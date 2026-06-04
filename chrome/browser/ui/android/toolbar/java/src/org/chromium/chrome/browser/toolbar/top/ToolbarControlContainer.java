@@ -97,7 +97,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private ToolbarViewResourceCoordinatorLayout mToolbarContainer;
 
     private @Nullable SwipeGestureListener mSwipeGestureListener;
-    private @Nullable OnDragListener mToolbarContainerDragListener;
 
     private boolean mIsAppInUnfocusedDesktopWindow;
     private int mToolbarLayoutHeight;
@@ -296,11 +295,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     @Override
     public void destroy() {
         ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).destroy();
-        if (mToolbarContainerDragListener != null) {
-            mToolbarContainer.setOnDragListener(null);
-            mToolbarContainerDragListener = null;
-        }
-
         if (mXrSpaceModeObservableSupplier != null) {
             mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
         }
@@ -572,17 +566,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public void setAppInUnfocusedDesktopWindow(boolean isAppInUnfocusedDesktopWindow) {
         // TODO (crbug/337132433): Observe window focus state changes to update this state.
         mIsAppInUnfocusedDesktopWindow = isAppInUnfocusedDesktopWindow;
-    }
-
-    /**
-     * Sets drag listener for toolbar container.
-     *
-     * @param toolbarContainerDragListener Listener to set.
-     */
-    public void setToolbarContainerDragListener(
-            @Nullable OnDragListener toolbarContainerDragListener) {
-        mToolbarContainerDragListener = toolbarContainerDragListener;
-        mToolbarContainer.setOnDragListener(mToolbarContainerDragListener);
     }
 
     @Override

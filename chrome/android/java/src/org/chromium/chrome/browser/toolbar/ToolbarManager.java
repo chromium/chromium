@@ -2651,8 +2651,7 @@ public class ToolbarManager
         mLayoutManager = layoutManager;
 
         if (stripLayoutHelperManager != null) {
-            mControlContainer.setToolbarContainerDragListener(
-                    stripLayoutHelperManager.getDragListener());
+            mControlContainer.setOnDragListener(stripLayoutHelperManager.getDragListener());
 
             mTabStripTransitionDelegateSupplier.set(stripLayoutHelperManager);
             stripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(
@@ -2959,6 +2958,7 @@ public class ToolbarManager
         mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         mComponentCallbacks = null;
 
+        mControlContainer.setOnDragListener(null);
         mControlContainer.destroy();
         mConstraintsSupplier.destroy();
         mLocationBarFocusHandler.destroy();
