@@ -602,27 +602,31 @@ gfx::Rect MultiContentsView::CalculateDropTargetLayout(
     return available_space;
   }
 
-  const int drop_target_width =
-      drop_target_view_->GetPreferredWidth(available_space.width());
+  CHECK(drop_target_view_->side().has_value());
+  const int drop_target_size = drop_target_view_->GetSizeForAvailableSpace(
+      drop_target_view_->side() == MultiContentsDropTargetView::DropSide::BOTTOM
+          ? available_space.height()
+          : available_space.width());
 
-  const int drop_target_x = (drop_target_view_->side() ==
-                             MultiContentsDropTargetView::DropSide::START)
-                                ? available_space.x()
-                                : available_space.right() - drop_target_width;
-  const int remaining_space_x =
-      available_space.x() + ((drop_target_view_->side() ==
-                              MultiContentsDropTargetView::DropSide::START)
-                                 ? drop_target_width
-                                 : 0);
+  gfx::Rect drop_target_bounds = available_space;
+  gfx::Rect remaining_space = available_space;
+  switch (drop_target_view_->side().value()) {
+    case MultiContentsDropTargetView::DropSide::START:
+      remaining_space.Inset(gfx::Insets().set_left(drop_target_size));
+      break;
+    case MultiContentsDropTargetView::DropSide::END:
+      remaining_space.Inset(gfx::Insets().set_right(drop_target_size));
+      break;
+    case MultiContentsDropTargetView::DropSide::BOTTOM:
+      remaining_space.Inset(gfx::Insets().set_bottom(drop_target_size));
+      break;
+    default:
+      NOTREACHED();
+  }
+  drop_target_bounds.Subtract(remaining_space);
 
-  child_layouts.emplace_back(
-      drop_target_view_.get(), true,
-      gfx::Rect(drop_target_x, available_space.y(), drop_target_width,
-                available_space.height()));
-
-  return gfx::Rect(remaining_space_x, available_space.y(),
-                   available_space.width() - drop_target_width,
-                   available_space.height());
+  child_layouts.emplace_back(drop_target_view_.get(), true, drop_target_bounds);
+  return remaining_space;
 }
 
 gfx::Rect MultiContentsView::CalculateSeparatorLayouts(

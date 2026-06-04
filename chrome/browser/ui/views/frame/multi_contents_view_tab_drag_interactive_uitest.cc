@@ -64,6 +64,9 @@ class MultiContentsViewTabDragEntrypointsUiTest
       case MultiContentsDropTargetView::DropSide::END:
         return gfx::Point(bounds.right_center().x() - 10,
                           bounds.right_center().y());
+      case MultiContentsDropTargetView::DropSide::BOTTOM:
+      default:
+        NOTREACHED();
     }
   }
 

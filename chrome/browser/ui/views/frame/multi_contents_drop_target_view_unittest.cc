@@ -54,7 +54,9 @@ class MockDragDelegate : public MultiContentsDropTargetView::DragDelegate {
               (override));
 };
 
-class DropTargetViewTest : public ChromeViewsTestBase {
+class DropTargetViewTest : public ChromeViewsTestBase,
+                           public testing::WithParamInterface<
+                               MultiContentsDropTargetView::DropSide> {
  protected:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
@@ -92,23 +94,28 @@ class DropTargetViewTest : public ChromeViewsTestBase {
   std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
-TEST_F(DropTargetViewTest, ViewIsOpened) {
+INSTANTIATE_TEST_SUITE_P(
+    DropSide,
+    DropTargetViewTest,
+    testing::Values(MultiContentsDropTargetView::DropSide::START,
+                    MultiContentsDropTargetView::DropSide::END,
+                    MultiContentsDropTargetView::DropSide::BOTTOM));
+
+TEST_P(DropTargetViewTest, ViewIsOpened) {
   MultiContentsDropTargetView* view = drop_target_view();
 
   EXPECT_EQ(0, view->animation_for_testing().GetCurrentValue());
 
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
 
   EXPECT_TRUE(view->GetVisible());
   EXPECT_TRUE(view->icon_view_for_testing()->GetVisible());
 }
 
-TEST_F(DropTargetViewTest, ViewIsClosed) {
+TEST_P(DropTargetViewTest, ViewIsClosed) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
 
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() == 1);
@@ -118,7 +125,7 @@ TEST_F(DropTargetViewTest, ViewIsClosed) {
   EXPECT_FALSE(view->GetVisible());
 }
 
-TEST_F(DropTargetViewTest, ViewIsClosedAfterDelay) {
+TEST_P(DropTargetViewTest, ViewIsClosedAfterDelay) {
   MultiContentsDropTargetView* view = drop_target_view();
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
@@ -129,8 +136,7 @@ TEST_F(DropTargetViewTest, ViewIsClosedAfterDelay) {
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
 
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
 
   animation.SetStartTime(now);
@@ -148,7 +154,7 @@ TEST_F(DropTargetViewTest, ViewIsClosedAfterDelay) {
   EXPECT_FALSE(view->GetVisible());
 }
 
-TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
+TEST_P(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   MultiContentsDropTargetView* view = drop_target_view();
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
@@ -156,8 +162,7 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   auto scoped_mode = animation.SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
 
   view->animation_for_testing().SetSlideDuration(
@@ -172,8 +177,7 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   EXPECT_TRUE(view->animation_for_testing().GetCurrentValue() < 1);
   EXPECT_TRUE(view->GetVisible());
 
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
 
   animation.Step(now + base::Seconds(kDelayedAnimationDuration + 1));
@@ -182,7 +186,7 @@ TEST_F(DropTargetViewTest, ViewIsOpenedAfterDelay) {
   EXPECT_TRUE(view->GetVisible());
 }
 
-TEST_F(DropTargetViewTest, ViewDoesNotAnimateWithReducedMotion) {
+TEST_P(DropTargetViewTest, ViewDoesNotAnimateWithReducedMotion) {
   MultiContentsDropTargetView* view = drop_target_view();
 
   // Set a non-zero animation duration to ensure animations would normally run.
@@ -196,8 +200,7 @@ TEST_F(DropTargetViewTest, ViewDoesNotAnimateWithReducedMotion) {
   gfx::AnimationTestApi animation_api(&view->animation_for_testing());
 
   // The view should appear immediately without animation.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 1.0);
 
@@ -269,10 +272,9 @@ TEST_F(DropTargetViewTest, OnDragDone) {
   view->OnDragDone();
 }
 
-TEST_F(DropTargetViewTest, DropCallback) {
+TEST_P(DropTargetViewTest, DropCallback) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
   ASSERT_TRUE(view->GetVisible());
 
@@ -288,62 +290,59 @@ TEST_F(DropTargetViewTest, DropCallback) {
   views::View::DropCallback callback = view->GetDropCallback(event);
 }
 
-TEST_F(DropTargetViewTest, GetPreferredWidth) {
+TEST_P(DropTargetViewTest, GetSizeForAvailableSpace) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kTab);
   EXPECT_TRUE(view->GetVisible());
 
-  // Width is clamped to the minimum.
-  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinWidth,
-            view->GetPreferredWidth(400));
+  // Size is clamped to the minimum.
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinSize,
+            view->GetSizeForAvailableSpace(400));
 
-  // Width is clamped to the maximum.
-  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxWidth,
-            view->GetPreferredWidth(3000));
+  // Size is clamped to the maximum.
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxSize,
+            view->GetSizeForAvailableSpace(3000));
 
-  // Width is the target percentage of the web contents width.
-  EXPECT_EQ(1000 *
-                MultiContentsDropTargetView::kDropTargetTargetWidthPercentage /
-                100,
-            view->GetPreferredWidth(1000));
+  // Size is the target percentage of the web contents size.
+  EXPECT_EQ(
+      1000 * MultiContentsDropTargetView::kDropTargetTargetSizePercentage / 100,
+      view->GetSizeForAvailableSpace(1000));
 
-  // When hidden, width should be 0.
+  // When hidden, size should be 0.
   view->Hide();
   EXPECT_FALSE(view->GetVisible());
-  EXPECT_EQ(0, view->GetPreferredWidth(1000));
+  EXPECT_EQ(0, view->GetSizeForAvailableSpace(1000));
 }
 
-TEST_F(DropTargetViewTest, GetPreferredWidthForLink) {
+TEST_P(DropTargetViewTest, GetSizeForAvailableSpaceForLink) {
   MultiContentsDropTargetView* view = drop_target_view();
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
 
-  // Width is clamped to the minimum.
-  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinWidth,
-            view->GetPreferredWidth(400));
+  // Size is clamped to the minimum.
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinSize,
+            view->GetSizeForAvailableSpace(400));
 
-  // Width is clamped to the maximum.
-  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxWidth,
-            view->GetPreferredWidth(3000));
+  // Size is clamped to the maximum.
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxSize,
+            view->GetSizeForAvailableSpace(3000));
 
-  // Width is the target percentage of the web contents width.
+  // Size is the target percentage of the web contents size.
   EXPECT_EQ(
       1000 *
-          MultiContentsDropTargetView::kDropTargetForLinkTargetWidthPercentage /
+          MultiContentsDropTargetView::kDropTargetForLinkTargetSizePercentage /
           100,
-      view->GetPreferredWidth(1000));
+      view->GetSizeForAvailableSpace(1000));
 
-  // When hidden, width should be 0.
+  // When hidden, size should be 0.
   view->Hide();
   EXPECT_FALSE(view->GetVisible());
-  EXPECT_EQ(0, view->GetPreferredWidth(1000));
+  EXPECT_EQ(0, view->GetSizeForAvailableSpace(1000));
 }
 
-TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
+TEST_P(DropTargetViewTest, GetSizeForAvailableSpaceWithAnimation) {
   MultiContentsDropTargetView* view = drop_target_view();
   auto now = base::TimeTicks::Now();
   gfx::AnimationTestApi animation(
@@ -354,8 +353,7 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
   view->animation_for_testing().SetSlideDuration(
       base::Seconds(kDelayedAnimationDuration));
 
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kTab);
 
   animation.SetStartTime(now);
@@ -365,69 +363,77 @@ TEST_F(DropTargetViewTest, GetPreferredWidthWithAnimation) {
   EXPECT_GT(view->animation_for_testing().GetCurrentValue(), 0);
   EXPECT_LT(view->animation_for_testing().GetCurrentValue(), 1);
 
-  // Width should be proportional to the animation progress.
-  const int final_width =
-      1000 * MultiContentsDropTargetView::kDropTargetTargetWidthPercentage /
-      100;
-  int animated_width = view->GetPreferredWidth(1000);
-  EXPECT_GT(animated_width, 0);
-  EXPECT_LT(animated_width, final_width);
+  // Size should be proportional to the animation progress.
+  const int final_size =
+      1000 * MultiContentsDropTargetView::kDropTargetTargetSizePercentage / 100;
+  int animated_size = view->GetSizeForAvailableSpace(1000);
+  EXPECT_GT(animated_size, 0);
+  EXPECT_LT(animated_size, final_size);
 
-  // After animation finishes, it should be the final width.
+  // After animation finishes, it should be the final size.
   animation.Step(now + base::Seconds(kDelayedAnimationDuration + 1));
   EXPECT_EQ(view->animation_for_testing().GetCurrentValue(), 1);
-  EXPECT_EQ(view->GetPreferredWidth(1000), final_width);
+  EXPECT_EQ(view->GetSizeForAvailableSpace(1000), final_size);
 }
 
-TEST_F(DropTargetViewTest, GetPreferredWidthWithStates) {
+TEST_P(DropTargetViewTest, GetSizeForAvailableSpaceWithStates) {
   MultiContentsDropTargetView* view = drop_target_view();
 
-  // Test nudge state.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kNudge,
+  // Test full state.
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(MultiContentsDropTargetView::kNudgeMinWidth,
-            view->GetPreferredWidth(800));
-  EXPECT_EQ(MultiContentsDropTargetView::kNudgeMaxWidth,
-            view->GetPreferredWidth(5000));
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinSize,
+            view->GetSizeForAvailableSpace(400));
+  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxSize,
+            view->GetSizeForAvailableSpace(3000));
   EXPECT_EQ(
-      2000 * MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100,
-      view->GetPreferredWidth(2000));
+      1000 *
+          MultiContentsDropTargetView::kDropTargetForLinkTargetSizePercentage /
+          100,
+      view->GetSizeForAvailableSpace(1000));
+
+  if (GetParam() == MultiContentsDropTargetView::DropSide::BOTTOM) {
+    // Nudge state only shows on the left/right sides.
+    return;
+  }
+
+  // Test nudge state.
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kNudge,
+             MultiContentsDropTargetView::DragType::kLink);
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeMinSize,
+            view->GetSizeForAvailableSpace(800));
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeMaxSize,
+            view->GetSizeForAvailableSpace(5000));
+  EXPECT_EQ(
+      2000 * MultiContentsDropTargetView::kNudgeTargetSizePercentage / 100,
+      view->GetSizeForAvailableSpace(2000));
 
   // Test nudge to full state.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
+  view->Show(GetParam(),
              MultiContentsDropTargetView::DropTargetState::kNudgeToFull,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(MultiContentsDropTargetView::kNudgeToFullMinWidth,
-            view->GetPreferredWidth(400));
-  EXPECT_EQ(MultiContentsDropTargetView::kNudgeToFullMaxWidth,
-            view->GetPreferredWidth(3000));
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeToFullMinSize,
+            view->GetSizeForAvailableSpace(400));
+  EXPECT_EQ(MultiContentsDropTargetView::kNudgeToFullMaxSize,
+            view->GetSizeForAvailableSpace(3000));
   EXPECT_EQ(1000 *
-                MultiContentsDropTargetView::kNudgeToFullTargetWidthPercentage /
+                MultiContentsDropTargetView::kNudgeToFullTargetSizePercentage /
                 100,
-            view->GetPreferredWidth(1000));
-
-  // Test full state.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kFull,
-             MultiContentsDropTargetView::DragType::kLink);
-  EXPECT_TRUE(view->GetVisible());
-  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMinWidth,
-            view->GetPreferredWidth(400));
-  EXPECT_EQ(MultiContentsDropTargetView::kDropTargetMaxWidth,
-            view->GetPreferredWidth(3000));
-  EXPECT_EQ(
-      1000 *
-          MultiContentsDropTargetView::kDropTargetForLinkTargetWidthPercentage /
-          100,
-      view->GetPreferredWidth(1000));
+            view->GetSizeForAvailableSpace(1000));
 }
 
-TEST_F(DropTargetViewTest, AnimateFromNudgeToFull) {
-  // Arbitrarily chosen. The view will calculate widths relative to this.
-  constexpr int kContentsWidth = 1600;
+TEST_P(DropTargetViewTest, AnimateFromNudgeToFull) {
+  if (GetParam() == MultiContentsDropTargetView::DropSide::BOTTOM) {
+    // Nudge state only shows on the left/right sides.
+    GTEST_SKIP();
+  }
+
+  // Chosen so that the nudge states sizes are not clamped to their min/max
+  // sizes. The view will calculate sizes relative to this.
+  constexpr int kContentsSize = 1800;
 
   MultiContentsDropTargetView* view = drop_target_view();
   auto now = base::TimeTicks::Now();
@@ -439,49 +445,56 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFull) {
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   // Start in nudge state.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kNudge,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kNudge,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
 
-  // Finish the animation and check the width.
+  // Finish the animation and check the size.
   animation.SetStartTime(now);
   animation.Step(now + base::Seconds(kDelayedAnimationDuration));
-  const int nudge_width = view->GetPreferredWidth(kContentsWidth);
-  view->SetSize(gfx::Size(nudge_width, view->size().height()));
-  EXPECT_EQ(kContentsWidth *
-                MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100,
-            nudge_width);
+  const int nudge_size = view->GetSizeForAvailableSpace(kContentsSize);
+  view->SetSize(GetParam() == MultiContentsDropTargetView::DropSide::BOTTOM
+                    ? gfx::Size(view->width(), nudge_size)
+                    : gfx::Size(nudge_size, view->height()));
+  EXPECT_EQ(kContentsSize *
+                MultiContentsDropTargetView::kNudgeTargetSizePercentage / 100,
+            nudge_size);
 
   // Transition to nudge-to-full state with an animation.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
+  view->Show(GetParam(),
              MultiContentsDropTargetView::DropTargetState::kNudgeToFull,
              MultiContentsDropTargetView::DragType::kLink);
-  EXPECT_EQ(kContentsWidth *
-                MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100,
-            view->GetPreferredWidth(kContentsWidth));
+  EXPECT_EQ(kContentsSize *
+                MultiContentsDropTargetView::kNudgeTargetSizePercentage / 100,
+            view->GetSizeForAvailableSpace(kContentsSize));
 
   // Step the animation to the middle.
   animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2));
 
-  // Check that the width is between the nudge and nudge-to-full widths.
-  // At half of the animation, we expect a width to be scaled to the target
-  // width.
-  const int nudge_to_full_width =
-      kContentsWidth *
-      MultiContentsDropTargetView::kNudgeToFullTargetWidthPercentage / 100;
-  const int current_width = view->GetPreferredWidth(kContentsWidth);
-  EXPECT_GT(current_width, nudge_width);
-  EXPECT_LT(current_width, nudge_to_full_width);
+  // Check that the size is between the nudge and nudge-to-full sizes.
+  // At half of the animation, we expect a size to be scaled to the target
+  // size.
+  const int nudge_to_full_size =
+      kContentsSize *
+      MultiContentsDropTargetView::kNudgeToFullTargetSizePercentage / 100;
+  const int current_size = view->GetSizeForAvailableSpace(kContentsSize);
+  EXPECT_GT(current_size, nudge_size);
+  EXPECT_LT(current_size, nudge_to_full_size);
 
   // Finish the animation.
   animation.Step(now + base::Seconds(kDelayedAnimationDuration));
-  EXPECT_EQ(view->GetPreferredWidth(kContentsWidth), nudge_to_full_width);
+  EXPECT_EQ(view->GetSizeForAvailableSpace(kContentsSize), nudge_to_full_size);
 }
 
-TEST_F(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
-  // Arbitrarily chosen. The view will calculate widths relative to this.
-  constexpr int kContentsWidth = 1600;
+TEST_P(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
+  if (GetParam() == MultiContentsDropTargetView::DropSide::BOTTOM) {
+    // Nudge state only shows on the left/right sides.
+    GTEST_SKIP();
+  }
+
+  // Chosen so that the nudge states sizes are not clamped to their min/max
+  // sizes. The view will calculate sizes relative to this.
+  constexpr int kContentsSize = 1800;
 
   MultiContentsDropTargetView* view = drop_target_view();
   auto now = base::TimeTicks::Now();
@@ -493,8 +506,7 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
   // Start in nudge state.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
-             MultiContentsDropTargetView::DropTargetState::kNudge,
+  view->Show(GetParam(), MultiContentsDropTargetView::DropTargetState::kNudge,
              MultiContentsDropTargetView::DragType::kLink);
   EXPECT_TRUE(view->GetVisible());
 
@@ -502,43 +514,48 @@ TEST_F(DropTargetViewTest, AnimateFromNudgeToFullMidAnimation) {
   animation.SetStartTime(now);
   animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2));
 
-  const int nudge_width =
-      kContentsWidth *
-      MultiContentsDropTargetView::kNudgeTargetWidthPercentage / 100;
-  const int nudge_mid_animation_width = view->GetPreferredWidth(kContentsWidth);
-  EXPECT_GT(nudge_mid_animation_width, 0);
-  EXPECT_LT(nudge_mid_animation_width, nudge_width);
+  const int nudge_size =
+      kContentsSize * MultiContentsDropTargetView::kNudgeTargetSizePercentage /
+      100;
+  const int nudge_mid_animation_size =
+      view->GetSizeForAvailableSpace(kContentsSize);
+  EXPECT_GT(nudge_mid_animation_size, 0);
+  EXPECT_LT(nudge_mid_animation_size, nudge_size);
 
   // Transition to nudge-to-full state with an animation.
-  view->Show(MultiContentsDropTargetView::DropSide::START,
+  view->Show(GetParam(),
              MultiContentsDropTargetView::DropTargetState::kNudgeToFull,
              MultiContentsDropTargetView::DragType::kLink);
 
-  // Step the animation by 1ms. The width should be larger than where it was
+  // Step the animation by 1ms. The size should be larger than where it was
   // when the nudge-animation was interrupted.
   animation.Step(now + base::Seconds(kDelayedAnimationDuration / 2) +
                  base::Milliseconds(1));
-  // Check that the width is between the nudge and nudge-to-full widths.
-  const int nudge_to_full_width =
-      kContentsWidth *
-      MultiContentsDropTargetView::kNudgeToFullTargetWidthPercentage / 100;
-  const int full_mid_animation_width = view->GetPreferredWidth(kContentsWidth);
-  EXPECT_GT(full_mid_animation_width, nudge_mid_animation_width);
-  EXPECT_LT(full_mid_animation_width, nudge_to_full_width);
+  // Check that the size is between the nudge and nudge-to-full sizes.
+  const int nudge_to_full_size =
+      kContentsSize *
+      MultiContentsDropTargetView::kNudgeToFullTargetSizePercentage / 100;
+  const int full_mid_animation_size =
+      view->GetSizeForAvailableSpace(kContentsSize);
+  EXPECT_GT(full_mid_animation_size, nudge_mid_animation_size);
+  EXPECT_LT(full_mid_animation_size, nudge_to_full_size);
 
   // Finish the animation.
   animation.Step(now + base::Seconds(kDelayedAnimationDuration * 2));
-  EXPECT_EQ(view->GetPreferredWidth(kContentsWidth), nudge_to_full_width);
+  EXPECT_EQ(view->GetSizeForAvailableSpace(kContentsSize), nudge_to_full_size);
 }
 
 // Tests that the icon and label are positioned correctly when dragging a tab.
-TEST_F(DropTargetViewTest, TabDrag_PositionsIconAndLabelCorrectly) {
+TEST_P(DropTargetViewTest, TabDrag_PositionsIconAndLabelCorrectly) {
   widget()->SetSize(gfx::Size(500, 500));
-  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+  drop_target_view()->Show(GetParam(),
                            MultiContentsDropTargetView::DropTargetState::kFull,
                            MultiContentsDropTargetView::DragType::kTab);
   widget()->LayoutRootViewIfNecessary();
 
+  // When dragging a tab, the icon and label should be centered horizontally and
+  // aligned to the top, unless it is to the bottom drop target in which case it
+  // should be centered vertically as well.
   views::ImageView* icon = drop_target_view()->icon_view_for_testing();
   views::Label* label = drop_target_view()->label_for_testing();
   EXPECT_TRUE(drop_target_view()->GetVisible());
@@ -553,14 +570,21 @@ TEST_F(DropTargetViewTest, TabDrag_PositionsIconAndLabelCorrectly) {
   EXPECT_NEAR(label->GetBoundsInScreen().CenterPoint().x(),
               drop_target_view()->GetBoundsInScreen().CenterPoint().x(),
               kErrorMargin);
-  EXPECT_LT(label->GetBoundsInScreen().bottom(),
-            drop_target_view()->GetBoundsInScreen().CenterPoint().y());
+  if (GetParam() == MultiContentsDropTargetView::DropSide::BOTTOM) {
+    EXPECT_LT(icon->GetBoundsInScreen().y(),
+              drop_target_view()->GetBoundsInScreen().CenterPoint().y());
+    EXPECT_GT(label->GetBoundsInScreen().bottom(),
+              drop_target_view()->GetBoundsInScreen().CenterPoint().y());
+  } else {
+    EXPECT_LT(label->GetBoundsInScreen().bottom(),
+              drop_target_view()->GetBoundsInScreen().CenterPoint().y());
+  }
 }
 
 // Tests that the icon and label are positioned correctly when dragging a link.
-TEST_F(DropTargetViewTest, LinkDrag_PositionsIconAndLabelCorrectly) {
+TEST_P(DropTargetViewTest, LinkDrag_PositionsIconAndLabelCorrectly) {
   widget()->SetSize(gfx::Size(500, 500));
-  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+  drop_target_view()->Show(GetParam(),
                            MultiContentsDropTargetView::DropTargetState::kFull,
                            MultiContentsDropTargetView::DragType::kLink);
   widget()->LayoutRootViewIfNecessary();
@@ -587,20 +611,25 @@ TEST_F(DropTargetViewTest, LinkDrag_PositionsIconAndLabelCorrectly) {
             drop_target_view()->GetBoundsInScreen().CenterPoint().y());
 }
 
-// Tests that the icon and label are positioned correctly when dragging a link.
-TEST_F(DropTargetViewTest, IconVerticalAlignmentWhenLabelHidden) {
+// Tests that the icon's y-position stays constant between the nudge and full
+// states.
+TEST_P(DropTargetViewTest, IconVerticalAlignmentWhenLabelHidden) {
+  if (GetParam() == MultiContentsDropTargetView::DropSide::BOTTOM) {
+    GTEST_SKIP();
+  }
+
   widget()->SetSize(
       {drop_target_view()->icon_view_for_testing()->GetPreferredSize().width() +
            1,
        500});
-  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+  drop_target_view()->Show(GetParam(),
                            MultiContentsDropTargetView::DropTargetState::kNudge,
                            MultiContentsDropTargetView::DragType::kLink);
   widget()->LayoutRootViewIfNecessary();
   views::ImageView* icon = drop_target_view()->icon_view_for_testing();
   const int icon_y_for_nudge = icon->y();
 
-  drop_target_view()->Show(MultiContentsDropTargetView::DropSide::START,
+  drop_target_view()->Show(GetParam(),
                            MultiContentsDropTargetView::DropTargetState::kFull,
                            MultiContentsDropTargetView::DragType::kLink);
   widget()->LayoutRootViewIfNecessary();

@@ -794,8 +794,8 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
        {"max_distance_threshold", "1000"}});
 
   constexpr int kWidthForForMinDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMinWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
+      (MultiContentsDropTargetView::kDropTargetMinSize * 100.0f) /
+      MultiContentsDropTargetView::kDropTargetTargetSizePercentage;
   views::View* parent = drop_target_view().parent();
   parent->SetSize(gfx::Size(kWidthForForMinDropTargetSize, 500));
 
@@ -817,8 +817,8 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
        {"max_distance_threshold", "1000"}});
 
   constexpr int kWidthForForMaxDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMaxWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
+      (MultiContentsDropTargetView::kDropTargetMaxSize * 100.0f) /
+      MultiContentsDropTargetView::kDropTargetTargetSizePercentage;
 
   views::View* parent = drop_target_view().parent();
   parent->SetSize(gfx::Size(kWidthForForMaxDropTargetSize, 500));
@@ -872,8 +872,8 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   views::View* parent = drop_target_view().parent();
 
   constexpr int kWidthForForMinDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMinWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
+      (MultiContentsDropTargetView::kDropTargetMinSize * 100.0f) /
+      MultiContentsDropTargetView::kDropTargetTargetSizePercentage;
 
   parent->SetSize(gfx::Size(kWidthForForMinDropTargetSize, 500));
   DragTabTo(gfx::Point(1, 250));
@@ -900,8 +900,8 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   views::View* parent = drop_target_view().parent();
 
   constexpr int kWidthForForMaxDropTargetSize =
-      (MultiContentsDropTargetView::kDropTargetMaxWidth * 100.0f) /
-      MultiContentsDropTargetView::kDropTargetTargetWidthPercentage;
+      (MultiContentsDropTargetView::kDropTargetMaxSize * 100.0f) /
+      MultiContentsDropTargetView::kDropTargetTargetSizePercentage;
 
   parent->SetSize(gfx::Size(kWidthForForMaxDropTargetSize, 500));
   DragTabTo(gfx::Point(1, 250));

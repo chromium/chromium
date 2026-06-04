@@ -52,9 +52,9 @@ static constexpr double kDropTargetHideForOSPercentage =
 // according to `current_width`.
 int GetValueScaledToWidth(int current_width, int min_value, int max_value) {
   static constexpr float kMinWidth =
-      MultiContentsDropTargetView::kDropTargetMinWidth;
+      MultiContentsDropTargetView::kDropTargetMinSize;
   static constexpr float kMaxWidth =
-      MultiContentsDropTargetView::kDropTargetMaxWidth;
+      MultiContentsDropTargetView::kDropTargetMaxSize;
 
   // Scale linearly between min and max delay based on the width.
   const float width_ratio = std::clamp(
@@ -322,7 +322,7 @@ void MultiContentsViewDropTargetController::HandleDragUpdate(
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
   const bool is_rtl = base::i18n::IsRTL();
 
-  const int drop_entry_point_width = MultiContentsDropTargetView::GetMaxWidth(
+  const int drop_entry_point_width = MultiContentsDropTargetView::GetMaxSize(
       drop_target_parent_view_->width(),
       MultiContentsDropTargetView::DropTargetState::kFull, drag_type);
   if (point_in_view.x() >=

@@ -141,45 +141,45 @@ bool MultiContentsDropTargetView::IsClosing() const {
 }
 
 // static
-int MultiContentsDropTargetView::GetMaxWidth(int web_contents_width,
-                                             DropTargetState state,
-                                             DragType drag_type) {
-  int min_width = 0;
-  int max_width = 0;
+int MultiContentsDropTargetView::GetMaxSize(int web_contents_size,
+                                            DropTargetState state,
+                                            DragType drag_type) {
+  int min_size = 0;
+  int max_size = 0;
   int percentage = 0;
 
   switch (state) {
     case DropTargetState::kNudge:
-      min_width = kNudgeMinWidth;
-      max_width = kNudgeMaxWidth;
-      percentage = kNudgeTargetWidthPercentage;
+      min_size = kNudgeMinSize;
+      max_size = kNudgeMaxSize;
+      percentage = kNudgeTargetSizePercentage;
       break;
     case DropTargetState::kNudgeToFull:
-      min_width = kNudgeToFullMinWidth;
-      max_width = kNudgeToFullMaxWidth;
-      percentage = kNudgeToFullTargetWidthPercentage;
+      min_size = kNudgeToFullMinSize;
+      max_size = kNudgeToFullMaxSize;
+      percentage = kNudgeToFullTargetSizePercentage;
       break;
     case DropTargetState::kFull:
-      min_width = kDropTargetMinWidth;
-      max_width = kDropTargetMaxWidth;
+      min_size = kDropTargetMinSize;
+      max_size = kDropTargetMaxSize;
       percentage = drag_type == DragType::kTab
-                       ? kDropTargetTargetWidthPercentage
-                       : kDropTargetForLinkTargetWidthPercentage;
+                       ? kDropTargetTargetSizePercentage
+                       : kDropTargetForLinkTargetSizePercentage;
       break;
     default:
       NOTREACHED();
   }
 
-  // Calculate the target width based on the web contents width and the target
+  // Calculate the target size based on the web contents size and the target
   // percentage.
-  const int target_width = web_contents_width * (percentage / 100.0);
+  const int target_size = web_contents_size * (percentage / 100.0);
 
-  // Clamp the width to the min and max widths.
-  return std::clamp(target_width, min_width, max_width);
+  // Clamp the size to the min and max sizes.
+  return std::clamp(target_size, min_size, max_size);
 }
 
-int MultiContentsDropTargetView::GetPreferredWidth(
-    int web_contents_width) const {
+int MultiContentsDropTargetView::GetSizeForAvailableSpace(
+    int available_space_size) const {
   if (!GetVisible()) {
     return 0;
   }
@@ -187,11 +187,11 @@ int MultiContentsDropTargetView::GetPreferredWidth(
   CHECK(state_.has_value());
   CHECK(drag_type_.has_value());
 
-  const int target_full_width =
-      GetMaxWidth(web_contents_width, *state_, drag_type_.value());
-  const int animation_start_width = animate_expand_starting_width_.value_or(0);
-  return animation_start_width +
-         (GetAnimationValue() * (target_full_width - animation_start_width));
+  const int target_full_size =
+      GetMaxSize(available_space_size, *state_, drag_type_.value());
+  const int animation_start_size = animate_expand_starting_size_.value_or(0);
+  return animation_start_size +
+         (GetAnimationValue() * (target_full_size - animation_start_size));
 }
 
 void MultiContentsDropTargetView::AnimationProgressed(
@@ -210,6 +210,9 @@ void MultiContentsDropTargetView::AnimationEnded(
 void MultiContentsDropTargetView::Show(DropSide side,
                                        DropTargetState state,
                                        DragType drag_type) {
+  // Bottom side should not show a nudge.
+  CHECK(side != DropSide::BOTTOM || state == DropTargetState::kFull);
+
   // If transitioning from a nudge to full state, start a new animation.
   if (state == DropTargetState::kNudgeToFull &&
       state_ == MultiContentsDropTargetView::DropTargetState::kNudge) {
@@ -223,8 +226,9 @@ void MultiContentsDropTargetView::Show(DropSide side,
   drag_type_ = drag_type;
 
   inner_container_layout_->SetMainAxisAlignment(
-      drag_type_ == DragType::kTab ? views::LayoutAlignment::kStart
-                                   : views::LayoutAlignment::kCenter);
+      (side != DropSide::BOTTOM && drag_type_ == DragType::kTab)
+          ? views::LayoutAlignment::kStart
+          : views::LayoutAlignment::kCenter);
 
   UpdateVisibility(true);
 }
@@ -245,10 +249,11 @@ void MultiContentsDropTargetView::SetVisible(bool visible) {
 
 void MultiContentsDropTargetView::UpdateVisibility(bool should_be_open) {
   if (!should_be_open || !GetVisible()) {
-    animate_expand_starting_width_.reset();
+    animate_expand_starting_size_.reset();
   } else if (animation_.GetCurrentValue() == 0) {
-    // If starting a new "expand" animation, then update the starting width.
-    animate_expand_starting_width_ = width();
+    // If starting a new "expand" animation, then update the starting size.
+    animate_expand_starting_size_ =
+        side_ == DropSide::BOTTOM ? height() : width();
   }
   if (ShouldShowAnimation()) {
     if (should_be_open) {

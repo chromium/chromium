@@ -28,21 +28,22 @@ class MultiContentsDropTargetView : public views::View,
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsDropTargetElementId);
 
-  static constexpr int kDropTargetMinWidth = 120;
-  static constexpr int kDropTargetMaxWidth = 360;
-  static constexpr int kDropTargetTargetWidthPercentage = 20;
-  static constexpr int kDropTargetForLinkTargetWidthPercentage = 20;
-  static constexpr int kNudgeMinWidth = 80;
-  static constexpr int kNudgeMaxWidth = 200;
-  static constexpr int kNudgeTargetWidthPercentage = 5;
-  static constexpr int kNudgeToFullMinWidth = 120;
-  static constexpr int kNudgeToFullMaxWidth = 360;
-  static constexpr int kNudgeToFullTargetWidthPercentage = 20;
+  static constexpr int kDropTargetMinSize = 120;
+  static constexpr int kDropTargetMaxSize = 360;
+  static constexpr int kDropTargetTargetSizePercentage = 20;
+  static constexpr int kDropTargetForLinkTargetSizePercentage = 20;
+  static constexpr int kNudgeMinSize = 80;
+  static constexpr int kNudgeMaxSize = 200;
+  static constexpr int kNudgeTargetSizePercentage = 5;
+  static constexpr int kNudgeToFullMinSize = 120;
+  static constexpr int kNudgeToFullMaxSize = 360;
+  static constexpr int kNudgeToFullTargetSizePercentage = 20;
 
   // Represents which edge of the contents area the drop target is on.
   enum class DropSide {
     START = 0,
     END = 1,
+    BOTTOM = 2,
   };
 
   // Represents the state of the drop target which determines its size.
@@ -91,14 +92,14 @@ class MultiContentsDropTargetView : public views::View,
 
   bool IsClosing() const;
 
-  // Returns the preferred width of this view for the given web contents width,
-  // considering animation progress.
-  int GetPreferredWidth(int web_contents_width) const;
-  // Returns the maximum width that a view should be for the given web
-  // contents width.
-  static int GetMaxWidth(int web_contents_width,
-                         DropTargetState state,
-                         DragType drag_type);
+  // Returns the maximum width or height that a view should be for the given web
+  // contents width or height.
+  static int GetMaxSize(int web_contents_size,
+                        DropTargetState state,
+                        DragType drag_type);
+  // Returns the preferred width or height of this view for the given available
+  // space's width or height, considering animation progress.
+  int GetSizeForAvailableSpace(int available_space_size) const;
 
   // views::View
   void SetVisible(bool visible) override;
@@ -150,9 +151,9 @@ class MultiContentsDropTargetView : public views::View,
 
   // Animation controlling showing and hiding of the drop target view.
   gfx::SlideAnimation animation_{this};
-  // The width at the time the animation started.
+  // The height or width at the time the animation started.
   // This is relevant for transitioning from a nudge state to a full state.
-  std::optional<int> animate_expand_starting_width_;
+  std::optional<int> animate_expand_starting_size_;
   // Flag to used by base::AutoReset to suppress animation for hide request
   // to avoid content reflows during the split view creation.
   bool should_suppress_animation_ = false;
