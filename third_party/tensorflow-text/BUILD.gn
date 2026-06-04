@@ -4,6 +4,7 @@
 
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/flatbuffers/flatbuffer.gni")
+import("//third_party/tflite/tflite_target.gni")
 
 config("tensorflow-text-config") {
   include_dirs = [
@@ -57,7 +58,7 @@ flatbuffer("bert_model_schemas") {
 }
 
 if (!is_fuchsia) {
-  static_library("shimed_bert_model_ops") {
+  tflite_static_library("shimed_bert_model_ops") {
     sources = [
       "src/tensorflow_text/core/kernels/darts_clone_trie_wrapper.h",
       "src/tensorflow_text/core/kernels/fast_bert_normalizer.h",
@@ -79,15 +80,14 @@ if (!is_fuchsia) {
       "//third_party/flatbuffers",
       "//third_party/icu",
       "//third_party/re2",
-      "//third_party/tflite",
     ]
+    conditional_deps = [ "//third_party/tflite" ]
 
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
+    configs_to_remove = [ "//build/config/compiler:chromium_code" ]
+    configs_to_add = [
       ":tensorflow-text-flags",
       "//build/config/compiler:no_chromium_code",
       "//third_party/ml_dtypes:ml_dtypes-includes",
-      "//third_party/tflite:tflite_config",
     ]
 
     public_configs = [ ":tensorflow-text-config" ]
