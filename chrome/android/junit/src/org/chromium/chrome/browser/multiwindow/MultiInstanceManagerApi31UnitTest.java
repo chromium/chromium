@@ -476,6 +476,27 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testAllocInstanceId_onStartupWindowPolicy_relaunchBypassesPolicy() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        // Allocate instance 0 and 1.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Simulate closing a window from Android Recents.
+        removeTaskOnRecentsScreen(mActivityPool[1]);
+
+        // Mock the intent for the current activity to contain EXTRA_FROM_RELAUNCH.
+        Intent relaunchIntent = new Intent();
+        relaunchIntent.putExtra(IntentHandler.EXTRA_FROM_RELAUNCH, true);
+        when(mCurrentActivity.getIntent()).thenReturn(relaunchIntent);
+
+        // With ON_STARTUP_WINDOW_POLICY enabled, but with EXTRA_FROM_RELAUNCH set on the intent,
+        // it should bypass the skip check and reuse instance 1.
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+    }
+
+    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testAllocInstanceId_removeTaskOnRecentScreen() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));

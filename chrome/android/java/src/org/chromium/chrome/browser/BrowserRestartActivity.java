@@ -71,6 +71,7 @@ public class BrowserRestartActivity extends Activity {
             Intent restartIntent = new Intent(Intent.ACTION_MAIN);
             restartIntent.setPackage(context.getPackageName());
             restartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            restartIntent.putExtra(IntentHandler.EXTRA_FROM_RELAUNCH, true);
             context.startActivity(restartIntent);
         }
 

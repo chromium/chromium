@@ -26,6 +26,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -434,6 +435,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         int id = INVALID_WINDOW_ID;
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
+        boolean isRelaunch =
+                IntentUtils.safeGetBooleanExtra(
+                        mActivity.getIntent(), IntentHandler.EXTRA_FROM_RELAUNCH, false);
         for (int i = 0; i < getMaxInstances(); ++i) {
             int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(i);
             if (persistedTaskId != INVALID_TASK_ID) {
@@ -445,6 +449,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
             boolean instanceExists = ChromeMultiInstancePersistentStore.hasInstance(i);
             if (instanceExists
+                    && !isRelaunch
                     && (DeviceInfo.isDesktop()
                             && ChromeFeatureList.sOnStartupWindowPolicy.isEnabled())) {
                 // This supports updated default id allocation / startup behavior where a newly

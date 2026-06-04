@@ -147,6 +147,9 @@ public class IntentHandler {
     public static final String EXTRA_INVOKED_FROM_SHORTCUT =
             "com.android.chrome.invoked_from_shortcut";
 
+    /** An extra to indicate that the intent was triggered from a relaunch/restart. */
+    public static final String EXTRA_FROM_RELAUNCH = "com.android.chrome.from_relaunch";
+
     /** An extra to indicate that the intent was triggered from an app widget. */
     public static final String EXTRA_INVOKED_FROM_APP_WIDGET =
             "com.android.chrome.invoked_from_app_widget";
