@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -140,6 +141,7 @@ class ExternalAudioDecoderWrapper::DecodedBuffer : public DecoderBufferBase {
   uint8_t* writable_data() const override {
     return const_cast<uint8_t*>(data_.data());
   }
+  base::span<uint8_t> writable_span() { return data_.as_span(); }
   size_t data_size() const override { return size_; }
   const CastDecryptConfig* decrypt_config() const override { return nullptr; }
   bool end_of_stream() const override { return false; }
@@ -151,7 +153,7 @@ class ExternalAudioDecoderWrapper::DecodedBuffer : public DecoderBufferBase {
   const StreamId stream_id_;
   const size_t capacity_;
 
-  const base::HeapArray<uint8_t> data_;
+  base::HeapArray<uint8_t> data_;
 
   base::TimeDelta timestamp_;
   size_t size_ = 0;
@@ -263,10 +265,11 @@ void ExternalAudioDecoderWrapper::ConvertToS16(DecodedBuffer* buffer) {
                 conversion_buffer_->channel(c).data());
   }
 
-  int16_t* dest = reinterpret_cast<int16_t*>(buffer->writable_data());
+  const size_t sample_count = frames * channels;
+  const size_t byte_count = sample_count * sizeof(int16_t);
   conversion_buffer_
-      ->ToInterleavedPartial<::media::SignedInt16SampleTypeTraits>(0, frames,
-                                                                   dest);
+      ->ToInterleavedBytesPartial<::media::SignedInt16SampleTypeTraits>(
+          0, buffer->writable_span().first(byte_count));
 
   buffer->set_size(frames * channels * sizeof(int16_t));
 }

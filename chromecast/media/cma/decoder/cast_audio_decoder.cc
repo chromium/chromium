@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -279,8 +280,8 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     auto result = base::MakeRefCounted<::media::DecoderBuffer>(size);
 
     if (output_format_ == kOutputSigned16) {
-      bus->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
-          num_frames, reinterpret_cast<int16_t*>(result->writable_data()));
+      bus->ToInterleavedBytesPartial<::media::SignedInt16SampleTypeTraits>(
+          0, result->writable_span());
     } else if (output_format_ == kOutputPlanarFloat) {
       // Data in an AudioBus is already in planar float format; just copy each
       // channel into the result buffer in order.

@@ -8,6 +8,8 @@
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -229,8 +231,12 @@ void CmaAudioOutputStream::PushBuffer() {
   }
   auto decoder_buffer = base::MakeRefCounted<CastDecoderBufferImpl>(
       frame_count * audio_bus_->channels() * sizeof(int16_t));
-  audio_bus_->ToInterleaved<::media::SignedInt16SampleTypeTraits>(
-      frame_count, reinterpret_cast<int16_t*>(decoder_buffer->writable_data()));
+  // SAFETY: Per the CastDecoderBuffer API contract, `writable_data()` points
+  // to a buffer of at least `data_size()` bytes, so this span is within bounds.
+  base::span<uint8_t> dest_span = UNSAFE_BUFFERS(
+      base::span(decoder_buffer->writable_data(), decoder_buffer->data_size()));
+  audio_bus_->ToInterleavedBytesPartial<::media::SignedInt16SampleTypeTraits>(
+      0, dest_span);
   push_in_progress_ = true;
   output_->PushBuffer(std::move(decoder_buffer), false /*is_silence*/);
 }
