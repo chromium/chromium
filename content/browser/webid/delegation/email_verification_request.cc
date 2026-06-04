@@ -83,7 +83,8 @@ EmailVerificationRequest::~EmailVerificationRequest() = default;
 
 sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
     const std::string& email,
-    const sdjwt::Jwk& public_key) {
+    const sdjwt::Jwk& public_key,
+    const url::Origin& issuer) {
   sdjwt::Header header;
   header.alg = public_key.alg;
   header.typ = "JWT";
@@ -98,11 +99,7 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
 
   sdjwt::Payload payload;
   payload.email = email;
-  // TODO(crbug.com/380367784): check if `render_frame_host_` isn't an
-  // opaque origin, or any other validation that might be
-  // necessary.
-  CHECK(render_frame_host_);
-  payload.aud = render_frame_host_->GetLastCommittedOrigin().Serialize();
+  payload.aud = issuer.Serialize();
   payload.exp = expiration;
   payload.iat = now;
 
@@ -406,7 +403,8 @@ void EmailVerificationRequest::Verify(
   std::optional<sdjwt::Jwk> public_key = sdjwt::ExportPublicKey(*private_key);
   CHECK(public_key);
 
-  sdjwt::Jwt jwt = CreateRequestToken(result.email, *public_key);
+  sdjwt::Jwt jwt = CreateRequestToken(
+      result.email, *public_key, url::Origin::Create(result.issuance_endpoint));
 
   auto signer = sdjwt::CreateJwtSigner(*private_key);
   CHECK(jwt.Sign(std::move(signer)));
