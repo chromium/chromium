@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
@@ -297,19 +298,9 @@ void ManagedConfigurationAPI::DecodeData(const url::Origin& origin,
     return;
   }
 
-  // First, we have to parse JSON file in an isolated sandbox so that we don't
-  // have to worry about potentially risky values.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *data,
-      base::BindOnce(&ManagedConfigurationAPI::ProcessDecodedConfiguration,
-                     weak_ptr_factory_.GetWeakPtr(), origin, url_hash));
-}
-
-void ManagedConfigurationAPI::ProcessDecodedConfiguration(
-    const url::Origin& origin,
-    const std::string& url_hash,
-    const data_decoder::DataDecoder::ValueOrError decoding_result) {
-  if (!decoding_result.has_value() || !decoding_result->is_dict()) {
+  std::optional<base::DictValue> decoding_result =
+      base::JSONReader::ReadDict(*data, base::JSON_PARSE_RFC);
+  if (!decoding_result.has_value()) {
     VLOG(1) << "Could not fetch managed configuration for app with origin = "
             << origin.Serialize();
     PostStoreConfiguration(origin, base::DictValue());
@@ -321,7 +312,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
 
   // We need to transform each value into a string.
   base::DictValue result_dict;
-  for (auto item : decoding_result->GetDict()) {
+  for (auto item : *decoding_result) {
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);
