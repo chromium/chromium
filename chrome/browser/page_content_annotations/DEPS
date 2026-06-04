@@ -7,4 +7,7 @@ specific_include_rules = {
     "+components/paint_preview/common",
     "+pdf/mojom",
   ],
+  "page_content_annotations_service_browsertest\.cc": [
+    "+pdf/mojom",
+  ],
 }

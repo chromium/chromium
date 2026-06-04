@@ -65,7 +65,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
@@ -74,6 +76,11 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#include "pdf/mojom/pdf.mojom.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -114,7 +121,43 @@ class TestPageContentAnnotationsObserver
       last_page_content_annotations_result_;
 };
 
+#if BUILDFLAG(ENABLE_PDF)
+// This class is used for simulating PDF text and bytes extraction hangs.
+class HangingPdfListener : public pdf::mojom::PdfListener {
+ public:
+  HangingPdfListener() = default;
+  ~HangingPdfListener() override = default;
 
+  // pdf::mojom::PdfListener:
+  void GetPageText(int32_t page_index, GetPageTextCallback callback) override {
+    pending_get_page_text_callbacks_.push_back(std::move(callback));
+  }
+
+  void GetPdfBytes(uint32_t size_limit, GetPdfBytesCallback callback) override {
+    pending_get_pdf_bytes_callbacks_.push_back(std::move(callback));
+  }
+
+  void SetCaretPosition(const gfx::PointF& position) override {}
+  void MoveRangeSelectionExtent(const gfx::PointF& extent) override {}
+  void SetSelectionBounds(const gfx::PointF& base,
+                          const gfx::PointF& extent) override {}
+  void GetMostVisiblePageIndex(
+      GetMostVisiblePageIndexCallback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  void GetSaveDataBufferHandlerForDrive(
+      pdf::mojom::SaveRequestType request_type,
+      GetSaveDataBufferHandlerForDriveCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+#endif
+
+ private:
+  std::vector<GetPageTextCallback> pending_get_page_text_callbacks_;
+  std::vector<GetPdfBytesCallback> pending_get_pdf_bytes_callbacks_;
+};
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -2806,5 +2849,102 @@ INSTANTIATE_TEST_SUITE_P(
     PageContentAnnotationsServiceContentExtractionPdfTest,
     ::testing::Combine(::testing::Bool(), ::testing::Bool()),
     &PageContentAnnotationsServiceContentExtractionPdfTest::DescribeParams);
+
+class PageContentAnnotationsServiceContentExtractionPdfHangingTest
+    : public PageContentAnnotationsServiceContentExtractionPdfTest {
+ public:
+  PageContentAnnotationsServiceContentExtractionPdfHangingTest() = default;
+  ~PageContentAnnotationsServiceContentExtractionPdfHangingTest() override =
+      default;
+
+  void InitializeFeatureList() override {
+    // Setting a delay so that the extraction does not get triggered by
+    // `AnnotatedPageContentRequest`. The extraction is triggered by directly
+    // calling `FetchPageContext` after the required setup completes.
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        {features::kAnnotatedPageContentExtraction,
+         {{"capture_delay", "10000s"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsPDFTextExtractionEnabled()) {
+      enabled_features.push_back(
+          {features::kAnnotatedPageContentPDFTextExtraction,
+           {{"max_text_byte_size",
+             base::NumberToString(kPDFMaxTextExtractionSize)}}});
+    } else {
+      disabled_features.push_back(
+          features::kAnnotatedPageContentPDFTextExtraction);
+    }
+
+    AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
+                                      enabled_features, disabled_features);
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
+  }
+};
+
+// Simulate that a PDF extraction hangs and the WebContents goes away. The
+// `PageContextFetcher` should be destroyed without causing memory leak. This is
+// done by making sure the `FetchPageContextResultCallback` is run in this case.
+// This callback is stored as a member of `PageContextFetcher`. The callback
+// also holds a unique_ptr to `PageContextFetcher` itself, creating a circular
+// reference. There will be a memory leak if WebContents goes away but the
+// callback is never run, which makes `PageContextFetcher` unable to be
+// destroyed.
+IN_PROC_BROWSER_TEST_P(
+    PageContentAnnotationsServiceContentExtractionPdfHangingTest,
+    PDFExtractionNotCompleteWebContentsWentAway) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to a PDF document.
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf"),
+      /*number_of_navigations=*/1);
+
+  // Wait for PDFDocumentHelper creation.
+  pdf::PDFDocumentHelper* pdf_helper;
+  ASSERT_TRUE(base::test::RunUntil([&pdf_helper, &web_contents]() {
+    pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
+    return pdf_helper != nullptr;
+  }));
+
+  // Bind the hanging PDF Listener to simulate PDF text and bytes extraction
+  // taking forever.
+  HangingPdfListener hanging_listener;
+  mojo::Receiver<pdf::mojom::PdfListener> receiver(&hanging_listener);
+  pdf_helper->SetListener(receiver.BindNewPipeAndPassRemote());
+
+  // Notify the PDF document load complete.
+  pdf_helper->OnDocumentLoadComplete();
+
+  // Manually trigger FetchPageContext.
+  FetchPageContextOptions options;
+  options.pdf_options.emplace(IsPDFTextExtractionEnabled()
+                                  ? PdfOptions::Format::kText
+                                  : PdfOptions::Format::kBytes,
+                              1024);
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContext(*web_contents, options, nullptr, future.GetCallback());
+
+  // Close the tab to simulate the web content going away.
+  browser()->tab_strip_model()->CloseWebContentsAt(0,
+                                                   TabCloseTypes::CLOSE_NONE);
+
+  // Verify the callback is resolved with
+  // `FetchPageContextError::kWebContentsWentAway`.
+  FetchPageContextResultCallbackArg result = future.Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error_code,
+            FetchPageContextError::kWebContentsWentAway);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PageContentAnnotationsServiceContentExtractionPdfHangingTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    &PageContentAnnotationsServiceContentExtractionPdfHangingTest::
+        DescribeParams);
 
 }  // namespace page_content_annotations

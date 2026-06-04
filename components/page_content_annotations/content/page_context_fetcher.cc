@@ -386,7 +386,13 @@ PageContextFetcher::PageContextFetcher(
     : get_screenshot_service_callback_(
           std::move(get_screenshot_service_callback)),
       progress_listener_(std::move(progress_listener)) {}
-PageContextFetcher::~PageContextFetcher() = default;
+PageContextFetcher::~PageContextFetcher() {
+  if (callback_) {
+    std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
+        FetchPageContextError::kWebContentsWentAway,
+        "web contents went away (fetcher destroyed)"}));
+  }
+}
 
 void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
                                     const FetchPageContextOptions& options,

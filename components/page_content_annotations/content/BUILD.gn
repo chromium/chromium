@@ -26,6 +26,8 @@ source_set("content") {
     "page_content_screenshot_service.h",
     "page_context_fetcher.cc",
     "page_context_fetcher.h",
+    "page_context_fetcher_manager.cc",
+    "page_context_fetcher_manager.h",
     "page_context_fetcher_options.cc",
     "page_context_fetcher_options.h",
   ]
