@@ -12,7 +12,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace content::webid {
 
 class MockModalDialogViewDelegate : public IdentityRegistryDelegate {
  public:
@@ -33,6 +33,6 @@ class MockModalDialogViewDelegate : public IdentityRegistryDelegate {
               (override));
 };
 
-}  // namespace content
+}  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_TEST_MOCK_MODAL_DIALOG_VIEW_DELEGATE_H_

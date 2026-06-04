@@ -7,7 +7,7 @@
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
 
-namespace content {
+namespace content::webid {
 
 WebIdTestContentBrowserClient::WebIdTestContentBrowserClient() = default;
 WebIdTestContentBrowserClient::~WebIdTestContentBrowserClient() = default;
@@ -42,4 +42,4 @@ void WebIdTestContentBrowserClient::SetIdentityRegistry(
   IdentityRegistry::CreateForWebContents(web_contents, delegate, config_url);
 }
 
-}  // namespace content
+}  // namespace content::webid

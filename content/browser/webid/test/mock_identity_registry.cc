@@ -8,7 +8,7 @@
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 #include "url/gurl.h"
 
-namespace content {
+namespace content::webid {
 
 MockIdentityRegistry::MockIdentityRegistry(
     content::WebContents* web_contents,
@@ -18,4 +18,4 @@ MockIdentityRegistry::MockIdentityRegistry(
 
 MockIdentityRegistry::~MockIdentityRegistry() = default;
 
-}  // namespace content
+}  // namespace content::webid

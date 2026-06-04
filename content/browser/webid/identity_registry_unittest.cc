@@ -14,7 +14,7 @@
 
 using ::testing::NiceMock;
 
-namespace content {
+namespace content::webid {
 
 namespace {
 
@@ -83,4 +83,4 @@ TEST_F(IdentityRegistryTest, NotifierAndRegistryCrossOrigin) {
   EXPECT_FALSE(test_delegate_->closed_);
 }
 
-}  // namespace content
+}  // namespace content::webid

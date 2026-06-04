@@ -265,7 +265,7 @@ class IdpTestServer {
 };
 
 class TestFederatedIdentityModalDialogViewDelegate
-    : public NiceMock<MockModalDialogViewDelegate> {
+    : public NiceMock<webid::MockModalDialogViewDelegate> {
  public:
   base::OnceClosure closure_;
   bool closed_{false};
@@ -310,7 +310,8 @@ class WebIdBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(
         shell(), https_server().GetURL(kRpHostName, "/title1.html")));
 
-    test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
+    test_browser_client_ =
+        std::make_unique<webid::WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
     SetTestModalDialogViewDelegate();
   }
@@ -425,7 +426,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
+  std::unique_ptr<webid::WebIdTestContentBrowserClient> test_browser_client_;
   std::unique_ptr<TestFederatedIdentityModalDialogViewDelegate>
       test_modal_dialog_view_delegate_;
 

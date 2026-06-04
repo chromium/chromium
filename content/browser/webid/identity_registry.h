@@ -11,8 +11,11 @@
 #include "url/gurl.h"
 
 namespace content {
-
 class WebContents;
+}  // namespace content
+
+namespace content::webid {
+
 class IdentityRegistryDelegate;
 class MockIdentityRegistry;
 
@@ -28,14 +31,14 @@ class CONTENT_EXPORT IdentityRegistry
                              blink::mojom::ResolveTokenParamsPtr params);
 
  private:
-  friend class content::WebContentsUserData<IdentityRegistry>;
-  friend class content::MockIdentityRegistry;
+  friend class WebContentsUserData<IdentityRegistry>;
+  friend class MockIdentityRegistry;
 
   // An identity registry is constructed with a |web_contents| which the
   // registry is attached to, a |delegate| which is used to control modal dialog
   // views and an |idp_config_url| which is the URL for the IDP associated with
   // this registry. Same-origin checks happen against the origin of this URL.
-  explicit IdentityRegistry(content::WebContents* web_contents,
+  explicit IdentityRegistry(WebContents* web_contents,
                             base::WeakPtr<IdentityRegistryDelegate> delegate,
                             const GURL& idp_config_url);
 
@@ -45,6 +48,6 @@ class CONTENT_EXPORT IdentityRegistry
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-}  // namespace content
+}  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_IDENTITY_REGISTRY_H_

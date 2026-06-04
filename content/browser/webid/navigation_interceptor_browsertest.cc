@@ -164,7 +164,8 @@ class NavigationInterceptorBrowserTest : public ContentBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
+    test_browser_client_ =
+        std::make_unique<webid::WebIdTestContentBrowserClient>();
   }
 
   void TearDownOnMainThread() override {
@@ -192,7 +193,7 @@ class NavigationInterceptorBrowserTest : public ContentBrowserTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
   TestIdP idp_server_;
-  std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
+  std::unique_ptr<webid::WebIdTestContentBrowserClient> test_browser_client_;
   std::string rp_page_content_;
 };
 

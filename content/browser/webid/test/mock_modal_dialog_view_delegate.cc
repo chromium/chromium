@@ -4,10 +4,10 @@
 
 #include "content/browser/webid/test/mock_modal_dialog_view_delegate.h"
 
-namespace content {
+namespace content::webid {
 
 MockModalDialogViewDelegate::MockModalDialogViewDelegate() = default;
 
 MockModalDialogViewDelegate::~MockModalDialogViewDelegate() = default;
 
-}  // namespace content
+}  // namespace content::webid

@@ -10,7 +10,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/origin.h"
 
-namespace content {
+namespace content::webid {
 
 IdentityRegistry::IdentityRegistry(
     content::WebContents* web_contents,
@@ -53,4 +53,4 @@ bool IdentityRegistry::NotifyResolve(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IdentityRegistry);
 
-}  // namespace content
+}  // namespace content::webid

@@ -11,7 +11,7 @@
 
 class GURL;
 
-namespace content {
+namespace content::webid {
 
 class MockIdentityRegistry : public IdentityRegistry {
  public:
@@ -34,6 +34,6 @@ class MockIdentityRegistry : public IdentityRegistry {
               (override));
 };
 
-}  // namespace content
+}  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_TEST_MOCK_IDENTITY_REGISTRY_H_
