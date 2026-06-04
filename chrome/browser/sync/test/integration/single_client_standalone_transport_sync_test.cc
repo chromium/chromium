@@ -200,6 +200,51 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
 }
+
+// Tests the behavior of receiving a "Reset Sync" operation from the dashboard
+// while Sync-the-feature is NOT enabled (transport mode is active).
+IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
+                       HandlesResetFromDashboardWhenTransportModeActive) {
+  ASSERT_TRUE(SetupClients());
+
+  // Set up Sync transport mode.
+  ASSERT_TRUE(SetupSyncWithMode(SyncTest::SetupSyncMode::kSyncTransportOnly));
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureActive());
+
+  // Trigger a "Reset Sync" from the dashboard and wait for it to apply.
+  GetFakeServer()->ClearServerData();
+
+  // On Ash, the primary account should remain, and Sync should start up
+  // again in standalone transport mode, but report this specific case via
+  // IsSyncFeatureDisabledViaDashboard().
+  EXPECT_TRUE(SyncDisabledViaDashboardChecker(GetSyncService(0)).Wait());
+  EXPECT_FALSE(GetSyncService(0)->HasSyncConsent());
+  EXPECT_FALSE(GetSyncService(0)->HasDisableReason(
+      syncer::SyncService::DISABLE_REASON_NOT_SIGNED_IN));
+  EXPECT_NE(syncer::SyncService::TransportState::DISABLED,
+            GetSyncService(0)->GetTransportState());
+
+  EXPECT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  EXPECT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+  EXPECT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  // Since kReplaceSyncPromosWithSignInPromos is enabled, the browser types
+  // should NOT be disabled (only a dashboard reset when Sync-the-feature
+  // is active should do that).
+  // Thus, the active types should be all types allowed in standalone transport
+  // mode, except the OS types which are disabled by
+  // SetSyncFeatureDisabledViaDashboard().
+  syncer::DataTypeSet expected_types = AllowedTypesInStandaloneTransportMode();
+  expected_types.RemoveAll({syncer::APP_LIST, syncer::ARC_PACKAGE,
+                            syncer::WEB_APPS, syncer::OS_PREFERENCES,
+                            syncer::OS_PRIORITY_PREFERENCES, syncer::PRINTERS,
+                            syncer::WIFI_CONFIGURATIONS});
+
+  EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
+              ContainerEq(expected_types));
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
