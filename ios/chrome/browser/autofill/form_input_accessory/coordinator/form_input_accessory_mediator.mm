@@ -486,6 +486,12 @@ bool IsStateless() {
     return;
   }
 
+  // Ignore form_changed events to prevent gestureless form changes from
+  // overwriting the active keyboard accessory's target web frame ID.
+  if (params.type == "form_changed") {
+    return;
+  }
+
   BOOL isDefaultViewEnabled =
       IsIOSKeyboardAccessoryDefaultViewEnabled() &&
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
@@ -505,9 +511,8 @@ bool IsStateless() {
     return;
   }
 
-  // Don't look for suggestions in the next events.
-  if (params.type == "blur" || params.type == "change" ||
-      params.type == "form_changed") {
+  // Skip retrieving suggestions for blur or change events.
+  if (params.type == "blur" || params.type == "change") {
     return;
   }
 
