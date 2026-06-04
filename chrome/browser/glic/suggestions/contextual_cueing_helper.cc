@@ -55,6 +55,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser.h"
@@ -141,8 +143,10 @@ glic::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
   return browser->GetFeatures().glic_nudge_controller();
 #else
   if (!glic_nudge_controller_) {
+    TabListInterface* tab_list =
+        TabModelList::GetTabModelForWebContents(web_contents());
     glic_nudge_controller_ =
-        std::make_unique<glic::GlicNudgeControllerAndroid>();
+        std::make_unique<glic::GlicNudgeControllerAndroid>(tab_list);
   }
   return glic_nudge_controller_.get();
 #endif

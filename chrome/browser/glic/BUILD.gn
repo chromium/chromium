@@ -853,8 +853,12 @@ source_set("browser_tests") {
   }
 
   if (is_android) {
-    sources += [ "widget/glic_side_panel_coordinator_android_browsertest.cc" ]
+    sources += [
+      "browser_ui/glic_nudge_controller_android_browsertest.cc",
+      "widget/glic_side_panel_coordinator_android_browsertest.cc",
+    ]
     deps += [
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/side_panel/android",
       "//chrome/test:test_support_ui_android",
