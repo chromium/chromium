@@ -97,9 +97,6 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
-import org.chromium.components.browser_ui.accessibility.PageZoomMenuItemCoordinator;
-import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
-import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
@@ -120,7 +117,6 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.ModelListAdapter;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -139,24 +135,17 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     public static final int MAX_RECENT_ENTRIES_TO_SHOW = 8;
 
-    @IntDef({
-        TabbedAppMenuItemType.UPDATE_ITEM,
-        TabbedAppMenuItemType.NEW_INCOGNITO,
-        TabbedAppMenuItemType.ZOOM_ITEM
-    })
+    @IntDef({TabbedAppMenuItemType.UPDATE_ITEM, TabbedAppMenuItemType.NEW_INCOGNITO})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabbedAppMenuItemType {
         /** Regular Android menu item that contains a title and an icon if icon is specified. */
-        int UPDATE_ITEM = AppMenuHandler.AppMenuItemType.NUM_ENTRIES;
+        int UPDATE_ITEM = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 1;
 
         /**
          * Menu item that has two buttons, the first one is a title and the second one is an icon.
          * It is different from the regular menu item because it contains two separate buttons.
          */
-        int NEW_INCOGNITO = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 1;
-
-        /** Menu item that has a title and two buttons. */
-        int ZOOM_ITEM = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 2;
+        int NEW_INCOGNITO = AppMenuHandler.AppMenuItemType.NUM_ENTRIES + 2;
     }
 
     AppMenuDelegate mAppMenuDelegate;
@@ -174,8 +163,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private @Nullable Runnable mUpdateStateChangeObserver;
 
     private final CallbackController mIncognitoReauthCallbackController = new CallbackController();
-
-    private final PageZoomMenuItemCoordinator mPageZoomMenuItemCoordinator;
 
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
 
@@ -213,11 +200,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 layoutStateProvider,
                 bookmarkModelSupplier,
                 readAloudControllerSupplier,
+                pageZoomManager,
                 openInAppMenuItemProvider);
         mAppMenuDelegate = appMenuDelegate;
         mModalDialogManager = modalDialogManager;
         mSnackbarManager = snackbarManager;
-        mPageZoomMenuItemCoordinator = new PageZoomMenuItemCoordinator(pageZoomManager);
         mHubManagerSupplier = hubManagerSupplier;
         mDefaultFaviconHelper = new FaviconHelper.DefaultFaviconHelper();
         mRoundedIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
@@ -234,6 +221,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     public void registerCustomViewBinders(
             ModelListAdapter modelListAdapter,
             SparseArray<BiFunction<Context, PropertyModel, Integer>> customSizingSuppliers) {
+        super.registerCustomViewBinders(modelListAdapter, customSizingSuppliers);
         modelListAdapter.registerType(
                 TabbedAppMenuItemType.UPDATE_ITEM,
                 new LayoutViewBuilder<>(R.layout.update_menu_item),
@@ -245,11 +233,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 TabbedAppMenuItemType.NEW_INCOGNITO,
                 new LayoutViewBuilder<>(R.layout.custom_view_menu_item),
                 IncognitoMenuItemViewBinder::bind);
-
-        modelListAdapter.registerType(
-                TabbedAppMenuItemType.ZOOM_ITEM,
-                new LayoutViewBuilder<>(R.layout.page_zoom_menu_item),
-                PageZoomMenuItemViewBinder::bind);
     }
 
     private FaviconHelper getFaviconHelper() {
@@ -1628,54 +1611,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_webstore_menu
                                 : Resources.ID_NULL));
-    }
-
-    @Contract("null -> false")
-    private boolean shouldShowPageZoomItem(@Nullable Tab currentTab) {
-        return currentTab != null
-                && shouldShowWebContentsDependentMenuItem(currentTab)
-                && PageZoomUtils.shouldShowZoomMenuItem();
-    }
-
-    private boolean shouldShowLFFPageZoomItem() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
-    }
-
-    private PropertyModel buildNewPageZoomModel() {
-        PropertyKey[] keys =
-                PropertyModel.concatKeys(
-                        AppMenuItemProperties.ALL_KEYS, PageZoomProperties.ALL_KEYS_FOR_MENU_ITEM);
-        Drawable icon =
-                shouldShowIconBeforeItem()
-                        ? AppCompatResources.getDrawable(mContext, R.drawable.ic_zoom)
-                        : null;
-        PropertyModel model =
-                populateBaseModelForTextItem(new PropertyModel.Builder(keys), R.id.page_zoom_id)
-                        .with(
-                                AppMenuItemProperties.TITLE,
-                                mContext.getString(R.string.page_zoom_menu_title))
-                        .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.page_zoom_id)
-                        .with(AppMenuItemProperties.ICON, icon)
-                        .with(
-                                PageZoomProperties.IMMERIVE_MODE_ENABLED,
-                                ChromeFeatureList.sAndroidZoomImmersive.isEnabled())
-                        .build();
-        return model;
-    }
-
-    private ListItem buildPageZoomItem(Tab currentTab) {
-        assert shouldShowPageZoomItem(currentTab);
-        if (shouldShowLFFPageZoomItem()) {
-            PropertyModel model = buildNewPageZoomModel();
-            mPageZoomMenuItemCoordinator.setModel(model);
-            return new ListItem(TabbedAppMenuItemType.ZOOM_ITEM, model);
-        }
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
-                        R.id.page_zoom_id,
-                        R.string.page_zoom_menu_title,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_zoom : 0));
     }
 
     private boolean shouldShowSaveAndPrintParentItem(

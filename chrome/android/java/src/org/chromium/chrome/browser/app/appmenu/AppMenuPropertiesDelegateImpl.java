@@ -12,6 +12,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Pair;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -42,6 +43,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.accessibility.PageZoomMenuItemViewBinder;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -78,6 +80,10 @@ import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.accessibility.PageZoomManager;
+import org.chromium.components.browser_ui.accessibility.PageZoomMenuItemCoordinator;
+import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
@@ -92,9 +98,12 @@ import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -102,6 +111,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /**
@@ -126,6 +136,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected final ToolbarManager mToolbarManager;
     protected final View mDecorView;
     protected final MonotonicObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+    protected final @Nullable PageZoomManager mPageZoomManager;
+    protected final @Nullable PageZoomMenuItemCoordinator mPageZoomMenuItemCoordinator;
 
     private CallbackController mCallbackController = new CallbackController();
     protected final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
@@ -175,6 +187,12 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         int NUM_ENTRIES = 8;
     }
 
+    @IntDef({CustomMenuItemType.ZOOM_ITEM})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CustomMenuItemType {
+        int ZOOM_ITEM = AppMenuItemType.NUM_ENTRIES;
+    }
+
     private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /**
@@ -192,6 +210,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
      *     LayoutStateProvider} associated with the containing activity.
      * @param bookmarkModelSupplier An {@link MonotonicObservableSupplier} for the {@link
      *     BookmarkModel}.
+     * @param pageZoomManager The {@link PageZoomManager} used to manage the page zoom.
      * @param openInAppMenuItemProvider The {@link OpenInAppMenuItemProvider} that may provide an
      *     open in app item.
      */
@@ -205,6 +224,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
             NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
+            @Nullable PageZoomManager pageZoomManager,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
@@ -224,6 +244,9 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
         }
 
         mBookmarkModelSupplier = bookmarkModelSupplier;
+        mPageZoomManager = pageZoomManager;
+        mPageZoomMenuItemCoordinator =
+                pageZoomManager != null ? new PageZoomMenuItemCoordinator(pageZoomManager) : null;
         mOpenInAppMenuItemProvider = openInAppMenuItemProvider;
     }
 
@@ -1440,5 +1463,64 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                     mContext.getString(R.string.open_in_app_desc, info.appName));
         }
         return new ListItem(AppMenuItemType.STANDARD, model);
+    }
+
+    @Override
+    public void registerCustomViewBinders(
+            ModelListAdapter modelListAdapter,
+            SparseArray<BiFunction<Context, PropertyModel, Integer>> customSizingSuppliers) {
+        modelListAdapter.registerType(
+                CustomMenuItemType.ZOOM_ITEM,
+                new LayoutViewBuilder<>(R.layout.page_zoom_menu_item),
+                PageZoomMenuItemViewBinder::bind);
+    }
+
+    @Contract("null -> false")
+    protected boolean shouldShowPageZoomItem(@Nullable Tab currentTab) {
+        return currentTab != null
+                && shouldShowWebContentsDependentMenuItem(currentTab)
+                && PageZoomUtils.shouldShowZoomMenuItem();
+    }
+
+    protected boolean shouldShowLffPageZoomItem() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+    }
+
+    private PropertyModel buildNewPageZoomModel() {
+        PropertyKey[] keys =
+                PropertyModel.concatKeys(
+                        AppMenuItemProperties.ALL_KEYS, PageZoomProperties.ALL_KEYS_FOR_MENU_ITEM);
+        Drawable icon =
+                shouldShowIconBeforeItem()
+                        ? AppCompatResources.getDrawable(mContext, R.drawable.ic_zoom)
+                        : null;
+        PropertyModel model =
+                populateBaseModelForTextItem(new PropertyModel.Builder(keys), R.id.page_zoom_id)
+                        .with(
+                                AppMenuItemProperties.TITLE,
+                                mContext.getString(R.string.page_zoom_menu_title))
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.page_zoom_id)
+                        .with(AppMenuItemProperties.ICON, icon)
+                        .with(
+                                PageZoomProperties.IMMERIVE_MODE_ENABLED,
+                                ChromeFeatureList.sAndroidZoomImmersive.isEnabled())
+                        .build();
+        return model;
+    }
+
+    protected ListItem buildPageZoomItem(Tab currentTab) {
+        assert shouldShowPageZoomItem(currentTab);
+        if (shouldShowLffPageZoomItem()) {
+            assert mPageZoomMenuItemCoordinator != null;
+            PropertyModel model = buildNewPageZoomModel();
+            mPageZoomMenuItemCoordinator.setModel(model);
+            return new ListItem(CustomMenuItemType.ZOOM_ITEM, model);
+        }
+        return new ListItem(
+                AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.page_zoom_id,
+                        R.string.page_zoom_menu_title,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_zoom : 0));
     }
 }

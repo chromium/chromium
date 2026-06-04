@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
+import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -99,6 +100,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             Supplier<ContextualPageActionController> contextualPageActionControllerSupplier,
             boolean hasClientPackage,
+            @Nullable PageZoomManager pageZoomManager,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         super(
                 context,
@@ -110,6 +112,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 null,
                 bookmarkModelSupplier,
                 readAloudControllerSupplier,
+                pageZoomManager,
                 openInAppMenuItemProvider);
         mVerifier = verifier;
         mUiType = uiType;
@@ -436,11 +439,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
         // --- Zoom ---
         if (zoomVisible) {
-            modelList.add(
-                    new MVCListAdapter.ListItem(
-                            AppMenuHandler.AppMenuItemType.STANDARD,
-                            buildModelForStandardMenuItem(
-                                    R.id.page_zoom_id, R.string.page_zoom_menu_title, 0)));
+            if (shouldShowPageZoomItem(currentTab)) {
+                modelList.add(buildPageZoomItem(currentTab));
+            }
         }
         return modelList;
     }

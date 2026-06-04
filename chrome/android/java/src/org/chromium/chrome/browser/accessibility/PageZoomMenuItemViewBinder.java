@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tabbed_mode;
+package org.chromium.chrome.browser.accessibility;
 
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.ICON;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties.MENU_ITEM_ID;

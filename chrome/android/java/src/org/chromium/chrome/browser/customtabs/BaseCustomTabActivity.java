@@ -1087,6 +1087,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),
                 mBaseCustomTabRootUiCoordinator::getContextualPageActionController,
                 mIntentDataProvider.getClientPackageNameIdentitySharing() != null,
+                mBaseCustomTabRootUiCoordinator.getPageZoomManager(),
                 mBaseCustomTabRootUiCoordinator.getOpenInAppMenuItemProvider());
     }
 

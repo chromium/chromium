@@ -197,6 +197,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                         mLayoutStateProviderSupplier,
                         mBookmarkModelSupplier,
                         mReadAloudControllerSupplier,
+                        /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null) {
                     @Override
                     public MVCListAdapter.ModelList buildMenuModelList() {

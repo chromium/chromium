@@ -153,6 +153,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier= */ () -> null,
                         /* hasClientPackage= */ false,
+                        /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
         assertTrue(isMenuItemPresent(modelList, R.id.enable_price_tracking_menu_id));
@@ -190,6 +191,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         () -> cpac,
                         /* hasClientPackage= */ false,
+                        /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
         assertTrue(isMenuItemPresent(modelList, R.id.price_insights_menu_id));
@@ -222,6 +224,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier= */ () -> null,
                         /* hasClientPackage= */ false,
+                        /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
 
@@ -262,6 +265,7 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
                         mReadAloudControllerSupplier,
                         /* contextualPageActionControllerSupplier= */ () -> null,
                         /* hasClientPackage= */ false,
+                        /* pageZoomManager= */ null,
                         /* openInAppMenuItemProvider= */ null);
         MVCListAdapter.ModelList modelList = delegate.getMenuItems();
 
