@@ -70,6 +70,7 @@ bool GlobalErrorWithStandardBubble::ShouldAddElevationIconToAcceptButton() {
 }
 
 void GlobalErrorWithStandardBubble::BubbleViewDidClose(Browser* browser) {
+  DCHECK(browser);
   bubble_view_ = nullptr;
   OnBubbleViewDidClose(browser);
 }

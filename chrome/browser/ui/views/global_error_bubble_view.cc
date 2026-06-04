@@ -72,18 +72,7 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
   WidgetDelegate::SetTitle(error_->GetBubbleViewTitle());
   WidgetDelegate::SetShowCloseButton(error_->ShouldShowCloseButton());
   WidgetDelegate::RegisterWindowClosingCallback(base::BindOnce(
-      [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
-         base::WeakPtr<Browser> browser) {
-        if (error) {
-          // The browser may have been destroyed by the time the bubble closes,
-          // so `browser` can be null. Call `BubbleViewDidClose` regardless
-          // so the error can clear its `bubble_view_` pointer.
-          // This is different from the button callbacks below, which require a
-          // valid browser to perform their actions.
-          error->BubbleViewDidClose(browser.get());
-        }
-      },
-      error_, browser->AsWeakPtr()));
+      &GlobalErrorWithStandardBubble::BubbleViewDidClose, error_, browser));
 
   SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
   SetButtons(!error_->GetBubbleViewCancelButtonLabel().empty()
@@ -95,36 +84,20 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  error_->GetBubbleViewCancelButtonLabel());
 
-  // Note that since `error` is a WeakPtr, the lambdas check if it is valid,
-  // so these callbacks will do nothing if they are invoked after its
-  // destruction.
+  // Note that error is already a WeakPtr, so these callbacks will simply do
+  // nothing if they are invoked after its destruction.
   SetAcceptCallback(base::BindOnce(
-      [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
-         base::WeakPtr<Browser> browser) {
-        if (error && browser) {
-          error->BubbleViewAcceptButtonPressed(browser.get());
-        }
-      },
-      error, browser->AsWeakPtr()));
+      &GlobalErrorWithStandardBubble::BubbleViewAcceptButtonPressed, error,
+      base::Unretained(browser)));
   SetCancelCallback(base::BindOnce(
-      [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
-         base::WeakPtr<Browser> browser) {
-        if (error && browser) {
-          error->BubbleViewCancelButtonPressed(browser.get());
-        }
-      },
-      error, browser->AsWeakPtr()));
+      &GlobalErrorWithStandardBubble::BubbleViewCancelButtonPressed, error,
+      base::Unretained(browser)));
 
   if (!error_->GetBubbleViewDetailsButtonLabel().empty()) {
     SetExtraView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(
-            [](base::WeakPtr<GlobalErrorWithStandardBubble> error,
-               base::WeakPtr<Browser> browser) {
-              if (error && browser) {
-                error->BubbleViewDetailsButtonPressed(browser.get());
-              }
-            },
-            error_, browser->AsWeakPtr()),
+            &GlobalErrorWithStandardBubble::BubbleViewDetailsButtonPressed,
+            error_, browser),
         error_->GetBubbleViewDetailsButtonLabel()));
   }
 }
