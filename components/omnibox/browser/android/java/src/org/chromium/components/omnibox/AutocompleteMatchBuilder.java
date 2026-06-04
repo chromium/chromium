@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -39,7 +40,7 @@ public class AutocompleteMatchBuilder {
     private String mImageDominantColor;
     private int mTransition;
     private boolean mIsDeletable;
-    private int mStarterPackId;
+    private @StarterPackId int mStarterPackId;
     private String mPostContentType;
     private byte[] mPostData;
     private int mGroupId;
@@ -94,7 +95,7 @@ public class AutocompleteMatchBuilder {
         mImageDominantColor = null;
         mTransition = 0;
         mIsDeletable = false;
-        mStarterPackId = 0;
+        mStarterPackId = StarterPackId.NONE;
         mPostContentType = null;
         mPostData = null;
         mGroupId = AutocompleteMatch.INVALID_GROUP;
@@ -330,7 +331,7 @@ public class AutocompleteMatchBuilder {
      * @param starterPackId The starter pack engine id.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setStarterPackId(int starterPackId) {
+    public AutocompleteMatchBuilder setStarterPackId(@StarterPackId int starterPackId) {
         mStarterPackId = starterPackId;
         return this;
     }

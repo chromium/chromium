@@ -737,6 +737,7 @@ if (is_android) {
     ]
     deps = [
       "//components/omnibox/browser:browser_java",
+      "//components/search_engines/android:java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",

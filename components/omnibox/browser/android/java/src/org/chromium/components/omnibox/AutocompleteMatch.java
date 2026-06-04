@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplat
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.TypesProto.SuggestSubtype;
 import org.chromium.components.omnibox.action.OmniboxAction;
+import org.chromium.components.search_engines.StarterPackId;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class AutocompleteMatch {
     private final @Nullable String mImageDominantColor;
     private final int mTransition;
     private final boolean mIsDeletable;
-    private final int mStarterPackId;
+    private final @StarterPackId int mStarterPackId;
     private final Map<String, String> mExtraHeaders;
     private byte @Nullable [] mPostData;
     private final int mGroupId;
@@ -120,7 +121,7 @@ public class AutocompleteMatch {
             GURL imageUrl,
             @Nullable String imageDominantColor,
             boolean isDeletable,
-            int starterPackId,
+            @StarterPackId int starterPackId,
             @Nullable String postContentType,
             byte @Nullable [] postData,
             int groupId,
@@ -222,7 +223,7 @@ public class AutocompleteMatch {
             @JniType("GURL") GURL imageUrl,
             @JniType("std::string") String imageDominantColor,
             boolean isDeletable,
-            int starterPackId,
+            @StarterPackId int starterPackId,
             @JniType("std::string") String postContentType,
             byte[] postData,
             int groupId,
@@ -569,7 +570,7 @@ public class AutocompleteMatch {
     /**
      * @return The starter pack engine id, or 0 if not a starter pack match.
      */
-    public int getStarterPackId() {
+    public @StarterPackId int getStarterPackId() {
         return mStarterPackId;
     }
 
