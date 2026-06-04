@@ -776,6 +776,16 @@ TEST_F(ExtensionInstallStatusTest, ExtensionCorrupted) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
+TEST_F(ExtensionInstallStatusTest, UnsupportedManifestVersion) {
+  const ExtensionId kTestId(32, 'a');
+  // Manifest V2 extensions are not installable.
+  EXPECT_EQ(
+      ExtensionInstallStatus::kDeprecatedManifestVersion,
+      GetInstallStatusSynchronously(kTestId, profile(), base::Version(),
+                                    Manifest::Type::kExtension, PermissionSet(),
+                                    /*manifest_version=*/2));
+}
+
 class SupervisedUserExtensionInstallStatusTest
     : public ExtensionInstallStatusTest {};
 

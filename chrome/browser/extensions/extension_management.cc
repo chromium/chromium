@@ -366,20 +366,6 @@ bool ExtensionManagement::IsAllowedManifestType(
   return std::ranges::contains(allowed_types, manifest_type);
 }
 
-bool ExtensionManagement::IsAllowedManifestVersion(
-    int manifest_version,
-    const std::string& extension_id,
-    Manifest::Type manifest_type) {
-  return !base::FeatureList::IsEnabled(
-             extensions_features::kExtensionsManifestV3Only) ||
-         manifest_version >= 3;
-}
-
-bool ExtensionManagement::IsAllowedManifestVersion(const Extension* extension) {
-  return IsAllowedManifestVersion(extension->manifest_version(),
-                                  extension->id(), extension->GetType());
-}
-
 bool ExtensionManagement::IsAllowedByUnpublishedAvailabilityPolicy(
     const Extension* extension) {
   // This policy only applies to extensions that update from CWS.

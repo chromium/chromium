@@ -64,14 +64,6 @@ class TestExtensionManagementClient : public ExtensionManagementClient {
   bool BlocklistedByDefault() const override { return false; }
   GURL GetEffectiveUpdateURL(const Extension& extension) override { return {}; }
 
-  bool IsAllowedManifestVersion(int manifest_version,
-                                const std::string& extension_id,
-                                Manifest::Type manifest_type) override {
-    return false;
-  }
-  bool IsAllowedManifestVersion(const Extension* extension) override {
-    return false;
-  }
   bool IsAllowedManifestType(Manifest::Type manifest_type,
                              const std::string& extension_id) const override {
     return false;

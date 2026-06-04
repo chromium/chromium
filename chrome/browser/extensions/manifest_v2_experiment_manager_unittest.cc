@@ -111,9 +111,7 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
     const char* name;
     bool should_block_install;
   } test_cases[] = {
-      // Unpacked extensions (including commandline-loaded extensions) should
-      // still be installable. This allows developers to continue testing their
-      // extensions during the experiment periods.
+      // User-installed extensions are only allowed if they are MV3 or higher.
       {mojom::ManifestLocation::kUnpacked, 2, "unpacked - mv2",
        kInstallShouldBeBlocked},
       {mojom::ManifestLocation::kUnpacked, 3, "unpacked - mv3",
@@ -122,9 +120,6 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
        kInstallShouldBeBlocked},
       {mojom::ManifestLocation::kCommandLine, 3, "command line - mv3",
        kInstallShouldBeAllowed},
-
-      // Other user-visible extension types should only be blocked if they are
-      // MV2.
       {mojom::ManifestLocation::kInternal, 2, "internal - mv2",
        kInstallShouldBeBlocked},
       {mojom::ManifestLocation::kInternal, 3, "internal - mv3",
@@ -196,6 +191,32 @@ TEST_F(ManifestV2ExperimentManagerUnitTest,
         extension->location(), extension->hashed_id()));
     EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionEnable(*extension));
   }
+}
+
+// A test harness that enables the kAllowLegacyMV2Extensions feature.
+class ManifestV2ExperimentManagerUnitTestWithAllowLegacy
+    : public ManifestV2ExperimentManagerUnitTest {
+ public:
+  ManifestV2ExperimentManagerUnitTestWithAllowLegacy() = default;
+  ~ManifestV2ExperimentManagerUnitTestWithAllowLegacy() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      extensions_features::kAllowLegacyMV2Extensions};
+};
+
+// Tests that unpacked extensions *are* installable with the
+// "kAllowLegacyMV2Extensions" flag.
+TEST_F(ManifestV2ExperimentManagerUnitTestWithAllowLegacy,
+       ShouldBlockInstallation_UnpackedExtensionsWithLegacyMV2Extensions) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("test")
+          .SetManifestVersion(2)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .Build();
+  EXPECT_FALSE(experiment_manager()->ShouldBlockExtensionInstallation(
+      extension->id(), extension->manifest_version(), extension->GetType(),
+      extension->location(), extension->hashed_id()));
 }
 
 // Tests that the proper manifest group is used when emitting metrics for

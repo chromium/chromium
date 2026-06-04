@@ -156,15 +156,6 @@ bool StandardManagementPolicyProvider::UserMayLoad(
     return false;
   }
 
-  if (!settings_->IsAllowedManifestVersion(extension)) {
-    if (error) {
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSION_MANIFEST_VERSION_NOT_SUPPORTED,
-          base::UTF8ToUTF16(extension->name()));
-    }
-    return false;
-  }
-
   return true;
 }
 

@@ -1215,16 +1215,6 @@ TEST_F(ExtensionManagementServiceTest,
             GetInstallationModeById(kTargetExtension));
 }
 
-TEST_F(ExtensionManagementServiceTest, ManifestV2Default) {
-  bool is_manifest_v3_only = base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsManifestV3Only);
-  EXPECT_EQ(!is_manifest_v3_only,
-            extension_management_->IsAllowedManifestVersion(
-                2, kTargetExtension, Manifest::Type::kExtension));
-  EXPECT_TRUE(extension_management_->IsAllowedManifestVersion(
-      3, kTargetExtension, Manifest::Type::kExtension));
-}
-
 // Verifies that extensions that do not update CWS are always allowed by
 // the ExtensionUnpublishedAvailability policy check function since this policy
 // ignores them.

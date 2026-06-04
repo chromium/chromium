@@ -12,7 +12,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/disable_reason.h"
-#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registrar.h"
@@ -195,15 +194,9 @@ bool ManifestV2ExperimentManager::ShouldBlockExtensionInstallation(
   }
 
   // Unpacked extensions are special-cased (since developers need to be able to
-  // continue supporting them). Check if unpacked extensions are blocked, either
-  // by the experiment phase or by enterprise policy.
-  auto* extension_mgmt_client =
-      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(
-          browser_context_);
+  // continue supporting them). Check if unpacked extensions are blocked.
   if (Manifest::IsUnpackedLocation(manifest_location) &&
-      !ShouldBlockUnpackedExtensions() &&
-      extension_mgmt_client->IsAllowedManifestVersion(
-          manifest_version, extension_id, manifest_type)) {
+      !ShouldBlockUnpackedExtensions()) {
     return false;
   }
 

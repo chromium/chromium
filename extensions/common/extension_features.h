@@ -181,13 +181,6 @@ BASE_DECLARE_FEATURE(kExtensionProtocolHandlers);
 // to add custom items when right-clicking a tab.
 BASE_DECLARE_FEATURE(kExtensionTabContextMenu);
 
-// If enabled, only manifest v3 extensions is allowed while v2 will be disabled.
-// Note that this feature is now only checked by `ExtensionManagement` which
-// represents enterprise extension configurations. Flip the feature will block
-// mv2 extension by default but the error messages will improperly mention
-// enterprise policy.
-BASE_DECLARE_FEATURE(kExtensionsManifestV3Only);
-
 // Enables enhanced site control for extensions and allowing the user to control
 // site permissions.
 BASE_DECLARE_FEATURE(kExtensionsMenuAccessControl);
