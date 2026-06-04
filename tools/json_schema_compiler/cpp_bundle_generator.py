@@ -261,11 +261,10 @@ class _APICCGenerator(object):
       if not os.path.exists(
           os.path.join(self._bundle._root,
                        os.path.normpath(implementation_header))):
-        if "implemented_in" in namespace.compiler_options:
-          raise ValueError('Header file for namespace "%s" specified in '
-                           'compiler_options not found: %s' %
-                           (namespace.unix_name, implementation_header))
-        continue
+        raise ValueError(
+            'Header file for namespace "%s" (either at the'
+            ' default path or specified in compiler_options) not found: %s' %
+            (namespace.unix_name, implementation_header))
       ifdefs = self._bundle._GetPlatformIfdefs(namespace)
       if ifdefs is not None:
         c.Append("#if %s" % ifdefs, indent_level=0)
