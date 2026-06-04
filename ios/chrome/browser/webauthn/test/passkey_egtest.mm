@@ -68,6 +68,10 @@ id<GREYMatcher> IncognitoInterstitialView() {
   // Make sure the fake passkey keychain provider bridge is set.
   [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];
 
+  // Mock a successful reauthentication result by default.
+  [IOSChromePasskeyClientAppInterface
+      setMockReauthenticationResult:ReauthenticationResult::kSuccess];
+
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
 

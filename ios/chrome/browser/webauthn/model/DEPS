@@ -4,11 +4,14 @@ include_rules = [
   "+components/webauthn/core/browser",
   "+ios/chrome/browser/affiliations/model",
   "+ios/chrome/browser/credential_provider/model",
+  "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/shared/model/application_context",
   "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/shared/model/profile",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
+  "+ios/chrome/common/ui/reauthentication",
+  "+ui/base",
   # keep-sorted end
 ]
