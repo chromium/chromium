@@ -2426,4 +2426,42 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertEquals("", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
     }
+
+    @Test
+    public void onInputStateChanged_setsRequestTypeButtonText_modelPickerEnabled() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        recreateMediator();
+
+        ToolConfig canvasConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas Menu")
+                        .setChipLabel("Canvas Chip")
+                        .build();
+        InputState stateWithTool =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {canvasConfig.toByteArray()})
+                        .build();
+
+        mInputStateSupplier.set(stateWithTool);
+        assertEquals("Canvas Chip", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        ToolConfig secondConfig =
+                ToolConfig.newBuilder()
+                        .setTool(ToolMode.TOOL_MODE_CANVAS)
+                        .setMenuLabel("Canvas Menu")
+                        .setChipLabel("Canvas Chip")
+                        .build();
+        InputState secondInputState =
+                new InputState.Builder()
+                        .withActiveTool(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE)
+                        .withAllowedTools(ToolMode.TOOL_MODE_CANVAS_VALUE)
+                        .withToolConfigs(new byte[][] {secondConfig.toByteArray()})
+                        .build();
+        mInputStateSupplier.set(secondInputState);
+        assertEquals("AI Mode", mModel.get(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT));
+    }
 }

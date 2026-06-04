@@ -924,10 +924,24 @@ import java.util.function.Supplier;
         return stringRes == Resources.ID_NULL ? "" : mContext.getString(stringRes);
     }
 
+    private String getRequestTypeButtonText(InputState inputState) {
+        if (inputState.activeTool == ToolMode.TOOL_MODE_UNSPECIFIED_VALUE) {
+            return mContext.getString(R.string.ai_mode_entrypoint_label);
+        }
+        for (ToolConfig toolConfig : inputState.toolConfigs) {
+            if (toolConfig.getToolValue() == inputState.activeTool) {
+                return toolConfig.getChipLabel();
+            }
+        }
+        return "";
+    }
+
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType Integer type) {
         updateFuseboxState();
         mModel.set(FuseboxProperties.REQUEST_TYPE, type);
-        mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(type));
+        if (!OmniboxFeatures.sShowModelPicker.getValue()) {
+            mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(type));
+        }
 
         if (isInInputSession()) {
             if (!ToolModeUtils.isAimRequest(type)) {
@@ -1207,6 +1221,9 @@ import java.util.function.Supplier;
         assert OmniboxFeatures.sShowModelPicker.getValue();
         // Note that some of the time that this method is called in the middle of beginInput(), so
         // checking avoid checking isInInputSession() or using mModelList.
+
+        mModel.set(
+                FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, getRequestTypeButtonText(inputState));
 
         // TODO(https://crbug.com/480976526): Control visibility as well.
         boolean tabsEnabled =
