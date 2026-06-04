@@ -34,7 +34,7 @@ constexpr char kRequestedFields[] =
     "courseWork(id,title,state,alternateLink,creationTime,updateTime,"
     "dueDate(year,month,day),dueTime(hours,minutes,seconds,nanos),workType,"
     "materials(youtubeVideo(title),link(title),form(title),"
-    "guidedLearning(title),driveFile(driveFile(title)))),"
+    "guidedLearning(title),notebook(title),driveFile(driveFile(title)))),"
     "nextPageToken";
 
 constexpr char kPageTokenParameterName[] = "pageToken";
