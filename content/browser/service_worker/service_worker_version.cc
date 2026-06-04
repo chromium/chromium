@@ -2151,7 +2151,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
 
   service_worker_client_utils::NavigateClient(
       url, script_url_, key_, service_worker_client->GetRenderFrameHostId(),
-      BuildClientSecurityState(), context_,
+      BuildClientSecurityState(), policy_container_host(), context_,
       base::BindOnce(&DidNavigateClient, std::move(callback), url));
 
   NotifyClientNavigated(script_url_, url);

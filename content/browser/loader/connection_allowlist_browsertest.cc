@@ -1865,14 +1865,15 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(net::ERR_FAILED, nav_observer.last_net_error_code());
 }
 
-// Verifies that a navigation triggered via WindowClient.navigate() currently
-// bypasses the Service Worker's Connection-Allowlist. Since the Service
-// Worker's PolicyContainerPolicies are not forwarded during
-// WindowClient.navigate(), the allowlist checks in the browser process bypass
-// this constraint, and the navigation succeeds. This is a known gap.
+// Verifies that a navigation triggered via WindowClient.navigate() is subject
+// to the Service Worker's Connection-Allowlist to see if the URL is allowed.
+// Once the navigation request starts, it considers the document being
+// navigated as the initiator in the current spec and implementation. We keep
+// that invariant and check for the document's CA for URL allowed and redirects
+// too.
 IN_PROC_BROWSER_TEST_F(
     ConnectionAllowlistTest,
-    ServiceWorkerWindowClientNavigateBypassesServiceWorkerAllowlist) {
+    ServiceWorkerWindowClientNavigateEnforcesServiceWorkerAndDocumentAllowlists) {
   RegisterResponse(
       "/sw.js",
       ResponseEntry(
@@ -1886,7 +1887,11 @@ IN_PROC_BROWSER_TEST_F(
           "    for (const client of clients) {\n"
           "      try {\n"
           "        await client.navigate(event.data.url);\n"
-          "      } catch (e) {}\n"
+          "        event.source.postMessage({result: 'success'});\n"
+          "      } catch (e) {\n"
+          "        event.source.postMessage({result: 'failure', error: "
+          "e.message});\n"
+          "      }\n"
           "    }\n"
           "  }());\n"
           "});",
@@ -1927,9 +1932,80 @@ IN_PROC_BROWSER_TEST_F(
           )"));
 
   // Tell the Service Worker to navigate the client window to target_url.
-  // Although the Service Worker's allowlist is empty () (prohibiting all
-  // connections), the navigation succeeds because WindowClient.navigate()
-  // currently bypasses the SW's allowlist.
+  // Since the Service Worker's allowlist is empty () (prohibiting all
+  // connections), the navigate() promise should reject.
+  EXPECT_EQ("failure", EvalJs(shell()->web_contents(), JsReplace(R"(
+      new Promise(resolve => {
+        navigator.serviceWorker.addEventListener('message', event => {
+          resolve(event.data.result);
+        }, {once: true});
+        navigator.serviceWorker.controller.postMessage({url: $1});
+      });
+  )",
+                                                                 target_url)));
+}
+
+// Verifies that a navigation triggered via WindowClient.navigate() is subject
+// to the Document's Connection-Allowlist, even when the initial URL is
+// allowed but redirects are disallowed (default Connection Allowlist behavior).
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    ServiceWorkerWindowClientNavigateRedirectObeysDocumentAllowlist) {
+  RegisterResponse(
+      "/sw.js",
+      ResponseEntry(
+          "self.addEventListener('install', e => self.skipWaiting());\n"
+          "self.addEventListener('activate', e => "
+          "e.waitUntil(self.clients.claim()));\n"
+          "self.addEventListener('message', event => {\n"
+          "  event.waitUntil(async function() {\n"
+          "    const clients = await self.clients.matchAll({type: 'window'});\n"
+          "    for (const client of clients) {\n"
+          "      try {\n"
+          "        await client.navigate(event.data.url);\n"
+          "      } catch (e) {}\n"
+          "    }\n"
+          "  }());\n"
+          "});",
+          {{"Content-Type", "text/javascript"}}));
+
+  RegisterResponse("/main.html",
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist",
+                                   R"((response-origin "*://a.test:*/*"))"}}));
+  RegisterResponse("/final.html", ResponseEntry("final-content", {}));
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  // Initial URL is on a.test (allowed) but it redirects (disallowed)
+  GURL target_url = embedded_https_test_server().GetURL(
+      "a.test", "/cross-site/b.test/final.html");
+  GURL final_url = embedded_https_test_server().GetURL("b.test", "/final.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Register and activate the Service Worker.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         R"(
+             (async () => {
+               const reg = await navigator.serviceWorker.register('/sw.js');
+               await new Promise(resolve => {
+                 const worker = reg.installing || reg.waiting || reg.active;
+                 if (worker.state === 'activated') {
+                   resolve();
+                 } else {
+                   worker.addEventListener('statechange', () => {
+                     if (worker.state === 'activated') {
+                       resolve();
+                     }
+                   });
+                 }
+               });
+               return !!navigator.serviceWorker.controller;
+             })();
+           )"));
+
   TestNavigationObserver nav_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(
       shell()->web_contents(),
@@ -1937,12 +2013,82 @@ IN_PROC_BROWSER_TEST_F(
                 target_url)));
   nav_observer.Wait();
 
-  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-  EXPECT_EQ(target_url, shell()->web_contents()->GetLastCommittedURL());
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_UNSAFE_REDIRECT, nav_observer.last_net_error_code());
+}
 
-  EXPECT_EQ("final-content",
-            EvalJs(shell()->web_contents(), "document.body.innerText")
-                .ExtractString());
+// Verifies that a navigation triggered via WindowClient.navigate() is subject
+// to the Document's Connection-Allowlist when the destination URL is allowed
+// by the Service Worker's Connection-Allowlist but blocked by the Document's
+// Connection-Allowlist.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    ServiceWorkerWindowClientNavigateObeysDocumentAllowlist) {
+  RegisterResponse(
+      "/sw.js",
+      ResponseEntry(
+          "self.addEventListener('install', e => self.skipWaiting());\n"
+          "self.addEventListener('activate', e => "
+          "e.waitUntil(self.clients.claim()));\n"
+          "self.addEventListener('message', event => {\n"
+          "  event.waitUntil(async function() {\n"
+          "    const clients = await self.clients.matchAll({type: 'window'});\n"
+          "    for (const client of clients) {\n"
+          "      try {\n"
+          "        await client.navigate(event.data.url);\n"
+          "      } catch (e) {}\n"
+          "    }\n"
+          "  }());\n"
+          "});",
+          {{"Content-Type", "text/javascript"},
+           {"Connection-Allowlist",
+            R"((response-origin "*://a.test:*/*" "*://b.test:*/*"))"}}));
+
+  RegisterResponse("/main.html",
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist",
+                                   R"((response-origin "*://a.test:*/*"))"}}));
+  RegisterResponse("/final.html", ResponseEntry("final-content", {}));
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  GURL target_url =
+      embedded_https_test_server().GetURL("b.test", "/final.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Register and activate the Service Worker.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         R"(
+             (async () => {
+               const reg = await navigator.serviceWorker.register('/sw.js');
+               await new Promise(resolve => {
+                 const worker = reg.installing || reg.waiting || reg.active;
+                 if (worker.state === 'activated') {
+                   resolve();
+                 } else {
+                   worker.addEventListener('statechange', () => {
+                     if (worker.state === 'activated') {
+                       resolve();
+                     }
+                   });
+                 }
+               });
+               return !!navigator.serviceWorker.controller;
+             })();
+           )"));
+
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents(),
+      JsReplace("navigator.serviceWorker.controller.postMessage({url: $1});",
+                target_url)));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
+            nav_observer.last_net_error_code());
 }
 
 class ConnectionAllowlistSyntheticResponseTest

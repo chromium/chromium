@@ -20,6 +20,7 @@ class StorageKey;
 
 namespace content {
 
+class PolicyContainerHost;
 struct GlobalRenderFrameHostId;
 class ServiceWorkerClient;
 class ServiceWorkerContextCore;
@@ -72,6 +73,7 @@ void NavigateClient(
     const blink::StorageKey& key,
     const GlobalRenderFrameHostId& rfh_id,
     const network::mojom::ClientSecurityStatePtr worker_client_security_state,
+    scoped_refptr<PolicyContainerHost> service_worker_policy_container_host,
     const base::WeakPtr<ServiceWorkerContextCore>& context,
     NavigationCallback callback);
 

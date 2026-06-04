@@ -121,8 +121,6 @@ Blink is the rendering engine running in the renderer process.
     fallback on the original fetch.
 
 ### Integration with service workers
-(In-progress CLs: [1](https://chromium-review.googlesource.com/c/chromium/src/+/7597226), [2](https://chromium-review.googlesource.com/c/chromium/src/+/7871179))
-
 Service Workers act as network proxies in the renderer process, intercepting requests
 before they reach the network.
 * **Responsibilities:**
@@ -162,3 +160,13 @@ before they reach the network.
   Connection-Allowlist, the associated navigation preload request will be executed using
   the Service Worker's `URLLoaderFactory` (which is associated with the Service Worker's
   `network_restrictions_id`), thereby enforcing the Service Worker's policies.
+  * **clients.navigate() in Service Workers**: Navigation initiated via
+    clients.navigate() is subject to both the Service Worker's and
+    the document's Connection Allowlists. Since the navigation is
+    initiated from the Service Worker context, the Service Worker's
+    Connection Allowlists apply to the navigation before it is
+    initiated from the Service Worker. In addition, since the
+    navigation is on a window client (which has an associated Document),
+    the Document's Connection Allowlists also apply, and if there is a
+    server redirect, the document's Connection Allowlists' redirect bit
+    will be checked.
