@@ -14,13 +14,13 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -291,26 +291,46 @@ public class ConditionWaiter {
      * @throws TravelException if not all {@link Condition}s are fulfilled before timing out.
      */
     void waitFor() throws TravelException {
+        assert !ThreadUtils.runningOnUiThread();
         assert isPreCheckDone();
 
         if (!mPreCheckFulfilledConditions) {
             TransitionOptions options = mTransition.getOptions();
             long timeoutMs = options.getTimeoutMs();
             TimeoutTimer timeoutTimer = new TimeoutTimer(timeoutMs);
+            boolean anyCriteriaMissing = true;
 
-            try {
-                CriteriaHelper.pollInstrumentationThread(
-                        new CheckConditionsOnce(timeoutTimer), timeoutMs, POLLING_INTERVAL);
-            } catch (CriteriaHelper.TimeoutException timeoutException) {
-                // Unwrap the TimeoutException and CriteriaNotSatisfiedException parts of the stack
-                // to reduce the error message.
-                if (timeoutException.getCause()
-                        instanceof CriteriaNotSatisfiedException criteriaNotSatisfiedException) {
-                    throw TravelException.newTravelException(
-                            criteriaNotSatisfiedException.getMessage());
-                } else {
-                    throw timeoutException;
+            while (!timeoutTimer.isTimedOut()) {
+                anyCriteriaMissing = processWaits(/* isPreCheck= */ false, timeoutTimer);
+                if (!anyCriteriaMissing) {
+                    break;
                 }
+                try {
+                    Thread.sleep(POLLING_INTERVAL);
+                } catch (InterruptedException e) {
+                    // ignore
+                }
+            }
+
+            if (anyCriteriaMissing) {
+                // Run one last time after timeout to ensure the total time has been given
+                // and that every Condition has been checked at least once.
+                anyCriteriaMissing = processWaits(/* isPreCheck= */ false, null);
+            }
+
+            if (anyCriteriaMissing) {
+                throw TravelException.newTravelException(
+                        "Did not complete "
+                                + mTransition.toDebugString()
+                                + ", "
+                                + createWaitConditionsSummary(
+                                        mWaits, /* generateMainMessage= */ true));
+            } else {
+                Log.i(
+                        TAG,
+                        "%s: Conditions fulfilled:\n%s",
+                        mTransition.toDebugString(),
+                        createWaitConditionsSummary(mWaits, /* generateMainMessage= */ false));
             }
         }
 
@@ -425,7 +445,7 @@ public class ConditionWaiter {
         return newWaits;
     }
 
-    private boolean processWaits(boolean isPreCheck, TimeoutTimer timeoutTimer) {
+    private boolean processWaits(boolean isPreCheck, @Nullable TimeoutTimer timeoutTimer) {
         assert isPreCheckDone();
 
         boolean anyCriteriaMissing = false;
@@ -445,7 +465,7 @@ public class ConditionWaiter {
             for (ConditionWait wait : nextBatch) {
                 // Check timeout before each Condition check; if multiple Conditions are taking
                 // long, the Transition can take too long to time out.
-                if (timeoutTimer.isTimedOut()) {
+                if (timeoutTimer != null && timeoutTimer.isTimedOut()) {
                     anyCriteriaMissing = true;
                     mWaits.addAll(nextBatch);
                     return anyCriteriaMissing;
@@ -647,36 +667,5 @@ public class ConditionWaiter {
         int ENTER = 0;
         int EXIT = 1;
         int TRANSITION = 2;
-    }
-
-    private class CheckConditionsOnce implements Runnable {
-        private final TimeoutTimer mTimeoutTimer;
-
-        private CheckConditionsOnce(TimeoutTimer timeoutTimer) {
-            mTimeoutTimer = timeoutTimer;
-        }
-
-        @Override
-        public void run() {
-            assert isPreCheckDone();
-
-            boolean anyCriteriaMissing =
-                    ConditionWaiter.this.processWaits(/* isPreCheck= */ false, mTimeoutTimer);
-
-            if (anyCriteriaMissing) {
-                throw new CriteriaNotSatisfiedException(
-                        "Did not complete "
-                                + mTransition.toDebugString()
-                                + ", "
-                                + createWaitConditionsSummary(
-                                        mWaits, /* generateMainMessage= */ true));
-            } else {
-                Log.i(
-                        TAG,
-                        "%s: Conditions fulfilled:\n%s",
-                        mTransition.toDebugString(),
-                        createWaitConditionsSummary(mWaits, /* generateMainMessage= */ false));
-            }
-        }
     }
 }
