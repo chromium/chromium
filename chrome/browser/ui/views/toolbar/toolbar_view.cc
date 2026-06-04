@@ -831,7 +831,9 @@ void ToolbarView::OnGlicButtonClicked() {
       glic_service->IsPanelShowingForBrowser(*browser_view_->browser());
   if (!is_panel_showing && prompt_suggestion.has_value() &&
       !prompt_suggestion->empty()) {
-    glic::GlicInvokeOptions options(glic::Target(browser()), source);
+    tabs::TabInterface* active_tab =
+        browser_view_->browser()->tab_strip_model()->GetActiveTab();
+    glic::GlicInvokeOptions options(glic::Target(active_tab), source);
     options.prompts.push_back(std::move(*prompt_suggestion));
     glic_service->Invoke(std::move(options));
   } else {

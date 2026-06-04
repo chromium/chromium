@@ -293,10 +293,11 @@ void GlicShareImageHandler::OnReceivedTabContext(
       do_policy_checks ? PolicyCheck::kClipboard : PolicyCheck::kNone;
 
   if (base::FeatureList::IsEnabled(features::kGlicShareImageViaInvoke)) {
-    GlicInvokeOptions invoke_options(Target(*tab, NewConversation()),
-                                     mojom::InvocationSource::kSharedImage);
+    GlicInvokeOptions invoke_options(mojom::InvocationSource::kSharedImage);
     invoke_options.additional_context = AdditionalTabContext(
         std::move(additional_context_), render_frame_host_id_, policy_check);
+    invoke_options.target.surface = tab;
+    invoke_options.target.conversation = NewConversation();
     invoke_options.fre_override = mojom::FreOverride::kTrustFirstClick;
     invoke_options.on_error = base::BindOnce(
         &GlicShareImageHandler::OnInvokeError, weak_ptr_factory_.GetWeakPtr());

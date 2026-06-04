@@ -63,7 +63,7 @@ void TaskExecutor::ExecuteTask(
   options.prompts = {std::move(prompt)};
   if (tabs::TabInterface* active_tab =
           browser_window->GetActiveTabInterface()) {
-    options.target = glic::Target(*active_tab);
+    options.target = glic::Target(active_tab);
   } else {
     options.target = glic::Target(browser_window);
   }

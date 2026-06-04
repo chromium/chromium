@@ -125,8 +125,7 @@ void AiOverlayTools::PerformSearch(const std::string& query,
   const TemplateURL* default_provider =
       template_url_service->GetDefaultSearchProvider();
   if (!default_provider) {
-    std::move(callback).Run(
-        base::unexpected("Default search provider not set"));
+    std::move(callback).Run(base::unexpected("Default search provider not set"));
     return;
   }
 
@@ -369,13 +368,9 @@ void AiOverlayTools::InvokeGlic(const std::string& prompt,
     return;
   }
 
-  auto* active_tab = browser_->GetTabStripModel()->GetActiveTab();
-  if (!active_tab) {
-    std::move(callback).Run(base::unexpected("No active tab"));
-    return;
-  }
-  glic::GlicInvokeOptions options(glic::Target(*active_tab),
-                                  glic::mojom::InvocationSource::kOsButton);
+  glic::GlicInvokeOptions options(
+      glic::Target(browser_->GetTabStripModel()->GetActiveTab()),
+      glic::mojom::InvocationSource::kOsButton);
   options.prompts.push_back(prompt);
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));

@@ -97,16 +97,9 @@ void GlicCueTarget::InvokeGlic(contextual_cueing::CueActionData data,
     return;
   }
   auto& glic_data = std::get<contextual_cueing::GlicCueActionData>(data);
-  TabListInterface* tab_list =
-      TabListInterface::From(&*browser_window_interface_);
-  tabs::TabInterface* active_tab =
-      tab_list ? tab_list->GetActiveTab() : nullptr;
-  if (!active_tab) {
-    return;
-  }
-  Target target(*active_tab, NewConversation());
   GlicInvokeOptions options(
-      std::move(target),
+      Target(browser_window_interface_->GetActiveTabInterface(),
+             NewConversation()),
       glic::mojom::InvocationSource::kAutoOpenedByContextualCue);
   options.prompts.emplace_back(std::move(glic_data.prompt));
 

@@ -59,12 +59,14 @@ MATCHER_P2(HasPromptAndTargetTab, expected_prompt, expected_tab, "") {
     return false;
   }
 
-  if (!std::holds_alternative<tabs::TabHandle>(arg.target.surface)) {
-    *result_listener << "Target surface is not tabs::TabHandle";
+  if (!std::holds_alternative<raw_ptr<tabs::TabInterface>>(
+          arg.target.surface)) {
+    *result_listener << "Target surface is not raw_ptr<tabs::TabInterface>";
     return false;
   }
 
-  auto actual_tab = std::get<tabs::TabHandle>(arg.target.surface).Get();
+  auto actual_tab =
+      std::get<raw_ptr<tabs::TabInterface>>(arg.target.surface).get();
   if (actual_tab != expected_tab) {
     *result_listener << "Target tab mismatch";
     return false;

@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayHotkeyInteractiveTest,
         GlicInvokeOptions options(
             glic::mojom::InvocationSource::kCaptureRegionHotkey);
         options.wait_for_panel_open = true;
-        options.target = Target(*tab);
+        options.target = Target(tab);
         glic_keyed_service->Invoke(std::move(options));
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(
         GlicInvokeOptions options(
             glic::mojom::InvocationSource::kCaptureRegionHotkey);
         options.wait_for_panel_open = true;
-        options.target = Target(*tab);
+        options.target = Target(tab);
         glic_keyed_service->Invoke(std::move(options));
       }),
       Wait(base::Seconds(1)),

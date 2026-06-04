@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
 #include "base/notreached.h"
-#include "chrome/browser/glic/public/glic_instance.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
@@ -54,18 +53,18 @@ Target::Target(Target&&) = default;
 Target& Target::operator=(Target&&) = default;
 Target::~Target() = default;
 
-Target::Target(tabs::TabInterface& tab) : surface(tab.GetHandle()) {}
+Target::Target(tabs::TabInterface* tab) : surface(tab) {}
 
 Target::Target(BrowserWindowInterface* window) : surface(NewTab{window}) {}
 
 Target::Target(NewTab new_tab) : surface(std::move(new_tab)) {}
 
-Target::Target(tabs::TabInterface& tab,
+Target::Target(tabs::TabInterface* tab,
                std::variant<DefaultConversation,
                             NewConversation,
                             ConversationId,
                             InstanceId> conversation)
-    : surface(tab.GetHandle()), conversation(std::move(conversation)) {}
+    : surface(tab), conversation(std::move(conversation)) {}
 
 Target::Target(std::variant<DefaultConversation,
                             NewConversation,

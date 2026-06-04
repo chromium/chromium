@@ -34,7 +34,7 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
   if (glic_service) {
     glic::GlicInvokeOptions options(
-        glic::Target(*tab),
+        glic::Target(tab),
         glic::mojom::InvocationSource::kWebContentsContextMenu);
     std::string arm = features::kGlicContextMenuArm.Get();
     if (arm == "arm3") {

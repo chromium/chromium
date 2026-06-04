@@ -449,52 +449,42 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
     std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
     GlicInvokeOptions options,
     GlicInvokeWithAutoSubmitOptions auto_submit_options) {
-  if (const auto* tab_handle =
-          std::get_if<tabs::TabHandle>(&options.target.surface)) {
-    if (tab_handle->raw_value() == tabs::TabHandle::NullValue) {
-      if (options.on_error) {
-        std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
-      }
-      return nullptr;
-    }
-  }
-
   GlicInvokeHandler::ResolvedTarget resolved_target =
       GlicInvokeHandler::ResolveTargetSurface(profile_, options.target);
   tabs::TabInterface* tab = resolved_target.tab;
+  options.target.surface = tab;
 
   if (!tab || !GlicInstanceHelper::From(tab)) {
     if (options.on_error) {
-      std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
+      std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
     }
     // TODO(crbug.com/483387751): Show default toast here once implemented.
     return nullptr;
   }
 
-  options.target.surface = tab->GetHandle();
-
   GlicInstanceImpl* instance = nullptr;
 
   instance = std::visit(
-      absl::Overload{
-          [&](const ConversationId& conv_id) {
-            if (conv_id.conversation_id.empty()) {
-              if (options.on_error) {
-                std::move(options.on_error)
-                    .Run(GlicInvokeError::kInvalidConversationId);
-              }
-              // TODO(crbug.com/483387751): Show default toast here
-              // once implemented.
-              return static_cast<GlicInstanceImpl*>(nullptr);
-            }
-            return GetOrCreateInstanceImplForConversationId(
-                conv_id.conversation_id, conv_id.turn_id);
-          },
-          [&](NewConversation) { return CreateGlicInstance(); },
-          [&](const InstanceId& id) { return GetInstanceImplFor(id); },
-          [&](DefaultConversation) {
-            return GetOrCreateGlicInstanceImplForTab(tab);
-          }},
+      absl::Overload{[&](const ConversationId& conv_id) {
+                       if (conv_id.conversation_id.empty()) {
+                         if (options.on_error) {
+                           std::move(options.on_error)
+                               .Run(GlicInvokeError::kInvalidConversationId);
+                         }
+                         // TODO(crbug.com/483387751): Show default toast here
+                         // once implemented.
+                         return static_cast<GlicInstanceImpl*>(nullptr);
+                       }
+                       return GetOrCreateInstanceImplForConversationId(
+                           conv_id.conversation_id, conv_id.turn_id);
+                     },
+                     [&](NewConversation) { return CreateGlicInstance(); },
+                     [&](const InstanceId& id) {
+                       return GetInstanceImplFor(id);
+                     },
+                     [&](DefaultConversation) {
+                       return GetOrCreateGlicInstanceImplForTab(tab);
+                     }},
       options.target.conversation);
 
   if (!instance) {

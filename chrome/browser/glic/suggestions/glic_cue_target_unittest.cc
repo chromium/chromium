@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -64,8 +63,7 @@ class GlicCueTargetTest : public testing::Test {
         testing_profile_manager->profile_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    profile_ = testing_profile_manager->CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName);
+    profile_ = testing_profile_manager->CreateTestingProfile("profile");
     mock_browser_window_interface_ =
         std::make_unique<NiceMock<MockBrowserWindowInterface>>();
     ON_CALL(*mock_browser_window_interface_, GetProfile())
@@ -85,12 +83,9 @@ class GlicCueTargetTest : public testing::Test {
         mock_browser_window_interface_.get());
     tab_strip_model_ = std::make_unique<TabStripModel>(
         tab_strip_model_delegate_.get(), profile_);
-    tab_list_bridge_ =
-        std::make_unique<TabListBridge>(*tab_strip_model_, user_data_host_);
   }
 
   void TearDown() override {
-    tab_list_bridge_.reset();
     tab_strip_model_.reset();
     tab_strip_model_delegate_.reset();
     mock_glic_keyed_service_.reset();
@@ -137,7 +132,6 @@ class GlicCueTargetTest : public testing::Test {
   std::unique_ptr<MockGlicKeyedService> mock_glic_keyed_service_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<TabListBridge> tab_list_bridge_;
   const tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
 #if BUILDFLAG(IS_CHROMEOS)
   // glic can run only in User session, so it needs to set up user session
@@ -177,7 +171,6 @@ TEST_F(GlicCueTargetTest, IsEligible) {
 }
 
 TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
-  CreateTab();
   base::test::ScopedFeatureList features(
       features::kGlicContextualCueingV2AutoSubmit);
 
@@ -195,8 +188,8 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
   EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _))
       .WillOnce([](InvokeWithAutoSubmitPasskey, GlicInvokeOptions options)
                     -> base::WeakPtr<glic::GlicInstance> {
-        EXPECT_TRUE(
-            std::holds_alternative<tabs::TabHandle>(options.target.surface));
+        EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
+            options.target.surface));
         EXPECT_EQ(1u, options.prompts.size());
         EXPECT_EQ("test prompt", options.prompts[0]);
         EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
@@ -215,7 +208,6 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
 }
 
 TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
-  CreateTab();
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGlicContextualCueingV2AutoSubmit);
 
@@ -231,29 +223,28 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
   contextual_cueing::CueActionData data = glic_data;
 
   EXPECT_CALL(*mock_glic_keyed_service_, Invoke(_))
-      .WillOnce(
-          [](GlicInvokeOptions options) -> base::WeakPtr<glic::GlicInstance> {
-            EXPECT_TRUE(std::holds_alternative<tabs::TabHandle>(
-                options.target.surface));
-            EXPECT_EQ(1u, options.prompts.size());
-            EXPECT_EQ("test prompt", options.prompts[0]);
-            EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
-                      options.GetInvocationSource());
-            EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
-                options.target.conversation));
-            EXPECT_EQ(2ul, options.tab_sharing.tabs_to_pin.size());
-            EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
-            EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
-            EXPECT_EQ(GlicPinTrigger::kContextualCue,
-                      options.tab_sharing.pin_trigger);
-            return base::WeakPtr<glic::GlicInstance>();
-          });
+      .WillOnce([](GlicInvokeOptions options)
+                    -> base::WeakPtr<glic::GlicInstance> {
+        EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
+            options.target.surface));
+        EXPECT_EQ(1u, options.prompts.size());
+        EXPECT_EQ("test prompt", options.prompts[0]);
+        EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
+                  options.GetInvocationSource());
+        EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+            options.target.conversation));
+        EXPECT_EQ(2ul, options.tab_sharing.tabs_to_pin.size());
+        EXPECT_EQ(123, options.tab_sharing.tabs_to_pin[0].raw_value());
+        EXPECT_EQ(456, options.tab_sharing.tabs_to_pin[1].raw_value());
+        EXPECT_EQ(GlicPinTrigger::kContextualCue,
+                  options.tab_sharing.pin_trigger);
+        return base::WeakPtr<glic::GlicInstance>();
+      });
 
   target.OnClick(data);
 }
 
 TEST_F(GlicCueTargetTest, OnEditPrompt) {
-  CreateTab();
   GlicCueTarget target(*mock_glic_keyed_service_,
                        /*optimization_guide_keyed_service=*/nullptr,
                        *mock_browser_window_interface_);
@@ -268,7 +259,7 @@ TEST_F(GlicCueTargetTest, OnEditPrompt) {
   EXPECT_CALL(*mock_glic_keyed_service_, Invoke(_))
       .WillOnce(
           [](GlicInvokeOptions options) -> base::WeakPtr<glic::GlicInstance> {
-            EXPECT_TRUE(std::holds_alternative<tabs::TabHandle>(
+            EXPECT_TRUE(std::holds_alternative<raw_ptr<tabs::TabInterface>>(
                 options.target.surface));
             EXPECT_EQ(1u, options.prompts.size());
             EXPECT_EQ("test prompt", options.prompts[0]);

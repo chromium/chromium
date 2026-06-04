@@ -247,7 +247,7 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   }
 
   glic::GlicInvokeOptions options(
-      glic::Target(*new_tab_interface),
+      glic::Target(new_tab_interface),
       glic::mojom::InvocationSource::kPasswordChange);
   options.prompts.push_back(std::move(reach_form_prompt));
   options.target.actuation_target = glic::mojom::ActuationTarget::kCurrentTab;
@@ -510,8 +510,8 @@ void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
   }
   glic::Target target =
       conversation_id.empty()
-          ? glic::Target(*tab_interface, glic::NewConversation())
-          : glic::Target(*tab_interface, glic::ConversationId(conversation_id));
+          ? glic::Target(tab_interface, glic::NewConversation())
+          : glic::Target(tab_interface, glic::ConversationId(conversation_id));
   glic::GlicInvokeOptions options(
       std::move(target), glic::mojom::InvocationSource::kPasswordChange);
   options.prompts.push_back(std::move(post_submission_prompt));

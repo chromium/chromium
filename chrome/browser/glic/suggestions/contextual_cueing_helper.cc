@@ -59,12 +59,12 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"  // nogncheck crbug.com/40147906
 #include "ui/views/controls/button/label_button.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #endif
 
 namespace glic {
@@ -541,7 +541,7 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
       invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
     }
 
-    glic::GlicInvokeOptions options(glic::Target(*tab_interface),
+    glic::GlicInvokeOptions options(glic::Target(tab_interface),
                                     invocation_source);
     options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
     if (!decision_result.prompt_suggestion.empty()) {

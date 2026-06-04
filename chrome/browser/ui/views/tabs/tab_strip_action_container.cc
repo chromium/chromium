@@ -598,11 +598,9 @@ void TabStripActionContainer::OnGlicButtonClicked() {
       !prompt_suggestion->empty()) {
     tabs::TabInterface* active_tab =
         TabListInterface::From(browser_window_interface_)->GetActiveTab();
-    if (active_tab) {
-      glic::GlicInvokeOptions options(glic::Target(*active_tab), source);
-      options.prompts.push_back(std::move(*prompt_suggestion));
-      glic_service->Invoke(std::move(options));
-    }
+    glic::GlicInvokeOptions options(glic::Target(active_tab), source);
+    options.prompts.push_back(std::move(*prompt_suggestion));
+    glic_service->Invoke(std::move(options));
   } else {
     glic_service->ToggleUI(browser_window_interface_,
                            /*prevent_close=*/false, source);

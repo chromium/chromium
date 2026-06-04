@@ -64,7 +64,7 @@ void AnchoredNudgeController::OnTriggerGlicNudgeUI(NudgeParams params) {
                 glic::GlicKeyedService::Get(bwi->GetProfile())) {
           if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
             glic::GlicInvokeOptions options(
-                Target(*tab),
+                glic::Target(tab),
                 glic::mojom::InvocationSource::kAnchoredContextualCue);
             if (prompt.has_value()) {
               options.prompts.emplace_back(std::move(*prompt));

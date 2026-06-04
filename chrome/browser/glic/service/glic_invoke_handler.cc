@@ -108,11 +108,9 @@ GlicInvokeHandler::ResolvedTarget GlicInvokeHandler::ResolveTargetSurface(
     return {nullptr, /*is_new=*/false};
   }
 
-  if (const auto* tab_handle = std::get_if<tabs::TabHandle>(&target.surface)) {
-    tabs::TabInterface* tab = tab_handle->Get();
-    if (tab) {
-      return {tab, /*is_new=*/false};
-    }
+  if (const auto* tab_ptr =
+          std::get_if<raw_ptr<tabs::TabInterface>>(&target.surface)) {
+    return {tab_ptr->get(), /*is_new=*/false};
   }
 
   return {nullptr, /*is_new=*/false};

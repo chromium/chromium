@@ -46,13 +46,10 @@ void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
   // CanHandleAccelerators.
   CHECK(bwi);
   CHECK_EQ(bwi->GetProfile(), profile_);
-  auto* active_tab = bwi->GetActiveTabInterface();
-  if (!active_tab) {
-    return;
-  }
   GlicInvokeOptions options(
-      Target(*active_tab), glic::mojom::InvocationSource::kCaptureRegionHotkey);
+      glic::mojom::InvocationSource::kCaptureRegionHotkey);
   options.wait_for_panel_open = true;
+  options.target = Target(bwi->GetActiveTabInterface());
   coordinator_->Invoke(std::move(options));
 }
 #endif
