@@ -66,7 +66,8 @@ found in the LICENSE file.
                 android:paddingStart="24dp"
                 android:text="@string/fre_welcome"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:accessibilityHeading="true" />
 
             <org.chromium.ui.widget.TextViewWithLeading
                 android:id="@+id/subtitle"
