@@ -130,14 +130,8 @@ TEST_F(FileSnapshotCreatorTest, NonExistentFileErrorHandling) {
   EXPECT_TRUE(snapshot_path.empty());
 }
 
-// TODO(crbug.com/519813376): Fails on ASan ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_MultiChunkFileCreation DISABLED_MultiChunkFileCreation
-#else
-#define MAYBE_MultiChunkFileCreation MultiChunkFileCreation
-#endif
-TEST_F(FileSnapshotCreatorTest, MAYBE_MultiChunkFileCreation) {
-  std::string expected_content("a", FileSnapshotCreator::CHUNK_SIZE + 10);
+TEST_F(FileSnapshotCreatorTest, MultiChunkFileCreation) {
+  std::string expected_content(FileSnapshotCreator::CHUNK_SIZE + 10, 'a');
   storage::FileSystemURL url =
       CreateVirtualFile("multi_chunk_file.txt", expected_content);
 
