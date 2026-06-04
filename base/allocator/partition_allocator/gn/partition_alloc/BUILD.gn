@@ -6,11 +6,10 @@ config("default") {
   asmflags = []
   cflags = []
   cflags = [
-    "-Wno-return-type",  # TODO(crbug.com/41481467): Fix this warning.
-    "-Wno-invalid-offsetof",  # TODO(crbug.com/41481467): Fix this warning.
     "-fstrict-aliasing",
     "-fPIC",
     "-fvisibility=hidden",
+    "-Werror",
   ]
   cflags_cc = [
     "-std=c++20",
