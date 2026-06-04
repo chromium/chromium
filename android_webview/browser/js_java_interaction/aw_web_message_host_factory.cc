@@ -44,13 +44,13 @@ class AwWebMessageHost : public js_injection::WebMessageHost {
   void OnPostMessage(
       std::unique_ptr<js_injection::WebMessage> message) override {
     JNIEnv* env = base::android::AttachCurrentThread();
+    // We do manual conversion here to explicitly pass ownership which is
+    // not done automatically by the default JniZero converter.
     base::android::ScopedJavaLocalRef<jobjectArray> jports =
         content::android::CreateJavaMessagePort(std::move(message->ports));
     Java_WebMessageListenerHolder_onPostMessage(
-        env, listener_,
-        content::android::ConvertWebMessagePayloadToJava(message->message),
-        top_level_origin_string_, origin_string_, is_main_frame_, jports,
-        reply_proxy_.GetJavaPeer());
+        env, listener_, message->message, top_level_origin_string_,
+        origin_string_, is_main_frame_, jports, reply_proxy_.GetJavaPeer());
   }
 
  private:

@@ -31,7 +31,7 @@ public class WebMessageListenerHolder {
 
     @CalledByNative
     public void onPostMessage(
-            MessagePayload payload,
+            @JniType("blink::WebMessagePayload") MessagePayload payload,
             @JniType("std::string") String topLevelOrigin,
             @JniType("std::string") String sourceOrigin,
             boolean isMainFrame,

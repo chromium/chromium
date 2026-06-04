@@ -11,6 +11,7 @@
 #include "content/public/browser/android/message_payload_type.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace content::android {
 
@@ -28,5 +29,17 @@ CONTENT_EXPORT blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
         jobject>& /* org.chromium.content_public.browser.MessagePayload */);
 
 }  // namespace content::android
+
+// JniZero custom type conversions
+namespace jni_zero {
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<blink::WebMessagePayload>(
+    JNIEnv* env,
+    const blink::WebMessagePayload& payload) {
+  return content::android::ConvertWebMessagePayloadToJava(payload);
+}
+
+}  // namespace jni_zero
 
 #endif  // CONTENT_PUBLIC_BROWSER_ANDROID_MESSAGE_PAYLOAD_H_
