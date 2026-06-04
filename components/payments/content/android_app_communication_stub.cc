@@ -4,7 +4,6 @@
 
 #include "components/payments/content/android_app_communication.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -51,7 +50,6 @@ class AndroidAppCommunicationStub : public AndroidAppCommunication {
       const std::string& payment_request_id,
       const base::UnguessableToken& request_token,
       content::WebContents* web_contents,
-      const std::optional<base::UnguessableToken>& twa_instance_identifier,
       InvokePaymentAppCallback callback) override {
     std::move(callback).Run(errors::kUnableToInvokeAndroidPaymentApps,
                             /*is_activity_result_ok=*/false,

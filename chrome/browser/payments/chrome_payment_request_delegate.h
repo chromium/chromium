@@ -66,8 +66,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   PaymentRequestDialog* GetDialogForTesting() override;
 
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
-  std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
-      const override;
   std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;
 
  protected:

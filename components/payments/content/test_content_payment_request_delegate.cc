@@ -145,11 +145,6 @@ TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
   return nullptr;
 }
 
-std::optional<base::UnguessableToken>
-TestContentPaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
-  return std::nullopt;
-}
-
 std::string TestContentPaymentRequestDelegate::
     GetSecurePaymentConfirmationKeychainAccessGroup() const {
   return "";

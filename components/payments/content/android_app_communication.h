@@ -88,7 +88,6 @@ class AndroidAppCommunication : public base::SupportsUserData::Data {
       const std::string& payment_request_id,
       const base::UnguessableToken& request_token,
       content::WebContents* web_contents,
-      const std::optional<base::UnguessableToken>& twa_instance_identifier,
       InvokePaymentAppCallback callback) = 0;
 
   // Aborts a payment flow which was previously started with InvokePaymentApp().

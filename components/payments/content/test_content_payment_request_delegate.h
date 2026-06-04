@@ -72,8 +72,6 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   void CompleteFullCardRequest();
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
 
-  std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
-      const override;
   std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;
 
   // Must be called if GetRenderFrameHost() needs to return non-null.

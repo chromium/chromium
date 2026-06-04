@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -18,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
-#include "base/unguessable_token.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
@@ -37,8 +35,7 @@ class AndroidPaymentAppTest : public testing::Test,
  public:
   static std::unique_ptr<AndroidPaymentApp> CreateAndroidPaymentApp(
       base::WeakPtr<AndroidAppCommunication> communication,
-      content::WebContents* web_contents,
-      const std::optional<base::UnguessableToken>& twa_instance_identifier) {
+      content::WebContents* web_contents) {
     std::set<std::string> payment_method_names;
     payment_method_names.insert(methods::kGooglePlayBilling);
     auto stringified_method_data =
@@ -58,8 +55,7 @@ class AndroidPaymentAppTest : public testing::Test,
         GURL("https://top-level-origin.com"),
         GURL("https://payment-request-origin.com"), "payment-request-id",
         std::move(description), communication,
-        web_contents->GetPrimaryMainFrame()->GetGlobalId(),
-        twa_instance_identifier);
+        web_contents->GetPrimaryMainFrame()->GetGlobalId());
   }
 
   AndroidPaymentAppTest()
@@ -102,8 +98,6 @@ class AndroidPaymentAppTest : public testing::Test,
   std::string stringified_details_;
   std::string error_message_;
   base::OnceClosure on_payment_app_response_callback_;
-  std::optional<base::UnguessableToken> twa_instance_identifier_ =
-      base::UnguessableToken::Create();
 
   base::WeakPtrFactory<AndroidPaymentAppTest> weak_ptr_factory_{this};
 };
@@ -115,8 +109,7 @@ TEST_F(AndroidPaymentAppTest, BrowserShutdown) {
 
   support_->ExpectNoPaymentAppInvoke();
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
   EXPECT_TRUE(error_message_.empty());
@@ -132,8 +125,7 @@ TEST_F(AndroidPaymentAppTest, UnableToCommunicateToAndroidApps) {
 
   support_->ExpectNoPaymentAppInvoke();
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   base::RunLoop runloop;
   on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
@@ -155,8 +147,7 @@ TEST_F(AndroidPaymentAppTest, OnInstrumentDetailsError) {
       /*payment_method_identifier=*/methods::kGooglePlayBilling,
       /*stringified_details=*/"{}");
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   base::RunLoop runloop;
   on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
@@ -183,8 +174,7 @@ TEST_F(AndroidPaymentAppTest, OnInstrumentDetailsReady) {
       /*payment_method_identifier=*/methods::kGooglePlayBilling,
       /*stringified_details=*/"{\"status\": \"ok\"}");
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   base::RunLoop runloop;
   on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
@@ -209,8 +199,7 @@ TEST_F(AndroidPaymentAppTest, AbortWithPaymentAppOpen) {
 
   support_->ExpectInvokeAndAbortPaymentApp();
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 
   bool aborted = false;
@@ -238,8 +227,7 @@ TEST_F(AndroidPaymentAppTest, AbortWhenAppDestroyed) {
 
   support_->ExpectInvokeAndAbortPaymentApp();
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
   // Payment app will be aborted when |app| is destroyed.
 }
@@ -256,8 +244,7 @@ TEST_F(AndroidPaymentAppTest, NoAbortWhenDestroyedWithCompletedFlow) {
       /*stringified_details=*/"{}");
   support_->ExpectNoAbortPaymentApp();
 
-  auto app = CreateAndroidPaymentApp(communication_, web_contents_,
-                                     twa_instance_identifier_);
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
   base::RunLoop runloop;
   on_payment_app_response_callback_ = runloop.QuitClosure();
   app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());

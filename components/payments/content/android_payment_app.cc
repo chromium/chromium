@@ -23,8 +23,7 @@ AndroidPaymentApp::AndroidPaymentApp(
     const std::string& payment_request_id,
     std::unique_ptr<AndroidAppDescription> description,
     base::WeakPtr<AndroidAppCommunication> communication,
-    content::GlobalRenderFrameHostId frame_routing_id,
-    const std::optional<base::UnguessableToken>& twa_instance_identifier)
+    content::GlobalRenderFrameHostId frame_routing_id)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::NATIVE_MOBILE_APP),
       stringified_method_data_(std::move(stringified_method_data)),
       top_level_origin_(top_level_origin),
@@ -34,8 +33,7 @@ AndroidPaymentApp::AndroidPaymentApp(
       communication_(communication),
       frame_routing_id_(frame_routing_id),
       payment_app_token_(base::UnguessableToken::Create()),
-      payment_app_open_(false),
-      twa_instance_identifier_(twa_instance_identifier) {
+      payment_app_open_(false) {
   DCHECK(!payment_method_names.empty());
   DCHECK_EQ(payment_method_names.size(), stringified_method_data_->size());
   DCHECK_EQ(*payment_method_names.begin(),
@@ -73,7 +71,6 @@ void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
       description_->package, description_->activities.front()->name,
       *stringified_method_data_, top_level_origin_, payment_request_origin_,
       payment_request_id_, payment_app_token_, web_contents,
-      twa_instance_identifier_,
       base::BindOnce(&AndroidPaymentApp::OnPaymentAppResponse,
                      weak_ptr_factory_.GetWeakPtr(), delegate));
 }

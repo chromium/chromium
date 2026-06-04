@@ -362,11 +362,6 @@ void PaymentAppServiceBridge::SetOptOutOffered() {
   set_opt_out_offered_callback_.Run();
 }
 
-std::optional<base::UnguessableToken>
-PaymentAppServiceBridge::GetChromeOSTWAInstanceId() const {
-  return std::nullopt;
-}
-
 PaymentAppServiceBridge::PaymentAppServiceBridge(
     std::unique_ptr<PaymentAppService> payment_app_service,
     content::RenderFrameHost* render_frame_host,

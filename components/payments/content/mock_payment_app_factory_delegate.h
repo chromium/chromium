@@ -70,8 +70,6 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
   MOCK_METHOD0(SetCanMakePaymentEvenWithoutApps, void());
   MOCK_METHOD0(GetCSPChecker, base::WeakPtr<CSPChecker>());
   MOCK_METHOD0(SetOptOutOffered, void());
-  MOCK_CONST_METHOD0(GetChromeOSTWAInstanceId,
-                     std::optional<base::UnguessableToken>());
 
   base::WeakPtr<PaymentAppFactory::Delegate> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

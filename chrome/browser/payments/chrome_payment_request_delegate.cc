@@ -281,11 +281,6 @@ PaymentRequestDialog* ChromePaymentRequestDelegate::GetDialogForTesting() {
   return shown_dialog_.get();
 }
 
-std::optional<base::UnguessableToken>
-ChromePaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
-  return std::nullopt;
-}
-
 std::string
 ChromePaymentRequestDelegate::GetSecurePaymentConfirmationKeychainAccessGroup()
     const {

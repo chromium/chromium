@@ -126,17 +126,6 @@ class PaymentAppFactory {
     // Records that an Opt Out experience will be offered to the user in the
     // current UI flow.
     virtual void SetOptOutOffered() = 0;
-
-    // Return the app instance id for the TWA that invokes the payment request.
-    // The instance id is used to find the TWA window in the ash so that we can
-    // attach the payment dialog to it. This interface should only be used
-    // in ChromeOS.
-    // At the moment, this interface is only implemented in Lacros and for all
-    // other platforms this will return std::nullopt. In addition to that, if
-    // for any reason, we failed to find the app instance, this method will
-    // also return std::nullopt.
-    virtual std::optional<base::UnguessableToken> GetChromeOSTWAInstanceId()
-        const = 0;
   };
 
   explicit PaymentAppFactory(PaymentApp::Type type);
