@@ -2438,6 +2438,8 @@ void RenderViewContextMenu::AppendPluginItems() {
 }
 
 void RenderViewContextMenu::AppendPageItems() {
+  AppendExitFullscreenItem();
+
   if (features::IsMenuSimplificationEnabled() &&
       params_.selection_text.empty() && !params_.is_editable) {
     // Navigation
@@ -2494,8 +2496,6 @@ void RenderViewContextMenu::AppendPageItems() {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     return;
   }
-
-  AppendExitFullscreenItem();
 
   const bool use_simplified_text_selection = ShouldUseSimplifiedTextSelection();
 
