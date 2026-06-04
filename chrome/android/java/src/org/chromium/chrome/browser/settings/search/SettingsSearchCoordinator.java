@@ -411,7 +411,10 @@ public class SettingsSearchCoordinator
             clearFragment(
                     R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
         } else {
-            displayRecentSearches();
+            // If the transition to RecentSearchFagment is added to back stack, back press will
+            // will go to the previous state (EmptyFragment). We skip adding the fragment
+            // transition to back stack.
+            displayRecentSearches(/* addToBackStack= */ false);
         }
         queryEdit.requestFocus();
         KeyboardUtils.showKeyboard(queryEdit);
@@ -910,7 +913,7 @@ public class SettingsSearchCoordinator
         if (RecentSearchQueue.getInstance().isEmpty()) {
             fragment = clearFragment(imageId, addToBackStack, openHelpCenter);
         } else {
-            fragment = displayRecentSearches();
+            fragment = displayRecentSearches(/* addToBackStack= */ true);
         }
         var fragmentManager = getSettingsFragmentManager();
         fragmentManager.registerFragmentLifecycleCallbacks(
@@ -962,20 +965,19 @@ public class SettingsSearchCoordinator
                 .show(mActivity, mActivity.getString(R.string.help_context_settings), null);
     }
 
-    private Fragment displayRecentSearches() {
+    private Fragment displayRecentSearches(boolean addToBackStack) {
         var fragment = new RecentSearchesFragment();
         fragment.setPreferenceData(new ArrayList<>(RecentSearchQueue.getInstance().values()));
         fragment.setDeleteCallback(this::deleteRecentSearches);
         fragment.setSelectedCallback(this::onResultSelected);
 
         // Get the FragmentManager and replace the current fragment in the container
-        FragmentManager fragmentManager = getSettingsFragmentManager();
-        fragmentManager
-                .beginTransaction()
+        var transaction = getSettingsFragmentManager().beginTransaction();
+        transaction
                 .replace(getViewIdForSearchDisplay(), fragment, RESULT_FRAGMENT)
-                .addToBackStack(null)
-                .setReorderingAllowed(true)
-                .commit();
+                .setReorderingAllowed(true);
+        if (addToBackStack) transaction.addToBackStack(null);
+        transaction.commit();
         return fragment;
     }
 
