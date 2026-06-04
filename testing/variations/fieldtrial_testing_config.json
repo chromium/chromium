@@ -16406,6 +16406,26 @@
             ]
         }
     ],
+    "NetTaskSchedulerHostResolver": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NetTaskSchedulerHostResolver"
+                    ]
+                }
+            ]
+        }
+    ],
     "NetworkContextDirectReceiver": [
         {
             "platforms": [
@@ -16564,26 +16584,6 @@
                     },
                     "enable_features": [
                         "NetTaskScheduler2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NetworkServiceTaskSchedulerHostResolver": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NetTaskSchedulerHostResolver"
                     ]
                 }
             ]
