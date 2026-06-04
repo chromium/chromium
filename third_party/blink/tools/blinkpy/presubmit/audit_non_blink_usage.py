@@ -2628,6 +2628,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/frame/local_frame_view.cc',
+            'third_party/blink/renderer/core/frame/local_frame_view.h',
+            'third_party/blink/renderer/core/html/canvas/html_canvas_element.cc',
+            'third_party/blink/renderer/core/html/canvas/html_canvas_element.h',
+        ],
+        'allowed': ['cc::AnimatedImageFrameIndexMap'],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.cc',
             'third_party/blink/renderer/modules/webaudio/realtime_audio_worklet_thread.cc',
             'third_party/blink/renderer/modules/webaudio/semi_realtime_audio_worklet_thread.cc',

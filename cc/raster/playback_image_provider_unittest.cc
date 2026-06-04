@@ -141,8 +141,9 @@ TEST(PlaybackImageProviderTest, SwapsGivenFrames) {
       FrameMetadata(true, base::Milliseconds(3))};
   PaintImage image = CreateAnimatedImage(gfx::Size(10, 10), frames);
 
-  base::flat_map<PaintImage::Id, size_t> image_to_frame;
-  image_to_frame[image.stable_id()] = 1u;
+  scoped_refptr<AnimatedImageFrameIndexMap> image_to_frame =
+      base::MakeRefCounted<AnimatedImageFrameIndexMap>();
+  (*image_to_frame)[image.stable_id()] = 1u;
   std::optional<PlaybackImageProvider::Settings> settings;
   settings.emplace();
   settings->image_to_current_frame_index = image_to_frame;

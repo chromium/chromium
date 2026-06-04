@@ -564,7 +564,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ImageAnimationController* image_animation_controller() {
     return image_animation_controller_.get();
   }
-  base::flat_map<PaintImage::Id, bool> GatherImageAnimationState() const;
+  AnimatedImageDriverMap GatherAnimatedImageDriverState() const;
 
   ImageDecodeCache* GetImageDecodeCache() const;
 

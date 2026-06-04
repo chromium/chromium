@@ -276,6 +276,7 @@ class CC_EXPORT LayerImpl {
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_handler_region;
+    ElementId canvas_child_id;
     PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kLow;
     PaintFlags::DynamicRangeLimitMixture dynamic_range_limit{
         PaintFlags::DynamicRangeLimit::kHigh};
@@ -341,6 +342,11 @@ class CC_EXPORT LayerImpl {
   const viz::TrackedElementRects* tracked_element_rects() const {
     return rare_properties_ ? &rare_properties_->tracked_element_rects
                             : nullptr;
+  }
+
+  void SetCanvasChildId(ElementId id);
+  ElementId canvas_child_id() const {
+    return rare_properties_ ? rare_properties_->canvas_child_id : ElementId();
   }
 
   // Set or get the region that contains wheel event handler.

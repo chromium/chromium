@@ -69,7 +69,6 @@ void RunBenchmark(const PictureLayerTiling& tiling,
       std::optional<PlaybackImageProvider::Settings> image_settings;
       image_settings.emplace();
       image_settings->images_to_skip = {};
-      image_settings->image_to_current_frame_index = {};
 
       PlaybackImageProvider image_provider(
           image_decode_cache, TargetColorParams(), std::move(image_settings));

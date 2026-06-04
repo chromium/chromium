@@ -41,6 +41,8 @@ class StubLayerTreeHostDelegate : public LayerTreeHostDelegate {
   void ApplyViewportChanges(const ApplyViewportChangesArgs&) override {}
   void UpdateCompositorScrollState(
       const CompositorCommitData& commit_data) override {}
+  void UpdateAnimatedImageState(
+      const CompositorCommitData& commit_data) override {}
   void RequestNewLayerTreeFrameSink() override {}
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override {}

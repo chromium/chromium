@@ -36,6 +36,9 @@ class LayerTreeViewDelegate {
   virtual void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) = 0;
 
+  virtual void UpdateAnimatedImageState(
+      const cc::CompositorCommitData& commit_data) = 0;
+
   // Notifies that the compositor has issued a BeginMainFrame.
   virtual void BeginMainFrame(const viz::BeginFrameArgs& args) = 0;
 

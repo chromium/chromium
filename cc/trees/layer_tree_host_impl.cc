@@ -659,19 +659,18 @@ const InputHandler& LayerTreeHostImpl::GetInputHandler() const {
   return static_cast<const InputHandler&>(*input_delegate_.get());
 }
 
-base::flat_map<PaintImage::Id, bool>
-LayerTreeHostImpl::GatherImageAnimationState() const {
-  base::flat_map<PaintImage::Id, bool> animation_state;
-  active_tree()->AnnotateAnimatedImages(animation_state);
+AnimatedImageDriverMap LayerTreeHostImpl::GatherAnimatedImageDriverState()
+    const {
+  AnimatedImageDriverMap result;
+  active_tree()->AnnotateAnimatedImages(result);
   if (pending_tree()) {
-    pending_tree()->AnnotateAnimatedImages(animation_state);
+    pending_tree()->AnnotateAnimatedImages(result);
   }
   if (recycle_tree()) {
-    recycle_tree()->AnnotateAnimatedImages(animation_state);
+    recycle_tree()->AnnotateAnimatedImages(result);
   }
-  return animation_state;
+  return result;
 }
-
 
 bool LayerTreeHostImpl::CanDraw() const {
   // Note: If you are changing this function or any other function that might
@@ -4977,6 +4976,12 @@ LayerTreeHostImpl::ProcessCompositorDeltas(
   }
   CollectScrollbarUpdatesForCommit(commit_data.get());
 
+  if (image_animation_controller_) {
+    commit_data->advanced_image_animation_clients =
+        image_animation_controller_->TakeAdvancedAnimationClients();
+    commit_data->animated_image_frame_index_map =
+        image_animation_controller_->GatherFrameIndexes();
+  }
   commit_data->page_scale_delta =
       active_tree_->page_scale_factor()->PullDeltaForMainThread(
           main_thread_mutator_host);

@@ -145,7 +145,9 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
                       cc::ImageDecodeCache* cache_f16,
                       const gfx::ColorSpace& target_color_space,
                       viz::SharedImageFormat canvas_format,
-                      cc::PlaybackImageProvider::RasterMode raster_mode);
+                      cc::PlaybackImageProvider::RasterMode raster_mode,
+                      scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+                          animated_image_frame_indexes);
   CanvasImageProvider(const CanvasImageProvider&) = delete;
   CanvasImageProvider& operator=(const CanvasImageProvider&) = delete;
   ~CanvasImageProvider() override = default;
@@ -155,6 +157,8 @@ class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
       const cc::DrawImage&) override;
 
   void ReleaseLockedImages() { locked_images_.clear(); }
+  void SetAnimatedImageFrameIndexes(
+      scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes);
 
  private:
   void CanUnlockImage(ScopedResult);
@@ -1154,7 +1158,8 @@ Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
 
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kGpu);
+      cc::PlaybackImageProvider::RasterMode::kGpu,
+      delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
 
   return canvas_image_provider_.get();
 }
@@ -1633,11 +1638,14 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     cc::ImageDecodeCache* cache_f16,
     const gfx::ColorSpace& target_color_space,
     viz::SharedImageFormat canvas_format,
-    cc::PlaybackImageProvider::RasterMode raster_mode)
+    cc::PlaybackImageProvider::RasterMode raster_mode,
+    scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+        animated_image_frame_indexes)
     : raster_mode_(raster_mode) {
   std::optional<cc::PlaybackImageProvider::Settings> settings =
       cc::PlaybackImageProvider::Settings();
   settings->raster_mode = raster_mode_;
+  settings->image_to_current_frame_index = animated_image_frame_indexes;
 
   cc::TargetColorParams target_color_params;
   target_color_params.color_space = target_color_space;
@@ -1649,8 +1657,19 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     DCHECK(cache_f16);
     settings = cc::PlaybackImageProvider::Settings();
     settings->raster_mode = raster_mode_;
+    settings->image_to_current_frame_index = animated_image_frame_indexes;
     playback_image_provider_f16_.emplace(cache_f16, target_color_params,
                                          std::move(settings));
+  }
+}
+
+void CanvasResourceProvider::CanvasImageProvider::SetAnimatedImageFrameIndexes(
+    scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
+  if (playback_image_provider_n32_) {
+    playback_image_provider_n32_->SetAnimatedImageFrameIndexes(indexes);
+  }
+  if (playback_image_provider_f16_) {
+    playback_image_provider_f16_->SetAnimatedImageFrameIndexes(indexes);
   }
 }
 
@@ -1781,7 +1800,8 @@ CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
 
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kSoftware);
+      cc::PlaybackImageProvider::RasterMode::kSoftware,
+      delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
 
   return canvas_image_provider_.get();
 }
@@ -1869,7 +1889,9 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
         canvas_image_provider_ =
             std::make_unique<CanvasResourceProvider::CanvasImageProvider>(
                 cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-                cc::PlaybackImageProvider::RasterMode::kSoftware);
+                cc::PlaybackImageProvider::RasterMode::kSoftware,
+                delegate_ ? delegate_->GetAnimatedImageFrameIndexes()
+                          : nullptr);
       }
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
           GetSkSurface()->getCanvas(), canvas_image_provider_.get());
@@ -1930,7 +1952,8 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
       canvas_image_provider_ =
           std::make_unique<CanvasResourceProvider::CanvasImageProvider>(
               cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-              cc::PlaybackImageProvider::RasterMode::kGpu);
+              cc::PlaybackImageProvider::RasterMode::kGpu,
+              delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
     }
 
     ri->RasterCHROMIUM(
@@ -1965,6 +1988,10 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   clear_frame_ = false;
   cc::PaintRecord recording;
   recording = Recorder().ReleaseMainRecording();
+  if (canvas_image_provider_ && delegate_) {
+    canvas_image_provider_->SetAnimatedImageFrameIndexes(
+        delegate_->GetAnimatedImageFrameIndexes());
+  }
   RasterRecord(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.

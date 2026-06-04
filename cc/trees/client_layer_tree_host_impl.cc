@@ -419,8 +419,11 @@ void ClientLayerTreeHostImpl::
   CHECK(!settings_.trees_in_viz_in_viz_process);
   CHECK(image_animation_controller_);
   const auto& animated_images = image_animation_controller_->AnimateForSyncTree(
-      CurrentBeginFrameArgs(), GatherImageAnimationState());
+      CurrentBeginFrameArgs(), GatherAnimatedImageDriverState());
   images_to_invalidate.insert(animated_images.begin(), animated_images.end());
+  if (image_animation_controller_->HasAdvancedAnimationClients()) {
+    SetNeedsCommit();
+  }
 
   images_to_invalidate.insert(dirty_paint_worklet_ids.begin(),
                               dirty_paint_worklet_ids.end());

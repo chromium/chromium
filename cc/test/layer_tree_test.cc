@@ -481,6 +481,9 @@ class LayerTreeHostDelegateForTesting
   void UpdateCompositorScrollState(
       const CompositorCommitData& commit_data) override {}
 
+  void UpdateAnimatedImageState(
+      const CompositorCommitData& commit_data) override {}
+
   void RequestNewLayerTreeFrameSink() override {
     test_hooks_->RequestNewLayerTreeFrameSink();
   }

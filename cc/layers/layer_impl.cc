@@ -425,6 +425,13 @@ void LayerImpl::SetTrackedElementRects(viz::TrackedElementRects rects) {
   }
 }
 
+void LayerImpl::SetCanvasChildId(ElementId id) {
+  if (rare_properties_ || id) {
+    EnsureRareProperties().canvas_child_id = id;
+    SetNeedsPushProperties();
+  }
+}
+
 std::unique_ptr<LayerImpl> LayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
   return LayerImpl::Create(tree_impl, layer_id_);

@@ -5109,7 +5109,8 @@ void LocalFrameView::DidPaintCanvasChild(HTMLCanvasElement& canvas,
   }
 }
 
-void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas) {
+void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas,
+                                          Element* child) {
   DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled(
       GetFrame().GetDocument()->GetExecutionContext()));
   if (canvas.IsInCanvasSubtree()) {
@@ -5120,7 +5121,21 @@ void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas) {
     add_result.stored_value->value =
         MakeGarbageCollected<GCedHeapLinkedHashSet<Member<Element>>>();
   }
+  if (child) {
+    add_result.stored_value->value->insert(child);
+  }
   ScheduleAnimation();
+}
+
+scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+LocalFrameView::GetAnimatedImageFrameIndexes() const {
+  return GetFrame().LocalFrameRoot().View()->animated_image_frame_indexes_;
+}
+
+void LocalFrameView::SetAnimatedImageFrameIndexes(
+    scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
+  CHECK(GetFrame().IsLocalRoot());
+  animated_image_frame_indexes_ = indexes;
 }
 
 #if DCHECK_IS_ON()

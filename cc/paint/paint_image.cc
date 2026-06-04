@@ -48,6 +48,13 @@ ImageHeaderMetadata& ImageHeaderMetadata::operator=(
     const ImageHeaderMetadata& other) = default;
 ImageHeaderMetadata::ImageHeaderMetadata::~ImageHeaderMetadata() = default;
 
+AnimatedImageFrameIndexMap::AnimatedImageFrameIndexMap() = default;
+AnimatedImageFrameIndexMap::AnimatedImageFrameIndexMap(
+    base::sorted_unique_t sorted_unique,
+    const std::vector<std::pair<int, size_t>>& entries)
+    : base::flat_map<int, size_t>(sorted_unique, entries) {}
+AnimatedImageFrameIndexMap::~AnimatedImageFrameIndexMap() = default;
+
 PaintImage::PaintImage() = default;
 PaintImage::PaintImage(const PaintImage& other) = default;
 PaintImage::PaintImage(PaintImage&& other) = default;

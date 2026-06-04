@@ -668,6 +668,11 @@ void WidgetBase::UpdateCompositorScrollState(
   client_->UpdateCompositorScrollState(commit_data);
 }
 
+void WidgetBase::UpdateAnimatedImageState(
+    const cc::CompositorCommitData& commit_data) {
+  client_->UpdateAnimatedImageState(commit_data);
+}
+
 void WidgetBase::OnDeferMainFrameUpdatesChanged(bool defer) {
   // LayerTreeHost::CreateThreaded() will defer main frame updates immediately
   // until it gets a LocalSurfaceId. That's before the

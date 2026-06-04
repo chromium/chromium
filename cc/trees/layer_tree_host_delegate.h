@@ -160,6 +160,12 @@ class CC_EXPORT LayerTreeHostDelegate {
   virtual void UpdateCompositorScrollState(
       const CompositorCommitData& commit_data) = 0;
 
+  // Notifies the client about the current frame index of animated images
+  // running the compositor, and animated image client elements who should be
+  // notified that an animated image has advanced.
+  virtual void UpdateAnimatedImageState(
+      const CompositorCommitData& commit_data) = 0;
+
   // Request a LayerTreeFrameSink from the client. When the client has one it
   // should call LayerTreeHost::SetLayerTreeFrameSink. This will result in
   // either DidFailToInitializeLayerTreeFrameSink or

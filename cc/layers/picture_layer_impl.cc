@@ -462,15 +462,15 @@ bool PictureLayerImpl::HasAnimatedImages() const {
 }
 
 void PictureLayerImpl::AnnotateAnimatedImages(
-    base::flat_map<PaintImage::Id, bool>& image_map) const {
+    AnimatedImageDriverMap& driver_map) const {
   if (!discardable_image_map_) {
     return;
   }
   for (const auto& data : discardable_image_map_->animated_images_metadata()) {
-    if (ShouldAnimate(data.first)) {
-      image_map.insert_or_assign(data.first, true);
-    } else {
-      image_map.try_emplace(data.first, false);
+    auto& driver_state = driver_map[data.first];
+    driver_state.first |= ShouldAnimate(data.first);
+    if (canvas_child_id()) {
+      driver_state.second.push_back(canvas_child_id());
     }
   }
 }
@@ -968,14 +968,21 @@ bool PictureLayerImpl::ShouldAnimate(PaintImage::Id paint_image_id) const {
   //
   //  Additionally only animate images which are on-screen, animations are
   //  paused once they are not visible.
-  if (!HasValidTilePriorities())
+  //
+  // An exception to the above is animated images inside a <canvas>, which we
+  // animate to trigger a "paint" event when the animation advances.
+  if (!HasValidTilePriorities() && !canvas_child_id()) {
     return false;
+  }
 
   if (auto it = discardable_image_map_->animated_images_metadata().find(
           paint_image_id);
       it != discardable_image_map_->animated_images_metadata().end()) {
     if (it->second.repetition_count == kAnimationPaused) {
       return false;
+    }
+    if (canvas_child_id()) {
+      return true;
     }
   }
 

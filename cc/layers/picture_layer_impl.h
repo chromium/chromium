@@ -109,7 +109,7 @@ class CC_EXPORT PictureLayerImpl
   void RegenerateDiscardableImageMap();
   bool UpdateTiles();
   bool HasAnimatedImages() const;
-  void AnnotateAnimatedImages(base::flat_map<PaintImage::Id, bool>&) const;
+  void AnnotateAnimatedImages(AnimatedImageDriverMap&) const;
 
   // Mask-related functions.
 

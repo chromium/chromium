@@ -361,8 +361,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   // WebFrameWidget overrides.
   void InitializeNonCompositing(WebNonCompositedWidgetClient* client) override;
   WebLocalFrame* LocalRoot() const override;
-  void UpdateCompositorScrollState(
-      const cc::CompositorCommitData& commit_data) override;
   WebInputMethodController* GetActiveWebInputMethodController() const override;
   void DisableDragAndDrop() override;
   WebLocalFrameImpl* FocusedWebLocalFrameInWidget() const override;
@@ -479,6 +477,10 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
+  void UpdateCompositorScrollState(
+      const cc::CompositorCommitData& commit_data) override;
+  void UpdateAnimatedImageState(
+      const cc::CompositorCommitData& commit_data) override;
   void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void BindInputTargetClient(

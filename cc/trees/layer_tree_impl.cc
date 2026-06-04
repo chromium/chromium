@@ -1931,7 +1931,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
   if (update_image_animation_controller && image_animation_controller()) {
     CHECK(!settings().trees_in_viz_in_viz_process);
     image_animation_controller()->UpdateStateFromDrivers(
-        host_impl()->GatherImageAnimationState());
+        host_impl()->GatherAnimatedImageDriverState());
   }
 
   device_viewport_rect_changed_ = false;
@@ -2403,9 +2403,9 @@ void LayerTreeImpl::NotifyLayerHasAnimatedImagesChanged(
 }
 
 void LayerTreeImpl::AnnotateAnimatedImages(
-    base::flat_map<PaintImage::Id, bool>& image_map) const {
+    AnimatedImageDriverMap& driver_map) const {
   for (auto* layer : layer_list_.PictureLayersWithAnimatedImages()) {
-    layer->AnnotateAnimatedImages(image_map);
+    layer->AnnotateAnimatedImages(driver_map);
   }
 }
 

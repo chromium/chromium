@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -109,6 +110,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -1538,6 +1540,24 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
 
   if (commit_data.scroll_end_data.done_containers.size()) {
     SendEndOfScrollEvents(commit_data);
+  }
+}
+
+void WebFrameWidgetImpl::UpdateAnimatedImageState(
+    const cc::CompositorCommitData& commit_data) {
+  for (auto id : commit_data.advanced_image_animation_clients) {
+    if (Element* client = DynamicTo<Element>(
+            DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(id)))) {
+      if (auto* canvas = DynamicTo<HTMLCanvasElement>(client->parentNode())) {
+        if (auto* view = canvas->GetDocument().View()) {
+          view->RequestCanvasOnpaint(*canvas, client);
+        }
+      }
+    }
+  }
+  if (LocalRootImpl() && LocalRootImpl()->GetFrameView()) {
+    LocalRootImpl()->GetFrameView()->SetAnimatedImageFrameIndexes(
+        commit_data.animated_image_frame_index_map);
   }
 }
 

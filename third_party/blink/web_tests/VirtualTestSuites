@@ -3665,6 +3665,7 @@
       "external/wpt/css/cssom-view/scroll-behavior-smooth-after-hiding-iframe.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-element.tentative.https.html",
       "external/wpt/fetch/compression-dictionary/dictionary-fetch-with-link-header.tentative.https.html",
+      "external/wpt/html/canvas/element/manual/draw-element-image/animated-gif.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/invalidation-during-onpaint.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/onpaint-invalidation-crash.tentative.html",
       "external/wpt/html/canvas/element/manual/draw-element-image/onpaint-outside-invalidation-crash.tentative.html",

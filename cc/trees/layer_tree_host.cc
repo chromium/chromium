@@ -1243,6 +1243,7 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   }
 
   client_->UpdateCompositorScrollState(*commit_data);
+  client_->UpdateAnimatedImageState(*commit_data);
 
   // This needs to happen after scroll deltas have been sent to prevent top
   // controls from clamping the layout viewport both on the compositor and

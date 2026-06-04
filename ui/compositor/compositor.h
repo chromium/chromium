@@ -415,6 +415,8 @@ class COMPOSITOR_EXPORT Compositor
   }
   void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) override {}
+  void UpdateAnimatedImageState(
+      const cc::CompositorCommitData& commit_data) override {}
   void RequestNewLayerTreeFrameSink() override;
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override;

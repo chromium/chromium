@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
@@ -1272,6 +1273,17 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
 
 bool HTMLCanvasElement::IsPrinting() const {
   return GetDocument().BeforePrintingOrPrinting();
+}
+
+scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+HTMLCanvasElement::GetAnimatedImageFrameIndexes() const {
+  if (layoutSubtree() &&
+      RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
+    if (auto* view = GetDocument().View()) {
+      return view->GetAnimatedImageFrameIndexes();
+    }
+  }
+  return CanvasRenderingContextHost::GetAnimatedImageFrameIndexes();
 }
 
 UkmParameters HTMLCanvasElement::GetUkmParameters() {

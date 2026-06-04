@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -60,7 +61,7 @@ bool ImageAnimationController::IsRegistered(PaintImage::Id paint_image_id) {
 
 const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
     const viz::BeginFrameArgs& args,
-    const base::flat_map<PaintImage::Id, bool>& should_animate_map) {
+    const AnimatedImageDriverMap& driver_map) {
   TRACE_EVENT1("cc", "ImageAnimationController::AnimateImagesForSyncTree",
                "frame_time_from_now",
                (base::TimeTicks::Now() - args.frame_time).InMillisecondsF());
@@ -72,13 +73,9 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
   for (auto& entry : animation_state_map_) {
     PaintImage::Id image_id = entry.first;
     AnimationState& state = entry.second;
-    auto should_animate_it = should_animate_map.find(image_id);
-    if (should_animate_it == should_animate_map.end()) {
-      // std::nullopt informs the state that it has no drivers.
-      state.UpdateStateFromDrivers(std::nullopt);
-    } else {
-      state.UpdateStateFromDrivers(should_animate_it->second);
-    }
+    auto driver_it = driver_map.find(image_id);
+    state.UpdateStateFromDrivers(
+        driver_it == driver_map.end() ? nullptr : &driver_it->second);
 
     if (!state.ShouldAnimate()) {
       TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -90,6 +87,8 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
     // tree.
     if (state.AdvanceFrame(args, enable_image_animation_resync_)) {
       images_animated_on_sync_tree_.insert(image_id);
+      advanced_animation_clients_.insert(driver_it->second.second.begin(),
+                                         driver_it->second.second.end());
     }
 
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"), "AnimationState",
@@ -121,20 +120,16 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
 }
 
 void ImageAnimationController::UpdateStateFromDrivers(
-    const base::flat_map<PaintImage::Id, bool>& should_animate_map) {
+    const AnimatedImageDriverMap& driver_map) {
   TRACE_EVENT0("cc", "ImageAnimationController::UpdateState");
 
   std::optional<base::TimeTicks> next_invalidation_time;
   for (auto& entry : animation_state_map_) {
     PaintImage::Id image_id = entry.first;
     AnimationState& state = entry.second;
-    auto should_animate_it = should_animate_map.find(image_id);
-    if (should_animate_it == should_animate_map.end()) {
-      // std::nullopt informs the state that it has no drivers.
-      state.UpdateStateFromDrivers(std::nullopt);
-    } else {
-      state.UpdateStateFromDrivers(should_animate_it->second);
-    }
+    auto driver_it = driver_map.find(image_id);
+    state.UpdateStateFromDrivers(
+        driver_it == driver_map.end() ? nullptr : &driver_it->second);
 
     // Note that by not updating the |next_invalidation_time| from this image
     // here, we will cancel any pending invalidation scheduled for this image
@@ -172,13 +167,9 @@ void ImageAnimationController::DidActivate() {
   // resuming of animations. However, since the animation will be re-started
   // from the beginning after navigation, we can avoid maintaining the state.
   if (did_navigate_) {
-    for (auto it = animation_state_map_.begin();
-         it != animation_state_map_.end();) {
-      if (it->second.has_drivers())
-        it++;
-      else
-        it = animation_state_map_.erase(it);
-    }
+    base::EraseIf(animation_state_map_, [](const auto& entry) -> bool {
+      return !entry.second.has_drivers();
+    });
     did_navigate_ = false;
   }
 }
@@ -190,6 +181,21 @@ size_t ImageAnimationController::GetFrameIndexForImage(
   CHECK(it != animation_state_map_.end());
   return tree == WhichTree::PENDING_TREE ? it->second.pending_index()
                                          : it->second.active_index();
+}
+
+base::flat_set<ElementId>
+ImageAnimationController::TakeAdvancedAnimationClients() {
+  return std::move(advanced_animation_clients_);
+}
+
+scoped_refptr<AnimatedImageFrameIndexMap>
+ImageAnimationController::GatherFrameIndexes() const {
+  std::vector<std::pair<PaintImage::Id, size_t>> entries;
+  for (auto& entry : animation_state_map_) {
+    entries.emplace_back(entry.first, entry.second.pending_index());
+  }
+  return MakeRefCounted<AnimatedImageFrameIndexMap>(base::sorted_unique,
+                                                    entries);
 }
 
 void ImageAnimationController::WillBeginImplFrame(
@@ -512,13 +518,15 @@ void ImageAnimationController::AnimationState::
 }
 
 void ImageAnimationController::AnimationState::UpdateStateFromDrivers(
-    const std::optional<bool>& should_animate) {
-  if (!should_animate.has_value()) {
+    const AnimatedImageDriverState* driver_state) {
+  if (driver_state) {
+    has_drivers_ = true;
+    should_animate_from_drivers_ = driver_state->first;
+    clients_ = driver_state->second;
+  } else {
     has_drivers_ = false;
     should_animate_from_drivers_ = false;
-  } else {
-    has_drivers_ = true;
-    should_animate_from_drivers_ = should_animate.value();
+    clients_.clear();
   }
 }
 

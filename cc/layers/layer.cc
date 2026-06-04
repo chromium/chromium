@@ -1252,7 +1252,7 @@ void Layer::SetCanvasChildId(ElementId id) {
     return;
   }
   EnsureRareInputs().canvas_child_id = id;
-  SetNeedsCommit();
+  SetNeedsPushProperties();
 }
 
 RenderSurfaceReason Layer::GetRenderSurfaceReason() const {
@@ -1561,6 +1561,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
       layer->SetCaptureBounds(inputs.rare_inputs->capture_bounds);
       layer->SetTrackedElementRects(inputs.rare_inputs->tracked_element_rects);
       layer->SetWheelEventHandlerRegion(inputs.rare_inputs->wheel_event_region);
+      layer->SetCanvasChildId(inputs.rare_inputs->canvas_child_id);
     } else {
       layer->ResetRareProperties();
     }

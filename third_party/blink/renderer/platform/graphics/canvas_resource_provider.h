@@ -107,6 +107,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
     virtual void NotifyGpuContextLost() = 0;
     virtual void InitializeForRecording(cc::PaintCanvas* canvas) const = 0;
     virtual bool IsPrinting() const { return false; }
+    virtual scoped_refptr<const cc::AnimatedImageFrameIndexMap>
+    GetAnimatedImageFrameIndexes() const {
+      return nullptr;
+    }
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

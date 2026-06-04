@@ -352,7 +352,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
       std::vector<DrawImage>* sync_decoded_images,
       std::vector<PaintImage>* checkered_images,
       const gfx::Rect* invalidated_rect,
-      base::flat_map<PaintImage::Id, size_t>* image_to_frame_index = nullptr);
+      scoped_refptr<AnimatedImageFrameIndexMap> image_to_frame_index = nullptr);
   void AddCheckeredImagesToDecodeQueue(
       const PrioritizedTile& prioritized_tile,
       const TargetColorParams& target_color_params,

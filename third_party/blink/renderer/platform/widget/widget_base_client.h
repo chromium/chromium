@@ -101,6 +101,9 @@ class WidgetBaseClient {
   virtual void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) {}
 
+  virtual void UpdateAnimatedImageState(
+      const cc::CompositorCommitData& commit_data) {}
+
   // Notifies that the layer tree host has completed a call to
   // RequestMainFrameUpdate in response to a BeginMainFrame.
   virtual void DidBeginMainFrame() {}

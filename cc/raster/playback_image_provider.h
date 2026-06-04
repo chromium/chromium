@@ -35,7 +35,8 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
 
     // The frame index to use for the given image id. If no index is provided,
     // the frame index provided in the PaintImage will be used.
-    base::flat_map<PaintImage::Id, size_t> image_to_current_frame_index;
+    scoped_refptr<const AnimatedImageFrameIndexMap>
+        image_to_current_frame_index;
 
     // Indicates the raster backend that will be consuming the decoded images.
     RasterMode raster_mode = RasterMode::kSoftware;
@@ -55,6 +56,9 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
   // ImageProvider implementation.
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override;
+
+  void SetAnimatedImageFrameIndexes(
+      scoped_refptr<const AnimatedImageFrameIndexMap> index_map);
 
  private:
   // RAW_PTR_EXCLUSION: ImageDecodeCache is marked as not supported by raw_ptr.

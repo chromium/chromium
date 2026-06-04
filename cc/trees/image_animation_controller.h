@@ -81,15 +81,14 @@ class CC_EXPORT ImageAnimationController {
   // a call to DidActivate when this tree is activated.
   // Returns the set of images that were animated and should be invalidated on
   // this sync tree.
-  const PaintImageIdFlatSet& AnimateForSyncTree(
-      const viz::BeginFrameArgs& args,
-      const base::flat_map<PaintImage::Id, bool>&);
+  const PaintImageIdFlatSet& AnimateForSyncTree(const viz::BeginFrameArgs&,
+                                                const AnimatedImageDriverMap&);
 
   // Called whenever the ShouldAnimate response for a driver could have changed.
   // For instance on a change in the visibility of the image, we would pause
   // off-screen animations.
   // This is called after every DrawProperties update and commit.
-  void UpdateStateFromDrivers(const base::flat_map<PaintImage::Id, bool>&);
+  void UpdateStateFromDrivers(const AnimatedImageDriverMap&);
 
   // Called when the sync tree was activated and the animations' associated
   // state should be pushed to the active tree.
@@ -98,6 +97,14 @@ class CC_EXPORT ImageAnimationController {
   // Returns the frame index to use for the given PaintImage and tree.
   size_t GetFrameIndexForImage(PaintImage::Id paint_image_id,
                                WhichTree tree) const;
+
+  // Returns and resets the set of clients for animations that have advanced
+  // since the last invocation.
+  base::flat_set<ElementId> TakeAdvancedAnimationClients();
+  bool HasAdvancedAnimationClients() const {
+    return !advanced_animation_clients_.empty();
+  }
+  scoped_refptr<AnimatedImageFrameIndexMap> GatherFrameIndexes() const;
 
   // Notifies the beginning of an impl frame with the given |args|.
   void WillBeginImplFrame(const viz::BeginFrameArgs& args);
@@ -150,7 +157,7 @@ class CC_EXPORT ImageAnimationController {
     // If all frames have same frame duration, return that duration.
     std::optional<base::TimeDelta> GetConsistentContentFrameDuration();
 
-    void UpdateStateFromDrivers(const std::optional<bool>& should_animate);
+    void UpdateStateFromDrivers(const AnimatedImageDriverState*);
     bool has_drivers() const { return has_drivers_; }
 
     size_t pending_index() const { return current_state_.pending_index; }
@@ -247,6 +254,9 @@ class CC_EXPORT ImageAnimationController {
     // The number of frames skipped during catch-up the last time this animation
     // was advanced.
     size_t last_num_frames_skipped_ = 0u;
+
+    // Elements that want to know when an animation advances.
+    std::vector<ElementId> clients_;
   };
 
   class InvalidationScheduler {
@@ -299,6 +309,10 @@ class CC_EXPORT ImageAnimationController {
 
   // The set of images that were animated and invalidated on the last sync tree.
   PaintImageIdFlatSet images_animated_on_sync_tree_;
+
+  // The set of clients of animated images that have been advanced since the
+  // most recent commit.
+  base::flat_set<ElementId> advanced_animation_clients_;
 
   InvalidationScheduler scheduler_;
 

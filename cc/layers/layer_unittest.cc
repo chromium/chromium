@@ -1857,6 +1857,36 @@ TEST_F(LayerTest, UpdatingCaptureBounds) {
   EXPECT_TRUE(layer->subtree_property_changed());
 }
 
+TEST_F(LayerTest, PushCanvasChildId) {
+  scoped_refptr<Layer> layer = Layer::Create();
+  std::unique_ptr<LayerImpl> layer_impl =
+      LayerImpl::Create(host_impl_.active_tree(), layer->id());
+
+  EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsCommit())
+      .Times(AnyNumber());
+  EXPECT_CALL_MOCK_DELEGATE(*layer_tree_host_, SetNeedsFullTreeSync())
+      .Times(AnyNumber());
+
+  layer->SetLayerTreeHost(layer_tree_host_.get());
+
+  ElementId id(123);
+  layer->SetCanvasChildId(id);
+  EXPECT_EQ(id, layer->canvas_child_id());
+  EXPECT_EQ(ElementId(), layer_impl->canvas_child_id());
+
+  CommitAndPushProperties(layer.get(), layer_impl.get());
+  EXPECT_EQ(id, layer_impl->canvas_child_id());
+
+  // Reset to invalid
+  layer->SetCanvasChildId(ElementId());
+  EXPECT_EQ(ElementId(), layer->canvas_child_id());
+
+  CommitAndPushProperties(layer.get(), layer_impl.get());
+  EXPECT_EQ(ElementId(), layer_impl->canvas_child_id());
+
+  layer->SetLayerTreeHost(nullptr);
+}
+
 TEST_F(LayerTest, UpdatingClipRect) {
   const gfx::Size kRootSize(200, 200);
   const gfx::Vector2dF kParentOffset(10.f, 20.f);

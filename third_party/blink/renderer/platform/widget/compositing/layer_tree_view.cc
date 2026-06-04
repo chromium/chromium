@@ -306,6 +306,14 @@ void LayerTreeView::UpdateCompositorScrollState(
   delegate_->UpdateCompositorScrollState(commit_data);
 }
 
+void LayerTreeView::UpdateAnimatedImageState(
+    const cc::CompositorCommitData& commit_data) {
+  if (!delegate_) {
+    return;
+  }
+  delegate_->UpdateAnimatedImageState(commit_data);
+}
+
 void LayerTreeView::RequestNewLayerTreeFrameSink() {
   if (!delegate_)
     return;

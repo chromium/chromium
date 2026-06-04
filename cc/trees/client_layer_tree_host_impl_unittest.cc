@@ -708,6 +708,88 @@ TEST_P(ClientModeLayerTreeHostImplTest,
   // Test passes when there is no crash.
 }
 
+TEST_P(ClientModeLayerTreeHostImplTest,
+       CommitScheduledOnAnimatedImageAdvanceWithCanvasChildId) {
+  // Invalidation should never run outside the impl frame.
+  auto args = viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1,
+                                                  base::TimeTicks::Now());
+  host_impl_->WillBeginImplFrame(args);
+
+  // 1. Setup a layer with an animated image.
+  gfx::Size layer_bounds(100, 100);
+  auto recording_source = std::make_unique<FakeRecordingSource>(layer_bounds);
+
+  std::vector<FrameMetadata> frames = {
+      FrameMetadata(true, base::Milliseconds(100)),
+      FrameMetadata(true, base::Milliseconds(100))};
+  PaintImage image = CreateAnimatedImage(gfx::Size(100, 100), frames);
+  recording_source->add_draw_image(image, gfx::Point(0, 0));
+  recording_source->Rerecord();
+  scoped_refptr<RasterSource> raster_source =
+      recording_source->CreateRasterSource();
+
+  // 2. Setup tree.
+  ElementId canvas_child_id(0x12345);
+  if (!CommitsToActiveTree()) {
+    CreatePendingTree();
+  }
+  FakePictureLayerImpl* sync_layer = SetupRootLayer<FakePictureLayerImpl>(
+      host_impl_->sync_tree(), layer_bounds);
+  sync_layer->SetCanvasChildId(canvas_child_id);
+  sync_layer->SetRasterSource(raster_source, Region());
+  UpdateDrawProperties(host_impl_->sync_tree());
+  FakePictureLayerImpl* active_layer;
+  if (CommitsToActiveTree()) {
+    active_layer = sync_layer;
+  } else {
+    host_impl_->ActivateSyncTree();
+    active_layer = static_cast<FakePictureLayerImpl*>(
+        host_impl_->active_tree()->root_layer());
+    UpdateDrawProperties(host_impl_->active_tree());
+  }
+
+  EXPECT_EQ(canvas_child_id, active_layer->canvas_child_id());
+
+  // 3. Make the image visible so it can animate.
+  gfx::Rect visible_rect(0, 0, 100, 100);
+  active_layer->SetVisibleLayerRectForTesting(visible_rect);
+  EXPECT_TRUE(active_layer->ShouldAnimate(image.stable_id()));
+
+  // 4. Trigger animation and verify NO commit is scheduled yet (since it hasn't
+  // advanced).
+  did_request_commit_ = false;
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
+  EXPECT_FALSE(did_request_commit_);
+
+  if (!CommitsToActiveTree()) {
+    ASSERT_TRUE(host_impl_->pending_tree());
+    ASSERT_TRUE(host_impl_->pending_tree()->root_layer());
+    UpdateDrawProperties(host_impl_->pending_tree());
+    host_impl_->ActivateSyncTree();
+    active_layer = static_cast<FakePictureLayerImpl*>(
+        host_impl_->active_tree()->root_layer());
+    active_layer->SetVisibleLayerRectForTesting(visible_rect);
+  }
+
+  host_impl_->DidFinishImplFrame(args);
+
+  // 5. Advance time and trigger animation again, verify commit IS scheduled.
+  did_request_commit_ = false;
+
+  // Advance time by 110ms (frame duration is 100ms).
+  auto args2 = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, 2, args.frame_time + base::Milliseconds(110));
+  host_impl_->WillBeginImplFrame(args2);
+
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
+
+  // Now it should have advanced, and since it has canvas_child_id, it should
+  // have scheduled a commit.
+  EXPECT_TRUE(did_request_commit_);
+
+  host_impl_->DidFinishImplFrame(args2);
+}
+
 // Scroll operations on a non-composited scroller are eligible
 // for rasterization. This tests if rasterization is detected
 // and requested by the LTHI. The scroll is applied to the
