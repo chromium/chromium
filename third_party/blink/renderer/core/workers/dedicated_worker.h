@@ -47,7 +47,6 @@ class PostMessageOptions;
 class ScriptState;
 class V8UnionTrustedScriptURLOrUSVString;
 class WebContentSettingsClient;
-class WorkerClassicScriptLoader;
 struct GlobalScopeCreationParams;
 
 // Implementation of the Worker interface defined in the WebWorker HTML spec:
@@ -195,14 +194,6 @@ class CORE_EXPORT DedicatedWorker final
   // May return nullptr.
   std::unique_ptr<WebContentSettingsClient> CreateWebContentSettingsClient();
 
-  // Callbacks for |classic_script_loader_|.
-  // TODO(crbug.com/400455021): Investigate whether these can be removed now
-  // that PlzDedicatedWorker has shipped.
-  void OnResponse();
-  void OnFinished(
-      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host);
-
   // Implements EventTarget (via AbstractWorker -> EventTarget).
   const AtomicString& InterfaceName() const final;
 
@@ -216,8 +207,6 @@ class CORE_EXPORT DedicatedWorker final
   Member<const FetchClientSettingsObjectSnapshot>
       outside_fetch_client_settings_object_;
   const Member<DedicatedWorkerMessagingProxy> context_proxy_;
-
-  Member<WorkerClassicScriptLoader> classic_script_loader_;
 
   std::unique_ptr<WebDedicatedWorkerHostFactoryClient> factory_client_;
 
