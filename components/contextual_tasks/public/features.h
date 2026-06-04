@@ -117,8 +117,6 @@ bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
-  kToolbarRevisit,
-  kToolbarPermanent,
   kToolbarEphemeralBranded,
 };
 

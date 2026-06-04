@@ -308,8 +308,6 @@ const base::FeatureParam<std::string> kContextualTasksSignInDomains{
 
 constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
     {EntryPointOption::kNoEntryPoint, "no-entry-point"},
-    {EntryPointOption::kToolbarRevisit, "toolbar-revisit"},
-    {EntryPointOption::kToolbarPermanent, "toolbar-permanent"},
     {EntryPointOption::kToolbarEphemeralBranded, "toolbar-ephemeral-branded"}};
 
 const base::FeatureParam<EntryPointOption> kShowEntryPoint(

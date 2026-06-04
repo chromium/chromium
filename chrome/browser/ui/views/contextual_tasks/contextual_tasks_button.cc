@@ -222,16 +222,7 @@ ContextualTasksButton::ContextualTasksButton(
                           base::Unretained(this)));
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarPermanent) {
-    pin_state_.Init(
-        prefs::kPinContextualTaskButton,
-        browser_window_interface->GetProfile()->GetPrefs(),
-        base::BindRepeating(&ContextualTasksButton::OnPinStateChanged,
-                            base::Unretained(this)));
-  } else if (contextual_tasks::kShowEntryPoint.Get() ==
-                 contextual_tasks::EntryPointOption::kToolbarRevisit ||
-             contextual_tasks::kShowEntryPoint.Get() ==
-                 contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     ContextualTasksEphemeralButtonController* const controller =
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);
@@ -342,9 +333,6 @@ void ContextualTasksButton::OnButtonPress() {
   }
 }
 
-void ContextualTasksButton::OnPinStateChanged() {
-  MaybeUpdateVisibility();
-}
 
 void ContextualTasksButton::OnSidePanelAlignmentChanged() {
   if (contextual_tasks::kShowEntryPoint.Get() ==
@@ -463,16 +451,7 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
           ->AreEntryPointsEligible();
 
   if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarPermanent) {
-    SetVisible(is_button_eligible && pin_state_.GetValue());
-  } else if (contextual_tasks::kShowEntryPoint.Get() ==
-             contextual_tasks::EntryPointOption::kToolbarRevisit) {
-    ContextualTasksEphemeralButtonController* const controller =
-        ContextualTasksEphemeralButtonController::From(
-            browser_window_interface_);
-    SetVisible(is_button_eligible && controller->ShouldShowEphemeralButton());
-  } else if (contextual_tasks::kShowEntryPoint.Get() ==
-             contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     ContextualTasksEphemeralButtonController* const controller =
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);
