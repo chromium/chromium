@@ -107,6 +107,8 @@ class WebUIToolbarControlDelegate {
           state) = 0;
   virtual void OnAvatarControlStateChanged(
       toolbar_ui_api::mojom::AvatarControlStatePtr state) = 0;
+  virtual void OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
 
   // Read the latest state.
   virtual const toolbar_ui_api::mojom::NavigationControlsState& GetState()
@@ -312,6 +314,8 @@ class WebUIToolbarWebView
       const override;
   void OnAvatarControlStateChanged(
       toolbar_ui_api::mojom::AvatarControlStatePtr state) override;
+  void OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget target) override;
 
   toolbar_ui_api::mojom::NavigationControlsStatePtr
   GetNavigationControlsState();

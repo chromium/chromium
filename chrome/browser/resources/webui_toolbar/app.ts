@@ -43,6 +43,7 @@ import {
   SplitTabActiveLocation,
 } from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {OmniboxAction, LocationBarState, PermissionChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import type {IconFromTableElement} from './icon_from_table.js';
@@ -64,6 +65,8 @@ export {
   getContextMenuSourceType,
   IconTable,
   IconType,
+  INVALID_FOCUS_REQUEST_HANDLE,
+  INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE,
   LhsChipIdentifier,
   LocationBarElement,
   LocationIconElement,

@@ -72,6 +72,9 @@ class Observer : public mojom::ToolbarUIObserver {
     state = std::move(changed);
   }
 
+  void OnFocusRequested(
+      toolbar_ui_api::mojom::FocusRequestTarget target) override {}
+
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // Easily accessible for testing. Start with nullopt to easily differentiate

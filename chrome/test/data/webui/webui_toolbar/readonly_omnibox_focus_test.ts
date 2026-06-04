@@ -7,7 +7,7 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, EventDispositionFlag, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, EventDispositionFlag, INVALID_FOCUS_REQUEST_HANDLE, OmniboxTextColor} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {OmniboxAction} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ReadonlyOmniboxElement} from 'chrome://webui-toolbar.top-chrome/readonly_omnibox.js';
 
@@ -19,6 +19,16 @@ class MockToolbarUiHandler extends TestBrowserProxy {
   onOmniboxAction(action: OmniboxAction) {
     this.methodCalled('onOmniboxAction', action);
   }
+}
+
+class MockBrowserProxy extends TestBrowserProxy {
+  toolbarUIHandler: MockToolbarUiHandler = new MockToolbarUiHandler();
+
+  addFocusRequestListener() {
+    return INVALID_FOCUS_REQUEST_HANDLE;
+  }
+
+  removeFocusRequestListener() {}
 }
 
 // These tests care about focus and selection so can't be parallelized.
@@ -35,8 +45,9 @@ suite('ReadOnlyOmniboxFocus', function() {
   }
 
   setup(async () => {
-    uiHandler = new MockToolbarUiHandler();
-    BrowserProxyImpl.setInstance({toolbarUIHandler: uiHandler} as any);
+    const browserProxy = new MockBrowserProxy();
+    uiHandler = browserProxy.toolbarUIHandler;
+    BrowserProxyImpl.setInstance(browserProxy as any);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     omnibox = document.createElement('readonly-omnibox');

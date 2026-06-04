@@ -46,6 +46,8 @@ class WebUILocationBar : public LocationBar,
   // WebUIReadOnlyOmnibox::UpdatePropagator:
   void PropagateOmniboxUpdate(
       toolbar_ui_api::mojom::OmniboxViewStatePtr update) override;
+  void PropagateFocusRequest(
+      toolbar_ui_api::mojom::FocusRequestTarget target) override;
 
   // Called from WebUIToolbarWebView:
   void OnThemeChanged();

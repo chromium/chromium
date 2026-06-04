@@ -21,6 +21,10 @@ interface ToolbarUIObserver {
   OnNavigationControlsStateChanged(
     array<IconUpdate> icons,
     NavigationControlsState state);
+
+  // Called to focus an element in the WebUI, with `target` specifying
+  // which one.
+  OnFocusRequested(FocusRequestTarget target);
 };
 
 struct InitialState {

@@ -42,6 +42,8 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
     virtual ~UpdatePropagator();
     virtual void PropagateOmniboxUpdate(
         toolbar_ui_api::mojom::OmniboxViewStatePtr update) = 0;
+    virtual void PropagateFocusRequest(
+        toolbar_ui_api::mojom::FocusRequestTarget target) = 0;
   };
 
   // Both parameters must outlive `this`.
@@ -100,6 +102,9 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   void UpdateSchemeStyle(const gfx::Range& range) override;
 
   toolbar_ui_api::mojom::OmniboxViewStatePtr ComputeMojoState() const;
+
+  // Requests focus with particular omnibox-related target
+  void SetFocusWithTarget(toolbar_ui_api::mojom::FocusRequestTarget target);
 
  private:
   void RequestUpdateWebUI();

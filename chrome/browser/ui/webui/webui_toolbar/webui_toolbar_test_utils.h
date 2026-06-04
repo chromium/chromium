@@ -47,6 +47,11 @@ class MockToolbarUIObserver : public toolbar_ui_api::mojom::ToolbarUIObserver {
                toolbar_ui_api::mojom::NavigationControlsStatePtr state),
               (override));
 
+  MOCK_METHOD(void,
+              OnFocusRequested,
+              (toolbar_ui_api::mojom::FocusRequestTarget target),
+              (override));
+
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIObserver> receiver_{this};
 };

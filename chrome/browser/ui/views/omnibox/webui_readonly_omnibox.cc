@@ -163,7 +163,10 @@ void WebUIReadOnlyOmnibox::SetAdditionalText(
 }
 
 void WebUIReadOnlyOmnibox::EnterKeywordModeForDefaultSearchProvider() {
-  NOTIMPLEMENTED();
+  controller()->edit_model()->EnterKeywordModeForDefaultSearchProvider(
+      metrics::OmniboxEventProto::KEYBOARD_SHORTCUT);
+  ResetBrowserVersion();
+  RequestUpdateWebUI();
 }
 
 bool WebUIReadOnlyOmnibox::IsSelectAll() const {
@@ -199,7 +202,10 @@ void WebUIReadOnlyOmnibox::RevertAll() {
 }
 
 void WebUIReadOnlyOmnibox::SetFocus(bool is_user_initiated) {
-  NOTIMPLEMENTED();
+  SetFocusWithTarget(
+      is_user_initiated
+          ? toolbar_ui_api::mojom::FocusRequestTarget::kLocationBarUserInitiated
+          : toolbar_ui_api::mojom::FocusRequestTarget::kLocationBar);
 }
 
 bool WebUIReadOnlyOmnibox::AimButtonVisible() const {
@@ -369,6 +375,17 @@ WebUIReadOnlyOmnibox::ComputeMojoState() const {
   }
 
   return state;
+}
+
+void WebUIReadOnlyOmnibox::SetFocusWithTarget(
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  update_propagator_->PropagateFocusRequest(target);
+
+  // If the user attempts to focus the omnibox, and the ctrl key is pressed, we
+  // want to prevent ctrl-enter behavior until the ctrl key is released and
+  // re-pressed. This occurs even if the omnibox is already focused and we
+  // re-request focus (e.g. pressing ctrl-l twice).
+  controller()->edit_model()->ConsumeCtrlKey();
 }
 
 void WebUIReadOnlyOmnibox::RequestUpdateWebUI() {

@@ -8,7 +8,7 @@ import type {DragEventSource} from 'chrome://resources/mojo/ui/base/dragdrop/moj
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE, LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {PermissionChipElement, PermissionChipState} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserControlsServiceInterface} from 'chrome://webui-toolbar.top-chrome/browser_controls_api.mojom-webui.js';
 import type {BrowserProxy} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
@@ -124,9 +124,13 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
 
   recordInHistogram() {}
   addNavigationStateListener() {
-    return -1;
+    return INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
+  }
+  addFocusRequestListener() {
+    return INVALID_FOCUS_REQUEST_HANDLE;
   }
   removeNavigationStateListener() {}
+  removeFocusRequestListener() {}
 }
 
 suite('PermissionChipTest', function() {

@@ -1061,6 +1061,15 @@ void WebUIToolbarWebView::OnAvatarControlStateChanged(
   }
 }
 
+void WebUIToolbarWebView::OnFocusRequested(
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  // We need to focus the WebView as well, besides the JS focus.
+  web_view_->RequestFocus();
+  if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
+    web_ui->OnFocusRequested(target);
+  }
+}
+
 void WebUIToolbarWebView::OnTouchUiChanged() {
   ++last_queued_state_.layout_constants_version;
   PostPushNavigationState();

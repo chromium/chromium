@@ -50,6 +50,9 @@ class TestUpdatePropagator : public WebUIReadOnlyOmnibox::UpdatePropagator {
     state_ = std::move(update);
   }
 
+  void PropagateFocusRequest(
+      toolbar_ui_api::mojom::FocusRequestTarget target) override {}
+
   toolbar_ui_api::mojom::OmniboxViewStatePtr TakeState() {
     return std::move(state_);
   }

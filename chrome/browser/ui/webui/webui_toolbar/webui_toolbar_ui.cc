@@ -182,6 +182,13 @@ void WebUIToolbarUI::OnNavigationControlsStateChanged(
   }
 }
 
+void WebUIToolbarUI::OnFocusRequested(
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  if (toolbar_ui_service_) {
+    toolbar_ui_service_->OnFocusRequested(target);
+  }
+}
+
 void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   CHECK(dependency_provider);
 

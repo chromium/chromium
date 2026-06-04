@@ -88,6 +88,7 @@ class WebUIToolbarUI : public TopChromeWebUIController,
 
   void OnNavigationControlsStateChanged(
       const toolbar_ui_api::mojom::NavigationControlsState& state);
+  void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
 
   // The |depdency_provider| is expected to outlive this class.
   void Init(DependencyProvider* dependency_provider);

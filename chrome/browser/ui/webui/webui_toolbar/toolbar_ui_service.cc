@@ -95,6 +95,12 @@ void ToolbarUIService::Bind(BindCallback callback) {
   std::move(callback).Run(std::move(result));
 }
 
+void ToolbarUIService::OnFocusRequested(mojom::FocusRequestTarget target) {
+  for (const auto& observer : observers_) {
+    observer->OnFocusRequested(target);
+  }
+}
+
 void ToolbarUIService::ShowContextMenu(
     toolbar_ui_api::mojom::ContextMenuType menu_type,
     const gfx::RectF& bounds_in_css_pixels,

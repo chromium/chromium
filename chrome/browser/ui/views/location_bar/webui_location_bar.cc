@@ -123,6 +123,14 @@ void WebUILocationBar::PropagateOmniboxUpdate(
   toolbar_delegate_->OnOmniboxViewStateChanged(std::move(omnibox_state));
 }
 
+void WebUILocationBar::PropagateFocusRequest(
+    toolbar_ui_api::mojom::FocusRequestTarget target) {
+  // TODO(crbug.com/503784990): Handle immersive lock; this is tricky since
+  // our focus request is async. Compare OmniboxViewViews::SetFocus.
+
+  toolbar_delegate_->OnFocusRequested(target);
+}
+
 void WebUILocationBar::OnThemeChanged() {
   if (!is_initialized_) {
     return;
@@ -142,11 +150,12 @@ WebUILocationBar::OnOmniboxAction(
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
                                      bool clear_focus_if_failed) {
-  NOTIMPLEMENTED();
+  omnibox_view_->SetFocus(is_user_initiated);
 }
 
 void WebUILocationBar::FocusSearch() {
-  NOTIMPLEMENTED();
+  omnibox_view_->SetFocusWithTarget(
+      toolbar_ui_api::mojom::FocusRequestTarget::kSearch);
 }
 
 void WebUILocationBar::UpdateFocusBehavior(bool toolbar_visible) {

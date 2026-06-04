@@ -8,13 +8,13 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
 
 import type {OmniboxViewState} from './browser_proxy.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
-import type {BrowserProxy} from './browser_proxy.js';
+import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
+import type {BrowserProxy, FocusRequestHandle} from './browser_proxy.js';
 import {getCss} from './readonly_omnibox.css.js';
 import {getHtml} from './readonly_omnibox.html.js';
 import {getEventDispositionFlags} from './toolbar_button.js';
 import type {OmniboxTextPortion} from './toolbar_ui_api_data_model.mojom-webui.js';
-import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {FocusRequestTarget, OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export interface ReadonlyOmniboxElement {
   $: {
@@ -63,6 +63,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   accessor omniboxViewState: OmniboxViewState =
       Object.assign(this.browserOmniboxState);
 
+  private focusRequestHandle_: FocusRequestHandle =
+      INVALID_FOCUS_REQUEST_HANDLE;
+
   // The portion of the text that the user entered or accepted (rather than
   // what's being merely suggested by inline autocompletion).
   private userText: string = '';
@@ -83,6 +86,18 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       ' ',
       'Backspace',
     ]);
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.focusRequestHandle_ = this.browserProxy_.addFocusRequestListener(
+        this.onFocusRequest.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.browserProxy_.removeFocusRequestListener(this.focusRequestHandle_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
@@ -162,6 +177,21 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private hasFocus(): boolean {
     return document.hasFocus() &&
         this.shadowRoot.activeElement === this.$.textInput;
+  }
+
+  private onFocusRequest(target: FocusRequestTarget): void {
+    // TODO(crbug.com/503784990): Proper implementation.
+    switch (target) {
+      case FocusRequestTarget.kLocationBar:
+      case FocusRequestTarget.kLocationBarUserInitiated:
+      case FocusRequestTarget.kSearch:
+        this.$.textInput.focus();
+        break;
+
+      default:
+        // Not relevant here.
+        return;
+    }
   }
 
   private onInputBlur(): void {

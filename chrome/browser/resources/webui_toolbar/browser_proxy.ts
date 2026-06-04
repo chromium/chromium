@@ -10,7 +10,7 @@ import {EventDispositionFlag} from './browser_controls_api_data_model.mojom-webu
 import {ToolbarUIObserverCallbackRouter, ToolbarUIService} from './toolbar_ui_api.mojom-webui.js';
 import type {ToolbarUIServiceInterface} from './toolbar_ui_api.mojom-webui.js';
 import {ContextMenuType} from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {BackForwardButtonState, IconUpdate, NavigationControlsState, OmniboxViewState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {BackForwardButtonState, FocusRequestTarget, IconUpdate, NavigationControlsState, OmniboxViewState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export {
   ContextMenuType,
@@ -30,6 +30,27 @@ export type NavigationControlsStateListener =
 export type NavigationControlsStateListenerHandle = number;
 export const INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE:
     NavigationControlsStateListenerHandle = -1;
+/*
+ * Listener type for invocations to
+ *    toolbar_ui_api.mojom.ToolbarUIObserver.OnFocusRequested method.
+ *
+ * Declare handle:
+ *   listenerHandle : FocusRequestHandle = INVALID_FOCUS_REQUEST_HANDLE;
+ *
+ * Subscribe:
+ *   listenerHandle = browserProxy.addFocusRequestListener(
+ *       (target: FocusRequestTarget) => {
+ *   });
+ *
+ * Unsubscribe:
+ *   browserProxy.removeFocusRequestListener(listenerHandle);
+ *
+ * Calling removeFocus with INVALID_FOCUS_REQUEST_HANDLE is OK; so it's
+ * the preferred initialization value for FocusRequestHandle type.
+ */
+export type FocusRequestListener = (target: FocusRequestTarget) => void;
+export type FocusRequestHandle = number;
+export const INVALID_FOCUS_REQUEST_HANDLE: FocusRequestHandle = -1;
 
 export interface BrowserProxy {
   browserControlsHandler: BrowserControlsServiceInterface;
@@ -47,8 +68,11 @@ export interface BrowserProxy {
   addNavigationStateListener(listener: NavigationControlsStateListener):
       NavigationControlsStateListenerHandle;
 
+  addFocusRequestListener(listener: FocusRequestListener): FocusRequestHandle;
+
   removeNavigationStateListener(handle: NavigationControlsStateListenerHandle):
       void;
+  removeFocusRequestListener(handle: FocusRequestHandle): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -84,8 +108,20 @@ export class BrowserProxyImpl implements BrowserProxy {
     return handle;
   }
 
+  addFocusRequestListener(listener: FocusRequestListener) {
+    // This assumes addNavigationStateListener will happen or has happened to
+    // actually connect the router.
+    return this.callbackRouter.onFocusRequested.addListener(listener);
+  }
+
   removeNavigationStateListener(handle: NavigationControlsStateListenerHandle) {
     if (handle !== INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE) {
+      this.callbackRouter.removeListener(handle);
+    }
+  }
+
+  removeFocusRequestListener(handle: FocusRequestHandle) {
+    if (handle !== INVALID_FOCUS_REQUEST_HANDLE) {
       this.callbackRouter.removeListener(handle);
     }
   }

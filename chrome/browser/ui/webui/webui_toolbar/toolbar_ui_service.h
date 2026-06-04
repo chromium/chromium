@@ -83,6 +83,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
 
   void OnNavigationControlsStateChanged(
       const mojom::NavigationControlsState& state);
+  void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
 
   // toolbar_ui_api::mojom::ToolbarUIService:
   void Bind(BindCallback callback) override;

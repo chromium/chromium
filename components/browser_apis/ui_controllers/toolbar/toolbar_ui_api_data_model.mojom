@@ -581,3 +581,17 @@ struct NavigationControlsState {
   // constants.
   int32 layout_constants_version = 0;
 };
+
+enum FocusRequestTarget {
+  kUnspecified,
+
+  // Focus the location bar.
+  kLocationBar,
+
+  // Focus the location bar as result of user explicitly asking for it.
+  kLocationBarUserInitiated,
+
+  // Focus the location bar and activate the default search provider keyword.
+  kSearch,
+};
+

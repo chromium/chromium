@@ -90,6 +90,10 @@ class MockWebUIToolbarControlDelegate
               OnAvatarControlStateChanged,
               (toolbar_ui_api::mojom::AvatarControlStatePtr),
               (override));
+  MOCK_METHOD(void,
+              OnFocusRequested,
+              (toolbar_ui_api::mojom::FocusRequestTarget target),
+              (override));
   webui_toolbar::IconTable& GetIconTable() override { return icon_table_; }
 
   // webui_toolbar::IconTable::Delegate:

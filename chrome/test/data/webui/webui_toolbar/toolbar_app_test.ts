@@ -13,9 +13,9 @@ import type {TrackedElementHandlerInterface} from 'chrome://resources/mojo/ui/we
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ToolbarAppElement} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {BrowserProxy, NavigationControlsStateListener} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
+import type {BrowserProxy, FocusRequestListener, NavigationControlsStateListener} from 'chrome://webui-toolbar.top-chrome/browser_proxy.js';
 
 class TestToolbarUiHandler extends TestBrowserProxy {
   constructor() {
@@ -46,7 +46,9 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
     super([
       'recordInHistogram',
       'addNavigationStateListener',
+      'addFocusRequestListener',
       'removeNavigationStateListener',
+      'removeFocusRequestListener',
     ]);
     this.toolbarUIHandler = new TestToolbarUiHandler();
     this.browserControlsHandler = new TestBrowserControlsHandler();
@@ -60,9 +62,18 @@ class TestToolbarBrowserProxy extends TestBrowserProxy implements BrowserProxy {
     return 1;
   }
 
+  addFocusRequestListener(listener: FocusRequestListener) {
+    this.methodCalled('addFocusRequestListener', listener);
+    return INVALID_FOCUS_REQUEST_HANDLE;
+  }
+
   removeNavigationStateListener(handle: number) {
     this.methodCalled('removeNavigationStateListener', handle);
     this.listener_ = null;
+  }
+
+  removeFocusRequestListener(handle: number) {
+    this.methodCalled('removeFocusRequestListener', handle);
   }
 
   fireNavigationStateListener(iconUpdates: any[], state: any) {
