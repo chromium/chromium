@@ -1,0 +1,200 @@
+From dbdac407eb1c9b79875e602b642201bac493c91c Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishsmail@gmail.com>
+Date: Wed, 3 Jun 2026 18:12:24 +0000
+Subject: [PATCH] Uplift icu_locale_core change to support numeric extension
+ singletons https://github.com/unicode-org/icu4x/pull/8019
+
+BUG=None
+TEST=cargo test -p icu_locale_core (in chromium_crates_io)
+
+TAG=agy
+CONV=db4133e8-56e6-4696-91be-e6bce3e36fb4
+---
+ .../icu_locale_core-v2/src/extensions/mod.rs  | 12 +++++--
+ .../src/extensions/other/mod.rs               |  9 +++--
+ .../tests/fixtures/locale.json                | 33 +++++++++++++++++++
+ .../icu_locale_core-v2/tests/fixtures/mod.rs  | 11 ++++++-
+ .../vendor/icu_locale_core-v2/tests/locale.rs | 15 +++++++++
+ 5 files changed, 74 insertions(+), 6 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/mod.rs b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/mod.rs
+index 72ae65d44e61c..47b2b81c45731 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/mod.rs
+@@ -11,7 +11,7 @@
+ //!  * [`Unicode Extensions`] - marked as `u`.
+ //!  * [`Transform Extensions`] - marked as `t`.
+ //!  * [`Private Use Extensions`] - marked as `x`.
+-//!  * [`Other Extensions`] - marked as any `a-z` except of `u`, `t` and `x`.
++//!  * [`Other Extensions`] - marked as any `a-z` or `0-9` except `u`, `t`, and `x`.
+ //!
+ //! One can think of extensions as a bag of extra information on top of basic 4 [`subtags`].
+ //!
+@@ -102,7 +102,7 @@ impl ExtensionType {
+             UNICODE_EXT_CHAR => Ok(Self::Unicode),
+             TRANSFORM_EXT_CHAR => Ok(Self::Transform),
+             PRIVATE_EXT_CHAR => Ok(Self::Private),
+-            'a'..='z' => Ok(Self::Other(key)),
++            'a'..='z' | '0'..='9' => Ok(Self::Other(key)),
+             _ => Err(ParseError::InvalidExtension),
+         }
+     }
+@@ -397,4 +397,12 @@ fn test_writeable() {
+             .extensions,
+         "a-foo-t-foo-u-foo-w-foo-z-foo-x-foo",
+     );
++    assert_writeable_eq!(
++        "en-1-ext-value".parse::<Locale>().unwrap().extensions,
++        "1-ext-value",
++    );
++    assert_writeable_eq!(
++        "und-a-foo-1-bar".parse::<Locale>().unwrap().extensions,
++        "1-bar-a-foo",
++    );
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/other/mod.rs b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/other/mod.rs
+index 8934c4dff76fa..51e2495751f0e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/other/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/src/extensions/other/mod.rs
+@@ -93,7 +93,7 @@ impl Other {
+     ///
+     /// # Panics
+     ///
+-    /// Panics if `ext` is not ASCII alphabetic.
++    /// Panics if `ext` is not ASCII alphanumeric.
+     ///
+     /// # Examples
+     ///
+@@ -114,7 +114,7 @@ impl Other {
+ 
+     #[allow(dead_code)]
+     pub(crate) fn from_short_slice_unchecked(ext: u8, keys: ShortBoxSlice<Subtag>) -> Self {
+-        assert!(ext.is_ascii_alphabetic());
++        assert!(ext.is_ascii_alphanumeric());
+         // Safety invariant upheld here: ext checked as ASCII above
+         Self { ext, keys }
+     }
+@@ -156,7 +156,7 @@ impl Other {
+     /// assert_eq!(other_ext.get_ext_str(), "a");
+     /// ```
+     pub fn get_ext_str(&self) -> &str {
+-        debug_assert!(self.ext.is_ascii_alphabetic());
++        debug_assert!(self.ext.is_ascii_alphanumeric());
+         // Safety: from safety invariant on self.ext (that it is ASCII)
+         unsafe { core::str::from_utf8_unchecked(core::slice::from_ref(&self.ext)) }
+     }
+@@ -254,6 +254,9 @@ mod tests {
+         let oe: Other = "o-foo-bar".parse().expect("Failed to parse Other");
+         assert_eq!(oe.to_string(), "o-foo-bar");
+ 
++        let oe: Other = "1-foo-bar".parse().expect("Failed to parse Other");
++        assert_eq!(oe.to_string(), "1-foo-bar");
++
+         let oe: Result<Other, _> = "o".parse();
+         assert!(oe.is_err());
+     }
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/locale.json b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/locale.json
+index 93679a0667b1f..c55f5e7ae5648 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/locale.json
++++ b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/locale.json
+@@ -294,5 +294,38 @@
+       "type": "Locale",
+       "identifier": "en-a-bar-u-foo-w-bar-x-u-foo"
+     }
++  },
++  {
++    "input": {
++      "type": "Locale",
++      "identifier": "en-1-ext-value"
++    },
++    "output": {
++      "type": "Locale",
++      "language": "en",
++      "extensions": {
++        "other": ["1-ext-value"]
++      }
++    }
++  },
++  {
++    "input": {
++      "type": "Locale",
++      "identifier": "en-w-bar-1-foo"
++    },
++    "output": {
++      "type": "Locale",
++      "identifier": "en-1-foo-w-bar"
++    }
++  },
++  {
++    "input": {
++      "type": "Locale",
++      "identifier": "en-w-bar-1-foo-u-baz"
++    },
++    "output": {
++      "type": "Locale",
++      "identifier": "en-1-foo-u-baz-w-bar"
++    }
+   }
+ ]
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/mod.rs b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/mod.rs
+index dd89ce86ff645..8867f34312acc 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/fixtures/mod.rs
+@@ -5,6 +5,7 @@
+ use std::collections::HashMap;
+ use std::convert::{TryFrom, TryInto};
+ 
++use icu_locale_core::extensions::other;
+ use icu_locale_core::extensions::private;
+ use icu_locale_core::extensions::transform;
+ use icu_locale_core::extensions::unicode;
+@@ -40,7 +41,8 @@ pub struct LocaleExtensions {
+     transform: Option<LocaleExtensionTransform>,
+     #[serde(default)]
+     private: Vec<String>,
+-    _other: Option<String>,
++    #[serde(default)]
++    other: Vec<String>,
+ }
+ 
+ impl TryFrom<LocaleExtensions> for Extensions {
+@@ -95,6 +97,13 @@ impl TryFrom<LocaleExtensions> for Extensions {
+             .map(|v| private::Subtag::try_from_str(v).expect("Failed to add field."))
+             .collect();
+         ext.private = private::Private::from_vec_unchecked(v);
++        let mut other: Vec<other::Other> = input
++            .other
++            .iter()
++            .map(|v| other::Other::try_from_str(v).expect("Failed to parse Other extension"))
++            .collect();
++        other.sort();
++        ext.other = other;
+         Ok(ext)
+     }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/locale.rs b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/locale.rs
+index 5a700bcc724ac..ddea6144298a1 100644
+--- a/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/locale.rs
++++ b/third_party/rust/chromium_crates_io/vendor/icu_locale_core-v2/tests/locale.rs
+@@ -117,3 +117,18 @@ fn test_locale_strict_cmp() {
+         }
+     }
+ }
++
++#[test]
++fn test_locale_total_cmp() {
++    let l_1_bar = "und-1-bar".parse::<Locale>().unwrap();
++    let l_a_foo = "und-a-foo".parse::<Locale>().unwrap();
++    let l_2_baz = "und-2-baz".parse::<Locale>().unwrap();
++
++    assert_eq!(l_1_bar.total_cmp(&l_a_foo), std::cmp::Ordering::Less);
++    assert_eq!(l_1_bar.total_cmp(&l_2_baz), std::cmp::Ordering::Less);
++    assert_eq!(l_2_baz.total_cmp(&l_a_foo), std::cmp::Ordering::Less);
++
++    let l_en_1 = "en-1-ext-value".parse::<Locale>().unwrap();
++    let l_en_a = "en-a-ext-value".parse::<Locale>().unwrap();
++    assert_eq!(l_en_1.total_cmp(&l_en_a), std::cmp::Ordering::Less);
++}
+-- 
+2.54.0.1032.g2f8565e1d1-goog
+
