@@ -70,6 +70,8 @@ build_webui("build") {
     ts_files += [
       "composebox.html.ts",
       "composebox.ts",
+      "contextual_tasks_inner_composebox.html.ts",
+      "contextual_tasks_inner_composebox.ts",
       "window_manager.ts",
     ]
   }
@@ -93,7 +95,10 @@ build_webui("build") {
     ]
   }
   if (!is_android || enable_webui_contextual_tasks_composebox) {
-    css_files += [ "composebox.css" ]
+    css_files += [
+      "composebox.css",
+      "contextual_tasks_inner_composebox.css",
+    ]
   }
 
   mojo_files_deps =
