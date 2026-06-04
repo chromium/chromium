@@ -5,7 +5,7 @@
 #include "gpu/command_buffer/common/iosurface_validation.h"
 
 #include <CoreVideo/CoreVideo.h>
-#include <IOSurface/IOSurface.h>
+#include <IOSurface/IOSurfaceRef.h>
 
 namespace gpu {
 
