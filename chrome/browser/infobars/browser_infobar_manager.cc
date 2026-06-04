@@ -67,6 +67,28 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate {
                         : ConfirmInfoBarDelegate::GetVectorIcon();
   }
 
+  int GetButtons() const override {
+    int buttons = BUTTON_NONE;
+    if (!spec_.ok_button_label().empty() || spec_.ok_button_callback()) {
+      buttons |= BUTTON_OK;
+    }
+    if (!spec_.cancel_button_label().empty() ||
+        spec_.cancel_button_callback()) {
+      buttons |= BUTTON_CANCEL;
+    }
+    return buttons;
+  }
+
+  std::u16string GetButtonLabel(InfoBarButton button) const override {
+    if (button == BUTTON_OK && !spec_.ok_button_label().empty()) {
+      return spec_.ok_button_label();
+    }
+    if (button == BUTTON_CANCEL && !spec_.cancel_button_label().empty()) {
+      return spec_.cancel_button_label();
+    }
+    return ConfirmInfoBarDelegate::GetButtonLabel(button);
+  }
+
   bool Accept() override {
     if (spec_.ok_button_callback()) {
       spec_.ok_button_callback().Run(GetActiveWebContents());

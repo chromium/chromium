@@ -4,6 +4,7 @@
 
 #include "chrome/browser/infobars/browser_infobar_manager.h"
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/infobar_features.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -91,6 +93,42 @@ IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest,
 
   manager()->Hide(identifier);
   EXPECT_EQ(0u, infobar_manager->infobars().size());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInfoBarManagerBrowserTest, ButtonConfiguration) {
+  const auto identifier = InfoBarDelegate::TEST_INFOBAR;
+  bool ok_called = false;
+  auto spec =
+      InfoBarSpec::Builder(identifier)
+          .SetMessageText(u"Test Message")
+          .SetScope(InfoBarScope::kCurrentTab)
+          .AddOkButton(u"Custom OK",
+                       base::BindLambdaForTesting(
+                           [&](content::WebContents*) { ok_called = true; }))
+          // Intentionally omitting the cancel button.
+          .Build();
+
+  manager()->Register(std::move(spec));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* infobar_manager = ContentInfoBarManager::FromWebContents(web_contents);
+
+  manager()->Show(identifier);
+  ASSERT_EQ(1u, infobar_manager->infobars().size());
+
+  auto* delegate =
+      infobar_manager->infobars()[0]->delegate()->AsConfirmInfoBarDelegate();
+  ASSERT_TRUE(delegate);
+
+  // Since we only added an OK button, the Cancel button should not be present.
+  EXPECT_EQ(ConfirmInfoBarDelegate::BUTTON_OK, delegate->GetButtons());
+  EXPECT_EQ(u"Custom OK",
+            delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+
+  // Simulating an accept action.
+  EXPECT_TRUE(delegate->Accept());
+  EXPECT_TRUE(ok_called);
 }
 
 }  // namespace infobars
