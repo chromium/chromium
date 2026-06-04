@@ -100,7 +100,6 @@ void OffscreenCanvasPlaceholderTest::TearDown() {
 
 void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
   dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>(placeholder_id_);
-  dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_id_);
   resource_provider_ =
       CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
           gfx::Size(kWidth, kHeight), GetN32FormatForCanvas(),

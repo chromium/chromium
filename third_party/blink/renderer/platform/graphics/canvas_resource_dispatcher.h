@@ -109,7 +109,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) final {}
 
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
-  void SetPlaceholderCanvasDispatcher(DOMNodeId placeholder_canvas_id);
 
  private:
   friend class OffscreenCanvasPlaceholderTest;
@@ -125,6 +124,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   // Timer callback for synthetic OnBeginFrames.
   void OnFakeFrameTimer(TimerBase* timer);
+
+  void SetPlaceholderCanvasDispatcher(DOMNodeId placeholder_canvas_id);
 
   // Surface-related
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;

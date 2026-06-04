@@ -62,20 +62,21 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
                         &CanvasResourceDispatcher::OnFakeFrameTimer) {
   // Frameless canvas pass an invalid |frame_sink_id_|; don't create mojo
   // channel for this special case.
-  if (!frame_sink_id_.is_valid())
-    return;
+  if (frame_sink_id_.is_valid()) {
+    DCHECK(!sink_.is_bound());
+    mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
+    Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+        provider.BindNewPipeAndPassReceiver());
 
-  DCHECK(!sink_.is_bound());
-  mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      provider.BindNewPipeAndPassReceiver());
+    DCHECK(provider);
+    provider->CreateCompositorFrameSink(frame_sink_id_,
+                                        receiver_.BindNewPipeAndPassRemote(),
+                                        sink_.BindNewPipeAndPassReceiver());
+    provider->ConnectToEmbedder(frame_sink_id_,
+                                surface_embedder_.BindNewPipeAndPassReceiver());
+  }
 
-  DCHECK(provider);
-  provider->CreateCompositorFrameSink(frame_sink_id_,
-                                      receiver_.BindNewPipeAndPassRemote(),
-                                      sink_.BindNewPipeAndPassReceiver());
-  provider->ConnectToEmbedder(frame_sink_id_,
-                              surface_embedder_.BindNewPipeAndPassReceiver());
+  SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
 }
 
 CanvasResourceDispatcher::~CanvasResourceDispatcher() = default;

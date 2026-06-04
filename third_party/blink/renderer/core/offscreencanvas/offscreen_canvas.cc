@@ -567,9 +567,6 @@ CanvasResourceDispatcher* OffscreenCanvas::GetOrCreateResourceDispatcher() {
         this, std::move(dispatcher_task_runner),
         std::move(agent_group_scheduler_compositor_task_runner), client_id_,
         sink_id_, placeholder_canvas_id_, Size());
-
-    if (HasPlaceholderCanvas())
-      frame_dispatcher_->SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
   }
   return frame_dispatcher_.get();
 }
