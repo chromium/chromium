@@ -136,7 +136,7 @@ public class StatusMediator
     private Drawable mVerboseStatusBackgroundIncognito;
     private boolean mShowStatusIconForSecureOrigins;
     private @Nullable GURL mExactMatchFetchedUrl;
-    private @Nullable Bitmap mExactMatchFavicon;
+    private @Nullable Drawable mExactMatchFavicon;
     private boolean mShowExactMatchGlobe;
 
     /**
@@ -544,6 +544,7 @@ public class StatusMediator
         @StringRes int doubleTapDescriptionRes = R.string.accessibility_toolbar_view_site_info;
         OnClickListener clickListener = null;
         Bitmap bitmap = null;
+        Drawable customDrawable = null;
 
         boolean exactMatch = OmniboxFeatures.sExactMatchFavicons.isEnabled();
         @AutocompleteRequestType
@@ -567,7 +568,7 @@ public class StatusMediator
             tintRes = mNavigationIconTintRes;
         } else if (exactMatch && mExactMatchFavicon != null) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
-            bitmap = mExactMatchFavicon;
+            customDrawable = mExactMatchFavicon;
         } else if (OmniboxCapabilities.isDesktopPlatform()
                 && mInputSessionState != null
                 && ToolModeUtils.isAimRequest(requestType)) {
@@ -623,7 +624,9 @@ public class StatusMediator
         }
 
         StatusIconResource statusIcon = null;
-        if (bitmap != null) {
+        if (customDrawable != null) {
+            statusIcon = new StatusIconResource(customDrawable);
+        } else if (bitmap != null) {
             statusIcon = new StatusIconResource(/* iconIdentifier= */ null, bitmap, tintRes);
         } else if (iconRes != Resources.ID_NULL) {
             statusIcon = new StatusIconResource(iconRes, tintRes);
@@ -765,22 +768,17 @@ public class StatusMediator
             mShowExactMatchGlobe = false;
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
         } else {
-            mImageSupplier.fetchFavicon(url, bitmap -> onFaviconFetched(url, bitmap));
+            mImageSupplier.fetchFavicon(url, drawable -> onFaviconFetched(url, drawable));
         }
     }
 
-    private void onFaviconFetched(GURL url, @Nullable Bitmap favicon) {
+    private void onFaviconFetched(GURL url, @Nullable Drawable favicon) {
         // If we're not the most recent fetch request, give up.
         if (!url.equals(mExactMatchFetchedUrl)) return;
 
         boolean useGlobe = favicon == null;
 
-        // When the url changes, but still the same domain, such as adding a longer path or changing
-        // the scheme, we'll get a different url and different bitmap, but they're identical. Even
-        // though this checks pixel by pixel, it avoids the weirdness of cross-fading what should be
-        // a no-op.
-        if ((mShowExactMatchGlobe && useGlobe)
-                || (mExactMatchFavicon != null && mExactMatchFavicon.sameAs(favicon))) {
+        if (mShowExactMatchGlobe && useGlobe) {
             return;
         }
 

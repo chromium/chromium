@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
@@ -480,7 +481,8 @@ public class BaseSuggestionViewBinderUnitTest {
         // Width bound by the edge edge size, height wrapping content.
         var b = Bitmap.createBitmap(/* width= */ 2, /* height= */ 1, Bitmap.Config.ALPHA_8);
 
-        OmniboxDrawableState state = OmniboxDrawableState.forFavIcon(mContext, b);
+        OmniboxDrawableState state =
+                OmniboxDrawableState.forFavIcon(new BitmapDrawable(mContext.getResources(), b));
         mModel.set(BaseSuggestionViewProperties.ICON, state);
         assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().height);
         assertEquals(smallEdgeSize, mIconView.getLayoutParams().width);
@@ -488,7 +490,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
         // Variant 2: Large, wide, short icon.
         // Width bound by the edge edge size, height wrapping content.
-        state = OmniboxDrawableState.forImage(mContext, b);
+        state = OmniboxDrawableState.forImage(new BitmapDrawable(mContext.getResources(), b));
         mModel.set(BaseSuggestionViewProperties.ICON, state);
         assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().height);
         assertEquals(largeEdgeSize, mIconView.getLayoutParams().width);
@@ -498,7 +500,7 @@ public class BaseSuggestionViewBinderUnitTest {
         // Height bound by the edge edge size, width wrapping content.
         b = Bitmap.createBitmap(/* width= */ 1, /* height= */ 2, Bitmap.Config.ALPHA_8);
 
-        state = OmniboxDrawableState.forFavIcon(mContext, b);
+        state = OmniboxDrawableState.forFavIcon(new BitmapDrawable(mContext.getResources(), b));
         mModel.set(BaseSuggestionViewProperties.ICON, state);
         assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().width);
         assertEquals(smallEdgeSize, mIconView.getLayoutParams().height);
@@ -506,7 +508,7 @@ public class BaseSuggestionViewBinderUnitTest {
 
         // Variant 4: Large, narrow, tall icon.
         // Height bound by the edge edge size, width wrapping content.
-        state = OmniboxDrawableState.forImage(mContext, b);
+        state = OmniboxDrawableState.forImage(new BitmapDrawable(mContext.getResources(), b));
         mModel.set(BaseSuggestionViewProperties.ICON, state);
         assertEquals(MarginLayoutParams.WRAP_CONTENT, mIconView.getLayoutParams().width);
         assertEquals(largeEdgeSize, mIconView.getLayoutParams().height);

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
@@ -213,17 +212,12 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                                         url,
                                         fallback -> {
                                             if (fallback == null) return;
-                                            model.set(
-                                                    TileViewProperties.ICON,
-                                                    new BitmapDrawable(
-                                                            mContext.getResources(), fallback));
+                                            model.set(TileViewProperties.ICON, fallback);
                                             model.set(TileViewProperties.ICON_TINT, null);
                                         });
                                 return;
                             }
-                            model.set(
-                                    TileViewProperties.ICON,
-                                    new BitmapDrawable(mContext.getResources(), icon));
+                            model.set(TileViewProperties.ICON, icon);
                             model.set(TileViewProperties.ICON_TINT, null);
                         });
             }

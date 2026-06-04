@@ -18,6 +18,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.DrawableRes;
 import androidx.test.filters.SmallTest;
@@ -431,14 +432,17 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_showFaviconWhenAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
+        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(icon1);
 
         verify(mImageSupplier).fetchFavicon(eq(mSuggestion.getUrl()), callback.capture());
-        callback.getValue().onResult(mBitmap);
+        callback.getValue()
+                .onResult(
+                        new BitmapDrawable(
+                                ContextUtils.getApplicationContext().getResources(), mBitmap));
         OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(icon2);
 
@@ -468,7 +472,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
+        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
         mProcessor.onNativeInitialized();
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);

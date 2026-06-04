@@ -6,6 +6,11 @@ package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
+import androidx.annotation.IntDef;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
@@ -23,6 +28,8 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +40,15 @@ import java.util.Map;
 public class OmniboxImageSupplier {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
-    private final Map<GURL, List<Callback<Bitmap>>> mPendingImageRequests;
+    @IntDef({FallbackIconType.ROUNDED_LETTER, FallbackIconType.GLOBE})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface FallbackIconType {
+        int ROUNDED_LETTER = 0;
+        int GLOBE = 1;
+    }
+
+    private final Context mContext;
+    private final Map<GURL, List<Callback<Drawable>>> mPendingImageRequests;
     private final int mDesiredFaviconWidthPx;
     private RoundedIconGenerator mIconGenerator;
     private @Nullable LargeIconBridge mIconBridge;
@@ -46,6 +61,7 @@ public class OmniboxImageSupplier {
      * @param context An Android context.
      */
     public OmniboxImageSupplier(Context context) {
+        mContext = context;
         mDesiredFaviconWidthPx =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
@@ -118,7 +134,7 @@ public class OmniboxImageSupplier {
      * @param url The url to retrieve a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
-    public void fetchFavicon(GURL url, Callback<@Nullable Bitmap> callback) {
+    public void fetchFavicon(GURL url, Callback<@Nullable Drawable> callback) {
         if (mIconBridge == null) {
             callback.onResult(null);
             return;
@@ -131,7 +147,10 @@ public class OmniboxImageSupplier {
                 mDesiredFaviconWidthPx / 2,
                 mDesiredFaviconWidthPx,
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
-                    callback.onResult(icon);
+                    callback.onResult(
+                            icon == null
+                                    ? null
+                                    : new BitmapDrawable(mContext.getResources(), icon));
                 });
     }
 
@@ -141,7 +160,21 @@ public class OmniboxImageSupplier {
      * @param url The url to generate a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
-    public void generateFavicon(GURL url, Callback<@Nullable Bitmap> callback) {
+    public void generateFavicon(GURL url, Callback<@Nullable Drawable> callback) {
+        generateFavicon(url, FallbackIconType.ROUNDED_LETTER, callback);
+    }
+
+    /**
+     * Asynchronously generate favicon for a given url and deliver the result via supplied callback.
+     *
+     * @param url The url to generate a favicon for.
+     * @param fallbackIconType The type of fallback icon to generate if the favicon is not found.
+     * @param callback The callback that will be invoked with the result.
+     */
+    public void generateFavicon(
+            GURL url,
+            @FallbackIconType int fallbackIconType,
+            Callback<@Nullable Drawable> callback) {
         if (!mNativeInitialized) {
             callback.onResult(null);
             return;
@@ -150,7 +183,15 @@ public class OmniboxImageSupplier {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    Bitmap icon = mIconGenerator.generateIconForUrl(url);
+                    Drawable icon = null;
+                    if (fallbackIconType == FallbackIconType.ROUNDED_LETTER) {
+                        Bitmap bitmap = mIconGenerator.generateIconForUrl(url);
+                        if (bitmap != null) {
+                            icon = new BitmapDrawable(mContext.getResources(), bitmap);
+                        }
+                    } else if (fallbackIconType == FallbackIconType.GLOBE) {
+                        icon = AppCompatResources.getDrawable(mContext, R.drawable.ic_globe_24dp);
+                    }
                     callback.onResult(icon);
                 });
     }
@@ -169,7 +210,7 @@ public class OmniboxImageSupplier {
      * @param url The url to retrieve a favicon for.
      * @param callback The callback that will be invoked with the result.
      */
-    public void fetchImage(GURL url, Callback<Bitmap> callback) {
+    public void fetchImage(GURL url, Callback<Drawable> callback) {
         if (mImageFetcher == null || !url.isValid() || url.isEmpty()) {
             return;
         }
@@ -181,7 +222,7 @@ public class OmniboxImageSupplier {
             return;
         }
 
-        var callbacks = new ArrayList<Callback<Bitmap>>();
+        var callbacks = new ArrayList<Callback<Drawable>>();
         callbacks.add(callback);
         mPendingImageRequests.put(url, callbacks);
 
@@ -195,8 +236,9 @@ public class OmniboxImageSupplier {
                     // Callbacks may be erased when Omnibox interaction is over.
                     if (bitmap == null || pendingCallbacks == null) return;
 
+                    Drawable drawable = new BitmapDrawable(mContext.getResources(), bitmap);
                     for (int i = 0; i < pendingCallbacks.size(); i++) {
-                        pendingCallbacks.get(i).onResult(bitmap);
+                        pendingCallbacks.get(i).onResult(drawable);
                     }
                 });
     }

@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omnibox.styles;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 
@@ -111,9 +109,9 @@ public class OmniboxDrawableState {
      * @param bitmap bitmap with decoded site favicon
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forFavIcon(Context context, Bitmap bitmap) {
+    public static OmniboxDrawableState forFavIcon(Drawable drawable) {
         return new OmniboxDrawableState(
-                new BitmapDrawable(context.getResources(), bitmap),
+                drawable,
                 /* useRoundedCorners= */ true,
                 /* isLarge= */ false,
                 /* allowTint= */ false);
@@ -122,13 +120,12 @@ public class OmniboxDrawableState {
     /**
      * Create OmniboxDrawableState with dedicated image decoration.
      *
-     * @param context current context
-     * @param bitmap dedicated bitmap
+     * @param drawable dedicated drawable
      * @return newly created OmniboxDrawableState
      */
-    public static OmniboxDrawableState forImage(Context context, Bitmap bitmap) {
+    public static OmniboxDrawableState forImage(Drawable drawable) {
         return new OmniboxDrawableState(
-                new BitmapDrawable(context.getResources(), bitmap),
+                drawable,
                 /* useRoundedCorners= */ true,
                 /* isLarge= */ true,
                 /* allowTint= */ false);

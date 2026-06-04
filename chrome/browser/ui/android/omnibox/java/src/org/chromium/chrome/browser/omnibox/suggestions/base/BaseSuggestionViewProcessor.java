@@ -367,8 +367,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                     url,
                     icon -> {
                         if (icon != null) {
-                            setOmniboxDrawableState(
-                                    model, OmniboxDrawableState.forFavIcon(mContext, icon));
+                            setOmniboxDrawableState(model, OmniboxDrawableState.forFavIcon(icon));
                         }
                     });
         }
@@ -385,10 +384,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         if (mImageSupplier != null) {
             mImageSupplier.fetchImage(
                     imageUrl,
-                    bitmap -> {
-                        if (bitmap != null) {
-                            setOmniboxDrawableState(
-                                    model, OmniboxDrawableState.forImage(mContext, bitmap));
+                    drawable -> {
+                        if (drawable != null) {
+                            setOmniboxDrawableState(model, OmniboxDrawableState.forImage(drawable));
                         }
                     });
         }

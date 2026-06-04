@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -178,13 +179,13 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipboardSuggestion_showsFaviconWhenAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
+        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(icon1);
 
         verify(mImageSupplier).fetchFavicon(eq(TEST_URL), callback.capture());
-        callback.getValue().onResult(mBitmap);
+        callback.getValue().onResult(new BitmapDrawable(mContext.getResources(), mBitmap));
         OmniboxDrawableState icon2 = mModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(icon2);
 
@@ -195,7 +196,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipboardSuggestion_showsFallbackIconWhenNoFaviconIsAvailable() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
+        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         OmniboxDrawableState icon1 = mModel.get(BaseSuggestionViewProperties.ICON);
         assertNotNull(icon1);
@@ -211,7 +212,7 @@ public class ClipboardSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void clipobardSuggestion_urlAndTextDirection() {
-        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
+        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
         // URL
         createClipboardSuggestionAndClickReveal(OmniboxSuggestionType.CLIPBOARD_URL, TEST_URL);
         assertFalse(mModel.get(SuggestionViewProperties.IS_SEARCH_SUGGESTION));

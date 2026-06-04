@@ -214,11 +214,14 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", WEB_URL);
         processSuggestion(suggHelper);
 
-        final ArgumentCaptor<Callback<Bitmap>> callback = MockitoHelper.callbackCaptor();
+        final ArgumentCaptor<Callback<Drawable>> callback = MockitoHelper.callbackCaptor();
         verify(mImageSupplier).fetchImage(eq(WEB_URL), callback.capture());
 
         assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
-        callback.getValue().onResult(mBitmap);
+        callback.getValue()
+                .onResult(
+                        new BitmapDrawable(
+                                ContextUtils.getApplicationContext().getResources(), mBitmap));
         assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
         assertEquals(mBitmap, ((BitmapDrawable) suggHelper.getIcon()).getBitmap());
     }

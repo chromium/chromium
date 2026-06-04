@@ -84,8 +84,8 @@ public final class MostVisitedTilesProcessorUnitTest {
     private MostVisitedTilesProcessor mProcessor;
     private List<AutocompleteMatch> mMatches;
 
-    private @Captor ArgumentCaptor<Callback<Bitmap>> mFavIconCallbackCaptor;
-    private @Captor ArgumentCaptor<Callback<Bitmap>> mGenIconCallbackCaptor;
+    private @Captor ArgumentCaptor<Callback<Drawable>> mFavIconCallbackCaptor;
+    private @Captor ArgumentCaptor<Callback<Drawable>> mGenIconCallbackCaptor;
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
@@ -239,7 +239,9 @@ public final class MostVisitedTilesProcessorUnitTest {
                 populateMatchesForHorizontalRenderGroup(0, new TileData("title", NAV_URL, false));
 
         verify(mImageSupplier, times(1)).fetchFavicon(eq(NAV_URL), any());
-        mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
+        mFavIconCallbackCaptor
+                .getValue()
+                .onResult(new BitmapDrawable(mContext.getResources(), mFaviconBitmap));
         verifyNoMoreInteractions(mImageSupplier);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.
@@ -263,7 +265,9 @@ public final class MostVisitedTilesProcessorUnitTest {
 
         // We should now observe a request to generate bitmap.
         verify(mImageSupplier).generateFavicon(eq(NAV_URL), mFavIconCallbackCaptor.capture());
-        mFavIconCallbackCaptor.getValue().onResult(mFaviconBitmap);
+        mFavIconCallbackCaptor
+                .getValue()
+                .onResult(new BitmapDrawable(mContext.getResources(), mFaviconBitmap));
         verifyNoMoreInteractions(mImageSupplier);
 
         // Since we "retrieved" an icon from LargeIconBridge, we should not generate a fallback.

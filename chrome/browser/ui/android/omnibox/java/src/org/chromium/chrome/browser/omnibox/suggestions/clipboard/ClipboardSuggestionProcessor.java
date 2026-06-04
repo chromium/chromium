@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.clipboard;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -136,7 +137,10 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                                         (int) Math.round(scale * height),
                                         true);
                     }
-                    setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
+                    setOmniboxDrawableState(
+                            model,
+                            OmniboxDrawableState.forImage(
+                                    new BitmapDrawable(mContext.getResources(), bitmap)));
                 }
             }
         } else if (!suggestion.isSearchSuggestion()) {
