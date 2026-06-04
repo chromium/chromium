@@ -12,7 +12,6 @@
 #include "components/lens/lens_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/search/ntp_features.h"
-#include "components/sync/base/features.h"
 #include "components/user_education/webui/whats_new_registry.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -26,11 +25,6 @@ namespace features {
 
 void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
   // Register modules here.
-
-  // M143
-  registry->RegisterModule(
-      WhatsNewModule(::syncer::kSyncAccountSettings, "vizcay@google.com",
-                     BrowserCommand::kOpenAutofillSettings));
 
   // M147
   registry->RegisterModule(WhatsNewModule(tabs::kVerticalTabsLaunch,

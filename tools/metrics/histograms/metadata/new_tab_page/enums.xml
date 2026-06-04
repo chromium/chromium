@@ -751,7 +751,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Open Glic settings"/>
   <int value="18" label="Prewarm Glic FRE"/>
   <int value="19" label="Open Split View"/>
-  <int value="20" label="Open Autofill Settings"/>
+  <int value="20" label="[Deprecated] Open Autofill Settings"/>
   <int value="21" label="Enable Vertical Tabs"/>
 </enum>
 

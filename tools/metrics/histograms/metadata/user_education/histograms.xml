@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
   <variant name="SideBySide" summary="the module for Split View"/>
   <variant name="SidePanelPinning" summary="the module for Side Panel Pinning"/>
   <variant name="SyncAccountSettings"
-      summary="the module for Wallet integration in Autofill"/>
+      summary="the module for Wallet integration in Autofill (obsolete)"/>
   <variant name="TabGroupsSync"
       summary="the module for Tab Groups that Sync (obsolete)"/>
   <variant name="TabOrganizer"

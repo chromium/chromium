@@ -976,7 +976,7 @@ should be able to be added at any place in this file.
   <variant name=".SideBySide" summary="Split View"/>
   <variant name=".SidePanelPinning" summary="Side Panel Pinning"/>
   <variant name=".SyncAccountSettings"
-      summary="Wallet integration in Autofill"/>
+      summary="Wallet integration in Autofill (obsolete)"/>
   <variant name=".TabGroupsSync" summary="Tab Groups Sync (obsolete)"/>
   <variant name=".TabOrganizer" summary="Tab Organizer (obsolete)"/>
   <variant name=".TestDefaultModule" summary="Test default module"/>
