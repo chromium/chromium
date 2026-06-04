@@ -144,3 +144,50 @@ export function getRelativeCoordinate(
     y: Math.max(0, Math.min(coord.y, parentBounds.bottom) - parentBounds.top),
   };
 }
+
+// Normalizes a list of points to the parent bounds.
+export function normalizePoints(
+    points: Point[], parentBounds: DOMRect): Point[] {
+  return points.map(p => {
+    const relative = getRelativeCoordinate(p, parentBounds);
+    return {
+      x: relative.x / parentBounds.width,
+      y: relative.y / parentBounds.height,
+    };
+  });
+}
+
+// Calculates a bounding box from a list of normalized points.
+export function calculateBoundingBox(points: Point[]):
+    {top: number, left: number, width: number, height: number} {
+  let minX = 1;
+  let minY = 1;
+  let maxX = 0;
+  let maxY = 0;
+  points.forEach(p => {
+    minX = Math.min(minX, p.x);
+    minY = Math.min(minY, p.y);
+    maxX = Math.max(maxX, p.x);
+    maxY = Math.max(maxY, p.y);
+  });
+  return {
+    top: minY,
+    left: minX,
+    width: maxX - minX,
+    height: maxY - minY,
+  };
+}
+
+// Calculates a center rotated box from a list of normalized points.
+export function calculateCenterRotatedBox(points: Point[]) {
+  const bounds = calculateBoundingBox(points);
+  return {
+    box: {
+      x: bounds.left + (bounds.width / 2),
+      y: bounds.top + (bounds.height / 2),
+      width: bounds.width,
+      height: bounds.height,
+    },
+    rotation: 0,
+  };
+}
