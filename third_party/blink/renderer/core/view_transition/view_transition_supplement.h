@@ -95,6 +95,10 @@ class CORE_EXPORT ViewTransitionSupplement
   void OnSkipTransitionWithPendingCallback(ViewTransition*) override;
   void OnSkippedTransitionDOMCallback(ViewTransition*) override;
   void OnTransitionCaptured(ViewTransition*) override;
+  void OnCaptureCommitted(ViewTransition*) override;
+  void OnDOMCallbackReadyToRun(ViewTransition*);
+  bool IsEarlyCallbackEnabled() const override;
+  bool HasNonScriptTransitions() const;
 
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.

@@ -104,6 +104,8 @@ const char* ViewTransition::StateToString(State state) {
       return "CaptureRequestPending";
     case State::kCapturing:
       return "Capturing";
+    case State::kCaptureCommitted:
+      return "CaptureCommitted";
     case State::kCaptured:
       return "Captured";
     case State::kWaitForRenderBlock:
@@ -112,6 +114,8 @@ const char* ViewTransition::StateToString(State state) {
       return "DOMCallbackRunning";
     case State::kDOMCallbackFinished:
       return "DOMCallbackFinished";
+    case State::kWaitingForCaptureRects:
+      return "WaitingForCaptureRects";
     case State::kAnimateTagDiscovery:
       return "AnimateTagDiscovery";
     case State::kPreview:
@@ -417,7 +421,10 @@ bool ViewTransition::CanAdvanceTo(State state) const {
     case State::kCaptureRequestPending:
       return state == State::kCapturing || state == State::kAborted;
     case State::kCapturing:
-      return state == State::kCaptured || state == State::kAborted;
+      return state == State::kCaptured || state == State::kCaptureCommitted ||
+             state == State::kAborted;
+    case State::kCaptureCommitted:
+      return state == State::kDOMCallbackRunning || state == State::kAborted;
     case State::kCaptured:
       return state == State::kDOMCallbackRunning ||
              state == State::kDOMCallbackFinished || state == State::kPreview ||
@@ -432,6 +439,10 @@ bool ViewTransition::CanAdvanceTo(State state) const {
     case State::kDOMCallbackRunning:
       return state == State::kDOMCallbackFinished || state == State::kAborted;
     case State::kDOMCallbackFinished:
+      return state == State::kAnimateTagDiscovery ||
+             state == State::kWaitingForCaptureRects ||
+             state == State::kAborted;
+    case State::kWaitingForCaptureRects:
       return state == State::kAnimateTagDiscovery || state == State::kAborted;
     case State::kPreview:
       return state == State::kAnimateTagDiscovery || state == State::kAborted;
@@ -464,10 +475,12 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
     case State::kCaptureRequestPending:
       return true;
     case State::kCapturing:
+    case State::kCaptureCommitted:
     case State::kCaptured:
     case State::kWaitForRenderBlock:
     case State::kDOMCallbackRunning:
     case State::kDOMCallbackFinished:
+    case State::kWaitingForCaptureRects:
     case State::kPreview:
     case State::kAnimateTagDiscovery:
     case State::kAnimateRequestPending:
@@ -488,7 +501,9 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
 // static
 bool ViewTransition::WaitsForNotification(State state) {
   return state == State::kCapturing || state == State::kDOMCallbackRunning ||
+         state == State::kCaptureCommitted ||
          state == State::kWaitForRenderBlock ||
+         state == State::kWaitingForCaptureRects ||
          state == State::kTransitionStateCallbackDispatched ||
          (RuntimeEnabledFeatures::ViewTransitionAsyncFinishedEnabled() &&
           state == State::kPendingDone);
@@ -613,8 +628,23 @@ void ViewTransition::ProcessCurrentState() {
         DCHECK(WaitsForNotification(state_));
         break;
 
+      case State::kCaptureCommitted:
       case State::kCaptured: {
-        style_tracker_->CaptureResolved();
+        bool can_run_callbacks_after_commit =
+            delegate_ && delegate_->IsEarlyCallbackEnabled();
+        bool should_run_for_commit = state_ == State::kCaptureCommitted &&
+                                     can_run_callbacks_after_commit &&
+                                     creation_type_ == CreationType::kScript;
+        bool should_run_for_captured =
+            state_ == State::kCaptured &&
+            (!can_run_callbacks_after_commit ||
+             creation_type_ != CreationType::kScript);
+
+        if (!should_run_for_commit && !should_run_for_captured) {
+          DCHECK(WaitsForNotification(state_));
+          break;
+        }
+
         switch (creation_type_) {
           case CreationType::kScript: {
             CHECK(script_delegate_);
@@ -639,6 +669,10 @@ void ViewTransition::ProcessCurrentState() {
           }
           case CreationType::kForSnapshot: {
             DCHECK(transition_state_callback_);
+            CHECK(capture_rects_received_)
+                << "Capture rects must arrive before snapshot serialization!";
+            ResumeRendering();
+
             ViewTransitionState view_transition_state =
                 style_tracker_->GetViewTransitionState();
             CHECK_EQ(view_transition_state.transition_token, transition_token_);
@@ -659,7 +693,6 @@ void ViewTransition::ProcessCurrentState() {
           default:
             NOTREACHED();
         }
-
         break;
       }
 
@@ -689,6 +722,15 @@ void ViewTransition::ProcessCurrentState() {
               dom_callback_finished_time_ - dom_callback_start_time_,
               base::Microseconds(1), base::Seconds(4), 100);
         }
+        process_next_state = AdvanceTo(State::kWaitingForCaptureRects);
+        DCHECK(process_next_state);
+        break;
+
+      case State::kWaitingForCaptureRects:
+        if (!capture_rects_received_) {
+          break;
+        }
+
         // For testing check: if the flag is enabled, re-create the style
         // tracker with the serialized state that the current style tracker
         // produces. This allows us to use SPA tests for MPA serialization.
@@ -697,8 +739,6 @@ void ViewTransition::ProcessCurrentState() {
           style_tracker_ = MakeGarbageCollected<ViewTransitionStyleTracker>(
               *document_, style_tracker_->GetViewTransitionState());
         }
-
-        ResumeRendering();
 
         // Animation and subsequent steps require us to have a view. If after
         // running the callbacks, we don't have a view, skip the transition.
@@ -753,6 +793,8 @@ void ViewTransition::ProcessCurrentState() {
               DocumentUpdateReason::kViewTransition);
           style_tracker_->RunPostPrePaintSteps();
         }
+
+        ResumeRendering();
 
         delegate_->AddPendingRequest(
             ViewTransitionRequest::CreateAnimateRenderer(
@@ -909,10 +951,17 @@ void ViewTransition::ContextDestroyed() {
 void ViewTransition::NotifyCaptureFinished(
     const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
         capture_rects) {
-  if (state_ == State::kCapturing) {
+  if (state_ == State::kCapturing || state_ == State::kCaptureCommitted ||
+      state_ == State::kDOMCallbackRunning ||
+      state_ == State::kDOMCallbackFinished ||
+      state_ == State::kWaitingForCaptureRects) {
     style_tracker_->SetCaptureRectsFromCompositor(capture_rects);
+    capture_rects_received_ = true;
+    if (style_tracker_ && style_tracker_->IsOldSnapshotFrozen()) {
+      style_tracker_->CaptureResolved();
+    }
   } else {
-    DCHECK(IsTerminalState(state_));
+    DCHECK(IsTerminalState(state_)) << StateToString(state_);
   }
 
   // Inform the delegate that the transition has been captured. Once all
@@ -922,9 +971,30 @@ void ViewTransition::NotifyCaptureFinished(
   delegate_->OnTransitionCaptured(this);
 }
 
-void ViewTransition::OnCapturePhaseComplete() {
+void ViewTransition::OnCaptureCommitted() {
+  CHECK(delegate_ && delegate_->IsEarlyCallbackEnabled());
   if (state_ != State::kCapturing) {
-    DCHECK(IsTerminalState(state_));
+    DCHECK(IsTerminalState(state_)) << StateToString(state_);
+    return;
+  }
+  AdvanceTo(State::kCaptureCommitted);
+  ProcessCurrentState();
+}
+
+void ViewTransition::OnCaptureRectsReceived() {
+  if (state_ == State::kDOMCallbackFinished ||
+      state_ == State::kWaitingForCaptureRects) {
+    ProcessCurrentState();
+  }
+}
+
+void ViewTransition::OnCapturePhaseComplete() {
+  CHECK(!delegate_ || !delegate_->IsEarlyCallbackEnabled());
+  if (state_ != State::kCapturing) {
+    CHECK(IsTerminalState(state_) || state_ == State::kCaptureCommitted ||
+          state_ == State::kDOMCallbackRunning ||
+          state_ == State::kDOMCallbackFinished)
+        << StateToString(state_);
     return;
   }
   bool process_next_state = AdvanceTo(State::kCaptured);
@@ -947,7 +1017,7 @@ void ViewTransition::NotifyDOMCallbackFinished(bool success) {
   ProcessCurrentState();
 
   // Succeed or fail, rendering must be resumed after this.
-  CHECK(!rendering_paused_scope_);
+  CHECK(!rendering_paused_scope_ || !capture_rects_received_);
 }
 
 bool ViewTransition::NeedsViewTransitionEffectNode(
@@ -1118,6 +1188,20 @@ void ViewTransition::WillCommitCompositorFrame() {
   // rendering is paused immediately after it finishes.
   if (state_ == State::kCapturing) {
     PauseRendering();
+    if (delegate_ && delegate_->IsEarlyCallbackEnabled()) {
+      document_->GetTaskRunner(TaskType::kDOMManipulation)
+          ->PostTask(
+              FROM_HERE,
+              BindOnce(
+                  [](ViewTransition* transition) {
+                    if (!transition || !transition->delegate_ ||
+                        !transition->delegate_->IsEarlyCallbackEnabled()) {
+                      return;
+                    }
+                    transition->delegate_->OnCaptureCommitted(transition);
+                  },
+                  WrapWeakPersistent(this)));
+    }
   }
 }
 

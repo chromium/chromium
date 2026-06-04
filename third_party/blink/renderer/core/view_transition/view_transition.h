@@ -55,6 +55,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     virtual void OnSkipTransitionWithPendingCallback(ViewTransition*) = 0;
     virtual void OnSkippedTransitionDOMCallback(ViewTransition*) = 0;
     virtual void OnTransitionCaptured(ViewTransition*) = 0;
+    virtual void OnCaptureCommitted(ViewTransition*) = 0;
+    virtual bool IsEarlyCallbackEnabled() const { return false; }
   };
 
   // Creates and starts a same-document ViewTransition initiated using the
@@ -299,8 +301,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // has started the DOM callback. We do not wait for completion as the callback
   // may be asynchronous and might never complete.
   void NotifySkippedTransitionDOMCallbackScheduled();
+  void OnCaptureCommitted();
   void NotifyInvokeDOMChangeCallback();
   bool PendingDomCallback();
+  void OnCaptureRectsReceived();
 
   // Notifies the view transition object when we start or stop style processing
   // for getComputedStyle.
@@ -331,6 +335,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;
+  friend class ViewTransitionTestUtils;
 
   // Tracks how the ViewTransition object was created.
   enum class CreationType {
@@ -361,6 +366,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     kCaptureTagDiscovery,
     kCaptureRequestPending,
     kCapturing,
+    kCaptureCommitted,
     kCaptured,
 
     // Navigation specific states.
@@ -371,6 +377,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     // Callback states.
     kDOMCallbackRunning,
     kDOMCallbackFinished,
+    kWaitingForCaptureRects,
 
     // Animate states.
     kAnimateTagDiscovery,
@@ -495,6 +502,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   bool dom_callback_succeeded_ = false;
   bool first_animating_frame_ = true;
   bool pending_skip_view_transitions_ = false;
+  bool capture_rects_received_ = false;
 
   int wait_until_pending_promise_count_ = 0;
 
