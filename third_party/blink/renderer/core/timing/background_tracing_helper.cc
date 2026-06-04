@@ -56,7 +56,7 @@ std::optional<uint64_t> ConvertToHashInteger(std::string_view chars) {
     }
   }
   return HexCharactersToUInt64(base::as_byte_span(chars),
-                               NumberParsingOptions(), nullptr);
+                               NumberParsingOptions());
 }
 
 static constexpr char kTriggerPrefix[] = "trigger:";

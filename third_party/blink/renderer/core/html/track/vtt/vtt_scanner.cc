@@ -77,19 +77,15 @@ size_t VTTScanner::ScanDigits(unsigned& number) {
     number = 0;
     return 0;
   }
-  bool valid_number;
-  number = Invoke([num_digits, &valid_number](auto& buf) {
+  number = Invoke([num_digits](auto& buf) {
     // Consume the digits.
-    return CharactersToUInt(buf.take_first(num_digits), NumberParsingOptions(),
-                            &valid_number);
+    // Since we know that ScanDigits only scanned valid (ASCII) digits (and
+    // hence that's what got passed to CharactersToUInt()), the remaining
+    // failure mode for CharactersToUInt() is overflow, so if std::nullopt is
+    // returned, then set `number` to the maximum unsigned value.
+    return CharactersToUInt(buf.take_first(num_digits), NumberParsingOptions())
+        .value_or(std::numeric_limits<unsigned>::max());
   });
-
-  // Since we know that scanDigits only scanned valid (ASCII) digits (and
-  // hence that's what got passed to charactersToUInt()), the remaining
-  // failure mode for charactersToUInt() is overflow, so if |validNumber| is
-  // not true, then set |number| to the maximum unsigned value.
-  if (!valid_number)
-    number = std::numeric_limits<unsigned>::max();
   return num_digits;
 }
 

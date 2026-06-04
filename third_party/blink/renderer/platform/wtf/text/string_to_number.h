@@ -24,32 +24,26 @@ enum class NumberParsingResult {
 };
 
 // string -> int.
-WTF_EXPORT int CharactersToInt(base::span<const LChar>,
-                               NumberParsingOptions,
-                               bool* ok);
-WTF_EXPORT int CharactersToInt(base::span<const UChar>,
-                               NumberParsingOptions,
-                               bool* ok);
+WTF_EXPORT std::optional<int32_t> CharactersToInt(base::span<const LChar>,
+                                                  NumberParsingOptions);
+WTF_EXPORT std::optional<int32_t> CharactersToInt(base::span<const UChar>,
+                                                  NumberParsingOptions);
 
 // string -> unsigned.
-WTF_EXPORT unsigned HexCharactersToUInt(base::span<const LChar>,
-                                        NumberParsingOptions,
-                                        bool* ok);
-WTF_EXPORT unsigned HexCharactersToUInt(base::span<const UChar>,
-                                        NumberParsingOptions,
-                                        bool* ok);
-WTF_EXPORT uint64_t HexCharactersToUInt64(base::span<const UChar>,
-                                          NumberParsingOptions,
-                                          bool* ok);
-WTF_EXPORT uint64_t HexCharactersToUInt64(base::span<const LChar>,
-                                          NumberParsingOptions,
-                                          bool* ok);
-WTF_EXPORT unsigned CharactersToUInt(base::span<const LChar>,
-                                     NumberParsingOptions,
-                                     bool* ok);
-WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
-                                     NumberParsingOptions,
-                                     bool* ok);
+WTF_EXPORT std::optional<uint32_t> HexCharactersToUInt(base::span<const LChar>,
+                                                       NumberParsingOptions);
+WTF_EXPORT std::optional<uint32_t> HexCharactersToUInt(base::span<const UChar>,
+                                                       NumberParsingOptions);
+WTF_EXPORT std::optional<uint64_t> HexCharactersToUInt64(
+    base::span<const UChar>,
+    NumberParsingOptions);
+WTF_EXPORT std::optional<uint64_t> HexCharactersToUInt64(
+    base::span<const LChar>,
+    NumberParsingOptions);
+WTF_EXPORT std::optional<uint32_t> CharactersToUInt(base::span<const LChar>,
+                                                    NumberParsingOptions);
+WTF_EXPORT std::optional<uint32_t> CharactersToUInt(base::span<const UChar>,
+                                                    NumberParsingOptions);
 
 // NumberParsingResult versions of CharactersToUInt. They can detect
 // overflow. |NumberParsingResult*| should not be nullptr;
@@ -61,20 +55,16 @@ WTF_EXPORT unsigned CharactersToUInt(base::span<const UChar>,
                                      NumberParsingResult*);
 
 // string -> int64_t.
-WTF_EXPORT int64_t CharactersToInt64(base::span<const LChar>,
-                                     NumberParsingOptions,
-                                     bool* ok);
-WTF_EXPORT int64_t CharactersToInt64(base::span<const UChar>,
-                                     NumberParsingOptions,
-                                     bool* ok);
+WTF_EXPORT std::optional<int64_t> CharactersToInt64(base::span<const LChar>,
+                                                    NumberParsingOptions);
+WTF_EXPORT std::optional<int64_t> CharactersToInt64(base::span<const UChar>,
+                                                    NumberParsingOptions);
 
 // string -> uint64_t.
-WTF_EXPORT uint64_t CharactersToUInt64(base::span<const LChar>,
-                                       NumberParsingOptions,
-                                       bool* ok);
-WTF_EXPORT uint64_t CharactersToUInt64(base::span<const UChar>,
-                                       NumberParsingOptions,
-                                       bool* ok);
+WTF_EXPORT std::optional<uint64_t> CharactersToUInt64(base::span<const LChar>,
+                                                      NumberParsingOptions);
+WTF_EXPORT std::optional<uint64_t> CharactersToUInt64(base::span<const UChar>,
+                                                      NumberParsingOptions);
 
 // FIXME: Like the strict functions above, these give false for "ok" when there
 // is trailing garbage.  Like the non-strict functions above, these return the

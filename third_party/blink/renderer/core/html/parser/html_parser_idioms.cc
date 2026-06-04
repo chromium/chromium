@@ -160,15 +160,15 @@ bool ParseHTMLInteger(const String& input, int& value) {
     }
     DCHECK_LT(position, chars.size());
 
-    bool ok;
     constexpr auto kOptions = NumberParsingOptions()
                                   .SetAcceptTrailingGarbage()
                                   .SetAcceptLeadingPlus();
-    int wtf_value = CharactersToInt(chars.subspan(position), kOptions, &ok);
-    if (ok) {
-      value = wtf_value;
+    std::optional<int> int_value =
+        CharactersToInt(chars.subspan(position), kOptions);
+    if (int_value) {
+      value = *int_value;
     }
-    return ok;
+    return int_value.has_value();
   });
 }
 
