@@ -6637,6 +6637,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5913" label="SemanticEmbedder_Create"/>
   <int value="5914" label="SemanticEmbedder_Embed"/>
   <int value="5915" label="SemanticEmbedder_Destroy"/>
+  <int value="5916" label="EmailVerificationProtocol"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

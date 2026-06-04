@@ -25,6 +25,8 @@
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/page_load_metrics/browser/test_metrics_web_contents_observer_embedder.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
@@ -33,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace autofill {
 
@@ -105,6 +108,10 @@ class EmailVerifierDelegateTestBase
  public:
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    page_load_metrics::MetricsWebContentsObserver::CreateForWebContents(
+        web_contents(),
+        std::make_unique<
+            page_load_metrics::TestMetricsWebContentsObserverEmbedder>());
     NavigateAndCommit(GURL("https://a.test/"));
     driver().SetLocalFrameToken(LocalFrameToken(*main_rfh()->GetFrameToken()));
     EmailVerifier::SetForFrameForTest(
@@ -231,6 +238,15 @@ class EmailVerifierDelegateTest : public EmailVerifierDelegateTestBase {
 // all requirements, the user autofills an email field and the
 // renderer is notified with the presentation token to dispatch an event.
 TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
+  auto* observer =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          web_contents());
+  ASSERT_TRUE(observer);
+  auto* embedder =
+      static_cast<page_load_metrics::TestMetricsWebContentsObserverEmbedder*>(
+          observer->GetEmbedderInterfaceForTesting());
+  ASSERT_TRUE(embedder);
+
   FormStructure* form = SetUpValidForm();
 
   SetUpVerificationExpectations(*form);
@@ -244,6 +260,19 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
 
   popup_shown_run_loop_.Run();
+
+  bool feature_observed = false;
+  for (const blink::UseCounterFeature& feature :
+       embedder->observed_features()) {
+    if (feature.type() == blink::mojom::UseCounterFeatureType::kWebFeature &&
+        feature.value() ==
+            static_cast<uint32_t>(
+                blink::mojom::WebFeature::kEmailVerificationProtocol)) {
+      feature_observed = true;
+      break;
+    }
+  }
+  EXPECT_TRUE(feature_observed);
 }
 
 // Verifies that if the user declines the prompt, no verification is triggered.
@@ -310,6 +339,15 @@ TEST_F(EmailVerifierDelegateTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(::features::kEmailVerificationProtocol);
 
+  auto* observer =
+      page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+          web_contents());
+  ASSERT_TRUE(observer);
+  auto* embedder =
+      static_cast<page_load_metrics::TestMetricsWebContentsObserverEmbedder*>(
+          observer->GetEmbedderInterfaceForTesting());
+  ASSERT_TRUE(embedder);
+
   FormStructure* form = SetUpValidForm();
 
   EXPECT_CALL(email_verifier(), Verify).Times(0);
@@ -321,6 +359,19 @@ TEST_F(EmailVerifierDelegateTest,
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  bool feature_observed = false;
+  for (const blink::UseCounterFeature& feature :
+       embedder->observed_features()) {
+    if (feature.type() == blink::mojom::UseCounterFeatureType::kWebFeature &&
+        feature.value() ==
+            static_cast<uint32_t>(
+                blink::mojom::WebFeature::kEmailVerificationProtocol)) {
+      feature_observed = true;
+      break;
+    }
+  }
+  EXPECT_FALSE(feature_observed);
 }
 
 // Verifies that if the action is not "fill", no verification is triggered.

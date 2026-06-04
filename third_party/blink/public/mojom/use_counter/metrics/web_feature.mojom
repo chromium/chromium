@@ -5230,6 +5230,7 @@ enum WebFeature {
   kSemanticEmbedder_Create = 5913,
   kSemanticEmbedder_Embed = 5914,
   kSemanticEmbedder_Destroy = 5915,
+  kEmailVerificationProtocol = 5916,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

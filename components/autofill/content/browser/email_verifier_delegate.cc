@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/strike_databases/email_verification_strike_database.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/strike_database/history_clearable_strike_database.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace autofill {
 
@@ -39,9 +41,7 @@ namespace {
 
 content::webid::EmailVerifier* GetOrCreateEmailVerifier(
     AutofillClient& client,
-    const LocalFrameToken& frame_token) {
-  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
-      *static_cast<ContentAutofillClient&>(client).web_contents(), frame_token);
+    content::RenderFrameHost* rfh) {
   if (!rfh) {
     return nullptr;
   }
@@ -96,8 +96,11 @@ void EmailVerifierDelegate::Verify(
     FieldGlobalId token_field_id,
     const std::string& nonce,
     const content::webid::EmailVerifier::Result& result) {
+  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
+      *static_cast<ContentAutofillClient&>(manager->client()).web_contents(),
+      email_field_id.frame_token);
   content::webid::EmailVerifier* verifier =
-      GetOrCreateEmailVerifier(manager->client(), email_field_id.frame_token);
+      GetOrCreateEmailVerifier(manager->client(), rfh);
   if (!verifier) {
     return;
   }
@@ -332,11 +335,22 @@ void EmailVerifierDelegate::TriggerVerification(
     return;
   }
 
+  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
+      *static_cast<ContentAutofillClient&>(manager.client()).web_contents(),
+      email_field.host_frame());
   content::webid::EmailVerifier* verifier =
-      GetOrCreateEmailVerifier(manager.client(), email_field.host_frame());
+      GetOrCreateEmailVerifier(manager.client(), rfh);
   if (!verifier) {
     return;
   }
+
+  // Record that the page has triggered the email verification protocol and
+  // the feature is active. We record this use counter when verification is
+  // first triggered on a page that successfully opted into the origin trial.
+  // Note that the use counter shouldn't depend on the status of strike or
+  // verify. It only represents whether the API is triggered on the website.
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
+      rfh, blink::mojom::WebFeature::kEmailVerificationProtocol);
 
   std::string email_utf8 = base::UTF16ToUTF8(email_value);
 
@@ -352,8 +366,9 @@ void EmailVerifierDelegate::TriggerVerification(
   PrefService* prefs = manager.client().GetPrefs();
   bool already_allowed = false;
   if (prefs) {
-    const auto& state = prefs->GetDict(prefs::kAutofillEmailVerificationState);
-    const auto* email_data = state.FindDict(email_utf8);
+    const base::DictValue& state =
+        prefs->GetDict(prefs::kAutofillEmailVerificationState);
+    const base::DictValue* email_data = state.FindDict(email_utf8);
     already_allowed =
         email_data && email_data->FindBool("allowed").value_or(false);
   }
