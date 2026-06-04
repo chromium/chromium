@@ -33,6 +33,7 @@ source_set("coordinator") {
     "//components/sync/service",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_content/ui_bundled:ui",
     "//ios/chrome/browser/bubble/model",

@@ -28982,6 +28982,15 @@ should be able to be added at any place in this file.
   <description>User pressed the 'Homepage' item in the app menu.</description>
 </action>
 
+<action name="MobileMenuIdentityMenu">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <description>
+    User pressed the identity details button in the overflow menu to open the
+    account menu.
+  </description>
+</action>
+
 <action name="MobileMenuIncognitoSearch">
   <obsolete>Deprecated as of 3/2023</obsolete>
   <owner>gambard@chromium.org</owner>

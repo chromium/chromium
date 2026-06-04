@@ -38,6 +38,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -2642,8 +2643,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens the account menu.
 - (void)showAccountMenu {
-  // TODO(crbug.com/517131639): Needs to open the account menu.
-  NOTIMPLEMENTED();
+  RecordAction(UserMetricsAction("MobileMenuIdentityMenu"));
+  [self dismissMenu];
+  [self.sceneHandler
+      showAccountMenuWithAccessPoint:AccountMenuAccessPoint::kOverflowMenu];
 }
 
 // Dismisses the menu and opens Text Zoom

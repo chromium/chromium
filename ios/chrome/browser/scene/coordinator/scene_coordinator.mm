@@ -861,6 +861,21 @@ void OnListFamilyMembersResponse(
   [_accountMenuCoordinator start];
 }
 
+- (void)showAccountMenuWithAccessPoint:(AccountMenuAccessPoint)accessPoint {
+  if (_accountMenuCoordinator) {
+    // Avoid double tap issue.
+    return;
+  }
+  _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:_regularBrowser.get()
+                      anchorView:nil
+                     accessPoint:accessPoint
+                             URL:GURL()];
+  _accountMenuCoordinator.delegate = self;
+  [_accountMenuCoordinator start];
+}
+
 - (void)showWebSigninPromoFromViewController:(UIViewController*)viewController
                                          URL:(const GURL&)URL {
   // Do not display the web sign-in promo if there is any UI on the screen.

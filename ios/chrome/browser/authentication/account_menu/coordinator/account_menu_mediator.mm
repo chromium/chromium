@@ -507,11 +507,13 @@
       continuation = CreateChangeProfileOpensURLContinuation(_url);
       break;
     }
-    case AccountMenuAccessPoint::kAppBar:
-      break;
     case AccountMenuAccessPoint::kPageActionMenu:
     case AccountMenuAccessPoint::kGeminiEntryFlow:
       continuation = CreateChangeProfileOpensURLContinuation(_url);
+      break;
+    case AccountMenuAccessPoint::kAppBar:
+    case AccountMenuAccessPoint::kOverflowMenu:
+      // No continuation to trigger after a profile switching.
       break;
   }
   void (^completion)() = base::CallbackToBlock(

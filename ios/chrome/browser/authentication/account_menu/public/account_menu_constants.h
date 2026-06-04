@@ -23,6 +23,8 @@ enum class AccountMenuAccessPoint {
   // Presented from the Gemini entry flow when the signed-in account
   // is ineligible due to Gemini policy restriction.
   kGeminiEntryFlow,
+  // The account menu triggered from the overflow menu.
+  kOverflowMenu,
 };
 
 // The accessibility identifier of the view controller's view.
