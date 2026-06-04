@@ -42,6 +42,19 @@ class ActorUiStateManagerInterface {
   virtual void MaybeShowToast(BrowserWindowInterface* bwi) = 0;
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Lazily initializes the tab strip tracker when the first actor task is
+  // created.
+  // Since ActorKeyedService is constructed during Profile/TestingProfile
+  // instantiation, eager initialization in the constructor would invoke
+  // BrowserTabStripTracker::Init() immediately. This triggers crashes in
+  // headless environments or non-UI/backend unit tests (e.g., due to a missing
+  // DeviceDataManager or X server/$DISPLAY) that instantiate a profile without
+  // a complete UI environment. Delaying until the first task ensures the UI
+  // environment is fully set up.
+  virtual void LazyInitTabTracker() = 0;
+#endif
+
   // Gets the title of a given task, this includes active tasks and tasks that
   // have stopped within an `kGlicActorUiCompletedTaskExpiryDelaySeconds` period
   // of time.

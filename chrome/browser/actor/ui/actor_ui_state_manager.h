@@ -15,6 +15,12 @@ namespace tabs {
 class TabInterface;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+namespace actor {
+class ActorTabStripTrackerDesktop;
+}
+#endif
+
 namespace actor::ui {
 class ActorUiStateManager : public ActorUiStateManagerInterface {
  public:
@@ -26,6 +32,10 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   void OnUiEvent(SyncUiEvent event) override;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void MaybeShowToast(BrowserWindowInterface* bwi) override;
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  void LazyInitTabTracker() override;
 #endif
 
   std::optional<std::string> GetActorTaskTitle(TaskId id) override;
@@ -69,6 +79,10 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 
   const raw_ref<ActorKeyedService> actor_service_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<actor::ActorTabStripTrackerDesktop> tab_strip_tracker_;
+#endif
 
   base::RepeatingCallbackList<void(TaskId)>
       actor_task_state_change_callback_list_;

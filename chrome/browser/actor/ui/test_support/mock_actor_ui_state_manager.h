@@ -26,6 +26,9 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   MOCK_METHOD(void, MaybeShowToast, (BrowserWindowInterface * bwi), (override));
 #endif  // BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, LazyInitTabTracker, (), (override));
+#endif
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterActorTaskStateChange,
               (ActorTaskStateChangeCallback callback),

@@ -617,14 +617,10 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle,
     return;
   }
 
-  auto emplace_result = controlled_tabs_.emplace(
+  controlled_tabs_.emplace(
       tab_handle,
       std::make_unique<ActorControlledTabState>(this, stop_task_on_detach));
-  if (tabs::TabInterface* tab = tab_handle.Get()) {
-    emplace_result.first->second->will_detach_subscription =
-        tab->RegisterWillDetach(base::BindRepeating(
-            &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
-  }
+
   DidTabEnterActorControl(tab_handle);
 
   // Notify the UI of the new tab.
@@ -713,25 +709,22 @@ void ActorTask::ObserveTabOnce(tabs::TabHandle tab_handle) {
                  .first;
   ActorControlledTabState* state = itr->second.get();
 
-  state->will_detach_subscription = tab->RegisterWillDetach(base::BindRepeating(
-      &ActorTask::OnTabWillDetach, weak_ptr_factory_.GetWeakPtr()));
   DidContentsEnterActorControl(state, tab->GetContents());
 }
 
-void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
-                                tabs::TabInterface::DetachReason reason) {
-  if (reason != tabs::TabInterface::DetachReason::kDelete) {
+void ActorTask::OnTabWillDetach(tabs::TabHandle handle) {
+  to_observe_tabs_.erase(handle);
+
+  // If the removed tab is only being observed, we can just remove it without
+  // disrupting the task. If the task hasn't gotten the observation it wanted
+  // for this tab, then won't be able to get it and will need to do something
+  // else.
+  if (!HasTab(handle)) {
     return;
   }
-  if (to_observe_tabs_.contains(tab->GetHandle())) {
-    // If the removed tab is only being observed, we can just remove it without
-    // disrupting the task. If the task hasn't gotten the observation it wanted
-    // for this tab, then won't be able to get it and will need to do something
-    // else.
-    to_observe_tabs_.erase(tab->GetHandle());
-  }
+
   const auto* controlled_tab_state =
-      base::FindPtrOrNull(controlled_tabs_, tab->GetHandle());
+      base::FindPtrOrNull(controlled_tabs_, handle);
   if (!controlled_tab_state || !controlled_tab_state->stop_task_on_detach) {
     return;
   }
@@ -739,10 +732,9 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
   // TODO(mcnee): This will also stop a task that's paused. Should we leave
   // paused tasks as is?
 
-  journal_->Log(GURL(), id(), "Acting Tab Deleted",
-                JournalDetailsBuilder()
-                    .Add("tab_id", tab->GetHandle().raw_value())
-                    .Build());
+  journal_->Log(
+      GURL(), id(), "Acting Tab Deleted",
+      JournalDetailsBuilder().Add("tab_id", handle.raw_value()).Build());
 
   service_->StopTask(id(), StoppedReason::kTabDetached);
 }

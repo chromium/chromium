@@ -286,6 +286,17 @@ source_set("ui") {
     "//ui/base/unowned_user_data",
   ]
 
+  if (!is_android) {
+    sources += [
+      "../actor_tab_strip_tracker_desktop.cc",
+      "../actor_tab_strip_tracker_desktop.h",
+    ]
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/ui:browser_tab_strip",
+    ]
+  }
+
   if (!skip_android_unmigrated_actor_files) {
     sources += [
       "actor_border_view_controller.cc",

@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,6 +15,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
@@ -30,7 +33,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/actor.mojom.h"
@@ -46,6 +51,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -148,6 +154,7 @@ ActorKeyedService* ActorKeyedService::Get(content::BrowserContext* context) {
 
 void ActorKeyedService::SetActorUiStateManagerForTesting(
     std::unique_ptr<ui::ActorUiStateManagerInterface> ausm) {
+  CHECK(ausm);
   actor_ui_state_manager_ = std::move(ausm);
 }
 
@@ -385,6 +392,11 @@ TaskId ActorKeyedService::CreateTaskImpl(
       policy_checker, std::move(delegate));
 
   active_tasks_[task_id] = std::move(actor_task);
+
+#if !BUILDFLAG(IS_ANDROID)
+  actor_ui_state_manager_->LazyInitTabTracker();
+#endif
+
   NotifyTaskStateChanged(*active_tasks_[task_id]);
   return task_id;
 }

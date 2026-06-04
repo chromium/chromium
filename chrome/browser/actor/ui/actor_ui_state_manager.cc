@@ -23,6 +23,10 @@
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/actor_tab_strip_tracker_desktop.h"
+#endif
+
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
@@ -30,6 +34,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
 #endif
+
+// TODO(crbug.com/519294360): Implement ActorAndroidUITracker. Since
+// TabStripModelObserver is desktop-only, the mobile equivalent on Android will
+// implement TabModelObserver and TabModelListObserver to monitor tab events in
+// real-time.
 
 namespace actor::ui {
 namespace {
@@ -266,6 +275,7 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
   TRACE_EVENT("actor", "UiStateManager::OnUiEvent_Sync", "event",
               DebugString(event));
+
   if (!base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     return;
   }
@@ -417,5 +427,14 @@ std::optional<actor::ActorTask::State> ActorUiStateManager::GetActorTaskState(
 size_t ActorUiStateManager::GetInactiveTaskCount() {
   return stopped_task_info_.size();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ActorUiStateManager::LazyInitTabTracker() {
+  if (!tab_strip_tracker_) {
+    tab_strip_tracker_ = std::make_unique<actor::ActorTabStripTrackerDesktop>(
+        actor_service_.get());
+  }
+}
+#endif
 
 }  // namespace actor::ui

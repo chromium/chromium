@@ -273,6 +273,8 @@ class ActorTask : public base::SupportsUserData {
     return additional_tab_observations_;
   }
 
+  void OnTabWillDetach(tabs::TabHandle handle);
+
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
    public:
@@ -295,8 +297,7 @@ class ActorTask : public base::SupportsUserData {
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
     base::ScopedClosureRunner reenable_external_popups;
 #endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
-    // Subscription for TabInterface::WillDetach.
-    base::CallbackListSubscription will_detach_subscription;
+
     // Subscription for TabInterface::WillDiscardContents.
     base::CallbackListSubscription content_discarded_subscription;
 
@@ -329,9 +330,6 @@ class ActorTask : public base::SupportsUserData {
 
   void OnFinishedAct(std::vector<ActionResultWithLatencyInfo> action_results,
                      TabObservationStrategy observation_strategy);
-
-  void OnTabWillDetach(tabs::TabInterface* tab,
-                       tabs::TabInterface::DetachReason reason);
 
   void ResetToObserveTabsSet();
   void ResetAdditionalTabObservations();

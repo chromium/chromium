@@ -1428,7 +1428,8 @@ CreateActorJournalFetchPageProgressListener(
 
 std::optional<mojom::ActionResultCode> MaybeGetErrorCodeForTab(
     tabs::TabInterface* tab_interface) {
-  if (!tab_interface || tab_interface->GetContents()->IsBeingDestroyed()) {
+  if (!tab_interface || !tab_interface->GetContents() ||
+      tab_interface->GetContents()->IsBeingDestroyed()) {
     return mojom::ActionResultCode::kTabWentAway;
   } else if (tab_interface->GetContents()->IsCrashed()) {
     return mojom::ActionResultCode::kRendererCrashed;

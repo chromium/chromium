@@ -404,6 +404,7 @@ source_set("browser_tests") {
 
   sources = [
     "actor_keyed_service_browsertest.cc",
+    "actor_keyed_service_browsertest.h",
     "actor_util_browsertest.cc",
     "tools/attempt_login_tool_browsertest.cc",
   ]
@@ -452,6 +453,7 @@ source_set("browser_tests") {
     deps += [ "//chrome/test:test_support_ui_android" ]
   } else {
     deps += [ "//chrome/test:test_support_ui" ]
+    sources += [ "actor_keyed_service_browsertest_desktop.cc" ]
   }
 
   if (is_linux) {
