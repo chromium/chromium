@@ -704,7 +704,7 @@ void NewWindow(BrowserWindowInterface* browser);
 void NewIncognitoWindow(Profile* profile);
 void CloseWindow(BrowserWindowInterface* browser);
 content::WebContents& NewTab(BrowserWindowInterface* browser,
-                             NewTabTypes context = NewTabTypes::kNewTabCommand);
+                             NewTabTypes context);
 void NewTabToRight(BrowserWindowInterface* browser);
 void NewTabFromClipboardURL(BrowserWindowInterface* browser);
 void CloseTab(BrowserWindowInterface* browser);

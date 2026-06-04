@@ -390,7 +390,7 @@ class TabMenuModelSplitViewHorizontalBrowserTest
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelSplitViewHorizontalBrowserTest,
                        ToggleOrientationMenuAction) {
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNewTabCommand);
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(tab_strip_model->count(), 2);
@@ -557,8 +557,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithInactiveTab) {
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, SwapWithSplitActiveTabChanged) {
   // Add 3 tabs to the browser.
-  chrome::NewTab(browser());
-  chrome::NewTab(browser());
+  chrome::NewTab(browser(), NewTabTypes::kNewTabCommand);
+  chrome::NewTab(browser(), NewTabTypes::kNewTabCommand);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(tab_strip_model->count(), 3);
 
