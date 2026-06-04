@@ -25,6 +25,7 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     private @Nullable WindowAndroid mWindowAndroid;
     private final ViewEventSinkImpl mViewEventSink;
     private boolean mAttachedToWindow;
+    private @Nullable DisplayAndroid mObservedDisplay;
 
     // The cache of device's current orientation and DIP scale factor.
     private int mRotation;
@@ -116,6 +117,9 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     }
 
     public void onConfigurationChanged(Configuration newConfig) {
+        // Configuration change (e.g. folding/unfolding) can change the display instance
+        // associated with the window. Update the observer if needed.
+        addDisplayAndroidObserverIfNeeded();
         for (WindowEventObserver observer : mWindowEventObservers) {
             observer.onConfigurationChanged(newConfig);
         }
@@ -130,9 +134,15 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     private void addDisplayAndroidObserverIfNeeded() {
         if (!mAttachedToWindow || mWindowAndroid == null) return;
         DisplayAndroid display = mWindowAndroid.getDisplay();
-        display.addObserver(this);
-        onRotationChanged(display.getRotation());
-        onDIPScaleChanged(display.getDipScale());
+        if (display == mObservedDisplay) return;
+
+        if (mObservedDisplay != null) {
+            mObservedDisplay.removeObserver(this);
+        }
+        mObservedDisplay = display;
+        mObservedDisplay.addObserver(this);
+        onRotationChanged(mObservedDisplay.getRotation());
+        onDIPScaleChanged(mObservedDisplay.getDipScale());
     }
 
     private void addActivityStateObserver() {
@@ -157,8 +167,9 @@ public final class WindowEventObserverManager implements DisplayAndroidObserver,
     }
 
     private void removeDisplayAndroidObserver() {
-        if (mWindowAndroid == null) return;
-        mWindowAndroid.getDisplay().removeObserver(this);
+        if (mObservedDisplay == null) return;
+        mObservedDisplay.removeObserver(this);
+        mObservedDisplay = null;
     }
 
     private void removeActivityStateObserver() {

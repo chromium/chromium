@@ -736,6 +736,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/GestureListenerManagerImplUnitTest.java",
     "junit/src/org/chromium/content/browser/ScreenOrientationProviderImplTest.java",
     "junit/src/org/chromium/content/browser/SpareChildConnectionTest.java",
+    "junit/src/org/chromium/content/browser/WindowEventObserverManagerTest.java",
     "junit/src/org/chromium/content/browser/androidoverlay/DialogOverlayCoreTest.java",
     "junit/src/org/chromium/content/browser/input/AutocorrectManagerTest.java",
     "junit/src/org/chromium/content/browser/input/ImeAdapterImplTest.java",

@@ -892,6 +892,7 @@ void WebContentsAndroid::SendOrientationChangeEvent(JNIEnv* env,
 void WebContentsAndroid::OnScaleFactorChanged(JNIEnv* env) {
   RenderWidgetHostViewAndroid* rwhva = GetRenderWidgetHostViewAndroid();
   if (rwhva) {
+    rwhva->UpdateScreenInfo();
     // |SendScreenRects()| indirectly calls GetViewSize() that asks Java layer.
     web_contents_->SendScreenRects();
     rwhva->SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
