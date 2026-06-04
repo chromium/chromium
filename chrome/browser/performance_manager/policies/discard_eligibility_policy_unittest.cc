@@ -241,7 +241,7 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardNeverAudiblePage) {
   constexpr base::TimeDelta kMinTimeInBackground = kTabAudioProtectionTime / 2;
   task_env().FastForwardBy(kMinTimeInBackground);
 
-  ExpectCanDiscardEligibleAllReasons(page_node(),
+  ExpectCanDiscardEligibleAllReasons(new_page_node.get(),
                                      /*ignore_recent_visibility=*/true);
 }
 
