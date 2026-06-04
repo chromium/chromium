@@ -1234,6 +1234,10 @@ void PaintArtifactCompositor::Update(
       canvas_child_layer_map_.Set(effect.CanvasChildId(), i);
       layer.SetCanvasChildId(
           CompositorElementIdFromDOMNodeId(effect.CanvasChildId()));
+    } else {
+      // All layers under canvas children should be merged into the
+      // canvas child's layer.
+      CHECK(!effect.IsInCanvasSubtree());
     }
 
     if (layer.subtree_property_changed())

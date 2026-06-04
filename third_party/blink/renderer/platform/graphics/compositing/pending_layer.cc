@@ -274,14 +274,12 @@ bool PendingLayer::CanMerge(
     force_merge = true;
   }
 
-  // Force merge descendants of the same canvas layout subtree. This ensures
-  // that all PendingLayers within a canvas child are grouped together
+  // Force merge all content under canvas so that it can be drawn using
+  // html-in-canvas APIs, and so that it is not drawn as a regular
+  // cc::Layer.
   if (!force_merge) {
-    const auto& home_effect = GetPropertyTreeState().Effect();
-    if (home_effect.RequiresCompositingForCanvasChild()) {
-      force_merge =
-          home_effect.IsAncestorOf(guest.GetPropertyTreeState().Effect());
-    }
+    force_merge = GetPropertyTreeState().Effect().IsInCanvasSubtree() &&
+                  guest.GetPropertyTreeState().Effect().IsInCanvasSubtree();
   }
 
   if (!force_merge) {

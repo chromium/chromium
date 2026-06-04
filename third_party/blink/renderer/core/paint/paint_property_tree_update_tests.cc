@@ -4,6 +4,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -2380,6 +2381,45 @@ TEST_P(PaintPropertyTreeUpdateTest, FixedPositionChangeCompositingReason) {
                      AtomicString("top: 100px; left: 0"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(translation->IsAffectedByOuterViewportBoundsDelta());
+}
+
+TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreePseudoElementFilter) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      canvas { width: 200px; height: 200px; }
+      #target::before {
+        content: 'FAIL';
+        filter: drop-shadow(0px 0px 0px rgba(0,0,0,0));
+      }
+    </style>
+    <canvas id="canvas" layoutsubtree>
+      <div id="target"></div>
+    </canvas>
+  )HTML");
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  PseudoElement* before = target->GetPseudoElement(kPseudoIdBefore);
+  LayoutObject* before_layout = before->GetLayoutObject();
+  const auto* properties = before_layout->FirstFragment().PaintProperties();
+
+  // Initially, the pseudo-element is inside the layoutsubtree canvas,
+  // so its filter effect node should have is_in_canvas_subtree set to true.
+  const auto* filter_effect = properties->Filter();
+  EXPECT_TRUE(filter_effect->IsInCanvasSubtree());
+
+  // Now, dynamically move the target out of the canvas.
+  GetDocument().body()->appendChild(target);
+  UpdateAllLifecyclePhasesForTest();
+
+  // The filter effect node should now have is_in_canvas_subtree set to false.
+  before = target->GetPseudoElement(kPseudoIdBefore);
+  before_layout = before->GetLayoutObject();
+  properties = before_layout->FirstFragment().PaintProperties();
+  filter_effect = properties->Filter();
+  EXPECT_FALSE(filter_effect->IsInCanvasSubtree());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, CanvasScriptsDisabled) {
