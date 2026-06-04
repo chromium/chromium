@@ -519,11 +519,11 @@ public class AutocompleteMatch {
         }
 
         AutocompleteMatch suggestion = (AutocompleteMatch) obj;
-        boolean answer_template_is_equal =
+        boolean answerTemplateIsEqual =
                 (mAnswerTemplate != null && suggestion.mAnswerTemplate != null)
                         ? mAnswerTemplate.equals(suggestion.mAnswerTemplate)
                         : mAnswerTemplate == null && suggestion.mAnswerTemplate == null;
-        boolean suggest_template_is_equal =
+        boolean suggestTemplateIsEqual =
                 (mSuggestTemplate != null && suggestion.mSuggestTemplate != null)
                         ? mSuggestTemplate.equals(suggestion.mSuggestTemplate)
                         : mSuggestTemplate == null && suggestion.mSuggestTemplate == null;
@@ -543,8 +543,8 @@ public class AutocompleteMatch {
                 && mGroupId == suggestion.mGroupId
                 && mAnswerType == suggestion.mAnswerType
                 && mAndroidTabId == suggestion.mAndroidTabId
-                && answer_template_is_equal
-                && suggest_template_is_equal
+                && answerTemplateIsEqual
+                && suggestTemplateIsEqual
                 && ObjectsCompat.equals(mTabGroupUuid, suggestion.mTabGroupUuid)
                 && ObjectsCompat.equals(mAssociatedKeyword, suggestion.mAssociatedKeyword);
     }

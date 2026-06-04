@@ -4,7 +4,6 @@
 
 package org.chromium.components.omnibox;
 
-import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -313,7 +312,7 @@ public class AutocompleteMatchBuilder {
      * @param actions List of actions to add to the AutocompleteMatch.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setActions(@NonNull List<OmniboxAction> actions) {
+    public AutocompleteMatchBuilder setActions(List<OmniboxAction> actions) {
         mActions = actions;
         return this;
     }
