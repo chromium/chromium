@@ -22,6 +22,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -435,4 +436,57 @@ TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefUpdated) {
       profile()->GetPrefs()->GetInteger(
           bookmarks::prefs::kBookmarkBarVisibilityState),
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+}
+
+class BookmarkBarTabGroupsTest : public BookmarkTest {
+ public:
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    auto factories = BookmarkTest::GetTestingFactories();
+    factories.push_back(TestingProfile::TestingFactory{
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+        })});
+    return factories;
+  }
+};
+
+TEST_F(BookmarkBarTabGroupsTest, SavedTabGroupsRespectPrefOnNTP) {
+  // Ensure bookmark model is loaded (empty).
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  ASSERT_FALSE(bookmark_model->HasBookmarks());
+
+  // Get the fake tab group sync service.
+  auto* service = static_cast<tab_groups::FakeTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+  ASSERT_TRUE(service);
+
+  // Add a saved tab group.
+  AddGroup(u"Test Group", service);
+  ASSERT_FALSE(service->GetAllGroups().empty());
+
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  // Set NTP as active tab.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  tab_strip_model_->AppendWebContents(std::move(web_contents),
+                                      /*foreground=*/true);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_strip_model_->GetActiveWebContents(),
+      chrome::ChromeUINewTabURLAsGURL());
+
+  // Case 1: Pref is ON (default is usually ON, but let's set it explicitly).
+  profile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
+  EXPECT_EQ(BookmarkBar::SHOW, controller.bookmark_bar_state());
+
+  // Case 2: Pref is OFF.
+  profile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller.bookmark_bar_state());
 }

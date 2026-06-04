@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -77,6 +78,11 @@ BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       bookmarks::prefs::kShowBookmarkBar,
+      base::BindRepeating(&BookmarkBarController::UpdateBookmarkBarState,
+                          base::Unretained(this),
+                          StateChangeReason::kPrefChange));
+  pref_change_registrar_.Add(
+      bookmarks::prefs::kShowTabGroupsInBookmarkBar,
       base::BindRepeating(&BookmarkBarController::UpdateBookmarkBarState,
                           base::Unretained(this),
                           StateChangeReason::kPrefChange));
@@ -208,7 +214,8 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   const bool has_saved_tab_groups =
-      tab_group_service && !tab_group_service->GetAllGroups().empty();
+      tab_group_service && !tab_group_service->GetAllGroups().empty() &&
+      chrome::ShouldShowTabGroupsInBookmarkBar(profile);
 
   // The bookmark bar is only shown if the user has added something to it.
   if (!has_bookmarks && !has_saved_tab_groups) {
