@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
+#include "base/test/fuzztest_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -25,6 +27,7 @@
 #include "net/dns/public/host_resolver_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -2082,4 +2085,72 @@ TEST_F(HostResolverCacheTest, SerializeForLogging) {
 }
 
 }  // namespace
+
+// Generates a seed corpus containing a single valid serialized
+// HostResolverCache. The cache serialization format is highly structured
+// (containing query types, IP endpoints, TTLs, etc.), so the seed corpus is
+// created from the HostResolverInternalDataResult implementation.
+std::vector<std::tuple<size_t, base::Value>> GetHostResolverCacheSeeds() {
+  std::vector<std::tuple<size_t, base::Value>> seeds;
+
+  HostResolverCache cache(10);
+
+  const std::string kName = "foo.test";
+  const base::TimeDelta kTtl = base::Minutes(2);
+  const std::vector<IPEndPoint> kEndpoints = {
+      IPEndPoint(IPAddress(1, 2, 3, 4), /*port=*/0),
+      IPEndPoint(IPAddress(2, 3, 4, 5), /*port=*/0)};
+
+  auto result = std::make_unique<HostResolverInternalDataResult>(
+      kName, DnsQueryType::A, base::TimeTicks::Now() + kTtl,
+      base::Time::Now() + kTtl, HostResolverInternalResult::Source::kDns,
+      kEndpoints,
+      /*strings=*/std::vector<std::string>{},
+      /*hosts=*/std::vector<HostPortPair>{});
+
+  cache.Set(std::move(result), NetworkAnonymizationKey(),
+            HostResolverSource::DNS,
+            /*secure=*/false);
+
+  seeds.emplace_back(10, cache.Serialize());
+  return seeds;
+}
+
+void SerializationDoesNotCrash(size_t cache_size, const base::Value& value) {
+  HostResolverCache cache(cache_size);
+  if (!cache.RestoreFromValue(value)) {
+    return;
+  }
+
+  base::Value reserialized = cache.Serialize();
+
+  if (cache.AtMaxSizeForTesting()) {
+    return;
+  }
+
+  if (value == reserialized) {
+    return;
+  }
+
+  // The mutator may have added unrecognized keys to the input `value`.
+  // `RestoreFromValue` silently ignores these unrecognized keys, but
+  // `Serialize()` does not write them back out.
+  //
+  // To verify serialization correctness without failing on these ignored keys,
+  // we perform a second round-trip using the `reserialized` value. Restoring
+  // and re-serializing this cleaned value will verify the cleaned values.
+  HostResolverCache canonical_cache(cache_size);
+  CHECK(canonical_cache.RestoreFromValue(reserialized));
+
+  base::Value double_reserialized = canonical_cache.Serialize();
+  CHECK_EQ(reserialized, double_reserialized);
+}
+
+FUZZ_TEST(HostResolverCacheFuzzTest, SerializationDoesNotCrash)
+    // A bit above the kDefaultCacheSize limit of 1000 in
+    // net/dns/resolve_context.cc
+    .WithDomains(fuzztest::InRange<size_t>(1, 1100),
+                 fuzztest::Arbitrary<base::Value>())
+    .WithSeeds(GetHostResolverCacheSeeds);
+
 }  // namespace net
