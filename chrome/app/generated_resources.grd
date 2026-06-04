@@ -1717,6 +1717,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_REOPEN_GROUP" desc="The text label of the Reopen Closed Group menu item">
           Reopen closed group
         </message>
+        <message name="IDS_REOPEN_SPLIT" desc="The text label of the Reopen Closed Split menu item">
+          Reopen closed split view
+        </message>
         <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
           &amp;Restore window
         </message>
@@ -1766,6 +1769,9 @@ are declared in tools/grit/grit_args.gni.
         </message>
         <message name="IDS_REOPEN_GROUP" desc="In Title Case: The text label of the Reopen Closed Group menu item">
           Reopen Closed Group
+        </message>
+        <message name="IDS_REOPEN_SPLIT" desc="In Title Case: The text label of the Reopen Closed Split menu item">
+          Reopen Closed Split View
         </message>
         <message name="IDS_REPORT_UNSAFE_SITE" desc="In Title Case: Text label of the Report Unsafe Site menu item">
           Report an &amp;Unsafe Site...
