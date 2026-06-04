@@ -2257,6 +2257,22 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void triggerSiteSearch_NoOpsInAiMode() {
+        FuseboxSessionState session = createEmptySession();
+        mMediator.beginInput(session);
+        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+
+        setUpSiteSearchSpaceTrigger(
+                /* keyword= */ "test",
+                /* shortName= */ "Test",
+                /* fullName= */ "Test Site",
+                /* userQuery= */ "abc");
+
+        assertFalse(mMediator.triggerSiteSearch(SiteSearchActivationSource.SPACE));
+    }
+
+    @Test
+    @SmallTest
     public void onInputChanged_setsAllowParkingAtSentinelProperty_mobile() {
         var session = createEmptySession();
         mMediator.beginInput(session);

@@ -99,6 +99,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AimModelsProto.ModelMode;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
@@ -2379,6 +2380,12 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
         mMediator.beginInput(createSession());
+        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+
+        mInput.setSiteSearchData(new SiteSearchData("test", "Test"));
+        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+
+        mInput.setSiteSearchData(null);
         assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);

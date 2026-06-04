@@ -1204,6 +1204,10 @@ class AutocompleteMediator
             return false;
         }
 
+        if (ToolModeUtils.isAimRequest(mAutocompleteInput.getRequestType())) {
+            return false;
+        }
+
         // If a site search is already active, do not trigger another site search.
         if (mAutocompleteInput.getSiteSearchData() != null) {
             return false;

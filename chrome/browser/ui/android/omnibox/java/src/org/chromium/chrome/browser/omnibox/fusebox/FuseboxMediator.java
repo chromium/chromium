@@ -67,6 +67,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
@@ -104,6 +105,8 @@ import java.util.function.Supplier;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
+    private final Callback<@Nullable SiteSearchData> mOnSiteSearchDataChanged =
+            this::onSiteSearchDataChanged;
     private final Callback<InputState> mOnInputStateChanged = this::onInputStateChange;
     private final Callback<List<SuggestedTabInfo>> mOnSuggestedTabsChanged =
             this::reconcileSuggestedTabs;
@@ -356,6 +359,7 @@ import java.util.function.Supplier;
     private void setAutocompleteInput(@Nullable AutocompleteInput input) {
         if (mInput != null) {
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
+            mInput.getSiteSearchDataSupplier().removeObserver(mOnSiteSearchDataChanged);
         }
         mInput = input;
         if (mInput == null) {
@@ -374,6 +378,8 @@ import java.util.function.Supplier;
 
             mInput.getRequestTypeSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteRequestTypeChanged);
+            mInput.getSiteSearchDataSupplier()
+                    .addSyncObserverAndCallIfNonNull(mOnSiteSearchDataChanged);
         }
     }
 
@@ -964,13 +970,18 @@ import java.util.function.Supplier;
         }
     }
 
+    private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {
+        updateActivationChip();
+    }
+
     private void updateActivationChip() {
         boolean showActivationChip =
                 isInInputSession()
                         && mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         && mModel.get(FuseboxProperties.REQUEST_TYPE)
-                                == AutocompleteRequestType.SEARCH;
+                                == AutocompleteRequestType.SEARCH
+                        && mInput.getSiteSearchData() == null;
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, showActivationChip);
     }
 
