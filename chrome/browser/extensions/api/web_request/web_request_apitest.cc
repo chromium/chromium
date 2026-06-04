@@ -7419,6 +7419,110 @@ IN_PROC_BROWSER_TEST_F(
   // NOT crash.
 }
 
+// Tests that a request resumes when a stale lazy webRequest listener has a
+// different filter than the re-registered listener.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       WebRequestBlocking_MismatchedLazyReregistration) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestBlocking"],
+           "host_permissions": [
+             "http://example.com/*",
+             "http://mismatch.example/*"
+           ],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               return new Promise(() => {});
+             },
+             {urls: ['http://mismatch.example/*'], types: ['main_frame']},
+             ['blocking']);
+         chrome.test.sendMessage('ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  const Extension* extension = LoadPolicyExtension(test_dir);
+  ASSERT_TRUE(extension);
+
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  std::optional<WorkerId> worker_id = GetWorkerIdForExtension(extension->id());
+  ASSERT_TRUE(worker_id);
+  int version_id = worker_id->version_id;
+
+  // Stop the worker so its current webRequest listener becomes inactive.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   version_id));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return web_request_router()->GetListenerCountForTesting(
+               profile(), "webRequest.onBeforeRequest") == 0u &&
+           web_request_router()->GetInactiveListenerCount(
+               profile(), "webRequest.onBeforeRequest") == 1u;
+  }));
+
+  EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(1u, web_request_router()->GetInactiveListenerCount(
+                    profile(), "webRequest.onBeforeRequest"));
+
+  // Simulate stale inactive listener state where an old listener can wake the
+  // service worker, but the worker registers a different filter under the same
+  // generated sub-event name.
+  base::DictValue stale_filter_value;
+  base::ListValue urls;
+  urls.Append("http://example.com/*");
+  stale_filter_value.Set("urls", std::move(urls));
+  base::ListValue types;
+  types.Append("main_frame");
+  stale_filter_value.Set("types", std::move(types));
+  WebRequestEventRouter::RequestFilter stale_filter;
+  std::string error;
+  ASSERT_TRUE(stale_filter.InitFromValue(stale_filter_value, &error)) << error;
+  ASSERT_TRUE(web_request_router()->AddEventListener(
+      profile(), extension->id(), extension->name(),
+      "webRequest.onBeforeRequest", "webRequest.onBeforeRequest/s1",
+      std::move(stale_filter),
+      extension_web_request_api_helpers::ExtraInfoSpec::BLOCKING,
+      -1 /* render_process_id */, 0 /* web_view_instance_id */,
+      -1 /* worker_thread_id */, blink::mojom::kInvalidServiceWorkerVersionId,
+      true /* is_lazy */));
+
+  // Navigating to the stale filter should wake the worker. The worker then
+  // registers the mismatched listener from `kBackgroundJs`.
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::TestNavigationObserver nav_observer(web_contents);
+  ExtensionTestMessageListener reregistered_listener("ready");
+  content::NavigationController::LoadURLParams params(url);
+  web_contents->GetController().LoadURLWithParams(params);
+  ASSERT_TRUE(reregistered_listener.WaitUntilSatisfied());
+
+  // The stale listener should have been cleaned up, allowing the navigation to
+  // finish instead of waiting forever for the stale listener's response.
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(1u, web_request_router()->GetListenerCountForTesting(
+                    profile(), "webRequest.onBeforeRequest"));
+  EXPECT_EQ(0u, web_request_router()->GetInactiveListenerCount(
+                    profile(), "webRequest.onBeforeRequest"));
+}
+
 // Tests unloading an extension with lazy listeners while the worker is
 // inactive. The listeners should be properly cleaned up.
 IN_PROC_BROWSER_TEST_F(

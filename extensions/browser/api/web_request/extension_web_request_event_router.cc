@@ -1866,8 +1866,8 @@ void WebRequestEventRouter::OnEventHandled(
   // listener that fails to re-register upon wake-up (via
   // `cannot_dispatch_callback`) causes the request to resume before other
   // blocking listeners have responded. See crbug.com/412695438.
-  if (listener->IsBlocking()) {
-    listener->blocked_requests.erase(request_id);
+  if (listener->IsBlocking() &&
+      listener->blocked_requests.erase(request_id) > 0) {
     DecrementBlockCount(browser_context, extension_id, event_name, request_id,
                         std::move(response), listener->extra_info_spec);
   }
@@ -1919,21 +1919,21 @@ bool WebRequestEventRouter::AddEventListener(
   listener->filter = std::move(filter);
   listener->extra_info_spec = extra_info_spec;
 
-  auto matches_sub_event = [browser_context, &extension_id, &sub_event_name](
-                               const std::unique_ptr<EventListener>& existing) {
-    return existing->id.browser_context == browser_context &&
-           existing->id.extension_id == extension_id &&
-           existing->id.sub_event_name == sub_event_name;
-  };
-
   if (is_lazy) {
     // Replace any inactive listener that already exists for this sub-event
     // name. This handles the case where prefs accumulated multiple filters
-    // under one sub-event-name in older builds. Each `AddEventListener` call
-    // collapses the duplicates to a single entry. See crbug.com/502402731.
+    // under one sub-event-name in older builds. `ReplaceInactiveListeners`
+    // keeps exact registration matches and cleans up stale mismatches.
+    // See crbug.com/502402731.
     auto& inactive = data_[browser_context_id].inactive_listeners[event_name];
-    std::erase_if(inactive, matches_sub_event);
-    AddLazyListener(browser_context, event_name, std::move(listener));
+    bool has_exact_registration_match =
+        ReplaceInactiveListeners(inactive, extension_id, sub_event_name,
+                                 browser_context_id, *listener) > 0u;
+    ListenerCountUpdate count_update =
+        has_exact_registration_match ? ListenerCountUpdate::kAlreadyCounted
+                                     : ListenerCountUpdate::kIncrement;
+    AddListenerToList(browser_context, inactive, std::move(listener),
+                      count_update);
     return true;
   }
 
@@ -1956,43 +1956,35 @@ bool WebRequestEventRouter::AddEventListener(
     // the *same order* in the extension. In practice, this should pretty much
     // always be the case, because we require listeners to be set up
     // synchronously.
-    size_t erased = std::erase_if(listeners, matches_sub_event);
-    // Only a single listener should ever match. It's possible no listener will
-    // match if this is a new listener in a worker context.
-    DCHECK_LE(erased, 1u);
-    is_reactivated = erased > 0u;
+    is_reactivated =
+        ReplaceInactiveListeners(listeners, extension_id, sub_event_name,
+                                 browser_context_id, *listener) > 0u;
   }
 
-  // If the listener was previously registered, there's no need to adjust the
-  // extra headers count.
-  if (!is_reactivated && listener->HasExtraHeaders()) {
-    IncrementExtraHeadersListenerCount(browser_context);
-  }
-
-  if (!is_reactivated && listener->HasSecurityInfo()) {
-    IncrementSecurityInfoListenerCount(browser_context);
-  }
-  data_[browser_context_id].active_listeners[event_name].push_back(
-      std::move(listener));
+  AddListenerToList(browser_context,
+                    data_[browser_context_id].active_listeners[event_name],
+                    std::move(listener),
+                    is_reactivated ? ListenerCountUpdate::kAlreadyCounted
+                                   : ListenerCountUpdate::kIncrement);
 
   return true;
 }
 
-void WebRequestEventRouter::AddLazyListener(
+void WebRequestEventRouter::AddListenerToList(
     content::BrowserContext* browser_context,
-    const std::string& event_name,
-    std::unique_ptr<EventListener> listener) {
-  BrowserContextID browser_context_id = GetBrowserContextID(browser_context);
-
-  if (listener->HasExtraHeaders()) {
-    IncrementExtraHeadersListenerCount(browser_context);
+    Listeners& listeners,
+    std::unique_ptr<EventListener> listener,
+    ListenerCountUpdate count_update) {
+  if (count_update == ListenerCountUpdate::kIncrement) {
+    if (listener->HasExtraHeaders()) {
+      IncrementExtraHeadersListenerCount(browser_context);
+    }
+    if (listener->HasSecurityInfo()) {
+      IncrementSecurityInfoListenerCount(browser_context);
+    }
   }
-  if (listener->HasSecurityInfo()) {
-    IncrementSecurityInfoListenerCount(browser_context);
-  }
 
-  data_[browser_context_id].inactive_listeners[event_name].push_back(
-      std::move(listener));
+  listeners.push_back(std::move(listener));
 }
 
 WebRequestEventRouter::EventListener* WebRequestEventRouter::FindEventListener(
@@ -2039,7 +2031,9 @@ WebRequestEventRouter::RemoveMatchingListeners(
     std::optional<content::ChildProcessId> render_process_id,
     std::optional<int> worker_thread_id,
     std::optional<int64_t> service_worker_version_id,
-    BrowserContextID browser_context_id) {
+    BrowserContextID browser_context_id,
+    const std::optional<base::DictValue>& filter_value,
+    std::optional<int> extra_info_spec) {
   Listeners removed_listeners;
   for (auto iter = listeners.begin(); iter != listeners.end();) {
     std::unique_ptr<EventListener>& listener = *iter;
@@ -2055,7 +2049,9 @@ WebRequestEventRouter::RemoveMatchingListeners(
         (!render_process_id || render_process_id == id.render_process_id) &&
         (!worker_thread_id || worker_thread_id == id.worker_thread_id) &&
         (!service_worker_version_id ||
-         service_worker_version_id == id.service_worker_version_id);
+         service_worker_version_id == id.service_worker_version_id) &&
+        (!extra_info_spec || listener->extra_info_spec == *extra_info_spec) &&
+        (!filter_value || listener->filter.ToValue() == *filter_value);
     if (!listener_matches) {
       ++iter;
       continue;
@@ -2075,6 +2071,38 @@ WebRequestEventRouter::RemoveMatchingListeners(
   }
 
   return removed_listeners;
+}
+
+size_t WebRequestEventRouter::ReplaceInactiveListeners(
+    Listeners& inactive_listeners,
+    const ExtensionId& extension_id,
+    const std::string& sub_event_name,
+    BrowserContextID browser_context_id,
+    EventListener& replacement_listener) {
+  // Keep pending requests only when the replacement is the same registration.
+  Listeners matching_listeners = RemoveMatchingListeners(
+      inactive_listeners, extension_id, sub_event_name, std::nullopt,
+      std::nullopt, std::nullopt, browser_context_id,
+      replacement_listener.filter.ToValue(),
+      replacement_listener.extra_info_spec);
+  // Only a single exact registration should ever match. It's possible no
+  // listener will match if this is a new listener in a worker context.
+  DCHECK_LE(matching_listeners.size(), 1u);
+  if (replacement_listener.IsBlocking() && !matching_listeners.empty()) {
+    replacement_listener.blocked_requests.swap(
+        matching_listeners.front()->blocked_requests);
+  }
+
+  // Anything still left under this sub-event name is stale relative to the
+  // replacement listener, so remove it before it can block forever.
+  Listeners stale_listeners = RemoveMatchingListeners(
+      inactive_listeners, extension_id, sub_event_name, std::nullopt,
+      std::nullopt, std::nullopt, browser_context_id);
+  for (const auto& stale_listener : stale_listeners) {
+    CleanUpForListener(*stale_listener, ListenerUpdateType::kRemove);
+  }
+
+  return matching_listeners.size();
 }
 
 void WebRequestEventRouter::RemoveLazyListener(
@@ -2166,7 +2194,7 @@ void WebRequestEventRouter::UpdateActiveListener(
   }
 }
 
-void WebRequestEventRouter::CleanUpForListener(const EventListener& listener,
+void WebRequestEventRouter::CleanUpForListener(EventListener& listener,
                                                ListenerUpdateType update_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::string event_name =
@@ -2183,6 +2211,7 @@ void WebRequestEventRouter::CleanUpForListener(const EventListener& listener,
                         event_name, blocked_request_id, nullptr,
                         0 /* extra_info_spec */);
   }
+  listener.blocked_requests.clear();
 
   // Update the extra headers count and clear the cache only if the listener is
   // fully removed; otherwise, these values are still correct.

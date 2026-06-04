@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -139,6 +140,15 @@ bool GenerateInfoSpec(content::BrowserContext* browser_context,
     list.Append(cur);
   }
   return ExtraInfoSpec::InitFromValue(base::Value(std::move(list)), result);
+}
+
+WebRequestEventRouter::RequestFilter MakeMainFrameFilter(
+    const char* url_pattern) {
+  WebRequestEventRouter::RequestFilter filter;
+  filter.urls.AddPattern(
+      URLPattern(Extension::kValidHostPermissionSchemes, url_pattern));
+  filter.types.push_back(WebRequestResourceType::MAIN_FRAME);
+  return filter;
 }
 
 class PlaceholderProxy : public WebRequestAPI::Proxy {
@@ -375,6 +385,82 @@ TEST_F(ExtensionWebRequestTest, PollutedPrefsActivationConverges) {
             event_router->GetListenerCountForTesting(&profile_, kEventName));
   // The inactive entry should have been consumed by activation.
   EXPECT_EQ(0u, event_router->GetInactiveListenerCount(&profile_, kEventName));
+}
+
+TEST_F(ExtensionWebRequestTest, StaleReplacementUpdatesListenerCounts) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kExtensionName("Test Extension");
+  const std::string kEventName(web_request::OnBeforeRequest::kEventName);
+  const std::string kSubEventName = kEventName + "/s1";
+  constexpr char kExamplePattern[] = "http://example.com/*";
+  WebRequestEventRouter* const event_router =
+      WebRequestEventRouter::Get(&profile_);
+  ASSERT_TRUE(event_router);
+
+  // Stale cleanup should decrement the old listener's securityInfo count.
+  ASSERT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
+      MakeMainFrameFilter(kExamplePattern),
+      ExtraInfoSpec::BLOCKING | ExtraInfoSpec::SECURITY_INFO,
+      /*render_process_id=*/0, /*web_view_instance_id=*/0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+      /*is_lazy=*/true));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
+  EXPECT_TRUE(event_router->HasAnySecurityInfoListenerForTesting(&profile_));
+
+  // The replacement is not an exact registration match, so its extraHeaders
+  // count should be added normally.
+  ASSERT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
+      MakeMainFrameFilter(kExamplePattern),
+      ExtraInfoSpec::BLOCKING | ExtraInfoSpec::EXTRA_HEADERS,
+      /*render_process_id=*/1, /*web_view_instance_id=*/0,
+      /*worker_thread_id=*/100, /*service_worker_version_id=*/10,
+      /*is_lazy=*/false));
+
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
+  EXPECT_FALSE(event_router->HasAnySecurityInfoListenerForTesting(&profile_));
+}
+
+TEST_F(ExtensionWebRequestTest, ExactLazyReplacementPreservesListenerCounts) {
+  const std::string kExtensionId("abcdefghijklmnopabcdefghijklmnop");
+  const std::string kExtensionName("Test Extension");
+  const std::string kEventName(web_request::OnBeforeRequest::kEventName);
+  const std::string kSubEventName = kEventName + "/s1";
+  constexpr char kExamplePattern[] = "http://example.com/*";
+  WebRequestEventRouter* const event_router =
+      WebRequestEventRouter::Get(&profile_);
+  ASSERT_TRUE(event_router);
+
+  // Register an exact lazy duplicate. The duplicate replaces the old inactive
+  // listener, but the extraHeaders count should still represent one listener.
+  ASSERT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
+      MakeMainFrameFilter(kExamplePattern), ExtraInfoSpec::EXTRA_HEADERS,
+      /*render_process_id=*/0, /*web_view_instance_id=*/0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+      /*is_lazy=*/true));
+  EXPECT_EQ(1u, event_router->GetInactiveListenerCount(&profile_, kEventName));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
+
+  ASSERT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
+      MakeMainFrameFilter(kExamplePattern), ExtraInfoSpec::EXTRA_HEADERS,
+      /*render_process_id=*/0, /*web_view_instance_id=*/0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+      /*is_lazy=*/true));
+  EXPECT_EQ(1u, event_router->GetInactiveListenerCount(&profile_, kEventName));
+  EXPECT_TRUE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
+
+  // Replacing with a registration without extraHeaders should clear the count.
+  ASSERT_TRUE(event_router->AddEventListener(
+      &profile_, kExtensionId, kExtensionName, kEventName, kSubEventName,
+      MakeMainFrameFilter(kExamplePattern), ExtraInfoSpec::BLOCKING,
+      /*render_process_id=*/0, /*web_view_instance_id=*/0,
+      extensions::kMainThreadId, blink::mojom::kInvalidServiceWorkerVersionId,
+      /*is_lazy=*/true));
+  EXPECT_EQ(1u, event_router->GetInactiveListenerCount(&profile_, kEventName));
+  EXPECT_FALSE(event_router->HasAnyExtraHeadersListenerForTesting(&profile_));
 }
 
 // Regression test for ExtensionNavigationRegistry::CanRedirect logic bug.
