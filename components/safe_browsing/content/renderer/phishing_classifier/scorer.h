@@ -32,7 +32,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace safe_browsing {
-class FeatureMap;
 
 // Enum used to keep stats about the status of the Scorer creation.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -90,11 +89,6 @@ class Scorer {
   void AttachImageEmbeddingModel(int image_embedding_input_width,
                                  int image_embedding_input_height,
                                  base::File image_embedding_model);
-
-  // This method computes the probability that the given features are indicative
-  // of phishing.  It returns a score value that falls in the range [0.0,1.0]
-  // (range is inclusive on both ends).
-  double ComputeScore(const FeatureMap& features) const;
 
   // This method applies the TfLite visual model to the given bitmap for image
   // classification. It asynchronously returns the list of scores for each
