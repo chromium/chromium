@@ -4759,8 +4759,6 @@ if (!is_android) {
 
     if (enable_extensions) {
       sources += [
-        "../../apps/app_restore_service_browsertest.cc",
-        "../../apps/load_and_launch_browsertest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
         "../browser/apps/platform_apps/app_browsertest.cc",
@@ -5085,10 +5083,11 @@ if (!is_android) {
       }
 
       deps += [
-        "../browser/enterprise/connectors/test:test_support",
+        "//apps:browser_tests",
         "//chrome/browser/client_hints",
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
+        "//chrome/browser/enterprise/connectors/test:test_support",
         "//chrome/browser/extensions:test_support",
         "//chrome/browser/extensions/api/braille_display_private:controller",
         "//chrome/browser/extensions/api/messaging:browser_tests",
@@ -5606,8 +5605,6 @@ if (!is_android) {
       }
 
       sources -= [
-        "../../apps/load_and_launch_browsertest.cc",
-
         # chromeos does not support profile list avatar menu
         "../browser/profiles/profile_list_desktop_browsertest.cc",
         "../browser/ui/views/external_protocol_dialog_browsertest.cc",
@@ -9559,7 +9556,6 @@ test("unit_tests") {
   # TODO(crbug.com/1229899): Clean up and move this to a separate target.
   if (enable_extensions) {
     sources += [
-      "../../apps/saved_files_service_unittest.cc",
       "../browser/controlled_frame/controlled_frame_menu_icon_loader_unittest.cc",
       "../browser/controlled_frame/controlled_frame_permissions_unittest.cc",
       "../browser/media/cast_mirroring_service_host_unittest.cc",
@@ -9597,6 +9593,7 @@ test("unit_tests") {
     ]
 
     deps += [
+      "//apps:unit_tests",
       "//chrome/browser/affiliations",
       "//chrome/browser/sync_file_system:unit_tests",
       "//chrome/browser/ui/web_applications:unit_tests",
