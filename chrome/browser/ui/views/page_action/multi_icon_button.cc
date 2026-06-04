@@ -35,8 +35,9 @@
 namespace page_actions {
 
 namespace {
-const int kAnchoredMessageIconSize = 16;
-const int kAnchoredMessageMaxExpandButtonIcons = 3;
+
+constexpr int kAnchoredMessageIconSize = 20;
+constexpr size_t kAnchoredMessageMaxExpandButtonIcons = 3;
 
 // An ImageView that clips its content to a rounded rectangle and also clips out
 // the area of a specified "clipper" view to create a cutout effect for
@@ -140,28 +141,28 @@ void MultiIconButton::Update(
     const std::vector<std::reference_wrapper<const ui::ImageModel>>& icons) {
   plus_more_label_ = nullptr;
   RemoveAllChildViews();
-  int count = 0;
   // When adding each icon, clip it using the previous icon.
   ClippingImageView* previous_icon = nullptr;
-  for (const ui::ImageModel& icon : icons) {
-    if (count < kAnchoredMessageMaxExpandButtonIcons) {
-      if (!icon.IsEmpty()) {
-        auto* icon_view = AddChildView(std::make_unique<ClippingImageView>());
-        icon_view->SetImage(icon);
-        icon_view->SetImageSize(
-            gfx::Size(kAnchoredMessageIconSize, kAnchoredMessageIconSize));
-        if (previous_icon) {
-          icon_view->SetClipperView(previous_icon);
-        }
-        previous_icon = icon_view;
+  const size_t num_icons =
+      std::min(icons.size(), kAnchoredMessageMaxExpandButtonIcons);
+  for (size_t i = 0; i < num_icons; ++i) {
+    const ui::ImageModel& icon = icons[i];
+    if (!icon.IsEmpty()) {
+      auto* icon_view = AddChildView(std::make_unique<ClippingImageView>());
+      icon_view->SetImage(icon);
+      icon_view->SetImageSize(
+          gfx::Size(kAnchoredMessageIconSize, kAnchoredMessageIconSize));
+      if (previous_icon) {
+        icon_view->SetClipperView(previous_icon);
       }
+      previous_icon = icon_view;
     }
-    count++;
   }
-  if (count > kAnchoredMessageMaxExpandButtonIcons) {
+
+  if (icons.size() > kAnchoredMessageMaxExpandButtonIcons) {
     plus_more_label_ = AddChildView(std::make_unique<views::Label>(base::StrCat(
-        {u"+",
-         base::FormatNumber(count - kAnchoredMessageMaxExpandButtonIcons)})));
+        {u"+", base::FormatNumber(icons.size() -
+                                  kAnchoredMessageMaxExpandButtonIcons)})));
     plus_more_label_->SetTextStyle(views::style::STYLE_BODY_5);
     plus_more_label_->SetProperty(views::kMarginsKey,
                                   gfx::Insets::TLBR(0, 8, 0, 0));
