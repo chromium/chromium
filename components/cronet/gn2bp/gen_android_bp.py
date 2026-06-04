@@ -2779,6 +2779,8 @@ def _is_cflag_allowed(cflag):
         '-mllvm -enable-ml-inliner=',
         '-mllvm -ml-inliner-model-selector=',
         '-fdiagnostics-show-inlining-chain',
+        # Soong sets -msse3 by default for the architectures where its relevant.
+        '-msse3',
     ])
 
 
