@@ -495,6 +495,20 @@
     No, thanks
   </message>
 
+  <!-- Glic Bottom Sheet Interruption Dialog -->
+  <message name="IDS_GLIC_END_TASK_CONFIRMATION_TITLE" desc="Title for the dialog asking the user to confirm interrupting the current Gemini agent task." formatter_data="android_java">
+    End task to continue
+  </message>
+  <message name="IDS_GLIC_END_TASK_CONFIRMATION_DESCRIPTION" desc="Description for the dialog asking the user to confirm interrupting the current Gemini agent task." formatter_data="android_java">
+    This will end the task that Gemini is currently working on.
+  </message>
+  <message name="IDS_GLIC_END_TASK_CONFIRMATION_CANCEL" desc="Button text to cancel opening the new sheet and keep the current Gemini task running." formatter_data="android_java">
+    Cancel
+  </message>
+  <message name="IDS_GLIC_END_TASK_CONFIRMATION_YES" desc="Button text to confirm interrupting the current Gemini task and open the new sheet." formatter_data="android_java">
+    Yes, end task
+  </message>
+
   <!-- Tab bottom sheet -->
   <message name="IDS_TAB_BOTTOM_SHEET_RESIZING_VIEW_TEXT" desc="Text shown while the web view is resizing." formatter_data="android_java">
     Resizing Gemini...
