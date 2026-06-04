@@ -52,11 +52,7 @@ BT
 20 100 Td
 (Hello) Tj
 ET
-EMC
 
-/GOOG:CrText <<
-  /TextboxId 0
->> BDC
 BT
 0 0 0 rg
 /F1 7.5 Tf
