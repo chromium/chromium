@@ -602,7 +602,6 @@ public class LocationBarCoordinator
         }
 
         if (mOptionalButtonCoordinator != null) {
-            mLocationBarMediator.setOptionalButtonColorChangeCallback(null);
             mOptionalButtonCoordinator.hideButton();
             mOptionalButtonData = null;
         }
@@ -679,6 +678,7 @@ public class LocationBarCoordinator
     @Override
     public void updateVisualsForState() {
         mLocationBarMediator.updateVisualsForState();
+        updateOptionalButtonState();
     }
 
     private void onPlusButtonClicked() {
@@ -1438,8 +1438,6 @@ public class LocationBarCoordinator
                             mTrackerSupplier);
 
             var context = mLocationBarLayout.getContext();
-            mLocationBarMediator.setOptionalButtonColorChangeCallback(
-                    mOptionalButtonCoordinator::setIconForegroundColor);
 
             mOptionalButtonCoordinator.setCollapsedStateWidth(
                     context.getResources().getDimensionPixelSize(R.dimen.min_touch_target_size));
@@ -1503,6 +1501,8 @@ public class LocationBarCoordinator
                 || mOptionalButtonData == null) {
             mOptionalButtonCoordinator.hideButton();
         } else {
+            mOptionalButtonCoordinator.setBrandedColorScheme(
+                    mLocationBarMediator.getBrandedColorScheme());
             mOptionalButtonCoordinator.setBackgroundColorFilter(
                     locationBarDataProvider.getPrimaryColor());
             mOptionalButtonCoordinator.updateButton(

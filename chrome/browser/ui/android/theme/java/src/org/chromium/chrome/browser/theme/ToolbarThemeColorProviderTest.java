@@ -203,4 +203,28 @@ public class ToolbarThemeColorProviderTest {
 
         assertEquals(BOTTOM_COLOR, mToolbarThemeColorProvider.getToolbarBackgroundColor(mTab));
     }
+
+    @Test
+    public void testTintChanged_UpdatesBrandedColorSchemeEvenIfTintsAreIdentical() {
+        mToolbarThemeColorProvider =
+                new ToolbarThemeColorProvider(
+                        mContext,
+                        mTopUiThemeColorProvider,
+                        mBottomUiThemeColorProvider,
+                        mBrowserControlsStateProvider);
+
+        ColorStateList tint = mContext.getColorStateList(R.color.default_icon_color_tint_list);
+
+        // Initial state is APP_DEFAULT.
+        assertEquals(
+                BrandedColorScheme.APP_DEFAULT, mToolbarThemeColorProvider.getBrandedColorScheme());
+
+        // Change branded color scheme to LIGHT_BRANDED_THEME but keep target tints identical.
+        mToolbarThemeColorProvider.onTintChanged(
+                tint, tint, BrandedColorScheme.LIGHT_BRANDED_THEME);
+
+        assertEquals(
+                BrandedColorScheme.LIGHT_BRANDED_THEME,
+                mToolbarThemeColorProvider.getBrandedColorScheme());
+    }
 }

@@ -344,7 +344,6 @@ class CustomTabToolbarButtonsMediator
                         colorScheme == BrandedColorScheme.INCOGNITO,
                         /* isCustomTab= */ true);
         mOptionalButtonCoordinator.setBackgroundColorFilter(backgroundColor);
-        mOptionalButtonCoordinator.setIconForegroundColor(
-                ThemeUtils.getThemedToolbarIconTint(mActivity, colorScheme));
+        mOptionalButtonCoordinator.setBrandedColorScheme(colorScheme);
     }
 }

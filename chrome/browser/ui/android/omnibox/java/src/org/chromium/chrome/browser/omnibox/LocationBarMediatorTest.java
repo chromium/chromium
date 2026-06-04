@@ -2939,16 +2939,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testOnPrimaryColorChanged_updatesBackButtonAndOptionalButtonColors() {
-        int[] callCount = new int[] {0};
-        Callback<ColorStateList> callback = (colorStateList) -> callCount[0]++;
-        mMediator.setOptionalButtonColorChangeCallback(callback);
-
-        verify(mLocationBarLayout).setBackButtonTint(any());
-        assertEquals(1, callCount[0]);
-    }
-
-    @Test
     public void testReparenting_notEnabled() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
