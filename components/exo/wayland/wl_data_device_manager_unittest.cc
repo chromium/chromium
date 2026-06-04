@@ -305,4 +305,134 @@ TEST_F(DataDeviceManagerTest, StaleSerialReplay) {
   }
 }
 
+TEST_F(DataDeviceManagerTest, StartDragInvalidIcon) {
+  test::ResourceKey surface_key;
+  InputListenerImpl* input_listener = nullptr;
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(client->InitShmBufferFactory(256 * 256 * 4));
+    auto* data_ptr =
+        client->set_data(std::make_unique<test::ShellClientData>(client));
+
+    auto input_listener_impl = std::make_unique<InputListenerImpl>();
+    input_listener = input_listener_impl.get();
+    data_ptr->set_input_listener(std::move(input_listener_impl));
+
+    data_ptr->CreateXdgToplevel();
+    data_ptr->CreateAndAttachBuffer({256, 256});
+    data_ptr->Commit();
+
+    surface_key = data_ptr->GetSurfaceResourceKey();
+  });
+
+  Surface* surface = test::server_util::GetUserDataForResource<Surface>(
+      server_.get(), surface_key);
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseToCenterOf(surface->window());
+  generator->PressLeftButton();
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(input_listener->button_serial_map.contains(BTN_LEFT));
+    uint32_t serial = input_listener->button_serial_map[BTN_LEFT];
+
+    // Create a second surface for icon.
+    wl_surface* icon_surface =
+        wl_compositor_create_surface(client->compositor());
+
+    // Give it a role by making it an xdg_surface.
+    xdg_surface* xdg_surf =
+        xdg_wm_base_get_xdg_surface(client->xdg_wm_base(), icon_surface);
+    ASSERT_TRUE(xdg_surf);
+
+    auto* shell_client_data = client->GetDataAs<test::ShellClientData>();
+
+    wl_data_source* data_source = wl_data_device_manager_create_data_source(
+        client->globals().data_device_manager.get());
+
+    wl_data_device* data_device = wl_data_device_manager_get_data_device(
+        client->globals().data_device_manager.get(),
+        client->globals().seat.get());
+
+    wl_display_flush(client->display());
+
+    wl_data_device_start_drag(data_device, data_source,
+                              shell_client_data->GetWlSurface(), icon_surface,
+                              serial);
+    wl_display_flush(client->display());
+
+    // Roundtrip should fail due to protocol error.
+    int r = wl_display_roundtrip(client->display());
+    EXPECT_EQ(-1, r);
+
+    uint32_t ec;
+    const struct wl_interface* interface;
+    uint32_t id;
+    ec = wl_display_get_protocol_error(client->display(), &interface, &id);
+    EXPECT_EQ(WL_DATA_DEVICE_ERROR_ROLE, ec);
+    EXPECT_STREQ("wl_data_device", interface->name);
+
+    wl_data_source_destroy(data_source);
+    xdg_surface_destroy(xdg_surf);
+    wl_surface_destroy(icon_surface);
+    wl_data_device_destroy(data_device);
+  });
+
+  generator->ReleaseLeftButton();
+}
+
+TEST_F(DataDeviceManagerTest, StartDragOriginNoRootWindow) {
+  test::ResourceKey surface_key;
+  InputListenerImpl* input_listener = nullptr;
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(client->InitShmBufferFactory(256 * 256 * 4));
+    auto* data_ptr =
+        client->set_data(std::make_unique<test::ShellClientData>(client));
+
+    auto input_listener_impl = std::make_unique<InputListenerImpl>();
+    input_listener = input_listener_impl.get();
+    data_ptr->set_input_listener(std::move(input_listener_impl));
+
+    data_ptr->CreateXdgToplevel();
+    data_ptr->CreateAndAttachBuffer({256, 256});
+    data_ptr->Commit();
+
+    surface_key = data_ptr->GetSurfaceResourceKey();
+  });
+
+  Surface* surface = test::server_util::GetUserDataForResource<Surface>(
+      server_.get(), surface_key);
+
+  auto* generator = GetEventGenerator();
+  generator->MoveMouseToCenterOf(surface->window());
+  generator->PressLeftButton();
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    ASSERT_TRUE(input_listener->button_serial_map.contains(BTN_LEFT));
+    uint32_t serial = input_listener->button_serial_map[BTN_LEFT];
+
+    // Create a second surface, but don't give it a role / don't commit it,
+    // so it has no root window.
+    wl_surface* non_root_surface =
+        wl_compositor_create_surface(client->compositor());
+
+    auto* shell_client_data = client->GetDataAs<test::ShellClientData>();
+
+    // Start drag with non-root surface as origin.
+    shell_client_data->StartDrag(serial, non_root_surface);
+    wl_display_flush(client->display());
+
+    // Roundtrip to process the request and get the cancellation event.
+    wl_display_roundtrip(client->display());
+
+    // The drag should have been cancelled, so data source should be gone.
+    EXPECT_FALSE(shell_client_data->HasDataSource());
+
+    wl_surface_destroy(non_root_surface);
+  });
+
+  generator->ReleaseLeftButton();
+}
+
 }  // namespace exo::wayland
