@@ -26,6 +26,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"  // For |Sleep()|.
 #include "base/threading/thread_restrictions.h"
@@ -72,6 +73,7 @@
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -106,6 +108,9 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
 #endif
+
+constexpr char kHttpCacheFinchExperimentGroups[] =
+    "profile_network_context_service.http_cache_finch_experiment_groups";
 
 // Most tests for this class are in NetworkContextConfigurationBrowserTest.
 class ProfileNetworkContextServiceBrowsertest : public InProcessBrowserTest {
@@ -293,10 +298,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
   // At this point, we have already called the initialization.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(
-      profile_prefs->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None None None None");
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "None None None None");
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
@@ -307,10 +310,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
   // At this point, we have already called the initialization.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(
-      profile_prefs->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None None None None");
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "None None None None");
 }
 
 class ProfileNetworkContextServiceCacheChangeBrowsertest
@@ -338,14 +339,11 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   // At this point, we have already called the initialization.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(
-      profile_prefs->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "scoped_feature_list_trial_group None None None");
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "scoped_feature_list_trial_group None None None");
   // Set the local state for the next test.
-  profile_prefs->SetString(
-      "profile_network_context_service.http_cache_finch_experiment_groups",
-      "None None None None");
+  profile_prefs->SetString(kHttpCacheFinchExperimentGroups,
+                           "None None None None");
 }
 
 // The second time we load we know the state, which was "None None None None"
@@ -358,10 +356,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   // At this point, we have already called the initialization once.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(
-      profile_prefs->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "scoped_feature_list_trial_group None None None");
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "scoped_feature_list_trial_group None None None");
 }
 
 // This subclass adds the "SplitCacheByIncludeCredentials" feature.
@@ -390,14 +386,11 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
   // At this point, we have already called the initialization.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(
-      profile_prefs->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None None None scoped_feature_list_trial_group");
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "None None None scoped_feature_list_trial_group");
   // Set the local state for the next test.
-  profile_prefs->SetString(
-      "profile_network_context_service.http_cache_finch_experiment_groups",
-      "None None None None");
+  profile_prefs->SetString(kHttpCacheFinchExperimentGroups,
+                           "None None None None");
 }
 
 // The second time we load we know the state, which was "None None None None"
@@ -410,10 +403,8 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
   // At this point, we have already called the initialization once.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(
-      profile_prefs->GetString(
-          "profile_network_context_service.http_cache_finch_experiment_groups"),
-      "None None None scoped_feature_list_trial_group");
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
+            "None None None scoped_feature_list_trial_group");
 }
 
 class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
@@ -460,14 +451,12 @@ IN_PROC_BROWSER_TEST_P(
   // At this point, we have already called the initialization.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(profile_prefs->GetString("profile_network_context_service.http_"
-                                     "cache_finch_experiment_groups"),
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
             "None None None None scoped_feature_list_trial_group");
 
   // Set the local state for the next test.
-  profile_prefs->SetString(
-      "profile_network_context_service.http_cache_finch_experiment_groups",
-      "None None None None");
+  profile_prefs->SetString(kHttpCacheFinchExperimentGroups,
+                           "None None None None");
 }
 
 // The second time we load we know the state, which was "None None None None"
@@ -481,8 +470,7 @@ IN_PROC_BROWSER_TEST_P(
   // At this point, we have already called the initialization.
   // Verify that we have the correct values in the profile preferences.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  DCHECK_EQ(profile_prefs->GetString("profile_network_context_service.http_"
-                                     "cache_finch_experiment_groups"),
+  DCHECK_EQ(profile_prefs->GetString(kHttpCacheFinchExperimentGroups),
             "None None None None scoped_feature_list_trial_group");
 }
 
@@ -497,33 +485,22 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     }));
 
-class ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest
+class ProfileNetworkContextServiceCacheResetBrowserTestBase
     : public ProfileNetworkContextServiceBrowsertest {
  public:
-  ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest() {
-    const ::testing::TestInfo* const test_info =
-        ::testing::UnitTest::GetInstance()->current_test_info();
-    if (std::string_view(test_info->name()).starts_with("PRE_")) {
-      // PRE_ test: no experiment (default)
-      feature_list_.InitAndDisableFeature(
-          net::features::kDiskCacheBackendExperiment);
-    } else {
-      // non-PRE test: experiment active (use simple backend)
-      feature_list_.InitAndEnableFeatureWithParameters(
-          net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
-    }
-  }
+  ProfileNetworkContextServiceCacheResetBrowserTestBase() = default;
 
   void SetUpOnMainThread() override {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-        &ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest::
+        &ProfileNetworkContextServiceCacheResetBrowserTestBase::
             HandleCacheResetTest,
         base::Unretained(this)));
     ProfileNetworkContextServiceBrowsertest::SetUpOnMainThread();
   }
 
  protected:
-  void FetchUrl(const GURL& url) {
+  void FetchUrl(const GURL& url,
+                content::StoragePartition* partition = nullptr) {
     std::unique_ptr<network::ResourceRequest> request =
         std::make_unique<network::ResourceRequest>();
     request->url = url;
@@ -533,8 +510,10 @@ class ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest
     std::unique_ptr<network::SimpleURLLoader> simple_loader =
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
-    simple_loader->DownloadToString(loader_factory(),
-                                    simple_loader_helper.GetCallback(),
+    network::mojom::URLLoaderFactory* factory =
+        partition ? partition->GetURLLoaderFactoryForBrowserProcess().get()
+                  : loader_factory();
+    simple_loader->DownloadToString(factory, simple_loader_helper.GetCallback(),
                                     /*max_body_size=*/1024 * 1024);
     simple_loader_helper.WaitForCallback();
     EXPECT_TRUE(simple_loader_helper.response_body());
@@ -556,7 +535,40 @@ class ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest
     http_response->AddCustomHeader("Cache-Control", "max-age=3600");
     return http_response;
   }
+};
 
+class ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest
+    : public ProfileNetworkContextServiceCacheResetBrowserTestBase {
+ public:
+  ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest() {
+    const ::testing::TestInfo* const test_info =
+        ::testing::UnitTest::GetInstance()->current_test_info();
+    if (std::string_view(test_info->name()).starts_with("PRE_")) {
+      // PRE_ test: no experiment (default)
+      feature_list_.InitAndDisableFeature(
+          net::features::kDiskCacheBackendExperiment);
+    } else {
+      // non-PRE test: experiment active (use simple backend)
+      feature_list_.InitAndEnableFeatureWithParameters(
+          net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class ProfileNetworkContextServiceCacheResetSameBackendBrowserTest
+    : public ProfileNetworkContextServiceCacheResetBrowserTestBase {
+ public:
+  ProfileNetworkContextServiceCacheResetSameBackendBrowserTest() {
+    // Enable the experiment in both PRE and non-PRE runs to keep the backend
+    // type same, avoiding forced cache recreation.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+  }
+
+ private:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -575,8 +587,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Simulate upgrade by clearing the pref.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
-  profile_prefs->SetString(
-      "profile_network_context_service.http_cache_finch_experiment_groups", "");
+  profile_prefs->ClearPref(kHttpCacheFinchExperimentGroups);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -593,6 +604,109 @@ IN_PROC_BROWSER_TEST_F(
   // Since we upgraded and are now in an experiment, the cache should have
   // been reset. Thus, the request should have gone to the server.
   EXPECT_EQ(1, cache_reset_test_request_count_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileNetworkContextServiceCacheResetSameBackendBrowserTest,
+    PRE_TestCacheResetOnUpgradeMultiPartition) {
+  GURL url = embedded_test_server()->GetURL("/cache_reset_test");
+
+  // Populate cache for default partition.
+  FetchUrl(url);
+  EXPECT_EQ(1, cache_reset_test_request_count_);
+  FetchUrl(url);
+  EXPECT_EQ(1, cache_reset_test_request_count_);
+
+  // Populate cache for non-default partition.
+  content::StoragePartition* partition =
+      browser()->profile()->GetStoragePartition(
+          content::StoragePartitionConfig::Create(browser()->profile(),
+                                                  "testdomain", "testpartition",
+                                                  /*in_memory=*/false));
+
+  FetchUrl(url, partition);
+  EXPECT_EQ(2, cache_reset_test_request_count_);
+
+  // Request again for non-default partition to make sure it is cached.
+  FetchUrl(url, partition);
+  EXPECT_EQ(2, cache_reset_test_request_count_);
+
+  // Simulate upgrade by clearing the pref.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->ClearPref(kHttpCacheFinchExperimentGroups);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileNetworkContextServiceCacheResetSameBackendBrowserTest,
+    TestCacheResetOnUpgradeMultiPartition) {
+  GURL url = embedded_test_server()->GetURL("/cache_reset_test");
+
+  // On ChromeOS, the sign-in profile is also initialized on startup.
+  // In the PRE_ test, both the main profile and the sign-in profile default
+  // partitions initialize. Since the experiment is active, both will reset
+  // their caches and update their respective preferences.
+  // In the non-PRE test, we only clear the preference for the main profile.
+  // Therefore, upon restart, the main profile's default partition will see
+  // the empty preference and reset its cache (logging `true`).
+  // However, the sign-in profile will see its persisted preference from the
+  // PRE_ run and will NOT reset its cache (logging `false`).
+  // This results in an additional `false` sample on ChromeOS.
+  const int count_for_chrome_os_signin_profile =
+#if BUILDFLAG(IS_CHROMEOS)
+      1;
+#else
+      0;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Default partition should have initialized on browser startup.
+  // Wait for it to record its cache initialization status.
+  // Since we cleared the pref in PRE_ test, it should have reset the cache.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    return histograms_.GetBucketCount("HttpCache.HardReset", true) +
+               histograms_.GetBucketCount("HttpCache.HardReset", false) ==
+           1 + count_for_chrome_os_signin_profile;
+  }));
+
+  EXPECT_EQ(histograms_.GetBucketCount("HttpCache.HardReset", true), 1);
+  EXPECT_EQ(histograms_.GetBucketCount("HttpCache.HardReset", false),
+            count_for_chrome_os_signin_profile);
+
+  // Clear the pref again. If the buggy code runs, the non-default partition
+  // initialization will see the empty pref, call GetHttpCacheBackendResetParam,
+  // return true (since we are in experiment), and update the pref.
+  // If the correct code runs, it will short-circuit and not touch the pref.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  const std::string pref_name = kHttpCacheFinchExperimentGroups;
+  profile_prefs->ClearPref(pref_name);
+
+  // Request the cached resource for non-default partition.
+  content::StoragePartition* partition =
+      browser()->profile()->GetStoragePartition(
+          content::StoragePartitionConfig::Create(browser()->profile(),
+                                                  "testdomain", "testpartition",
+                                                  /*in_memory=*/false));
+  FetchUrl(url, partition);
+
+  // Wait for the non-default partition to record its cache initialization
+  // status. It should NOT reset the cache.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    return histograms_.GetBucketCount("HttpCache.HardReset", true) +
+               histograms_.GetBucketCount("HttpCache.HardReset", false) ==
+           count_for_chrome_os_signin_profile + 2;
+  }));
+
+  // Total counts: 1 true (from default startup), 1 false (from non-default).
+  EXPECT_EQ(histograms_.GetBucketCount("HttpCache.HardReset", true), 1);
+  EXPECT_EQ(histograms_.GetBucketCount("HttpCache.HardReset", false),
+            count_for_chrome_os_signin_profile + 1);
+
+  // The pref should STILL be empty, because the non-default partition
+  // should not have updated it.
+  EXPECT_TRUE(profile_prefs->GetString(pref_name).empty());
 }
 
 class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
