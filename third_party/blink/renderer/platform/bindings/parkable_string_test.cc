@@ -50,7 +50,6 @@ constexpr size_t kSizeKb = 20;
 // Compressed size of the string returned by |MakeLargeString()|.
 // Update if the assertion in the |CheckCompressedSize()| test fails.
 constexpr size_t kCompressedSizeZlib = 55;
-constexpr size_t kCompressedSizeSnappy = 944;
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
 constexpr size_t kCompressedSizeZstd = 19;
 #endif
@@ -91,13 +90,6 @@ class ParkableStringTest
       case ParkableStringImpl::CompressionAlgorithm::kZlib:
         scoped_feature_list_.InitWithFeatures(
             {features::kCompressParkableStrings},
-            {features::kUseSnappyForParkableStrings,
-             features::kUseZstdForParkableStrings});
-        break;
-      case ParkableStringImpl::CompressionAlgorithm::kSnappy:
-        scoped_feature_list_.InitWithFeatures(
-            {features::kCompressParkableStrings,
-             features::kUseSnappyForParkableStrings},
             {features::kUseZstdForParkableStrings});
         break;
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
@@ -105,7 +97,7 @@ class ParkableStringTest
         scoped_feature_list_.InitWithFeatures(
             {features::kCompressParkableStrings,
              features::kUseZstdForParkableStrings},
-            {features::kUseSnappyForParkableStrings});
+            {});
         break;
 #endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
     }
@@ -197,8 +189,7 @@ class ParkableStringTest
     switch (ParkableStringImpl::GetCompressionAlgorithm()) {
       case ParkableStringImpl::CompressionAlgorithm::kZlib:
         return kCompressedSizeZlib;
-      case ParkableStringImpl::CompressionAlgorithm::kSnappy:
-        return kCompressedSizeSnappy;
+
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
       case ParkableStringImpl::CompressionAlgorithm::kZstd:
         return kCompressedSizeZstd;
@@ -214,8 +205,7 @@ class ParkableStringTest
 INSTANTIATE_TEST_SUITE_P(
     CompressionAlgorithm,
     ParkableStringTest,
-    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
-                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
                       ,
                       ParkableStringImpl::CompressionAlgorithm::kZstd
@@ -223,8 +213,7 @@ INSTANTIATE_TEST_SUITE_P(
                       ));
 
 // The main aim of this test is to check that the compressed size of a string
-// doesn't change. If it does, |kCompressedSizeZlib| and/or
-// |kCompressedSizeSnappy| will need to be updated.
+// doesn't change. If it does, |kCompressedSizeZlib| will need to be updated.
 TEST_P(ParkableStringTest, CheckCompressedSize) {
   const size_t kCompressedSize = GetExpectedCompressedSize();
 
@@ -1444,8 +1433,7 @@ class ParkableStringTestWithQueuedThreadPool : public ParkableStringTest {
 INSTANTIATE_TEST_SUITE_P(
     CompressionAlgorithm,
     ParkableStringTestWithQueuedThreadPool,
-    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
-                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
                       ,
                       ParkableStringImpl::CompressionAlgorithm::kZstd
@@ -1492,8 +1480,7 @@ class ParkableStringTestWithLimitedDiskCapacity : public ParkableStringTest {
 INSTANTIATE_TEST_SUITE_P(
     CompressionAlgorithm,
     ParkableStringTestWithLimitedDiskCapacity,
-    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
-                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
                       ,
                       ParkableStringImpl::CompressionAlgorithm::kZstd
@@ -1666,8 +1653,7 @@ TEST_P(ParkableStringTestLessAggressiveMode,
 INSTANTIATE_TEST_SUITE_P(
     CompressionAlgorithm,
     ParkableStringTestLessAggressiveMode,
-    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
-                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib
 #if BUILDFLAG(HAS_ZSTD_COMPRESSION)
                       ,
                       ParkableStringImpl::CompressionAlgorithm::kZstd

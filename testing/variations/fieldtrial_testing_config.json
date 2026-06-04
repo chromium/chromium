@@ -24567,25 +24567,6 @@
             ]
         }
     ],
-    "UseSnappyForParkableStrings": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseSnappyForParkableStrings"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseStrongRefToSharedImageInterface": [
         {
             "platforms": [

@@ -1951,7 +1951,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kURLPatternDummyURLCanonicalization);
 // feature directly.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUsePersistentCacheForCodeCache);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSnappyForParkableStrings);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseZstdForParkableStrings);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kZstdCompressionLevel);
@@ -2072,7 +2071,6 @@ BLINK_COMMON_EXPORT bool IsSetIntervalWithoutClampEnabled();
 // back/forward cache.
 BLINK_COMMON_EXPORT bool IsUnloadBlocklisted();
 
-BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 
 // Returns true if the in-browser KeepAliveURLLoaderService should be enabled by
 // verifying either kKeepAliveInBrowserMigration or kFetchLaterAPI is true.

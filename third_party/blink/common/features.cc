@@ -2632,9 +2632,6 @@ BASE_FEATURE(kURLPatternDummyURLCanonicalization,
 BASE_FEATURE(kUsePersistentCacheForCodeCache,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabling this will cause parkable strings to use Snappy for compression iff
-// kCompressParkableStrings is enabled.
-BASE_FEATURE(kUseSnappyForParkableStrings, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use the zstd compression algorithm for ParkableString compression.
 BASE_FEATURE(kUseZstdForParkableStrings, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2853,9 +2850,6 @@ bool IsUnloadBlocklisted() {
   return base::FeatureList::IsEnabled(kUnloadBlocklisted);
 }
 
-bool ParkableStringsUseSnappy() {
-  return base::FeatureList::IsEnabled(kUseSnappyForParkableStrings);
-}
 
 bool IsKeepAliveURLLoaderServiceEnabled() {
   return base::FeatureList::IsEnabled(kKeepAliveInBrowserMigration) ||
