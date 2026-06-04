@@ -26,6 +26,8 @@ source_set("drive_picker_host_request") {
 
 source_set("drive_picker_host") {
   sources = [
+    "drive_disclaimer_controller.cc",
+    "drive_disclaimer_controller.h",
     "drive_picker_host_ui.cc",
     "drive_picker_host_ui.h",
   ]
@@ -36,10 +38,12 @@ source_set("drive_picker_host") {
     "untrusted",
     "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
     "//chrome/browser/ui/webui/top_chrome",
+    "//components/contextual_search/footprints/public",
     "//content/public/browser",
   ]
 
   deps = [
+    "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/drive_picker_host:resources",
     "//chrome/browser/signin",
@@ -52,7 +56,10 @@ source_set("drive_picker_host") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "drive_picker_host_ui_unittest.cc" ]
+  sources = [
+    "drive_disclaimer_controller_unittest.cc",
+    "drive_picker_host_ui_unittest.cc",
+  ]
 
   deps = [
     ":drive_picker_host",
