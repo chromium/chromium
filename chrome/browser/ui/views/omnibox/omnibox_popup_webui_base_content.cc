@@ -141,11 +141,6 @@ void OmniboxPopupWebUIBaseContent::CloseUI() {
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
 }
 
-void OmniboxPopupWebUIBaseContent::OnActiveTabChanged(
-    content::WebContents* new_contents) {
-  CloseUI();
-}
-
 void OmniboxPopupWebUIBaseContent::ShowUI() {
   // This is a signal from the WebUIContentsWrapper::Host. We use this signal to
   // check if the renderer crashes. If the renderer process has crashed, reset

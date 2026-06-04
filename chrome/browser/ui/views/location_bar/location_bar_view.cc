@@ -1181,6 +1181,10 @@ void LocationBarView::Update(WebContents* contents) {
 
   if (contents) {
     omnibox_view_->OnTabChanged(contents);
+    if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2) &&
+        !omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+      omnibox_popup_view_->OnTabChanged(contents);
+    }
   } else {
     omnibox_view_->Update();
   }
@@ -2112,8 +2116,9 @@ void LocationBarView::OnOmniboxFocused() {
 
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2) &&
       !in_popup_state_transition_) {
-    GetOmniboxController()->popup_state_manager()->SetPopupState(
-        OmniboxPopupState::kFull);
+    if (auto* popup_view = GetOmniboxPopupView()) {
+      popup_view->OnFocus();
+    }
   }
 }
 
