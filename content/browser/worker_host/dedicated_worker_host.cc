@@ -808,11 +808,7 @@ void DedicatedWorkerHost::CreateWebSocketConnector(
               ancestor_render_frame_host_id_.frame_routing_id),
           GetWorkerStorageKey().origin(),
           ancestor_render_frame_host->GetIsolationInfoForSubresources(),
-          worker_client_security_state_->Clone(),
-          // TODO(crbug.com/492462310): Pass network_restrictions_id from the
-          // ancestor frame so Connection-Allowlist is enforced for dedicated
-          // worker WebSocket connections.
-          /*network_restrictions_id=*/std::nullopt),
+          worker_client_security_state_->Clone(), network_restrictions_id_),
       std::move(receiver));
 }
 
