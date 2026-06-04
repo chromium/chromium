@@ -8,23 +8,31 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/async_check_tracker.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/fake_service_worker_context.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -393,9 +401,10 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   }
 
   // This function returns the value of |defer| after the function is called.
-  bool CallWillRedirectRequest() {
+  bool CallWillRedirectRequest(const GURL& new_url = GURL()) {
     bool defer = false;
     net::RedirectInfo redirect_info;
+    redirect_info.new_url = new_url;
     network::HttpRequestHeadersUpdateParams headers_update_params;
     throttle_->WillRedirectRequest(&redirect_info, *response_head_, &defer,
                                    &headers_update_params);
@@ -454,6 +463,11 @@ class SBBrowserUrlLoaderThrottleTest
   void SetUpTest() {
     bool async_check_enabled = GetParam();
     SBBrowserUrlLoaderThrottleTestBase::SetUpTest(async_check_enabled);
+  }
+
+  SafeBrowsingNavigationObserverManager::HostToIpMap* GetHostToIpMap(
+      SafeBrowsingNavigationObserverManager* manager) {
+    return &manager->host_to_ip_map_;
   }
 
   void RunTotalDelayHistogramsUrlCheckTypeTest(
@@ -837,6 +851,85 @@ TEST_P(SBBrowserUrlLoaderThrottleTest,
       SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck,
       /*url_real_time_lookup_enabled=*/true,
       "SafeBrowsing.BrowserThrottle.TotalDelay2.MockFullUrlLookup");
+}
+
+TEST_P(SBBrowserUrlLoaderThrottleTest, VerifyRedirectIpAddressRecorded) {
+  SetUpTest();
+  // One for original URL, one for first redirect, one for second redirect.
+  AddCallbackInfo(/*should_proceed=*/true,
+                  /*should_show_interstitial=*/false,
+                  /*should_delay_callback=*/false);
+  AddCallbackInfo(/*should_proceed=*/true,
+                  /*should_show_interstitial=*/false,
+                  /*should_delay_callback=*/false);
+  AddCallbackInfo(/*should_proceed=*/true,
+                  /*should_show_interstitial=*/false,
+                  /*should_delay_callback=*/false);
+
+  // Setup SafeBrowsingNavigationObserver and its dependencies.
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  HostContentSettingsMap::RegisterProfilePrefs(pref_service.registry());
+  safe_browsing::RegisterProfilePrefs(pref_service.registry());
+  pref_service.SetBoolean(prefs::kSafeBrowsingEnabled, true);
+
+  scoped_refptr<HostContentSettingsMap> settings_map =
+      base::MakeRefCounted<HostContentSettingsMap>(
+          &pref_service, /*is_off_the_record=*/false,
+          /*store_last_modified=*/false, /*restore_session=*/false,
+          /*should_record_metrics=*/false);
+
+  // Ensure that settings_map is shut down even if assertions fail.
+  base::ScopedClosureRunner shutdown_runner(base::BindOnce(
+      &HostContentSettingsMap::ShutdownOnUIThread, settings_map));
+
+  // Declaration order matters to ensure teardown is in right order.
+  content::FakeServiceWorkerContext service_worker_context;
+  SafeBrowsingNavigationObserverManager observer_manager(
+      &pref_service, &service_worker_context);
+  content::WebContents* local_web_contents =
+      web_contents_factory_.CreateWebContents(&browser_context_);
+
+  // Redirect the throttle to use the local WebContents.
+  EXPECT_CALL(mock_web_contents_getter_, Run())
+      .WillRepeatedly(::testing::Return(local_web_contents));
+
+  SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
+      local_web_contents, settings_map.get(), &observer_manager, &pref_service,
+      /*has_safe_browsing_service=*/true);
+
+  // Simulate starting request for the original URL.
+  url_ = GURL("https://original.example.com/");
+  CallWillStartRequest();
+
+  // First redirect: original.example.com -> first-redirect.example.com
+  response_head_->remote_endpoint =
+      net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 443);
+  bool defer =
+      CallWillRedirectRequest(GURL("https://first-redirect.example.com/"));
+  EXPECT_FALSE(defer);
+
+  // Second redirect: first-redirect.example.com -> second-redirect.example.com
+  response_head_->remote_endpoint =
+      net::IPEndPoint(net::IPAddress(5, 6, 7, 8), 443);
+  defer = CallWillRedirectRequest(GURL("https://second-redirect.example.com/"));
+  EXPECT_FALSE(defer);
+
+  // Verify that the IP mapping for the original URL was recorded.
+  auto* host_to_ip_map = GetHostToIpMap(&observer_manager);
+  auto it = host_to_ip_map->find("original.example.com");
+  ASSERT_NE(it, host_to_ip_map->end());
+  ASSERT_EQ(it->second.size(), 1u);
+  EXPECT_EQ(it->second[0].ip, "1.2.3.4");
+
+  // Verify that the IP mapping for the first redirect URL was recorded.
+  it = host_to_ip_map->find("first-redirect.example.com");
+  ASSERT_NE(it, host_to_ip_map->end());
+  ASSERT_EQ(it->second.size(), 1u);
+  EXPECT_EQ(it->second[0].ip, "5.6.7.8");
+
+  // Clear expectations that bind local_web_contents before destroying it.
+  ::testing::Mock::VerifyAndClearExpectations(&mock_web_contents_getter_);
+  web_contents_factory_.DestroyWebContents(local_web_contents);
 }
 
 class SBBrowserUrlLoaderThrottleAsyncCheckTest

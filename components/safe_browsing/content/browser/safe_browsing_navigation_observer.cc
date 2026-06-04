@@ -58,7 +58,8 @@ void SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
   if (FromWebContents(web_contents))
     return;
 
-  if (safe_browsing::SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
+  if (observer_manager &&
+      safe_browsing::SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
           prefs, has_safe_browsing_service)) {
     web_contents->SetUserData(
         kWebContentsUserDataKey,
@@ -335,6 +336,14 @@ void SafeBrowsingNavigationObserver::SetNavigationOutermostMainFrameIds(
       nav_event->initiator_outermost_main_frame_id =
           initiator_frame_host->GetOutermostMainFrame()->GetGlobalId();
     }
+  }
+}
+
+void SafeBrowsingNavigationObserver::RecordHostToIpMapping(
+    const std::string& host,
+    const std::string& ip) {
+  if (GetObserverManager()) {
+    GetObserverManager()->RecordHostToIpMapping(host, ip);
   }
 }
 

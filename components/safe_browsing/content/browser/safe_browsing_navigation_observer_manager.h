@@ -371,6 +371,7 @@ class SafeBrowsingNavigationObserverManager
 
  private:
   friend class TestNavigationObserverManager;
+  friend class SBBrowserUrlLoaderThrottleTest;
   friend class SBNavigationObserverBrowserTest;
   friend class SBNavigationObserverTest;
   friend class ChromeClientSideDetectionHostDelegateTest;
