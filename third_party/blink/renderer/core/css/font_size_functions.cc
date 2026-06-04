@@ -297,8 +297,8 @@ std::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
 }
 
 double FontSizeFunctions::SnapToClosestFontScaleBucket(double raw_font_scale) {
-  static const std::array<double, 7> font_scale_buckets = {0.85, 1,   1.15, 1.3,
-                                                           1.5,  1.8, 2};
+  static const std::array<double, 10> font_scale_buckets = {
+      0.85, 1, 1.15, 1.3, 1.5, 1.8, 2, 2.5, 3, 3.5};
 
   // Handle cases where the input value is outside the range of literals.
   if (raw_font_scale <= font_scale_buckets.front()) {
