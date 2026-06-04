@@ -1719,6 +1719,14 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   // the qp if |qp_| is less than zero.
   image.qp_ = metadata.qp;
 
+  if (metadata.yuv_psnr) {
+    image.set_psnr(webrtc::EncodedImage::Psnr{
+        .y = metadata.yuv_psnr->y,
+        .u = metadata.yuv_psnr->u,
+        .v = metadata.yuv_psnr->v,
+    });
+  }
+
   image.set_end_of_temporal_unit(metadata.end_of_picture());
 
   webrtc::CodecSpecificInfo info;

@@ -134,6 +134,12 @@ struct MEDIA_EXPORT SVCGenericMetadata final {
   std::optional<uint16_t> refresh_flags;
 };
 
+struct MEDIA_EXPORT YuvPsnr final {
+  double y;
+  double u;
+  double v;
+};
+
 //  Metadata associated with a bitstream buffer.
 //  |payload_size| is the byte size of the used portion of the buffer.
 //  |key_frame| is true if this delivered frame is a keyframe.
@@ -185,6 +191,9 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
 
   // Some platforms may adjust the color space.
   std::optional<gfx::ColorSpace> encoded_color_space;
+
+  // Y, U, and V Peak Signal-to-Noise Ratio (PSNR) values.
+  std::optional<YuvPsnr> yuv_psnr;
 };
 
 // Video encoder interface.
@@ -532,6 +541,7 @@ MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,
                              const VideoEncodeAccelerator::SupportedProfile& r);
 MEDIA_EXPORT bool operator==(const Vp8Metadata& l, const Vp8Metadata& r);
 MEDIA_EXPORT bool operator==(const Vp9Metadata& l, const Vp9Metadata& r);
+MEDIA_EXPORT bool operator==(const YuvPsnr& l, const YuvPsnr& r);
 MEDIA_EXPORT bool operator==(const BitstreamBufferMetadata& l,
                              const BitstreamBufferMetadata& r);
 MEDIA_EXPORT bool operator==(

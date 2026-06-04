@@ -325,6 +325,16 @@ union OptionalMetadata {
   Vp9Metadata vp9;
 };
 
+// PSNR (peak signal-to-noise ratio) for each YUV plane, in dB. Valid values
+// must be >= 0 dB. There's no hard upper limit, but values > 100 dB are far
+// beyond what's visually lossless. May be generated as part of the encoding
+// process for some video encoder implementations. Output for stats purposes.
+struct YuvPsnr {
+  double y;
+  double u;
+  double v;
+};
+
 struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
@@ -334,6 +344,7 @@ struct BitstreamBufferMetadata {
   SVCGenericMetadata? svc_generic;
   gfx.mojom.Size? encoded_size;
   gfx.mojom.ColorSpace? encoded_color_space;
+  YuvPsnr? yuv_psnr;
 };
 
 interface VideoEncodeAcceleratorClient {

@@ -3937,4 +3937,63 @@ TEST_F(RTCVideoEncoderEncodeTest, H265TemporalLayerGenericFrameInfo) {
 }
 #endif  // BUILDFLAG(RTC_USE_H265)
 
+TEST_F(RTCVideoEncoderEncodeTest, PassesYuvPsnr) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP8;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec(codec_type);
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  class PsnrVerifier : public webrtc::EncodedImageCallback {
+   public:
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      EXPECT_TRUE(encoded_image.psnr().has_value());
+      if (encoded_image.psnr().has_value()) {
+        EXPECT_DOUBLE_EQ(encoded_image.psnr()->y, 40.1);
+        EXPECT_DOUBLE_EQ(encoded_image.psnr()->u, 41.2);
+        EXPECT_DOUBLE_EQ(encoded_image.psnr()->v, 42.3);
+      }
+      waiter_.Signal();
+      return Result(Result::OK);
+    }
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
+    void Wait() { waiter_.Wait(); }
+
+   private:
+    base::WaitableEvent waiter_;
+  };
+
+  PsnrVerifier verifier;
+  rtc_encoder_->RegisterEncodeCompleteCallback(&verifier);
+
+  const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
+      webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+  FillFrameBuffer(buffer);
+  std::vector<webrtc::VideoFrameType> frame_types{
+      webrtc::VideoFrameType::kVideoFrameKey};
+
+  EXPECT_CALL(*mock_vea_, Encode).WillOnce([&] {
+    media::BitstreamBufferMetadata metadata(
+        100u /* payload_size_bytes */,
+        /*key_frame=*/true,
+        /*timestamp=*/base::Milliseconds(0));
+    metadata.yuv_psnr = media::YuvPsnr{.y = 40.1, .u = 41.2, .v = 42.3};
+    client_->BitstreamBufferReady(/*bitstream_buffer_id=*/0, metadata);
+  });
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(buffer)
+                                     .set_rtp_timestamp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+  verifier.Wait();
+}
 }  // namespace blink

@@ -212,6 +212,17 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
 };
 
 template <>
+class StructTraits<media::mojom::YuvPsnrDataView, media::YuvPsnr> {
+ public:
+  static double y(const media::YuvPsnr& psnr) { return psnr.y; }
+  static double u(const media::YuvPsnr& psnr) { return psnr.u; }
+  static double v(const media::YuvPsnr& psnr) { return psnr.v; }
+
+  static bool Read(media::mojom::YuvPsnrDataView data,
+                   media::YuvPsnr* out_psnr);
+};
+
+template <>
 class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
                    media::BitstreamBufferMetadata> {
  public:
@@ -242,6 +253,10 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   static std::optional<gfx::ColorSpace> encoded_color_space(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm.encoded_color_space;
+  }
+  static std::optional<media::YuvPsnr> yuv_psnr(
+      const media::BitstreamBufferMetadata& bbm) {
+    return bbm.yuv_psnr;
   }
 
   static bool Read(media::mojom::BitstreamBufferMetadataDataView data,

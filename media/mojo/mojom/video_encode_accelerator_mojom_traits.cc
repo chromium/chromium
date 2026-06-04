@@ -4,6 +4,7 @@
 
 #include "media/mojo/mojom/video_encode_accelerator_mojom_traits.h"
 
+#include <cmath>
 #include <optional>
 
 #include "base/notreached.h"
@@ -208,6 +209,30 @@ bool UnionTraits<media::mojom::OptionalMetadataDataView,
   NOTREACHED();
 }
 
+bool StructTraits<media::mojom::YuvPsnrDataView, media::YuvPsnr>::Read(
+    media::mojom::YuvPsnrDataView data,
+    media::YuvPsnr* out_psnr) {
+  double y = data.y();
+  if (std::isnan(y) || y < 0.0) {
+    return false;
+  }
+
+  double u = data.u();
+  if (std::isnan(u) || u < 0.0) {
+    return false;
+  }
+
+  double v = data.v();
+  if (std::isnan(v) || v < 0.0) {
+    return false;
+  }
+
+  out_psnr->y = y;
+  out_psnr->u = u;
+  out_psnr->v = v;
+  return true;
+}
+
 // static
 bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
                   media::BitstreamBufferMetadata>::
@@ -226,6 +251,9 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
     return false;
   }
   if (!data.ReadSvcGeneric(&metadata->svc_generic)) {
+    return false;
+  }
+  if (!data.ReadYuvPsnr(&metadata->yuv_psnr)) {
     return false;
   }
 
