@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,14 +38,18 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 #include "chrome/browser/ui/webui_browser/webui_stub_location_bar.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/sharing_message/sharing_dialog_data.h"
+#include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/hit_test.h"
@@ -115,6 +121,17 @@ class WebUIBrowserWindow::WidgetDelegate : public views::WidgetDelegate {
 };
 
 WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
+  // GuestContents is not approved for use in production. Restrict its
+  // proxy content feature kAttachUnownedInnerWebContents to development,
+  // canary, and test builds.
+  if (base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents)) {
+    const bool is_development_build = !version_info::IsOfficialBuild();
+    const bool is_canary_or_test_build =
+        chrome::GetChannel() == version_info::Channel::CANARY ||
+        chrome::GetChannel() == version_info::Channel::UNKNOWN;
+    CHECK(is_development_build || is_canary_or_test_build);
+  }
+
   location_bar_ = std::make_unique<WebUIStubLocationBar>(this);
   web_contents_delegate_ =
       std::make_unique<WebUIBrowserWebContentsDelegate>(this);
