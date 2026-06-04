@@ -393,7 +393,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
-import org.chromium.ui.base.AcceleratorManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -638,7 +637,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private Runnable mShowHistoryRunnable;
     private CompositorViewHolder mCompositorViewHolder;
     private IncognitoWindowNightModeStateProvider mIncognitoWindowNightModeStateProvider;
-    private AcceleratorManager mAcceleratorManager;
 
     /** Keeps track of whether or not a specific tab was created based on the startup intent. */
     private boolean mCreatedTabOnStartup;
@@ -3149,7 +3147,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
-        mAcceleratorManager = AcceleratorManager.getOrCreate(getWindowAndroid());
 
         if (isMainIntentLaunchPreOnResume()) {
             StartupLatencyInjector startupLatencyInjector = new StartupLatencyInjector();
@@ -5093,10 +5090,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     .destroy(mRecentlyClosedEntriesManager);
         }
 
-        if (mAcceleratorManager != null) {
-            mAcceleratorManager.destroy();
-        }
-
         if (mFindsManager != null) {
             mFindsManager.destroy();
             mFindsManager = null;
@@ -5141,10 +5134,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (extensionsToolbarCoordinator.dispatchKeyEvent(event)) {
                 result = true;
             }
-        }
-
-        if (mAcceleratorManager.processKeyEvent(event)) {
-            result = true;
         }
 
         return result != null ? result : super.dispatchKeyEvent(event);

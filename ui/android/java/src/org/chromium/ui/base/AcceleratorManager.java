@@ -69,6 +69,10 @@ public class AcceleratorManager {
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }
 
+    public static @Nullable AcceleratorManager fromForTesting(WindowAndroid window) {
+        return from(window);
+    }
+
     @CalledByNative
     private static long getNativePointerFromWindow(WindowAndroid window) {
         AcceleratorManager manager = from(window);

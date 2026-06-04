@@ -205,6 +205,7 @@ import org.chromium.content_public.browser.test.util.PrefetchTestUtil;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.AcceleratorManager;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -3188,5 +3189,17 @@ public class CustomTabActivityTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         var tab = getActivity().getActivityTab();
         assertFalse(tab.getWebContents().getCanAcceptLoadDropsForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testAcceleratorManagerInitialized() {
+        Intent intent = createMinimalCustomTabIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        CustomTabActivity activity = mCustomTabActivityTestRule.getActivity();
+        var manager =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> AcceleratorManager.fromForTesting(activity.getWindowAndroid()));
+        assertNotNull("AcceleratorManager should be initialized for CustomTabActivity", manager);
     }
 }

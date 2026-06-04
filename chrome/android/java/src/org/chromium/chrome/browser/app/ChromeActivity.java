@@ -33,6 +33,7 @@ import android.util.Pair;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Display.Mode;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -263,6 +264,7 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.AcceleratorManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.Clipboard;
@@ -415,6 +417,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private boolean mDidAddPolicyChangeListener;
 
     private StartupMetricsTracker mStartupMetricsTracker;
+    private @Nullable AcceleratorManager mAcceleratorManager;
 
     /** Whether or not the activity is in started state. */
     private boolean mStarted;
@@ -592,6 +595,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 });
 
         super.performPreInflationStartup();
+        mAcceleratorManager = AcceleratorManager.getOrCreate(getWindowAndroid());
 
         // Force a partner customizations refresh if it has yet to be initialized.  This can happen
         // if Chrome is killed and you refocus a previous activity from Android recents, which does
@@ -2076,14 +2080,27 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     /**
-     * Override this to perform destruction tasks.  Note that by the time this is called, the
-     * {@link CompositorViewHolder} will be destroyed, but the {@link WindowAndroid} and
-     * {@link TabModelSelector} will not.
-     * <p>
-     * After returning from this, the {@link TabModelSelector} will be destroyed followed
-     * by the {@link WindowAndroid}.
+     * Override this to perform destruction tasks. Note that by the time this is called, the {@link
+     * CompositorViewHolder} will be destroyed, but the {@link WindowAndroid} and {@link
+     * TabModelSelector} will not.
+     *
+     * <p>After returning from this, the {@link TabModelSelector} will be destroyed followed by the
+     * {@link WindowAndroid}.
      */
-    protected void onDestroyInternal() {}
+    protected void onDestroyInternal() {
+        if (mAcceleratorManager != null) {
+            mAcceleratorManager.destroy();
+            mAcceleratorManager = null;
+        }
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event)) {
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
 
     /** Returns snackbar manager for all snackbar related operations. */
     @Override
