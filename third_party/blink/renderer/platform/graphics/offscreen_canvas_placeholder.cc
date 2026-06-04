@@ -82,7 +82,12 @@ void OffscreenCanvasPlaceholder::SetSuspendOffscreenCanvasAnimation(
 }
 
 OffscreenCanvasPlaceholder*
-OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(unsigned placeholder_id) {
+OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(DOMNodeId placeholder_id) {
+  if (placeholder_id == kNoPlaceholderId ||
+      placeholder_id == kInvalidDOMNodeId) {
+    return nullptr;
+  }
+
   PlaceholderIdMap::iterator it = placeholderRegistry().find(placeholder_id);
   if (it == placeholderRegistry().end())
     return nullptr;
@@ -90,7 +95,10 @@ OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(unsigned placeholder_id) {
 }
 
 void OffscreenCanvasPlaceholder::RegisterPlaceholderCanvas(
-    unsigned placeholder_id) {
+    DOMNodeId placeholder_id) {
+  CHECK_NE(placeholder_id, kInvalidDOMNodeId);
+  CHECK_NE(placeholder_id, kNoPlaceholderId);
+
   DCHECK(!placeholderRegistry().Contains(placeholder_id));
   DCHECK(!IsOffscreenCanvasRegistered());
   placeholderRegistry().insert(placeholder_id, this);

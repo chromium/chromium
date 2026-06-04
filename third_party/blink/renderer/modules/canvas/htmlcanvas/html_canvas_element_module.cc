@@ -71,7 +71,7 @@ OffscreenCanvas* HTMLCanvasElementModule::TransferControlToOffscreenInternal(
     ScriptState* script_state,
     HTMLCanvasElement& canvas) {
   DOMNodeId canvas_id = canvas.GetDomNodeId();
-  canvas.RegisterPlaceholderCanvas(static_cast<int>(canvas_id));
+  canvas.RegisterPlaceholderCanvas(canvas_id);
 
   uint32_t client_id = 0;
   uint32_t sink_id = 0;

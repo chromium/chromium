@@ -32,7 +32,7 @@ constexpr size_t kHeight = 10;
 
 class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
  public:
-  explicit MockCanvasResourceDispatcher(unsigned placeholder_id)
+  explicit MockCanvasResourceDispatcher(int placeholder_id)
       : CanvasResourceDispatcher(
             /*client=*/nullptr,
             scheduler::GetSingleThreadTaskRunnerForTesting(),
@@ -50,8 +50,8 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
   MOCK_METHOD0(MainThreadReceivedImage, void());
 };
 
-unsigned GenPlaceholderId() {
-  DEFINE_STATIC_LOCAL(unsigned, s_id, (0));
+DOMNodeId GenPlaceholderId() {
+  static DOMNodeId s_id = 0;
   return ++s_id;
 }
 
@@ -79,7 +79,7 @@ class OffscreenCanvasPlaceholderTest : public Test {
   std::unique_ptr<CanvasNon2DResourceProviderSharedImage> resource_provider_;
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       test_web_shared_image_interface_provider_;
-  unsigned placeholder_id_ = 0;
+  DOMNodeId placeholder_id_ = 0;
 };
 
 void OffscreenCanvasPlaceholderTest::SetUp() {

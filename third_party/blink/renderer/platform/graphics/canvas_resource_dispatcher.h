@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -74,7 +75,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
           agent_group_scheduler_compositor_task_runner,
       uint32_t client_id,
       uint32_t sink_id,
-      int placeholder_canvas_id,
+      DOMNodeId placeholder_canvas_id,
       const gfx::Size&);
 
   ~CanvasResourceDispatcher() override;
@@ -112,7 +113,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) final {}
 
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
-  void SetPlaceholderCanvasDispatcher(int placeholder_canvas_id);
+  void SetPlaceholderCanvasDispatcher(DOMNodeId placeholder_canvas_id);
 
  private:
   friend class OffscreenCanvasPlaceholderTest;
@@ -154,7 +155,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   mojo::Remote<mojom::blink::SurfaceEmbedder> surface_embedder_;
   mojo::Receiver<viz::mojom::blink::CompositorFrameSinkClient> receiver_{this};
 
-  int placeholder_canvas_id_;
+  DOMNodeId placeholder_canvas_id_;
 
   viz::ResourceIdGenerator id_generator_;
 

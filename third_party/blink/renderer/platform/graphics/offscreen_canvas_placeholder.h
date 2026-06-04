@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -35,9 +36,9 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
       CanvasResourceDispatcher::AnimationState requested_state);
 
   static OffscreenCanvasPlaceholder* GetPlaceholderCanvasById(
-      unsigned placeholder_id);
+      DOMNodeId placeholder_id);
 
-  void RegisterPlaceholderCanvas(unsigned placeholder_id);
+  void RegisterPlaceholderCanvas(DOMNodeId placeholder_id);
   void UnregisterPlaceholderCanvas();
   bool HasOffscreenCanvasFrame() const { return !!placeholder_frame_; }
   ExportedCanvasResource* OffscreenCanvasFrame() const {
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
   enum {
     kNoPlaceholderId = -1,
   };
-  int placeholder_id_ = kNoPlaceholderId;
+  DOMNodeId placeholder_id_ = kNoPlaceholderId;
 
   // If an animation state change was requested, but we couldn't update it
   // immediately, then this holds the most recent request.

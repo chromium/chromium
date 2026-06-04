@@ -46,7 +46,7 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
         agent_group_scheduler_compositor_task_runner,
     uint32_t client_id,
     uint32_t sink_id,
-    int canvas_id,
+    DOMNodeId canvas_id,
     const gfx::Size& size)
     : frame_sink_id_(viz::FrameSinkId(client_id, sink_id)),
       size_(size),
@@ -85,7 +85,7 @@ namespace {
 static void UpdatePlaceholderImage(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    int placeholder_canvas_id,
+    DOMNodeId placeholder_canvas_id,
     scoped_refptr<blink::ExportedCanvasResource>&& canvas_resource) {
   DCHECK(IsMainThread());
   OffscreenCanvasPlaceholder* placeholder_canvas =
@@ -103,7 +103,7 @@ static void UpdatePlaceholderImage(
 void UpdatePlaceholderDispatcher(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    int placeholder_canvas_id) {
+    DOMNodeId placeholder_canvas_id) {
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
@@ -423,7 +423,7 @@ void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
 }
 
 void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
-    int placeholder_canvas_id) {
+    DOMNodeId placeholder_canvas_id) {
   // `agent_group_scheduler_compositor_task_runner_` may be null if this
   // was created from a SharedWorker.
   if (!agent_group_scheduler_compositor_task_runner_)
