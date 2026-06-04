@@ -335,8 +335,9 @@ GlicEnabling::ProfileEnablement::~ProfileEnablement() = default;
 
 void GlicEnabling::ProfileEnablement::RecordMetrics(
     const std::string& suffix) const {
+  bool is_enabled = IsEnabled();
   base::UmaHistogramBoolean(
-      base::StrCat({"Glic.ProfileEnablement.IsEnabled.", suffix}), IsEnabled());
+      base::StrCat({"Glic.ProfileEnablement.IsEnabled.", suffix}), is_enabled);
 
   auto record_reason = [&](DisabledReason reason) {
     base::UmaHistogramEnumeration(
@@ -349,9 +350,11 @@ void GlicEnabling::ProfileEnablement::RecordMetrics(
     RecordFeatureDisabledReason(suffix);
   }
 
-  base::UmaHistogramBoolean(
-      base::StrCat({"Glic.ProfileEnablement.IsConsented.", suffix}),
-      fre_is_consented);
+  if (is_enabled) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Glic.ProfileEnablement.IsConsented.", suffix}),
+        fre_is_consented);
+  }
   base::UmaHistogramBoolean(
       base::StrCat({"Glic.ProfileEnablement.EligibleForLive.", suffix}),
       EligibleForLive());

@@ -140,6 +140,22 @@ TEST_F(GlicEnablingTest, GlicFeatureNotEnabledTest) {
   EXPECT_EQ(GlicGlobalEnabling(delegate_).IsEnabledByGlobalCriteria(), false);
 }
 
+TEST_F(GlicEnablingTest, IneligibleProfileDoesNotLogIsConsentedMetrics) {
+  GlicEnabling::ProfileEnablement enablement;
+  enablement.is_regular_profile = false;
+  enablement.fre_is_consented = true;
+
+  EXPECT_FALSE(enablement.IsEnabled());
+
+  enablement.RecordStartupMetrics();
+  enablement.RecordSteadyStateMetrics();
+
+  histogram_tester_->ExpectTotalCount(
+      "Glic.ProfileEnablement.IsConsented.Startup", 0);
+  histogram_tester_->ExpectTotalCount(
+      "Glic.ProfileEnablement.IsConsented.SteadyState", 0);
+}
+
 TEST_F(GlicEnablingTest, CountryFilteringNotEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGlicCountryFiltering);

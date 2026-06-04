@@ -2200,8 +2200,9 @@ chromium-metrics-reviews@google.com.
   <owner>dewittj@chromium.org</owner>
   <owner>glic@chromium.org</owner>
   <summary>
-    Records whether the user has consented to use glic (accepted the FRE) for
-    the profile. This is {Suffix}.
+    Records whether an eligible user has consented to use glic (accepted the
+    FRE) for the profile. Excludes users that are ineligible for glic. This is
+    {Suffix}.
   </summary>
   <token key="Suffix" variants="ProfileEnablementSuffix"/>
 </histogram>

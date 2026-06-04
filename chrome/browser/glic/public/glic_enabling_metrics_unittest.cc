@@ -89,8 +89,8 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
       "Glic.ProfileEnablement.DisabledReason.SteadyState", 2);
 
   // Sub-features
-  histograms.ExpectUniqueSample(
-      "Glic.ProfileEnablement.IsConsented.SteadyState", false, 1);
+  histograms.ExpectTotalCount("Glic.ProfileEnablement.IsConsented.SteadyState",
+                              0);
   // EligibleForLive is false because feature_disabled is true
   // (IsProfileEligible() is false)
   histograms.ExpectUniqueSample(
