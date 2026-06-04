@@ -839,7 +839,7 @@ TEST_F(OpenscreenSessionHostTest, ResumeVideoCapture) {
   PauseCapturingVideo();
 
   // Change the video capture parameters.
-  mirror_settings()->SetResolutionConstraints(1280, 720);
+  mirror_settings()->SetMaxResolutionConstraints(gfx::Size(1280, 720));
 
   // Resume with different parameters.
   EXPECT_FALSE(TryResumeCapturingVideo());
@@ -1038,7 +1038,11 @@ TEST_F(OpenscreenSessionHostTest,
 }
 
 TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
-#if !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kCastStreamingWinHardwareH264);
+#endif
+
   CreateSession(SessionType::VIDEO_ONLY);
 
   SetSupportedProfiles(
@@ -1050,7 +1054,6 @@ TEST_F(OpenscreenSessionHostTest, ShouldEnableHardwareH264EncodingIfSupported) {
   task_environment().RunUntilIdle();
 
   AssertCodecWasOffered(media::VideoCodec::kH264, true);
-#endif
 }
 
 TEST_F(OpenscreenSessionHostTest, GetStatsDefault) {
@@ -1237,6 +1240,43 @@ TEST_F(OpenscreenSessionHostTest,
   // RemotingSender must be destroyed before StopSession().
   result1.reset();
 
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest, CodecParameterInOffer) {
+  CreateSession(SessionType::VIDEO_ONLY);
+
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kCastStreamingWinHardwareH264);
+#endif
+
+  SetSupportedProfiles(
+      std::vector<media::VideoEncodeAccelerator::SupportedProfile>{
+          media::VideoEncodeAccelerator::SupportedProfile(
+              media::VideoCodecProfile::H264PROFILE_HIGH,
+              gfx::Size{1920, 1080})});
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer))
+      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+
+  NegotiateMirroring();
+  run_loop.Run();
+
+  const auto& offer = std::get<Offer>(last_sent_offer().body);
+  ASSERT_FALSE(offer.video_streams.empty());
+
+  bool found_h264 = false;
+  for (const auto& stream : offer.video_streams) {
+    if (stream.codec == openscreen::cast::VideoCodec::kH264) {
+      EXPECT_EQ(stream.stream.codec_parameter, "avc1.4d0028");
+      found_h264 = true;
+    } else if (stream.codec == openscreen::cast::VideoCodec::kVp9) {
+      EXPECT_EQ(stream.stream.codec_parameter, "vp09.00.40.08");
+    }
+  }
+  EXPECT_TRUE(found_h264);
   StopSession();
 }
 

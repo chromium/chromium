@@ -51,4 +51,31 @@ TEST(OpenscreenConversionHelpersTest, TimeConversions) {
             ToTimeDelta(std::chrono::milliseconds(300)));
 }
 
+TEST(OpenscreenConversionHelpersTest, ToOpenscreenAudioConfig) {
+  FrameSenderConfig config;
+  config.rtp_timebase = 48000;
+  config.max_playout_delay = base::Milliseconds(400);
+  AudioCodecParams audio_params;
+  audio_params.codec = AudioCodec::kOpus;
+  audio_params.codec_parameter = "opus_param";
+  config.audio_codec_params = audio_params;
+
+  const openscreen::cast::AudioCaptureConfig converted =
+      ToOpenscreenAudioConfig(config);
+  EXPECT_EQ(converted.codec_parameter, "opus_param");
+}
+
+TEST(OpenscreenConversionHelpersTest, ToOpenscreenVideoConfig) {
+  FrameSenderConfig config;
+  config.rtp_timebase = 90000;
+  config.max_playout_delay = base::Milliseconds(400);
+  VideoCodecParams video_params(VideoCodec::kH264);
+  video_params.codec_parameter = "avc1.4d0028";
+  config.video_codec_params = video_params;
+
+  const openscreen::cast::VideoCaptureConfig converted =
+      ToOpenscreenVideoConfig(config);
+  EXPECT_EQ(converted.codec_parameter, "avc1.4d0028");
+}
+
 }  // namespace media::cast

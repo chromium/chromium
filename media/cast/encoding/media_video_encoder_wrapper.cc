@@ -24,6 +24,7 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/sender_encoded_frame.h"
 #include "media/cast/constants.h"
+#include "media/cast/encoding/encoding_support.h"
 #include "media/cast/encoding/video_encoder.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -72,23 +73,6 @@ std::unique_ptr<media::VideoEncoder> CreateSoftwareEncoder(VideoCodec codec) {
   }
 }
 
-VideoCodecProfile ToProfile(VideoCodec codec) {
-  switch (codec) {
-    case VideoCodec::kH264:
-      return H264PROFILE_MAIN;
-    case VideoCodec::kHEVC:
-      return HEVCPROFILE_MAIN;
-    case VideoCodec::kVP8:
-      return VP8PROFILE_ANY;
-    case VideoCodec::kVP9:
-      // VP9 Profile 0 is 8 bit/sample at 4:2:0.
-      return VP9PROFILE_PROFILE0;
-    case VideoCodec::kAV1:
-      return AV1PROFILE_PROFILE_MAIN;
-    default:
-      NOTREACHED() << "Unhandled codec. value=" << std::to_underlying(codec);
-  }
-}
 
 // Must be called on the ENCODER thread, which resolves to VIDEO for hardware
 // encoding, and MAIN for software encoding.
@@ -476,7 +460,7 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   }
   CHECK(encoder_);
 
-  const VideoCodecProfile profile = ToProfile(codec_);
+  const VideoCodecProfile profile = encoding_support::ToProfile(codec_);
   metrics_provider_->Initialize(profile, options_.frame_size,
                                 is_hardware_encoder_);
 

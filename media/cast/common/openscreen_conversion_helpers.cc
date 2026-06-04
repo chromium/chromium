@@ -175,7 +175,9 @@ openscreen::cast::AudioCaptureConfig ToOpenscreenAudioConfig(
       .sample_rate = config.rtp_timebase,
       .target_playout_delay =
           std::chrono::milliseconds(config.max_playout_delay.InMilliseconds()),
-      .codec_parameter = std::string()};
+      .codec_parameter = config.audio_codec_params
+                             ? config.audio_codec_params->codec_parameter
+                             : std::string()};
 }
 
 openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(
@@ -195,7 +197,9 @@ openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(
           std::vector(std::begin(kResolutions), std::end(kResolutions)),
       .target_playout_delay =
           std::chrono::milliseconds(config.max_playout_delay.InMilliseconds()),
-      .codec_parameter = std::string()};
+      .codec_parameter = config.video_codec_params
+                             ? config.video_codec_params->codec_parameter
+                             : std::string()};
 }
 
 RemotingSinkAudioCapability ToRemotingAudioCapability(

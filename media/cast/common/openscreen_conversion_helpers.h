@@ -53,7 +53,6 @@ openscreen::cast::AudioCaptureConfig ToOpenscreenAudioConfig(
     const FrameSenderConfig& config);
 openscreen::cast::VideoCaptureConfig ToOpenscreenVideoConfig(
     const FrameSenderConfig& config);
-
 media::mojom::RemotingSinkAudioCapability ToRemotingAudioCapability(
     openscreen::cast::AudioCapability capability);
 media::mojom::RemotingSinkVideoCapability ToRemotingVideoCapability(

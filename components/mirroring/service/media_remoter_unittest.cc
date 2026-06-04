@@ -138,11 +138,10 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
       return nullptr;
     }
 
+    MirrorSettings mirror_settings(/*target_playout_delay=*/std::nullopt);
     auto config =
-        is_audio
-            ? MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kUnknown)
-            : MirrorSettings::GetDefaultVideoConfig(
-                  media::VideoCodec::kUnknown);
+        is_audio ? mirror_settings.GetAudioConfig(media::AudioCodec::kUnknown)
+                 : mirror_settings.GetVideoConfig(media::VideoCodec::kUnknown);
     return std::make_unique<RemotingSender>(
         cast_environment(), std::move(sender), config, std::move(pipe),
         std::move(receiver), std::move(error_callback));

@@ -26,25 +26,45 @@ namespace mirroring {
 
 namespace {
 
+// Default timebase for audio (48 kHz).
 constexpr int kAudioTimebase = 48000;
+
+// Default timebase for video (90 kHz).
 constexpr int kVideoTimebase = 90000;
+
+// Number of audio channels (stereo).
 constexpr int kAudioChannels = 2;
-constexpr int kAudioFramerate = 100;  // 100 FPS for 10ms packets.
+
+// Audio frame rate (100 FPS for 10ms packets).
+constexpr int kAudioFramerate = 100;
+
+// Minimum video bitrate (300 kbps).
 constexpr int kMinVideoBitrate = 300000;
+
+// Maximum video bitrate (5 Mbps).
 constexpr int kMaxVideoBitrate = 5000000;
-constexpr int kAudioBitrate = 0;   // 0 means automatic.
-constexpr int kDefaultMaxFrameRate = 30;   // The default maximum frame rate.
-constexpr int kTargetMaxFrameRate60 = 60;  // Target frame rate for 60FPS.
-constexpr int kMaxWidth = 1920;    // Maximum video width in pixels.
+
+// Default maximum frame rate for video (30 FPS).
+constexpr int kDefaultMaxFrameRate = 30;
+
+// Target maximum frame rate for 60FPS video streaming.
+constexpr int kTargetMaxFrameRate60 = 60;
+
+// Maximum resolution supported by default (1080p).
+constexpr gfx::Size kMaxResolution{1920, 1080};
+
+// Minimum resolution supported by default (180p).
+constexpr gfx::Size kMinResolution{180, 180};
+
+// Default maximum bitrate for audio (128 kbps).
+// Bumped from legacy ~102 kbps formula to provide better quality.
+constexpr int kDefaultAudioMaxBitrate = 128000;
 
 int GetMaxFrameRate() {
   return base::FeatureList::IsEnabled(features::kCastStreaming60fps)
              ? kTargetMaxFrameRate60
              : kDefaultMaxFrameRate;
 }
-constexpr int kMaxHeight = 1080;   // Maximum video height in pixels.
-constexpr int kMinWidth = 180;     // Minimum video frame width in pixels.
-constexpr int kMinHeight = 180;    // Minimum video frame height in pixels.
 
 base::TimeDelta GetPlayoutDelayImpl() {
   // Currently min, max, and animated playout delay are the same.
@@ -77,41 +97,22 @@ base::TimeDelta GetPlayoutDelay() {
 
 }  // namespace
 
-MirrorSettings::MirrorSettings()
-    : min_width_(kMinWidth),
-      min_height_(kMinHeight),
-      max_width_(kMaxWidth),
-      max_height_(kMaxHeight) {}
+MirrorSettings::MirrorSettings(
+    std::optional<base::TimeDelta> target_playout_delay)
+    : target_playout_delay_(target_playout_delay),
+      min_resolution_(kMinResolution),
+      max_resolution_(kMaxResolution),
+      max_frame_rate_(GetMaxFrameRate()) {}
 
 MirrorSettings::~MirrorSettings() = default;
 
-// static
-FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(
-    media::AudioCodec codec) {
-  FrameSenderConfig config;
-  config.sender_ssrc = 1;
-  config.receiver_ssrc = 2;
-  const base::TimeDelta playout_delay = GetPlayoutDelay();
-  config.min_playout_delay = playout_delay;
-  config.max_playout_delay = playout_delay;
-  config.rtp_timebase = (codec == media::AudioCodec::kUnknown)
-                            ? media::cast::kRemotingRtpTimebase
-                            : kAudioTimebase;
-  config.channels = kAudioChannels;
-  config.min_bitrate = config.max_bitrate = config.start_bitrate =
-      kAudioBitrate;
-  config.max_frame_rate = kAudioFramerate;  // 10 ms audio frames
-  config.audio_codec_params = AudioCodecParams{.codec = codec};
-  return config;
-}
-
-// static
-FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
-    media::VideoCodec codec) {
+FrameSenderConfig MirrorSettings::GetVideoConfig(
+    media::VideoCodec codec) const {
   FrameSenderConfig config;
   config.sender_ssrc = 11;
   config.receiver_ssrc = 12;
-  const base::TimeDelta playout_delay = GetPlayoutDelay();
+  const base::TimeDelta playout_delay =
+      target_playout_delay_.value_or(GetPlayoutDelay());
   config.min_playout_delay = playout_delay;
   config.max_playout_delay = playout_delay;
   config.rtp_timebase = (codec == media::VideoCodec::kUnknown)
@@ -121,26 +122,51 @@ FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
   config.min_bitrate = kMinVideoBitrate;
   config.max_bitrate = kMaxVideoBitrate;
   config.start_bitrate = kMinVideoBitrate;
-  config.max_frame_rate = GetMaxFrameRate();
+  config.max_frame_rate = max_frame_rate_;
   config.video_codec_params = VideoCodecParams(codec);
+
   return config;
 }
 
-void MirrorSettings::SetResolutionConstraints(int max_width, int max_height) {
-  max_width_ = std::max(max_width, min_width_);
-  max_height_ = std::max(max_height, min_height_);
+FrameSenderConfig MirrorSettings::GetAudioConfig(
+    media::AudioCodec codec) const {
+  FrameSenderConfig config;
+  config.sender_ssrc = 1;
+  config.receiver_ssrc = 2;
+  const base::TimeDelta playout_delay =
+      target_playout_delay_.value_or(GetPlayoutDelay());
+  config.min_playout_delay = playout_delay;
+  config.max_playout_delay = playout_delay;
+  config.rtp_timebase = (codec == media::AudioCodec::kUnknown)
+                            ? media::cast::kRemotingRtpTimebase
+                            : kAudioTimebase;
+  config.channels = kAudioChannels;
+  config.min_bitrate = 0;
+  config.start_bitrate = kDefaultAudioMaxBitrate;
+  config.max_bitrate = kDefaultAudioMaxBitrate;
+  config.max_frame_rate = kAudioFramerate;  // 10 ms audio frames
+  config.audio_codec_params = AudioCodecParams{.codec = codec};
+
+  return config;
+}
+
+void MirrorSettings::SetMaxResolutionConstraints(gfx::Size max_resolution) {
+  // Clamp the requested maximum resolution to ensure it does not fall below the
+  // safe minimum resolution.
+  max_resolution_ =
+      gfx::Size(std::max(max_resolution.width(), min_resolution_.width()),
+                std::max(max_resolution.height(), min_resolution_.height()));
 }
 
 void MirrorSettings::SetSenderSideLetterboxingEnabled(bool enabled) {
   enable_sender_side_letterboxing_ = enabled;
 }
 
-media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
+media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() const {
   media::VideoCaptureParams params;
-  params.requested_format =
-      media::VideoCaptureFormat(gfx::Size(max_width_, max_height_),
-                                GetMaxFrameRate(), media::PIXEL_FORMAT_I420);
-  if (max_height_ == min_height_ && max_width_ == min_width_) {
+  params.requested_format = media::VideoCaptureFormat(
+      max_resolution_, max_frame_rate_, media::PIXEL_FORMAT_I420);
+  if (max_resolution_ == min_resolution_) {
     params.resolution_change_policy = ResolutionChangePolicy::FIXED_RESOLUTION;
   } else if (enable_sender_side_letterboxing_) {
     params.resolution_change_policy =
@@ -155,7 +181,7 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
   return params;
 }
 
-media::AudioParameters MirrorSettings::GetAudioCaptureParams() {
+media::AudioParameters MirrorSettings::GetAudioCaptureParams() const {
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                 media::ChannelLayoutConfig::Stereo(),
                                 kAudioTimebase, kAudioTimebase / 100);

@@ -99,11 +99,17 @@ struct VideoCodecParams {
   int max_number_of_video_buffers_used = kDefaultNumberOfVideoBuffers;
 
   int number_of_encode_threads = 1;
+
+  // The codec parameter string, as defined by RFC 6381.
+  std::string codec_parameter;
 };
 
 // These parameters are only for audio encoders.
 struct AudioCodecParams {
   AudioCodec codec = AudioCodec::kUnknown;
+
+  // The codec parameter string, as defined by RFC 6381.
+  std::string codec_parameter;
 };
 
 struct FrameSenderConfig {
