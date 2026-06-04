@@ -108,7 +108,11 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   class PlaceholderClient : public OffscreenCanvasPlaceholder::Client {
    public:
-    explicit PlaceholderClient(base::RepeatingClosure animation_state_callback);
+    PlaceholderClient(DOMNodeId placeholder_canvas_id,
+                      scoped_refptr<base::SingleThreadTaskRunner>
+                          agent_group_scheduler_compositor_task_runner,
+                      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+                      base::RepeatingClosure animation_state_callback);
     ~PlaceholderClient() override;
 
     base::WeakPtr<PlaceholderClient> GetWeakPtr() {
@@ -122,8 +126,16 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
       return animation_state_;
     }
 
+    void RegisterWithPlaceholder();
+
    private:
     base::RepeatingClosure animation_state_callback_;
+
+    const DOMNodeId placeholder_canvas_id_;
+
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    scoped_refptr<base::SingleThreadTaskRunner>
+        agent_group_scheduler_compositor_task_runner_;
 
     OffscreenCanvasPlaceholder::AnimationState animation_state_ =
         OffscreenCanvasPlaceholder::AnimationState::kActive;
@@ -140,8 +152,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   // Timer callback for synthetic OnBeginFrames.
   void OnFakeFrameTimer(TimerBase* timer);
-
-  void RegisterWithPlaceholder();
 
   // Surface-related
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;

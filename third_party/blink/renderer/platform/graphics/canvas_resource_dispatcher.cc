@@ -78,14 +78,15 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
 
   // `PlaceholderClient` runs callbacks synchronously and lives on the same
   // thread. Because dispatcher owns client, Unretained is fine.
-  placeholder_client_ = std::make_unique<PlaceholderClient>(base::BindRepeating(
-      [](CanvasResourceDispatcher* dispatcher) {
-        dispatcher->SetAnimationState(
-            dispatcher->placeholder_client_->GetAnimationState());
-      },
-      base::Unretained(this)));
-
-  RegisterWithPlaceholder();
+  placeholder_client_ = std::make_unique<PlaceholderClient>(
+      placeholder_canvas_id_, agent_group_scheduler_compositor_task_runner_,
+      task_runner_,
+      base::BindRepeating(
+          [](CanvasResourceDispatcher* dispatcher) {
+            dispatcher->SetAnimationState(
+                dispatcher->placeholder_client_->GetAnimationState());
+          },
+          base::Unretained(this)));
 }
 
 CanvasResourceDispatcher::~CanvasResourceDispatcher() = default;
@@ -445,7 +446,7 @@ void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
   }
 }
 
-void CanvasResourceDispatcher::RegisterWithPlaceholder() {
+void CanvasResourceDispatcher::PlaceholderClient::RegisterWithPlaceholder() {
   // `agent_group_scheduler_compositor_task_runner_` may be null if this
   // was created from a SharedWorker.
   if (!agent_group_scheduler_compositor_task_runner_)
@@ -460,21 +461,32 @@ void CanvasResourceDispatcher::RegisterWithPlaceholder() {
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in
   // a more synchronous way when it's on the main thread.
   if (IsMainThread()) {
-    UpdatePlaceholderDispatcher(placeholder_client_->GetWeakPtr(), task_runner_,
+    UpdatePlaceholderDispatcher(GetWeakPtr(), task_runner_,
                                 placeholder_canvas_id_);
   } else {
     PostCrossThreadTask(
         *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(UpdatePlaceholderDispatcher,
-                            placeholder_client_->GetWeakPtr(), task_runner_,
-                            placeholder_canvas_id_));
+        CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
+                            task_runner_, placeholder_canvas_id_));
   }
 }
 
 CanvasResourceDispatcher::PlaceholderClient::PlaceholderClient(
+    DOMNodeId placeholder_canvas_id,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        agent_group_scheduler_compositor_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::RepeatingClosure animation_state_callback)
-    : animation_state_callback_(animation_state_callback) {}
+    : animation_state_callback_(animation_state_callback),
+      placeholder_canvas_id_(placeholder_canvas_id),
+      task_runner_(std::move(task_runner)),
+      agent_group_scheduler_compositor_task_runner_(
+          std::move(agent_group_scheduler_compositor_task_runner)) {
+  RegisterWithPlaceholder();
+}
+
 CanvasResourceDispatcher::PlaceholderClient::~PlaceholderClient() = default;
+
 void CanvasResourceDispatcher::PlaceholderClient::SetAnimationState(
     OffscreenCanvasPlaceholder::AnimationState animation_state) {
   animation_state_ = animation_state;
