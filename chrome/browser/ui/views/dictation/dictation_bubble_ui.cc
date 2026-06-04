@@ -118,7 +118,7 @@ void DictationToastView::Init() {
       AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           close_callback_,
           features::IsRoundedIconsEnabled()
-              ? vector_icons::kCloseSmallIcon
+              ? vector_icons::kCloseIcon
               : vector_icons::kCloseChromeRefreshOldIcon,
           lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
           ui::kColorToastForeground, ui::kColorIconDisabled,

@@ -88,7 +88,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
               base::BindRepeating(&PopupSearchBarView::OnClearPressed,
                                   base::Unretained(this)),
               ::features::IsRoundedIconsEnabled()
-                  ? vector_icons::kCloseSmallIcon
+                  ? vector_icons::kCloseIcon
                   : vector_icons::kCloseChromeRefreshOldIcon))
           // Reset the border set by `CreateVectorImageButtonWithNativeTheme()`
           // as it sets an unnecessary padding to the highlighting circle.

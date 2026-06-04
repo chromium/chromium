@@ -221,7 +221,7 @@ ConversationNotificationView::CreateRightControlsContainer() {
   view->SetID(ViewId::kControlButtonsView);
   view->SetBetweenButtonSpacing(kNotificationControlButtonsHorizontalSpacing);
   view->SetCloseButtonIcon(::features::IsRoundedIconsEnabled()
-                               ? vector_icons::kCloseSmallIcon
+                               ? vector_icons::kCloseIcon
                                : vector_icons::kCloseChromeRefreshOldIcon);
   view->SetSettingsButtonIcon(::features::IsRoundedIconsEnabled()
                                   ? vector_icons::kSettingsIcon

@@ -68,7 +68,7 @@ ChosenObjectView::ChosenObjectView(
   UpdateIconImage(/*is_deleted=*/false);
   views::SetImageFromVectorIconWithColor(
       delete_button_,
-      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
                                         : vector_icons::kCloseRoundedOldIcon,
       {kColorPageInfoChosenObjectDeleteButtonIcon,
        kColorPageInfoChosenObjectDeleteButtonIconDisabled});

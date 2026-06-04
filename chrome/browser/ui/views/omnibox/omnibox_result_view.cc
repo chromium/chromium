@@ -457,7 +457,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
 
   views::SetImageFromVectorIconWithColor(
       remove_suggestion_button_,
-      features::IsRoundedIconsEnabled() ? vector_icons::kCloseSmallIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
                                         : vector_icons::kCloseRoundedOldIcon,
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,

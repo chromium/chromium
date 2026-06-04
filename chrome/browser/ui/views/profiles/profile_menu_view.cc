@@ -1155,7 +1155,7 @@ void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
       l10n_util::GetPluralStringFUTF16(button_title_id, window_count),
       std::move(callback),
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kCloseSmallIcon
+          ? vector_icons::kCloseIcon
           : vector_icons::kCloseChromeRefreshOldIcon);
 }
 

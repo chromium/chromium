@@ -153,7 +153,7 @@ void DownloadDialogView::AddHeader() {
           base::BindRepeating(&DownloadDialogView::CloseBubble,
                               base::Unretained(this)),
           features::IsRoundedIconsEnabled()
-              ? vector_icons::kCloseSmallIcon
+              ? vector_icons::kCloseIcon
               : vector_icons::kCloseChromeRefreshOldIcon,
           GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
   InstallCircleHighlightPathGenerator(close_button_);

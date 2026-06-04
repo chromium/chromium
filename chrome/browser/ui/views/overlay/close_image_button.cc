@@ -29,7 +29,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
 
   auto* icon = &(features::IsRoundedIconsEnabled()
-                     ? vector_icons::kCloseSmallIcon
+                     ? vector_icons::kCloseIcon
                      : vector_icons::kCloseChromeRefreshOldIcon);
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(*icon, kColorPipWindowForeground,

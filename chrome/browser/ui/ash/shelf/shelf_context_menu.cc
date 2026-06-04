@@ -219,7 +219,6 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
                                                : views::kOpenOldIcon;
     case ash::MENU_CLOSE:
       return features::IsRoundedIconsEnabled()   ? views::kCancelIcon
-             : features::IsRoundedIconsEnabled() ? vector_icons::kCloseIcon
                                                  : views::kCloseOldIcon;
     case ash::SHOW_APP_INFO:
       return features::IsRoundedIconsEnabled() ? views::kInfoIcon

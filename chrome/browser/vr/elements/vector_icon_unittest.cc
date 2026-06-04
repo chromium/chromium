@@ -72,7 +72,7 @@ TEST(VectorIcon, SmokeTest) {
   UiScene scene;
   auto icon = std::make_unique<TestVectorIcon>(kMaximumWidth);
   icon->SetIcon(features::IsRoundedIconsEnabled()
-                    ? vector_icons::kCloseSmallIcon
+                    ? vector_icons::kCloseIcon
                     : vector_icons::kCloseRoundedOldIcon);
   UiTexture* texture = icon->GetTexture();
   scene.AddUiElement(kRoot, std::move(icon));
