@@ -138,6 +138,10 @@ class CORE_EXPORT SelectorFilter {
       const CSSSelector* selector,
       Element::AttributesToExcludeHashesFor attributes_to_exclude,
       Element::TinyBloomFilter& subject_filter);
+  static void CollectSingleSelectorIdentifierHashes(
+      const CSSSelector* selector,
+      Element::AttributesToExcludeHashesFor attributes_to_exclude,
+      Element::TinyBloomFilter& subject_filter);
 
   void Trace(Visitor*) const;
 
