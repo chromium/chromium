@@ -80,6 +80,14 @@ constexpr uint8_t kManifestPublicKeySHA256[32] = {
     0xfa, 0x5d, 0xd4, 0x55, 0xf7, 0x95, 0x88, 0xff, 0xfd, 0x8a};
 static_assert(std::size(kManifestPublicKeySHA256) == crypto::kSHA256Length);
 
+BASE_FEATURE(kModelManifestChannelFeature,
+             "ModelManifestChannel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kModelManifestChannel,
+                   &kModelManifestChannelFeature,
+                   "");
+
 bool IsModelAlreadyInstalled(ComponentUpdateService* cus,
                              const std::string& extension_id,
                              const std::string& target_version = "") {
@@ -457,6 +465,10 @@ class ManifestMonitorInstallerPolicy final
 
   std::string GetName() const override {
     return kOptimizationGuideModelsManifestName;
+  }
+
+  update_client::InstallerAttributes GetInstallerAttributes() const override {
+    return {{"manifest_channel", kModelManifestChannel.Get()}};
   }
 
   // Manifest should never be uninstalled.
