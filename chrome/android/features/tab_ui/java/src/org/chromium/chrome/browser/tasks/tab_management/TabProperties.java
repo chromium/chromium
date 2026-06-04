@@ -306,20 +306,22 @@ public class TabProperties {
 
     public static final PropertyKey[] ALL_KEYS_VERTICAL_TAB =
             new PropertyKey[] {
-                TAB_ID,
-                TITLE,
+                // go/keep-sorted start
+                CONTENT_DESCRIPTION_TEXT_RESOLVER,
                 FAVICON_FETCHER,
-                IS_SELECTED,
-                IS_INCOGNITO,
                 IS_COLLAPSED,
-                TAB_GROUP_ID,
-                TAB_GROUP_HEADER_ID,
-                TAB_CLICK_LISTENER,
-                TAB_LONG_CLICK_LISTENER,
-                TAB_CONTEXT_CLICK_LISTENER,
-                TAB_ACTION_BUTTON_DATA,
-                TAB_GROUP_CARD_COLOR,
+                IS_INCOGNITO,
                 IS_PINNED,
-                CONTENT_DESCRIPTION_TEXT_RESOLVER
+                IS_SELECTED,
+                TAB_ACTION_BUTTON_DATA,
+                TAB_CLICK_LISTENER,
+                TAB_CONTEXT_CLICK_LISTENER,
+                TAB_GROUP_CARD_COLOR,
+                TAB_GROUP_HEADER_ID,
+                TAB_GROUP_ID,
+                TAB_ID,
+                TAB_LONG_CLICK_LISTENER,
+                TITLE
+                // go/keep-sorted end
             };
 }
