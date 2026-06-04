@@ -33,6 +33,8 @@ namespace {
 constexpr int kMainMenuWidthWithSubmenuEnabled = 240;
 // Default menu width for all menus, unless specified.
 constexpr int kDefaultMenuWidth = 320;
+// Maximum height of tab sub menu before scroll is activated.
+constexpr int kMaxTabSubMenuHeight = 344;
 }  // namespace
 
 OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
@@ -105,6 +107,18 @@ int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
                  .width();
   }
   return width;
+}
+void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
+  if (menu->GetCommand() == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+    // Set up scroll capabilities for tabs submenu right before it is rendered.
+    // Scroll is set up to start when max height is exceeded.
+    auto* scroll_container = menu->GetSubmenu()->GetScrollViewContainer();
+    if (scroll_container) {
+      gfx::Size pref_size = scroll_container->GetPreferredSize({});
+      pref_size.set_height(std::min(pref_size.height(), kMaxTabSubMenuHeight));
+      scroll_container->SetPreferredSize(pref_size);
+    }
+  }
 }
 
 OmniboxContextMenu::~OmniboxContextMenu() {

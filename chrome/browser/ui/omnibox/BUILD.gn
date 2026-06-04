@@ -277,6 +277,7 @@ if (!is_android) {
       "//components/omnibox/browser:location_bar",
       "//components/omnibox/browser:test_support",
       "//components/omnibox/common",
+      "//components/omnibox/common:features",
       "//components/open_from_clipboard:test_support",
       "//components/search_engines",
       "//components/sync_preferences:test_support",

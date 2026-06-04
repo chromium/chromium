@@ -1163,9 +1163,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
 
     for (size_t i = 0; i < target_model->GetItemCount(); ++i) {
       int command_id = target_model->GetCommandIdAt(i);
-      if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-          command_id < kMinOmniboxContextMenuRecentTabsCommandId +
-                           controller.GetMaxTabSuggestions()) {
+      if (controller.IsTabCommandId(command_id)) {
         bool has_checkmark = !target_model->GetMinorIconAt(i).IsEmpty();
         items.emplace_back(target_model->GetLabelAt(i), has_checkmark);
       }
