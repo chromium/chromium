@@ -80,7 +80,6 @@ int QuicProxyDatagramClientSocket::ConnectViaStream(
 
   // Register stream to receive HTTP/3 datagrams.
   stream_handle_->RegisterHttp3DatagramVisitor(this);
-  datagram_visitor_registered_ = true;
 
   DCHECK_EQ(STATE_DISCONNECTED, next_state_);
   next_state_ = STATE_CALCULATE_HEADERS;
@@ -133,11 +132,6 @@ void QuicProxyDatagramClientSocket::Close() {
   read_buf_ = nullptr;
 
   next_state_ = STATE_DISCONNECTED;
-
-  if (datagram_visitor_registered_) {
-    stream_handle_->UnregisterHttp3DatagramVisitor();
-    datagram_visitor_registered_ = false;
-  }
 
   connect_request_sent_ = false;
   awaiting_connect_response_ = false;

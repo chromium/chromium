@@ -229,6 +229,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
     uint64_t ietf_application_error_ = 0;
     bool fin_sent_;
     bool fin_received_;
+    // Visitor on stream is registered to receive HTTP/3 datagrams.
+    bool datagram_visitor_registered_ = false;
     uint64_t stream_bytes_read_;
     uint64_t stream_bytes_written_;
     bool is_done_reading_;
