@@ -23,7 +23,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -219,14 +218,12 @@ class WebAuthenticationProxyService
  private:
   void CancelPendingCallbacks();
   RequestId NewRequestId();
-  void OnParseCreateResponse(
-      RespondCallback respondCallback,
-      RequestId request_id,
-      data_decoder::DataDecoder::ValueOrError value_or_error);
-  void OnParseGetResponse(
-      RespondCallback respondCallback,
-      RequestId request_id,
-      data_decoder::DataDecoder::ValueOrError value_or_error);
+  void ParseCreateResponseSync(RespondCallback respond_callback,
+                               RequestId request_id,
+                               const std::string& response_json);
+  void ParseGetResponseSync(RespondCallback respond_callback,
+                            RequestId request_id,
+                            const std::string& response_json);
 
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   raw_ptr<EventRouter> event_router_ = nullptr;
@@ -240,8 +237,6 @@ class WebAuthenticationProxyService
   std::map<RequestId, CallbackType> pending_callbacks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<WebAuthenticationProxyService> weak_ptr_factory_{this};
 };
 
 // WebAuthenticationProxyServiceFactory creates instances of

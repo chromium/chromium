@@ -28,7 +28,6 @@ source_set("web_authentication_proxy") {
     "//components/keyed_service/core",
     "//extensions/browser",
     "//extensions/common",
-    "//services/data_decoder/public/cpp",
   ]
 
   deps = [
