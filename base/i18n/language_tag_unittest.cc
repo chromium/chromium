@@ -42,7 +42,7 @@ TEST(LanguageTagTest, ParseAndToString) {
 TEST(LanguageTagTest, InvalidLocales) {
   EXPECT_EQ(LanguageTagConverter::GetInstance().FromString(""), std::nullopt);
   EXPECT_EQ(
-      LanguageTagConverter::GetInstance().FromString("toolonglanguagecode"),
+      LanguageTagConverter::GetInstance().FromString("toolongLanguageTag"),
       std::nullopt);
   EXPECT_EQ(LanguageTagConverter::GetInstance().FromString("pt-longscript-BR"),
             std::nullopt);
@@ -83,7 +83,7 @@ TEST(LanguageTagTest, NumericRegions) {
 }
 
 TEST(LanguageTagTest, ThreeLetterLanguages) {
-  // 3-letter language codes.
+  // 3-letter language tags.
   EXPECT_THAT(LanguageTagConverter::GetInstance().FromString("fil-PH"),
               OptionalToString("fil-PH"));
 
@@ -162,22 +162,62 @@ TEST(LanguageTagTest, ExtensionBadlyFormed) {
             std::nullopt);
 }
 
-TEST(LanguageTagTest, LongBcp47Codes) {
-  // A long but valid BCP47 code that should trigger heap allocation (> 12
+TEST(LanguageTagTest, PrivateUseSubtags) {
+  {
+    // Private use subtags.
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("und-x-private"))
+    EXPECT_EQ(lc.ToString(), "und-x-private");
+    EXPECT_THAT(
+        lc.GetExtension(i18n_extensions::priv()),
+        Optional(Property(&i18n_extensions::PrivateUseSubtags::subtags_string,
+                          Eq("private"))));
+  }
+  {
+    // Single-char private use subtags.
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US-x-a"))
+    EXPECT_EQ(lc.ToString(), "en-US-x-a");
+    EXPECT_THAT(
+        lc.GetExtension(i18n_extensions::priv()),
+        Optional(Property(&i18n_extensions::PrivateUseSubtags::subtags_string,
+                          Eq("a"))));
+  }
+  {
+    // Long private use subtags.
+    // Private use subtags also have to conform with |subtag| <= 8.
+    EXPECT_EQ(
+        LanguageTagConverter::GetInstance().FromString("en-US-x-123456789"),
+        std::nullopt);
+    // Checks that |subtag| = 8 is fine.
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US-x-12345678"))
+    EXPECT_THAT(
+        lc.GetExtension(i18n_extensions::priv()),
+        Optional(Property(&i18n_extensions::PrivateUseSubtags::subtags_string,
+                          Eq("12345678"))));
+  }
+}
+
+TEST(LanguageTagTest, LongBcp47Tags) {
+  // A long but valid BCP47 tag that should trigger heap allocation (> 12
   // chars). Azerbaijani in Cyrillic script as spoken in Russia with a variant
   // and extensions. "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk"
-  const std::string long_code = "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk";
-  EXPECT_THAT(LanguageTagConverter::GetInstance().FromString(long_code),
-              OptionalToString(long_code));
+  const std::string long_tag = "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk";
+  EXPECT_THAT(LanguageTagConverter::GetInstance().FromString(long_tag),
+              OptionalToString(long_tag));
 
   // Another long one: "en-US-u-ca-gregory-co-emoji-kb-true-hc-h24"
   // Note: LanguageTagConverter canonicalizes the extensions.
-  const std::string very_long_code =
+  const std::string very_long_tag =
       "en-US-u-ca-gregory-co-emoji-kb-true-hc-h24";
-  const std::string very_long_code_canonical =
+  const std::string very_long_tag_canonical =
       "en-US-u-ca-gregory-co-emoji-hc-h24-kb";
-  EXPECT_THAT(LanguageTagConverter::GetInstance().FromString(very_long_code),
-              OptionalToString(very_long_code_canonical));
+  EXPECT_THAT(LanguageTagConverter::GetInstance().FromString(very_long_tag),
+              OptionalToString(very_long_tag_canonical));
 }
 
 TEST(LanguageTagTest, PrivateUseTags) {
@@ -278,7 +318,7 @@ TEST(LanguageTagTest, LegacyIcuBadlyFormed) {
       std::nullopt);
 }
 
-TEST(LanguageTagTest, LegacyIcuLongCodes) {
+TEST(LanguageTagTest, LegacyIcuLongTags) {
   // Extremely long input.
   std::string long_string(1000, 'a');
   EXPECT_EQ(LanguageTagConverter::GetInstance().FromString(long_string + "_US"),
@@ -290,7 +330,7 @@ TEST(LanguageTagTest, LegacyIcuLongCodes) {
             std::nullopt);
 }
 
-TEST(LanguageTagTest, LegacyIcuWellFormedCodes) {
+TEST(LanguageTagTest, LegacyIcuWellFormedTags) {
   // Mixed case keys (mapping is case-insensitive for keys).
   EXPECT_THAT(
       LanguageTagConverter::GetInstance().FromString("en@Calendar=gregorian"),

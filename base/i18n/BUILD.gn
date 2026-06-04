@@ -8,6 +8,8 @@ source_set("base_i18n_export") {
 
 source_set("language_tag") {
   sources = [
+    "bcp47_extensions.cc",
+    "bcp47_extensions.h",
     "language_tag.cc",
     "language_tag.h",
     "language_tag_matcher.cc",

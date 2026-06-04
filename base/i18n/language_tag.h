@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/i18n/base_i18n_export.h"
+#include "base/i18n/bcp47_extensions.h"
 #include "base/i18n/internal/immutable_string.h"
 
 namespace base {
@@ -23,7 +24,7 @@ namespace base {
 class BASE_I18N_EXPORT LanguageTagConverter;
 class BASE_I18N_EXPORT RegionSubtag;
 
-// A type-safe wrapper for BCP47 language codes (locales).
+// A type-safe wrapper for BCP47 language tags (locales).
 //
 // Supported Format Specification:
 // - Core Standard: BCP47 language tags.
@@ -73,9 +74,33 @@ class BASE_I18N_EXPORT LanguageTag {
   // - "sr-Latn" -> std::nullopt
   std::optional<RegionSubtag> region_subtag() const;
 
+  // Retrieves the singleton and subtag(s) for an extension to a BCP47 language
+  // tag.
+  //
+  // Use the helper functions in `i18n_extensions` to specify which extension
+  // or private use subtags to retrieve:
+  // - `GetExtension(i18n_extensions::unicode())` for "u-" extensions.
+  // - `GetExtension(i18n_extensions::priv())` for "x-" private use subtags.
+  // - `GetExtension(i18n_extensions::ext('a'))` for any other single-char
+  // extension.
+  //
+  // Example:
+  //   auto locale =
+  //   LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory");
+  //   auto ext = locale->GetExtension(i18n_extensions::unicode());
+  //   if (ext) {
+  //     std::string_view val = ext->subtags_string(); // "ca-gregory"
+  //   }
+  template <i18n_extensions::ExtensionTrait T>
+  std::optional<typename T::type> GetExtension(T traits) const {
+    return GetExtensionInternal<typename T::type>(T::key);
+  }
+
  private:
   friend class LanguageTagConverter;
 
+  template <typename R>
+  std::optional<R> GetExtensionInternal(char key) const;
   // This constructor is intended for internal use by `LanguageTagConverter`.
   // Do not call this directly.
   explicit LanguageTag(ImmutableStringType tag);
@@ -128,7 +153,7 @@ class BASE_I18N_EXPORT Bcp47Subtag {
 
 }  // namespace internal
 
-// Represents the code for the region subtag extracted from a LanguageTag.
+// Represents the region subtag extracted from a LanguageTag.
 // The spec definition can be found here:
 // https://www.rfc-editor.org/info/rfc5646/#section-2.1
 // They are defined as:

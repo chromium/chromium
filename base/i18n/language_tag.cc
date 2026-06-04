@@ -10,6 +10,58 @@
 #include "base/strings/string_util.h"
 
 namespace base {
+namespace {
+
+// Finds the position of start of the next singleton identified as
+// "-"+<singleton>+"-". Where <singleton> is any alpha ASCII character.
+size_t FindNextSingleton(std::string_view tag) {
+  // Skip the first two characters as they are always present within a language
+  // definition or a subtag inside a non-private extension.
+  for (size_t i = 2; i + 2 < tag.size(); i++) {
+    if (tag[i] == '-' && tag[i + 2] == '-' && base::IsAsciiAlpha(tag[i + 1])) {
+      // Skip the first '-', e.g. if "-x-value" was found, "x-value" is
+      // returned.
+      return i + 1;
+    }
+  }
+
+  return std::string_view::npos;
+}
+
+// Returns the subtags for the extension identified by the singleton `ext_id`.
+// It returns the whole extension string (e.g., "a-myext").
+std::string_view GetExtensionString(std::string_view tag, char ext_id) {
+  size_t extension_pos = FindNextSingleton(tag);
+  while (extension_pos != std::string_view::npos) {
+    // As `extension_pos` is not `npos`, code is not empty.
+    tag = tag.substr(extension_pos);
+    // The singleton 'x' was found, the remainder of the code is a sequence of
+    // private use subtags.
+    if (tag[0] == 'x') {
+      return (ext_id == 'x') ? tag : std::string_view();
+    }
+    if (tag[0] == ext_id) {
+      // Look for the next singleton, that is where the found extension is going
+      // to end.
+      size_t next_extension_pos = FindNextSingleton(tag.substr(2));
+      // The `code` must never start with an extension.
+      if (next_extension_pos == 0u) {
+        return {};
+      }
+      return (next_extension_pos != std::string_view::npos)
+                 ? tag.substr(0, next_extension_pos - 1u)
+                 : tag;
+    }
+
+    // Move to the next singleton, not that the first two characters are skipped
+    // as they are part of the current singleton.
+    extension_pos = FindNextSingleton(tag.substr(2));
+  }
+
+  return {};
+}
+
+}  // namespace
 
 LanguageTag::~LanguageTag() = default;
 LanguageTag::LanguageTag(const LanguageTag&) = default;
@@ -31,7 +83,7 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
 
 std::optional<RegionSubtag> LanguageTag::region_subtag() const {
   std::string_view tag = tag_.AsString();
-  // Region codes are at least 2 chars, and language is at least 2.
+  // Region tags are at least 2 chars, and language is at least 2.
   // "en-US" is 5 chars.
   if (tag.size() < 3) {
     return std::nullopt;
@@ -58,7 +110,7 @@ std::optional<RegionSubtag> LanguageTag::region_subtag() const {
   // - Extension: 1 character prefix (e.g., "u-", "x-").
   // - Variant: 5-8 characters (or 4 if it starts with a digit).
 
-  // Check if the second subtag is a region code (length 2 or 3).
+  // Check if the second subtag is a region tag (length 2 or 3).
   // This effectively skips single-character extensions and 4-character scripts.
   if (second_subtag_len >= 2 && second_subtag_len <= 3) {
     return RegionSubtag(tag.substr(first_hyphen + 1, second_subtag_len));
@@ -85,5 +137,23 @@ std::optional<RegionSubtag> LanguageTag::region_subtag() const {
 
   return std::nullopt;
 }
+
+template <typename R>
+std::optional<R> LanguageTag::GetExtensionInternal(char key) const {
+  std::string_view extension_string = GetExtensionString(tag_.AsString(), key);
+  if (extension_string.empty()) {
+    return std::nullopt;
+  }
+  return R(base::PassKey<LanguageTag>(), extension_string);
+}
+
+template BASE_I18N_EXPORT std::optional<i18n_extensions::UnicodeExtension>
+LanguageTag::GetExtensionInternal(char) const;
+
+template BASE_I18N_EXPORT std::optional<i18n_extensions::PrivateUseSubtags>
+LanguageTag::GetExtensionInternal(char) const;
+
+template BASE_I18N_EXPORT std::optional<i18n_extensions::Extension>
+LanguageTag::GetExtensionInternal(char) const;
 
 }  // namespace base
