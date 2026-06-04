@@ -440,7 +440,8 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   }
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<tracing::IOSChromeBackgroundTracingMetricsProvider>());
+      std::make_unique<tracing::IOSChromeBackgroundTracingMetricsProvider>(
+          synthetic_trial_registry_));
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

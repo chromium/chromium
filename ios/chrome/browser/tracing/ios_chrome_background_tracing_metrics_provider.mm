@@ -7,6 +7,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/metrics/field_trials_provider.h"
 #import "components/metrics/metrics_log.h"
 #import "components/metrics/version_utils.h"
 #import "components/tracing/common/background_tracing_utils.h"
@@ -17,13 +18,20 @@
 namespace tracing {
 
 IOSChromeBackgroundTracingMetricsProvider::
-    IOSChromeBackgroundTracingMetricsProvider() = default;
+    IOSChromeBackgroundTracingMetricsProvider(
+        variations::SyntheticTrialRegistry* synthetic_trial_registry)
+    : synthetic_trial_registry_(synthetic_trial_registry) {}
 
 IOSChromeBackgroundTracingMetricsProvider::
     ~IOSChromeBackgroundTracingMetricsProvider() = default;
 
 void IOSChromeBackgroundTracingMetricsProvider::Init() {
   SetupFieldTracingFromFieldTrial();
+  if (synthetic_trial_registry_) {
+    system_profile_providers_.emplace_back(
+        std::make_unique<variations::FieldTrialsProvider>(
+            synthetic_trial_registry_, std::string_view()));
+  }
 }
 
 void IOSChromeBackgroundTracingMetricsProvider::RecordCoreSystemProfileMetrics(
