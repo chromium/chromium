@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -126,9 +127,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTestWithMessageFirstFre,
   ASSERT_FALSE(background_tab->IsActivated());
 
   // 2. Invoke for the background tab.
-  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
-  options.target.conversation = NewConversation{};
-  options.target.surface = background_tab;
+  GlicInvokeOptions options(Target(*background_tab, NewConversation{}),
+                            mojom::InvocationSource::kNavigationCapture);
 
   glic_service->Invoke(std::move(options));
 
@@ -254,9 +254,10 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
 
-  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
-  options.target.conversation = DefaultConversation{};
-  options.target.surface = TabListInterface::From(browser())->GetActiveTab();
+  GlicInvokeOptions options(
+      Target(*TabListInterface::From(browser())->GetActiveTab(),
+             DefaultConversation{}),
+      mojom::InvocationSource::kNavigationCapture);
 
   glic_service->Invoke(std::move(options));
 
@@ -289,9 +290,10 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                                       mojom::InvocationSource::kOsButton, 1);
 
   // 2. Call Invoke with a NEW conversation.
-  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
-  options.target.conversation = NewConversation{};
-  options.target.surface = TabListInterface::From(browser())->GetActiveTab();
+  GlicInvokeOptions options(
+      Target(*TabListInterface::From(browser())->GetActiveTab(),
+             NewConversation{}),
+      mojom::InvocationSource::kNavigationCapture);
 
   base::HistogramTester histogram_tester_invoke;
   glic_service->Invoke(std::move(options));
@@ -329,9 +331,10 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   // 2. Call Invoke with DefaultConversation (representing current
   // conversation).
-  GlicInvokeOptions options(mojom::InvocationSource::kNavigationCapture);
-  options.target.conversation = DefaultConversation{};
-  options.target.surface = TabListInterface::From(browser())->GetActiveTab();
+  GlicInvokeOptions options(
+      Target(*TabListInterface::From(browser())->GetActiveTab(),
+             DefaultConversation{}),
+      mojom::InvocationSource::kNavigationCapture);
 
   glic_service->Invoke(std::move(options));
 
@@ -488,13 +491,11 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
 
   // 1. Open Glic in active tab (Tab 1) via Invoke.
-  GlicInvokeOptions options1(mojom::InvocationSource::kNavigationCapture);
-  options1.target.conversation = NewConversation{};
-  options1.target.surface = browser()->GetActiveTabInterface();
-  glic_service->Invoke(std::move(options1));
-
   tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
+  GlicInvokeOptions options1(Target(*tab1, NewConversation{}),
+                             mojom::InvocationSource::kNavigationCapture);
+  glic_service->Invoke(std::move(options1));
 
   auto* coordinator = GlicSidePanelCoordinator::GetForTab(tab1);
   ASSERT_TRUE(coordinator);
@@ -549,13 +550,11 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
 
   // 1. Open Glic in active tab (Tab 1) via Invoke.
-  GlicInvokeOptions options1(mojom::InvocationSource::kNavigationCapture);
-  options1.target.conversation = NewConversation{};
-  options1.target.surface = browser()->GetActiveTabInterface();
-  glic_service->Invoke(std::move(options1));
-
   tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
   ASSERT_TRUE(tab1);
+  GlicInvokeOptions options1(Target(*tab1, NewConversation{}),
+                             mojom::InvocationSource::kNavigationCapture);
+  glic_service->Invoke(std::move(options1));
 
   auto* coordinator1 = GlicSidePanelCoordinator::GetForTab(tab1);
   ASSERT_TRUE(coordinator1);

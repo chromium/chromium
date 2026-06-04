@@ -226,7 +226,7 @@ GlicNavigationThrottle::WillStartRequest() {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(web_contents);
     if (tab && tab->GetBrowserWindowInterface()) {
-      glic::Target target(tab);
+      glic::Target target(*tab);
       if (cid) {
         target.conversation = glic::ConversationId(*cid, turn_id);
       }

@@ -116,7 +116,7 @@ void TriggerDragDropInvoke(content::WebContents* target_web_contents,
   }
 
   if (source_tab) {
-    invoke_options.target.surface = source_tab;
+    invoke_options.target.surface = source_tab->GetHandle();
   }
 
   service->Invoke(std::move(invoke_options));

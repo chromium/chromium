@@ -556,7 +556,7 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
     options.target.surface = glic::NewTab(
         tab_interface->GetBrowserWindowInterface(), open_in_foreground);
   } else {
-    options.target.surface = tab_interface;
+    options.target.surface = tab_interface->GetHandle();
   }
 
   glic::GlicKeyedService* glic_service =

@@ -57,11 +57,13 @@ struct NewTab {
 };
 // The target for the invocation.
 struct Target {
+  using Surface = std::variant<DefaultSurface, NewTab, tabs::TabHandle>;
+
   Target();
-  explicit Target(tabs::TabInterface* tab);
+  explicit Target(tabs::TabInterface& tab);
   explicit Target(BrowserWindowInterface* window);
   explicit Target(NewTab new_tab);
-  Target(tabs::TabInterface* tab,
+  Target(tabs::TabInterface& tab,
          std::variant<DefaultConversation,
                       NewConversation,
                       ConversationId,
@@ -79,9 +81,8 @@ struct Target {
   //   window, or creates a new window if no browser is specified.
   // - NewTab: Creates a new tab in the specified window, or a new window if
   // null.
-  // - TabInterface*: Targets a specific tab. Must not be null.
-  std::variant<DefaultSurface, NewTab, raw_ptr<tabs::TabInterface>> surface =
-      DefaultSurface();
+  // - TabHandle: Targets a specific tab.
+  Surface surface = DefaultSurface();
 
   // Specifies which conversation to use or create.
   // - DefaultConversation: Uses the conversation already bound to the target

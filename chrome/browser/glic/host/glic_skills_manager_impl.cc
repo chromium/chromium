@@ -120,7 +120,7 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
   }
   // Delegate the race-condition handling to the Skills launcher.
   auto target = std::make_unique<glic::Target>();
-  target->surface = target_tab;
+  target->surface = target_tab->GetHandle();
   if (auto conv_id = instance_->conversation_id()) {
     target->conversation = glic::ConversationId(*conv_id);
   }

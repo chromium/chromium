@@ -267,8 +267,10 @@ bool GlicKeyedService::MaybeInvoke(BrowserWindowInterface* bwi,
   if (fre_override_compatible && panel_closed &&
       base::FeatureList::IsEnabled(features::kGlicMessageFirstFre)) {
     GlicInvokeOptions options(source);
+    if (auto* active_tab = TabListInterface::From(target_bwi)->GetActiveTab()) {
+      options.target = Target(*active_tab);
+    }
     options.fre_override = mojom::FreOverride::kTrustFirstInline;
-    options.target.surface = TabListInterface::From(target_bwi)->GetActiveTab();
     Invoke(std::move(options));
     return true;
   }

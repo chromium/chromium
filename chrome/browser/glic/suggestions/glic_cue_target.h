@@ -42,8 +42,6 @@ class GlicCueTarget : public contextual_cueing::CueTarget {
   void InvokeGlic(contextual_cueing::CueActionData data,
                   bool should_autosubmit);
 
-  tabs::TabHandle GetActiveTabHandle();
-
   // Unowned and guaranteed to outlive this.
   raw_ref<GlicKeyedService> glic_keyed_service_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;

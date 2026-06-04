@@ -194,7 +194,7 @@ void SkillsUiTabController::InvokeSkill(std::string_view skill_id) {
 
   if (auto* service = GetGlicService()) {
     glic::GlicInvokeOptions options(
-        glic::Target(&tab_.get(), glic::DefaultConversation()),
+        glic::Target(tab_.get(), glic::DefaultConversation()),
         glic::mojom::InvocationSource::kSkills);
     options.prompts.push_back(skill->prompt);
     options.skill_id = std::string(skill_id);

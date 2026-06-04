@@ -246,7 +246,7 @@ void IndigoPageActionController::ContinueInvoke(
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     if (auto* glic_keyed_service = glic::GlicKeyedService::Get(profile)) {
       glic::GlicInvokeOptions options(
-          glic::Target(&tab()),
+          glic::Target(tab()),
           glic::mojom::InvocationSource::kIndigoPageAction);
 
       std::string skill_id = features::kIndigoGlicSkillId.Get();
@@ -291,8 +291,6 @@ void IndigoPageActionController::ContinueInvoke(
         base::UserMetricsAction("Indigo.Transformation.Trigger"));
     return;
   }
-
-
 }
 
 void IndigoPageActionController::ShowOnboardingDialog(

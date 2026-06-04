@@ -104,7 +104,7 @@ bool GlicKeyedServiceAndroid::InvokeWithAutoSubmit(JNIEnv* env,
   }
 
   auto invocation_source = static_cast<mojom::InvocationSource>(source);
-  GlicInvokeOptions options(Target(tab), invocation_source);
+  GlicInvokeOptions options(Target(*tab), invocation_source);
   options.prompts.push_back(std::move(text));
 
   switch (invocation_source) {
