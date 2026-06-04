@@ -690,8 +690,9 @@ IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest, CreateNewInstance) {
       CheckCachedInstance(), CheckHistograms());
 }
 
+// Disabled because flaky: crbug.com/519961669
 IN_PROC_BROWSER_TEST_P(GlicInteractiveContextMenuTest,
-                       CreateNewInstanceDetached) {
+                       DISABLED_CreateNewInstanceDetached) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
 
   const GURL url = embedded_test_server()->GetURL(kPageWithImage);
