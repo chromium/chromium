@@ -23,6 +23,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1200,12 +1201,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, ExtensionAPICannotNavigateDevtools) {
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools);
 }
 
-// TODO(crbug.com/519444124): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, DISABLED_AcceptState) {
 #if BUILDFLAG(IS_MAC)
-  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+// Mac is intentionally unsupported (crbug.com/41385204).
+#define MAYBE_AcceptState DISABLED_AcceptState
+#else
+#define MAYBE_AcceptState AcceptState
 #endif
-
+IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, MAYBE_AcceptState) {
   auto function = base::MakeRefCounted<WindowsCreateFunction>();
   scoped_refptr<const Extension> extension(ExtensionBuilder("Test").Build());
   function->set_extension(extension.get());
@@ -1239,7 +1241,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowCreateTest, DISABLED_AcceptState) {
   views::test::PropertyWaiter minimize_waiter(
       base::BindRepeating(&BrowserWindow::IsMinimized,
                           base::Unretained(new_browser->window())),
-      true);
+      true, TestTimeouts::action_timeout());
   EXPECT_TRUE(minimize_waiter.Wait());
 #elif BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   // TODO(crbug.com/40252593): Find a fix/workaround for wayland and add
