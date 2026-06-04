@@ -98,8 +98,6 @@ if (!is_chromeos_device && !is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
       "instant_extended_interactive_uitest.cc",
-      "instant_test_base.cc",
-      "instant_test_base.h",
       "third_party_ntp_uitest.cc",
     ]
 
@@ -112,6 +110,7 @@ if (!is_chromeos_device && !is_android) {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
       "//chrome/test:test_support",
@@ -130,17 +129,22 @@ if (!is_android) {
   source_set("test_support_ui") {
     testonly = true
     sources = [
+      "instant_test_base.cc",
+      "instant_test_base.h",
       "ntp_test_utils.cc",
       "ntp_test_utils.h",
     ]
+    public_deps = [ "//net:test_support" ]
     deps = [
       "//base",
       "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/common",
       "//chrome/test:test_support",
       "//components/search_engines",
+      "//url",
     ]
   }
 
@@ -148,8 +152,6 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
-      "instant_test_base.cc",
-      "instant_test_base.h",
       "new_tab_page_navigation_throttle_browsertest.cc",
       "search_ipc_router_policy_browsertest.cc",
       "third_party_ntp_browsertest.cc",
