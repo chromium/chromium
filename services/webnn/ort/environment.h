@@ -6,6 +6,7 @@
 #define SERVICES_WEBNN_ORT_ENVIRONMENT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/strings/cstring_view.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
@@ -69,7 +69,7 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
   // Returns true if the execution provider name of `device` matches any of the
   // names in `ep_names`.
   static bool IsEpDevice(const OrtEpDevice* device,
-                         base::span<const base::cstring_view> ep_names);
+                         base::span<const std::string_view> ep_names);
 
   // Returns a span of registered execution provider devices in `env`. The span
   // is guaranteed to be valid until `env_` is released or the list of execution

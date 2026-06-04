@@ -105,8 +105,8 @@ std::optional<uint32_t> GetBatchedMatMulKDimensionLimit(
     const OrtEpDevice* first_selected_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
-  const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
-  const auto iter = kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+  std::string_view ep_name = ort_api->EpDevice_EpName(first_selected_device);
+  const auto iter = kKnownEPs.find(ep_name);
   if (iter == kKnownEPs.end()) {
     return std::nullopt;
   }

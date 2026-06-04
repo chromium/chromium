@@ -62,13 +62,13 @@ enum class WebNNOrtDeviceUma {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:WebNNOrtDeviceUma)
 
-void RecordFirstSelectedEP(base::cstring_view ep_name) {
+void RecordFirstSelectedEP(std::string_view ep_name) {
   // It is expected that `ep_name` is one of the execution providers defined in
   // `services/webnn/public/cpp/execution_providers_info.h`. If a new EP is
   // added, it should be added to this map as well. Otherwise, it will be
   // recorded as `kOther`.
   static constexpr auto kEPUmaMap =
-      base::MakeFixedFlatMap<base::cstring_view, WebNNOrtEPUma>({
+      base::MakeFixedFlatMap<std::string_view, WebNNOrtEPUma>({
           {kCPUExecutionProvider, WebNNOrtEPUma::kCPU},
           {kDmlExecutionProvider, WebNNOrtEPUma::kDml},
           {kWebGpuExecutionProvider, WebNNOrtEPUma::kWebGpu},
@@ -196,8 +196,8 @@ ContextImplOrt::ContextImplOrt(
   const OrtEpDevice* first_selected_device =
       session_options_->first_selected_device();
 
-  const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
-  RecordFirstSelectedEP(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+  std::string_view ep_name = ort_api->EpDevice_EpName(first_selected_device);
+  RecordFirstSelectedEP(ep_name);
 
   OrtHardwareDeviceType hardware_device_type = ort_api->HardwareDevice_Type(
       ort_api->EpDevice_Device(first_selected_device));

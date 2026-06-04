@@ -4,15 +4,15 @@
 
 #include "services/webnn/ort/environment.h"
 
+#include <ranges>
 #include <set>
-#include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split_win.h"
@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/zip.h"
 #include "base/version.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
@@ -30,6 +31,21 @@
 namespace webnn::ort {
 
 namespace {
+
+// Returns paired spans of keys and values from OrtKeyValuePairs. The spans are
+// valid for the lifetime of `key_value_pairs`.
+std::pair<base::span<const char* const>, base::span<const char* const>>
+GetKeyValueSpans(const OrtApi* ort_api,
+                 const OrtKeyValuePairs* key_value_pairs) {
+  size_t num_entries = 0;
+  const char* const* keys = nullptr;
+  const char* const* values = nullptr;
+  ort_api->GetKeyValuePairs(key_value_pairs, &keys, &values, &num_entries);
+  // SAFETY: ORT guarantees that `keys` and `values` are valid arrays
+  // containing `num_entries` elements.
+  return {UNSAFE_BUFFERS(base::span(keys, num_entries)),
+          UNSAFE_BUFFERS(base::span(values, num_entries))};
+}
 
 // Returns a span of registered execution provider devices in `env`. The span is
 // guaranteed to be valid until `env` is released or the list of execution
@@ -47,16 +63,13 @@ base::span<const OrtEpDevice* const> GetRegisteredEpDevicesImpl(
 
 bool IsExecutionProviderRegistered(const OrtApi* ort_api,
                                    const OrtEnv* env,
-                                   base::cstring_view ep_name) {
+                                   std::string_view ep_name) {
   base::span<const OrtEpDevice* const> ep_devices =
       GetRegisteredEpDevicesImpl(ort_api, env);
   for (const auto* ep_device : ep_devices) {
     CHECK(ep_device);
-    const char* registered_ep_name = ort_api->EpDevice_EpName(ep_device);
-    // SAFETY: ORT guarantees that `registered_ep_name` is valid and
-    // null-terminated.
-    if (registered_ep_name &&
-        ep_name == UNSAFE_BUFFERS(base::cstring_view(registered_ep_name))) {
+    std::string_view registered_ep_name = ort_api->EpDevice_EpName(ep_device);
+    if (ep_name == registered_ep_name) {
       return true;
     }
   }
@@ -119,8 +132,7 @@ bool MatchesEpVendor(const OrtEpDevice* ep_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   const char* ep_name = ort_api->EpDevice_EpName(ep_device);
-  // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
-  const auto iter = kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+  const auto iter = kKnownEPs.find(ep_name);
   if (iter == kKnownEPs.end()) {
     // Unknown EP, no matching possibility.
     return false;
@@ -144,18 +156,10 @@ bool IsDiscreteGpu(const OrtEpDevice* device) {
   const OrtKeyValuePairs* device_metadata =
       ort_api->HardwareDevice_Metadata(hardware_device);
 
-  size_t num_entries = 0;
-  const char* const* keys = nullptr;
-  const char* const* values = nullptr;
-  ort_api->GetKeyValuePairs(device_metadata, &keys, &values, &num_entries);
-
-  for (size_t i = 0; i < num_entries; ++i) {
-    // SAFETY: ORT guarantees that `keys[i]` is valid and null-terminated.
-    base::cstring_view key = UNSAFE_BUFFERS(base::cstring_view(keys[i]));
-    if (key == "Discrete") {
-      // SAFETY: ORT guarantees that `values[i]` is valid and null-terminated.
-      base::cstring_view value = UNSAFE_BUFFERS(base::cstring_view(values[i]));
-      return value == "1";
+  auto [keys, values] = GetKeyValueSpans(ort_api, device_metadata);
+  for (auto [key, value] : base::zip(keys, values)) {
+    if (std::string_view(key) == "Discrete") {
+      return std::string_view(value) == "1";
     }
   }
 
@@ -208,14 +212,9 @@ bool MatchEpNameAndHardwareVendor(const OrtEpDevice* lhs_device,
                                   const OrtEpDevice* rhs_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
-  const char* lhs_ep_name = ort_api->EpDevice_EpName(lhs_device);
-  const char* rhs_ep_name = ort_api->EpDevice_EpName(rhs_device);
-  // SAFETY: ORT guarantees that EP names are valid and null-terminated.
-  base::cstring_view lhs_ep_name_view =
-      UNSAFE_BUFFERS(base::cstring_view(lhs_ep_name));
-  base::cstring_view rhs_ep_name_view =
-      UNSAFE_BUFFERS(base::cstring_view(rhs_ep_name));
-  if (lhs_ep_name_view != rhs_ep_name_view) {
+  std::string_view lhs_ep_name = ort_api->EpDevice_EpName(lhs_device);
+  std::string_view rhs_ep_name = ort_api->EpDevice_EpName(rhs_device);
+  if (lhs_ep_name != rhs_ep_name) {
     return false;
   }
 
@@ -292,33 +291,27 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
 
 // Queries the OS driver version from the EP device metadata. Returns an
 // empty string view if the driver version metadata is not found.
-base::cstring_view GetOsDriverVersion(const OrtEpDevice* ep_device) {
+std::string_view GetOsDriverVersion(const OrtEpDevice* ep_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   const OrtKeyValuePairs* ep_metadata = ort_api->EpDevice_EpMetadata(ep_device);
   CHECK(ep_metadata);
 
-  size_t num_entries = 0;
-  const char* const* keys = nullptr;
-  const char* const* values = nullptr;
-  ort_api->GetKeyValuePairs(ep_metadata, &keys, &values, &num_entries);
+  auto [keys, values] = GetKeyValueSpans(ort_api, ep_metadata);
 
   // For now, redefine the key for the EP OS driver version here according to
   // https://github.com/microsoft/onnxruntime/blob/56c984ffc417987eafcd9efb252ab2c65f24398a/include/onnxruntime/core/session/onnxruntime_ep_device_ep_metadata_keys.h#L13
   // TODO(crbug.com/474141335): Use the key from
   // onnxruntime_ep_device_ep_metadata_keys.h once it's available.
-  constexpr base::cstring_view kOrtEpDeviceEpMetadataKeyOSDriverVersion =
+  constexpr std::string_view kOrtEpDeviceEpMetadataKeyOSDriverVersion =
       "os_driver_version";
-  for (size_t i = 0; i < num_entries; ++i) {
-    // SAFETY: ORT guarantees that `keys[i]` is valid and null-terminated.
-    if (UNSAFE_BUFFERS(base::cstring_view(keys[i])) ==
-        kOrtEpDeviceEpMetadataKeyOSDriverVersion) {
-      // SAFETY: ORT guarantees that `values[i]` is valid and null-terminated.
-      return UNSAFE_BUFFERS(base::cstring_view(values[i]));
+  for (auto [key, value] : base::zip(keys, values)) {
+    if (key == kOrtEpDeviceEpMetadataKeyOSDriverVersion) {
+      return std::string_view(value);
     }
   }
 
-  return base::cstring_view();
+  return std::string_view();
 }
 
 // Returns whether the NPU driver version is blocked based on the known EPs
@@ -326,9 +319,8 @@ base::cstring_view GetOsDriverVersion(const OrtEpDevice* ep_device) {
 bool IsNpuDriverVersionBlocked(const OrtEpDevice* npu_ep_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
-  const char* ep_name = ort_api->EpDevice_EpName(npu_ep_device);
-  // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
-  const auto iter = kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+  std::string_view ep_name = ort_api->EpDevice_EpName(npu_ep_device);
+  const auto iter = kKnownEPs.find(ep_name);
   // Currently, the NPU device must belong to a known EP.
   CHECK(iter != kKnownEPs.end());
 
@@ -489,18 +481,14 @@ std::vector<const OrtEpDevice*> SortEpDevices(
         // If neither are default CPU EP and both do/don't match vendor, sort by
         // EP name.
         if (!a_is_default_cpu && !b_is_default_cpu) {
-          const char* ep_name_a = ort_api->EpDevice_EpName(a);
-          const char* ep_name_b = ort_api->EpDevice_EpName(b);
-          base::cstring_view ep_name_a_view =
-              UNSAFE_BUFFERS(base::cstring_view(ep_name_a));
-          base::cstring_view ep_name_b_view =
-              UNSAFE_BUFFERS(base::cstring_view(ep_name_b));
+          std::string_view ep_name_a = ort_api->EpDevice_EpName(a);
+          std::string_view ep_name_b = ort_api->EpDevice_EpName(b);
 
           // WebGPU EP > DML EP
-          bool a_is_webgpu = (ep_name_a_view == kWebGpuExecutionProvider);
-          bool b_is_webgpu = (ep_name_b_view == kWebGpuExecutionProvider);
-          bool a_is_dml = (ep_name_a_view == kDmlExecutionProvider);
-          bool b_is_dml = (ep_name_b_view == kDmlExecutionProvider);
+          bool a_is_webgpu = (ep_name_a == kWebGpuExecutionProvider);
+          bool b_is_webgpu = (ep_name_b == kWebGpuExecutionProvider);
+          bool a_is_dml = (ep_name_a == kDmlExecutionProvider);
+          bool b_is_dml = (ep_name_b == kDmlExecutionProvider);
 
           if (a_is_webgpu && b_is_dml) {
             return true;
@@ -512,7 +500,7 @@ std::vector<const OrtEpDevice*> SortEpDevices(
           // Arbitrarily sort for tie-breaking.
           // TODO(crbug.com/444049495): Implement a sophisticated tie-breaker
           // for this scenario.
-          return ep_name_a_view < ep_name_b_view;
+          return ep_name_a < ep_name_b;
         }
 
         // Default CPU EP placed last.
@@ -559,13 +547,12 @@ base::expected<EpDeviceInfo, std::string> ParseEpDeviceSwitch(
 bool MatchSpecifiedEpDevice(const OrtEpDevice* ep_device,
                             const EpDeviceInfo& ep_device_info,
                             const OrtApi* ort_api) {
-  const char* ep_name = ort_api->EpDevice_EpName(ep_device);
-  base::cstring_view ep_name_view = UNSAFE_BUFFERS(base::cstring_view(ep_name));
+  std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
   uint32_t hardware_vendor_id =
       ort_api->HardwareDevice_VendorId(ort_api->EpDevice_Device(ep_device));
   uint32_t hardware_device_id =
       ort_api->HardwareDevice_DeviceId(ort_api->EpDevice_Device(ep_device));
-  return ep_name_view == ep_device_info.ep_name &&
+  return ep_name == ep_device_info.ep_name &&
          hardware_vendor_id == ep_device_info.hardware_vendor_id &&
          hardware_device_id == ep_device_info.hardware_device_id;
 }
@@ -630,15 +617,11 @@ ConvertEpListForIntrospection(base::span<const OrtEpDevice* const> ep_devices) {
     const OrtKeyValuePairs* ep_metadata =
         ort_api->EpDevice_EpMetadata(ep_device);
     CHECK(ep_metadata);
-    size_t num_entries = 0;
-    const char* const* keys = nullptr;
-    const char* const* values = nullptr;
-    ort_api->GetKeyValuePairs(ep_metadata, &keys, &values, &num_entries);
-    for (size_t i = 0; i < num_entries; ++i) {
-      // SAFETY: ORT guarantees that `keys[i]` is valid and null-terminated.
-      if (UNSAFE_BUFFERS(base::cstring_view(keys[i])) == "version") {
-        // SAFETY: ORT guarantees that `values[i]` is valid and null-terminated.
-        ep_details->version = UNSAFE_BUFFERS(base::cstring_view(values[i]));
+
+    auto [keys, values] = GetKeyValueSpans(ort_api, ep_metadata);
+    for (auto [key, value] : base::zip(keys, values)) {
+      if (std::string_view(key) == "version") {
+        ep_details->version = value;
         break;
       }
     }
@@ -818,15 +801,10 @@ std::vector<const OrtEpDevice*> Environment::SelectEpDevices(
 
 // static
 bool Environment::IsEpDevice(const OrtEpDevice* device,
-                             base::span<const base::cstring_view> ep_names) {
+                             base::span<const std::string_view> ep_names) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-  const char* ep_name = ort_api->EpDevice_EpName(device);
-  // SAFETY: ORT guarantees that EP names are valid and null-terminated.
-  base::cstring_view ep_name_view = UNSAFE_BUFFERS(base::cstring_view(ep_name));
-
-  return std::ranges::any_of(ep_names, [ep_name_view](base::cstring_view name) {
-    return ep_name_view == name;
-  });
+  std::string_view ep_name = ort_api->EpDevice_EpName(device);
+  return std::ranges::contains(ep_names, ep_name);
 }
 
 base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
@@ -868,13 +846,11 @@ EpWorkarounds Environment::GetEpWorkarounds(
       SelectEpDevices(registered_ep_devices, device_type);
   for (const auto* ep_device : selected_ep_devices) {
     CHECK(ep_device);
-      const char* ep_name = ort_api->EpDevice_EpName(ep_device);
-      // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
-      const auto iter =
-          kKnownEPs.find(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
-      if (iter != kKnownEPs.end()) {
-        workarounds |= iter->second.workarounds;
-      }
+    std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
+    const auto iter = kKnownEPs.find(ep_name);
+    if (iter != kKnownEPs.end()) {
+      workarounds |= iter->second.workarounds;
+    }
   }
   return workarounds;
 }
@@ -888,24 +864,19 @@ std::vector<SessionConfigEntry> Environment::GetEpConfigEntries(
       SelectEpDevices(registered_ep_devices, device_type);
   std::vector<SessionConfigEntry> ep_config_entries;
   // Track processed EP names to avoid duplicates.
-  std::set<base::cstring_view> processed_ep_names;
+  std::set<std::string_view> processed_ep_names;
 
   for (const auto* ep_device : selected_ep_devices) {
     CHECK(ep_device);
 
-
-    const char* ep_name = ort_api->EpDevice_EpName(ep_device);
-    // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
-    base::cstring_view ep_name_view =
-        UNSAFE_BUFFERS(base::cstring_view(ep_name));
-
+    std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
     // Skip if we've already processed this EP
-    if (processed_ep_names.contains(ep_name_view)) {
+    if (processed_ep_names.contains(ep_name)) {
       continue;
     }
-    processed_ep_names.insert(ep_name_view);
+    processed_ep_names.insert(ep_name);
 
-    const auto& ep_it = kKnownEPs.find(ep_name_view);
+    const auto& ep_it = kKnownEPs.find(ep_name);
     if (ep_it == kKnownEPs.end()) {
       continue;
     }

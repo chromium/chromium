@@ -7,27 +7,29 @@
 
 #include <appmodel.h>
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_span.h"
 #include "base/strings/cstring_view.h"
 
 namespace webnn {
 
-inline constexpr base::cstring_view kCPUExecutionProvider =
+inline constexpr std::string_view kCPUExecutionProvider =
     "CPUExecutionProvider";
-inline constexpr base::cstring_view kDmlExecutionProvider =
+inline constexpr std::string_view kDmlExecutionProvider =
     "DmlExecutionProvider";
-inline constexpr base::cstring_view kMIGraphXExecutionProvider =
+inline constexpr std::string_view kMIGraphXExecutionProvider =
     "MIGraphXExecutionProvider";
-inline constexpr base::cstring_view kNvTensorRTRTXExecutionProvider =
+inline constexpr std::string_view kNvTensorRTRTXExecutionProvider =
     "NvTensorRTRTXExecutionProvider";
-inline constexpr base::cstring_view kOpenVINOExecutionProvider =
+inline constexpr std::string_view kOpenVINOExecutionProvider =
     "OpenVINOExecutionProvider";
-inline constexpr base::cstring_view kQNNExecutionProvider =
+inline constexpr std::string_view kQNNExecutionProvider =
     "QNNExecutionProvider";
-inline constexpr base::cstring_view kVitisAIExecutionProvider =
+inline constexpr std::string_view kVitisAIExecutionProvider =
     "VitisAIExecutionProvider";
-inline constexpr base::cstring_view kWebGpuExecutionProvider =
+inline constexpr std::string_view kWebGpuExecutionProvider =
     "WebGpuExecutionProvider";
 
 // Describes the workarounds needed for execution provider limitations.
@@ -77,13 +79,13 @@ struct EpInfo {
   base::raw_span<const SessionConfigEntry> config_entries;
   // The minimum driver versions required by the NPU device for this EP to work.
   // Empty value means no version check is needed (default allow).
-  base::cstring_view min_npu_driver_version;
+  std::string_view min_npu_driver_version;
 };
 
 // The listed EPs must match the names of the histogram variants
 // WebNNOrtExecutionProvider in
 // tools/metrics/histograms/metadata/webnn/histograms.xml.
-inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view,
+inline constexpr auto kKnownEPs = base::MakeFixedFlatMap<std::string_view,
                                                          EpInfo>({
     // AMD
     {
