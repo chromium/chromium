@@ -51,7 +51,8 @@ if (!is_win && !is_mac && !is_ios) {
         !is_official_build &&
         # TODO(40208899): Enable more broadly.
         target_os == "android" &&
-        (current_cpu == "x64" || current_cpu == "arm64")
+        (current_cpu == "x64" || current_cpu == "arm64" ||
+         current_cpu == "x86")
   }
 }
 

@@ -1149,7 +1149,11 @@ config("linker") {
   if (is_android && linker_path != "") {
     # Wild linker does not support the default of android+relr.
     # Mold has a bug: https://github.com/rui314/mold/issues/1595
-    ldflags += [ "-Wl,--pack-dyn-relocs=relr" ]
+    if (android_ndk_api_level >= 28) {
+      ldflags += [ "-Wl,--pack-dyn-relocs=relr" ]
+    } else {
+      ldflags += [ "-Wl,--pack-dyn-relocs=none" ]
+    }
   }
 
   # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
@@ -2450,11 +2454,9 @@ if (is_win) {
   if (is_android && (use_lld || use_mold)) {
     # TODO(jdduke) Re-enable on mips after resolving linking
     # issues with libc++ (crbug.com/456380).
-    # ffmpeg x86 asm has textrels. See: https://crbug.com/911658#c19
-    if (current_cpu != "mipsel" && current_cpu != "mips64el" &&
-        current_cpu != "x86") {
+    if (current_cpu != "mipsel" && current_cpu != "mips64el") {
       common_optimize_on_ldflags += [
-        # Warn in case of text relocations.
+        # Android will not load libraries that have text relocations.
         "-Wl,--warn-shared-textrel",
       ]
     }
