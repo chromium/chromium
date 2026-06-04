@@ -10,5 +10,27 @@ std::string TaskTypeToString(TaskType type) {
       return "Unknown";
     case TaskType::kTabGroups:
       return "TabGroups";
+    case TaskType::kAutofill:
+      return "Autofill";
+    case TaskType::kPinTabs:
+      return "PinTabs";
+    case TaskType::kGemini:
+      return "Gemini";
+    case TaskType::kPaymentMethods:
+      return "PaymentMethods";
+    case TaskType::kQuickDelete:
+      return "QuickDelete";
+    case TaskType::kSafeBrowsing:
+      return "SafeBrowsing";
+    case TaskType::kIncognito:
+      return "Incognito";
+    case TaskType::kPasswordCheckup:
+      return "PasswordCheckup";
+    case TaskType::kLensSearch:
+      return "LensSearch";
+    case TaskType::kAISearch:
+      return "AISearch";
+    case TaskType::kCameraSearch:
+      return "CameraSearch";
   }
 }

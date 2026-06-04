@@ -65,17 +65,27 @@ class LevelUpSceneAgentTest : public PlatformTest {
 };
 
 TEST_F(LevelUpSceneAgentTest, TestActionTriggersCompletion) {
-  // Ensure task is not completed initially.
+  // Ensure tasks are not completed initially.
   EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kPasswordCheckup));
 
   // Simulate the scene becoming active to start listening.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  // Record the action that should trigger completion.
-  base::RecordAction(base::UserMetricsAction("TabGroupCreated"));
+  // Record the action that should trigger kTabGroups completion.
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGroupUserCreatedNewGroup"));
 
   // Verify that the task is now completed.
   EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kTabGroups));
+  EXPECT_FALSE(service_->IsTaskCompleted(TaskType::kPasswordCheckup));
+
+  // Record the action that should trigger kPasswordCheckup completion.
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordCheckupSettingsClose"));
+
+  // Verify that password checkup is completed as well.
+  EXPECT_TRUE(service_->IsTaskCompleted(TaskType::kPasswordCheckup));
 }
 
 }  // namespace

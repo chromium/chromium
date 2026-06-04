@@ -16,7 +16,8 @@ struct TaskInfo {
            int title_id,
            int task_description_id,
            const std::string& icon_symbol_name,
-           const std::string& category,
+           bool is_custom_symbol,
+           LevelUpTaskCategory category,
            const std::string& trigger_action,
            base::RepeatingClosure navigation_action);
   ~TaskInfo();
@@ -36,8 +37,11 @@ struct TaskInfo {
   // Name of the icon asset associated with the task.
   std::string icon_symbol_name;
 
+  // Whether the icon_symbol_name is a custom asset in the bundle.
+  bool is_custom_symbol;
+
   // The category this task belongs to (e.g., for grouping).
-  std::string category;
+  LevelUpTaskCategory category;
 
   // The user action string that triggers completion of this task.
   std::string trigger_action;
