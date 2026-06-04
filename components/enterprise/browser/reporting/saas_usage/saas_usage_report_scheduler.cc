@@ -80,14 +80,16 @@ void SaasUsageReportScheduler::GenerateAndUploadReport() {
                              weak_ptr_factory_.GetWeakPtr()));
 }
 
-void SaasUsageReportScheduler::OnReportUploaded(bool success) {
+void SaasUsageReportScheduler::OnReportUploaded(
+    policy::CloudPolicyClient::Result result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (success) {
+  if (result.IsSuccess()) {
     ClearSaasUsageReport(pref_service_.get());
   } else {
     LOG_POLICY(WARNING, REPORTING)
         << "SaaS usage " << debug_name_
-        << " report upload failed, upload will be retried at the next trigger.";
+        << " report upload failed with status: " << result.GetDMServerError()
+        << ", upload will be retried at the next trigger.";
   }
 }
 

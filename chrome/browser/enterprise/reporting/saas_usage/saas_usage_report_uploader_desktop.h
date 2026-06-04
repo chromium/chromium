@@ -30,7 +30,8 @@ class SaasUsageReportUploaderDesktop : public SaasUsageReportUploader {
   // SaasUsageReportUploader:
   void UploadReport(
       const ::chrome::cros::reporting::proto::SaasUsageReportEvent& report,
-      base::OnceCallback<void(bool)> upload_callback) override;
+      base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+          upload_callback) override;
 
  protected:
   virtual enterprise_connectors::RealtimeReportingClientBase*

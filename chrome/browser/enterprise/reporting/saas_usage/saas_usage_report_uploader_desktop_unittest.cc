@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
@@ -46,7 +47,8 @@ class MockRealtimeReportingClient
               (::chrome::cros::reporting::proto::Event event,
                bool is_per_profile,
                const std::string& dm_token,
-               base::OnceCallback<void(bool)> upload_callback),
+               base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+                   upload_callback),
               (override));
 };
 

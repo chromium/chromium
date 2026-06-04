@@ -51,7 +51,8 @@ SaasUsageReportUploaderDesktop::SaasUsageReportUploaderDesktop(
 
 void SaasUsageReportUploaderDesktop::UploadReport(
     const ::chrome::cros::reporting::proto::SaasUsageReportEvent& report,
-    base::OnceCallback<void(bool)> upload_callback) {
+    base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+        upload_callback) {
   if (!base::FeatureList::IsEnabled(
           policy::kUploadRealtimeReportingEventsUsingProto)) {
     LOG_POLICY(INFO, REPORTING)

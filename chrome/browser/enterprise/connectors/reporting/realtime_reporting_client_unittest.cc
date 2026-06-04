@@ -702,7 +702,7 @@ TEST_P(RealtimeReportingClientSaasTest, ReportSaasUsageEvent) {
   event.mutable_saas_usage_report_event();
 
   base::RunLoop run_loop;
-  bool success_result = false;
+  policy::CloudPolicyClient::Result captured_result(policy::DM_STATUS_SUCCESS);
 
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
       .WillOnce(
@@ -717,13 +717,14 @@ TEST_P(RealtimeReportingClientSaasTest, ReportSaasUsageEvent) {
 
   reporting_client_->ReportSaasUsageEvent(
       event, is_profile_reporting(), "fake-token",
-      base::BindLambdaForTesting([&](bool success) {
-        success_result = success;
+      base::BindLambdaForTesting([&](policy::CloudPolicyClient::Result result) {
+        captured_result = std::move(result);
         run_loop.Quit();
       }));
 
   run_loop.Run();
-  EXPECT_EQ(success_result, should_succeed());
+  EXPECT_EQ(captured_result.IsSuccess(), should_succeed());
+  EXPECT_EQ(captured_result.GetDMServerError(), dm_status());
   VerifyStandaloneMetrics(
       EnterpriseReportingEventType::kSaasUsageReportEvent,
       "Enterprise.ReportingEvent.SaasUsage.UploadSuccess.Duration",
@@ -750,7 +751,7 @@ TEST_P(RealtimeReportingClientBrowserLaunchTest, ReportBrowserLaunchEvent) {
   event.mutable_browser_launch_event();
 
   base::RunLoop run_loop;
-  bool success_result = false;
+  policy::CloudPolicyClient::Result captured_result(policy::DM_STATUS_SUCCESS);
 
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
       .WillOnce(
@@ -765,13 +766,14 @@ TEST_P(RealtimeReportingClientBrowserLaunchTest, ReportBrowserLaunchEvent) {
 
   reporting_client_->ReportBrowserLaunchEvent(
       event, is_profile_reporting(), "fake-token",
-      base::BindLambdaForTesting([&](bool success) {
-        success_result = success;
+      base::BindLambdaForTesting([&](policy::CloudPolicyClient::Result result) {
+        captured_result = std::move(result);
         run_loop.Quit();
       }));
 
   run_loop.Run();
-  EXPECT_EQ(success_result, should_succeed());
+  EXPECT_EQ(captured_result.IsSuccess(), should_succeed());
+  EXPECT_EQ(captured_result.GetDMServerError(), dm_status());
   VerifyStandaloneMetrics(
       EnterpriseReportingEventType::kBrowserLaunchEvent,
       "Enterprise.ReportingEvent.BrowserLaunch.UploadSuccess.Duration",

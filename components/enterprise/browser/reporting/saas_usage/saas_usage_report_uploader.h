@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "components/enterprise/common/proto/synced/saas_usage_report_event.pb.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 
 namespace enterprise_reporting {
 
@@ -21,7 +22,8 @@ class SaasUsageReportUploader {
   // when the upload is complete with the upload success result.
   virtual void UploadReport(
       const ::chrome::cros::reporting::proto::SaasUsageReportEvent& report,
-      base::OnceCallback<void(bool)> upload_callback) = 0;
+      base::OnceCallback<void(policy::CloudPolicyClient::Result)>
+          upload_callback) = 0;
 };
 
 }  // namespace enterprise_reporting

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/mock_log.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
@@ -23,6 +24,8 @@ namespace enterprise_reporting {
 
 namespace {
 
+using ::testing::_;
+using ::testing::HasSubstr;
 using ReportEvent = ::chrome::cros::reporting::proto::SaasUsageReportEvent;
 
 class FakeSaasUsageReportSchedulerDelegate
@@ -69,10 +72,14 @@ class FakeSaasUsageReportUploader : public SaasUsageReportUploader {
   FakeSaasUsageReportUploader() = default;
   ~FakeSaasUsageReportUploader() override = default;
 
-  void UploadReport(const ReportEvent& report,
-                    base::OnceCallback<void(bool)> callback) override {
+  void UploadReport(
+      const ReportEvent& report,
+      base::OnceCallback<void(policy::CloudPolicyClient::Result)> callback)
+      override {
     upload_count_++;
-    std::move(callback).Run(should_upload_successfully_);
+    std::move(callback).Run(policy::CloudPolicyClient::Result(
+        should_upload_successfully_ ? policy::DM_STATUS_SUCCESS
+                                    : policy::DM_STATUS_REQUEST_FAILED));
   }
 
   int upload_count() const { return upload_count_; }
@@ -227,6 +234,14 @@ TEST_F(SaasUsageReportSchedulerTest, DoesNotClearReportPrefAfterFailedUpload) {
   RecordNavigation();
   CreateScheduler();
   report_uploader_->SetShouldUploadSuccessfully(false);
+
+  base::test::MockLog mock_log;
+  mock_log.StartCapturingLogs();
+
+  // Verify that the error code (2 for DM_STATUS_REQUEST_FAILED) is logged.
+  EXPECT_CALL(mock_log, Log(logging::LOGGING_WARNING, _, _, _,
+                            HasSubstr("failed with status: 2")))
+      .Times(1);
 
   task_environment_.FastForwardBy(base::TimeDelta());
 

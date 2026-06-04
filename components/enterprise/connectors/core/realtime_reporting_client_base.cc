@@ -211,7 +211,7 @@ void RealtimeReportingClientBase::ReportSaasUsageEvent(
     ::chrome::cros::reporting::proto::Event event,
     bool per_profile,
     const std::string& dm_token,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(policy::CloudPolicyClient::Result)> callback) {
   CHECK(event.has_saas_usage_report_event());
   ReportStandaloneEvent(std::move(event),
                         EnterpriseReportingEventType::kSaasUsageReportEvent,
@@ -222,7 +222,7 @@ void RealtimeReportingClientBase::ReportBrowserLaunchEvent(
     ::chrome::cros::reporting::proto::Event event,
     bool per_profile,
     const std::string& dm_token,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(policy::CloudPolicyClient::Result)> callback) {
   CHECK(event.has_browser_launch_event());
   ReportStandaloneEvent(std::move(event),
                         EnterpriseReportingEventType::kBrowserLaunchEvent,
@@ -234,12 +234,13 @@ void RealtimeReportingClientBase::ReportStandaloneEvent(
     EnterpriseReportingEventType event_type,
     bool per_profile,
     const std::string& dm_token,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(policy::CloudPolicyClient::Result)> callback) {
   policy::CloudPolicyClient* client = GetReportingClient(dm_token, per_profile);
   if (!client) {
     LOG(ERROR) << "Could not find a reporting client for standalone event: "
                << GetEventName(event.event_case());
-    std::move(callback).Run(false);
+    std::move(callback).Run(
+        policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
     return;
   }
 
@@ -261,7 +262,7 @@ void RealtimeReportingClientBase::ReportStandaloneEvent(
 }
 
 void RealtimeReportingClientBase::OnStandaloneEventUploadCompleted(
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(policy::CloudPolicyClient::Result)> callback,
     EnterpriseReportingEventType event_type,
     base::TimeTicks upload_started_at,
     policy::CloudPolicyClient::Result upload_result) {
@@ -276,7 +277,7 @@ void RealtimeReportingClientBase::OnStandaloneEventUploadCompleted(
       base::TimeTicks::Now() - upload_started_at, base::Milliseconds(1),
       base::Minutes(5), 50);
 
-  std::move(callback).Run(upload_result.IsSuccess());
+  std::move(callback).Run(std::move(upload_result));
 }
 
 void RealtimeReportingClientBase::ReportEventWithTimestampDeprecated(

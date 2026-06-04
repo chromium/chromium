@@ -16,6 +16,7 @@
 #include "base/timer/wall_clock_timer.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_factory.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_uploader.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_reporting {
@@ -64,7 +65,7 @@ class SaasUsageReportScheduler {
   void GenerateAndUploadReport();
   void ScheduleNextReport();
   void OnReadyStateChanged();
-  void OnReportUploaded(bool success);
+  void OnReportUploaded(policy::CloudPolicyClient::Result result);
 
   base::WallClockTimer timer_;
   const std::string debug_name_;
