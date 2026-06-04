@@ -71,7 +71,7 @@ void PagePlaceholderTabHelper::DidStartNavigation(
 void PagePlaceholderTabHelper::PageLoaded(web::WebState* web_state,
                                           web::PageLoadCompletionStatus) {
   DCHECK_EQ(web_state_, web_state);
-  RemovePlaceholder();
+  CancelPlaceholderForNextNavigation();
 }
 
 void PagePlaceholderTabHelper::WebStateDestroyed(web::WebState* web_state) {
