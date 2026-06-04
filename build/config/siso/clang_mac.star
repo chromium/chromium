@@ -22,15 +22,15 @@ __handlers = clang_unix.handlers
 def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_mac.cfg"
     if ctx.fs.exists(cfg):
-        reproxy_config = rewrapper_cfg.parse(ctx, cfg)
+        rewrapper_config = rewrapper_cfg.parse(ctx, cfg)
         largePlatform = {}
-        for k, v in reproxy_config["platform"].items():
+        for k, v in rewrapper_config["platform"].items():
             if k.startswith("label:action"):
                 continue
             largePlatform[k] = v
         largePlatform["label:action_large"] = "1"
         step_config["platforms"].update({
-            "clang": reproxy_config["platform"],
+            "clang": rewrapper_config["platform"],
             "clang_large": largePlatform,
         })
         step_config["input_deps"].update(clang_unix.input_deps(ctx))
@@ -39,15 +39,15 @@ def __step_config(ctx, step_config):
 
         for rule in clang_rules:
             if "remote" in rule and rule["remote"]:
-                rule["remote_wrapper"] = reproxy_config["remote_wrapper"]
+                rule["remote_wrapper"] = rewrapper_config["remote_wrapper"]
                 if "platform_ref" not in rule:
                     rule["platform_ref"] = "clang"
                 elif rule["platform_ref"] == "large":
                     rule["platform_ref"] = "clang_large"
 
             inputs = rule.setdefault("inputs", [])
-            inputs.extend(reproxy_config.get("inputs", []))
-            inputs.extend(reproxy_config.get("toolchain_inputs", []))
+            inputs.extend(rewrapper_config.get("inputs", []))
+            inputs.extend(rewrapper_config.get("toolchain_inputs", []))
 
             step_config["rules"].append(rule)
     elif gn_logs.read(ctx).get("use_remoteexec") == "true":

@@ -9,7 +9,7 @@ load("./clang_all.star", "clang_all")
 load("./clang_exception.star", "clang_exception")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
-load("./reproxy.star", "reproxy")
+load("./reclient.star", "reclient")
 load("./rewrapper_cfg.star", "rewrapper_cfg")
 load("./win_sdk.star", "win_sdk")
 
@@ -25,20 +25,20 @@ __handlers.update(clang_all.handlers)
 def __step_config(ctx, step_config):
     cfg = "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg"
     if ctx.fs.exists(cfg):
-        reproxy_config = rewrapper_cfg.parse(ctx, cfg)
+        rewrapper_config = rewrapper_cfg.parse(ctx, cfg)
         largePlatform = {}
-        for k, v in reproxy_config["platform"].items():
+        for k, v in rewrapper_config["platform"].items():
             if k.startswith("label:action"):
                 continue
             largePlatform[k] = v
 
         # no "action_large" Windows worker pool
         use_windows_worker = True
-        if reproxy_config["platform"]["OSFamily"] != "Windows":
+        if rewrapper_config["platform"]["OSFamily"] != "Windows":
             largePlatform["label:action_large"] = "1"
             use_windows_worker = False
         step_config["platforms"].update({
-            "clang-cl": reproxy_config["platform"],
+            "clang-cl": rewrapper_config["platform"],
             "clang-cl_large": largePlatform,
             "lld-link": largePlatform,
         })
@@ -59,7 +59,7 @@ def __step_config(ctx, step_config):
                 "third_party/llvm-build/Release+Asserts/bin/lld-link.exe",
                 win_toolchain_dir + ":libs",
             ]
-            if reproxy_config["platform"]["OSFamily"] == "Windows":
+            if rewrapper_config["platform"]["OSFamily"] == "Windows":
                 step_config["input_deps"].update({
                     win_toolchain_dir + ":headers": [
                         win_toolchain_dir + ":headers-ci",
@@ -67,11 +67,11 @@ def __step_config(ctx, step_config):
                 })
             else:
                 win_sdk.step_config(ctx, step_config)
-        remote_wrapper = reproxy_config.get("remote_wrapper")
+        remote_wrapper = rewrapper_config.get("remote_wrapper")
         input_root_absolute_path = gn_logs.read(ctx).get("clang_need_input_root_absolute_path") == "true"
 
         timeout = "2m"
-        if (not reproxy.enabled(ctx)) and use_windows_worker:
+        if (not reclient.enabled(ctx)) and use_windows_worker:
             # use longer timeout for siso native
             # it takes long time for input fetch (many files in sysroot etc)
             timeout = "4m"
@@ -82,9 +82,9 @@ def __step_config(ctx, step_config):
         use_thin_lto = gn_logs.read(ctx).get("use_thin_lto") == "true"
         remote_link_timeout = "80m" if use_thin_lto else "10m"
 
-        reproxy_config_inputs = []
-        reproxy_config_inputs.extend(reproxy_config.get("inputs", []))
-        reproxy_config_inputs.extend(reproxy_config.get("toolchain_inputs", []))
+        rewrapper_config_inputs = []
+        rewrapper_config_inputs.extend(rewrapper_config.get("inputs", []))
+        rewrapper_config_inputs.extend(rewrapper_config.get("toolchain_inputs", []))
 
         rules = step_config.setdefault("rules", [])
         rules.extend([
@@ -93,7 +93,7 @@ def __step_config(ctx, step_config):
                 "handler": "clang_compile",
                 "action": "(.*_)?cxx",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
-                "inputs": reproxy_config_inputs + [
+                "inputs": rewrapper_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],
                 "platform_ref": "clang-cl",
@@ -107,7 +107,7 @@ def __step_config(ctx, step_config):
                 "handler": "clang_compile",
                 "action": "(.*_)?cc",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\clang-cl.exe",
-                "inputs": reproxy_config_inputs + [
+                "inputs": rewrapper_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe",
                 ],
                 "platform_ref": "clang-cl",
@@ -120,7 +120,7 @@ def __step_config(ctx, step_config):
                 "name": "clang-coverage/cxx",
                 "action": "(.*_)?cxx",
                 "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
-                "inputs": reproxy_config_inputs + [
+                "inputs": rewrapper_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang++",
                 ],
                 "handler": "clang_compile_coverage",
@@ -134,7 +134,7 @@ def __step_config(ctx, step_config):
                 "name": "clang-coverage/cc",
                 "action": "(.*_)?cc",
                 "command_prefix": "python3.exe ../../build/toolchain/clang_code_coverage_wrapper.py",
-                "inputs": reproxy_config_inputs + [
+                "inputs": rewrapper_config_inputs + [
                     "third_party/llvm-build/Release+Asserts/bin/clang",
                 ],
                 "handler": "clang_compile_coverage",
@@ -149,7 +149,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?alink",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe /lib",
                 "handler": "lld_thin_archive",
-                "inputs": reproxy_config_inputs,
+                "inputs": rewrapper_config_inputs,
                 "remote": False,
                 "accumulate": True,
             },
@@ -158,7 +158,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": reproxy_config_inputs + link_inputs,
+                "inputs": rewrapper_config_inputs + link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
@@ -177,7 +177,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?solink_module",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": reproxy_config_inputs + link_inputs,
+                "inputs": rewrapper_config_inputs + link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
@@ -196,7 +196,7 @@ def __step_config(ctx, step_config):
                 "action": "(.*_)?link",
                 "command_prefix": "..\\..\\third_party\\llvm-build\\Release+Asserts\\bin\\lld-link.exe",
                 "handler": "lld_link",
-                "inputs": reproxy_config_inputs + link_inputs,
+                "inputs": rewrapper_config_inputs + link_inputs,
                 "exclude_input_patterns": [
                     "*.cc",
                     "*.h",
