@@ -12,15 +12,11 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
 
 <section id="instructions">
   <h2>Instructions</h2>
-  <p>Use this page to test the AI notification generation process.</p>
+  <p>Use this page to inspect and trigger different aspects of the Finds Service:</p>
   <ul>
-    <li>Enter a custom prompt in the text area below.</li>
-    <li>Use <code>{USER_HISTORY}</code> as a placeholder to inject visited
-      URLs from the user's history.</li>
-    <li>Specify the number of history entries to use. Set to
-      <strong>0</strong> for no history. Max is 500.</li>
-    <li>Click <strong>Start</strong> to execute the model and see the
-      output in the log.</li>
+    <li><strong>Trigger Finds Service</strong>: Executes the full Finds service workflow.</li>
+    <li><strong>Trigger Finds Test Notification</strong>: Directly schedules a mock Finds notification for testing.</li>
+    <li><strong>Dump History to JSON</strong>: Queries and displays the raw history entries that would be provided to the model.</li>
   </ul>
 </section>
 
@@ -33,21 +29,13 @@ export function getHtml(this: ChromeFindsInternalsAppElement) {
           @change="${this.onHistoryCountChange_}" min="0">
     </label>
   </div>
-  <textarea id="prompt-input" rows="10" .value="${this.prompt_}"
-      @input="${this.onPromptInput_}"
-      placeholder="Paste prompt here..."></textarea>
-    <cr-button id="start-btn" class="action-button"
-        @click="${this.onStartClick_}">Start</cr-button>
     <cr-button id="run-finds-model-btn" class="action-button"
         @click="${this.onRunFindsModelClick_}">
-      Run Model and Schedule Notification
+      Trigger Finds Service
     </cr-button>
     <cr-button id="finds-test-notification-btn" class="action-button"
         @click="${this.onTriggerFindsTestNotificationClick_}">
       Trigger Finds Test Notification
-    </cr-button>
-    <cr-button id="reset-btn" @click="${this.onResetClick_}">
-      Reset to Default Prompt
     </cr-button>
     <cr-button id="dump-history-btn" @click="${this.onDumpHistoryClick_}">
       Dump History to JSON

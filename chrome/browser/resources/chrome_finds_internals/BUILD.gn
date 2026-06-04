@@ -15,7 +15,6 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
-    "constants.ts",
   ]
 
   css_files = [ "app.css" ]

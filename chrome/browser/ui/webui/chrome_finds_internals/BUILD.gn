@@ -6,10 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("chrome_finds_internals") {
   sources = [
-    "chrome_finds_agent.cc",
-    "chrome_finds_agent.h",
-    "chrome_finds_agent_factory.cc",
-    "chrome_finds_agent_factory.h",
     "chrome_finds_internals_ui.cc",
     "chrome_finds_internals_ui.h",
   ]

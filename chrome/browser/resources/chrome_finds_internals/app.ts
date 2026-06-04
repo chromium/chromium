@@ -10,7 +10,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './chrome_finds_internals.mojom-webui.js';
-import {DEFAULT_PROMPT} from './constants.js';
 
 export class ChromeFindsInternalsAppElement extends CrLitElement {
   static get is() {
@@ -28,14 +27,12 @@ export class ChromeFindsInternalsAppElement extends CrLitElement {
   static override get properties() {
     return {
       historyCount_: {type: Number},
-      prompt_: {type: String},
       historyJson_: {type: String},
       logs_: {type: Array},
     };
   }
 
   protected accessor historyCount_: number = 10;
-  protected accessor prompt_: string = DEFAULT_PROMPT;
   protected accessor historyJson_: string = '';
   protected accessor logs_: string[] = [];
 
@@ -69,27 +66,14 @@ export class ChromeFindsInternalsAppElement extends CrLitElement {
         parseInt((e.target as HTMLInputElement).value, 10) || 0;
   }
 
-  protected onPromptInput_(e: Event) {
-    this.prompt_ = (e.target as HTMLTextAreaElement).value;
-  }
-
-  protected onStartClick_() {
-    this.handler_.start(this.prompt_, this.historyCount_);
-  }
-
   protected onRunFindsModelClick_() {
-    this.appendLog_('Running FindsService Model...');
+    this.appendLog_('Triggering Finds Service...');
     this.handler_.getFindsServiceModelResponse();
   }
 
   protected onTriggerFindsTestNotificationClick_() {
     this.appendLog_('Triggering Finds Test Notification...');
     this.handler_.triggerFindsTestNotification();
-  }
-
-  protected onResetClick_() {
-    this.prompt_ = DEFAULT_PROMPT;
-    this.appendLog_('Prompt reset to default.');
   }
 
   protected async onDumpHistoryClick_() {

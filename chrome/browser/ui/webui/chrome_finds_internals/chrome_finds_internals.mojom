@@ -12,10 +12,6 @@ interface Page {
 
 // Renderer-to-browser communication.
 interface PageHandler {
-  // Starts the AI notification process with the given prompt and history count.
-  // Use 0 for all history.
-  Start(string prompt, int32 history_count);
-
   // Starts an AI notification process that fetches history internally through
   // FindsService.
   GetFindsServiceModelResponse();
