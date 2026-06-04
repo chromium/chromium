@@ -6,8 +6,12 @@
 
 #include <limits>
 
+#include "ash/accessibility/accessibility_prefs_custom_associator.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/prefs/pref_service_syncable_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "components/sync_preferences/pref_service_syncable.h"
 
 using ash::AccessibilityManager;
 using ash::MagnificationManager;
@@ -43,4 +47,16 @@ double ChromeAccessibilityDelegate::GetSavedScreenMagnifierScale() {
   }
 
   return std::numeric_limits<double>::min();
+}
+
+std::unique_ptr<ash::AccessibilityPrefsCustomAssociator>
+ChromeAccessibilityDelegate::CreatePrefsCustomAssociator(
+    PrefService* pref_service) {
+  sync_preferences::PrefServiceSyncable* pref_service_syncable =
+      PrefServiceSyncableFromProfile(ProfileManager::GetActiveUserProfile());
+  if (pref_service_syncable == pref_service) {
+    return std::make_unique<ash::AccessibilityPrefsCustomAssociator>(
+        pref_service_syncable);
+  }
+  return nullptr;
 }

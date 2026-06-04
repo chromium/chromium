@@ -73,9 +73,6 @@ class PrefServiceSyncable : public PrefService,
 
   ~PrefServiceSyncable() override;
 
-  // PrefService:
-  bool IsSyncable() const override;
-
   // Creates an incognito copy of the pref service that shares most pref stores
   // but uses a fresh non-persistent overlay for the user pref store and an
   // individual extension pref store (to cache the effective extension prefs for

@@ -33,24 +33,16 @@ bool PrefNeedsResolution(const AccessibilityPrefBatchEntry& entry) {
 }  // namespace
 
 AccessibilityPrefsCustomAssociator::AccessibilityPrefsCustomAssociator(
-    PrefService* prefs)
-    : enabled_sync_prefs_(GetAccessibilityPrefBatchesWithSyncEnabled()) {
+    sync_preferences::PrefServiceSyncable* prefs)
+    : enabled_sync_prefs_(GetAccessibilityPrefBatchesWithSyncEnabled()),
+      prefs_(prefs) {
   CHECK(g_accessibility_prefs_custom_associator == nullptr);
   g_accessibility_prefs_custom_associator = this;
 
-  if (!prefs) {
-    return;
-  }
-
-  // TODO(515812912): Move syncability checks and associator creation
-  // into chrome/browser via a delegate, so ash/ no longer needs to cast
-  // from PrefService to PrefServiceSyncable.
-  if (!prefs->IsSyncable()) {
+  if (!prefs_) {
     CHECK_IS_TEST();
     return;
   }
-
-  prefs_ = static_cast<sync_preferences::PrefServiceSyncable*>(prefs);
 
   for (auto& enabled_sync_pref : enabled_sync_prefs_) {
     if (PrefNeedsResolution(enabled_sync_pref)) {

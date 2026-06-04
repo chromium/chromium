@@ -5,9 +5,15 @@
 #ifndef ASH_ACCESSIBILITY_ACCESSIBILITY_DELEGATE_H_
 #define ASH_ACCESSIBILITY_ACCESSIBILITY_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 
+class PrefService;
+
 namespace ash {
+
+class AccessibilityPrefsCustomAssociator;
 
 // A delegate class to control and query accessibility features.
 class ASH_EXPORT AccessibilityDelegate {
@@ -29,6 +35,10 @@ class ASH_EXPORT AccessibilityDelegate {
   // Gets a saved value of the zoom scale of full screen magnifier. If a value
   // is not saved, return a negative value.
   virtual double GetSavedScreenMagnifierScale() = 0;
+
+  // Creates the preferences custom associator instance.
+  virtual std::unique_ptr<AccessibilityPrefsCustomAssociator>
+  CreatePrefsCustomAssociator(PrefService* pref_service) = 0;
 };
 
 }  // namespace ash

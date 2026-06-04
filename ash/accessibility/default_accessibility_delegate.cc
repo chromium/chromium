@@ -7,6 +7,7 @@
 #include <limits>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_prefs_custom_associator.h"
 #include "ash/shell.h"
 
 namespace ash {
@@ -40,4 +41,10 @@ double DefaultAccessibilityDelegate::GetSavedScreenMagnifierScale() {
   return std::numeric_limits<double>::min();
 }
 
+std::unique_ptr<AccessibilityPrefsCustomAssociator>
+DefaultAccessibilityDelegate::CreatePrefsCustomAssociator(
+    PrefService* pref_service) {
+  return std::make_unique<AccessibilityPrefsCustomAssociator>(
+      /*pref_service=*/nullptr);
+}
 }  // namespace ash

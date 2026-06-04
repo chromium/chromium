@@ -25,6 +25,8 @@ class ASH_EXPORT DefaultAccessibilityDelegate : public AccessibilityDelegate {
   bool ShouldShowAccessibilityMenu() const override;
   void SaveScreenMagnifierScale(double scale) override;
   double GetSavedScreenMagnifierScale() override;
+  std::unique_ptr<AccessibilityPrefsCustomAssociator>
+  CreatePrefsCustomAssociator(PrefService* pref_service) override;
 
  private:
   bool screen_magnifier_enabled_ = false;

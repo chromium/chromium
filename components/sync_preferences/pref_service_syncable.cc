@@ -164,10 +164,6 @@ PrefServiceSyncable::~PrefServiceSyncable() {
   pref_registry_->SetSyncableRegistrationCallback(base::NullCallback());
 }
 
-bool PrefServiceSyncable::IsSyncable() const {
-  return true;
-}
-
 std::unique_ptr<PrefServiceSyncable>
 PrefServiceSyncable::CreateIncognitoPrefService(
     scoped_refptr<PrefStore> incognito_extension_pref_store,

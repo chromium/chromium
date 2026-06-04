@@ -12,6 +12,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
+#include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/accessibility_prefs_custom_associator.h"
@@ -2582,7 +2583,7 @@ void AccessibilityController::CopySigninPrefsIfNeeded(
   // Ensure a fresh state on the associator.
   CHECK(!prefs_custom_associator_);
   prefs_custom_associator_ =
-      std::make_unique<AccessibilityPrefsCustomAssociator>(
+      Shell::Get()->accessibility_delegate()->CreatePrefsCustomAssociator(
           current_pref_service);
 
   PrefService* signin_prefs =
@@ -2605,7 +2606,8 @@ void AccessibilityController::CopySigninPrefsIfNeeded(
 
     // A preference is lockable when its OOBE-configured value may differ
     // from a previously synced value.
-    if (prefs_custom_associator_->CanLockPref(pref_path)) {
+    if (prefs_custom_associator_ &&
+        prefs_custom_associator_->CanLockPref(pref_path)) {
       // Lock syncable OOBE accessibility prefs so sync application is
       // deferred until conflicts are resolved.
       prefs_custom_associator_->TryLockPref(pref_path, *value_on_login);

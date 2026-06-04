@@ -12,8 +12,6 @@
 #include "base/values.h"
 #include "components/sync_preferences/synced_pref_observer.h"
 
-class PrefService;
-
 namespace sync_preferences {
 class PrefServiceSyncable;
 }
@@ -39,7 +37,8 @@ struct AccessibilityPrefBatchEntry;
 class ASH_EXPORT AccessibilityPrefsCustomAssociator
     : public sync_preferences::SyncedPrefObserver {
  public:
-  explicit AccessibilityPrefsCustomAssociator(PrefService* prefs);
+  explicit AccessibilityPrefsCustomAssociator(
+      sync_preferences::PrefServiceSyncable* prefs);
   virtual ~AccessibilityPrefsCustomAssociator();
 
   AccessibilityPrefsCustomAssociator(

@@ -24,6 +24,8 @@ class ChromeAccessibilityDelegate : public ash::AccessibilityDelegate {
   bool ShouldShowAccessibilityMenu() const override;
   void SaveScreenMagnifierScale(double scale) override;
   double GetSavedScreenMagnifierScale() override;
+  std::unique_ptr<ash::AccessibilityPrefsCustomAssociator>
+  CreatePrefsCustomAssociator(PrefService* pref_service) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_ACCESSIBILITY_CHROME_ACCESSIBILITY_DELEGATE_H_
