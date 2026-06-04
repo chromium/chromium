@@ -153,7 +153,7 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
     return;
   }
-  reclaim_target.target = base::KiB(reclaim_target_kb);
+  reclaim_target.target = base::KiBU(reclaim_target_kb);
 
   int64_t signal_origin_timestamp_ms = -1;
   // The signal origin timestamp may not be included by resourced, and if it is,
@@ -189,7 +189,7 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
     return;
   }
 
-  if (reclaim_target.target > total_memory_) {
+  if (reclaim_target.target.AsDeprecatedByteCount() > total_memory_) {
     LOG(ERROR) << "reclaim_target is too large: " << reclaim_target.target;
     return;
   }

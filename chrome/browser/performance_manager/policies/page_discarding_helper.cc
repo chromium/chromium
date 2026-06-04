@@ -194,8 +194,7 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
 
   // Note: If `reclaim_target->target` is zero, this loop is not entered.
   while (!candidates.empty() &&
-         (!reclaim_target ||
-          total_reclaim.AsDeprecatedByteCount() < reclaim_target->target)) {
+         (!reclaim_target || total_reclaim < reclaim_target->target)) {
     const PageNodeSortProxy candidate = std::move(candidates.back());
     candidates.pop_back();
 
@@ -250,8 +249,8 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
     if (estimated_memory_freed.has_value()) {
       const base::TimeTicks discard_time = base::TimeTicks::Now();
 
-      unnecessary_discard_monitor_.OnDiscard(
-          estimated_memory_freed.value().AsDeprecatedByteCount(), discard_time);
+      unnecessary_discard_monitor_.OnDiscard(estimated_memory_freed.value(),
+                                             discard_time);
 
       RecordDiscardedTabMetrics(candidate);
 

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
 #define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_WIN_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
@@ -42,10 +42,10 @@ class SystemMemoryPressureEvaluator
   // available memory, paging until that is the case (this may not be accurate
   // at the time of writing this). Therefore, we consider that there is critical
   // memory pressure when approaching this amount of available memory.
-  static constexpr base::ByteCount kPhysicalMemoryDefaultModerateThreshold =
-      base::MiB(1000);
-  static constexpr base::ByteCount kPhysicalMemoryDefaultCriticalThreshold =
-      base::MiB(400);
+  static constexpr base::ByteSize kPhysicalMemoryDefaultModerateThreshold =
+      base::MiBU(1000);
+  static constexpr base::ByteSize kPhysicalMemoryDefaultCriticalThreshold =
+      base::MiBU(400);
 
   // Default constructor. Will choose thresholds automatically based on the
   // actual amount of system memory.
@@ -55,8 +55,8 @@ class SystemMemoryPressureEvaluator
   // Constructor with explicit memory thresholds. These represent the amount of
   // free memory below which the applicable memory pressure state engages.
   // For testing purposes.
-  SystemMemoryPressureEvaluator(base::ByteCount moderate_threshold,
-                                base::ByteCount critical_threshold,
+  SystemMemoryPressureEvaluator(base::ByteSize moderate_threshold,
+                                base::ByteSize critical_threshold,
                                 std::unique_ptr<MemoryPressureVoter> voter);
 
   ~SystemMemoryPressureEvaluator() override;
@@ -66,10 +66,10 @@ class SystemMemoryPressureEvaluator
       const SystemMemoryPressureEvaluator&) = delete;
 
   // Returns the moderate pressure level free memory threshold.
-  base::ByteCount moderate_threshold() const { return moderate_threshold_; }
+  base::ByteSize moderate_threshold() const { return moderate_threshold_; }
 
   // Returns the critical pressure level free memory threshold.
-  base::ByteCount critical_threshold() const { return critical_threshold_; }
+  base::ByteSize critical_threshold() const { return critical_threshold_; }
 
  protected:
   // Internals are exposed for unittests.
@@ -106,8 +106,8 @@ class SystemMemoryPressureEvaluator
  private:
   // Threshold amounts of available memory that trigger pressure levels. See
   // memory_pressure_monitor.cc for a discussion of reasonable values for these.
-  const base::ByteCount moderate_threshold_;
-  const base::ByteCount critical_threshold_;
+  const base::ByteSize moderate_threshold_;
+  const base::ByteSize critical_threshold_;
 
   // A periodic timer to check for memory pressure changes.
   base::RepeatingTimer timer_;

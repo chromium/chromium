@@ -10,7 +10,6 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_dispatch_object.h"
-#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/message_loop/message_pump_apple.h"
 #include "base/sequence_checker.h"
@@ -57,7 +56,8 @@ class SystemMemoryPressureEvaluator
 
   // Callback for the disk space check. Updates the pressure level based on the
   // amount of free space.
-  void OnDiskSpaceCheckComplete(std::optional<int64_t> free_bytes);
+  void OnDiskSpaceCheckComplete(
+      std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info);
 
   // Updates the pressure level and manages re-notification timers.
   void UpdatePressureAndManageNotifications();

@@ -6,7 +6,7 @@
 
 #include <unistd.h>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/memory_pressure_listener_registry.h"
@@ -72,7 +72,7 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator->OnMemoryPressure(
       PressureLevel::MODERATE,
-      memory_pressure::ReclaimTarget(base::ByteCount(1000)));
+      memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 
@@ -80,7 +80,7 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   evaluator->OnMemoryPressure(
       PressureLevel::CRITICAL,
-      memory_pressure::ReclaimTarget(base::ByteCount(1000)));
+      memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 
@@ -88,14 +88,14 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator->OnMemoryPressure(
       PressureLevel::MODERATE,
-      memory_pressure::ReclaimTarget(base::ByteCount(1000)));
+      memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 
   // No pressure.
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE));
   evaluator->OnMemoryPressure(
-      PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteCount(0)));
+      PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteSize(0)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 
@@ -103,7 +103,7 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_NONE))
       .Times(0);
   evaluator->OnMemoryPressure(
-      PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteCount(0)));
+      PressureLevel::NONE, memory_pressure::ReclaimTarget(base::ByteSize(0)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 
@@ -111,7 +111,7 @@ TEST(ChromeOSSystemMemoryPressureEvaluatorTest, CheckMemoryPressure) {
   EXPECT_CALL(listener, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE));
   evaluator->OnMemoryPressure(
       PressureLevel::MODERATE,
-      memory_pressure::ReclaimTarget(base::ByteCount(1000)));
+      memory_pressure::ReclaimTarget(base::ByteSize(1000)));
   ASSERT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator->current_vote());
   Mock::VerifyAndClearExpectations(&listener);
 }

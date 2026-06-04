@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -37,10 +37,10 @@ BASE_FEATURE(kCommitAvailableMemoryPressureThresholds,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Default thresholds for commit-based memory pressure detection.
-constexpr base::ByteCount kDefaultCommitAvailableCriticalThreshold =
-    base::MiB(200);
-constexpr base::ByteCount kDefaultCommitAvailableModerateThreshold =
-    base::MiB(500);
+constexpr base::ByteSize kDefaultCommitAvailableCriticalThreshold =
+    base::MiBU(200);
+constexpr base::ByteSize kDefaultCommitAvailableModerateThreshold =
+    base::MiBU(500);
 
 // The amount of commit available below which the system is considered to be
 // under critical memory pressure. The default value is equal to
@@ -74,7 +74,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // to avoid activating the feature study group for users with ample memory.
 // Value based on Memory.CommitAvailableMB UMA, aiming to capture a population
 // similar in size (~13%) to the existing physical memory signal.
-constexpr base::ByteCount kEarlyExitCommitThreshold = base::GiB(2);
+constexpr base::ByteSize kEarlyExitCommitThreshold = base::GiBU(2);
 
 // Implements ObjectWatcher::Delegate by forwarding to a provided callback.
 class MemoryPressureWatcherDelegate
@@ -134,8 +134,8 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
                                     std::move(voter)) {}
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
-    base::ByteCount moderate_threshold,
-    base::ByteCount critical_threshold,
+    base::ByteSize moderate_threshold,
+    base::ByteSize critical_threshold,
     std::unique_ptr<MemoryPressureVoter> voter)
     : memory_pressure::SystemMemoryPressureEvaluator(std::move(voter)),
       moderate_threshold_(moderate_threshold),
@@ -225,12 +225,10 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   RecordCommitHistograms(mem_status);
 
   // How much physical system memory is available for use right now.
-  base::ByteCount phys_free =
-      base::ByteCount::FromUnsigned(mem_status.ullAvailPhys);
+  base::ByteSize phys_free = base::ByteSize(mem_status.ullAvailPhys);
 
   // The maximum amount of memory the current process can commit.
-  base::ByteCount commit_available =
-      base::ByteCount::FromUnsigned(mem_status.ullAvailPageFile);
+  base::ByteSize commit_available = base::ByteSize(mem_status.ullAvailPageFile);
 
   if (phys_free > moderate_threshold_ &&
       commit_available > kEarlyExitCommitThreshold) {
@@ -241,13 +239,13 @@ SystemMemoryPressureEvaluator::CalculateCurrentPressureLevel() {
   }
 
   if (base::FeatureList::IsEnabled(kCommitAvailableMemoryPressureThresholds)) {
-    if (commit_available <
-        base::MiB(kCommitAvailableCriticalThresholdMB.Get())) {
+    if (commit_available < base::MiBU(base::saturated_cast<uint64_t>(
+                               kCommitAvailableCriticalThresholdMB.Get()))) {
       return base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     }
 
-    if (commit_available <
-        base::MiB(kCommitAvailableModerateThresholdMB.Get())) {
+    if (commit_available < base::MiBU(base::saturated_cast<uint64_t>(
+                               kCommitAvailableModerateThresholdMB.Get()))) {
       return base::MEMORY_PRESSURE_LEVEL_MODERATE;
     }
 
@@ -288,12 +286,10 @@ bool SystemMemoryPressureEvaluator::GetSystemMemoryStatus(
 void SystemMemoryPressureEvaluator::RecordCommitHistograms(
     const MEMORYSTATUSEX& mem_status) {
   // Calculate commit limit.
-  base::ByteCount commit_limit =
-      base::ByteCount::FromUnsigned(mem_status.ullTotalPageFile);
+  base::ByteSize commit_limit = base::ByteSize(mem_status.ullTotalPageFile);
 
   // Calculate amount of available commit space.
-  base::ByteCount commit_available =
-      base::ByteCount::FromUnsigned(mem_status.ullAvailPageFile);
+  base::ByteSize commit_available = base::ByteSize(mem_status.ullAvailPageFile);
 
   base::UmaHistogramCounts10M("Memory.CommitLimitMB",
                               base::saturated_cast<int>(commit_limit.InMiB()));

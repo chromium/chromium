@@ -12,11 +12,12 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -37,14 +38,13 @@ BASE_FEATURE(kMacCriticalDiskSpacePressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The default threshold for the critical disk space pressure
 // signal.
-constexpr base::ByteCount kDefaultCriticalDiskSpace = base::MiB(250);
+constexpr base::ByteSize kDefaultCriticalDiskSpace = base::MiBU(250);
 
 // Defines the threshold for the critical disk space pressure
 // signal. This is a parameter for the kMacCriticalDiskSpacePressure feature.
-BASE_FEATURE_PARAM(int,
+BASE_FEATURE_PARAM(size_t,
                    kMacCriticalDiskSpacePressureThresholdMB,
                    &kMacCriticalDiskSpacePressure,
-                   "MacCriticalDiskSpacePressureThresholdMB",
                    kDefaultCriticalDiskSpace.InMiB());
 
 // How often to check for free disk space.
@@ -173,22 +173,22 @@ void SystemMemoryPressureEvaluator::CheckDiskSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   disk_check_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, user_data_dir_),
+      base::BindOnce(&base::SysInfo::AmountOfDiskSpace, user_data_dir_),
       base::BindOnce(&SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
-    std::optional<int64_t> free_bytes) {
+    std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::MemoryPressureLevel new_disk_vote = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   // The minimum free disk space before dispatching a critical memory pressure
   // signal.
-  const base::ByteCount threshold =
-      base::MiB(kMacCriticalDiskSpacePressureThresholdMB.Get());
+  const base::ByteSize threshold =
+      base::MiBU(kMacCriticalDiskSpacePressureThresholdMB.Get());
 
-  if (free_bytes.has_value() && base::ByteCount(*free_bytes) < threshold) {
+  if (disk_space_info.has_value() && disk_space_info->available < threshold) {
     new_disk_vote = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
   }
 
