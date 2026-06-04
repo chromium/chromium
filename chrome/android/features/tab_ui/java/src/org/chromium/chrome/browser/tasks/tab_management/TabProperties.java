@@ -313,6 +313,7 @@ public class TabProperties {
                 IS_INCOGNITO,
                 IS_COLLAPSED,
                 TAB_GROUP_ID,
+                TAB_GROUP_HEADER_ID,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 TAB_CONTEXT_CLICK_LISTENER,

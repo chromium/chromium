@@ -2940,12 +2940,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private boolean isTabGroupHeader(PropertyModel model) {
-        if (model.get(CARD_TYPE) != TAB) {
-            return false;
-        }
-        return model.get(TabProperties.TAB_GROUP_HEADER_ID) != null
-                || (model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null
-                        && model.get(TabProperties.TAB_GROUP_ID) == null);
+        return model.get(CARD_TYPE) == TAB && model.get(TabProperties.TAB_GROUP_HEADER_ID) != null;
     }
 
     @VisibleForTesting
@@ -3845,7 +3840,11 @@ public class TabListMediator implements TabListNotificationHandler {
 
         // TODO(crbug.com/509226293): Evolve standard GTS to also use TAB_GROUP_HEADER_ID
         // to find and remove/update group cards instead of relying on index translations.
-        model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+        if (model.get(TabProperties.TAB_GROUP_ID) == null) {
+            model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
+        } else {
+            model.set(TabProperties.TAB_GROUP_HEADER_ID, null);
+        }
 
         updateTabGroupColorViewProvider(
                 EitherGroupId.createLocalId(new LocalTabGroupId(tabGroupId)), model, colorId);

@@ -120,7 +120,7 @@ public class VerticalTabListCoordinator {
                         if (item.type == UiType.TAB) {
                             if (item.model.get(TabProperties.IS_PINNED)) {
                                 return UiType.PINNED_TAB;
-                            } else if (item.model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null) {
+                            } else if (item.model.get(TabProperties.TAB_GROUP_HEADER_ID) != null) {
                                 return UiType.TAB_GROUP;
                             }
                         }

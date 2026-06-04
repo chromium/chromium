@@ -215,7 +215,7 @@ public class VerticalTabListCoordinatorUnitTest {
         PropertyModel pin = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
         PropertyModel group = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
         pin.set(TabProperties.IS_PINNED, true);
-        group.set(TabProperties.TAB_GROUP_CARD_COLOR, 1);
+        group.set(TabProperties.TAB_GROUP_HEADER_ID, new Token(1L, 2L));
 
         assertNotNull(adapter);
         adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, reg));

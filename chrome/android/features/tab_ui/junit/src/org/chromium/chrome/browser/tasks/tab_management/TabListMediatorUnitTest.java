@@ -1551,6 +1551,36 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testTabGroupIdAndHeaderIdMutualExclusivity() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        Tab childTab = prepareTab(TAB1_ID, TAB1_TITLE, TAB1_URL);
+        when(mTabModel.isTabInTabGroup(childTab)).thenReturn(true);
+        when(childTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(Arrays.asList(childTab));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(Arrays.asList(childTab));
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+
+        // Force the group to be expanded so resetWithListOfTabs inserts both the header and the
+        // child.
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+
+        // Reset the mediator. It will process childTab, realize it's part of a group,
+        // insert the header card first, and then since it's expanded, insert the child card.
+        mMediator.resetWithListOfTabs(Arrays.asList(childTab), null, false);
+
+        // The first card should be the group header.
+        PropertyModel headerModel = mModelList.get(0).model;
+        assertEquals(TAB_GROUP_ID, headerModel.get(TabProperties.TAB_GROUP_HEADER_ID));
+        assertNull(headerModel.get(TabProperties.TAB_GROUP_ID));
+
+        // The second card should be the child tab.
+        PropertyModel childModel = mModelList.get(1).model;
+        assertEquals(TAB_GROUP_ID, childModel.get(TabProperties.TAB_GROUP_ID));
+        assertNull(childModel.get(TabProperties.TAB_GROUP_HEADER_ID));
+    }
+
+    @Test
     public void tabAddition_Dialog_End() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
 
@@ -6088,6 +6118,7 @@ public class TabListMediatorUnitTest {
                 model.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.GREY);
                 model.set(TabProperties.TAB_GROUP_ID, null);
             }
+            model.set(TabProperties.TAB_GROUP_HEADER_ID, tabGroupId);
         }
     }
 
