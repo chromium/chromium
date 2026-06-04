@@ -39,8 +39,8 @@
       assert_true(body.hasOwnProperty("entries"), "Report body should have entries");
       const entries = body.entries;
 
-      // We expect exactly 2 entries: visibility-state and navigation.
-      assert_equals(entries.length, 2, "Should have exactly 2 entries");
+      // We expect exactly 3 entries: visibility-state, navigation, and session-end.
+      assert_equals(entries.length, 3, "Should have exactly 3 entries");
 
       // 1. Verify Visibility State (initial)
       const visEntry = entries.find(e => e.entryType === "visibility-state");
@@ -48,6 +48,15 @@
       assert_equals(visEntry.name, "visible");
       assert_equals(visEntry.startTime, 0);
       assert_equals(visEntry.duration, 0);
+
+      // 2. Verify Session End
+      const sessionEndEntry = entries.find(e => e.entryType === "session-end");
+      assert_not_equals(sessionEndEntry, undefined, "Should have session-end entry");
+      assert_equals(sessionEndEntry.name, "session-end-event");
+      assert_true(sessionEndEntry.hasOwnProperty("startTime"));
+      assert_equals(typeof sessionEndEntry.startTime, "number");
+      assert_true(sessionEndEntry.startTime >= 0);
+      assert_equals(sessionEndEntry.duration, 0);
 
       // 2. Verify Navigation
       const navEntry = entries.find(e => e.entryType === "navigation");

@@ -44,6 +44,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -288,7 +289,12 @@ Performance::Performance(
       resource_timing_buffer_full_timer_(
           task_runner_,
           this,
-          &Performance::FireResourceTimingBufferFull) {
+          &Performance::FireResourceTimingBufferFull),
+      performance_entries_flush_timer_(
+          task_runner_,
+          this,
+          &Performance::PerformanceEntriesFlushTimerFired),
+      declarative_performance_observer_host_(context) {
   unix_at_zero_monotonic_ =
       GetUnixAtZeroMonotonic(base::DefaultClock::GetInstance());
   // |context| may be null in tests.
@@ -907,6 +913,25 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
       }
     }
 
+    std::optional<base::Value> detail_value;
+    if (mark_options && mark_options->hasDetail()) {
+      ScriptValue detail = mark_options->detail();
+      if (!detail.IsEmpty() && !detail.V8Value()->IsNullOrUndefined()) {
+        v8::Local<v8::Context> context = script_state->GetContext();
+        std::unique_ptr<WebV8ValueConverter> converter =
+            Platform::Current()->CreateWebV8ValueConverter();
+        if (std::unique_ptr<base::Value> new_value =
+                converter->FromV8Value(detail.V8Value(), context)) {
+          detail_value = std::move(*new_value);
+        }
+      }
+    }
+    auto entry = mojom::blink::DeclarativePerformanceEntry::New();
+    entry->name = mark_name;
+    entry->start_time = base::Milliseconds(performance_mark->startTime());
+    entry->detail = std::move(detail_value);
+    BufferPerformanceEntry(std::move(entry));
+
     if (RuntimeEnabledFeatures::HTMLParserYieldByUserTimingEnabled() &&
         !mark_parser_blocking.empty() && !mark_parser_restart.empty()) {
       DCHECK_NE(mark_parser_blocking, "");
@@ -1362,6 +1387,8 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(deliver_observations_timer_);
   visitor->Trace(resource_timing_buffer_full_timer_);
   visitor->Trace(background_tracing_helper_);
+  visitor->Trace(performance_entries_flush_timer_);
+  visitor->Trace(declarative_performance_observer_host_);
   EventTarget::Trace(visitor);
 }
 
@@ -1418,6 +1445,41 @@ V8Function* Performance::bind(V8Function* inner_function,
   return V8Function::Create(
       MakeGarbageCollected<UserEntryPoint>(inner_function, this_arg, bound_args)
           ->ToV8Function(inner_function->CallbackRelevantScriptState()));
+}
+
+void Performance::BufferPerformanceEntry(
+    mojom::blink::DeclarativePerformanceEntryPtr entry) {
+  batched_performance_entries_.push_back(std::move(entry));
+  if (!performance_entries_flush_timer_.IsActive()) {
+    performance_entries_flush_timer_.StartOneShot(base::Milliseconds(100),
+                                                  FROM_HERE);
+  }
+}
+
+void Performance::PerformanceEntriesFlushTimerFired(TimerBase*) {
+  FlushPerformanceEntries();
+}
+
+void Performance::FlushPerformanceEntries() {
+  performance_entries_flush_timer_.Stop();
+  if (batched_performance_entries_.empty()) {
+    return;
+  }
+
+  if (ExecutionContext* execution_context = GetExecutionContext()) {
+    if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+      if (LocalFrame* frame = window->GetFrame()) {
+        if (!declarative_performance_observer_host_.is_bound()) {
+          frame->GetBrowserInterfaceBroker().GetInterface(
+              declarative_performance_observer_host_.BindNewPipeAndPassReceiver(
+                  frame->GetTaskRunner(TaskType::kInternalDefault)));
+        }
+        declarative_performance_observer_host_->DidObservePerformanceEntries(
+            std::move(batched_performance_entries_));
+      }
+    }
+  }
+  batched_performance_entries_.clear();
 }
 
 void Performance::ResetTimeOriginForTesting(base::TimeTicks time_origin) {

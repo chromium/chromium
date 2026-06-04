@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Declarative Performance Observer Popup Navigated</title>
+</head>
+<body>
+<h1>Declarative Performance Observer Popup Navigated</h1>
+<script>
+// Give some time for the browser to receive the report and store it in stash.
+setTimeout(() => {
+  if (window.opener) {
+    window.opener.postMessage("ready", "*");
+  }
+}, 1500);
+</script>
+</body>
+</html>

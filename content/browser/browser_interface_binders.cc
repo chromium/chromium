@@ -46,6 +46,7 @@
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/midi_host.h"
 #include "content/browser/media/session/media_session_service_impl.h"
+#include "content/browser/network/declarative_performance_observer.h"
 #include "content/browser/network/reporting_service_proxy.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/preloading/anchor_element_interaction_host_impl.h"
@@ -198,6 +199,7 @@
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom.h"
+#include "third_party/blink/public/mojom/timing/declarative_performance_observer.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
@@ -837,6 +839,8 @@ void PopulateBinderMapWithContext(
     map->Add<blink::mojom::BrowsingTopicsDocumentService>(
         &BrowsingTopicsDocumentHost::CreateMojoService);
   }
+  map->Add<blink::mojom::DeclarativePerformanceObserverHost>(
+      base::BindRepeating(&DeclarativePerformanceObserver::Bind));
 #if !BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::DirectSocketsService>(
       &DirectSocketsServiceImpl::CreateForFrame);

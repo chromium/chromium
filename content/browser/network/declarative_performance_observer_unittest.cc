@@ -13,8 +13,10 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_storage_partition.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/timing/declarative_performance_observer.mojom.h"
 
 namespace content {
 namespace {
@@ -414,6 +416,140 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   ASSERT_TRUE(vis_entry);
   EXPECT_EQ(*(vis_entry->FindString("entryType")), "visibility-state");
   EXPECT_EQ(*(vis_entry->FindString("name")), "visible");
+}
+
+TEST_F(DeclarativePerformanceObserverTest, RecordsPerformanceMarks) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(network::mojom::PerformanceEntryType::kMark);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&navigation_handle);
+
+  // Bind Mojo remote
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  // Simulate receiving performance entries from renderer
+  std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+
+  // 1. Allowed mark with detail
+  auto entry1 = blink::mojom::DeclarativePerformanceEntry::New();
+  entry1->name = "some_mark";
+  entry1->start_time = base::Milliseconds(100);
+  base::DictValue detail_dict;
+  detail_dict.Set("key", "value");
+  entry1->detail = base::Value(std::move(detail_dict));
+  entries.push_back(std::move(entry1));
+
+  observer_remote->DidObservePerformanceEntries(std::move(entries));
+  observer_remote.FlushForTesting();
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameDeleted(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+  EXPECT_EQ(report.type, "performance-observer");
+  EXPECT_EQ(report.group, kEndpoint);
+  EXPECT_EQ(report.url, kPageURL);
+
+  const base::ListValue* report_entries = report.body.FindList("entries");
+  ASSERT_TRUE(report_entries);
+  ASSERT_EQ(report_entries->size(), 1u);  // only mark
+
+  const base::Value& entry_val = (*report_entries)[0];
+  const base::DictValue* mark_entry = entry_val.GetIfDict();
+  ASSERT_TRUE(mark_entry);
+  EXPECT_EQ(*(mark_entry->FindString("entryType")), "mark");
+  EXPECT_EQ(*(mark_entry->FindString("name")), "some_mark");
+  EXPECT_EQ(*(mark_entry->FindDouble("startTime")), 100.0);
+
+  const base::Value* detail = mark_entry->Find("detail");
+  ASSERT_TRUE(detail);
+  ASSERT_TRUE(detail->is_dict());
+  EXPECT_EQ(*(detail->GetDict().FindString("key")), "value");
+}
+
+TEST_F(DeclarativePerformanceObserverTest,
+       FiltersPerformanceMarksByIncludeUserTiming) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(network::mojom::PerformanceEntryType::kMark);
+  policy->include_user_timing = std::vector<std::string>{"allowed_mark"};
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&navigation_handle);
+
+  // Bind Mojo remote
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  // Simulate receiving performance entries from renderer
+  std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+
+  // 1. Allowed mark
+  auto entry1 = blink::mojom::DeclarativePerformanceEntry::New();
+  entry1->name = "allowed_mark";
+  entry1->start_time = base::Milliseconds(100);
+  entries.push_back(std::move(entry1));
+
+  // 2. Disallowed mark
+  auto entry2 = blink::mojom::DeclarativePerformanceEntry::New();
+  entry2->name = "disallowed_mark";
+  entry2->start_time = base::Milliseconds(200);
+  entries.push_back(std::move(entry2));
+
+  observer_remote->DidObservePerformanceEntries(std::move(entries));
+  observer_remote.FlushForTesting();
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameDeleted(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+  EXPECT_EQ(report.type, "performance-observer");
+  EXPECT_EQ(report.group, kEndpoint);
+  EXPECT_EQ(report.url, kPageURL);
+
+  const base::ListValue* report_entries = report.body.FindList("entries");
+  ASSERT_TRUE(report_entries);
+  ASSERT_EQ(report_entries->size(), 1u);  // only allowed_mark
+
+  const base::Value& entry_val = (*report_entries)[0];
+  const base::DictValue* mark_entry = entry_val.GetIfDict();
+  ASSERT_TRUE(mark_entry);
+  EXPECT_EQ(*(mark_entry->FindString("entryType")), "mark");
+  EXPECT_EQ(*(mark_entry->FindString("name")), "allowed_mark");
+  EXPECT_EQ(*(mark_entry->FindDouble("startTime")), 100.0);
 }
 
 }  // namespace

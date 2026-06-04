@@ -1,0 +1,3 @@
+Reporting-Endpoints: dpo-endpoint="https://{{host}}:{{ports[https][0]}}/reporting/resources/report.py?op=put&reportID={{GET[reportID]}}"
+Performance-Observer: report-to="dpo-endpoint", entry-types=("mark"), include-user-timing=("allowed_mark")
+Access-Control-Allow-Origin: *

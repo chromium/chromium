@@ -40,7 +40,7 @@ void DeclarativePerformanceObserver::DidFinishNavigation(
   if (navigation_handle->IsServedFromBackForwardCache()) {
     navigation_start_ = navigation_handle->NavigationStart();
     buffered_entries_.clear();
-    active_rfh_ = new_rfh;
+    active_rfh_ = new_rfh ? new_rfh->GetGlobalId() : GlobalRenderFrameHostId();
 
     if (enabled_types_.contains(
             network::mojom::PerformanceEntryType::kNavigation)) {
@@ -64,10 +64,11 @@ void DeclarativePerformanceObserver::DidFinishNavigation(
     return;
   }
 
-  if (active_rfh_ && active_rfh_ != new_rfh) {
+  if (active_rfh_ && active_rfh_ != (new_rfh ? new_rfh->GetGlobalId()
+                                             : GlobalRenderFrameHostId())) {
     AppendSessionEndEntry();
-    FlushMetrics(active_rfh_);
-    active_rfh_ = nullptr;
+    FlushMetrics(RenderFrameHost::FromID(active_rfh_));
+    active_rfh_ = GlobalRenderFrameHostId();
   }
 
   const network::mojom::DeclarativePerformanceObserverPolicy* policy =
@@ -80,6 +81,13 @@ void DeclarativePerformanceObserver::DidFinishNavigation(
   reporting_endpoint_ = *policy->reporting_endpoint;
   enabled_types_ = base::flat_set<network::mojom::PerformanceEntryType>(
       policy->entry_types.begin(), policy->entry_types.end());
+  if (policy->include_user_timing) {
+    include_user_timing_ =
+        base::flat_set<std::string>(policy->include_user_timing->begin(),
+                                    policy->include_user_timing->end());
+  } else {
+    include_user_timing_ = std::nullopt;
+  }
 
   navigation_start_ = navigation_handle->NavigationStart();
   committed_url_ = navigation_handle->GetURL();
@@ -88,7 +96,7 @@ void DeclarativePerformanceObserver::DidFinishNavigation(
     network_anonymization_key_ =
         new_rfh->GetIsolationInfoForSubresources().network_anonymization_key();
     reporting_source_ = new_rfh->GetReportingSource();
-    active_rfh_ = new_rfh;
+    active_rfh_ = new_rfh->GetGlobalId();
 
     if (enabled_types_.contains(
             network::mojom::PerformanceEntryType::kVisibilityState)) {
@@ -174,16 +182,16 @@ void DeclarativePerformanceObserver::OnVisibilityChanged(
   }
 
   if (visibility == Visibility::HIDDEN) {
-    FlushMetrics(active_rfh_);
+    FlushMetrics(RenderFrameHost::FromID(active_rfh_));
   }
 }
 
 void DeclarativePerformanceObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  if (active_rfh_ == render_frame_host) {
+  if (active_rfh_ == render_frame_host->GetGlobalId()) {
     AppendSessionEndEntry();
     FlushMetrics(render_frame_host);
-    active_rfh_ = nullptr;
+    active_rfh_ = GlobalRenderFrameHostId();
   }
 }
 
@@ -191,7 +199,7 @@ void DeclarativePerformanceObserver::RenderFrameHostStateChanged(
     RenderFrameHost* render_frame_host,
     RenderFrameHost::LifecycleState old_state,
     RenderFrameHost::LifecycleState new_state) {
-  if (render_frame_host == active_rfh_ &&
+  if (render_frame_host->GetGlobalId() == active_rfh_ &&
       old_state == RenderFrameHost::LifecycleState::kActive &&
       new_state == RenderFrameHost::LifecycleState::kInBackForwardCache) {
     if (enabled_types_.contains(
@@ -209,7 +217,7 @@ void DeclarativePerformanceObserver::RenderFrameHostStateChanged(
     }
 
     FlushMetrics(render_frame_host);
-    active_rfh_ = nullptr;
+    active_rfh_ = GlobalRenderFrameHostId();
   }
 }
 
@@ -257,6 +265,57 @@ void DeclarativePerformanceObserver::AppendSessionEndEntry() {
 
 void DeclarativePerformanceObserver::AddEntryToBuffer(base::DictValue entry) {
   buffered_entries_.Append(std::move(entry));
+}
+
+// static
+void DeclarativePerformanceObserver::Bind(
+    RenderFrameHost* rfh,
+    mojo::PendingReceiver<blink::mojom::DeclarativePerformanceObserverHost>
+        receiver) {
+  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return;
+  }
+  auto* observer =
+      DeclarativePerformanceObserver::FromWebContents(web_contents);
+  if (observer) {
+    observer->BindReceiver(rfh, std::move(receiver));
+  }
+}
+
+void DeclarativePerformanceObserver::BindReceiver(
+    RenderFrameHost* rfh,
+    mojo::PendingReceiver<blink::mojom::DeclarativePerformanceObserverHost>
+        receiver) {
+  receivers_.Add(this, std::move(receiver), rfh->GetGlobalId());
+}
+
+void DeclarativePerformanceObserver::DidObservePerformanceEntries(
+    std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries) {
+  GlobalRenderFrameHostId rfh_id = receivers_.current_context();
+  if (rfh_id != active_rfh_) {
+    return;
+  }
+
+  for (auto& entry : entries) {
+    if (!enabled_types_.contains(network::mojom::PerformanceEntryType::kMark)) {
+      continue;
+    }
+    if (include_user_timing_ && !include_user_timing_->contains(entry->name)) {
+      continue;
+    }
+
+    base::DictValue dict;
+    dict.Set("name", entry->name);
+    dict.Set("entryType", "mark");
+    dict.Set("startTime", entry->start_time.InMillisecondsF());
+    dict.Set("duration", 0.0);
+
+    if (entry->detail.has_value()) {
+      dict.Set("detail", std::move(entry->detail.value()));
+    }
+    AddEntryToBuffer(std::move(dict));
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DeclarativePerformanceObserver);

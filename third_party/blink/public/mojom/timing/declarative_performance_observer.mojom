@@ -1,0 +1,28 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
+
+// Represents a simplified version of a PerformanceEntry to be forwarded from
+// the renderer to the browser. We only forward fields necessary for the
+// Declarative Performance Observer to evaluate and report the entry (e.g.
+// filtering by name and including the custom 'detail' payload).
+struct DeclarativePerformanceEntry {
+  string name;
+  mojo_base.mojom.TimeDelta start_time;
+  // The custom 'detail' payload, if present.
+  mojo_base.mojom.Value? detail;
+};
+
+// Implemented by the browser process (`content::DeclarativePerformanceObserver`)
+// and called by the renderer process (`blink::Performance`) to forward
+// observed performance entries (e.g. marks) associated with the frame.
+interface DeclarativePerformanceObserverHost {
+  // Sent to notify the browser of new performance entries observed in the frame.
+  // This is throttled and sent in batches to minimize IPC overhead.
+  DidObservePerformanceEntries(array<DeclarativePerformanceEntry> entries);
+};

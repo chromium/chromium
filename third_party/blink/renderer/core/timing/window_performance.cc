@@ -1516,6 +1516,9 @@ void WindowPerformance::PageVisibilityChangedWithTimestamp(
   if (!GetPage()->IsPageVisible()) {
     last_hidden_timestamp_ = visibility_change_timestamp;
     FlushEventTimingsOnPageHidden();
+    // Also flush any buffered performance entries immediately when the page
+    // becomes hidden, to ensure they are not lost if the page is discarded.
+    FlushPerformanceEntries();
   }
   AddVisibilityStateEntry(GetPage()->IsPageVisible(),
                           visibility_change_timestamp);

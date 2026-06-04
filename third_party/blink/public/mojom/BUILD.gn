@@ -241,6 +241,7 @@ mojom("mojom_platform") {
     "speculation_rules/speculation_rules.mojom",
     "speech/speech_synthesis.mojom",
     "subapps/sub_apps_service.mojom",
+    "timing/declarative_performance_observer.mojom",
     "timing/performance_mark_or_measure.mojom",
     "timing/resource_timing.mojom",
     "use_counter/use_counter_feature.mojom",

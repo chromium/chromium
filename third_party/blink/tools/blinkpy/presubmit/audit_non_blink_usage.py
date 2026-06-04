@@ -1952,6 +1952,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/timing/performance.cc',
+        ],
+        'allowed': [
+            'base::Value',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/modules/breakout_box/',
         ],
         'allowed': [

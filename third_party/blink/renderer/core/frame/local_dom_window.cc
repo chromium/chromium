@@ -1075,6 +1075,9 @@ void LocalDOMWindow::FrameDestroyed() {
   // Some unit tests manually call FrameDestroyed(). Don't run it a second time.
   if (!GetFrame())
     return;
+  // Manually flush any remaining buffered performance entries before the window
+  // is destroyed.
+  DOMWindowPerformance::performance(*this)->FlushPerformanceEntries();
   // In the Reset() case, this Document::Shutdown() early-exits because it was
   // already called earlier in the commit process.
   // TODO(japhet): Can we merge this function and Reset()? At least, this

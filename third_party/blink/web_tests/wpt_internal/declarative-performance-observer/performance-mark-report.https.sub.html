@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Declarative Performance Observer: Performance Mark Report</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/reporting/resources/report-helper.js"></script>
+<body>
+<h1>Declarative Performance Observer Test Main</h1>
+<script>
+promise_test(async t => {
+  const reportID = crypto.randomUUID();
+  const base_url = `${location.protocol}//${location.host}`;
+  const endpoint = `${base_url}/reporting/resources/report.py`;
+  // Start listening for the ready message before opening the popup.
+  const readyPromise = new Promise(resolve => {
+    const listener = e => {
+      if (e.data === "ready") {
+        window.removeEventListener("message", listener);
+        resolve();
+      }
+    };
+    window.addEventListener("message", listener);
+  });
+  // Open popup to pass reportID.
+  const popupURL = `${base_url}/wpt_internal/declarative-performance-observer/resources/declarative-performance-observer-popup-mark.https.sub.html?reportID=${reportID}`;
+  const popup = window.open(popupURL);
+  assert_not_equals(popup, null, "Popup should be opened");
+  await readyPromise;
+  // Clean up by closing the popup.
+  popup.close();
+  const reports = await pollReports(endpoint, reportID);
+  assert_equals(reports.length, 1, "Should receive one report");
+  const report = reports[0];
+  assert_equals(report.type, "performance-observer");
+  const entries = report.body.entries;
+  assert_true(!!entries, "Report should have entries");
+  // We expect only "allowed_mark" because "filtered_mark" should be filtered by policy.
+  assert_equals(entries.length, 1, "Should have 1 entry");
+  const entry = entries[0];
+  assert_equals(entry.entryType, "mark");
+  assert_equals(entry.name, "allowed_mark");
+  assert_equals(entry.duration, 0);
+  assert_true(entry.startTime > 0, "startTime should be positive");
+  assert_true(!!entry.detail, "detail should exist");
+  assert_equals(entry.detail.key, "value");
+}, "Performance mark reports are correctly filtered and sent to the endpoint with details on navigation");
+</script>
+</body>

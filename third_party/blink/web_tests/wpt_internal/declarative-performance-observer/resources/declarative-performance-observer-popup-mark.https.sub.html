@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Declarative Performance Observer Popup</title>
+</head>
+<body>
+<h1>Declarative Performance Observer Popup</h1>
+<script>
+window.onload = () => {
+  // Generate marks
+  performance.mark('allowed_mark', {detail: {key: 'value'}});
+  performance.mark('filtered_mark', {detail: {key: 'should_be_filtered'}});
+
+  // Navigate away immediately on load to trigger flush
+  location.href = "declarative-performance-observer-popup-mark-navigated.https.sub.html";
+};
+</script>
+</body>
+</html>
