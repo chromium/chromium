@@ -21,6 +21,7 @@ source_set("state") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
+    "//ios/chrome/common/ui/util",
   ]
 }
 
