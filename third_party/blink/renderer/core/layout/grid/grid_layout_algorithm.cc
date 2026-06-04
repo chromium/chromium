@@ -372,14 +372,18 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
   // If we have a layout subtree in the constraint space, it means we are in a
   // subgrid whose geometry is already computed. We can exit early by simply
   // copying the layout data and constructing our grid items.
+  //
+  // `parent_is_auto_placed` is set to false because at this point, track sizing
+  // has completed, so if we are in a nested grid lanes container, sizing and
+  // explicit placement information within this subgrid are known and accurate.
   if (const auto* layout_subtree = constraint_space.GetGridLayoutSubtree()) {
     const auto* layout_data = layout_subtree->LayoutData();
 
     if (!node.ChildLayoutBlockedByDisplayLock()) {
       bool must_invalidate_placement_cache = false;
-      *grid_items = node.ConstructGridItems(node.CachedLineResolver(),
-                                            &must_invalidate_placement_cache,
-                                            oof_children);
+      *grid_items = node.ConstructGridItems(
+          node.CachedLineResolver(), &must_invalidate_placement_cache,
+          /*parent_is_auto_placed=*/false, oof_children);
 
       DCHECK(!must_invalidate_placement_cache)
           << "We shouldn't need to invalidate the placement cache if we relied "

@@ -314,7 +314,8 @@ void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
         subgrid.CachedLineResolver(), root_grid_style, subgrid.Style(),
         current_item.must_consider_grid_items_for_column_sizing,
         current_item.must_consider_grid_items_for_row_sizing,
-        &must_invalidate_placement_cache);
+        &must_invalidate_placement_cache,
+        /*parent_is_auto_placed=*/current_item.is_auto_placed);
 
     DCHECK(!must_invalidate_placement_cache)
         << "We shouldn't need to invalidate the placement cache if we relied "

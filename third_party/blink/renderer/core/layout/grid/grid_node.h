@@ -45,11 +45,19 @@ class CORE_EXPORT GridNode final : public BlockNode {
         ->ShouldInvalidateSubgridMinMaxSizesCacheFor(layout_data);
   }
 
-  // If `oof_children` is provided, aggregate any out of flow children.
-  GridItems* ConstructGridItems(const GridLineResolver& line_resolver,
-                                bool* must_invalidate_placement_cache,
-                                HeapVector<Member<LayoutBox>>* opt_oof_children,
-                                bool* opt_has_nested_subgrid = nullptr) const;
+  // If `opt_oof_children` is provided, aggregate any out of flow children.
+  //
+  // `parent_is_auto_placed` is true when this grid is itself an auto-placed
+  // subgrid inside a grid-lanes ancestor — i.e. the ancestor resolves its own
+  // track positions after track sizing, so this subgrid's position in the
+  // ancestor's tracks is unknown at sizing time. As such, any items within this
+  // subgrid should also be considered auto-placed if true.
+  GridItems* ConstructGridItems(
+      const GridLineResolver& line_resolver,
+      bool* must_invalidate_placement_cache,
+      bool parent_is_auto_placed = false,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr,
+      bool* opt_has_nested_subgrid = nullptr) const;
 
   MinMaxSizesResult ComputeSubgridMinMaxSizes(
       const GridSizingSubtree& sizing_subtree,
@@ -77,6 +85,7 @@ class CORE_EXPORT GridNode final : public BlockNode {
       bool must_consider_grid_items_for_column_sizing,
       bool must_consider_grid_items_for_row_sizing,
       bool* must_invalidate_placement_cache,
+      bool parent_is_auto_placed = false,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr,
       bool* opt_has_nested_subgrid = nullptr) const;
 };

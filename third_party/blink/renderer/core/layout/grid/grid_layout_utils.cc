@@ -665,6 +665,8 @@ void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
     // Construct grid items that are not subgridded.
     grid_items =
         node.ConstructGridItems(line_resolver, &must_invalidate_placement_cache,
+                                /*parent_is_auto_placed=*/opt_subgrid_data &&
+                                    opt_subgrid_data->is_auto_placed,
                                 opt_oof_children, &has_nested_subgrid);
   }
 

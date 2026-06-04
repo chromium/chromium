@@ -122,6 +122,7 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
 GridItems* GridLanesNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
     bool* must_invalidate_placement_cache,
+    bool parent_is_auto_placed,
     HeapVector<Member<LayoutBox>>* opt_oof_children,
     bool* opt_has_nested_subgrid) const {
   const ComputedStyle& style = Style();
@@ -165,6 +166,18 @@ GridItems* GridLanesNode::ConstructGridItems(
       }
 
       AdjustGridItemSpan(*grid_lanes_item, line_resolver, grid_axis_direction);
+
+      // If this grid-lanes container is itself an auto-placed subgrid (e.g.
+      // inside a grid-lanes ancestor whose placement happens after track
+      // sizing), then any child's final position in the grid-lanes ancestor's
+      // tracks is unknown — even children with explicit placement, because
+      // their explicit placement is only relative to this subgrid and this
+      // subgrid's own position is unresolved. Mark these child items as
+      // auto-placed as a result.
+      if (parent_is_auto_placed) {
+        grid_lanes_item->is_auto_placed = true;
+      }
+
       grid_lanes_items->Append(grid_lanes_item);
     }
 

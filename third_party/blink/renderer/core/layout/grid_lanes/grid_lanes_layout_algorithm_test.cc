@@ -166,8 +166,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, ConstructGridLanesItems) {
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
   auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
-      /*opt_oof_children=*/nullptr);
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
@@ -187,6 +186,72 @@ TEST_F(GridLanesLayoutAlgorithmTest, ConstructGridLanesItems) {
                                        GridTrackSizingDirection::kForColumns);
     EXPECT_EQ(grid_lanes_item.resolved_position.Span(grid_axis_direction),
               expected_spans[i++]);
+  }
+}
+
+// Non-subgrid grid-lanes items should only be marked as auto-placed if they
+// have an indefinite span in the grid axis.
+TEST_F(GridLanesLayoutAlgorithmTest, GridLanesAutoPlacedItems) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px 100px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div style="grid-column: 1 / 3"></div>
+      <div style="grid-column: span 2"></div>
+      <div style="grid-column: 2 / 4"></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto* grid_lanes_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*parent_is_auto_placed=*/false);
+
+  ASSERT_EQ(grid_lanes_items->Size(), 4u);
+  EXPECT_FALSE(grid_lanes_items->At(0).is_auto_placed);
+  EXPECT_TRUE(grid_lanes_items->At(1).is_auto_placed);
+  EXPECT_FALSE(grid_lanes_items->At(2).is_auto_placed);
+  EXPECT_TRUE(grid_lanes_items->At(3).is_auto_placed);
+}
+
+// When the grid-lanes container is itself an auto-placed subgrid (e.g.
+// nested in a larger grid-lanes ancestor whose tracks aren't resolved until
+// placement runs after track sizing), every child must be marked
+// auto-placed regardless of its own placement.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       ConstructGridLanesItemsParentAutoPlacedMarksAll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px 100px;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div style="grid-column: 1 / 3"></div>
+      <div style="grid-column: span 2"></div>
+      <div style="grid-column: 2 / 4"></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto* grid_lanes_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*parent_is_auto_placed=*/true);
+
+  ASSERT_EQ(grid_lanes_items->Size(), 4u);
+  for (const auto& grid_lanes_item : *grid_lanes_items) {
+    EXPECT_TRUE(grid_lanes_item.is_auto_placed);
   }
 }
 
@@ -284,8 +349,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroups) {
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
   const auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
-      /*opt_oof_children=*/nullptr);
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr);
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
       node.CollectItemGroups(line_resolver, *grid_lanes_items, max_end_line,
@@ -329,8 +393,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroupsWithBaseline) {
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
   const auto* grid_lanes_items = node.ConstructGridItems(
-      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
-      /*opt_oof_children=*/nullptr);
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr);
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
       node.CollectItemGroups(line_resolver, *grid_lanes_items, max_end_line,
@@ -2192,6 +2255,290 @@ TEST_F(GridLanesLayoutAlgorithmTest,
       expected_max_size = LayoutUnit(80);
     }
     EXPECT_EQ(MaxContentContribution(i), expected_max_size);
+  }
+}
+
+// A subgrid nested inside an auto-placed subgrid of a grid-lanes container,
+// with no explicit placement of its own, should be marked auto-placed.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       NestedSubgridInAutoPlacedSubgridIsAutoPlaced) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    #outer-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 2;
+    }
+    #inner-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 1;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="outer-subgrid">
+        <div id="inner-subgrid"></div>
+      </div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto sizing_tree =
+      BuildGridSizingTree<GridLanesLayoutAlgorithm>(algorithm, line_resolver);
+
+  // Outer subgrid is auto-placed because it has no explicit grid-column in
+  // the grid-lanes axis.
+  const auto& outer_subgrid_item = sizing_tree.GetGridItems().At(0);
+  ASSERT_TRUE(outer_subgrid_item.IsSubgrid());
+  EXPECT_TRUE(outer_subgrid_item.is_auto_placed);
+
+  // Inner subgrid should be marked auto-placed because the outer subgrid is
+  // auto-placed and the inner subgrid's own placement is indefinite.
+  BlockNode outer_node(GetLayoutBoxByElementId("outer-subgrid"));
+  const auto outer_index = sizing_tree.LookupSubgridIndex(outer_node);
+  const auto& outer_items = sizing_tree.GetGridItems(outer_index);
+  ASSERT_EQ(outer_items.Size(), 1u);
+  const auto& inner_subgrid_item = outer_items.At(0);
+  EXPECT_TRUE(inner_subgrid_item.IsSubgrid());
+  EXPECT_TRUE(inner_subgrid_item.is_auto_placed);
+}
+
+// A nested subgrid with an explicit placement inside an auto-placed subgrid
+// should still be marked auto-placed: even though its position within the
+// outer subgrid is explicit, the outer subgrid's own position in the
+// grid-lanes ancestor's tracks is unresolved, so this item's final position
+// is unknown.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       ExplicitlyPlacedNestedSubgridInAutoPlacedSubgridIsAutoPlaced) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    #outer-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 2;
+    }
+    #inner-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1 / 2;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="outer-subgrid">
+        <div id="inner-subgrid"></div>
+      </div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto sizing_tree =
+      BuildGridSizingTree<GridLanesLayoutAlgorithm>(algorithm, line_resolver);
+
+  const auto& outer_subgrid_item = sizing_tree.GetGridItems().At(0);
+  EXPECT_TRUE(outer_subgrid_item.is_auto_placed);
+
+  BlockNode outer_node(GetLayoutBoxByElementId("outer-subgrid"));
+  const auto outer_index = sizing_tree.LookupSubgridIndex(outer_node);
+  const auto& outer_items = sizing_tree.GetGridItems(outer_index);
+  ASSERT_EQ(outer_items.Size(), 1u);
+  const auto& inner_subgrid_item = outer_items.At(0);
+  EXPECT_TRUE(inner_subgrid_item.IsSubgrid());
+  EXPECT_TRUE(inner_subgrid_item.is_auto_placed);
+}
+
+// A subgrid nested inside an explicitly-placed subgrid of a grid-lanes
+// container should NOT be marked auto-placed, because the outer subgrid is
+// not auto-placed.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       NestedSubgridUnderExplicitOuterSubgridIsNotAutoPlaced) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    #outer-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1 / 3;
+    }
+    #inner-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 1;
+    }
+    </style>
+    <div id="grid-lanes">
+      <div id="outer-subgrid">
+        <div id="inner-subgrid"></div>
+      </div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto sizing_tree =
+      BuildGridSizingTree<GridLanesLayoutAlgorithm>(algorithm, line_resolver);
+
+  // Outer subgrid has explicit grid-column so it is NOT auto-placed.
+  const auto& outer_subgrid_item = sizing_tree.GetGridItems().At(0);
+  ASSERT_TRUE(outer_subgrid_item.IsSubgrid());
+  EXPECT_FALSE(outer_subgrid_item.is_auto_placed);
+
+  BlockNode outer_node(GetLayoutBoxByElementId("outer-subgrid"));
+  const auto outer_index = sizing_tree.LookupSubgridIndex(outer_node);
+  const auto& outer_items = sizing_tree.GetGridItems(outer_index);
+  ASSERT_EQ(outer_items.Size(), 1u);
+  const auto& inner_subgrid_item = outer_items.At(0);
+  EXPECT_FALSE(inner_subgrid_item.is_auto_placed);
+}
+
+// Three levels of nested auto-placed subgrids: the auto-placed property
+// should chain all the way down.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       DeepNestedAutoPlacedSubgridsAreAllAutoPlaced) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    .subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+    }
+    #outer { grid-column: span 3; }
+    #middle { grid-column: span 2; }
+    #inner { grid-column: span 1; }
+    </style>
+    <div id="grid-lanes">
+      <div id="outer" class="subgrid">
+        <div id="middle" class="subgrid">
+          <div id="inner" class="subgrid"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto sizing_tree =
+      BuildGridSizingTree<GridLanesLayoutAlgorithm>(algorithm, line_resolver);
+
+  // Level 1: outer (direct child of grid-lanes).
+  const auto& outer_item = sizing_tree.GetGridItems().At(0);
+  EXPECT_TRUE(outer_item.is_auto_placed);
+
+  // Level 2: middle (inside outer).
+  BlockNode outer_node(GetLayoutBoxByElementId("outer"));
+  const auto& middle_items =
+      sizing_tree.GetGridItems(sizing_tree.LookupSubgridIndex(outer_node));
+  ASSERT_EQ(middle_items.Size(), 1u);
+  const auto& middle_item = middle_items.At(0);
+  EXPECT_TRUE(middle_item.is_auto_placed);
+
+  // Level 3: inner (inside middle). Chain should have propagated through.
+  BlockNode middle_node(GetLayoutBoxByElementId("middle"));
+  const auto& inner_items =
+      sizing_tree.GetGridItems(sizing_tree.LookupSubgridIndex(middle_node));
+  ASSERT_EQ(inner_items.Size(), 1u);
+  const auto& inner_item = inner_items.At(0);
+  EXPECT_TRUE(inner_item.is_auto_placed);
+}
+
+// All children of an auto-placed subgrid — both implicitly and explicitly
+// placed — should be marked auto-placed, since the outer subgrid's position
+// in the grid-lanes ancestor is unresolved.
+TEST_F(GridLanesLayoutAlgorithmTest,
+       AllChildrenOfAutoPlacedSubgridAreAutoPlaced) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #grid-lanes {
+      display: grid-lanes;
+      grid-template-columns: 100px 100px 100px;
+    }
+    #outer-subgrid {
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: span 2;
+    }
+    #placed-leaf { grid-column: 1 / 2; }
+    </style>
+    <div id="grid-lanes">
+      <div id="outer-subgrid">
+        <div id="auto-leaf"></div>
+        <div id="placed-leaf"></div>
+      </div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("grid-lanes"));
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+  GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
+  auto sizing_tree =
+      BuildGridSizingTree<GridLanesLayoutAlgorithm>(algorithm, line_resolver);
+
+  BlockNode outer_node(GetLayoutBoxByElementId("outer-subgrid"));
+  const auto& outer_items =
+      sizing_tree.GetGridItems(sizing_tree.LookupSubgridIndex(outer_node));
+  ASSERT_EQ(outer_items.Size(), 2u);
+
+  for (const auto& item : outer_items) {
+    EXPECT_TRUE(item.is_auto_placed);
   }
 }
 

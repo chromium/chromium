@@ -50,10 +50,18 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   // cache isn't as heavily relied on for performance with subgrid as it is in
   // grid. However, we still need to include it in the signature for common
   // call sites with grid.
-  GridItems* ConstructGridItems(const GridLineResolver& line_resolver,
-                                bool* must_invalidate_placement_cache,
-                                HeapVector<Member<LayoutBox>>* opt_oof_children,
-                                bool* opt_has_nested_subgrid = nullptr) const;
+  //
+  // `parent_is_auto_placed` is true when this grid is itself an auto-placed
+  // subgrid inside a grid-lanes ancestor — i.e. the ancestor resolves its own
+  // track positions after track sizing, so this subgrid's position in the
+  // ancestor's tracks is unknown at sizing time. As such, any items within this
+  // subgrid should also be considered auto-placed if true.
+  GridItems* ConstructGridItems(
+      const GridLineResolver& line_resolver,
+      bool* must_invalidate_placement_cache,
+      bool parent_is_auto_placed = false,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr,
+      bool* opt_has_nested_subgrid = nullptr) const;
 
   // Adjusts a subgridded item's span to be relative to the parent grid's
   // coordinate system if the span is definite.
