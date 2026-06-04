@@ -37,7 +37,7 @@ namespace {
 
 // If this feature is enabled, then the COM interface on explorer will be used
 // to ShellExecute, rather than calling it directly.
-BASE_FEATURE(kLaunchShellExecuteViaExplorer, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kLaunchShellExecuteViaExplorer, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default ShellExecuteEx flags used with "openas", "explore", and default
 // verbs.
