@@ -1353,7 +1353,22 @@ class LocationBarMediator
         ConstraintSet set = new ConstraintSet();
         set.clone(mLocationBarLayout);
 
-        set.connect(mDropdown.getId(), ConstraintSet.TOP, R.id.url_bar, ConstraintSet.BOTTOM);
+        set.connect(R.id.url_bar, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP);
+        set.connect(
+                R.id.location_bar_status,
+                ConstraintSet.TOP,
+                ConstraintSet.PARENT_ID,
+                ConstraintSet.TOP);
+        set.connect(
+                R.id.location_bar_attachments,
+                ConstraintSet.TOP,
+                R.id.url_bar,
+                ConstraintSet.BOTTOM);
+        set.connect(
+                mDropdown.getId(),
+                ConstraintSet.TOP,
+                R.id.location_bar_attachments,
+                ConstraintSet.BOTTOM);
         set.connect(
                 mDropdown.getId(),
                 ConstraintSet.BOTTOM,
