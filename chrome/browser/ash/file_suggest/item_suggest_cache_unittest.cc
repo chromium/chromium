@@ -24,7 +24,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_util.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -153,7 +152,6 @@ class ItemSuggestCacheTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
 
   network::TestURLLoaderFactory url_loader_factory_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   ScopedFeatureList scoped_feature_list_;

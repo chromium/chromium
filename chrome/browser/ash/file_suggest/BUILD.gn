@@ -49,7 +49,6 @@ static_library("file_suggest") {
     "//components/google/core/common",
     "//components/prefs",
     "//content/public/browser",
-    "//services/data_decoder/public/cpp",
     "//storage/browser",
   ]
 
@@ -108,7 +107,6 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//net",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gmock",

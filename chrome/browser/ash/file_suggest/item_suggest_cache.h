@@ -18,10 +18,13 @@
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 
 class Profile;
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -152,7 +155,7 @@ class ItemSuggestCache {
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
   void OnSuggestionsReceived(std::optional<std::string> json_response);
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnJsonParsed(std::optional<base::Value> result);
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader(
       const std::string& token);
 

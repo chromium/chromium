@@ -13,6 +13,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -340,9 +341,8 @@ void ItemSuggestCache::MaybeUpdateCache() {
 
 void ItemSuggestCache::UpdateCacheWithJsonForTest(
     const std::string& json_response) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json_response, base::BindOnce(&ItemSuggestCache::OnJsonParsed,
-                                    weak_factory_.GetWeakPtr()));
+  // JSONReader is now safe for rule of 2.
+  OnJsonParsed(base::JSONReader::Read(json_response, base::JSON_PARSE_RFC));
 }
 
 void ItemSuggestCache::OnTokenReceived(GoogleServiceAuthError error,
@@ -404,14 +404,11 @@ void ItemSuggestCache::OnSuggestionsReceived(
 
   LogResponseSize(json_response->size());
 
-  // Parse the JSON response from ItemSuggest.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *json_response, base::BindOnce(&ItemSuggestCache::OnJsonParsed,
-                                     weak_factory_.GetWeakPtr()));
+  // JSONReader is now safe for rule of 2.
+  OnJsonParsed(base::JSONReader::Read(*json_response, base::JSON_PARSE_RFC));
 }
 
-void ItemSuggestCache::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
+void ItemSuggestCache::OnJsonParsed(std::optional<base::Value> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result.has_value()) {
