@@ -150,6 +150,13 @@ bool CanBypassPermissionStatusCheck(
 RequestService::FetchData::FetchData() = default;
 RequestService::FetchData::~FetchData() = default;
 
+RequestService::AutoReauthnInfo::AutoReauthnInfo() = default;
+RequestService::AutoReauthnInfo::~AutoReauthnInfo() = default;
+RequestService::AutoReauthnInfo::AutoReauthnInfo(const AutoReauthnInfo&) =
+    default;
+RequestService::AutoReauthnInfo& RequestService::AutoReauthnInfo::operator=(
+    const AutoReauthnInfo&) = default;
+
 DOCUMENT_USER_DATA_KEY_IMPL(RequestService);
 
 RequestService::RequestService(RenderFrameHost* rfh)
@@ -1027,25 +1034,7 @@ RequestService::GetAutofillSuggestions() const {
   return GetAccounts();
 }
 
-void RequestService::MaybeShowAccountsDialog() {
-  if (!fetch_data_.pending_idps.empty()) {
-    return;
-  }
-
-  // The accounts fetch could be delayed for legitimate reasons. A user may be
-  // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
-  // on the same RP origin) before the browser receives the accounts response.
-  // We should exit early without showing any UI.
-  if (!CanBypassPermissionStatusCheck(rp_mode_, mediation_requirement_) &&
-      GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
-    CompleteRequestWithError(FederatedAuthRequestResult::kDisabledInSettings,
-                             TokenStatus::kDisabledInSettings,
-                             /*should_delay_callback=*/true);
-    return;
-  }
-
-  // This map may have contents already if we came here through the "Add
-  // Account" flow or the IDP login mismatch in multiple IDP case.
+void RequestService::AssembleAndSortAccounts() {
   idp_data_for_display_.clear();
   filtered_accounts_.clear();
 
@@ -1114,6 +1103,87 @@ void RequestService::MaybeShowAccountsDialog() {
       account->identity_provider->idp_metadata.has_filtered_out_account = true;
     }
   }
+}
+
+RequestService::AutoReauthnInfo RequestService::CheckAutoReauthnEligibility() {
+  AutoReauthnInfo result;
+
+  // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
+  // TODO(crbug.com/380367784): Handle auto_reauthn_ for delegated IdP.
+  bool auto_reauthn_enabled =
+      mediation_requirement_ != MediationRequirement::kRequired;
+
+  if (!auto_reauthn_enabled) {
+    return result;
+  }
+
+  bool is_auto_reauthn_setting_enabled =
+      auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
+  bool is_auto_reauthn_embargoed =
+      auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
+          GetEmbeddingOrigin());
+  bool is_auto_reauthn_blocked_by_embedder =
+      auto_reauthn_permission_delegate_->IsAutoReauthnDisabledByEmbedder(
+          WebContents::FromRenderFrameHost(&render_frame_host()));
+
+  std::optional<base::TimeDelta> time_from_embargo;
+  if (is_auto_reauthn_embargoed) {
+    time_from_embargo =
+        base::Time::Now() -
+        auto_reauthn_permission_delegate_->GetAutoReauthnEmbargoStartTime(
+            GetEmbeddingOrigin());
+
+    // See `kFederatedIdentityAutoReauthnEmbargoDuration`.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kInfo,
+        "Auto re-authn was previously triggered less than 10 minutes ago. "
+        "Only one auto re-authn request can be made every 10 minutes.");
+  }
+  bool requires_user_mediation = RequiresUserMediation();
+  // Auto signs in returning users if they have a single returning account and
+  // are signing in.
+  IdentityProviderDataPtr auto_reauthn_idp = nullptr;
+  IdentityRequestAccountPtr auto_reauthn_account = nullptr;
+  bool has_single_returning_account =
+      GetAccountForAutoReauthn(&auto_reauthn_idp, &auto_reauthn_account);
+
+  bool is_eligible =
+      !requires_user_mediation && is_auto_reauthn_setting_enabled &&
+      !is_auto_reauthn_embargoed && has_single_returning_account &&
+      !is_auto_reauthn_blocked_by_embedder;
+
+  fedcm_metrics_->RecordAutoReauthnMetrics(
+      has_single_returning_account, auto_reauthn_account.get(), is_eligible,
+      !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
+      is_auto_reauthn_blocked_by_embedder, time_from_embargo,
+      requires_user_mediation);
+
+  if (is_eligible) {
+    result.is_eligible = true;
+    result.idp = auto_reauthn_idp;
+    result.account = auto_reauthn_account;
+  }
+  return result;
+}
+
+void RequestService::MaybeShowAccountsDialog() {
+  if (!fetch_data_.pending_idps.empty()) {
+    return;
+  }
+
+  // The accounts fetch could be delayed for legitimate reasons. A user may be
+  // able to disable FedCM API (e.g. via settings or dismissing another FedCM UI
+  // on the same RP origin) before the browser receives the accounts response.
+  // We should exit early without showing any UI.
+  if (!CanBypassPermissionStatusCheck(rp_mode_, mediation_requirement_) &&
+      GetApiPermissionStatus() != FederatedApiPermissionStatus::GRANTED) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kDisabledInSettings,
+                             TokenStatus::kDisabledInSettings,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
+  AssembleAndSortAccounts();
 
   // Conditional mediation doesn't display the account chooser when called,
   // it instead waits for another UI surface (say, autofill) to trigger the
@@ -1123,99 +1193,37 @@ void RequestService::MaybeShowAccountsDialog() {
     return;
   }
 
-  // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
-  // TODO(crbug.com/380367784): Handle auto_reauthn_ for delegated IdP.
-  bool auto_reauthn_enabled =
-      mediation_requirement_ != MediationRequirement::kRequired;
+  AutoReauthnInfo auto_reauthn = CheckAutoReauthnEligibility();
 
-  dialog_type_ = auto_reauthn_enabled ? DialogType::kAutoReauth
-                                      : DialogType::kSelectAccount;
-  bool is_auto_reauthn_setting_enabled = false;
-  bool is_auto_reauthn_embargoed = false;
-  bool is_auto_reauthn_blocked_by_embedder =
-      auto_reauthn_permission_delegate_->IsAutoReauthnDisabledByEmbedder(
-          WebContents::FromRenderFrameHost(&render_frame_host()));
-
-  std::optional<base::TimeDelta> time_from_embargo;
-  bool requires_user_mediation = false;
-  IdentityProviderDataPtr auto_reauthn_idp = nullptr;
-  IdentityRequestAccountPtr auto_reauthn_account = nullptr;
-  bool has_single_returning_account = false;
-  if (auto_reauthn_enabled) {
-    is_auto_reauthn_setting_enabled =
-        auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
-    is_auto_reauthn_embargoed =
-        auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
-            GetEmbeddingOrigin());
-    if (is_auto_reauthn_embargoed) {
-      time_from_embargo =
-          base::Time::Now() -
-          auto_reauthn_permission_delegate_->GetAutoReauthnEmbargoStartTime(
-              GetEmbeddingOrigin());
-
-      // See `kFederatedIdentityAutoReauthnEmbargoDuration`.
-      render_frame_host().AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kInfo,
-          "Auto re-authn was previously triggered less than 10 minutes ago. "
-          "Only one auto re-authn request can be made every 10 minutes.");
-    }
-    requires_user_mediation = RequiresUserMediation();
-    // Auto signs in returning users if they have a single returning account and
-    // are signing in.
-    has_single_returning_account =
-        GetAccountForAutoReauthn(&auto_reauthn_idp, &auto_reauthn_account);
-    if (dialog_type_ == DialogType::kAutoReauth &&
-        (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
-         is_auto_reauthn_embargoed || !has_single_returning_account ||
-         is_auto_reauthn_blocked_by_embedder)) {
-      dialog_type_ = DialogType::kSelectAccount;
-    }
-    if (!has_single_returning_account &&
-        mediation_requirement_ == MediationRequirement::kSilent) {
-      fedcm_metrics_->RecordAutoReauthnMetrics(
-          has_single_returning_account, auto_reauthn_account.get(),
-          dialog_type_ == DialogType::kAutoReauth,
-          !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-          is_auto_reauthn_blocked_by_embedder, time_from_embargo,
-          requires_user_mediation);
-
-      // By this moment we know that the user has granted permission in the past
-      // for the RP/IdP. Because otherwise we have returned already in
-      // `ShouldFailBeforeFetchingAccounts`. It means that we don't need to show
-      // any UI to respect `mediation: silent`.
-      render_frame_host().AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kError,
-          "Silent mediation issue: the user has used FedCM with multiple "
-          "accounts on this site.");
-      CompleteRequestWithError(
-          FederatedAuthRequestResult::kSilentMediationFailure,
-          TokenStatus::kSilentMediationFailure,
-          /*should_delay_callback=*/true);
-      return;
-    }
-
-    if (dialog_type_ == DialogType::kAutoReauth) {
-      accounts_ = {auto_reauthn_account};
-      idp_data_for_display_ = {auto_reauthn_idp};
-      accounts_[0]->identity_provider = idp_data_for_display_[0];
-    }
+  if (!auto_reauthn.is_eligible &&
+      mediation_requirement_ == MediationRequirement::kSilent) {
+    // By this moment we know that the user has granted permission in the past
+    // for the RP/IdP. Because otherwise we have returned already in
+    // `ShouldFailBeforeFetchingAccounts`. It means that we don't need to show
+    // any UI to respect `mediation: silent`.
+    render_frame_host().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError,
+        "Silent mediation issue: the user has used FedCM with multiple "
+        "accounts on this site.");
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kSilentMediationFailure,
+        TokenStatus::kSilentMediationFailure,
+        /*should_delay_callback=*/true);
+    return;
   }
 
-  if (dialog_type_ != DialogType::kAutoReauth) {
-    identity_selection_type_ = kExplicit;
-  } else if (rp_mode_ == blink::mojom::RpMode::kPassive) {
-    identity_selection_type_ = kAutoPassive;
+  if (auto_reauthn.is_eligible) {
+    dialog_type_ = DialogType::kAutoReauth;
+    accounts_ = {auto_reauthn.account};
+    idp_data_for_display_ = {auto_reauthn.idp};
+    accounts_[0]->identity_provider = idp_data_for_display_[0];
+
+    identity_selection_type_ = (rp_mode_ == blink::mojom::RpMode::kPassive)
+                                   ? kAutoPassive
+                                   : kAutoActive;
   } else {
-    identity_selection_type_ = kAutoActive;
-  }
-
-  if (auto_reauthn_enabled) {
-    fedcm_metrics_->RecordAutoReauthnMetrics(
-        has_single_returning_account, auto_reauthn_account.get(),
-        dialog_type_ == DialogType::kAutoReauth,
-        !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
-        is_auto_reauthn_blocked_by_embedder, time_from_embargo,
-        requires_user_mediation);
+    dialog_type_ = DialogType::kSelectAccount;
+    identity_selection_type_ = kExplicit;
   }
 
   // The RenderFrameHost may be alive but not visible in the following
@@ -1281,7 +1289,7 @@ void RequestService::MaybeShowAccountsDialog() {
     OnAccountSelected(accounts_[0]->identity_provider->idp_metadata.config_url,
                       accounts_[0]->id, /*is_sign_in=*/true);
     if (!request_dialog_controller_->ShowVerifyingDialog(
-            CreateRpData(/*client_metadata_received=*/true), auto_reauthn_idp,
+            CreateRpData(/*client_metadata_received=*/true), auto_reauthn.idp,
             accounts_[0], SignInMode::kAuto, rp_mode_,
             base::BindOnce(&RequestService::OnAccountsDisplayed,
                            weak_ptr_factory_.GetWeakPtr()))) {

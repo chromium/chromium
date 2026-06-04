@@ -339,6 +339,17 @@ class CONTENT_EXPORT RequestService
     bool did_succeed_for_at_least_one_idp{false};
   };
 
+  struct AutoReauthnInfo {
+    AutoReauthnInfo();
+    ~AutoReauthnInfo();
+    AutoReauthnInfo(const AutoReauthnInfo&);
+    AutoReauthnInfo& operator=(const AutoReauthnInfo&);
+
+    bool is_eligible = false;
+    IdentityProviderDataPtr idp = nullptr;
+    IdentityRequestAccountPtr account = nullptr;
+  };
+
   bool HasPendingRequest() const;
 
   // Fetch well-known, config, accounts and client metadata endpoints for
@@ -468,6 +479,9 @@ class CONTENT_EXPORT RequestService
   // Check if auto re-authn is available so we can skip fetching accounts if the
   // auto re-authn flow is guaranteed to fail.
   bool ShouldFailBeforeFetchingAccounts(const GURL& config_url);
+
+  void AssembleAndSortAccounts();
+  AutoReauthnInfo CheckAutoReauthnEligibility();
 
   // Check if the site requires user mediation due to a previous
   // `preventSilentAccess` call.
