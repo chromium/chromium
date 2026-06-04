@@ -540,6 +540,54 @@ cc::PaintedOverlayScrollbarLayer depending on the type of the scrollbar.
 
 Custom scrollbars are still painted into drawing display items directly.
 
+## HTML-in-Canvas
+
+HTML-in-Canvas is a feature (enabled via the `CanvasDrawElement` runtime enabled
+feature flag) that allows rendering a DOM subtree (descendant of a `<canvas>`)
+into a canvas with the `layoutsubtree` attribute using `drawElementImage()`
+(or the similar WebGL/WebGPU APIs), while still supporting browser features
+like layout, hit testing, accessibility, etc. See the
+[explainer](https://github.com/WICG/html-in-canvas) for more information.
+
+### Stacking and layout
+*   **Layout subtree**: Specifying the `layoutsubtree` attribute on a `<canvas>`
+    element opts in its descendants to layout. This forces direct children of
+    the canvas to establish a stacking context and participate in layout, via
+    `ForceStackingAndContainingBlockForCanvasLayoutSubtree` in
+    `style_adjuster.cc`.
+*   **Element helpers**: The DOM `Element` class provides helpers
+    `IsCanvasOrInCanvasSubtree()` and `IsInCanvasSubtree()` to easily identify
+    elements participating in this feature.
+
+### Painting
+*   **Special paint flags**: When painting the children of a `layoutsubtree`
+    canvas in `PaintLayerPainter::PaintChildren`, we apply special paint flags:
+    *   `PaintFlag::kOmitCompositingInfo`: Prevents compositing of descendants.
+    *   `PaintFlag::kPrivacyPreserving`: Ensures no sensitive or privacy-
+        sensitive information (such as cross-origin iframe/image data, visited
+        links, spelling markers, or system themes) is exposed during canvas
+        drawing or invalidations.
+*   **Fallback content prevention**: If `layoutsubtree` is not specified,
+    `PaintLayerPainter::PaintChildren` returns early, preventing canvas
+    fallback content from being rendered.
+
+### Compositing and layerization
+*   **Child direct compositing reason**: Direct children of a `layoutsubtree`
+    canvas are given the direct compositing reason
+    `CompositingReason::kCanvasChild` in
+    `CompositingReasonFinder::DirectReasonsForPaintProperties`. This forces the
+    creation of an `EffectPaintPropertyNode` for the child (see
+    `EffectPaintPropertyNode::RequiresCompositingForCanvasChild()`), and
+    ultimately forces a `cc::Layer` to be created for each canvas child. This
+    cc::Layer has `DrawsContent()` set to false so that it participates in hit
+    testing but does not render.
+*   **Compositing disabled for other descendants**: Composited layers are
+    disabled for all content *below* the direct children of the canvas. This
+    ensures the full content is available in the canvas child's `cc::Layer`,
+    which is used via `ContentLayerClientImpl::GetCanvasChildPaintRecord`. This
+    also ensures the content does not create additional layers which could
+    render.
+
 ## Pixel snapping and bluriness
 
 Bluriness can happen when drawings are not aligned to screen pixels. In
