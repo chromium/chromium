@@ -1963,6 +1963,7 @@ public class ToolbarManager
                 new MiniOriginBarController(
                         mLocationBar,
                         mFormFieldFocusedSupplier,
+                        mBottomSheetController,
                         mWindowAndroid.getKeyboardDelegate(),
                         mActivity,
                         mControlContainer,
