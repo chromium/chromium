@@ -832,9 +832,10 @@ TEST_F(RenderViewContextMenuPrefsTest, LoadBrokenImage) {
   ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LOAD_IMAGE));
 }
 
-TEST_F(RenderViewContextMenuPrefsTest, ContextMenu2026VideoOrderDisabled) {
+TEST_F(RenderViewContextMenuPrefsTest,
+       ContextMenuMenuSimplificationVideoOrderDisabled) {
   base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(media::kContextMenu2026);
+  features.InitAndDisableFeature(features::kMenuSimplification);
 
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.media_flags |= blink::ContextMenuData::kMediaCanPictureInPicture;
@@ -853,10 +854,11 @@ TEST_F(RenderViewContextMenuPrefsTest, ContextMenu2026VideoOrderDisabled) {
   EXPECT_GT(pip_item->second, loop_item->second);
 }
 
-// Verify that the 2026 video context menu are ordered properly.
-TEST_F(RenderViewContextMenuPrefsTest, ContextMenu2026VideoOrder) {
+// Verify that the MenuSimplification video context menu are ordered properly.
+TEST_F(RenderViewContextMenuPrefsTest,
+       ContextMenuMenuSimplificationVideoOrder) {
   base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(media::kContextMenu2026);
+  features.InitAndEnableFeature(features::kMenuSimplification);
 
   content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
   params.media_flags |= blink::ContextMenuData::kMediaCanPictureInPicture;

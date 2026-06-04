@@ -490,9 +490,6 @@ BASE_FEATURE(kCdmProcessPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
 // playback performance.
 BASE_FEATURE(kCdmThreadPriorityElevation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Reorders video context menu items if enabled.
-BASE_FEATURE(kContextMenu2026, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the "Copy Video Frame" context menu item.
 BASE_FEATURE(kContextMenuCopyVideoFrame, base::FEATURE_ENABLED_BY_DEFAULT);
 

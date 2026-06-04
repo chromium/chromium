@@ -2291,7 +2291,7 @@ void RenderViewContextMenu::AppendCanvasItems() {
 
 void RenderViewContextMenu::AppendVideoItems() {
   const bool use_submenu =
-      base::FeatureList::IsEnabled(media::kContextMenu2026);
+      base::FeatureList::IsEnabled(features::kMenuSimplification);
 
   if (use_submenu) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
@@ -3550,7 +3550,7 @@ bool RenderViewContextMenu::IsCommandIdChecked(int id) const {
 
 bool RenderViewContextMenu::IsItemForCommandIdDynamic(int command_id) const {
   if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE &&
-      base::FeatureList::IsEnabled(media::kContextMenu2026)) {
+      base::FeatureList::IsEnabled(features::kMenuSimplification)) {
     return true;
   }
   return RenderViewContextMenuBase::IsItemForCommandIdDynamic(command_id);
@@ -3559,7 +3559,7 @@ bool RenderViewContextMenu::IsItemForCommandIdDynamic(int command_id) const {
 std::u16string RenderViewContextMenu::GetLabelForCommandId(
     int command_id) const {
   if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE &&
-      base::FeatureList::IsEnabled(media::kContextMenu2026)) {
+      base::FeatureList::IsEnabled(features::kMenuSimplification)) {
     return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
   }
   return RenderViewContextMenuBase::GetLabelForCommandId(command_id);
@@ -3568,7 +3568,7 @@ std::u16string RenderViewContextMenu::GetLabelForCommandId(
 ui::ImageModel RenderViewContextMenu::GetIconForCommandId(
     int command_id) const {
   if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE &&
-      base::FeatureList::IsEnabled(media::kContextMenu2026)) {
+      base::FeatureList::IsEnabled(features::kMenuSimplification)) {
     return ui::ImageModel::FromVectorIcon(
         IsCommandIdChecked(IDC_CONTENT_CONTEXT_PICTUREINPICTURE)
             ? features::IsRoundedIconsEnabled() ? vector_icons::kPipExitIcon
