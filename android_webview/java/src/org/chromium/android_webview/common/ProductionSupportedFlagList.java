@@ -1407,6 +1407,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SELECT_WEBVIEW_UNTRUSTED_EVENT_REMOVAL,
                 "Enables the removal of a WebView-specific hack to allow select elements to be"
                         + " opened with untrusted mousedown events."),
+        Flag.baseFeature(
+                "QuicIgnoreRedundantOnNetworkMadeDefault",
+                "When enabled, Quic will ignore redundant OnNetworkMadeDefault calls."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
