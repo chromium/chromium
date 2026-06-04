@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
@@ -522,12 +523,24 @@ FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>::MakeBlinkFrame(
       media_frame->timestamp(), "rt",
       media_frame->metadata().reference_time.value_or(base::TimeTicks()), "cbt",
       media_frame->metadata().capture_begin_time.value_or(base::TimeTicks()));
-  return MakeGarbageCollected<VideoFrame>(
-      std::move(media_frame), GetExecutionContext(), device_id_,
-      /*sk_image=*/nullptr,
-      /*prefer_capture_timestamp=*/
-      base::FeatureList::IsEnabled(
-          kBreakoutBoxPreferCaptureTimestampInVideoFrames));
+
+  // Timestamps emitted to the page must have a clamped resolution.
+  auto* ec = GetExecutionContext();
+  auto timestamp = media_frame->timestamp();
+  if (base::FeatureList::IsEnabled(
+          kBreakoutBoxPreferCaptureTimestampInVideoFrames)) {
+    if (auto cbt = media_frame->metadata().capture_begin_time) {
+      timestamp = time_clamper_.ClampTimeResolution(
+          *cbt - base::TimeTicks(), ec->CrossOriginIsolatedCapability());
+    } else if (auto rt = media_frame->metadata().reference_time) {
+      timestamp = time_clamper_.ClampTimeResolution(
+          *rt - base::TimeTicks(), ec->CrossOriginIsolatedCapability());
+    }
+  }
+
+  return MakeGarbageCollected<VideoFrame>(std::move(media_frame), ec,
+                                          device_id_,
+                                          /*sk_image=*/nullptr, timestamp);
 }
 
 template <>

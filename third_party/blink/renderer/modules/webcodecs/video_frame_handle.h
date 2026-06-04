@@ -38,30 +38,25 @@ class ExecutionContext;
 class MODULES_EXPORT VideoFrameHandle
     : public ThreadSafeRefCounted<VideoFrameHandle> {
  public:
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
-                   ExecutionContext*,
-                   std::string monitoring_source_id = std::string(),
-                   bool use_capture_timestamp = false);
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+  // 1. Full constructor with auditor (primary implementation)
+  VideoFrameHandle(
+      scoped_refptr<media::VideoFrame> frame,
+      sk_sp<SkImage> sk_image,
+      std::optional<base::TimeDelta> timestamp,
+      scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor,
+      std::string monitoring_source_id = std::string());
+
+  // 2. Constructor with ExecutionContext (looks up auditor and delegates to 1)
+  VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                    sk_sp<SkImage> sk_image,
-                   ExecutionContext*,
-                   std::string monitoring_source_id = std::string(),
-                   bool use_capture_timestamp = false);
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
-                   sk_sp<SkImage> sk_image,
-                   base::TimeDelta timestamp,
-                   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>,
+                   std::optional<base::TimeDelta> timestamp,
+                   ExecutionContext* context,
                    std::string monitoring_source_id = std::string());
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
-                   sk_sp<SkImage> sk_image,
-                   base::TimeDelta timestamp,
-                   std::string monitoring_source_id = std::string());
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
-                   sk_sp<SkImage> sk_image,
-                   std::string monitoring_source_id = std::string());
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
-                   sk_sp<SkImage> sk_image,
-                   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>,
+
+  // 3. Convenience constructor with ExecutionContext (no sk_image, no
+  // timestamp)
+  VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
+                   ExecutionContext* context,
                    std::string monitoring_source_id = std::string());
 
   VideoFrameHandle(const VideoFrameHandle&) = delete;

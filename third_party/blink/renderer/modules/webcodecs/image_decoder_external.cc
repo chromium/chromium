@@ -608,7 +608,8 @@ void ImageDecoderExternal::OnDecodeReady(
   request->result = ImageDecodeResult::Create();
   request->result->setImage(
       MakeGarbageCollected<VideoFrame>(base::MakeRefCounted<VideoFrameHandle>(
-          std::move(result->frame), std::move(result->sk_image))));
+          std::move(result->frame), std::move(result->sk_image),
+          /*timestamp=*/std::nullopt, GetExecutionContext())));
   request->result->setComplete(result->complete);
   MaybeSatisfyPendingDecodes();
 }

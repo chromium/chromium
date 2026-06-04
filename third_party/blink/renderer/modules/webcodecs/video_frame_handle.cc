@@ -14,99 +14,49 @@
 
 namespace blink {
 
-namespace {
-
-base::TimeDelta GetPreferredTimestamp(bool prefer_capture_timestamp,
-                                      const media::VideoFrame& video_frame) {
-  if (prefer_capture_timestamp) {
-    if (video_frame.metadata().capture_begin_time) {
-      return *video_frame.metadata().capture_begin_time - base::TimeTicks();
-    }
-    if (video_frame.metadata().reference_time) {
-      return *video_frame.metadata().reference_time - base::TimeTicks();
-    }
-  }
-  return video_frame.timestamp();
-}
-
-}  // namespace
-
-VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
-                                   ExecutionContext* context,
-                                   std::string monitoring_source_id,
-                                   bool prefer_capture_timestamp)
-    : frame_(std::move(frame)),
-      monitoring_source_id_(std::move(monitoring_source_id)),
-      timestamp_(GetPreferredTimestamp(prefer_capture_timestamp, *frame_)),
-      duration_(frame_->metadata().frame_duration) {
-  DCHECK(frame_);
-  DCHECK(context);
-
-  close_auditor_ = WebCodecsLogger::From(*context).GetCloseAuditor();
-  DCHECK(close_auditor_);
-
-  MaybeMonitorOpenFrame();
-}
-
-VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
-                                   sk_sp<SkImage> sk_image,
-                                   ExecutionContext* context,
-                                   std::string monitoring_source_id,
-                                   bool use_capture_timestamp)
-    : VideoFrameHandle(std::move(frame),
-                       context,
-                       std::move(monitoring_source_id),
-                       use_capture_timestamp) {
-  sk_image_ = std::move(sk_image);
-}
-
 VideoFrameHandle::VideoFrameHandle(
     scoped_refptr<media::VideoFrame> frame,
     sk_sp<SkImage> sk_image,
-    base::TimeDelta timestamp,
+    std::optional<base::TimeDelta> timestamp,
     scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor,
     std::string monitoring_source_id)
     : sk_image_(std::move(sk_image)),
       frame_(std::move(frame)),
       close_auditor_(std::move(close_auditor)),
       monitoring_source_id_(std::move(monitoring_source_id)),
-      timestamp_(timestamp),
+      timestamp_(timestamp.value_or(frame_->timestamp())),
       duration_(frame_->metadata().frame_duration) {
   DCHECK(frame_);
   MaybeMonitorOpenFrame();
 }
 
-VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
-                                   sk_sp<SkImage> sk_image,
-                                   base::TimeDelta timestamp,
-                                   std::string monitoring_source_id)
-    : sk_image_(std::move(sk_image)),
-      frame_(std::move(frame)),
-      monitoring_source_id_(std::move(monitoring_source_id)),
-      timestamp_(timestamp),
-      duration_(frame_->metadata().frame_duration) {
-  DCHECK(frame_);
-  MaybeMonitorOpenFrame();
+namespace {
+scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> GetCloseAuditor(
+    ExecutionContext* context) {
+  DCHECK(context);
+  return WebCodecsLogger::From(*context).GetCloseAuditor();
 }
+}  // namespace
 
 VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
                                    sk_sp<SkImage> sk_image,
+                                   std::optional<base::TimeDelta> timestamp,
+                                   ExecutionContext* context,
                                    std::string monitoring_source_id)
-    : VideoFrameHandle(frame,
-                       sk_image,
-                       frame->timestamp(),
-                       monitoring_source_id) {}
+    : VideoFrameHandle(std::move(frame),
+                       std::move(sk_image),
+                       timestamp,
+                       GetCloseAuditor(context),
+                       std::move(monitoring_source_id)) {}
 
-VideoFrameHandle::VideoFrameHandle(
-    scoped_refptr<media::VideoFrame> frame,
-    sk_sp<SkImage> sk_image,
-    scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor,
-    std::string monitoring_source_id)
-    : VideoFrameHandle(frame,
-                       sk_image,
-                       frame->timestamp(),
-                       close_auditor,
-                       monitoring_source_id) {}
+VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
+                                   ExecutionContext* context,
+                                   std::string monitoring_source_id)
+    : VideoFrameHandle(std::move(frame),
+                       /*sk_image=*/nullptr,
+                       /*timestamp=*/std::nullopt,
+                       context,
+                       std::move(monitoring_source_id)) {}
 
 VideoFrameHandle::~VideoFrameHandle() {
   MaybeMonitorCloseFrame();
@@ -153,7 +103,9 @@ scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
 scoped_refptr<VideoFrameHandle> VideoFrameHandle::CloneForInternalUse() {
   base::AutoLock locker(lock_);
   return frame_ ? base::MakeRefCounted<VideoFrameHandle>(
-                      frame_, sk_image_, timestamp_, monitoring_source_id_)
+                      frame_, sk_image_, timestamp_,
+                      scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>(),
+                      monitoring_source_id_)
                 : nullptr;
 }
 

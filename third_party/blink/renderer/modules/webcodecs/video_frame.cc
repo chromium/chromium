@@ -621,11 +621,12 @@ VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
                        ExecutionContext* context,
                        std::string monitoring_source_id,
                        sk_sp<SkImage> sk_image,
-                       bool use_capture_timestamp) {
+                       std::optional<base::TimeDelta> timestamp) {
   DCHECK(frame);
+  auto ts = timestamp.value_or(frame->timestamp());
   handle_ = base::MakeRefCounted<VideoFrameHandle>(
-      frame, std::move(sk_image), context, std::move(monitoring_source_id),
-      use_capture_timestamp);
+      std::move(frame), std::move(sk_image), ts, context,
+      std::move(monitoring_source_id));
 }
 
 VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
@@ -933,7 +934,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
 
   return MakeGarbageCollected<VideoFrame>(
       base::MakeRefCounted<VideoFrameHandle>(
-          std::move(frame), std::move(sk_image),
+          std::move(frame), std::move(sk_image), /*timestamp=*/std::nullopt,
           ExecutionContext::From(script_state)));
 }
 
