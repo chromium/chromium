@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/path_service.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -62,6 +63,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -242,6 +244,20 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         content::URLLoaderInterceptor>(base::BindLambdaForTesting(
         [&](content::URLLoaderInterceptor::RequestParams* params) {
           const GURL& url = params->url_request.url;
+          if (url.host() == kMockAimPageHost &&
+              url.path() == "/complete/search") {
+            std::string q_param;
+            net::GetValueForKeyInQuery(url, "q", &q_param);
+            std::string query = base::UnescapeURLComponent(
+                q_param, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+            std::string response_json = base::StringPrintf(
+                R"()]}'\n["%s", ["suggestion-1", "suggestion-2"]])",
+                query.c_str());
+            content::URLLoaderInterceptor::WriteResponse(
+                "HTTP/1.1 200 OK\nContent-Type: application/json\n\n",
+                response_json, params->client.get());
+            return true;
+          }
           if (url.host() == "a.google.com") {
             content::URLLoaderInterceptor::WriteResponse(
                 "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
@@ -2369,6 +2385,35 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 
       DispatchVoiceSearchFinalResult(kSidePanelId, "test query"),
       VerifyMultipleSubmitQueryMessage("test query",
+                                       /*expected_viewport_image_count=*/0,
+                                       /*expected_upload_image_count=*/0,
+                                       /*expected_upload_file_count=*/0,
+                                       /*expected_added_input_names=*/{}));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       ClickSuggestionSubmitsQuery) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  // SimulateThreadLinkAndOpenPanel transfers the original contextual tasks page
+  // (empty query) into the panel, so typed matches render in
+  // #contextualTasksSuggestionsContainer, not the composebox's internal #matches.
+  const DeepQuery kSuggestionMatchText = {
+      "contextual-tasks-app", "#composebox",
+      "#contextualTasksSuggestionsContainer", "#match1", "#textContainer"};
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(GURL(kCujInterceptionUrl)),
+      SimulateThreadLinkAndOpenPanel(kSidePanelId),
+
+      InputText(kSidePanelId, "kombucha"),
+      // Wait for the real suggestion text so we never click a stale match.
+      WaitForJsResultAt(kSidePanelId, kSuggestionMatchText,
+                        "el => el.textContent.trim()",
+                        std::string("suggestion-1"),
+                        /*element_must_be_present_at_start=*/false),
+      ClickButton(kSidePanelId, kSuggestionMatchText),
+      VerifyMultipleSubmitQueryMessage("suggestion-1",
                                        /*expected_viewport_image_count=*/0,
                                        /*expected_upload_image_count=*/0,
                                        /*expected_upload_file_count=*/0,
