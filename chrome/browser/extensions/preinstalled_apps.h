@@ -9,8 +9,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -19,6 +22,8 @@ class PrefRegistrySyncable;
 }
 
 // Functions and types related to preinstalling apps.
+// TODO(crbug.com/519617484): Rename this, since it has long supported
+// extensions as well as apps.
 namespace preinstalled_apps {
 
 // These enum values are persisted in the user preferences, so they should not
@@ -64,6 +69,9 @@ class Provider : public extensions::ExternalProviderImpl {
  private:
   // Initializes state for the Provider based on the profile.
   void InitProfileState();
+
+  // Adds an extension to the provided `prefs`.
+  void AddExtension(const std::string& extension_id, base::DictValue& prefs);
 
   // The associated profile.
   raw_ptr<Profile> profile_ = nullptr;
