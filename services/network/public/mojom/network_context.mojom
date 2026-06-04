@@ -1487,8 +1487,12 @@ interface NetworkContext {
   // https://tools.ietf.org/html/draft-vvv-webtransport-quic-01#section-3.2 .
   // When |fingerprints| is not empty, it is used to verify the certificate.
   // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
-  //
   // It is recommended to detect mojo connection errors on |handshake_client|.
+  //
+  // The |network_restrictions_id| is used to block WebTransport connections
+  // that don't adhere to the current context's Connection Allowlist:
+  // https://wicg.github.io/connection-allowlists
+  // TODO(492456054): Make network_restrictions_id non-optional.
   CreateWebTransport(
       url.mojom.Url url,
       url.mojom.Origin origin,
@@ -1501,7 +1505,8 @@ interface NetworkContext {
       pending_remote<WebTransportHandshakeClient> handshake_client,
       pending_remote<URLLoaderNetworkServiceObserver>?
           url_loader_network_observer,
-      ClientSecurityState client_security_state);
+      ClientSecurityState client_security_state,
+      mojo_base.mojom.UnguessableToken? network_restrictions_id);
 
   // Create a NetLogExporter, which helps export NetLog to an existing file.
   // Note that the log is generally global, including all NetworkContexts

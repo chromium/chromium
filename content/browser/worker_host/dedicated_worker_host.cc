@@ -827,13 +827,15 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
     receiver.ResetWithReason(0, "The parent frame has already been gone.");
     return;
   }
-  mojo::MakeSelfOwnedReceiver(std::make_unique<WebTransportConnectorImpl>(
-                                  worker_process_host_->GetDeprecatedID(),
-                                  ancestor_render_frame_host->GetWeakPtr(),
-                                  GetWorkerStorageKey().origin(),
-                                  isolation_info_.network_anonymization_key(),
-                                  worker_client_security_state_->Clone()),
-                              std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<WebTransportConnectorImpl>(
+          worker_process_host_->GetDeprecatedID(),
+          ancestor_render_frame_host->GetWeakPtr(),
+          GetWorkerStorageKey().origin(),
+          isolation_info_.network_anonymization_key(),
+          worker_client_security_state_->Clone(),
+          network_restrictions_id_),
+      std::move(receiver));
 }
 
 void DedicatedWorkerHost::CreateWakeLockService(

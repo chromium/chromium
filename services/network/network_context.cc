@@ -2076,7 +2076,18 @@ void NetworkContext::CreateWebTransport(
         pending_handshake_client,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
-    mojom::ClientSecurityStatePtr client_security_state) {
+    mojom::ClientSecurityStatePtr client_security_state,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
+  if (network_restrictions_id.has_value() &&
+          !IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
+              *network_restrictions_id,
+      url, key)) {
+    mojo::Remote<mojom::WebTransportHandshakeClient> remote_handshake_client(
+        std::move(pending_handshake_client));
+    remote_handshake_client->OnHandshakeFailed(
+        net::WebTransportError(net::ERR_NETWORK_ACCESS_REVOKED));
+    return;
+  }
   web_transports_.insert(std::make_unique<WebTransport>(
       url, origin, key, fingerprints, application_protocols, congestion_control,
       anticipated_concurrent_incoming_unidirectional_streams,

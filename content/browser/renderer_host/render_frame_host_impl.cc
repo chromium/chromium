@@ -14780,7 +14780,7 @@ void RenderFrameHostImpl::CreateWebTransportConnector(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcess()->GetDeprecatedID(), weak_ptr_factory_.GetWeakPtr(),
           last_committed_origin_, isolation_info_.network_anonymization_key(),
-          BuildClientSecurityState()),
+          BuildClientSecurityState(), GetNetworkRestrictionsID()),
       std::move(receiver));
 }
 

@@ -164,13 +164,15 @@ WebTransportConnectorImpl::WebTransportConnectorImpl(
     base::WeakPtr<RenderFrameHostImpl> frame,
     const url::Origin& origin,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    network::mojom::ClientSecurityStatePtr client_security_state)
+    network::mojom::ClientSecurityStatePtr client_security_state,
+    std::optional<base::UnguessableToken> network_restrictions_id)
     : process_id_(process_id),
       frame_(std::move(frame)),
       origin_(origin),
       network_anonymization_key_(network_anonymization_key),
       client_security_state_(std::move(client_security_state)),
-      throttle_context_(GetThrottleContext(process_id_, frame_)) {}
+      throttle_context_(GetThrottleContext(process_id_, frame_)),
+      network_restrictions_id_(network_restrictions_id) {}
 
 WebTransportConnectorImpl::~WebTransportConnectorImpl() = default;
 
@@ -329,7 +331,7 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
       anticipated_concurrent_incoming_unidirectional_streams,
       anticipated_concurrent_incoming_bidirectional_streams,
       std::move(handshake_client), std::move(url_loader_network_observer),
-      std::move(client_security_state));
+      std::move(client_security_state), network_restrictions_id_);
 }
 
 }  // namespace content

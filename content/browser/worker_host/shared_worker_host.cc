@@ -687,10 +687,13 @@ void SharedWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const url::Origin origin = GetWorkerStorageKey().origin();
+  // TODO(crbug.com/492462310): Pass correct network_restrictions_id for shared
+  // workers.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           GetProcessHost()->GetDeprecatedID(), /*frame=*/nullptr, origin,
-          GetNetworkAnonymizationKey(), worker_client_security_state_->Clone()),
+          GetNetworkAnonymizationKey(), worker_client_security_state_->Clone(),
+          /*network_restrictions_id=*/std::nullopt),
       std::move(receiver));
 }
 

@@ -422,7 +422,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
-      mojom::ClientSecurityStatePtr client_security_state) override;
+      mojom::ClientSecurityStatePtr client_security_state,
+      const std::optional<base::UnguessableToken>& network_restrictions_id)
+      override;
   void CreateNetLogExporter(
       mojo::PendingReceiver<mojom::NetLogExporter> receiver) override;
   void ResolveHost(

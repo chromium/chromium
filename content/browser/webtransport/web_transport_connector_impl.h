@@ -36,7 +36,8 @@ class WebTransportConnectorImpl final
       base::WeakPtr<RenderFrameHostImpl> frame,
       const url::Origin& origin,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      network::mojom::ClientSecurityStatePtr client_security_state);
+      network::mojom::ClientSecurityStatePtr client_security_state,
+      std::optional<base::UnguessableToken> network_restrictions_id);
   ~WebTransportConnectorImpl() override;
 
   void Connect(
@@ -90,6 +91,7 @@ class WebTransportConnectorImpl final
   const net::NetworkAnonymizationKey network_anonymization_key_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;
   const base::WeakPtr<WebTransportThrottleContext> throttle_context_;
+  const std::optional<base::UnguessableToken> network_restrictions_id_;
 
   base::WeakPtrFactory<WebTransportConnectorImpl> weak_factory_{this};
 };

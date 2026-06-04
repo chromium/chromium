@@ -87,12 +87,15 @@ void ServiceWorkerHost::CompleteStartWorkerPreparation(
 void ServiceWorkerHost::CreateWebTransportConnector(
     mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  // TODO(crbug.com/492462310): Pass correct network_restrictions_id for service
+  // workers.
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_id_.GetUnsafeValue(), /*frame=*/nullptr,
           version_->key().origin(), GetNetworkAnonymizationKey(),
-          version_->BuildClientSecurityState()->Clone()),
+          version_->BuildClientSecurityState()->Clone(),
+          /*network_restrictions_id=*/std::nullopt),
       std::move(receiver));
 }
 

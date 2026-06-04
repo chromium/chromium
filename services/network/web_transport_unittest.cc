@@ -379,7 +379,8 @@ class WebTransportTest : public testing::TestWithParam<std::string_view> {
         /*anticipated_concurrent_incoming_unidirectional_streams=*/std::nullopt,
         /*anticipated_concurrent_incoming_bidirectional_streams=*/std::nullopt,
         std::move(handshake_client), std::move(url_loader_network_observer),
-        std::move(client_security_state));
+        std::move(client_security_state),
+        /*network_restrictions_id=*/std::nullopt);
   }
 
   void CreateWebTransport(
