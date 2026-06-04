@@ -70,11 +70,6 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
       /** Searchbox default icon (i.e., Google G icon or the search loupe). */
       searchboxIcon_: {type: String},
 
-      showThumbnail: {
-        type: Boolean,
-        reflect: true,
-      },
-
       thumbnailUrl_: {type: String},
       isThumbnailDeletable_: {type: Boolean},
       searchboxLensSearchEnabled_: {
@@ -84,7 +79,6 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
     };
   }
 
-  accessor showThumbnail: boolean = false;
   accessor placeholderText: string = '';
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');

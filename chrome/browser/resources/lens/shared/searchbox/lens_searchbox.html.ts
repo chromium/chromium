@@ -51,8 +51,7 @@ export function getHtml(this: LensSearchboxElement) {
       @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
       @match-focusin="${this.onMatchFocusin}"
       @match-click="${this.onMatchClick}"
-      ?hidden="${!this.dropdownIsVisible}"
-      ?show-thumbnail="${this.showThumbnail}">
+      ?hidden="${!this.dropdownIsVisible}">
   </cr-searchbox-dropdown>
 </div>
 <!--_html_template_end_-->`;
