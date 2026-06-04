@@ -10,11 +10,13 @@
 #include <sys/mman.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <tuple>
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
@@ -534,6 +536,14 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
     size_t max_buffer_capacity,
     base::WritableSharedMemoryMapping exif_mapping) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_->encoder_sequence_);
+
+  if (buffer_size > max_buffer_capacity) {
+    LOG(ERROR) << "buffer_size (" << buffer_size
+               << ") exceeds max_buffer_capacity (" << max_buffer_capacity
+               << ")";
+    return 0;
+  }
+
   size_t idx = 0;
 
   auto output_gmb_handle = CreateGpuMemoryBufferHandle(output_frame.get());
@@ -561,7 +571,6 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
     VLOGF(1) << "Failed to map native pixmap";
     return 0;
   }
-  uint8_t* dst_ptr = static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0));
 
   // Fill SOI and EXIF markers.
   static const uint8_t kJpegStart[] = {0xFF, JPEG_SOI};
@@ -584,14 +593,33 @@ size_t V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::FinalizeJpegImage(
     // SOI-marker1-marker2-...-SOS-compressed stream-EOI
     // |......| <- src_data_offset = len(SOI) + len(APP0) (if APP0 found)
     // |...................| <- data_offset = len(SOI) + len(APP1)
+    if (buffer_size < sizeof(kJpegStart)) {
+      LOG(WARNING) << "JPEG buffer is too small";
+      return 0;
+    }
+
+    // SAFETY: GetMemoryAddress(0) returns a pointer to a mapped region of at
+    // least max_buffer_capacity, which is verified in Dequeue() to be bounded
+    // by the buffer length and the mapped size.
+    auto dst_span = UNSAFE_BUFFERS(base::span<uint8_t>(
+        static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0)),
+        max_buffer_capacity));
+    uint8_t* dst_ptr = dst_span.data();
+
     size_t data_offset =
         sizeof(kJpegStart) + sizeof(kAppSegment) + exif_buffer_size;
     size_t src_data_offset = sizeof(kJpegStart);
+
+    // Avoid parsing headers directly in memory shared with another process.
+    // Copy the first few bytes to a local buffer to avoid TOCTOU.
+    std::array<uint8_t, 6> header = {};
+    const size_t copy_size = std::min(buffer_size, header.size());
+    base::span(header).first(copy_size).copy_from(dst_span.first(copy_size));
+
     // Check for APP0 segment following SOI marker and skip over it if found
-    if (UNSAFE_TODO(dst_ptr[2]) == JPEG_MARKER_PREFIX &&
-        UNSAFE_TODO(dst_ptr[3]) == JPEG_APP0) {
-      src_data_offset +=
-          2 + ((UNSAFE_TODO(dst_ptr[4]) << 8) | UNSAFE_TODO(dst_ptr[5]));
+    if (copy_size >= header.size() && header[2] == JPEG_MARKER_PREFIX &&
+        header[3] == JPEG_APP0) {
+      src_data_offset += 2 + ((header[4] << 8) | header[5]);
       if (src_data_offset >= buffer_size) {
         LOG(WARNING) << "APP0 segment from encoder extends beyond JPEG buffer";
         return 0;
