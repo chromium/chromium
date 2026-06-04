@@ -3,17 +3,17 @@ Document
 ++++Text Name='Mixed host'
 ++Button Name='Save'
 ++Button Name='Edit'
-++Group
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='Disabled host'
 ++Button Name='Delete' IsEnabled=false
-++Group
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='Span host'
 ++Group IsControlElement=false
 ++++Text Name='Not clickable'
 ++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='Listener host'
 ++Button Name='Run'
-++Group
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='All invalid host'
 ++Button Name='No listener'
 ++Group IsControlElement=false

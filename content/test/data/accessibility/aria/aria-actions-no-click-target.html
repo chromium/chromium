@@ -44,8 +44,10 @@
 </div>
 <div id="aria-button-with-listener" role="button" tabindex="0">Run</div>
 
-<!-- All targets fail the click-handler check — kHasActions must not
-     appear on this host. -->
+<!-- All targets fail the click-handler check, so kActionsIds is empty,
+     but kHasActions must still appear on this host because Core-AAM
+     PR 1805 requires has-actions:true whenever aria-actions is set on
+     a role that supports it (https://github.com/w3c/aria/pull/1805). -->
 <div role="group" id="all-invalid-host" aria-actions="aria-button2 plain-span2">
   All invalid host
 </div>

@@ -10,7 +10,7 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='Edit' nameFrom=contents
 ++++++++++inlineTextBox name='Edit' nameFrom=contents
-++++++group
+++++++group hasActions
 ++++++++staticText name='Not focusable host' nameFrom=contents
 ++++++++++inlineTextBox name='Not focusable host' nameFrom=contents
 ++++++button name='Run' nameFrom=contents
@@ -28,7 +28,7 @@ rootWebArea
 ++++++button name='Close' nameFrom=contents
 ++++++++staticText name='Close' nameFrom=contents
 ++++++++++inlineTextBox name='Close' nameFrom=contents
-++++++group
+++++++group hasActions
 ++++++++staticText name='All invalid host' nameFrom=contents
 ++++++++++inlineTextBox name='All invalid host' nameFrom=contents
 ++++++genericContainer

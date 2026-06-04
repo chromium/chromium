@@ -10,13 +10,13 @@ rootWebArea
 ++++++button name='Edit' nameFrom=contents
 ++++++++staticText name='Edit' nameFrom=contents
 ++++++++++inlineTextBox name='Edit' nameFrom=contents
-++++++group
+++++++group hasActions
 ++++++++staticText name='Disabled host' nameFrom=contents
 ++++++++++inlineTextBox name='Disabled host' nameFrom=contents
 ++++++button name='Delete' nameFrom=contents restriction=disabled
 ++++++++staticText name='Delete' nameFrom=contents
 ++++++++++inlineTextBox name='Delete' nameFrom=contents
-++++++group
+++++++group hasActions
 ++++++++staticText name='Span host' nameFrom=contents
 ++++++++++inlineTextBox name='Span host' nameFrom=contents
 ++++++genericContainer
@@ -28,7 +28,7 @@ rootWebArea
 ++++++button name='Run' nameFrom=contents
 ++++++++staticText name='Run' nameFrom=contents
 ++++++++++inlineTextBox name='Run' nameFrom=contents
-++++++group
+++++++group hasActions
 ++++++++staticText name='All invalid host' nameFrom=contents
 ++++++++++inlineTextBox name='All invalid host' nameFrom=contents
 ++++++button name='No listener' nameFrom=contents

@@ -4,7 +4,7 @@ Document
 ++Button Name='Save'
 ++Group
 ++++Text Name='Edit'
-++Group
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='Not focusable host'
 ++Button Name='Run'
 ++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
@@ -13,7 +13,7 @@ Document
 ++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='Negative tabindex host'
 ++Button Name='Close'
-++Group
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='All invalid host'
 ++Group
 ++++Text Name='Another span'

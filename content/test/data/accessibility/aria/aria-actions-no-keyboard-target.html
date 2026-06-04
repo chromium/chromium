@@ -44,8 +44,10 @@
 </div>
 <button id="negative-tabindex-button" tabindex="-1">Close</button>
 
-<!-- All targets fail the keyboard check — kHasActions must not
-     appear on this host. -->
+<!-- All targets fail the keyboard check, so kActionsIds is empty,
+     but kHasActions must still appear on this host because Core-AAM
+     PR 1805 requires has-actions:true whenever aria-actions is set on
+     a role that supports it (https://github.com/w3c/aria/pull/1805). -->
 <div role="group" id="all-invalid-host" aria-actions="clickable-span2 aria-button-no-tabindex2">
   All invalid host
 </div>

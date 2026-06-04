@@ -2484,12 +2484,23 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     SerializeImplicitActions(node_data);
   }
 
-  // Expose kHasActions when at least one valid actions target was
-  // serialized. Targets without an accessible name are dropped per the
-  // spec PR (https://github.com/w3c/aria/pull/1805) #aria-actions; this
-  // gate covers both author-defined targets (aria-actions) and implicit
-  // targets derived from children of menuitem-like roles.
-  if (node_data->HasIntListAttribute(
+  // Expose kHasActions in two cases:
+  //   1. The aria-actions attribute is set on a role that supports it
+  //      (Core-AAM PR 1805 #aria-actions:
+  //      https://github.com/w3c/aria/pull/1805). The Core-AAM mapping
+  //      requires the has-actions object attribute to be exposed
+  //      whenever aria-actions is set, even when all referenced targets
+  //      fail the Author MUSTs in IsValidAriaActionsTarget and
+  //      kActionsIds is therefore empty.
+  //   2. SerializeImplicitActions populated kActionsIds for a
+  //      menuitem-like role. That path is gated by
+  //      AccessibilityImplicitActionsEnabled() at the call site above,
+  //      so kActionsIds can be non-empty even when AriaActionsEnabled()
+  //      is off.
+  if ((RuntimeEnabledFeatures::AriaActionsEnabled() &&
+       RoleSupportsAriaAttribute(RoleValue(), html_names::kAriaActionsAttr) &&
+       HasAriaAttribute(html_names::kAriaActionsAttr)) ||
+      node_data->HasIntListAttribute(
           ax::mojom::blink::IntListAttribute::kActionsIds)) {
     node_data->AddState(ax::mojom::blink::State::kHasActions);
   }

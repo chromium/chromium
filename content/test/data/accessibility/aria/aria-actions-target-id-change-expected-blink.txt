@@ -23,7 +23,7 @@ rootWebArea name='switch-reference'
 rootWebArea name='remove-reference'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++main
+++++++main hasActions
 ++++++button name='Target A'
 ++++++++staticText name='Target A'
 ++++++++++inlineTextBox name='Target A'

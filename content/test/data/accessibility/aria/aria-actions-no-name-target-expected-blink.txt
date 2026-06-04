@@ -16,7 +16,7 @@ rootWebArea
 ++++++++staticText name='Archive' nameFrom=contents
 ++++++++++inlineTextBox name='Archive' nameFrom=contents
 ++++++button
-++++++group
+++++++group hasActions
 ++++++++staticText name='Section with no valid actions' nameFrom=contents
 ++++++++++inlineTextBox name='Section with no valid actions' nameFrom=contents
 ++++++button

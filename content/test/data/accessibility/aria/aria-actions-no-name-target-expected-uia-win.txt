@@ -7,7 +7,7 @@ Document
 ++++Text Name='File section'
 ++Button Name='Archive'
 ++Button
-++Group
+++Group AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
 ++++Text Name='Section with no valid actions'
 ++Button
 ++Button

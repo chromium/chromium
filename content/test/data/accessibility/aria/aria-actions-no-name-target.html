@@ -24,7 +24,10 @@
 <button id="archive-action">Archive</button>
 <button id="whitespace-label" aria-label="   "></button>
 
-<!-- All targets lack accessible names — kHasActions must not appear. -->
+<!-- All targets lack accessible names, so kActionsIds is empty, but
+     kHasActions must still appear on this host because Core-AAM PR 1805
+     requires has-actions:true whenever aria-actions is set on a role
+     that supports it (https://github.com/w3c/aria/pull/1805). -->
 <div role="group" id="all-invalid-host" aria-actions="unnamed-btn unlabelled-btn">
   Section with no valid actions
 </div>
