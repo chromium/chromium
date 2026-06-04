@@ -4057,8 +4057,6 @@ static_library("ui") {
       "views/page_info/merchant_trust_side_panel_coordinator.h",
       "views/page_info/page_info_ad_personalization_content_view.cc",
       "views/page_info/page_info_ad_personalization_content_view.h",
-      "views/page_info/page_info_bubble_specification.cc",
-      "views/page_info/page_info_bubble_specification.h",
       "views/page_info/page_info_cookies_content_view.cc",
       "views/page_info/page_info_cookies_content_view.h",
       "views/page_info/page_info_main_view.cc",
@@ -4852,7 +4850,6 @@ static_library("ui") {
       # c/b/ui/browser.h, browser_dialogs.h, browser_finder.h, browser_tabstrip.h, view_ids.h, browser_window.h.
       # c/b/ui/views/chrome_layout_provider.h
       # c/b/ui/views/frame/browser_view.h
-      # c/b/ui/views/page_info/page_info_bubble_specification.h
       "//chrome/browser/ui/views/location_bar:impl",
 
       # TODO(crbug.com/413572035): Remove circular dependency once/if
