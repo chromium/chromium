@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -598,8 +599,22 @@ views::View* ToolbarController::FindToolbarElementWithId(
   return nullptr;
 }
 
+bool ToolbarController::IsElementOverflowedForTesting(
+    ui::ElementIdentifier id) const {
+  for (const auto& responsive_element : responsive_elements_) {
+    const auto* element_id_info = std::get_if<ToolbarController::ElementIdInfo>(
+        &responsive_element.overflow_id);
+    if (!element_id_info || element_id_info->overflow_identifier != id) {
+      continue;
+    }
+    return IsOverflowed(responsive_element);
+  }
+  // Element cannot overflow, since it is not in `responsive_elements_`
+  NOTREACHED();
+}
+
 std::vector<const ToolbarController::ResponsiveElementInfo*>
-ToolbarController::GetOverflowedElements() {
+ToolbarController::GetOverflowedElements() const {
   std::vector<const ToolbarController::ResponsiveElementInfo*>
       overflowed_buttons;
   if (ToolbarControllerUtil::PreventOverflow()) {

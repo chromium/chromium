@@ -232,30 +232,19 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
   }
 
   auto CheckIfOverflowed(ui::ElementIdentifier id, bool is_overflowed) {
-    return CheckResult([this, id]() { return ElementIsOverflowed(id); },
-                       is_overflowed,
-                       base::StringPrintf("CheckIfOverflowed(%s)",
-                                          base::ToString(is_overflowed)));
+    return CheckResult(
+        [this, id]() {
+          return toolbar_controller_->IsElementOverflowedForTesting(id);
+        },
+        is_overflowed,
+        base::StringPrintf("CheckIfOverflowed(%s)",
+                           base::ToString(is_overflowed)));
   }
 
   auto SetBooleanPref(const std::string& path, bool value) {
     return Do([this, path, value]() {
       browser()->profile()->GetPrefs()->SetBoolean(path, value);
     });
-  }
-
-  // Returns true if the element corresponding to `id` is overflowed.
-  bool ElementIsOverflowed(ui::ElementIdentifier id) {
-    for (const auto& responsive_element : get_responsive_elements()) {
-      const auto* element_id_info =
-          std::get_if<ToolbarController::ElementIdInfo>(
-              &responsive_element.overflow_id);
-      if (!element_id_info || element_id_info->overflow_identifier != id) {
-        continue;
-      }
-      return toolbar_controller_->IsOverflowed(responsive_element);
-    }
-    NOTREACHED();
   }
 
   // Waits until an overflowable element is visible.
@@ -286,15 +275,15 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
   // Forces `id` to overflow by filling toolbar with dummy buttons.
   auto AddDummyButtonsToToolbarTillElementOverflowsWithoutResizing(
       ui::ElementIdentifier id) {
-    auto result =
-        Steps(CheckIsManagedByController(id),
-              Do([this, id]() {
-                while (!ElementIsOverflowed(id)) {
-                  toolbar_container_view_->AddChildView(CreateADummyButton());
-                  views::test::RunScheduledLayout(browser_view_);
-                }
-              }).SetDescription("ForceOverflow"),
-              WaitForShow(kToolbarOverflowButtonElementId), WaitForHide(id));
+    auto result = Steps(
+        CheckIsManagedByController(id),
+        Do([this, id]() {
+          while (!toolbar_controller_->IsElementOverflowedForTesting(id)) {
+            toolbar_container_view_->AddChildView(CreateADummyButton());
+            views::test::RunScheduledLayout(browser_view_);
+          }
+        }).SetDescription("ForceOverflow"),
+        WaitForShow(kToolbarOverflowButtonElementId), WaitForHide(id));
     AddDescriptionPrefix(
         result,
         "AddDummyButtonsToToolbarTillElementOverflowsWithoutResizing()");

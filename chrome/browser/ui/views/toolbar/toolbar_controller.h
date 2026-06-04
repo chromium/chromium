@@ -281,12 +281,15 @@ class ToolbarController : public views::MenuDelegate,
     return menu_model_.get();
   }
 
+  // Check if element is currently overflowed.
+  bool IsElementOverflowedForTesting(ui::ElementIdentifier id) const;
+
  private:
   friend class ToolbarControllerUiTest;
   friend class ToolbarControllerUnitTest;
 
   // Returns currently hidden elements.
-  std::vector<const ResponsiveElementInfo*> GetOverflowedElements();
+  std::vector<const ResponsiveElementInfo*> GetOverflowedElements() const;
 
   // Check if element has overflowed.
   bool IsOverflowed(

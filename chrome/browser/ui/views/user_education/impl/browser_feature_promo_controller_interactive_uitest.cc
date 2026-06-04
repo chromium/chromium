@@ -751,16 +751,13 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerOverflowUiTest,
             const ToolbarController* const controller =
                 browser_view->toolbar()->toolbar_controller();
             CHECK(controller);
-            auto* const forward_button =
-                views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                    kToolbarForwardButtonElementId,
-                    browser_view->GetElementContext());
             auto* const container_view =
                 views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                     ToolbarView::kToolbarElementId,
                     browser_view->GetElementContext());
             constexpr gfx::Size kButtonSize{16, 16};
-            while (forward_button->GetVisible()) {
+            while (!controller->IsElementOverflowedForTesting(
+                kToolbarForwardButtonElementId)) {
               auto* const button = container_view->AddChildView(
                   std::make_unique<ToolbarButton>());
               button->SetPreferredSize(kButtonSize);
