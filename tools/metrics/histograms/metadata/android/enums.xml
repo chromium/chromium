@@ -274,16 +274,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Choice was already applied"/>
 </enum>
 
-<enum name="AndroidSearchEngineLogoEvents">
-  <summary>Events related to Search Engine logo feature.</summary>
-  <int value="0" label="Fetch non-Google logo request"/>
-  <int value="1" label="Fetch failed, null logo url"/>
-  <int value="2" label="Fetch failed, favicon helper error"/>
-  <int value="3" label="Fetch failed, returned bitmap null"/>
-  <int value="4" label="Fetch success, cache hit"/>
-  <int value="5" label="Fetch from network success"/>
-</enum>
-
 <enum name="AndroidSeccompSandboxStatus">
   <int value="0" label="Not Supported"/>
   <int value="1" label="Detection Failed"/>

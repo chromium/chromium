@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -20,7 +19,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -52,8 +50,6 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /** Common Default Search Engine functions. */
@@ -81,32 +77,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private boolean mDoesDefaultSearchEngineHaveLogo;
     private @Nullable StatusIconResource mFavicon;
     private @Nullable String mSearchEngineName;
-
-    /**
-     * AndroidSearchEngineLogoEvents defined in tools/metrics/histograms/enums.xml. These values are
-     * persisted to logs. Entries should not be renumbered and numeric values should never be
-     * reused.
-     */
-    @VisibleForTesting
-    @IntDef({
-        Events.FETCH_NON_GOOGLE_LOGO_REQUEST,
-        Events.FETCH_FAILED_NULL_URL,
-        Events.FETCH_FAILED_FAVICON_HELPER_ERROR,
-        Events.FETCH_FAILED_RETURNED_BITMAP_NULL,
-        Events.FETCH_SUCCESS_CACHE_HIT,
-        Events.FETCH_SUCCESS
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface Events {
-        int FETCH_NON_GOOGLE_LOGO_REQUEST = 0;
-        int FETCH_FAILED_NULL_URL = 1;
-        int FETCH_FAILED_FAVICON_HELPER_ERROR = 2;
-        int FETCH_FAILED_RETURNED_BITMAP_NULL = 3;
-        int FETCH_SUCCESS_CACHE_HIT = 4;
-        int FETCH_SUCCESS = 5;
-
-        int MAX = 6;
-    }
 
     @FunctionalInterface
     public interface SearchBoxHintTextObserver {
@@ -197,7 +167,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
 
         var templateUrl = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         if (templateUrl == null) {
-            recordEvent(Events.FETCH_FAILED_NULL_URL);
             setSearchBoxHintText(null);
             return;
         }
@@ -338,7 +307,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         mFavicon = newIcon;
         for (var observer : mSearchEngineIconObservers) {
             observer.onSearchEngineIconChanged(newIcon);
-            recordEvent(Events.FETCH_SUCCESS_CACHE_HIT);
         }
     }
 
@@ -362,7 +330,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                 callback.onResult(
                         new StatusIconResource(
                                 templateUrl.getFaviconURL().getSpec(), bm, Resources.ID_NULL));
-                recordEvent(Events.FETCH_SUCCESS);
                 return;
             }
         }
@@ -384,7 +351,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                     default -> null;
                 };
         if (icon != null) {
-            recordEvent(Events.FETCH_SUCCESS);
             callback.onResult(icon);
             return;
         }
@@ -397,7 +363,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         if (mTemplateUrlService.getSearchEngineTypeFromTemplateUrl(templateUrl.getKeyword())
                 != SearchEngineType.SEARCH_ENGINE_GOOGLE) {
             // Fall back to next source.
-            recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
             retrieveFaviconFromOriginUrl(templateUrl, callback);
             return;
         }
@@ -417,10 +382,8 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                         /* fallbackToHost= */ true,
                         (image, iconUrl) -> {
                             if (image == null) {
-                                recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
                                 callback.onResult(null);
                             } else {
-                                recordEvent(Events.FETCH_SUCCESS);
                                 callback.onResult(
                                         new StatusIconResource(
                                                 originUrl.getSpec(), image, Resources.ID_NULL));
@@ -428,7 +391,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                         });
 
         if (!willCall) {
-            recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
             callback.onResult(null);
         }
     }
@@ -477,18 +439,6 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
                     e);
             return null;
         }
-    }
-
-    /**
-     * Records an event to the search engine logo histogram. See {@link Events} and histograms.xml
-     * for more details.
-     *
-     * @param event The {@link Events} to be reported.
-     */
-    @VisibleForTesting
-    static void recordEvent(@Events int event) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "AndroidSearchEngineLogo.Events", event, Events.MAX);
     }
 
     /** Set the instance for testing. */

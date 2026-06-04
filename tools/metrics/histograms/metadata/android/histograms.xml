@@ -9929,18 +9929,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AndroidSearchEngineLogo.Events"
-    enum="AndroidSearchEngineLogoEvents" expires_after="2025-07-06">
-  <owner>wylieb@google.com</owner>
-  <owner>fgorski@chromium.org</owner>
-  <summary>
-    Counts occurences of various events related to the Search Engine Logo
-    feature. When enabled, the feature will show the logo of the default search
-    engine in the omnibox. These events record the performance of fetching
-    non-Google logos.
-  </summary>
-</histogram>
-
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
     enum="BooleanRelroAvailableImmediately" expires_after="2023-12-29">
   <owner>lizeb@chromium.org</owner>
