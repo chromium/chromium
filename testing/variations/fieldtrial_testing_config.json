@@ -23930,6 +23930,24 @@
             ]
         }
     ],
+    "TranslateLanguageSearchUIExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260528",
+                    "enable_features": [
+                        "TranslateLanguageSearchUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "TranslateToastStudy": [
         {
             "platforms": [

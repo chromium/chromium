@@ -100,6 +100,28 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 };
 
+class TranslateBubbleViewBrowserTest_SearchUIDisabled
+    : public TranslateBubbleViewBrowserTest {
+ public:
+  TranslateBubbleViewBrowserTest_SearchUIDisabled() {
+    feature_list_.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class TranslateBubbleViewBrowserTest_SearchUIEnabled
+    : public TranslateBubbleViewBrowserTest {
+ public:
+  TranslateBubbleViewBrowserTest_SearchUIEnabled() {
+    feature_list_.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
                        CloseBrowserWithoutTranslating) {
   EXPECT_FALSE(
@@ -195,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest, AlertAccessibleEvent) {
 }
 
 class TranslateBubbleVisualTest
-    : public SupportsTestDialog<TranslateBubbleViewBrowserTest> {
+    : public SupportsTestDialog<
+          TranslateBubbleViewBrowserTest_SearchUIDisabled> {
  public:
   TranslateBubbleVisualTest(const TranslateBubbleVisualTest&) = delete;
   TranslateBubbleVisualTest& operator=(const TranslateBubbleVisualTest&) =
@@ -253,16 +276,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
   EXPECT_FALSE(bubble);
 }
 
-class TranslateBubbleViewBrowserTest_SearchUIDisabled
-    : public TranslateBubbleViewBrowserTest {
- public:
-  TranslateBubbleViewBrowserTest_SearchUIDisabled() {
-    feature_list_.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
-  }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIDisabled,
                        SelectTargetLanguageByDisplayName) {
@@ -285,16 +299,7 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIDisabled,
             bubble->model()->GetTargetLanguageIndexForCode("es").value());
 }
 
-class TranslateBubbleViewBrowserTest_SearchUIEnabled
-    : public TranslateBubbleViewBrowserTest {
- public:
-  TranslateBubbleViewBrowserTest_SearchUIEnabled() {
-    feature_list_.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
-  }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIEnabled,
                        SelectTargetLanguageByDisplayName) {
