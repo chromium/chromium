@@ -22,6 +22,11 @@ class URLResponseHead;
 }  // namespace mojom
 
 // Checks if a single request header is safe to send.
+//
+// Per https://fetch.spec.whatwg.org/#forbidden-request-header, the method-
+// override headers are forbidden when their value parses to a forbidden
+// method. The logic is almost compatible but exclude some headers that would
+// be set by renderer's internal code.
 COMPONENT_EXPORT(NETWORK_CPP)
 bool IsRequestHeaderSafe(std::string_view key, std::string_view value);
 
