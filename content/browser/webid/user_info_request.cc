@@ -203,7 +203,6 @@ void UserInfoRequest::OnAllConfigAndWellKnownFetched(
 
   network_manager_->SendAccountsRequest(
       url::Origin::Create(idp_config_url_), fetch_results[0].endpoints.accounts,
-      client_id_,
       base::BindOnce(&UserInfoRequest::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -223,6 +222,9 @@ void UserInfoRequest::OnAccountsResponseReceived(
   GetPageData(render_frame_host_->GetPage())
       ->SetUserInfoAccountsResponseTime(idp_config_url_,
                                         base::TimeTicks::Now());
+
+  IdentityRequestAccount::ComputeIdpClaimedLoginStates(client_id_,
+                                                       accounts.accounts);
 
   // Populate the accounts' login state based on browser stored permission
   // grants.

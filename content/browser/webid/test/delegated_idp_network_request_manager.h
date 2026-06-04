@@ -42,7 +42,6 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            FetchClientMetadataCallback callback) override;
   bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
-                           const std::string& client_id,
                            AccountsRequestCallback callback) override;
   void SendTokenRequest(
       const GURL& token_url,

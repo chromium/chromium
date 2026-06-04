@@ -117,7 +117,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
-                           const std::string& client_id,
                            AccountsRequestCallback callback) override {
     IdpNetworkRequestManager::AccountsResponse response;
     response.accounts = kAccounts;

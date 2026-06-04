@@ -42,7 +42,6 @@ class MockIdpNetworkRequestManager : public webid::IdpNetworkRequestManager {
               SendAccountsRequest,
               (const url::Origin& idp_origin,
                const GURL&,
-               const std::string&,
                AccountsRequestCallback),
               (override));
   MOCK_METHOD(void,

@@ -66,4 +66,20 @@ IdentityRequestAccount::IdentityRequestAccount(
 
 IdentityRequestAccount::~IdentityRequestAccount() = default;
 
+// static
+void IdentityRequestAccount::ComputeIdpClaimedLoginStates(
+    const std::string& client_id,
+    std::vector<scoped_refptr<IdentityRequestAccount>>& accounts) {
+  for (auto& account : accounts) {
+    if (!account->approved_clients) {
+      continue;
+    }
+    const bool is_approved =
+        std::ranges::contains(*account->approved_clients, client_id);
+    account->idp_claimed_login_state =
+        is_approved ? IdentityRequestAccount::LoginState::kSignIn
+                    : IdentityRequestAccount::LoginState::kSignUp;
+  }
+}
+
 }  // namespace content

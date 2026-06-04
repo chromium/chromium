@@ -426,7 +426,6 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
   bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
-                           const std::string& client_id,
                            AccountsRequestCallback callback) override {
     ++num_fetched_[FetchedEndpoint::ACCOUNTS];
 
@@ -560,13 +559,9 @@ class IdpNetworkRequestManagerParamChecker
 
   bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
-                           const std::string& client_id,
                            AccountsRequestCallback callback) override {
-    if (expected_client_id_) {
-      EXPECT_EQ(expected_client_id_, client_id);
-    }
     return TestIdpNetworkRequestManager::SendAccountsRequest(
-        idp_origin, accounts_url, client_id, std::move(callback));
+        idp_origin, accounts_url, std::move(callback));
   }
 
   void SendTokenRequest(
@@ -4459,7 +4454,6 @@ class ParseStatusOverrideIdpNetworkRequestManager
 
   bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
-                           const std::string& client_id,
                            AccountsRequestCallback callback) override {
     if (accounts_parse_status_ != ParseStatus::kSuccess) {
       ++num_fetched_[FetchedEndpoint::ACCOUNTS];
@@ -4473,7 +4467,7 @@ class ParseStatusOverrideIdpNetworkRequestManager
     }
 
     return TestIdpNetworkRequestManager::SendAccountsRequest(
-        idp_origin, accounts_url, client_id, std::move(callback));
+        idp_origin, accounts_url, std::move(callback));
   }
 };
 

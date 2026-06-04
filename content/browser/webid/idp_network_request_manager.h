@@ -319,7 +319,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
   // whether a network request is sent to fetch accounts.
   virtual bool SendAccountsRequest(const url::Origin& idp_origin,
                                    const GURL& accounts_url,
-                                   const std::string& client_id,
                                    AccountsRequestCallback callback);
 
   // Request a new token for this user account and RP from the IDP.

@@ -166,6 +166,7 @@ class AccountsFetcher {
   // it had been populated. Otherwise, it uses the browser knowledge on which
   // accounts are returning and which are not.
   void ComputeLoginStates(const GURL& idp_config_url,
+                          const std::string& client_id,
                           std::vector<IdentityRequestAccountPtr>& accounts);
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a

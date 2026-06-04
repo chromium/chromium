@@ -219,8 +219,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   std::tuple<FetchStatus, IdpNetworkRequestManager::AccountsResponse>
-  SendAccountsRequestWithStoredAccounts(base::ListValue test_accounts,
-                                        const char* client_id = "") {
+  SendAccountsRequestWithStoredAccounts(base::ListValue test_accounts) {
     GURL accounts_endpoint(kTestAccountsEndpoint);
     url::Origin idp_origin = url::Origin::Create(accounts_endpoint);
 
@@ -239,8 +238,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
     EXPECT_CALL(*test_permission_delegate_, GetAccounts(_))
         .WillOnce(Return(test_accounts.Clone()));
-    manager->SendAccountsRequest(idp_origin, GURL(), client_id,
-                                 std::move(callback));
+    manager->SendAccountsRequest(idp_origin, GURL(), std::move(callback));
     run_loop.Run();
 
     return {parsed_accounts_response, parsed_accounts};
@@ -249,7 +247,6 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   std::tuple<FetchStatus, IdpNetworkRequestManager::AccountsResponse>
   SendAccountsRequestAndWaitForResponse(
       const std::string& test_accounts,
-      const char* client_id = "",
       net::HttpStatusCode response_code = net::HTTP_OK,
       const std::string& mime_type = "application/json") {
     GURL accounts_endpoint(kTestAccountsEndpoint);
@@ -268,8 +265,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendAccountsRequest(url::Origin::Create(accounts_endpoint),
-                                 accounts_endpoint, client_id,
-                                 std::move(callback));
+                                 accounts_endpoint, std::move(callback));
     run_loop.Run();
 
     return {parsed_accounts_response, parsed_accounts};
@@ -1525,25 +1521,24 @@ TEST_F(IdpNetworkRequestManagerTest, AccountSignedInStatus) {
   FetchStatus accounts_response;
   IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
-      SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_TRUE(called);
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   ASSERT_EQ(5ul, accounts.accounts.size());
-  ASSERT_TRUE(accounts.accounts[0]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn,
-            *accounts.accounts[0]->idp_claimed_login_state);
-  ASSERT_TRUE(accounts.accounts[1]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp,
-            *accounts.accounts[1]->idp_claimed_login_state);
-  ASSERT_TRUE(accounts.accounts[2]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignUp,
-            *accounts.accounts[2]->idp_claimed_login_state);
-  EXPECT_FALSE(accounts.accounts[3]->idp_claimed_login_state.has_value());
-  ASSERT_TRUE(accounts.accounts[4]->idp_claimed_login_state.has_value());
-  EXPECT_EQ(LoginState::kSignIn,
-            *accounts.accounts[4]->idp_claimed_login_state);
+  ASSERT_TRUE(accounts.accounts[0]->approved_clients.has_value());
+  EXPECT_EQ(std::vector<std::string>{"xxx"},
+            *accounts.accounts[0]->approved_clients);
+  ASSERT_TRUE(accounts.accounts[1]->approved_clients.has_value());
+  EXPECT_TRUE((*accounts.accounts[1]->approved_clients).empty());
+  ASSERT_TRUE(accounts.accounts[2]->approved_clients.has_value());
+  EXPECT_EQ(std::vector<std::string>{"yyy"},
+            *accounts.accounts[2]->approved_clients);
+  EXPECT_FALSE(accounts.accounts[3]->approved_clients.has_value());
+  ASSERT_TRUE(accounts.accounts[4]->approved_clients.has_value());
+  EXPECT_EQ((std::vector<std::string>{"xxx", "yyy"}),
+            *accounts.accounts[4]->approved_clients);
 }
 
 // Tests the token request implementation.
@@ -1838,7 +1833,7 @@ TEST_F(IdpNetworkRequestManagerTest, RecordApprovedClientsMetrics) {
   FetchStatus accounts_response;
   IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) =
-      SendAccountsRequestAndWaitForResponse(test_accounts_json, "xxx");
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
 
   EXPECT_TRUE(called);
   EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
@@ -1885,8 +1880,7 @@ TEST_F(IdpNetworkRequestManagerTest, DontCallCallbackAfterManagerDeletion) {
   {
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendAccountsRequest(url::Origin::Create(accounts_endpoint),
-                                 accounts_endpoint, /*client_id=*/"",
-                                 std::move(callback));
+                                 accounts_endpoint, std::move(callback));
     // Destroy `manager`.
   }
   base::RunLoop().RunUntilIdle();
@@ -2142,7 +2136,7 @@ TEST_F(IdpNetworkRequestManagerTest, ErrorFetchingAccounts) {
       SendAccountsRequestAndWaitForResponse(R"({
   "accounts" : []
   })",
-                                            "", net::HTTP_BAD_REQUEST);
+                                            net::HTTP_BAD_REQUEST);
   EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_BAD_REQUEST, fetch_status.response_code);
 }
@@ -2245,7 +2239,7 @@ TEST_F(IdpNetworkRequestManagerTest, AccountsWrongMimeType) {
   FetchStatus accounts_response;
   IdpNetworkRequestManager::AccountsResponse accounts;
   std::tie(accounts_response, accounts) = SendAccountsRequestAndWaitForResponse(
-      test_single_account_json, /*client_id=*/"", net::HTTP_OK, "text/html");
+      test_single_account_json, net::HTTP_OK, "text/html");
 
   EXPECT_EQ(ParseStatus::kInvalidContentTypeError,
             accounts_response.parse_status);

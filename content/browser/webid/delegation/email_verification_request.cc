@@ -280,11 +280,8 @@ void EmailVerificationRequest::OnWebIdentityWellKnownFetched(
     return;
   }
 
-  // EVP doesn't use client_ids, so it can safely use an empty string one.
-  // TODO(crbug.com/380367784): Allow callers of SendAccountsRequest to not pass
-  // an unnecessary client_id.
   idp_network_manager_->SendAccountsRequest(
-      url::Origin::Create(well_known.accounts), well_known.accounts, "",
+      url::Origin::Create(well_known.accounts), well_known.accounts,
       base::BindOnce(&EmailVerificationRequest::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), email, barrier, accounts));
 }

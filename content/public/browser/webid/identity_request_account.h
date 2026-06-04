@@ -87,6 +87,12 @@ class CONTENT_EXPORT IdentityRequestAccount
   explicit IdentityRequestAccount(
       const blink::common::webid::LoginStatusAccount& account);
 
+  // Populates the idp_claimed_login_state for each account based on the
+  // approved_clients field and the client_id.
+  static void ComputeIdpClaimedLoginStates(
+      const std::string& client_id,
+      std::vector<scoped_refptr<IdentityRequestAccount>>& accounts);
+
   // The identity provider to which the account belongs to. This is not set in
   // the constructor but instead set later.
   scoped_refptr<IdentityProviderData> identity_provider = nullptr;
@@ -119,6 +125,10 @@ class CONTENT_EXPORT IdentityRequestAccount
   // The account login state populated by the IDP through an approved clients
   // list.
   std::optional<LoginState> idp_claimed_login_state;
+
+  // The list of approved clients for this account, or std::nullopt if the IDP
+  // did not provide the approved_clients list.
+  std::optional<std::vector<std::string>> approved_clients = std::nullopt;
 
   // The account login state populated by the browser based on stored permission
   // grants.

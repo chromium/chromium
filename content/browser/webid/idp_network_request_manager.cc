@@ -189,8 +189,7 @@ std::string ExtractString(const base::DictValue& response, const char* key) {
   return *str;
 }
 
-IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
-                                       const std::string& client_id) {
+IdentityRequestAccountPtr ParseAccount(const base::DictValue& account) {
   auto* id = account.FindString(webid::kAccountIdKey);
   auto* email = account.FindString(webid::kAccountEmailKey);
   auto* name = account.FindString(webid::kAccountNameKey);
@@ -267,19 +266,13 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
 
   webid::RecordApprovedClientsExistence(approved_clients != nullptr);
 
-  std::optional<LoginState> approved_value;
+  std::optional<std::vector<std::string>> approved_clients_list;
   if (approved_clients) {
+    approved_clients_list = std::vector<std::string>();
     for (const base::Value& entry : *approved_clients) {
-      if (entry.is_string() && entry.GetString() == client_id) {
-        approved_value = LoginState::kSignIn;
-        break;
+      if (entry.is_string()) {
+        approved_clients_list->push_back(entry.GetString());
       }
-    }
-    if (!approved_value) {
-      // We did get an approved_clients list, but the client ID was not found.
-      // This means we are certain that the client is not approved; set to
-      // kSignUp instead of leaving as nullopt.
-      approved_value = LoginState::kSignUp;
     }
     webid::RecordApprovedClientsSize(approved_clients->size());
   }
@@ -293,21 +286,22 @@ IdentityRequestAccountPtr ParseAccount(const base::DictValue& account,
     }
   }
 
-  return base::MakeRefCounted<IdentityRequestAccount>(
+  auto parsed_account = base::MakeRefCounted<IdentityRequestAccount>(
       *id, display_identifier, display_name, *email, *name,
       given_name ? *given_name : "", picture ? GURL(*picture) : GURL(),
       phone ? *phone : "", username ? *username : "",
       std::move(potentially_approved_site_hashes_vector),
       std::move(account_hints), std::move(domain_hints), std::move(labels),
-      approved_value,
+      /*idp_claimed_login_state=*/std::nullopt,
       /*browser_trusted_login_state=*/LoginState::kSignUp);
+  parsed_account->approved_clients = std::move(approved_clients_list);
+  return parsed_account;
 }
 
 // Parses accounts from given Value. Returns true if parse is successful and
 // adds parsed accounts to the |account_list|.
 bool ParseAccounts(const base::ListValue& accounts,
                    std::vector<IdentityRequestAccountPtr>& account_list,
-                   const std::string& client_id,
                    bool from_accounts_push,
                    AccountsResponseInvalidReason& parsing_error) {
   DCHECK(account_list.empty());
@@ -320,8 +314,7 @@ bool ParseAccounts(const base::ListValue& accounts,
       return false;
     }
 
-    IdentityRequestAccountPtr parsed_account =
-        ParseAccount(*account_dict, client_id);
+    IdentityRequestAccountPtr parsed_account = ParseAccount(*account_dict);
     if (parsed_account) {
       if (account_ids.count(parsed_account->id)) {
         parsing_error = AccountsResponseInvalidReason::kAccountsShareSameId;
@@ -605,7 +598,6 @@ void OnClientMetadataParsed(
 }
 
 void OnAccountsRequestParsed(
-    std::string client_id,
     IdpNetworkRequestManager::AccountsRequestCallback callback,
     FetchStatus fetch_status,
     std::optional<base::DictValue> result) {
@@ -640,7 +632,7 @@ void OnAccountsRequestParsed(
   AccountsResponseInvalidReason parsing_error =
       AccountsResponseInvalidReason::kResponseIsNotJsonOrDict;
   bool accounts_valid =
-      ParseAccounts(*accounts, response.accounts, client_id,
+      ParseAccounts(*accounts, response.accounts,
                     fetch_status.from_accounts_push, parsing_error);
 
   if (!accounts_valid) {
@@ -1158,7 +1150,6 @@ void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
 bool IdpNetworkRequestManager::SendAccountsRequest(
     const url::Origin& idp_origin,
     const GURL& accounts_url,
-    const std::string& client_id,
     AccountsRequestCallback callback) {
   if (webid::IsLightweightModeEnabled()) {
     base::ListValue accounts = permission_delegate_->GetAccounts(idp_origin);
@@ -1170,7 +1161,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
 
     if (accounts.size() > 0) {
       OnAccountsRequestParsed(
-          client_id, std::move(callback), success_status,
+          std::move(callback), success_status,
           base::DictValue().Set(kAccountsKey, std::move(accounts)));
       return false;
     }
@@ -1179,7 +1170,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
     // behave as though we received an empty accounts_endpoint response.
     if (accounts_url.is_empty()) {
       OnAccountsRequestParsed(
-          client_id, std::move(callback), success_status,
+          std::move(callback), success_status,
           base::DictValue().Set(kAccountsKey, base::ListValue()));
       return false;
     }
@@ -1191,7 +1182,7 @@ bool IdpNetworkRequestManager::SendAccountsRequest(
   DownloadJsonAndParse(
       std::move(resource_request),
       /*url_encoded_post_data=*/std::nullopt,
-      base::BindOnce(&OnAccountsRequestParsed, client_id, std::move(callback)));
+      base::BindOnce(&OnAccountsRequestParsed, std::move(callback)));
   return true;
 }
 

@@ -154,9 +154,9 @@ TEST_F(IdentityCredentialSourceImplTest, SuccessfulFetching) {
   accounts_response.site_salt = "fc432178f9155c4e24762de5b9505f2e";
   accounts_response.accounts.push_back(account);
 
-  EXPECT_CALL(*network_manager_, SendAccountsRequest(_, accounts_url, _, _))
+  EXPECT_CALL(*network_manager_, SendAccountsRequest(_, accounts_url, _))
       .WillOnce(
-          [&](const url::Origin&, const GURL&, const std::string&,
+          [&](const url::Origin&, const GURL&,
               IdpNetworkRequestManager::AccountsRequestCallback callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
@@ -190,7 +190,7 @@ TEST_F(IdentityCredentialSourceImplTest, UserNotSignedInToIdP) {
 
   // Should NOT call FetchWellKnown or anything else.
   EXPECT_CALL(*network_manager_, FetchWellKnown(_, _)).Times(0);
-  EXPECT_CALL(*network_manager_, SendAccountsRequest(_, _, _, _)).Times(0);
+  EXPECT_CALL(*network_manager_, SendAccountsRequest(_, _, _)).Times(0);
 
   base::RunLoop run_loop;
   source_->GetIdentityCredentialSuggestions(
@@ -256,9 +256,9 @@ TEST_F(IdentityCredentialSourceImplTest, FilterOutSignupAccount) {
   accounts_response.accounts.push_back(account_matching);
   accounts_response.accounts.push_back(account_not_matching);
 
-  EXPECT_CALL(*network_manager_, SendAccountsRequest(_, accounts_url, _, _))
+  EXPECT_CALL(*network_manager_, SendAccountsRequest(_, accounts_url, _))
       .WillOnce(
-          [&](const url::Origin&, const GURL&, const std::string&,
+          [&](const url::Origin&, const GURL&,
               IdpNetworkRequestManager::AccountsRequestCallback callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,
@@ -633,9 +633,9 @@ TEST_F(IdentityCredentialSourceImplTest,
   // Mock SendAccountsRequest returning an account that will be filtered out
   // in OnAccountsFetchCompleted.
   EXPECT_CALL(*subframe_network_manager_ptr,
-              SendAccountsRequest(_, GURL(kAccountsUrl), _, _))
+              SendAccountsRequest(_, GURL(kAccountsUrl), _))
       .WillOnce(
-          [&](const url::Origin&, const GURL&, const std::string&,
+          [&](const url::Origin&, const GURL&,
               IdpNetworkRequestManager::AccountsRequestCallback callback) {
             base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
                 FROM_HERE,

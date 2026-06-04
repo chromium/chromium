@@ -307,11 +307,10 @@ void AccountsFetcher::OnAllConfigAndWellKnownFetched(
     if (idp_info->provider->config->from_idp_registration_api) {
       accounts_endpoint = GURL();
     }
-    std::string client_id = idp_info->provider->config->client_id;
     const GURL& config_url = idp_info->provider->config->config_url;
 
     if (network_manager_->SendAccountsRequest(
-            url::Origin::Create(config_url), accounts_endpoint, client_id,
+            url::Origin::Create(config_url), accounts_endpoint,
             base::BindOnce(&AccountsFetcher::OnAccountsResponseReceived,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(idp_info)))) {
@@ -378,7 +377,8 @@ void AccountsFetcher::OnAccountsResponseReceived(
     return;
   }
   fedcm_metrics_->RecordReadyToShowAccountsSize(accounts.accounts.size());
-  ComputeLoginStates(idp_info->provider->config->config_url, accounts.accounts);
+  ComputeLoginStates(idp_info->provider->config->config_url,
+                     idp_info->provider->config->client_id, accounts.accounts);
   ComputeAccountFields(GetDisclosureFields(idp_info->provider->fields),
                        accounts.accounts);
 
@@ -575,7 +575,9 @@ void AccountsFetcher::MarkAccountsWithDomainHint(
 
 void AccountsFetcher::ComputeLoginStates(
     const GURL& idp_config_url,
+    const std::string& client_id,
     std::vector<IdentityRequestAccountPtr>& accounts) {
+  IdentityRequestAccount::ComputeIdpClaimedLoginStates(client_id, accounts);
   url::Origin idp_origin = url::Origin::Create(idp_config_url);
   // Populate the accounts login state.
   for (auto& account : accounts) {

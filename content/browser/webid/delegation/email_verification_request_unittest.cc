@@ -172,8 +172,8 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
@@ -379,8 +379,8 @@ TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
@@ -521,8 +521,8 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
@@ -604,8 +604,8 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
@@ -685,8 +685,8 @@ TEST_F(EmailVerificationRequestTest, AccountsListEmpty) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             std::move(callback).Run(FetchStatus{ParseStatus::kEmptyListError},
@@ -762,8 +762,8 @@ TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
@@ -990,8 +990,8 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
@@ -1080,8 +1080,8 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
           }));
 
   EXPECT_CALL(*mock_idp_network_manager_,
-              SendAccountsRequest(_, kAccountsEndpoint, _, _))
-      .WillOnce(WithArgs<3>(
+              SendAccountsRequest(_, kAccountsEndpoint, _))
+      .WillOnce(WithArgs<2>(
           [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
             IdpNetworkRequestManager::AccountsResponse response;
             auto account = base::MakeRefCounted<IdentityRequestAccount>(
