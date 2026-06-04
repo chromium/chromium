@@ -37,6 +37,7 @@
 #include "base/win/windows_version.h"
 #include "services/webnn/ort/context_impl_ort.h"      // nogncheck
 #include "services/webnn/ort/context_provider_ort.h"  // nogncheck
+#include "services/webnn/ort/dispatch_context_impl_ort.h"  // nogncheck
 #include "services/webnn/ort/environment.h"           // nogncheck
 #include "services/webnn/ort/ort_session_options.h"   // nogncheck
 #include "services/webnn/public/cpp/win_app_runtime_package_info.h"
@@ -138,6 +139,30 @@ void AsanUnsafeFeatureWarning(const char* reason,
   asan_service->Log("\nUnsafe feature: WebMachineLearningNeuralNetwork");
 }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+// Posts BindModelLoader to the context's owning thread, guarded by a weak
+// pointer check to avoid use-after-free. Only called when
+// kWebNNCompilerProcess is enabled, so the context is always a
+// DispatchContextImplOrt.
+void PostBindModelLoaderOnOwningThread(
+    const scoped_refptr<base::SequencedTaskRunner>& owning_task_runner,
+    base::WeakPtr<ort::DispatchContextImplOrt> context_weak_ptr,
+    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver) {
+  CHECK(model_loader_receiver.is_valid());
+  owning_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<ort::DispatchContextImplOrt> weak_context,
+             mojo::PendingReceiver<mojom::WebNNModelLoader> receiver) {
+            if (!weak_context) {
+              return;
+            }
+            weak_context->BindModelLoader(std::move(receiver));
+          },
+          std::move(context_weak_ptr), std::move(model_loader_receiver)));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -339,7 +364,7 @@ bool WebNNContextProviderImpl::HasBackendForTesting() {
 
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
-    WebNNContextProvider::CreateWebNNContextCallback callback) {
+    CreateWebNNContextCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   // `current_context()` must only be called within the stack frame of an actual
   // interface method invocation or disconnect notification scheduled by a
@@ -541,7 +566,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 }
 
 void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
-    WebNNContextProvider::CreateWebNNContextCallback callback,
+    CreateWebNNContextCallback callback,
     mojo::PendingRemote<::webnn::mojom::WebNNContext> remote,
     mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
@@ -586,6 +611,93 @@ void WebNNContextProviderImpl::CreateWeightsFile(
     viz::mojom::GpuHost::CreateWebNNWeightsFileCallback callback) {
   gpu_host_->CreateWebNNWeightsFile(std::move(callback));
 }
+
+#if BUILDFLAG(IS_WIN)
+void WebNNContextProviderImpl::OnDispatchContextCreated(
+    CreateWebNNContextCallback callback,
+    mojo::PendingRemote<mojom::WebNNContext> remote,
+    mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+    mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+    gpu::SequenceId sequence_id,
+    WebNNContextImplPtr context_impl) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  pending_sequences_.erase(sequence_id);
+  CHECK(context_impl);
+
+  auto* dispatch_context =
+      static_cast<ort::DispatchContextImplOrt*>(context_impl.get());
+  auto options_clone = dispatch_context->options().Clone();
+  ContextProperties context_properties = context_impl->properties();
+  blink::WebNNContextToken context_handle = context_impl->handle();
+  gpu::CommandBufferId command_buffer_id =
+      context_impl->gpu_task_scheduler()->command_buffer_id();
+  auto context_weak_ptr = dispatch_context->GetWeakPtr();
+  scoped_refptr<base::SequencedTaskRunner> owning_task_runner(
+      dispatch_context->owning_task_runner());
+
+  sequences_.emplace(context_handle, sequence_id);
+  context_impls_.emplace(std::move(context_impl));
+
+  UpdateWebNNServiceIntrospection();
+
+  // Request a CompilerContext from the Browser. The Browser will launch the
+  // Compiler process if needed and create the context atomically within a
+  // single message handler, avoiding races with Compiler crashes.
+  gpu_host_->RequestWebNNCompilerContext(
+      std::move(options_clone), context_properties,
+      CloneEpPackageInfoForCompiler(),
+      base::BindOnce(
+          [](CreateWebNNContextCallback callback,
+             mojo::PendingRemote<mojom::WebNNContext> remote,
+             ContextProperties context_properties,
+             blink::WebNNContextToken context_handle,
+             mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+             mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+             base::WeakPtr<ort::DispatchContextImplOrt> context_weak_ptr,
+             scoped_refptr<base::SequencedTaskRunner> owning_task_runner,
+             uint64_t command_buffer_id_value,
+             mojo::PendingRemote<mojom::WebNNCompilerContext>
+                 compiler_context_remote,
+             mojo::PendingReceiver<mojom::WebNNModelLoader>
+                 model_loader_receiver) {
+            // Don't check `context_weak_ptr` here — it is bound to the
+            // context's owning sequence, not the main thread. The weak
+            // check happens inside PostBindModelLoaderOnOwningThread.
+            if (!compiler_context_remote.is_valid() ||
+                !model_loader_receiver.is_valid()) {
+              std::move(callback).Run(ToError<mojom::CreateContextResult>(
+                  mojom::Error::Code::kUnknownError,
+                  "Failed to request CompilerContext."));
+              return;
+            }
+            PostBindModelLoaderOnOwningThread(owning_task_runner,
+                                              std::move(context_weak_ptr),
+                                              std::move(model_loader_receiver));
+            auto success = mojom::CreateContextSuccess::New(
+                std::move(remote), std::move(compiler_context_remote),
+                std::move(context_properties), std::move(context_handle),
+                std::move(write_tensor_producer),
+                std::move(read_tensor_consumer), command_buffer_id_value);
+            std::move(callback).Run(
+                mojom::CreateContextResult::NewSuccess(std::move(success)));
+          },
+          std::move(callback), std::move(remote), std::move(context_properties),
+          std::move(context_handle), std::move(write_tensor_producer),
+          std::move(read_tensor_consumer), std::move(context_weak_ptr),
+          std::move(owning_task_runner), command_buffer_id.GetUnsafeValue()));
+}
+
+base::flat_map<std::string, mojom::EpPackageInfoPtr>
+WebNNContextProviderImpl::CloneEpPackageInfoForCompiler() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  std::vector<std::pair<std::string, mojom::EpPackageInfoPtr>> pairs;
+  pairs.reserve(ep_package_info_for_compiler_.size());
+  for (const auto& [name, info] : ep_package_info_for_compiler_) {
+    pairs.emplace_back(name, info.Clone());
+  }
+  return base::flat_map<std::string, mojom::EpPackageInfoPtr>(std::move(pairs));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
 void WebNNContextProviderImpl::CreateTFLiteContext(
@@ -678,25 +790,45 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
   const gpu::CommandBufferId command_buffer_id =
       gpu_task_scheduler->command_buffer_id();
   if (env_creation_results.has_value()) {
-    scoped_trace.AddStep("ort::ContextImplOrt::Create");
-    // Safe to use base::Unretained for shared_image_manager_ since it
-    // lives on the GPU service, which is guaranteed to outlive the provider
-    // and its contexts.
-    task_runner->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(
-            &ort::ContextImplOrt::Create, std::move(receiver), AsWeakPtr(),
-            std::move(options), std::move(write_tensor_consumer),
-            std::move(read_tensor_producer),
-            std::move(env_creation_results.value()),
-            std::move(gpu_task_scheduler), std::move(memory_tracker),
-            task_runner, base::Unretained(shared_image_manager_.get()),
-            main_thread_task_runner_, std::move(scoped_trace)),
-        base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
-                       AsWeakPtr(), std::move(callback), std::move(remote),
-                       std::move(write_tensor_producer),
-                       std::move(read_tensor_consumer), sequence_id,
-                       command_buffer_id));
+    // When the Compiler process is enabled, create a dispatch-only context.
+    // Graph building and compilation happen in the Compiler process.
+    if (base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess)) {
+      scoped_trace.AddStep("ort::DispatchContextImplOrt::Create");
+      task_runner->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(
+              &ort::DispatchContextImplOrt::Create, std::move(receiver),
+              AsWeakPtr(), std::move(options), std::move(write_tensor_consumer),
+              std::move(read_tensor_producer),
+              std::move(env_creation_results.value()),
+              std::move(gpu_task_scheduler), std::move(memory_tracker),
+              task_runner, base::Unretained(shared_image_manager_.get()),
+              main_thread_task_runner_, std::move(scoped_trace)),
+          base::BindOnce(&WebNNContextProviderImpl::OnDispatchContextCreated,
+                         AsWeakPtr(), std::move(callback), std::move(remote),
+                         std::move(write_tensor_producer),
+                         std::move(read_tensor_consumer), sequence_id));
+    } else {
+      scoped_trace.AddStep("ort::ContextImplOrt::Create");
+      // Safe to use base::Unretained for shared_image_manager_ since it
+      // lives on the GPU service, which is guaranteed to outlive the provider
+      // and its contexts.
+      task_runner->PostTaskAndReplyWithResult(
+          FROM_HERE,
+          base::BindOnce(
+              &ort::ContextImplOrt::Create, std::move(receiver), AsWeakPtr(),
+              std::move(options), std::move(write_tensor_consumer),
+              std::move(read_tensor_producer),
+              std::move(env_creation_results.value()),
+              std::move(gpu_task_scheduler), std::move(memory_tracker),
+              task_runner, base::Unretained(shared_image_manager_.get()),
+              main_thread_task_runner_, std::move(scoped_trace)),
+          base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
+                         AsWeakPtr(), std::move(callback), std::move(remote),
+                         std::move(write_tensor_producer),
+                         std::move(read_tensor_consumer), sequence_id,
+                         command_buffer_id));
+    }
     return;
   }
 
@@ -765,7 +897,22 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
     bool is_incognito,
     scoped_refptr<gpu::MemoryTracker> memory_tracker,
     base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   scoped_trace.AddStep("ort::Environment::GetInstance");
+
+  // Store a copy of the EP package info for forwarding to the Compiler process.
+  // Always update the cached copy because EPs in `NotPresent` state may be
+  // added asynchronously after initialization, so later calls may contain
+  // more entries than earlier ones.
+  if (!ep_package_info.empty()) {
+    std::vector<std::pair<std::string, mojom::EpPackageInfoPtr>> pairs;
+    pairs.reserve(ep_package_info.size());
+    for (const auto& [name, info] : ep_package_info) {
+      pairs.emplace_back(name, info.Clone());
+    }
+    ep_package_info_for_compiler_ =
+        base::flat_map<std::string, mojom::EpPackageInfoPtr>(std::move(pairs));
+  }
 
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,

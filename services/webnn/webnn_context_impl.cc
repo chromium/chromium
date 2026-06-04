@@ -282,6 +282,10 @@ void WebNNContextImpl::DestroyAllContextsAndKillGpuProcess() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+void WebNNContextImpl::AddGraphImpl(scoped_refptr<WebNNGraphImpl> graph_impl) {
+  graph_impls_.emplace(std::move(graph_impl));
+}
+
 void WebNNContextImpl::CreateWeightsFile(
     base::OnceCallback<void(base::File)> callback) {
   base::OnceClosure create_task;

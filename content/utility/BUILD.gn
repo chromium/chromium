@@ -148,7 +148,11 @@ source_set("utility") {
   }
 
   if (is_win) {
-    deps += [ ":delegate_data" ]
+    deps += [
+      ":delegate_data",
+      "//services/webnn:webnn_service",
+      "//services/webnn/public/mojom",
+    ]
   }
 }
 

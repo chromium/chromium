@@ -26,6 +26,10 @@ class WebNNContextImpl;
 class WebNNGraphBuilderImpl;
 class WebNNTensorImpl;
 
+namespace ort {
+class DispatchContextImplOrt;
+}  // namespace ort
+
 // GPU process implementation of the `MLGraph` interface. While this class is
 // reference-counted a `WebNNGraphImpl` is guaranteed not to outlive the
 // `WebNNContextImpl` that created it because references are only held by the
@@ -51,6 +55,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
             operand_to_dependent_operations,
         base::flat_map<OperandId, OperationId> operand_to_producing_operation,
         base::PassKey<WebNNGraphBuilderImpl> pass_key);
+
+    // Constructor for graphs created from pre-compiled models. Graph structure
+    // information is not needed since only I/O descriptors are used for
+    // dispatch validation.
+    ComputeResourceInfo(base::flat_map<std::string, OperandDescriptor>
+                            input_names_to_descriptors,
+                        base::flat_map<std::string, OperandDescriptor>
+                            output_names_to_descriptors,
+                        base::PassKey<ort::DispatchContextImplOrt> pass_key);
     ~ComputeResourceInfo();
 
     ComputeResourceInfo(const ComputeResourceInfo&) = delete;

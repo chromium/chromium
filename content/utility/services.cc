@@ -67,6 +67,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "sandbox/win/src/sandbox.h"
+#include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
+#include "services/webnn/webnn_compiler_service_impl.h"
 extern sandbox::TargetServices* g_utility_target_services;
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -292,6 +294,11 @@ auto RunMediaFoundationServiceBroker(
   return std::make_unique<media::MediaFoundationServiceBroker>(
       std::move(receiver), base::BindOnce(&EnsureSandboxedWin));
 }
+
+auto RunWebNNCompilerService(
+    mojo::PendingReceiver<webnn::mojom::WebNNCompilerService> receiver) {
+  return std::make_unique<webnn::WebNNCompilerServiceImpl>(std::move(receiver));
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -423,6 +430,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(IS_WIN)
   services.Add(RunMediaFoundationServiceBroker);
+  services.Add(RunWebNNCompilerService);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

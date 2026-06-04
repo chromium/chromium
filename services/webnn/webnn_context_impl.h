@@ -291,6 +291,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void DestroyAllContextsAndKillGpuProcess();
 #endif  // BUILDFLAG(IS_WIN)
 
+  // Adds a graph to this context.
+  void AddGraphImpl(scoped_refptr<WebNNGraphImpl> graph_impl);
+
   void CreateWeightsFile(base::OnceCallback<void(base::File)> callback);
 
   // True when this context is owned by a WebNNContextProviderImpl (GPU
@@ -348,7 +351,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void ReportBadMessageAndDisconnect(std::string_view message);
 
   // Callback for BuildGraph. Takes ownership of the graph and
-  // extracts the devices for the builder.
+  // extracts the token/devices for the builder.
   void OnGraphBuilt(
       BuildGraphCallback callback,
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr> result);

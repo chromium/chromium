@@ -215,6 +215,8 @@ component("webnn_service") {
       "ort/context_provider_ort.h",
       "ort/device_allocator.cc",
       "ort/device_allocator.h",
+      "ort/dispatch_context_impl_ort.cc",
+      "ort/dispatch_context_impl_ort.h",
       "ort/environment.cc",
       "ort/environment.h",
       "ort/external_weights_manager.cc",

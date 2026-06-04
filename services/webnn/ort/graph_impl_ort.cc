@@ -4,6 +4,8 @@
 
 #include "services/webnn/ort/graph_impl_ort.h"
 
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
@@ -34,6 +36,8 @@ namespace webnn::ort {
 // executing the graph.
 class GraphImplOrt::ComputeResources {
  public:
+  // Session created from model. ExternalWeightsManager keeps weights alive
+  // since they are referenced by the session.
   ComputeResources(
       scoped_refptr<Environment> env,
       std::unique_ptr<ExternalWeightsManager> external_weights_manager,
@@ -48,6 +52,21 @@ class GraphImplOrt::ComputeResources {
             std::move(operand_output_name_to_onnx_output_name)),
         env_(std::move(env)),
         external_weights_manager_(std::move(external_weights_manager)),
+        session_(std::move(session)) {}
+
+  // Session created from compiled model bytes, weights are embedded so
+  // ExternalWeightsManager is not needed.
+  ComputeResources(scoped_refptr<Environment> env,
+                   ScopedOrtSession session,
+                   base::flat_map<std::string, std::string>
+                       operand_input_name_to_onnx_input_name,
+                   base::flat_map<std::string, std::string>
+                       operand_output_name_to_onnx_output_name)
+      : operand_input_name_to_onnx_input_name_(
+            std::move(operand_input_name_to_onnx_input_name)),
+        operand_output_name_to_onnx_output_name_(
+            std::move(operand_output_name_to_onnx_output_name)),
+        env_(std::move(env)),
         session_(std::move(session)) {}
 
   ~ComputeResources() = default;
@@ -101,7 +120,8 @@ class GraphImplOrt::ComputeResources {
   scoped_refptr<Environment> env_;
   // `external_weights_manager_` should be prior to `session_` since it will be
   // called by ORT to release the external weights during `session_`
-  // destruction.
+  // destruction. Only used when the session is created from a model (not from
+  // compiled bytes).
   std::unique_ptr<ExternalWeightsManager> external_weights_manager_;
   ScopedOrtSession session_;
 };
@@ -188,6 +208,41 @@ void GraphImplOrt::DidCreateAndBuild(
       std::move(receiver), std::move(compute_resource_info),
       std::move(result.value()), context,
       /*devices=*/std::vector<mojom::Device>()));
+}
+
+// static
+base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>
+GraphImplOrt::CreateSessionFromCompiledGraph(
+    mojo::PendingReceiver<mojom::WebNNGraph> receiver,
+    WebNNContextImpl& context,
+    ComputeResourceInfo compute_resource_info,
+    scoped_refptr<SessionOptions> session_options,
+    scoped_refptr<Environment> env,
+    mojo_base::BigBuffer compiled_model_data,
+    base::flat_map<std::string, std::string>
+        operand_input_name_to_onnx_input_name,
+    base::flat_map<std::string, std::string>
+        operand_output_name_to_onnx_output_name) {
+  ScopedOrtSession session;
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  if (ORT_CALL_FAILED(ort_api->CreateSessionFromArray(
+          env->get(), compiled_model_data.data(), compiled_model_data.size(),
+          session_options->get(), ScopedOrtSession::Receiver(session).get()))) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Failed to create session from compiled model."));
+  }
+
+  auto compute_resources = base::WrapUnique(new GraphImplOrt::ComputeResources(
+      std::move(env), std::move(session),
+      std::move(operand_input_name_to_onnx_input_name),
+      std::move(operand_output_name_to_onnx_output_name)));
+
+  return base::MakeRefCounted<GraphImplOrt>(
+      std::move(receiver), std::move(compute_resource_info),
+      std::move(compute_resources), context,
+      // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
+      /*devices=*/std::vector<mojom::Device>());
 }
 
 GraphImplOrt::~GraphImplOrt() = default;

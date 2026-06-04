@@ -24,7 +24,7 @@ namespace ort {
 
 // `ContextImplOrt` is created by `WebNNContextProviderImpl` and responsible
 // for creating a `GraphImplOrt` which uses ONNX Runtime for inference.
-class ContextImplOrt final : public WebNNContextImpl {
+class ContextImplOrt : public WebNNContextImpl {
  public:
   // Constructs a new `ContextImplOrt`. Must be called on `owning_task_runner`.
   static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
@@ -80,9 +80,10 @@ class ContextImplOrt final : public WebNNContextImpl {
   void HandleContextLostOrCrash(const std::string& error_message,
                                 OrtErrorCode error_code);
 
- private:
+ protected:
   ~ContextImplOrt() override;
 
+ private:
   void CreateGraphImpl(
       mojo::PendingReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,

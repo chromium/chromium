@@ -22,5 +22,6 @@ include_rules = [
   "+services/screen_ai",
   "+services/video_capture",
   "+services/viz",
+  "+services/webnn",
   "+sandbox/win/src",
 ]
