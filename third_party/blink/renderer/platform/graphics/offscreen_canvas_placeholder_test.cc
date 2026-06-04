@@ -210,7 +210,7 @@ TEST_F(OffscreenCanvasPlaceholderTest, DeferredAnimationStateIsApplied) {
   ASSERT_FALSE(dispatcher());
   const auto initial_state = placeholder()->GetAnimationStateForTesting();
   constexpr auto deferred_state =
-      CanvasResourceDispatcher::AnimationState::kSuspended;
+      OffscreenCanvasPlaceholder::AnimationState::kSuspended;
   // It doesn't really matter what the initial animation state is, but we want
   // to be sure that we're actually going to change it.
   ASSERT_NE(initial_state, deferred_state);
@@ -241,7 +241,7 @@ TEST_F(OffscreenCanvasPlaceholderTest,
   CreateDispatcher();
   const auto initial_state = placeholder()->GetAnimationStateForTesting();
   constexpr auto deferred_state =
-      CanvasResourceDispatcher::AnimationState::kSuspended;
+      OffscreenCanvasPlaceholder::AnimationState::kSuspended;
   ASSERT_NE(initial_state, deferred_state);
   placeholder()->SetSuspendOffscreenCanvasAnimation(deferred_state);
   platform->RunUntilIdle();

@@ -195,7 +195,7 @@ TEST_F(OffscreenCanvasTest, AnimationUsesSyntheticTimerWhenHidden) {
 
   // Without capture, animation should be suspended.
   EXPECT_EQ(GetCanvasElement()->GetAnimationStateForTesting(),
-            CanvasResourceDispatcher::AnimationState::kSuspended);
+            OffscreenCanvasPlaceholder::AnimationState::kSuspended);
 
   // Cause the canvas to believe that it's being captured, and verify that we're
   // now using synthetic timing.
@@ -203,7 +203,7 @@ TEST_F(OffscreenCanvasTest, AnimationUsesSyntheticTimerWhenHidden) {
   GetCanvasElement()->AddListener(listener);
   EXPECT_EQ(
       GetCanvasElement()->GetAnimationStateForTesting(),
-      CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming);
+      OffscreenCanvasPlaceholder::AnimationState::kActiveWithSyntheticTiming);
   GetCanvasElement()->RemoveListener(listener);
 }
 

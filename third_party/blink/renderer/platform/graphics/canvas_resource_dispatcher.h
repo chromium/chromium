@@ -17,6 +17,7 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -35,7 +36,8 @@ class CanvasResourceDispatcherClient {
 };
 
 class PLATFORM_EXPORT CanvasResourceDispatcher
-    : public viz::mojom::blink::CompositorFrameSinkClient {
+    : public viz::mojom::blink::CompositorFrameSinkClient,
+      public OffscreenCanvasPlaceholder::Client {
  public:
   static constexpr unsigned kMaxPendingCompositorFrames = 2;
 
@@ -48,18 +50,6 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   }
 
   CanvasResourceDispatcherClient* Client() { return client_; }
-
-  enum class AnimationState {
-    // Animation should be active, and use the real sync signal from viz.
-    kActive,
-
-    // Animation should be active, but should use a synthetic sync signal.  This
-    // is useful when viz won't provide us with one.
-    kActiveWithSyntheticTiming,
-
-    // Animation should be suspended.
-    kSuspended,
-  };
 
   // `task_runner` is the task runner this object is associated with and
   // executes on. `agent_group_scheduler_compositor_task_runner` is the
@@ -76,13 +66,16 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   ~CanvasResourceDispatcher() override;
   void SetNeedsBeginFrame(bool);
-  void SetAnimationState(AnimationState animation_state);
-  AnimationState GetAnimationStateForTesting() const {
+  void SetAnimationState(
+      OffscreenCanvasPlaceholder::AnimationState animation_state) override;
+  OffscreenCanvasPlaceholder::AnimationState GetAnimationStateForTesting()
+      const {
     return animation_state_;
   }
   bool NeedsBeginFrame() const { return needs_begin_frame_; }
   bool IsAnimationSuspended() const {
-    return animation_state_ == AnimationState::kSuspended;
+    return animation_state_ ==
+           OffscreenCanvasPlaceholder::AnimationState::kSuspended;
   }
   void DispatchFrame(scoped_refptr<CanvasResource>&&,
                      const gfx::Rect& damage_rect,
@@ -133,7 +126,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   gfx::Size size_;
   bool change_size_for_next_commit_;
-  AnimationState animation_state_ = AnimationState::kActive;
+  OffscreenCanvasPlaceholder::AnimationState animation_state_ =
+      OffscreenCanvasPlaceholder::AnimationState::kActive;
   bool needs_begin_frame_ = false;
   unsigned pending_compositor_frames_ = 0;
 

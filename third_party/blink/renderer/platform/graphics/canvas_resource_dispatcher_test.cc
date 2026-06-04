@@ -43,7 +43,7 @@ constexpr size_t kHeight = 10;
 
 struct TestParams {
   bool context_alpha;
-  CanvasResourceDispatcher::AnimationState animation_state;
+  OffscreenCanvasPlaceholder::AnimationState animation_state;
 };
 
 class MockCanvasResourceDispatcherClient
@@ -254,7 +254,7 @@ TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
 
   CreateCanvasResourceDispatcher();
   Dispatcher()->SetAnimationState(
-      CanvasResourceDispatcher::AnimationState::kActive);
+      OffscreenCanvasPlaceholder::AnimationState::kActive);
   platform->RunUntilIdle();
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SetNeedsBeginFrame(true))
@@ -286,7 +286,7 @@ TEST_F(CanvasResourceDispatcherTest,
 
   CreateCanvasResourceDispatcher();
   Dispatcher()->SetAnimationState(
-      CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming);
+      OffscreenCanvasPlaceholder::AnimationState::kActiveWithSyntheticTiming);
   platform->RunUntilIdle();
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SetNeedsBeginFrame(false))
@@ -312,7 +312,7 @@ TEST_F(CanvasResourceDispatcherTest, UsesNoOnBeginFrameWhenSuspended) {
 
   CreateCanvasResourceDispatcher();
   Dispatcher()->SetAnimationState(
-      CanvasResourceDispatcher::AnimationState::kSuspended);
+      OffscreenCanvasPlaceholder::AnimationState::kSuspended);
   platform->RunUntilIdle();
   // Since OBF is off by default zero or more calls to turn it off is okay.  For
   // clarity, explicitly require no calls that would enable OBF.
@@ -353,7 +353,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   // throttle since the canvas might be driving some on-screen work indirectly.
   const bool expected_throttle =
       GetParam().animation_state ==
-      CanvasResourceDispatcher::AnimationState::kSuspended;
+      OffscreenCanvasPlaceholder::AnimationState::kSuspended;
 
   // CanvasResourceDispatcher ctor will cause a CreateCompositorFrameSink() to
   // be issued.
@@ -425,12 +425,12 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
 const TestParams kTestCases[] = {
     {false /* context_alpha */,
-     CanvasResourceDispatcher::AnimationState::kActive},
-    {true, CanvasResourceDispatcher::AnimationState::kActive},
+     OffscreenCanvasPlaceholder::AnimationState::kActive},
+    {true, OffscreenCanvasPlaceholder::AnimationState::kActive},
     // These test the requested throttling state.  Alpha doesn't matter.
     {false,
-     CanvasResourceDispatcher::AnimationState::kActiveWithSyntheticTiming},
-    {false, CanvasResourceDispatcher::AnimationState::kSuspended},
+     OffscreenCanvasPlaceholder::AnimationState::kActiveWithSyntheticTiming},
+    {false, OffscreenCanvasPlaceholder::AnimationState::kSuspended},
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -6,7 +6,6 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -26,14 +25,16 @@ PlaceholderIdMap& placeholderRegistry() {
 }
 
 void SetAnimationState(
-    base::WeakPtr<CanvasResourceDispatcher> dispatcher,
-    CanvasResourceDispatcher::AnimationState animation_state) {
-  if (dispatcher) {
-    dispatcher->SetAnimationState(animation_state);
+    base::WeakPtr<OffscreenCanvasPlaceholder::Client> client,
+    OffscreenCanvasPlaceholder::AnimationState animation_state) {
+  if (client) {
+    client->SetAnimationState(animation_state);
   }
 }
 
 }  // unnamed namespace
+
+OffscreenCanvasPlaceholder::Client::~Client() = default;
 
 OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
   ExportedCanvasResource::OnPlaceholderReleasedResource(
@@ -60,23 +61,23 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
   }
 }
 
-void OffscreenCanvasPlaceholder::SetOffscreenCanvasDispatcher(
-    base::WeakPtr<CanvasResourceDispatcher> dispatcher,
+void OffscreenCanvasPlaceholder::SetClient(
+    base::WeakPtr<Client> client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(IsOffscreenCanvasRegistered());
-  frame_dispatcher_ = std::move(dispatcher);
-  frame_dispatcher_task_runner_ = std::move(task_runner);
+  client_ = std::move(client);
+  client_task_runner_ = std::move(task_runner);
 }
 
 void OffscreenCanvasPlaceholder::SetSuspendOffscreenCanvasAnimation(
-    CanvasResourceDispatcher::AnimationState requested_animation_state) {
+    AnimationState requested_animation_state) {
   if (PostSetAnimationStateToOffscreenCanvasThread(requested_animation_state)) {
     current_animation_state_ = requested_animation_state;
     // If there is any deferred state, clear it because we just posted the
     // correct update.
     deferred_animation_state_.reset();
   } else {
-    // Defer the request until we have a dispatcher.
+    // Defer the request until we have a client.
     deferred_animation_state_ = requested_animation_state;
   }
 }
@@ -112,12 +113,13 @@ void OffscreenCanvasPlaceholder::UnregisterPlaceholderCanvas() {
 }
 
 bool OffscreenCanvasPlaceholder::PostSetAnimationStateToOffscreenCanvasThread(
-    CanvasResourceDispatcher::AnimationState animation_state) {
-  if (!frame_dispatcher_task_runner_)
+    AnimationState animation_state) {
+  if (!client_task_runner_) {
     return false;
-  PostCrossThreadTask(*frame_dispatcher_task_runner_, FROM_HERE,
-                      CrossThreadBindOnce(SetAnimationState, frame_dispatcher_,
-                                          animation_state));
+  }
+  PostCrossThreadTask(
+      *client_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(SetAnimationState, client_, animation_state));
   return true;
 }
 

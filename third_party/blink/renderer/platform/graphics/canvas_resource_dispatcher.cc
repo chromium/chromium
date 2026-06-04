@@ -117,7 +117,7 @@ void UpdatePlaceholderDispatcher(
   // Note that the placeholder canvas may be destroyed when this post task get
   // to executed.
   if (placeholder_canvas)
-    placeholder_canvas->SetOffscreenCanvasDispatcher(dispatcher, task_runner);
+    placeholder_canvas->SetClient(dispatcher, task_runner);
 }
 
 }  // namespace
@@ -315,7 +315,7 @@ void CanvasResourceDispatcher::SetNeedsBeginFrame(bool needs_begin_frame) {
 }
 
 void CanvasResourceDispatcher::SetAnimationState(
-    AnimationState animation_state) {
+    OffscreenCanvasPlaceholder::AnimationState animation_state) {
   if (animation_state_ == animation_state) {
     return;
   }
@@ -334,8 +334,9 @@ void CanvasResourceDispatcher::UpdateBeginFrameSource() {
   }
 
   bool needs_begin_frame = needs_begin_frame_ && !IsAnimationSuspended();
-  if (needs_begin_frame &&
-      animation_state_ == AnimationState::kActiveWithSyntheticTiming) {
+  if (needs_begin_frame && animation_state_ ==
+                               OffscreenCanvasPlaceholder::AnimationState::
+                                   kActiveWithSyntheticTiming) {
     // Generate a synthetic OBF instead of asking viz, if we aren't already.
     sink_->SetNeedsBeginFrame(false);
     if (!fake_frame_timer_.IsActive()) {

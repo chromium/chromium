@@ -1745,8 +1745,7 @@ void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
     return;
   }
 
-  CanvasResourceDispatcher::AnimationState animation_state =
-      CanvasResourceDispatcher::AnimationState::kActive;
+  AnimationState animation_state = AnimationState::kActive;
   const bool is_hidden = GetPage()->GetVisibilityState() ==
                          mojom::blink::PageVisibilityState::kHidden;
   if (is_hidden) {
@@ -1754,11 +1753,10 @@ void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
       const bool allow_synthetic_timing =
           RuntimeEnabledFeatures::AllowSyntheticTimingForCanvasCaptureEnabled();
       animation_state = allow_synthetic_timing
-                            ? CanvasResourceDispatcher::AnimationState::
-                                  kActiveWithSyntheticTiming
-                            : CanvasResourceDispatcher::AnimationState::kActive;
+                            ? AnimationState::kActiveWithSyntheticTiming
+                            : AnimationState::kActive;
     } else {
-      animation_state = CanvasResourceDispatcher::AnimationState::kSuspended;
+      animation_state = AnimationState::kSuspended;
     }
   }
 

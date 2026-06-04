@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -28,16 +27,32 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     kNoPlaceholderId = -1,
   };
 
+  enum class AnimationState {
+    // Animation should be active, and use the real sync signal from viz.
+    kActive,
+
+    // Animation should be active, but should use a synthetic sync signal.  This
+    // is useful when viz won't provide us with one.
+    kActiveWithSyntheticTiming,
+
+    // Animation should be suspended.
+    kSuspended,
+  };
+
+  class Client {
+   public:
+    virtual ~Client();
+    virtual void SetAnimationState(AnimationState animation_state) = 0;
+  };
+
   ~OffscreenCanvasPlaceholder();
 
   virtual void SetOffscreenCanvasResource(
       scoped_refptr<ExportedCanvasResource>&&);
-  void SetOffscreenCanvasDispatcher(
-      base::WeakPtr<CanvasResourceDispatcher>,
-      scoped_refptr<base::SingleThreadTaskRunner>);
+  void SetClient(base::WeakPtr<Client>,
+                 scoped_refptr<base::SingleThreadTaskRunner>);
 
-  void SetSuspendOffscreenCanvasAnimation(
-      CanvasResourceDispatcher::AnimationState requested_state);
+  void SetSuspendOffscreenCanvasAnimation(AnimationState requested_state);
 
   static OffscreenCanvasPlaceholder* GetPlaceholderCanvasById(
       DOMNodeId placeholder_id);
@@ -55,29 +70,27 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
 
   virtual bool HasCanvasCapture() const { return false; }
 
-  CanvasResourceDispatcher::AnimationState GetAnimationStateForTesting() const {
+  AnimationState GetAnimationStateForTesting() const {
     return current_animation_state_;
   }
 
  private:
   bool PostSetAnimationStateToOffscreenCanvasThread(
-      CanvasResourceDispatcher::AnimationState animation_state);
+      AnimationState animation_state);
 
   // Information about the Offscreen Canvas:
   scoped_refptr<ExportedCanvasResource> placeholder_frame_;
-  base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher_;
-  scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner_;
+  base::WeakPtr<Client> client_;
+  scoped_refptr<base::SingleThreadTaskRunner> client_task_runner_;
 
   DOMNodeId placeholder_id_ = kNoPlaceholderId;
 
   // If an animation state change was requested, but we couldn't update it
   // immediately, then this holds the most recent request.
-  std::optional<CanvasResourceDispatcher::AnimationState>
-      deferred_animation_state_;
+  std::optional<AnimationState> deferred_animation_state_;
 
-  // Most recent animation state sent to the dispatcher.
-  CanvasResourceDispatcher::AnimationState current_animation_state_ =
-      CanvasResourceDispatcher::AnimationState::kActive;
+  // Most recent animation state sent to the client.
+  AnimationState current_animation_state_ = AnimationState::kActive;
 
   std::optional<cc::PaintFlags::FilterQuality> filter_quality_ = std::nullopt;
 };
