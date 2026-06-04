@@ -9,6 +9,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -75,9 +76,7 @@ class VIZ_COMMON_EXPORT DrawQuad {
   // Stores state common to a large bundle of quads; kept separate for memory
   // efficiency. There is special treatment to reconstruct these pointers
   // during serialization.
-  // RAW_PTR_EXCLUSION: Performance reasons (rendering.mobile,
-  // Graphics.Smoothness, see crbug.com/345298647)
-  RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state;
+  raw_ptr<const SharedQuadState> shared_quad_state;
 
   // A resource defined by `TransferableResource` with the same `ResourceId`. If
   // set to `kInvalidResourceId` then the quad is resourceless.

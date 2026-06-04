@@ -8,6 +8,7 @@
 
 #include <unordered_map>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/math_util.h"
@@ -30,12 +31,20 @@ RenderPassInternal::RenderPassInternal(size_t num_layers)
     : RenderPassInternal(num_layers, kDefaultNumQuadsToReserve) {}
 RenderPassInternal::RenderPassInternal(size_t shared_quad_state_list_size,
                                        size_t quad_list_size)
-    : quad_list(quad_list_size),
-      shared_quad_state_list(alignof(SharedQuadState),
+    : shared_quad_state_list(alignof(SharedQuadState),
                              sizeof(SharedQuadState),
-                             shared_quad_state_list_size) {}
+                             shared_quad_state_list_size),
+      quad_list(quad_list_size) {}
 
-RenderPassInternal::~RenderPassInternal() = default;
+RenderPassInternal::~RenderPassInternal() {
+#if DCHECK_IS_ON()
+  base::flat_set<const SharedQuadState*> valid_states(
+      shared_quad_state_list.begin(), shared_quad_state_list.end());
+  for (const auto* quad : quad_list) {
+    DCHECK(valid_states.contains(quad->shared_quad_state.get()));
+  }
+#endif
+}
 
 SharedQuadState* RenderPassInternal::CreateAndAppendSharedQuadState() {
   return shared_quad_state_list.AllocateAndConstruct<SharedQuadState>();

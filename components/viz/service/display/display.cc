@@ -658,7 +658,7 @@ void DebugDrawFrame(
         render_pass->transform_to_root_target.ToDecomposedString().c_str());
 
     for (auto* quad : render_pass->quad_list) {
-      auto* sqs = quad->shared_quad_state;
+      const SharedQuadState* sqs = quad->shared_quad_state;
       auto quad_to_root_transform = sqs->quad_to_target_transform;
       if (non_root_passes_in_root_space()) {
         quad_to_root_transform.PostConcat(

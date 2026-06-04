@@ -920,7 +920,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
-    auto* replaced_sqs = replaced_quad->shared_quad_state;
+    const SharedQuadState* replaced_sqs = replaced_quad->shared_quad_state;
 
     // The video should be forced to an underlay mode, even there is nothing on
     // top.
@@ -970,7 +970,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
-    auto* replaced_sqs = replaced_quad->shared_quad_state;
+    const SharedQuadState* replaced_sqs = replaced_quad->shared_quad_state;
 
     // still in an underlay mode.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -1020,7 +1020,7 @@ TEST_F(DCLayerOverlayProcessorTest, RoundedCorners) {
 
     auto* root_pass = pass_list.back().get();
     auto* replaced_quad = root_pass->quad_list.back();
-    auto* replaced_sqs = replaced_quad->shared_quad_state;
+    const SharedQuadState* replaced_sqs = replaced_quad->shared_quad_state;
 
     // still in an underlay mode.
     EXPECT_EQ(1U, overlay_data.promoted_overlays.size());
@@ -2612,7 +2612,6 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
 
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;
   gfx::Rect damage_rect_;
-
 };
 
 enum class SurfaceTestMode {

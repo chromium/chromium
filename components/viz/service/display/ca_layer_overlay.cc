@@ -86,7 +86,7 @@ gfx::CALayerResult FromRenderPassQuad(
     return gfx::kCALayerFailedRenderPassBackdropFilters;
   }
 
-  auto* shared_quad_state = quad->shared_quad_state;
+  const SharedQuadState* shared_quad_state = quad->shared_quad_state;
   if (shared_quad_state->sorting_context_id != 0)
     return gfx::kCALayerFailedRenderPassSortingContextId;
 

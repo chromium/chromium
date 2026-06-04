@@ -2177,7 +2177,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
     {
       SharedQuadState* shared_state = CreateTestSharedQuadState(
           filter_pass_to_target_transform_, filter_pass_layer_rect_,
-          filter_pass.get(), gfx::MaskFilterInfo());
+          root_pass.get(), gfx::MaskFilterInfo());
       auto* filter_pass_quad =
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       filter_pass_quad->SetNew(shared_state, filter_pass_layer_rect_,

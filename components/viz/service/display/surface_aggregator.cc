@@ -488,7 +488,8 @@ void SurfaceAggregator::ProcessPixelMovingFilters(
     filter_rect_in_target_space = GetTargetExpandedRectForPixelMovingFilters(
         *render_pass_quad, child_render_pass.filters);
   } else if (child_render_pass.backdrop_filters.HasFilterThatMovesPixels()) {
-    const auto* shared_quad_state = render_pass_quad->shared_quad_state;
+    const SharedQuadState* shared_quad_state =
+        render_pass_quad->shared_quad_state;
     filter_rect_in_target_space = cc::MathUtil::MapEnclosingClippedRect(
         shared_quad_state->quad_to_target_transform, render_pass_quad->rect);
     if (shared_quad_state->clip_rect) {

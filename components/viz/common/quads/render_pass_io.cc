@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -1100,8 +1101,7 @@ struct DrawQuadCommon {
   gfx::Rect rect;
   gfx::Rect visible_rect;
   bool needs_blending = false;
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
-  RAW_PTR_EXCLUSION const SharedQuadState* shared_quad_state = nullptr;
+  raw_ptr<const SharedQuadState> shared_quad_state = nullptr;
   ResourceId resource_id;
 };
 

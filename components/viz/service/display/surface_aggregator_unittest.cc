@@ -7893,7 +7893,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, PerQuadDamageSameSharedQuadState) {
 
   int draw_rect_index = 0;
   for (auto* quad : output_root_pass->quad_list) {
-    auto* quad_sqs = quad->shared_quad_state;
+    const SharedQuadState* quad_sqs = quad->shared_quad_state;
     EXPECT_TRUE(quad_sqs->overlay_damage_index.has_value());
     EXPECT_EQ(
         aggregated_frame

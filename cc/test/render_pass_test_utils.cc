@@ -340,6 +340,7 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
     quad->shared_quad_state = src_quad->shared_quad_state;
   }
 
+  from_pass->quad_list.clear();
   return copy_pass;
 }
 

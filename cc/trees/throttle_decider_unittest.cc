@@ -53,15 +53,17 @@ TEST_F(ThrottleDeciderTest, BackdropFilter) {
           ->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
   rpdq->material = viz::DrawQuad::Material::kCompositorRenderPass;
   rpdq->render_pass_id = id1;
-  viz::SharedQuadState sqs1;
-  rpdq->shared_quad_state = &sqs1;
+  viz::SharedQuadState* sqs1 =
+      render_passes[1]->CreateAndAppendSharedQuadState();
+  rpdq->shared_quad_state = sqs1;
   rpdq->rect = quad_rect;
 
   viz::FrameSinkId frame_sink_id{10, 10};
   auto* surface_quad =
       render_passes[1]->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
-  viz::SharedQuadState sqs2;
-  surface_quad->shared_quad_state = &sqs2;
+  viz::SharedQuadState* sqs2 =
+      render_passes[1]->CreateAndAppendSharedQuadState();
+  surface_quad->shared_quad_state = sqs2;
   surface_quad->material = viz::DrawQuad::Material::kSurfaceContent;
   surface_quad->surface_range = viz::SurfaceRange(
       std::nullopt,
@@ -88,7 +90,7 @@ TEST_F(ThrottleDeciderTest, BackdropFilter) {
   gfx::Transform transform;
   transform.Translate(0, 10);
   transform.Scale(0.5f, 0.5f);
-  sqs2.quad_to_target_transform = transform;
+  sqs2->quad_to_target_transform = transform;
   // The surface quad (0,10 50x50) is entirely behind the backdrop filter on the
   // rpdq (0,10 50x50) so it can be throttled.
   RunThrottleDecider(render_passes);

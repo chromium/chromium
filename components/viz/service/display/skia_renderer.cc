@@ -640,6 +640,26 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 struct SkiaRenderer::RenderPassOverlayParams {
+  RenderPassOverlayParams() = default;
+  RenderPassOverlayParams(RenderPassOverlayParams&& other) noexcept
+      : render_pass_id(other.render_pass_id),
+        render_pass_backing(std::move(other.render_pass_backing)),
+        rpdq(std::move(other.rpdq)),
+        shared_quad_state(std::move(other.shared_quad_state)),
+        ref_count(other.ref_count) {
+    rpdq.shared_quad_state = &shared_quad_state;
+  }
+
+  RenderPassOverlayParams& operator=(RenderPassOverlayParams&& other) noexcept {
+    render_pass_id = other.render_pass_id;
+    render_pass_backing = std::move(other.render_pass_backing);
+    rpdq = std::move(other.rpdq);
+    shared_quad_state = std::move(other.shared_quad_state);
+    ref_count = other.ref_count;
+    rpdq.shared_quad_state = &shared_quad_state;
+    return *this;
+  }
+
   AggregatedRenderPassId render_pass_id;
   RenderPassBacking render_pass_backing;
   AggregatedRenderPassDrawQuad rpdq;
@@ -3899,6 +3919,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
   overlay_params.render_pass_id = render_pass_id;
   overlay_params.shared_quad_state.SetAll(*rpdq->shared_quad_state);
   overlay_params.rpdq.SetAll(*rpdq);
+  overlay_params.rpdq.shared_quad_state = &overlay_params.shared_quad_state;
 
   in_flight_render_pass_overlay_backings_.push_back(std::move(overlay_params));
 
@@ -3923,7 +3944,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
                                      current_frame()->root_render_pass);
 
   auto* shared_quad_state =
-      const_cast<SharedQuadState*>(quad->shared_quad_state);
+      const_cast<SharedQuadState*>(quad->shared_quad_state.get());
 
   std::optional<gfx::Transform> quad_to_target_transform_inverse;
   if (shared_quad_state->quad_to_target_transform.IsInvertible()) {

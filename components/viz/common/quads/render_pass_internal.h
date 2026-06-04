@@ -89,8 +89,8 @@ class VIZ_COMMON_EXPORT RenderPassInternal {
   // will be serialized as the mojom traits depends on it. Ideally the order is
   // maintained in viz after deserialization, for cache efficiency while
   // iterating through quads, but it's not a strict requirement.
-  QuadList quad_list;
   SharedQuadStateList shared_quad_state_list;
+  QuadList quad_list;
 
   template <typename RenderPassType>
   static void CopyAllForTest(

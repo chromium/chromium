@@ -67,7 +67,7 @@ float OverdrawTracker::EstimateOverdraw(const AggregatedFrame* frame) {
   for (const auto& pass : frame->render_pass_list) {
     for (auto quad = pass->quad_list.begin(); quad != pass->quad_list.end();
          ++quad) {
-      auto* sqs = quad->shared_quad_state;
+      const SharedQuadState* sqs = quad->shared_quad_state;
       auto quad_to_root_transform = sqs->quad_to_target_transform;
 
       if (!quad_to_root_transform.NonDegeneratePreserves2dAxisAlignment()) {
