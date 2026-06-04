@@ -1151,9 +1151,10 @@ SharedImageRepresentationFactory::ProduceGLTexturePassthrough(
 std::unique_ptr<SkiaImageRepresentation>
 SharedImageRepresentationFactory::ProduceSkia(
     const Mailbox& mailbox,
-    scoped_refptr<SharedContextState> context_state) {
+    scoped_refptr<SharedContextState> context_state,
+    SharedImageUsageSet required_usages) {
   return manager_->ProduceSkia(mailbox, memory_type_tracker_.get(),
-                               context_state);
+                               context_state, required_usages);
 }
 
 std::unique_ptr<DawnImageRepresentation>

@@ -84,10 +84,13 @@ class GPU_GLES2_EXPORT SharedImageManager
       MemoryTypeTracker* ref);
   std::unique_ptr<GLTexturePassthroughImageRepresentation>
   ProduceGLTexturePassthrough(const Mailbox& mailbox, MemoryTypeTracker* ref);
+  // If `required_usages` is not empty then the backing must have all the
+  // required usages in order to create a representation.
   std::unique_ptr<SkiaImageRepresentation> ProduceSkia(
       const Mailbox& mailbox,
       MemoryTypeTracker* ref,
-      scoped_refptr<SharedContextState> context_state);
+      scoped_refptr<SharedContextState> context_state,
+      SharedImageUsageSet required_usages = {});
 
   // ProduceDawn must also be called using same |device| if
   // using the same |mailbox|. This is because the underlying shared image
