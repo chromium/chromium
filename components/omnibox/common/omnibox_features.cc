@@ -171,7 +171,7 @@ BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
 BASE_FEATURE(kRichAutocompletion, "OmniboxRichAutocompletion", ENABLED);
 
 // When enabled, the multimodal input button is shown in the Omnibox.
-BASE_FEATURE(kOmniboxMultimodalInput, ENABLED);
+BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 
 // An additional gate to the behavior of OmniboxMultimodalInput on desktop.
 BASE_FEATURE(kAndroidDesktopAimGate, DISABLED);
