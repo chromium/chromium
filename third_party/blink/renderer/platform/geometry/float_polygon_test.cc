@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -43,8 +44,9 @@ class FloatPolygonTestValue {
  public:
   explicit FloatPolygonTestValue(base::span<const float> coordinates) {
     DCHECK_EQ(coordinates.size() % 2, 0u);
-    Vector<gfx::PointF> vertices(coordinates.size() / 2);
-    for (size_t i = 0; i < coordinates.size(); i += 2) {
+    auto coordinates_size = base::checked_cast<wtf_size_t>(coordinates.size());
+    Vector<gfx::PointF> vertices(coordinates_size / 2);
+    for (wtf_size_t i = 0; i < coordinates_size; i += 2) {
       vertices[i / 2] = gfx::PointF(coordinates[i], coordinates[i + 1]);
     }
     polygon_ = std::make_unique<FloatPolygon>(std::move(vertices));

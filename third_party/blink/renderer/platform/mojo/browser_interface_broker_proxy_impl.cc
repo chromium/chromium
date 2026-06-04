@@ -21,7 +21,8 @@ namespace {
 // length)` work fine here.
 struct InterfaceNameHashTranslator {
   static unsigned GetHash(std::string_view s) {
-    return StringHasher::HashMemory(base::as_byte_span(s));
+    return static_cast<unsigned>(
+        StringHasher::HashMemory(base::as_byte_span(s)));
   }
 
   static bool Equal(const String& a, std::string_view b) {

@@ -36,6 +36,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/memory/discardable_memory_allocator.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -167,7 +168,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
       v8::Local<v8::Value> operator()(std::string_view value) {
         return v8::String::NewFromUtf8(isolate, value.data(),
                                        v8::NewStringType::kNormal,
-                                       value.length())
+                                       base::checked_cast<int>(value.length()))
             .ToLocalChecked();
       }
 

@@ -292,8 +292,9 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   test_component->SetPendingValue(WebMediaPlayer::DisplayType::kFullscreen);
   test_component->Finalize(&actual_finalize_keys);
   ASSERT_EQ(actual_finalize_keys.size(), finalize_keys.size());
-  for (size_t i = 0; i < finalize_keys.size(); ++i)
+  for (wtf_size_t i = 0; i < finalize_keys.size(); ++i) {
     EXPECT_EQ(actual_finalize_keys[i], finalize_keys[i]);
+  }
 }
 
 // Unlike WatchTimeReporter, WatchTimeComponents have no automatic finalization

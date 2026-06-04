@@ -134,7 +134,7 @@ TEST(BlinkStorageKeyMojomTraitsTest,
                               mojom::blink::AncestorChainBit::kCrossSite),
   };
 
-  for (size_t i = 0; i < storage_keys.size(); ++i) {
+  for (wtf_size_t i = 0; i < storage_keys.size(); ++i) {
     auto serialized = mojom::StorageKey::Serialize(&storage_keys[i]);
 
     BlinkStorageKey deserialized;
@@ -214,7 +214,7 @@ TEST(BlinkStorageKeyMojomTraitsTest,
                                 mojom::blink::AncestorChainBit::kCrossSite),
     };
 
-    for (size_t i = 0; i < storage_keys.size(); ++i) {
+    for (wtf_size_t i = 0; i < storage_keys.size(); ++i) {
       auto serialized = mojom::StorageKey::Serialize(&blink_storage_keys[i]);
 
       StorageKey deserialized;

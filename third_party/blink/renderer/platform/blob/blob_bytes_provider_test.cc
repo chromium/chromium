@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -274,7 +275,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_MultipleChunks) {
         }));
     auto combined_bytes_chunk = base::span(combined_bytes_).subspan(i, 16u);
     expected_data.insert(0, combined_bytes_chunk.data(),
-                         combined_bytes_chunk.size());
+                         static_cast<wtf_size_t>(combined_bytes_chunk.size()));
   }
 
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
@@ -352,7 +353,7 @@ TEST_F(BlobBytesProviderTest, RequestAsStream) {
               return;
             EXPECT_EQ(MOJO_RESULT_OK, query_result);
 
-            Vector<uint8_t> bytes(num_bytes);
+            Vector<uint8_t> bytes(base::checked_cast<wtf_size_t>(num_bytes));
             EXPECT_EQ(
                 MOJO_RESULT_OK,
                 pipe.ReadData(MOJO_READ_DATA_FLAG_ALL_OR_NONE,

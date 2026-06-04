@@ -61,15 +61,18 @@ class I420FrameAdapter : public webrtc::I420BufferInterface {
   }
 
   int StrideY() const override {
-    return frame_->stride(media::VideoFrame::Plane::kY);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kY));
   }
 
   int StrideU() const override {
-    return frame_->stride(media::VideoFrame::Plane::kU);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kU));
   }
 
   int StrideV() const override {
-    return frame_->stride(media::VideoFrame::Plane::kV);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kV));
   }
 
  protected:
@@ -104,19 +107,23 @@ class I420AFrameAdapter : public webrtc::I420ABufferInterface {
   }
 
   int StrideY() const override {
-    return frame_->stride(media::VideoFrame::Plane::kY);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kY));
   }
 
   int StrideU() const override {
-    return frame_->stride(media::VideoFrame::Plane::kU);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kU));
   }
 
   int StrideV() const override {
-    return frame_->stride(media::VideoFrame::Plane::kV);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kV));
   }
 
   int StrideA() const override {
-    return frame_->stride(media::VideoFrame::Plane::kA);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kA));
   }
 
  protected:
@@ -143,11 +150,13 @@ class NV12FrameAdapter : public webrtc::NV12BufferInterface {
   }
 
   int StrideY() const override {
-    return frame_->stride(media::VideoFrame::Plane::kY);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kY));
   }
 
   int StrideUV() const override {
-    return frame_->stride(media::VideoFrame::Plane::kUV);
+    return base::checked_cast<int>(
+        frame_->stride(media::VideoFrame::Plane::kUV));
   }
 
   webrtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {

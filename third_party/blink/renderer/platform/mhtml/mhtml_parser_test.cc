@@ -18,7 +18,7 @@ namespace {
 
 std::string GetResourceData(
     const HeapVector<Member<ArchiveResource>>& resources,
-    size_t index) {
+    wtf_size_t index) {
   Vector<char> flatten_data = resources[index]->Data()->CopyAs<Vector<char>>();
   return std::string(base::as_string_view(flatten_data));
 }

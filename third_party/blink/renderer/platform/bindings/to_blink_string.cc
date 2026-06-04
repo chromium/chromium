@@ -6,6 +6,7 @@
 
 #include <type_traits>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
@@ -51,7 +52,7 @@ struct V8StringTwoBytesTrait {
                                   v8::Local<v8::String> v8_string,
                                   base::span<CharType> buffer) {
     DCHECK_LE(buffer.size(), static_cast<uint32_t>(v8_string->Length()));
-    v8_string->WriteV2(isolate, 0, buffer.size(),
+    v8_string->WriteV2(isolate, 0, base::checked_cast<uint32_t>(buffer.size()),
                        reinterpret_cast<uint16_t*>(buffer.data()));
   }
 };
@@ -62,7 +63,8 @@ struct V8StringOneByteTrait {
                                   v8::Local<v8::String> v8_string,
                                   base::span<CharType> buffer) {
     DCHECK_LE(buffer.size(), static_cast<uint32_t>(v8_string->Length()));
-    v8_string->WriteOneByteV2(isolate, 0, buffer.size(), buffer.data());
+    v8_string->WriteOneByteV2(
+        isolate, 0, base::checked_cast<uint32_t>(buffer.size()), buffer.data());
   }
 };
 

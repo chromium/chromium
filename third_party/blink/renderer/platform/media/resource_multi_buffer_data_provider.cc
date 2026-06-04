@@ -70,8 +70,9 @@ ResourceMultiBufferDataProvider::ResourceMultiBufferDataProvider(
 }
 
 ResourceMultiBufferDataProvider::~ResourceMultiBufferDataProvider() {
-  base::UmaHistogramCustomCounts("Media.Network.TotalBytesReceived.SRC",
-                                 total_bytes_received_, 1024, 1073741824, 100);
+  base::UmaHistogramCustomCounts(
+      "Media.Network.TotalBytesReceived.SRC",
+      base::saturated_cast<int>(total_bytes_received_), 1024, 1073741824, 100);
 }
 
 void ResourceMultiBufferDataProvider::Start() {

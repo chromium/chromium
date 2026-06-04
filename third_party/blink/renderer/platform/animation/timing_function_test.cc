@@ -47,8 +47,8 @@ class TimingFunctionTest : public testing::Test {
 
   void NotEqualHelperLoop(
       Vector<std::pair<std::string, scoped_refptr<TimingFunction>>>& v) {
-    for (size_t i = 0; i < v.size(); ++i) {
-      for (size_t j = 0; j < v.size(); ++j) {
+    for (wtf_size_t i = 0; i < v.size(); ++i) {
+      for (wtf_size_t j = 0; j < v.size(); ++j) {
         if (i == j)
           continue;
         EXPECT_NE(v[i], v[j])

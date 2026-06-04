@@ -320,7 +320,7 @@ struct VectorTypeOperations {
           AtomicWriteMemcpy<sizeof(T), alignof(T)>(d, s);
           AtomicWriteMemcpy<sizeof(T), alignof(T)>(s, buf);
         });
-        const wtf_size_t len = std::distance(src, src_end);
+        const wtf_size_t len = CheckedDistance(src, src_end);
         if (src_origin != VectorOperationOrigin::kConstruction) {
           // SAFETY: TODO(359904345): VectorTypeOperations should operate on
           // spans.
@@ -2098,26 +2098,28 @@ template <typename Range, typename Proj>
   requires VectorCanAssignFromRange<T, InlineCapacity, Allocator, Range, Proj>
 void Vector<T, InlineCapacity, Allocator>::assign(Range&& other, Proj proj) {
   this->RegisterModification();
-  if (std::ranges::size(other) > capacity()) {
+  const wtf_size_t other_size =
+      base::checked_cast<wtf_size_t>(std::ranges::size(other));
+  if (other_size > capacity()) {
     clear();
-    reserve(std::ranges::size(other));
+    reserve(other_size);
     // Note that `size(other)` may become smaller if `other` is a hash table
     // with `WeakMember` keys and `reserve` caused GC which removed some
     // entries from `other`, see crbug.com/40448463. This won't cause problems
     // as long as we won't use the old `size(other)` in the following code.
   } else {
-    if (std::ranges::size(other) < size()) {
-      Shrink(std::ranges::size(other));
+    if (other_size < size()) {
+      Shrink(other_size);
     }
     TypeOperations::Destruct(data(), DataEnd());
   }
 
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, data(), capacity(), size_,
-                                     std::ranges::size(other));
+                                     other_size);
   TypeOperations::UninitializedTransform(
       std::ranges::begin(other), std::ranges::end(other), data(),
       VectorOperationOrigin::kRegularModification, std::move(proj));
-  size_ = std::ranges::size(other);
+  size_ = other_size;
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>

@@ -12,6 +12,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -255,13 +256,16 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
           shared_image->mailbox(), shared_image->GetTextureTarget(),
           source_rect, out_rect_even,
           shared_image->surface_origin() != kTopLeft_GrSurfaceOrigin,
-          output_frame->stride(media::VideoFrame::Plane::kY),
+          base::checked_cast<int>(
+              output_frame->stride(media::VideoFrame::Plane::kY)),
           output_frame->GetWritableVisiblePlaneData(
               media::VideoFrame::Plane::kY),
-          output_frame->stride(media::VideoFrame::Plane::kU),
+          base::checked_cast<int>(
+              output_frame->stride(media::VideoFrame::Plane::kU)),
           output_frame->GetWritableVisiblePlaneData(
               media::VideoFrame::Plane::kU),
-          output_frame->stride(media::VideoFrame::Plane::kV),
+          base::checked_cast<int>(
+              output_frame->stride(media::VideoFrame::Plane::kV)),
           output_frame->GetWritableVisiblePlaneData(
               media::VideoFrame::Plane::kV),
           std::move(keepalive_callback), std::move(finish_callback));
@@ -600,7 +604,8 @@ void WebRtcVideoFrameAdapter::PrepareMappedBufferAsync(
 
   auto scaled_frame = media::VideoFrame::WrapVideoFrame(
       frame_, frame_->format(), frame_->visible_rect(),
-      gfx::Size(width, height));
+      gfx::Size(base::checked_cast<int>(width),
+                base::checked_cast<int>(height)));
 
   // Need to ensure `this` is held in the callback.
   base::OnceCallback<void(scoped_refptr<media::VideoFrame>)> callback =
