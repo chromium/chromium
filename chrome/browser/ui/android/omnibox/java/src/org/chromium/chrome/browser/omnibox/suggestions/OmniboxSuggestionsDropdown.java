@@ -65,7 +65,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final RecyclerViewSelectionController mSelectionController;
     private final Handler mHandler;
     private final OmniboxViewHolderFactory mViewHolderFactory;
-    private final PreWarmingRecycledViewPool mRecycledViewPool;
+    private @Nullable PreWarmingRecycledViewPool mRecycledViewPool;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable GestureObserver mGestureObserver;
@@ -341,13 +341,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             setVerticalScrollBarEnabled(false);
 
             mViewHolderFactory = new OmniboxViewHolderFactory();
-            mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
-            setRecycledViewPool(mRecycledViewPool);
+            if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+                mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
+                setRecycledViewPool(mRecycledViewPool);
+            }
         }
-    }
-
-    public void onNativeInitialized() {
-        mRecycledViewPool.onNativeInitialized();
     }
 
     /**
@@ -371,7 +369,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Clean up resources and remove observers installed by this class. */
     public void destroy() {
-        mRecycledViewPool.destroy();
+        if (mRecycledViewPool != null) {
+            mRecycledViewPool.destroy();
+        }
         mGestureObserver = null;
     }
 
