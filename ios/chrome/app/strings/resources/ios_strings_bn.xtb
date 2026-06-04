@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">আপনার কপি করা টেক্সট সার্চ করুন</translation>
 <translation id="2147127444698817042">শুধুমাত্র iPhone-এ উপলভ্য</translation>
+<translation id="2148326276832455306">Google AI উন্নত করতে চ্যাট পর্যালোচনা ও ব্যবহার করা হয়। আপনি <ph name="BEGIN_LINK" />নিজের অ্যাক্টিভিটি ম্যানেজ<ph name="END_LINK" /> করতে পারবেন, এর মধ্যে আপনার লোকেশনের তথ্যও রয়েছে। <ph name="BEGIN_LINK" />আপনার পছন্দ সম্পর্কে আরও জানুন<ph name="END_LINK" />।</translation>
 <translation id="2148799636999124959">আপনার সেভ করা পাসওয়ার্ডের মাধ্যমে সাইট বা অ্যাপে ঝটপট সাইন-ইন করুন।</translation>
 <translation id="2149968176347646218">কানেকশন সুরক্ষিত নয়</translation>
 <translation id="2149973817440762519">বুকমার্ক সম্পাদনা করুন</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">ইউনিট বাছাইকারী</translation>
 <translation id="2330607597130465898">কোনও সুরক্ষা নেই</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
+<translation id="2340966584724330791">Google আপনার করা চ্যাট এবং আপনি Gemini-র সাথে যা শেয়ার করেন (যেমন, ফাইল, ভিডিও, স্ক্রিন ও ফটো), তা সংগ্রহ করে। এছাড়াও, এটি আপনার মতামত, Gemini-র মাধ্যমে যেসব ওয়েবসাইটে আপনি ভিজিট করেন সেগুলির তথ্য, প্রোডাক্টের ব্যবহার ও লোকেশনের তথ্য (যার মধ্যে রয়েছে আপনার ডিভাইসের সাধারণ লোকেশন, IP অ্যাড্রেস বা Google অ্যাকাউন্টে থাকা বাড়ি অথবা কর্মস্থলের ঠিকানা) সংগ্রহ করে।</translation>
 <translation id="2350463587705616331">ব্যাকগ্রাউন্ডের সেপিয়া রঙ</translation>
 <translation id="2351097562818989364">আপনার অনুবাদ সেটিংস রিসেট করা হয়েছে৷</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=2{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE} ও {DOMAIN_TWO}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=3{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">আপনার তথ্য পূরণ করতে সমস্যা হচ্ছে</translation>
 <translation id="2371084566192454134">ট্যাব ও ট্যাব গ্রুপ</translation>
 <translation id="2371303771137626249">নতুন</translation>
+<translation id="2375947780110007467">Google শেয়ার করা ট্যাবের কন্টেন্ট ও URL ব্যবহার করে। নতুন চ্যাটে আপনার বর্তমান ট্যাব শেয়ার করা হয়। আপনি যেকোনও সময় এই সেটিং পরিবর্তন করতে পারবেন।</translation>
 <translation id="2381405137052800939">প্রাথমিক বিষয়াদি</translation>
 <translation id="2384692388811649784">ছদ্মবেশী ট্যাব লুকান</translation>
 <translation id="2386793615875593361">১টি নির্বাচিত</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">ভয়েস সার্চ</translation>
 <translation id="3289505634533552500">ভয়েস সার্চ</translation>
 <translation id="3295904109373959849">ট্যাব গ্রুপ গ্রিড</translation>
+<translation id="3301639354590628973">অ্যাকাউন্ট পরিবর্তন করবেন?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, নতুন অ্যাক্টিভিটি</translation>
 <translation id="3305294846493618482">আরও</translation>
 <translation id="3311748811247479259">বন্ধ করা আছে</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">পড়া হয়েছে হিসেবে চিহ্নিত করুন</translation>
 <translation id="428768789042547925">নতুন কী আছে</translation>
 <translation id="429074084062258019">{count,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
+<translation id="4294506173142861371"><ph name="FIRST_NAME" /> হিসেবে সাইন-ইন করেছেন?</translation>
 <translation id="4300830875340617674">কার্ড স্ক্যান করে অটোফিল করুন</translation>
 <translation id="4302061870579014542">পজিশন সেট করুন</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">বুকমার্ক</translation>
 <translation id="5447973833955560753">রিকভারি পাসওয়ার্ড</translation>
 <translation id="5452354193031718372">শক্তিশালী পাসওয়ার্ড ব্যবহার করুন:</translation>
+<translation id="5453088693079603292">কোন অ্যাক্টিভিটি সংগ্রহ করা হয়</translation>
 <translation id="5454211924362324495">আপনার পাসওয়ার্ড যাতে অন্যরা ব্যবহার করতে না পারে তার জন্য <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> সাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">আপনার সার্চে যোগ করুন</translation>
 <translation id="5457226814769348910">ডাউনলোড করা অফলাইন পেজ খুলন</translation>
@@ -1523,6 +1529,7 @@
 <translation id="6253686838150111720"><ph name="URL" /> লিঙ্কে সাইন-ইন করুন</translation>
 <translation id="6254066287920239840">ব্রাউজারের পরিবর্তে অ্যাপটিতে লিঙ্কগুলি খুলুন।</translation>
 <translation id="6259928806013786178">রিডিং মোড কাজ করছে না</translation>
+<translation id="626335165106398104">Gemini অন্যান্য পরিষেবায় কাজ করে</translation>
 <translation id="6268773951964630964">কপি করা ছবি সার্চ করুন</translation>
 <translation id="6271462272606946663">মোবাইল সাইটের অনুরোধ লুকান</translation>
 <translation id="6271824294945464304">পাসওয়ার্ড শেয়ার করা হচ্ছে</translation>
@@ -1638,6 +1645,7 @@
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> এবং <ph name="THIRD_WEBSITE" />-এর পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="661266467055912436">ওয়েবে আপনার এবং সকলের জন্য নিরাপত্তা আরও উন্নত করুন।</translation>
 <translation id="6612912757320004438">ট্যাব সম্পর্কিত বিজ্ঞপ্তির অনুমতি দিন…</translation>
+<translation id="6613372200395638275">আপনাকে সবচেয়ে উপযুক্ত সহায়তা প্রদান করতে, Maps ও Flights-এর মতো অন্যান্য Google পরিষেবার সাথে আপনার কিছু ডেটা (যেমন, আপনার চ্যাটের কিছু অংশ, লোকেশন ও অন্যান্য প্রাসঙ্গিক তথ্য) Gemini শেয়ার করে। এমনকি, আপনি পরে নিজের Gemini অ্যাপ অ্যাক্টিভিটি মুছে দিলেও, উন্নতির জন্য এইসব পরিষেবা সেই তথ্য ব্যবহার করতে পারে। <ph name="BEGIN_LINK" />Gemini অ্যাপ গোপনীয়তা হাব<ph name="END_LINK" /> থেকে আরও জানুন।</translation>
 <translation id="6617761071025228250">টেক্সট মুছুন</translation>
 <translation id="6619015782482868078">অ্যাকুয়া থিম</translation>
 <translation id="6620279676667515405">বাতিল করুন</translation>
@@ -1713,6 +1721,9 @@
 <translation id="6858718102216837409">ভাষা যোগ করুন…</translation>
 <translation id="6858855187367714033">স্ক্যান করা হয়েছে</translation>
 <translation id="6859944681507688231">কোনও QR কোড বা ক্রেডিট কার্ড স্ক্যান করতে সেটিংস থেকে ক্যামেরা চালু করুন।</translation>
+<translation id="6862212368460840758">আপনি <ph name="SIGNED_EMAIL" /> হিসেবে সাইন-ইন করেছেন।
+
+আপনার কম্পিউটার থেকে চালিয়ে যেতে, <ph name="OTHER_EMAIL" />-এ পরিবর্তিত করুন। আপনি এই অ্যাকাউন্ট থেকে পাসওয়ার্ড, বুকমার্ক ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="6867369562105931222">পাসওয়ার্ড</translation>
 <translation id="6867400383614725881">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="686831807558000905">সাইন-ইন করবেন না</translation>
@@ -1781,6 +1792,7 @@
 <translation id="7091023926159231962">{count,plural, =1{{count}টি পাসওয়ার্ড ইমপোর্ট করা যায়নি}one{{count}টি পাসওয়ার্ড ইমপোর্ট করা যায়নি}other{{count}টি পাসওয়ার্ড ইমপোর্ট করা যায়নি}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" />-এর Google Password Manager-এ</translation>
 <translation id="7097046145876891318">সময় অনুসারে দামের পরিবর্তন দেখতে অ্যাড্রেস বারে, দামের ইতিহাসে ট্যাপ করুন</translation>
+<translation id="7098554251807199977">Gemini-র সাথে আপনার কথোপকথন বা আপনার <ph name="BEGIN_LINK" />Google Workspace ডেটা<ph name="END_LINK" /> পর্যালোচনা করা অথবা জেনারেটিভ AI মডেল উন্নত করতে তা ব্যবহার করা হবে না।</translation>
 <translation id="7102005569666697658"><ph name="FILE_SIZE" /> ডাউনলোড করা হচ্ছে…</translation>
 <translation id="7104701424653979232">মেনু → সেটিংস → পেমেন্ট পদ্ধতি</translation>
 <translation id="7108338896283013870">লুকান</translation>
@@ -2174,6 +2186,7 @@
 <translation id="8439758443371991593">'পড়ার তালিকায় যোগ করুন' বিকল্পটি লুকান</translation>
 <translation id="8443986842926457191">URL-এ ২০৪৮টির বেশি অক্ষর রয়েছে</translation>
 <translation id="8449869326050867919">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
+<translation id="8461708300275916315">আপনার বয়স ১৮ বছরের চেয়ে কম হলে</translation>
 <translation id="8473815223723723001">Gemini-এর সাহায্যে ছবি এডিট করুন</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="8474378002946546633">সূচনাকে মঞ্জুরী দিন</translation>
@@ -2235,6 +2248,8 @@
 <translation id="8636825310635137004">আপনার অন্য ডিভাইসগুলি থেকে আপনার ট্যাবগুলি পেতে, সিঙ্ক চালু করুন।</translation>
 <translation id="8637431369725868556">বিপজ্জনক সাইট থেকে সুরক্ষা পান।</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{{COUNT}টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {COUNT}টি পাসওয়ার্ড}}</translation>
+<translation id="8639963783467694461">স্বতঃপূর্ণ সেটিংস</translation>
+<translation id="8642417828095157370">আরও প্রাসঙ্গিক উত্তরের জন্য ট্যাব শেয়ার করা হয়েছে</translation>
 <translation id="8643403533759285912">গ্রুপ মুছুন</translation>
 <translation id="8647280737650867362">দাম ট্র্যাক করা বন্ধ হয়নি।</translation>
 <translation id="8654802032646794042">বাতিল করুন</translation>
@@ -2248,6 +2263,7 @@
 <translation id="8672733398999596205">সব চালু করুন</translation>
 <translation id="8674716540979958118">আপনার চুরি হয়ে যাওয়া পাসওয়ার্ড আছে।</translation>
 <translation id="8679900250380464358">পড়ার তালিকায় যোগ করুন</translation>
+<translation id="8680643216091361291">ডিফল্ট হিসেবে আপনার <ph name="BEGIN_LINK" />অ্যাক্টিভিটি সেভ করে রাখুন<ph name="END_LINK" /> সংক্রান্ত সেটিং বন্ধ করা আছে। এটি বন্ধ থাকলে, Google আপনার চ্যাট ৩ দিন সেভ করে রাখে। Gemini অ্যাপকে সঠিকভাবে কাজ করার ব্যাপারে সাহায্য করতে, এটি নিরাপদ রাখতে এবং আপনার মতামত ব্যবহার করে সমস্যার সমাধান করতে Google আপনার চ্যাট ব্যবহার করে। Google AI-কে সকলের জন্য সহায়ক করে তুলতে, আপনি 'অ্যাক্টিভিটি সেভ করে রাখুন' সেটিং চালু করতে পারেন।</translation>
 <translation id="8680786875305615692">সকলের জন্য ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
 <translation id="8690752723634292147">মুছে দেওয়ার বিষয়টি কনফার্ম করুন</translation>
@@ -2397,6 +2413,7 @@
 <translation id="9162432979321511934">অটোফিল পাসওয়ার্ড চালু করুন</translation>
 <translation id="9165320910061267720">ভাড়া কমে যাওয়া সংক্রান্ত সতর্কতার বিজ্ঞপ্তি পেতে, আপনার iOS সেটিংসে বিজ্ঞপ্তিগুলি চালু করতে হবে।</translation>
 <translation id="9179151630575358778">এই আইটেম লুকায়</translation>
+<translation id="9183563643084679152">Chrome-এ সাইন-ইন করার জন্য আপনি একটি QR কোড স্ক্যান করেছেন। আপনি এই অ্যাকাউন্ট থেকে পাসওয়ার্ড, বুকমার্ক ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="9183733013282108610">ছদ্মবেশী মোডে সার্চ</translation>
 <translation id="9186762474139509529">লগ করা শুরু করুন</translation>
 <translation id="9191031968346938109">এতে যোগ করুন…</translation>

@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Buscar texto que copiaches</translation>
 <translation id="2147127444698817042">Só está dispoñible en iPhone</translation>
+<translation id="2148326276832455306">Os chats revísanse e úsanse para mellorar a IA de Google. Podes <ph name="BEGIN_LINK" />xestionar a túa actividade<ph name="END_LINK" />, incluída a información sobre a túa localización. Consulta <ph name="BEGIN_LINK" />máis información acerca das túas escollas<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Inicia sesión de forma rápida en sitios e aplicacións cos contrasinais que teñas gardados.</translation>
 <translation id="2149968176347646218">A conexión non é segura</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Selector de unidades</translation>
 <translation id="2330607597130465898">Sen protección</translation>
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
+<translation id="2340966584724330791">Google recompila os teus chats e o que compartas con Gemini (por exemplo, ficheiros, vídeos, pantallas e fotos). Así mesmo, recompila os teus comentarios, os detalles dos sitios web que visites con Gemini, os datos de uso do produto e a información de localización (por exemplo, a localización xeral do teu dispositivo, o teu enderezo IP ou os enderezos particular ou do traballo que teñas rexistrados na Conta de Google).</translation>
 <translation id="2350463587705616331">Cor de fondo sepia</translation>
 <translation id="2351097562818989364">Restableceuse a túa configuración de tradución.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Podes gardar o teu contrasinal de {DOMAIN_ONE} na túa Conta de Google, {EMAIL}.}=2{Podes gardar os teus contrasinais de {DOMAIN_ONE} e {DOMAIN_TWO} na túa Conta de Google, {EMAIL}.}=3{Podes gardar os teus contrasinais de {DOMAIN_ONE}, {DOMAIN_TWO} e {OTHER_DOMAINS_COUNT} dominio máis na túa Conta de Google, {EMAIL}.}other{Podes gardar os teus contrasinais de {DOMAIN_ONE}, {DOMAIN_TWO} e {OTHER_DOMAINS_COUNT} dominios máis na túa Conta de Google, {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Produciuse un problema ao completar a túa información</translation>
 <translation id="2371084566192454134">Pestanas e grupos de pestanas</translation>
 <translation id="2371303771137626249">Novo</translation>
+<translation id="2375947780110007467">Google usa o contido e o URL das pestanas compartidas. A pestana actual compártese nos novos chats. Podes cambiar esta opción en calquera momento.</translation>
 <translation id="2381405137052800939">Opcións básicas</translation>
 <translation id="2384692388811649784">Ocultar pestanas do modo de incógnito</translation>
 <translation id="2386793615875593361">Seleccionouse un</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Busca por voz</translation>
 <translation id="3289505634533552500">Busca por voz</translation>
 <translation id="3295904109373959849">Grade de grupos de pestanas</translation>
+<translation id="3301639354590628973">Queres cambiar de conta?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, actividade nova</translation>
 <translation id="3305294846493618482">máis</translation>
 <translation id="3311748811247479259">Non</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Marcar como sen ler</translation>
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
+<translation id="4294506173142861371">Queres iniciar sesión como <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">Escanear tarxeta e autocompletar</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Marcadores</translation>
 <translation id="5447973833955560753">Contrasinal de recuperación</translation>
 <translation id="5452354193031718372">Usa este contrasinal seguro:</translation>
+<translation id="5453088693079603292">Que actividade se recompila?</translation>
 <translation id="5454211924362324495">Para evitar que outras persoas usen o teu contrasinal, <ph name="BEGIN_LINK" />cámbiao en <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Engade unha consulta á busca</translation>
 <translation id="5457226814769348910">Abrir versión sen conexión</translation>
@@ -1522,6 +1528,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6253686838150111720">Iniciar sesión en <ph name="URL" /></translation>
 <translation id="6254066287920239840">Abre as ligazóns na aplicación en vez de no navegador.</translation>
 <translation id="6259928806013786178">Produciuse un erro ao activar o modo de lectura</translation>
+<translation id="626335165106398104">Gemini funciona con outros servizos</translation>
 <translation id="6268773951964630964">Buscar imaxe copiada</translation>
 <translation id="6271462272606946663">Ocultar Solicitar sitio para móbiles</translation>
 <translation id="6271824294945464304">Vaise compartir o contrasinal</translation>
@@ -1637,6 +1644,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6609890790934458793">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" />. Non se eliminarán as túas contas.</translation>
 <translation id="661266467055912436">Mellora a túa seguranza e a do resto dos usuarios da Web.</translation>
 <translation id="6612912757320004438">Permitir notificacións de pestanas…</translation>
+<translation id="6613372200395638275">Para ofrecerche axuda personalizada, Gemini comparte algúns dos teus datos (como partes dos teus chats, a localización e outra información relevante) con outros servizos de Google, como Maps e Voos. Eses servizos poden utilizar a devandita información para mellorar, aínda que máis tarde elimines a túa actividade nas aplicacións Gemini. Tes máis detalles no <ph name="BEGIN_LINK" />Centro de privacidade das aplicacións Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Borrar o texto</translation>
 <translation id="6619015782482868078">Tema augamariña</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1712,6 +1720,9 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6858718102216837409">Engadir idioma…</translation>
 <translation id="6858855187367714033">Escaneado</translation>
 <translation id="6859944681507688231">Para escanear un código QR ou unha tarxeta de crédito, activa a cámara na configuración.</translation>
+<translation id="6862212368460840758">Tes a sesión iniciada como <ph name="SIGNED_EMAIL" />.
+
+Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás os contrasinais, os marcadores e moito máis desta conta.</translation>
 <translation id="6867369562105931222">contrasinal</translation>
 <translation id="6867400383614725881">Nova pestana de incógnito</translation>
 <translation id="686831807558000905">Non iniciar sesión</translation>
@@ -1780,6 +1791,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7091023926159231962">{count,plural, =1{Non se puido importar {count} contrasinal}other{Non se puideron importar {count} contrasinais}}</translation>
 <translation id="7095110968493193530">No xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Na barra de enderezos, toca o historial de prezos para consultar os cambios nos prezos ao longo do tempo</translation>
+<translation id="7098554251807199977">O equipo de revisión non analizará nin as túas conversas con Gemini nin os teus <ph name="BEGIN_LINK" />datos de Google Workspace<ph name="END_LINK" />. Ningunha desas dúas cousas se usará para mellorar os modelos de IA xenerativa.</translation>
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menú → Configuración → Métodos de pago</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -2173,6 +2185,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
 <translation id="8443986842926457191">O URL contén máis de 2048 caracteres</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
+<translation id="8461708300275916315">Se tes menos de 18 anos</translation>
 <translation id="8473815223723723001">Editar imaxe con Gemini</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
@@ -2234,6 +2247,8 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8636825310635137004">Activa a sincronización para sincronizar as pestanas dos demais dispositivos.</translation>
 <translation id="8637431369725868556">Protéxete contra os sitios perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
+<translation id="8639963783467694461">Configuración de completado automático</translation>
+<translation id="8642417828095157370">As pestanas compártense para obter respostas máis relevantes</translation>
 <translation id="8643403533759285912">Eliminar grupo</translation>
 <translation id="8647280737650867362">Non se puido facer un seguimento do prezo.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
@@ -2247,6 +2262,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8672733398999596205">Activar todo</translation>
 <translation id="8674716540979958118">Tes contrasinais vulnerados.</translation>
 <translation id="8679900250380464358">Engadir á lista de lectura</translation>
+<translation id="8680643216091361291">A opción de configuración <ph name="BEGIN_LINK" />Manter actividade<ph name="END_LINK" /> está desactivada de forma predeterminada. Nese estado, Google gardará os teus chats durante 3 días e usaraos para que as aplicacións Gemini funcionen correctamente e sexan seguras, e para solucionar problemas a partir dos comentarios que fagas. Podes activar Manter actividade co fin de axudar a mellorar a IA de Google para todo o mundo.</translation>
 <translation id="8680786875305615692">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
@@ -2396,6 +2412,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="9162432979321511934">Activa a opción Autofill Passwords (Autocompletar contrasinais)</translation>
 <translation id="9165320910061267720">Para recibir notificacións de alertas sobre baixadas de prezos, tes que activalas na configuración de iOS.</translation>
 <translation id="9179151630575358778">Oculta este elemento</translation>
+<translation id="9183563643084679152">Escaneaches un código QR para iniciar sesión en Chrome. Obterás os contrasinais, os marcadores e moito máis desta conta.</translation>
 <translation id="9183733013282108610">Busca no modo de incógnito</translation>
 <translation id="9186762474139509529">Iniciar rexistro</translation>
 <translation id="9191031968346938109">Engadir a…</translation>

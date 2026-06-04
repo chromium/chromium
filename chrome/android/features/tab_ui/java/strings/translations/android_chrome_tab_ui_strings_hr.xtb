@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> kartica je grupirana</translation>
 <translation id="1844381456014878100">Nakon 7 dana neaktivnosti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Dodaj karticu na popis za čitanje}one{Dodaj kartice na popis za čitanje}few{Dodaj kartice na popis za čitanje}other{Dodaj kartice na popis za čitanje}}</translation>
 <translation id="1909810060368225529">Obavijest: promjene ove dijeljene grupe kartica vidljive su svima. Svi mogu unositi promjene u vaše dijeljene grupe kartica</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Prikvači karticu}one{Prikvači kartice}few{Prikvači kartice}other{Prikvači kartice}}</translation>
 <translation id="1982637982196732906">Premjesti u odjeljak Neaktivno</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">Pad cijene od <ph name="PRICE_DROP" /> za proizvod <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ikona boje grupe kartica</translation>
 <translation id="311432875115153175">Popis grupa kartica je zatvoren</translation>
+<translation id="3152596030350326139">Prikaži kartice vodoravno</translation>
+<translation id="31806439105337256">Prikaži kartice okomito</translation>
 <translation id="3194464645767632461">ocjena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodaj <ph name="TABS_COUNT_ONE" /> karticu u grupu}one{Dodaj <ph name="TABS_COUNT_MANY" /> karticu u grupu}few{Dodaj <ph name="TABS_COUNT_MANY" /> kartice u grupu}other{Dodaj <ph name="TABS_COUNT_MANY" /> kartica u grupu}}</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>

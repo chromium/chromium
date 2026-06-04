@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">已將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組</translation>
 <translation id="1844381456014878100">閒置 7 天後</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="1909810060368225529">注意：所有人都能看到這個共用分頁群組的變動，以及變更你的共用分頁群組</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{固定分頁}other{固定分頁}}</translation>
 <translation id="1982637982196732906">移到閒置分頁區塊</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" />分頁群組顏色圖示</translation>
 <translation id="311432875115153175">分頁群組清單已關閉</translation>
+<translation id="3152596030350326139">水平顯示分頁</translation>
+<translation id="31806439105337256">垂直顯示分頁</translation>
 <translation id="3194464645767632461">評分</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個分頁加入群組}other{將 <ph name="TABS_COUNT_MANY" /> 個分頁加入群組}}</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>

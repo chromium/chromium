@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">不明政策。</translation>
 <translation id="1227677022489889280">請提供要移動的原因 (必填)</translation>
 <translation id="1228893227497259893">實體 ID 錯誤</translation>
+<translation id="122989279399348496">登入後，<ph name="DOMAIN" /> 就能在支援的網站上自動確認「<ph name="EMAIL" />」，無需手動檢查收件匣</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (自動偵測)</translation>
 <translation id="1232569758102978740">未命名</translation>
 <translation id="1234539281285007945">必須提供「<ph name="FIELD_1" />」</translation>
@@ -509,6 +510,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />，可執行多個動作，按下 Tab 鍵即可切換不同的動作</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">虛擬卡片資料</translation>
+<translation id="1802420021606590788">Chrome 會在雲端私人空間處理網頁標題和網址</translation>
 <translation id="1803254472779303354">允許鎖定滑鼠</translation>
 <translation id="1803351196216024260">可以要求使用你的麥克風</translation>
 <translation id="1804258830776932716">連結帳戶即可快速啟用 Pix</translation>
@@ -872,6 +874,7 @@
 <translation id="2354001756790975382">其他書籤</translation>
 <translation id="2355395290879513365">攻擊者可能會看到你正在這個網站上瀏覽的圖片，並以修改圖片內容的方式讓你受騙。</translation>
 <translation id="2356941001189392209">你造訪的網頁網址清單 (僅列出發生舊版技術事件的網址)</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{將分享 1 個分頁}other{將分享 {NUM_TABS} 個分頁}}</translation>
 <translation id="2357481397660644965">你的裝置是由 <ph name="DEVICE_MANAGER" /> 管理，帳戶是由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種</translation>
 <translation id="2359808026110333948">繼續</translation>
@@ -3025,6 +3028,7 @@
 <translation id="5742806904559466333">酒吧、俱樂部及夜生活</translation>
 <translation id="5743684619253032786">指甲護理產品</translation>
 <translation id="574392208103952083">中</translation>
+<translation id="5745586894920491759">Chrome 會在雲端處理網頁標題和網址</translation>
 <translation id="5745733273847572235">可以要求你提供位置資訊</translation>
 <translation id="5750869797196646528">手勢追蹤</translation>
 <translation id="5752327398324808817">輸入一到兩個字詞</translation>
@@ -3419,6 +3423,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">查看記錄</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和安全 DNS 設定<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">自動確認電子郵件地址</translation>
 <translation id="6366710531182496394">雙釘 (左側)</translation>
 <translation id="6367196786591004737">刪除項目</translation>
 <translation id="6370022303958842211">裝置存取動作，例如登入 (包括登入失敗原因)、登出、鎖定和解鎖</translation>
@@ -5059,6 +5064,7 @@
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建議：<ph name="MARKUP_2" />確認您的數據連線狀態正常<ph name="MARKUP_3" />稍後再重新載入這個網頁<ph name="MARKUP_4" />檢查您輸入的網址是否正確<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">本機檔案將在 <ph name="HOURS" /> 小時後刪除</translation>
+<translation id="8964904785315870349">已驗證的電子郵件地址</translation>
 <translation id="8968766641738584599">儲存卡片</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8971063699422889582">伺服器憑證已過期。</translation>

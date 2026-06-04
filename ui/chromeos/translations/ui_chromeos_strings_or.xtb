@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">ସ୍ୱଚାଳିତ ନାମ ସର୍ଭର</translation>
 <translation id="1210831758834677569">ଲାଓ</translation>
 <translation id="1221555006497674479">ଷ୍ଟୋରେଜ କମ ଅଛି ଆପଣଙ୍କ <ph name="TOTAL_SPACE" /> ସେୟାର କରାଯାଇଥିବା ଡ୍ରାଇଭ ଷ୍ଟୋରେଜରୁ <ph name="REMAINING_PERCENTAGE" />% ବାକି ଅଛି।</translation>
+<translation id="1239594683407221485">Files ଆପ୍‌ରେ ଡିଭାଇସ୍‌ର ବିଷୟବସ୍ତୁ ଏକ୍ସପ୍ଲୋର୍ କରନ୍ତୁ।</translation>
 <translation id="1243314992276662751">ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1249250836236328755">ଶୈଳୀ</translation>
 <translation id="1254593899333212300">ସିଧାସଳଖ ଇଣ୍ଟର୍ନେ‍ଟ୍ ସଂଯୋଗ</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ଆଇଟମକୁ ଡିଲିଟ କରାଯାଇପାରିବ ନାହିଁ। ଆଇଟମକୁ ବ୍ୟବହାର କରାଯାଉଛି।</translation>
 <translation id="1307931752636661898">Linux ଫାଇଲ୍‌ଗୁଡ଼ିକ ଦେଖିପାରୁନାହିଁ</translation>
 <translation id="1313405956111467313">ସ୍ୱଚାଳିତ ପ୍ରୋକ୍ସି କନ୍‌ଫିଗ୍‌ରେସନ୍‌</translation>
+<translation id="1340527397989195812">ଫାଇଲ୍‌ ଆପ୍‌ ବ୍ୟବହାର କରି ଡିଭାଇସ୍‌ରୁ ମିଡିଆର ବ୍ୟାକ୍‍ଅପ୍‌ ନିଅନ୍ତୁ</translation>
 <translation id="134645005685694099">ଫାଇଲ ସିଙ୍କକୁ ଚାଲୁ ରଖିବା ପାଇଁ ଆପଣଙ୍କ ଡିଭାଇସରେ ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ସ୍ପେସ ନାହିଁ। ନୂଆ ଫାଇଲଗୁଡ଼ିକ ଆଉ ସ୍ୱତଃ ସିଙ୍କ ହେବ ନାହିଁ।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ଫାଇଲ୍ ବା ଡିରେକ୍ଟୋରୀ ବ୍ୟବହାର ଯୋଗ୍ୟ ନୁହେଁ।</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">କୌଣସି ୟୁଜର ସାର୍ଟିଫିକେଟ ନାହିଁ</translation>
 <translation id="1403008701842173542">ସବୁ ସ୍ଥାନରେ</translation>
 <translation id="1404323374378969387">ନରୱେଜୀୟ</translation>
+<translation id="1408504635543854729">Files ଆପ୍‌ରେ ଡିଭାଇସ୍‌ର ବିଷୟବସ୍ତୁ ଏକ୍ସପ୍ଲୋର୍ କରନ୍ତୁ। ଏହି ବିଷୟବସ୍ତୁ ଜଣେ ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା ପ୍ରତିବନ୍ଧିତ ଏବଂ ଏହାକୁ ସଂଶୋଧନ କରାଯାଇ ପାରିବ ନାହିଁ।</translation>
 <translation id="1412476183660741812">ସାଇନ କରାଯାଇଥିବା ୱେବ ବଣ୍ଡଲ</translation>
 <translation id="1433628812591023318">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରକୁ ମୁଭ୍ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="1439919885608649279">ଫୁଲଗୁଡ଼ିକ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />କୁ ବାହାର କରିଦିଅନ୍ତୁ</translation>
+<translation id="1464781208867302907">ଡିଭାଇସ୍ ପସନ୍ଦଗୁଡ଼ିକ ପାଇଁ ସେଟିଂସ୍‍କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ଫାଇଲକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ କପି କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1482884275703521657">ଫିନିଶ୍</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Driveରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2004942826429452291">ଫାଇଲଗୁଡ଼ିକୁ କ୍ଲାଉଡରେ ଏବଂ ଏହି Chromebookରେ ଷ୍ଟୋର କରାଯିବ।</translation>
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
+<translation id="2018352199541442911">କ୍ଷମା କରିବେ, ଏହି ସମୟରେ ଆପଣଙ୍କର ବାହ୍ୟ ଷ୍ଟୋରେଜ୍ ଡିଭାଇସ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="2025955442973426285">ଟାଇଗ୍ରିନ୍ୟା</translation>
 <translation id="2029385776150020336">ୟୁଏସ ଏକ୍ସଟେଣ୍ଡ</translation>
 <translation id="2037845485764049925">ଋଷୀୟ</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ଟାମାଗୋଚୀ</translation>
 <translation id="2468470447085858632">ଫାଇଲ ସିଙ୍କ ମାଧ୍ୟମରେ ଆପଣଙ୍କ Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଆକ୍ସେସ କରନ୍ତୁ</translation>
 <translation id="2470939964922472929">ଏକ ଭୁଲ PIN ବହୁତ ଥର ଲେଖାଯାଇଛି। ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ କରିବାକୁ, ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା 8-ଅଙ୍କ ବିଶିଷ୍ଟ ବ୍ୟକ୍ତିଗତ ଅନବ୍ଲକ୍ କରିବା କୀ (PUK) ଲେଖନ୍ତୁ।</translation>
+<translation id="249113932447298600">କ୍ଷମା କରିବେ, ବର୍ତ୍ତମାନ ସମୟରେ ଡିଭାଇସ୍<ph name="DEVICE_LABEL" /> ସମର୍ଥିତ ନୁହେଁ</translation>
 <translation id="2500392669976258912">ଗୁଜୁରାଟୀ ଫୋନେଟିକ୍</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ୟୁକ୍ରେନିଆନ୍</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />କୁ ଜିପ୍ କରୁଛି...</translation>
 <translation id="3335337277364016868">ରେକର୍ଡ କରାଯାଇଥିବା ବର୍ଷ</translation>
+<translation id="3348038390189153836">କାଢ଼ିବା ଯୋଗ୍ୟ ଡିଭାଇସ୍ ଚିହ୍ନଟ ହୋଇଛି</translation>
 <translation id="3353984535370177728">ଅପ୍‌ଲୋଡ୍‍ କରିବାକୁ ଏକ ଫୋଲ୍ଡର୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3356580349448036450">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3358452157379365236">ଗିଟାର</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ନେଟୱାର୍କ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="3973925058222872294">ଇଂରାଜୀ (UK)</translation>
 <translation id="3975895378829046965">ବଙ୍ଗଳା ଫୋନେଟିକ୍</translation>
+<translation id="3983764759749072418">Play Store ଆପ୍ଲିକେସନ୍‌ଗୁଡ଼ିକରେ ଏହି ଡିଭାଇସ୍‌କୁ ଆକ୍ସେସ୍ ଅଛି।</translation>
 <translation id="3999574733850440202">ବର୍ତ୍ତମାନ ଖୋଲାଯାଇଥିବା Microsoft ଫାଇଲଗୁଡ଼ିକ OneDriveକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4017788180641807848">ୱାର୍କମ୍ୟାନ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">ଏହି ଫାଇଲ୍‌କୁ ଆକ୍ସେସ୍‌ କରିବାକୁ ଆପଣଙ୍କୁ ଅନ୍‌ଲାଇନ୍‌ ରହିବା ଆବଶ୍ୟକ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" ନାମରେ ଫୋଲ୍ଡର୍‌ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଦୟାକରି ଗୋଟିଏ ଅଲଗା ନାମ ବାଛନ୍ତୁ।</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ପାଇଁ ବ୍ୟତିକ୍ରମକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="4242533952199664413">ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="4261901459838235729">Google ଉପସ୍ଥାପନା</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ଫିଲ୍ଟର ଚାଲୁ ଅଛି।</translation>
 <translation id="4290535918735525311">Linux ସହ 1ଟି ଫୋଲ୍ଡର୍ ସେୟାର୍ କରାଯାଇଛି</translation>
@@ -550,6 +559,7 @@
 <translation id="5275973617553375938">Google Driveରୁ ଫାଇଲ୍ ପୁନରୁଦ୍ଧାର ହୋଇଛି</translation>
 <translation id="5278111733643988471">ଏହି ଆଇଟମକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ଏହାକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡର "<ph name="PARENT_FOLDER_NAME" />"କୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="5288441970121584418">ବର୍ଗର୍</translation>
+<translation id="529175790091471945">ଏହି ଡିଭାଇସ୍‌କୁ ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
 <translation id="5293615890992542006">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
@@ -565,6 +575,7 @@
 <translation id="5411472733320185105">ଏହି ହୋଷ୍ଟ ଏବଂ ଡୋମେନ୍‌ଗୁଡ଼ିକ ପାଇଁ ପ୍ରକ୍ସି ସେଟିଂସ୍ ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ:</translation>
 <translation id="541890217011173530">ସୋରାନୀ କୁର୍ଦ୍ଦିଶ୍ ଇଂରାଜୀ-ଆଧାରିତ କୀବୋର୍ଡ</translation>
 <translation id="5422221874247253874">ଆକ୍ସେସ୍ ପଏଣ୍ଟ</translation>
+<translation id="5422781158178868512">କ୍ଷମାକରିବେ, ଆପଣଙ୍କ ଏକ୍ସଟର୍ନଲ୍ ଷ୍ଟୋରେଜ୍ ଡିଭାଇସ୍ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ପାଇଁ କୌଣସି ଫଳାଫଳ ନାହିଁ।</translation>
 <translation id="5447680084201416734">ଯଥେଷ୍ଟ ଷ୍ଟୋରେଜ ନାହିଁ।</translation>
 <translation id="5449551289610225147">ଅବୈଧ ପାସ୍‌ୱର୍ଡ</translation>
@@ -612,10 +623,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" />ଟି ଆଇଟମ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="5763377084591234761">ଜର୍ମାନ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
 <translation id="5769519078756170258">ବାହାର କରିବାକୁ ହୋଷ୍ଟ କିମ୍ବା ଡୋମେନ୍</translation>
+<translation id="5774295353725270860">ଫାଇଲ୍ସ ଆପ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="5775750595919327203">ଉର୍ଦ୍ଦୁ</translation>
 <translation id="5776325638577448643">ଲିଭାଇ ଦିଅନ୍ତୁ ଏବଂ ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
 <translation id="57838592816432529">ମ୍ୟୁଟ୍‌</translation>
 <translation id="5788127256798019331">Play ଫାଇଲ୍ସ</translation>
+<translation id="5788367137662787332">କ୍ଷମା କରିବେ, ଅତିକମ୍‌ରେ ଡିଭାଇସ୍‌<ph name="DEVICE_LABEL" />ରେ ଗୋଟିଏ ବିଭାଜନ ଖଞ୍ଜାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="5804245609861364054">କନ୍ନଡ଼ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="5814126672212206791">ସଂଯୋଗର ପ୍ରକାର</translation>
 <translation id="5817397429773072584">ପାରମ୍ପାରିକ ଚାଇନିଜ୍</translation>
@@ -808,9 +821,11 @@
 <translation id="7224162581405244205">ଆଇସ୍ଲେଣ୍ଡିକ</translation>
 <translation id="7229570126336867161">EVDO ଆବଶ୍ୟକ କରେ</translation>
 <translation id="7230898482850090046">"SIMକୁ ଲକ କରନ୍ତୁ" ସେଟିଂ ବନ୍ଦ କରିବାକୁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କୁ ଅନୁରୋଧ କରିଛନ୍ତି</translation>
+<translation id="7232750842195536390">ରିନେମ୍ ପ୍ରକ୍ରିୟା ବିଫଳ ହୋଇଛି</translation>
 <translation id="7238097264433196391">ଡ୍ରାଇଭ୍ ନାମ</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ବିବରଣୀ</translation>
 <translation id="7246947237293279874">FTP ପ୍ରୋକ୍ସି</translation>
+<translation id="725109152065019550">କ୍ଷମା କରିବେ, ଆପଣଙ୍କର ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କ ବ୍ୟବସ୍ଥାପକ ଏକ୍ସଟର୍ନଲ୍‍ ଷ୍ଟୋରେଜ୍‌ ଅକ୍ଷମ କରିଛନ୍ତି।</translation>
 <translation id="7256405249507348194">ଅଜଣା ତ୍ରୁଟି: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ଉପଲବ୍ଧ ଥିବା ସେବାଗୁଡ଼ିକ</translation>
 <translation id="7291818353625820805">କୀଗୁଡ଼ିକୁ ରିପିଟ କରିବା ପାଇଁ ଚାହୁଁଛନ୍ତି? କୀବୋର୍ଡ ସେଟିଂସରେ ଆସେଣ୍ଟ ମାର୍କକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -833,6 +848,7 @@
 <translation id="7417705661718309329">Google ମ୍ୟାପ୍‌</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" ରିଷ୍ଟୋର କରାଯାଉଛି</translation>
 <translation id="7435577899926900307">ୟୁଏସ ଡିଭୋରାକ</translation>
+<translation id="7436921188514130341">ଇସ୍‌, କିଛି ଭୁଲ୍‍ ହୋଇଛି! ରିନେମ୍‌ କରିବା ସମୟରେ ଏକ ତ୍ରୁଟି ହୋ‍ଇଥିଲା।</translation>
 <translation id="7458955835361612701">ବର୍ତ୍ତମାନର କୌଣସି ଇମେଜ ନାହିଁ</translation>
 <translation id="7469894403370665791">ସ୍ୱଚାଳିତ ଭାବେ ଏହି ନେଟ୍‍ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="7486315294984620427">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରିବା ଆବଶ୍ୟକ।</translation>
@@ -848,6 +864,7 @@
 <translation id="7551643184018910560">ସେଲ୍ଫରେ ପିନ୍‌ କରନ୍ତୁ</translation>
 <translation id="7553492409867692754">Linux ଆପ୍ସକୁ <ph name="FOLDER_NAME" /> ଫୋଲ୍ଡରରେ ଥିବା ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="7555339735447658365">ବର୍ତ୍ତମାନ ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ଆପଣ ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ ହେଲେ ଫାଇଲ ସିଙ୍କ ପୁଣି ଆରମ୍ଭ ହେବ</translation>
+<translation id="7589461650300748890">ୱାହୋ, ସେଠାରେ ଅଛି। ସତର୍କ ରୁହନ୍ତୁ।</translation>
 <translation id="7589661784326793847">ଗୋଟିଏ ସେକେଣ୍ଡ ଅପେକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="7600126690270271294">ସର୍ବିଆନ୍</translation>
 <translation id="7603724359189955920">ଗ୍ରିଡ୍ସ</translation>
@@ -893,6 +910,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ନେଟ୍‍ୱର୍କ କନ୍‍ଫିଗର୍ କରିବା ସମୟରେ ତ୍ରୁଟି ହୋଇଛି</translation>
+<translation id="7839051173341654115">ମିଡିଆ ଦେଖନ୍ତୁ/ବ୍ୟାକ୍‍ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="7839804798877833423">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଆଣିବା ପାଇଁ ଆନୁମାନିକ <ph name="FILE_SIZE" /> ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର ହେବ।</translation>
 <translation id="7846076177841592234">ଚୟନିତ ଆଇଟମ୍ ବାତିଲ୍ କରନ୍ତୁ</translation>
 <translation id="7857117644404132472">ବ୍ୟତିକ୍ରମ ଯୋଗ କରନ୍ତୁ</translation>
@@ -900,8 +918,10 @@
 <translation id="7868774406711971383">ପୋଲିଶ୍</translation>
 <translation id="7874321682039004450">ଫିଲିପିନୋ</translation>
 <translation id="78946041517601018">ସେୟାର୍ ହୋଇଥିବା ଡ୍ରାଇଭ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="7897900149154324287">ଭବିଷ୍ୟତରେ, ଆପଣଙ୍କର ଅପସାରଣଯୋଗ୍ୟ ଡିଭାଇସ୍‌ଟିକୁ ଅନ୍‌ପ୍ଲଗ୍ କରିବା ପୂର୍ବରୁ ଏହାକୁ ଫାଇଲ୍ସ ଆପ୍‌ରୁ ବାହାର କରିଦେଇଥିବା ସୁନିଶ୍ଚିତ କରିନିଅନ୍ତୁ। ଅନ୍ୟଥା, ଆପଣ ହୁଏତ ଡାଟା ହରାଇପାରନ୍ତି।</translation>
 <translation id="7901567919203965902">ୟୁଏସ ୱର୍କମେନ ଇଣ୍ଟରନେସନାଲ</translation>
 <translation id="7903984238293908205">କାଟାକାନା</translation>
+<translation id="7908378463497120834">ଆମେ ଦୁଃଖିତ, ଆପଣଙ୍କର ଏକ୍ସଟର୍ନଲ୍ ଷ୍ଟୋରେଜ୍ ଡିଭାଇସ୍‍ର ଅତି କମ୍‍‍ରେ ଗୋଟିଏ ଭାଗ ମାଉଣ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="7908793776359722643">ଏକ ପାର୍ଟିସନକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">My Driveରେ ଥିବା ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକ ଆପଣଙ୍କର Chromebookରେ ସ୍ୱତଃ ସିଙ୍କ ହେବ ଯାହା ଫଳରେ ଆପଣ ଏକ ଇଣ୍ଟରନେଟ କନେକ୍ସନ ବିନା ସେଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିପାରିବେ।</translation>
@@ -1035,6 +1055,7 @@
 <translation id="8873014196523807561">ଏହି ଆଇଟମଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ସେଗୁଡ଼ିକୁ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମଗୁଡ଼ିକରୁ କିଛି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡରଗୁଡ଼ିକୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8876368061475701452">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
+<translation id="8893928184421379330">କ୍ଷମା କରିବେ, <ph name="DEVICE_LABEL" /> ଡିଭାଇସ୍ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="8902208737522818687">ୟୁଏସ ଇଣ୍ଟରନେସନାଲ (PC)</translation>
 <translation id="8903931173357132290">ଗ୍ରାଜୁଏଟ୍</translation>
 <translation id="8912078710089354287">ଲାଞ୍ଜ ହଲାଉଥିବା କୁକୁର</translation>

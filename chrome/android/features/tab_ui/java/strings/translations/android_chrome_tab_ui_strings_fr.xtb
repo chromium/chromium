@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> onglet regroupé</translation>
 <translation id="1844381456014878100">Après 7 jours d'inactivité</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="1909810060368225529">Remarque : Les modifications apportées à ce groupe d'onglets partagé sont visibles par tous. Tout le monde peut modifier vos groupes d'onglets partagés</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Épingler l'onglet}one{Épingler l'onglet}other{Épingler les onglets}}</translation>
 <translation id="1982637982196732906">Déplacer vers la section des éléments inactifs</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> : prix en baisse (-<ph name="PRICE_DROP" />)</translation>
 <translation id="3078350928901129212">Icône <ph name="COLOR_NAME" /> du groupe d'onglets</translation>
 <translation id="311432875115153175">Liste de groupes d'onglets fermée</translation>
+<translation id="3152596030350326139">Afficher les onglets horizontalement</translation>
+<translation id="31806439105337256">Afficher les onglets verticalement</translation>
 <translation id="3194464645767632461">note</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ajouter <ph name="TABS_COUNT_ONE" /> onglet à un groupe}one{Ajouter <ph name="TABS_COUNT_MANY" /> onglet à un groupe}other{Ajouter <ph name="TABS_COUNT_MANY" /> onglets à un groupe}}</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>

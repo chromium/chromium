@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Снижење од <ph name="PRICE_DROP" /> за:<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Боја иконе групе картица је <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Листа групе картица је затворена</translation>
+<translation id="3152596030350326139">Прикажи картице хоризонтално</translation>
+<translation id="31806439105337256">Прикажи картице вертикално</translation>
 <translation id="3194464645767632461">оцена</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> картицу у групу}one{Додајте <ph name="TABS_COUNT_MANY" /> картицу у групу}few{Додајте <ph name="TABS_COUNT_MANY" /> картице у групу}other{Додајте <ph name="TABS_COUNT_MANY" /> картица у групу}}</translation>
 <translation id="3328308545011660196">Предлог: Картице (<ph name="NUMBER_OF_TABS" />) делују повезано. Желите ли да их групишете?</translation>

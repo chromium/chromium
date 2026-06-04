@@ -259,7 +259,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1392813880755413602">OpenDocument prezentacija</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
 <translation id="1393071644879491291">Napadači na web lokaciji koju ste pokušali posjetiti vas mogu prevariti da instalirate softver ili otkrijete podatke kao što su lozinke, broj telefona ili brojevi kreditnih kartica. Chrome strogo preporučuje da se vratite na sigurne web lokacije. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o ovom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="1398743098754840707">Web lokacije koje dodate ovdje se neće koristiti kao reference za odgovore, čak ni ako je kartica otvorena. Ako se web lokacija koju dodate trenutno koristi u konverzaciji, može proći do 30 minuta dok se ne prestane koristiti kao referenca u konverzaciji.</translation>
+<translation id="1398743098754840707">Web lokacije koje dodate ovdje se neće koristiti kao reference za odgovore, čak ni ako je kartica otvorena. Ako se web lokacija koju dodate trenutno koristi u konverzaciji, može proći do 30 minuta dok se ne prestane koristiti kao referenca.</translation>
 <translation id="1402151528875251561">Prikaži historiju na bočnoj ploči</translation>
 <translation id="1405567553485452995">Svijetlozelena</translation>
 <translation id="1406370515365284486">Načini plaćanja će se i dalje sačuvati</translation>
@@ -875,6 +875,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2354001756790975382">Ostale oznake</translation>
 <translation id="2355395290879513365">Napadači mogu vidjeti slike koje gledate na ovoj web lokaciji i navesti vas da ih izmijenite.</translation>
 <translation id="2356941001189392209">Ograničena lista URL-ova stranica koje posjećujete na kojima se odvijaju događaji starije tehnologije</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Dijelit će se 1 kartica}one{Dijelit će se {NUM_TABS} kartica}few{Dijelit će se {NUM_TABS} kartice}other{Dijelit će se {NUM_TABS} kartica}}</translation>
 <translation id="2357481397660644965">Vašim uređajem upravlja <ph name="DEVICE_MANAGER" />, a vašim računom upravlja <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Veći broj</translation>
 <translation id="2359808026110333948">Nastavi</translation>
@@ -4070,7 +4071,6 @@ Dodatni detalji:
 <translation id="7388380253839603603">Cijene plina i gorivo za vozila</translation>
 <translation id="7388594495505979117">{0,plural, =1{Uređaj će se ponovo pokrenuti za 1 min}one{Uređaj će se ponovo pokrenuti za # min}few{Uređaj će se ponovo pokrenuti za # min}other{Uređaj će se ponovo pokrenuti za # min}}</translation>
 <translation id="7393161616326137353">Avanturističke igre</translation>
-<translation id="7393243238767102021">Dozvoliti domeni <ph name="DOMAIN" /> da automatski potvrdi ovu adresu e-pošte?</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
 <translation id="7393971683644170444">Povezivanje s pružaocem usluga kartice…</translation>
 <translation id="739728382607845710">Ikona obrađivača plaćanja</translation>
@@ -4371,7 +4371,7 @@ Dodatni detalji:
 <translation id="7805268272389338048">Šifriranje štiti lične informacije</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Zatvaranje savjeta</translation>
-<translation id="780756914888723112">Pravila dozvoljava do <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> zaglavlja po pravilu. Koristit će se samo ovoliko prvih zaglavlja po pravilu: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />.</translation>
+<translation id="780756914888723112">Pravila dozvoljavaju do <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> zaglavlja po pravilu. Koristit će se samo ovoliko prvih zaglavlja po pravilu: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />.</translation>
 <translation id="7810410097247356677">Da sljedeći put platite brže, sačuvajte karticu i šifrirani sigurnosni kôd na uređaj</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Ukloniti prijedlog obrasca iz Chromea?</translation>

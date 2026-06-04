@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">알 수 없는 정책입니다.</translation>
 <translation id="1227677022489889280">이전 사유 입력(필수)</translation>
 <translation id="1228893227497259893">잘못된 개체 식별자</translation>
+<translation id="122989279399348496">로그인되어 있는 동안에는 사용자가 받은편지함을 확인할 필요가 없도록 <ph name="DOMAIN" /> 도메인이 지원되는 사이트에서 <ph name="EMAIL" /> 주소를 확인할 수 있습니다.</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" />(자동 감지됨)</translation>
 <translation id="1232569758102978740">제목 없음</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> 입력란은 필수 항목입니다.</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, 여러 작업 이용 가능, Tab을 눌러 작업 둘러보기</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">가상 카드 세부정보</translation>
+<translation id="1802420021606590788">Chrome은 페이지 제목과 URL을 클라우드의 비공개 공간에서 처리합니다.</translation>
 <translation id="1803254472779303354">마우스 잠금 허용됨</translation>
 <translation id="1803351196216024260">마이크 사용을 요청할 수 있음</translation>
 <translation id="1804258830776932716">계정을 빠르게 연결하여 Pix를 사용하세요</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">기타 북마크</translation>
 <translation id="2355395290879513365">공격자는 사용자가 이 사이트에서 보고 있는 이미지를 볼 수 있으며 이미지를 수정하여 사용자를 속일 수 있습니다.</translation>
 <translation id="2356941001189392209">기존 기술 이벤트가 발생하는 페이지의 제한된 URL 목록</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{탭 1개 공유 예정}other{탭 {NUM_TABS}개 공유 예정}}</translation>
 <translation id="2357481397660644965">내 기기는 <ph name="DEVICE_MANAGER" />에서 관리하며 내 계정은 <ph name="ACCOUNT_MANAGER" />에서 관리합니다.</translation>
 <translation id="2359629602545592467">복수</translation>
 <translation id="2359808026110333948">계속</translation>
@@ -3027,6 +3030,7 @@
 <translation id="5742806904559466333">바, 클럽, 밤문화</translation>
 <translation id="5743684619253032786">네일케어 제품</translation>
 <translation id="574392208103952083">보통</translation>
+<translation id="5745586894920491759">Chrome은 페이지 제목과 URL을 클라우드에서 처리합니다.</translation>
 <translation id="5745733273847572235">위치를 요청할 수 있음</translation>
 <translation id="5750869797196646528">손 추적</translation>
 <translation id="5752327398324808817">단어를 1~2개 입력하세요.</translation>
@@ -3421,6 +3425,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">로그 보기</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />프록시, 방화벽, 보안 DNS 설정 확인<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">이메일을 자동으로 확인</translation>
 <translation id="6366710531182496394">왼쪽 듀얼 스테이플</translation>
 <translation id="6367196786591004737">항목 삭제</translation>
 <translation id="6370022303958842211">로그인(로그인 실패 이유 포함), 로그아웃, 잠금, 잠금 해제와 같은 기기 액세스 작업</translation>
@@ -5060,6 +5065,7 @@
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />제안사항:<ph name="MARKUP_2" />데이터 연결 상태 확인<ph name="MARKUP_3" />나중에 페이지 새로고침<ph name="MARKUP_4" />입력한 주소 확인<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">로컬 파일이 <ph name="HOURS" />시간 후에 삭제됩니다</translation>
+<translation id="8964904785315870349">인증된 이메일</translation>
 <translation id="8968766641738584599">카드 저장</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8971063699422889582">서버 인증서가 만료되었습니다.</translation>

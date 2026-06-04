@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">นโยบายที่ไม่รู้จัก</translation>
 <translation id="1227677022489889280">ระบุเหตุผลในการย้าย (ต้องระบุ)</translation>
 <translation id="1228893227497259893">ตัวระบุเอนทิตีไม่ถูกต้อง</translation>
+<translation id="122989279399348496">ขณะที่คุณลงชื่อเข้าใช้ <ph name="DOMAIN" /> จะยืนยัน <ph name="EMAIL" /> ในเว็บไซต์ที่รองรับได้ คุณจึงไม่ต้องเช็คกล่องจดหมาย</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ตรวจพบอัตโนมัติ)</translation>
 <translation id="1232569758102978740">ไม่ระบุชื่อ</translation>
 <translation id="1234539281285007945">ต้องระบุ<ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> มีการทำงานหลายอย่างที่ทำได้ กด Tab เพื่อวนดูการทำงานดังกล่าว</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">รายละเอียดบัตรเสมือน</translation>
+<translation id="1802420021606590788">Chrome ประมวลผลชื่อหน้าและ URL ในพื้นที่ส่วนตัวในระบบคลาวด์</translation>
 <translation id="1803254472779303354">อนุญาตให้ล็อกเมาส์</translation>
 <translation id="1803351196216024260">สามารถขอใช้ไมโครโฟนของคุณได้</translation>
 <translation id="1804258830776932716">เปิดใช้ Pix ด้วยการลิงก์บัญชีของคุณอย่างรวดเร็ว</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="2355395290879513365">ผู้โจมตีอาจเห็นรูปภาพที่คุณกำลังดูอยู่บนเว็บไซต์นี้และหลอกลวงคุณโดยการแก้ไขรูปภาพ</translation>
 <translation id="2356941001189392209">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้เหตุการณ์เทคโนโลยีเดิม</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{จะแชร์ 1 แท็บ}other{จะแชร์ {NUM_TABS} แท็บ}}</translation>
 <translation id="2357481397660644965">อุปกรณ์ของคุณจัดการโดย <ph name="DEVICE_MANAGER" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="2359629602545592467">หลายรายการ</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
@@ -3026,6 +3029,7 @@
 <translation id="5742806904559466333">บาร์ คลับ และสถานบันเทิงยามค่ำคืน</translation>
 <translation id="5743684619253032786">ผลิตภัณฑ์ดูแลเล็บ</translation>
 <translation id="574392208103952083">ปานกลาง</translation>
+<translation id="5745586894920491759">Chrome ประมวลผลชื่อหน้าและ URL ในระบบคลาวด์</translation>
 <translation id="5745733273847572235">สามารถขอตำแหน่งของคุณได้</translation>
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>
 <translation id="5752327398324808817">ป้อน 1-2 คำ</translation>
@@ -3420,6 +3424,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ดูบันทึก</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซี ไฟร์วอลล์ และการกำหนดค่า DNS ที่ปลอดภัย<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">ยืนยันอีเมลโดยอัตโนมัติ</translation>
 <translation id="6366710531182496394">เย็บด้วยลวดเย็บกระดาษด้านซ้าย 2 ครั้ง</translation>
 <translation id="6367196786591004737">ลบรายการข้อมูล</translation>
 <translation id="6370022303958842211">การดำเนินการเข้าถึงอุปกรณ์ เช่น การเข้าสู่ระบบ (รวมถึงเหตุผลที่เข้าสู่ระบบไม่สำเร็จ) การออกจากระบบ การล็อก และการปลดล็อก</translation>
@@ -5061,6 +5066,7 @@
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />คำแนะนำ:<ph name="MARKUP_2" />ตรวจสอบว่าคุณมีการเชื่อมต่ออินเทอร์เน็ต<ph name="MARKUP_3" />โหลดหน้าเว็บนี้อีกครั้งในภายหลัง<ph name="MARKUP_4" />ตรวจสอบที่อยู่ที่คุณป้อน<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ระบบจะลบไฟล์ในเครื่องของคุณใน <ph name="HOURS" /> ชั่วโมง</translation>
+<translation id="8964904785315870349">อีเมลที่ยืนยันแล้ว</translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
 <translation id="8970887620466824814">เกิดข้อผิดพลาด</translation>
 <translation id="8971063699422889582">ใบรับรองของเซิร์ฟเวอร์หมดอายุแล้ว</translation>

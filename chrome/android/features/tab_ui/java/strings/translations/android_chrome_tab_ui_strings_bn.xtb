@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-এ <ph name="PRICE_DROP" /> দাম কমে গেছে</translation>
 <translation id="3078350928901129212">ট্যাব গ্রুপ রঙের আইকন <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">ট্যাব গ্রুপের তালিকা বন্ধ আছে</translation>
+<translation id="3152596030350326139">ট্যাবগুলি অনুভূমিকভাবে দেখুন</translation>
+<translation id="31806439105337256">ট্যাবগুলি উল্লম্বভাবে দেখুন</translation>
 <translation id="3194464645767632461">রেটিং</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{গ্রুপে <ph name="TABS_COUNT_ONE" />টি ট্যাব যোগ করুন}one{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}other{গ্রুপে <ph name="TABS_COUNT_MANY" />টি ট্যাব যোগ করুন}}</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>

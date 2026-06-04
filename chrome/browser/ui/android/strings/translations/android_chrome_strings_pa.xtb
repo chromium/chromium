@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">ਤੁਸੀਂ ਇੱਥੋਂ PDF ਡਾਊਨਲੋਡ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="107147699690128016">ਜੇ ਤੁਸੀਂ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਬਦਲਦੇ ਹੋ, ਤਾਂ ਫ਼ਾਈਲ ਸ਼ਾਇਦ ਕਿਸੇ ਵੱਖਰੀ ਐਪਲੀਕੇਸ਼ਨ ਵਿੱਚ ਖੁੱਲ੍ਹੇ ਅਤੇ ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ ਨੁਕਸਾਨ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="1073328695547557412">Google Lens ਪ੍ਰਤੀਕ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
+<translation id="1080116354587839789">ਚੁੜਾਈ ਤੱਕ ਫਿਟ</translation>
 <translation id="1086486568852410168">Google Lens ਨਾਲ ਖੋਜੋ</translation>
 <translation id="1087799850623149508">ਤੁਸੀਂ ਪਤਾ ਬਾਰ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਉਣ ਲਈ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="1089606299949659462">ਸਮੀਖਿਆ ਪੂਰੀ ਹੋ ਗਈ!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ਟੈਬ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ਟੈਬ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}one{# ਪਾਸਵਰਡ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਸਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}other{# ਪਾਸਵਰਡਾਂ ਨੂੰ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੂਜੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਵਰਤਣ ਲਈ, ਇਨ੍ਹਾਂ ਨੂੰ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ।}}</translation>
 <translation id="3293181007446299124">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਪ੍ਰਾਈਵੇਟ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਰਿਪੋਰਟਾਂ ਨੂੰ ਦੇਰੀ ਨਾਲ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
+<translation id="3301639354590628973">ਕੀ ਖਾਤੇ ਸਵਿੱਚ ਕਰਨੇ ਹਨ?</translation>
 <translation id="3301936297336370235">ਪਾਸਵਰਡ ਸੁਝਾਅ ਸੰਬੰਧੀ ਤਸਦੀਕ</translation>
 <translation id="3302615849591357577">ਟੈਬ ਗਰੁੱਪ <ph name="TITLE_OF_GROUP" />, ਰੰਗ <ph name="COLOR_NAME" /> ਨੂੰ ਨਵੇਂ ਬੈਕਗ੍ਰਾਊਂਡ ਟੈਬ ਗਰੁੱਪ ਵਜੋਂ ਮੁੜ-ਬਹਾਲ ਕਰੋ।</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>

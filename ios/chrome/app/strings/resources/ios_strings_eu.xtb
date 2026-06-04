@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Bilatu kopiatu duzun testua</translation>
 <translation id="2147127444698817042">iPhone-rako soilik erabilgarri</translation>
+<translation id="2148326276832455306">Elkarrizketak berrikusiko dira, eta Google-ren AA hobetzeko erabiliko. <ph name="BEGIN_LINK" />Zure jarduerak kudea<ph name="END_LINK" /> ditzakezu, kokapenari buruzko informazioa barne. <ph name="BEGIN_LINK" />Lortu zure aukerei buruzko informazio gehiago<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Hasi saioa bizkor webgune eta aplikazioetan, gordetako pasahitzak erabilita.</translation>
 <translation id="2149968176347646218">Konexioa ez da segurua</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Unitate-hautatzailea</translation>
 <translation id="2330607597130465898">Babesik gabe</translation>
 <translation id="233375395665273385">Ezabatu datuak eta amaitu saioa</translation>
+<translation id="2340966584724330791">Google-k zure elkarrizketak eta Gemini-rekin partekatzen duzun edukia biltzen ditu, hala nola fitxategiak, bideoak, pantailak eta argazkiak. Zure oharrak, Gemini-rekin bisitatzen dituzun webguneei buruzko informazioa, produktuaren erabilera eta kokapen-informazioa (besteak beste, gailuaren kokapen zehaztugabea, IP helbidea, edo Google-ko kontuan gordeta daukazun etxeko edo laneko helbidea) ere biltzen ditu.</translation>
 <translation id="2350463587705616331">Atzeko planoaren kolorea: sepia</translation>
 <translation id="2351097562818989364">Itzulpen-ezarpenak berrezarri egin dira.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} domeinurako pasahitza Google-ko kontuan gorde dezakezu ({EMAIL}).}=2{{DOMAIN_ONE} eta {DOMAIN_TWO} domeinuetarako pasahitzak Google-ko kontuan gorde ditzakezu ({EMAIL}).}=3{{DOMAIN_ONE}, {DOMAIN_TWO} eta beste {OTHER_DOMAINS_COUNT} domeinutarako pasahitzak Google-ko kontuan gorde ditzakezu ({EMAIL}).}other{{DOMAIN_ONE}, {DOMAIN_TWO} eta beste {OTHER_DOMAINS_COUNT} domeinutarako pasahitzak Google-ko kontuan gorde ditzakezu ({EMAIL}).}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Arazoak ditugu zure informazioa betetzeko</translation>
 <translation id="2371084566192454134">Fitxak eta fitxa taldeak</translation>
 <translation id="2371303771137626249">Berria</translation>
+<translation id="2375947780110007467">Partekatutako fitxen edukia eta URLak erabiltzen ditu Google-k. Irekita dagoen fitxa partekatzen da elkarrizketa berrietan. Nahi duzunean alda dezakezu ezarpena.</translation>
 <translation id="2381405137052800939">Oinarrizkoak</translation>
 <translation id="2384692388811649784">Ezkutatu ezkutuko moduko fitxak</translation>
 <translation id="2386793615875593361">Bat hautatu da</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Ahozko bilaketa</translation>
 <translation id="3289505634533552500">Ahozko bilaketa</translation>
 <translation id="3295904109373959849">Fitxa taldeen sareta</translation>
+<translation id="3301639354590628973">Kontua aldatu nahi duzu?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, jarduera berria</translation>
 <translation id="3305294846493618482">gehiago</translation>
 <translation id="3311748811247479259">Desaktibatuta</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Markatu irakurritako gisa</translation>
 <translation id="428768789042547925">Berritasunak</translation>
 <translation id="429074084062258019">{count,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
+<translation id="4294506173142861371"><ph name="FIRST_NAME" /> gisa hasi nahi duzu saioa?</translation>
 <translation id="4300830875340617674">Eskaneatu txartela eta bete automatikoki</translation>
 <translation id="4302061870579014542">Ezarri posizioa</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Laster-markak</translation>
 <translation id="5447973833955560753">Kontua berreskuratzeko pasahitza</translation>
 <translation id="5452354193031718372">Erabili pasahitz konplexu bat:</translation>
+<translation id="5453088693079603292">Zer jarduera biltzen dira?</translation>
 <translation id="5454211924362324495">Besteei zure pasahitza erabiltzea galarazteko, <ph name="BEGIN_LINK" />alda ezazu <ph name="WEBSITE" /> webgunean<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Gehitu zerbait bilaketan</translation>
 <translation id="5457226814769348910">Ireki konexio gabeko bertsioa</translation>
@@ -1522,6 +1528,7 @@
 <translation id="6253686838150111720">Hasi saioa <ph name="URL" /> zerbitzuan</translation>
 <translation id="6254066287920239840">Ireki estekak aplikazioan eta ez arakatzailean.</translation>
 <translation id="6259928806013786178">Irakurtzeko moduak huts egin du</translation>
+<translation id="626335165106398104">Gemini-k beste zerbitzu batzuekin funtzionatzen du</translation>
 <translation id="6268773951964630964">Bilatu kopiatu duzun irudia</translation>
 <translation id="6271462272606946663">Ezkutatu "Eskatu mugikorretarako webgunea"</translation>
 <translation id="6271824294945464304">Pasahitza partekatzen</translation>
@@ -1637,6 +1644,7 @@
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> eta <ph name="THIRD_WEBSITE" /> webguneetako pasahitzak ezabatuko dira. Zure kontuak ez dira ezabatuko.</translation>
 <translation id="661266467055912436">Segurtasuna hobetzen du, bai zuretzat, bai sareko gainerako erabiltzaileentzat.</translation>
 <translation id="6612912757320004438">Eman fitxei buruzko jakinarazpenak bidaltzeko baimena…</translation>
+<translation id="6613372200395638275">Laguntza pertsonalizatua emateko, Gemini-k zure datu batzuk (adibidez, elkarrizketen zatiak, kokapena eta bestelako informazio egokia) Google-ren beste zerbitzu batzuekin partekatzen ditu; esaterako, Maps eta Hegaldiak zerbitzuekin. Zerbitzu horiek hobetzeko erabili dezakete informazio hori, aurrerago zure Gemini-ren aplikazioetako jarduerak ezabatzen badituzu ere. Lortu informazio gehiago <ph name="BEGIN_LINK" />Gemini-ren aplikazioen Pribatutasun-zentroa<ph name="END_LINK" /> atalean.</translation>
 <translation id="6617761071025228250">Garbitu testua</translation>
 <translation id="6619015782482868078">Akuamarina-koloreko gaia</translation>
 <translation id="6620279676667515405">Utzi</translation>
@@ -1712,6 +1720,9 @@
 <translation id="6858718102216837409">Gehitu hizkuntza bat…</translation>
 <translation id="6858855187367714033">Eskaneatuta</translation>
 <translation id="6859944681507688231">QR kodea edo kreditu-txartela eskaneatzeko, gaitu kamera ezarpenetan.</translation>
+<translation id="6862212368460840758"><ph name="SIGNED_EMAIL" /> gisa hasi duzu saioa.
+
+Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikora. Kontu honetako pasahitzak, laster-markak eta bestelako datuak lortuko dituzu.</translation>
 <translation id="6867369562105931222">pasahitza</translation>
 <translation id="6867400383614725881">Sortu ezkutuko moduko fitxa bat</translation>
 <translation id="686831807558000905">Ez hasi saioa</translation>
@@ -1780,6 +1791,7 @@
 <translation id="7091023926159231962">{count,plural, =1{Ezin izan da inportatu {count} pasahitz}other{Ezin izan dira inportatu {count} pasahitz}}</translation>
 <translation id="7095110968493193530">Google-ren Pasahitz-kudeatzailea zerbitzuan (<ph name="EMAIL" /> kontuan)</translation>
 <translation id="7097046145876891318">Helbide-barran, sakatu prezioen historia denboran zehar prezioek izan dituzten aldaketak ikusteko</translation>
+<translation id="7098554251807199977">Gemini-rekin dituzun elkarrizketak eta <ph name="BEGIN_LINK" />Google Workspace-ko datuak<ph name="END_LINK" /> ez dira berrikusiko, eta ez dira erabiliko AA generatiboko ereduak hobetzeko.</translation>
 <translation id="7102005569666697658">Deskargatzen… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menua → Ezarpenak → Ordainketa-metodoak</translation>
 <translation id="7108338896283013870">Ezkutatu</translation>
@@ -2173,6 +2185,7 @@
 <translation id="8439758443371991593">Ezkutatu "Gehitu irakurketa-zerrendan"</translation>
 <translation id="8443986842926457191">URLak 2048 karaktere baino gehiago ditu</translation>
 <translation id="8449869326050867919">Partekatu da pasahitza</translation>
+<translation id="8461708300275916315">18 urte baino gutxiago badituzu</translation>
 <translation id="8473815223723723001">Editatu irudia Gemini bidez</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="8474378002946546633">Eman jakinarazpenak bidaltzeko baimena</translation>
@@ -2234,6 +2247,8 @@
 <translation id="8636825310635137004">Beste gailuetako fitxak eskura izateko, aktibatu sinkronizazioa.</translation>
 <translation id="8637431369725868556">Babestu zeure burua webgune arriskutsuen aurrean.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Ez dago pasahitzik arriskuan}=1{{COUNT} pasahitz dago arriskuan}other{{COUNT} pasahitz daude arriskuan}}</translation>
+<translation id="8639963783467694461">Betetze automatikoaren ezarpenak</translation>
+<translation id="8642417828095157370">Erantzun egokiagoak emateko partekatzen dira fitxak</translation>
 <translation id="8643403533759285912">Ezabatu taldea</translation>
 <translation id="8647280737650867362">Ezin izan zaio utzi prezioaren jarraipena egiteari.</translation>
 <translation id="8654802032646794042">Utzi</translation>
@@ -2247,6 +2262,7 @@
 <translation id="8672733398999596205">Gaitu guztiak</translation>
 <translation id="8674716540979958118">Arriskuan dauden pasahitz batzuk dauzkazu.</translation>
 <translation id="8679900250380464358">Gehitu irakurketa-zerrendan</translation>
+<translation id="8680643216091361291"><ph name="BEGIN_LINK" />Gorde jarduerak<ph name="END_LINK" /> ezarpena desaktibatuta dago modu lehenetsian. Desaktibatuta dagoenean, Google-k 3 egunez gordetzen ditu zure elkarrizketak. Gemini-ren aplikazioek behar bezala funtzionatzen dutela ziurtatzeko, segurtasuna areagotzeko eta zure oharren bidez arazoak konpontzeko erabiltzen ditu elkarrizketak. Google-ren AA guztiontzat hobetzen laguntzeko aktiba dezakezu jarduerak gordetzeko ezarpena.</translation>
 <translation id="8680786875305615692">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="8680787084697685621">Kontuan saioa hasteko xehetasunak zaharkituta daude.</translation>
 <translation id="8690752723634292147">Berretsi ezabatu nahi duzula</translation>
@@ -2396,6 +2412,7 @@
 <translation id="9162432979321511934">Aktibatu pasahitzen betetze automatikoa</translation>
 <translation id="9165320910061267720">Prezio-jaitsierei buruzko alerten jakinarazpenak jasotzeko, iOS-eko ezarpenetan jakinarazpenak aktibatu beharko dituzu.</translation>
 <translation id="9179151630575358778">Elementu hau ezkutatzen du</translation>
+<translation id="9183563643084679152">Chrome-n saioa hasteko QR kode bat eskaneatu duzu. Kontu honetako pasahitzak, laster-markak eta bestelako datuak lortuko dituzu.</translation>
 <translation id="9183733013282108610">Ezkutuko moduko bilaketa</translation>
 <translation id="9186762474139509529">Hasi erregistratzen</translation>
 <translation id="9191031968346938109">Gehitu hemen…</translation>

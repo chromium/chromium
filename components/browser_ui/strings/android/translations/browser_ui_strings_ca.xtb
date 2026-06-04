@@ -143,7 +143,7 @@
 <translation id="2403474027143565107">Exacta</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han permès <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="2404857459073803936">Accés a la ubicació per a aquest lloc web</translation>
-<translation id="2410940059315936967">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Les galetes establertes per aquests altres llocs web s'anomenen "galetes de tercers".</translation>
+<translation id="2410940059315936967">Els llocs web que visites poden incrustar contingut d'altres llocs web, com ara imatges, anuncis i text. Les galetes establertes per aquests altres llocs web s'anomenen "galetes de tercers".</translation>
 <translation id="2411116727035790889">Activa les dreceres</translation>
 <translation id="2433507940547922241">Aparença</translation>
 <translation id="2434158240863470628">S'ha completat la baixada <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -491,7 +491,7 @@
 <translation id="5930707844513754220">Mostra més llistes de configuració</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="5948139900367969951">Accedeix ràpidament al que t'interessa</translation>
-<translation id="5964247741333118902">Contingut inserit</translation>
+<translation id="5964247741333118902">Contingut incrustat</translation>
 <translation id="5968921426641056619">Introdueix l'adreça web</translation>
 <translation id="5975083100439434680">Redueix</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
@@ -734,7 +734,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="851751545965956758">Impedeix que els llocs web es connectin a dispositius</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8541410041357371550">Aquest lloc web obté de Chrome els teus temes d'anunci per mostrar-te anuncis més rellevants</translation>
-<translation id="854876774113449365">Els llocs web que visites poden inserir contingut d'altres llocs web, com ara imatges, anuncis i text. Aquests altres llocs web poden demanar permís per utilitzar informació teva que han desat a mesura que navegues pel lloc web. <ph name="BEGIN_LINK" />Més informació sobre el contingut inserit<ph name="END_LINK" /></translation>
+<translation id="854876774113449365">Els llocs web que visites poden incrustar contingut d'altres llocs web, com ara imatges, anuncis i text. Aquests altres llocs web poden demanar permís per utilitzar informació teva que han desat a mesura que navegues pel lloc web. <ph name="BEGIN_LINK" />Més informació sobre el contingut incrustat<ph name="END_LINK" /></translation>
 <translation id="8549127125482561383">Com s'han de mostrar les sol·licituds</translation>
 <translation id="8558480467877843976">Ara pots utilitzar Chrome cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="857943718398505171">Permès (opció recomanada)</translation>

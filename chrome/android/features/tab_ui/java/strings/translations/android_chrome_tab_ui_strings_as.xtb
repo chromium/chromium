@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />টা টেব এক গোট কৰা হৈছে</translation>
 <translation id="1844381456014878100">৭ দিন নিষ্ক্ৰিয় হৈ থকাৰ পাছত</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{পঢ়াৰ সূচীত টেব যোগ দিয়ক}one{পঢ়াৰ সূচীত টেব যোগ দিয়ক}other{পঢ়াৰ সূচীত টেব যোগ দিয়ক}}</translation>
 <translation id="1909810060368225529">জাননী: এই শ্বেয়াৰ কৰা টেবৰ গোটৰ সালসলনিসমূহ সকলোৰে বাবে দৃশ্যমান। আপোনাৰ শ্বেয়াৰ কৰা টেবৰ গোটত যিকোনো লোকে সালসলনি কৰিব পাৰে</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{টেব পিন কৰক}one{টেবসমূহ পিন কৰক}other{টেবসমূহ পিন কৰক}}</translation>
 <translation id="1982637982196732906">নিষ্ক্ৰিয় শাখালৈ স্থানান্তৰ কৰক</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ৰ দাম <ph name="PRICE_DROP" /> কমিছে</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> টেবৰ গোটৰ ৰঙৰ চিহ্ন</translation>
 <translation id="311432875115153175">টেবৰ গোটৰ সূচী বন্ধ কৰা হৈছে</translation>
+<translation id="3152596030350326139">টেবসমূহ অনুভূমিকভাৱে দেখুৱাওক</translation>
+<translation id="31806439105337256">টেবসমূহ উলম্বভাৱে দেখুৱাওক</translation>
 <translation id="3194464645767632461">মূল্যাংকন</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{গোটত <ph name="TABS_COUNT_ONE" /> টা টেব যোগ দিয়ক}one{গোটত <ph name="TABS_COUNT_MANY" /> টা টেব যোগ দিয়ক}other{গোটত <ph name="TABS_COUNT_MANY" /> টা টেব যোগ দিয়ক}}</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>

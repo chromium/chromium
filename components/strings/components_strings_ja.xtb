@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">不明なポリシー。</translation>
 <translation id="1227677022489889280">移動する理由をお知らせください（必須）</translation>
 <translation id="1228893227497259893">エンティティ識別子が正しくありません</translation>
+<translation id="122989279399348496">ログイン中は、サポートされているサイトで <ph name="DOMAIN" /> により <ph name="EMAIL" /> の確認が行われるため、受信トレイを確認する手間が省けます</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" />（自動検出）</translation>
 <translation id="1232569758102978740">無題</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> が必要です</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。複数の操作が可能で、Tab キーを押すと操作が切り替わります</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">仮想カードの詳細</translation>
+<translation id="1802420021606590788">Chrome は、クラウドのプライベート スペースでページのタイトルと URL を処理します</translation>
 <translation id="1803254472779303354">マウスのロックを許可しました</translation>
 <translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1804258830776932716">アカウントをリンクして Pix を有効にします</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">その他のブックマーク</translation>
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
 <translation id="2356941001189392209">アクセスしたページのうち、以前のテクノロジー イベントが発生しているページの URL リストのみ</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 個のタブを共有します}other{{NUM_TABS} 個のタブを共有します}}</translation>
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
 <translation id="2359629602545592467">複数</translation>
 <translation id="2359808026110333948">続行</translation>
@@ -3027,6 +3030,7 @@
 <translation id="5742806904559466333">バー、クラブ、ナイトライフ</translation>
 <translation id="5743684619253032786">ネイルケア商品</translation>
 <translation id="574392208103952083">中</translation>
+<translation id="5745586894920491759">Chrome はクラウドでページのタイトルと URL を処理します</translation>
 <translation id="5745733273847572235">位置情報を要求できる</translation>
 <translation id="5750869797196646528">ハンド トラッキング</translation>
 <translation id="5752327398324808817">1 つか 2 つの単語を入力</translation>
@@ -3421,6 +3425,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ログを表示</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、セキュア DNS の設定を確認する<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">メールを自動的に確認する</translation>
 <translation id="6366710531182496394">2 か所のステープル（左）</translation>
 <translation id="6367196786591004737">エントリを削除</translation>
 <translation id="6370022303958842211">ログイン（失敗したログインの理由を含む）、ログアウト、ロック、ロック解除などのデバイス アクセス アクション</translation>
@@ -5062,6 +5067,7 @@
 <translation id="8963117664422609631">サイトの設定に移動</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />アドバイス:<ph name="MARKUP_2" />データ接続があることを確認します<ph name="MARKUP_3" />このウェブページを後で再読み込みします<ph name="MARKUP_4" />入力したアドレスを確認します<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ローカル ファイルは <ph name="HOURS" /> 時間後に削除されます</translation>
+<translation id="8964904785315870349">メールの確認</translation>
 <translation id="8968766641738584599">カードを保存</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8971063699422889582">サーバーの証明書の有効期限が切れています。</translation>

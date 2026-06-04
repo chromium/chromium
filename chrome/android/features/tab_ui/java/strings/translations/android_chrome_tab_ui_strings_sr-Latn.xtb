@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Sniženje od <ph name="PRICE_DROP" /> za:<ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Boja ikone grupe kartica je <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Lista grupe kartica je zatvorena</translation>
+<translation id="3152596030350326139">Prikaži kartice horizontalno</translation>
+<translation id="31806439105337256">Prikaži kartice vertikalno</translation>
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Dodajte <ph name="TABS_COUNT_ONE" /> karticu u grupu}one{Dodajte <ph name="TABS_COUNT_MANY" /> karticu u grupu}few{Dodajte <ph name="TABS_COUNT_MANY" /> kartice u grupu}other{Dodajte <ph name="TABS_COUNT_MANY" /> kartica u grupu}}</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>

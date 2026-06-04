@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Puwede kang mag-download ng mga PDF dito</translation>
 <translation id="107147699690128016">Kung babaguhin mo ang file extension, puwedeng bumukas ang file sa ibang application at posible itong maging mapanganib sa iyong device.</translation>
 <translation id="1073328695547557412">I-tap ang icon ng Google Lens</translation>
+<translation id="1080116354587839789">Pagkasyahin sa lapad</translation>
 <translation id="1086486568852410168">Maghanap gamit ang Google Lens</translation>
 <translation id="1087799850623149508">Puwede mong pindutin nang matagal para ilipat ang address bar sa ibaba</translation>
 <translation id="1089606299949659462">Tapos na ang pagsusuri!</translation>
@@ -536,6 +537,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> na tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Mase-save ang 1 password sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong Google Account.}one{Mase-save ang # password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}other{Mase-save ang # na password sa device lang na ito. Para magamit ang mga ito sa iba mo pang device, i-save ang mga ito sa iyong Google Account.}}</translation>
 <translation id="3293181007446299124">Pinapanatiling pribado ang iyong history ng pag-browse sa device mo at inaantala ang pagpapadala ng mga ulat para maprotektahan ang iyong pagkakakilanlan</translation>
+<translation id="3301639354590628973">Lumipat ng account?</translation>
 <translation id="3301936297336370235">Kumpirmasyon ng suhestyon sa password</translation>
 <translation id="3302615849591357577">I-restore ang grupo ng tab na <ph name="TITLE_OF_GROUP" />, na kulay <ph name="COLOR_NAME" />, bilang bagong background na grupo ng tab.</translation>
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
@@ -678,6 +680,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Naka-pin na Picture-in-Picture na Tab</translation>
 <translation id="3950820424414687140">Mag-sign in</translation>
 <translation id="395377504920307820">Gamitin nang walang account</translation>
+<translation id="3955353672249727801">Idinagdag ang mga page sa listahan ng babasahin</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Ilo-load ng Chrome ang iyong page kapag handa na}one{Ilo-load ng Chrome ang iyong mga page kapag handa na}other{Ilo-load ng Chrome ang iyong mga page kapag handa na}}</translation>
 <translation id="3969142555815019568">Hindi masuri ng Chrome ang iyong mga password</translation>
 <translation id="3969863827134279083">Lumipat Pataas</translation>

@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Laster ned …</translation>
 <translation id="1651617469580841801">Når du bruker Google Lens, sendes sidens tittel, nettadresse og innhold, inkludert PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
+<translation id="1665867022636014702">Bruk nettleserinnstillingene som anbefales av Google</translation>
 <translation id="1674870198290878346">Åpne linken i et inko&amp;gnitovindu i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke lese og skrive til sin egen datakatalog: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver, til søke-, AI- og agentverktøyene til organisasjonen din for å få forslag.</translation>
@@ -149,6 +150,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="2580411288591421699">Google Chrome-versjonen du prøver å installere, kjører allerede. Lukk Google Chrome og forsøk å installere på nytt.</translation>
 <translation id="2586406160782125153">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Kunne ikke bufre det nedlastede installasjonsprogrammet. Feil: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Få en rask oversikt over dette dokumentet, og still spørsmål med Gemini i Chrome</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="263447411082773721">Hold passordene, bokmerkene og loggen din synkronisert på alle enheter. Ved å oppdatere standardnettleseren din til Chrome, får du enkel tilgang til funksjonene du kjenner og liker. Chrome festes på oppgavelinjen for rask tilgang.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -238,6 +240,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="345171907106878721">Legg til deg selv i Chrome</translation>
 <translation id="3453763134178591239">Vilkår for ChromeOS</translation>
 <translation id="3503306920980160878">Chrome trenger tilgang til posisjonen din for å kunne dele den med dette nettstedet</translation>
+<translation id="3539955434060988644">Åpne linken i et inkognitovindu i Chrome</translation>
 <translation id="3576528680708590453">Systemadministratoren din har konfigurert at Google Chrome skal åpne <ph name="TARGET_URL_HOSTNAME" /> i en annen nettleser.</translation>
 <translation id="3582972582564653026">Synkroniser og gi Chrome et personlig preg på alle enhetene dine</translation>
 <translation id="3583751698304738917">Du er allerede logget på som <ph name="USER_EMAIL_ADDRESS" /> i en annen Chrome-profil</translation>
@@ -743,6 +746,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="8624541899164515475">Innstillinger (åpnes i en ny fane).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome startes på nytt om 1 minutt}other{Chrome startes på nytt om # minutter}}</translation>
 <translation id="8637932705841171563">For å dele vinduet, tillat skjermopptak for Chrome i Systeminnstillinger</translation>
+<translation id="8642497536370021917">For å sikre at du alltid kan bruke og lagre Chrome-data i Google-kontoen din, må du bekrefte at det er deg</translation>
 <translation id="8656634243791296665">Åpne Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome-hjelper</translation>
 <translation id="8679801911857917785">Den styrer også hvilken side som vises når du starter Chrome.</translation>

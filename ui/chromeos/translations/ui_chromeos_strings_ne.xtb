@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">स्वचालित नाम सर्भरहरू</translation>
 <translation id="1210831758834677569">लाओ</translation>
 <translation id="1221555006497674479">भण्डारणमा खाली ठाउँ कम छ। तपाईंको <ph name="TOTAL_SPACE" /> साझा ड्राइभमा भएको भण्डारणमध्ये <ph name="REMAINING_PERCENTAGE" />% ठाउँ खाली छ।</translation>
+<translation id="1239594683407221485">Files एपमार्फत यन्त्रको सामग्री अन्वेषण गर्नुहोस्।</translation>
 <translation id="1243314992276662751">अपलोड गर्नुहोस्</translation>
 <translation id="1249250836236328755">विधा</translation>
 <translation id="1254593899333212300">प्रत्यक्ष इन्टरनेट जडान</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">यो वस्तु मेटाउन सकिएन। यो वस्तु प्रयोग भइरहेको छ।</translation>
 <translation id="1307931752636661898">Linux का फाइलहरू हेर्न सकिएन</translation>
 <translation id="1313405956111467313">स्वचालित प्रोक्सी कन्फिगरेसन</translation>
+<translation id="1340527397989195812">फाइलहरु एप प्रयोग गरेर उपकरणबाट मिडिया ब्याकअप गर्नुहोस्।</translation>
 <translation id="134645005685694099">फाइल सिंक गर्ने सुविधा अन राखिराख्न तपाईंको डिभाइसमा पर्याप्त खाली ठाउँ छैन। अबदेखि नयाँ फाइलहरू स्वतः सिंक हुने छैनन्।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">फाइलवा डाइरेक्टरी प्रयोगयोग्य छैन।</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">प्रयोगकर्ताको प्रमाणपत्र छैन</translation>
 <translation id="1403008701842173542">सबैतिर</translation>
 <translation id="1404323374378969387">नर्वेली</translation>
+<translation id="1408504635543854729">फाइलहरू नामक एपमा यन्त्रको सामग्री अन्वेषण गर्नुहोस्। कुनै एडमिनद्वारा बन्देज लगाइएको सामग्रीलाई परिमार्जन गर्न सकिँदैन।</translation>
 <translation id="1412476183660741812">हस्ताक्षर गरिएको वेब बन्डल</translation>
 <translation id="1433628812591023318">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल सारेर 'Windows फाइलहरू' फोल्डरमा लैजानु पर्ने हुन्छ।</translation>
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1439919885608649279">फूल बोकिरहेका व्यक्ति</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> हटाउनुहोस्</translation>
+<translation id="1464781208867302907">प्राथमिक यन्त्र सेट गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> वटा फाइलहरू इन्क्रिप्ट गरिएकाले तिनलाई कपी गर्न सकिएन।</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
 <translation id="1482884275703521657">फिनिस</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ड्राइभमा व्यवस्थित गर्नुहोस्</translation>
 <translation id="2004942826429452291">फाइलहरू क्लाउड र यो Chromebook मा भण्डारण गरिने छन्।</translation>
 <translation id="2009067268969781306">ड्राइभ फर्म्याट गर्नुले यसमा भण्डारण गरिएका सम्पूर्ण डेटा मेट्ने छ। यो कार्य उल्टाउन सकिँदैन।</translation>
+<translation id="2018352199541442911">माफ गर्नुहोस्, तपाइँको बाह्य भण्डारण यन्त्र यस समयमा समर्थन गरिएको छैन।</translation>
 <translation id="2025955442973426285">टिग्रिन्या</translation>
 <translation id="2029385776150020336">अमेरिकी विस्तारित</translation>
 <translation id="2037845485764049925">रुसी</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">तामागोची</translation>
 <translation id="2468470447085858632">फाइल सिंक गर्ने सुविधा प्रयोग गरी Google Drive मा भएका आफ्ना फाइलहरू अफलाइन एक्सेस गर्नुहोस्</translation>
 <translation id="2470939964922472929">तपाईंले अत्यन्तै धेरै पटक गलत PIN हाल्नुभयो। नयाँ PIN सेटअप गर्न तपाईंको मोबाइल सेवा प्रदायकले उपलब्ध गराएको ८ अङ्कको पर्सनल अनब्लकिङ की (PUK) हाल्नुहोस्।</translation>
+<translation id="249113932447298600">माफ गर्नुहोला, साधन<ph name="DEVICE_LABEL" /> यस समयमा समर्थित छैन।</translation>
 <translation id="2500392669976258912">गुजराती फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">युक्रेनियाली</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> जिप गर्दै...</translation>
 <translation id="3335337277364016868">रेकर्ड गरिएको वर्ष</translation>
+<translation id="3348038390189153836">हटाउन सकिने यन्त्र पत्ता लगाइयो</translation>
 <translation id="3353984535370177728">अपलोड लागि फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3358452157379365236">गितार</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">मोबाइल प्रोफाइल डाउनलोड गर्नुहोस्, <ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">अङ्ग्रेजी (संयुक्त अधिराज्य)</translation>
 <translation id="3975895378829046965">बङ्गाली फोनेटिक</translation>
+<translation id="3983764759749072418">Play स्टोरका एपहरूले यस यन्त्रमाथि पहुँच राख्न सक्छन्।</translation>
 <translation id="3999574733850440202">हालसालै खोलिएका Microsoft फाइलहरू सारेर OneDrive मा लगिएका छन्</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">अङ्ग्रेजी (सं. रा. अमेरिकी) वर्कमेन किबोर्ड</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">यो फाइलको पहुँच गर्न तपाईं अनलाइन हुनु पर्छ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" नाम गरेको फोल्डर पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> को अपवाद हटाउनुहोस्</translation>
+<translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="4261901459838235729">Google प्रस्तुती</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> फिल्टर अन छ।</translation>
 <translation id="4290535918735525311">Linux सँग १ फोल्डर आदान प्रदान गरियो</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google ड्राइभ फाइलहरू पुन: प्राप्त गरियो</translation>
 <translation id="5278111733643988471">तपाईं यो फाइल रिस्टोर गर्न चाहनुहुन्छ भने यो फाइल ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यो फाइलको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
 <translation id="5288441970121584418">बर्गर</translation>
+<translation id="529175790091471945">यस यन्त्रलाई फर्म्याट गर्नुहोस्</translation>
 <translation id="5293615890992542006">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल सार्न पाइँदैन</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">यी होस्टहरू र डोमेनहरूको लागि प्रोक्सी सेटिङहरू प्रयोग नगर्नुहोस्:</translation>
 <translation id="541890217011173530">अङ्ग्रेजीमा आधारित सोरानी कुर्दिस किबोर्ड</translation>
 <translation id="5422221874247253874">पहुँचको बिन्दु</translation>
+<translation id="5422781158178868512">माफ गर्नुहोस्, तपाइँको बाह्य भण्डारण चिनिन सकिएन।</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> सम्बन्धी कुनै पनि परिणाम छैन।</translation>
 <translation id="5447680084201416734">पर्याप्त खाली ठाउँ छैन।</translation>
 <translation id="5449551289610225147">अमान्य पासवर्ड</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> वटा सामग्री चयन गरिएका छन्</translation>
 <translation id="5763377084591234761">जर्मन (स्विजरल्यान्ड)</translation>
 <translation id="5769519078756170258">वर्जित गर्नु पर्ने होस्ट वा डोमेन</translation>
+<translation id="5774295353725270860">फाइल एप खोल्नुहोस्</translation>
 <translation id="5775750595919327203">उर्दू</translation>
 <translation id="5776325638577448643">मेट्नुहोस् तथा फर्म्याट गर्नुहोस्</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5788127256798019331">Play मा भएका फाइलहरू</translation>
+<translation id="5788367137662787332">माफ गर्नुहोस्, यन्त्रमा कम्तीमा एउटा विभाजन <ph name="DEVICE_LABEL" /> माउन्ट हुन सकेन।</translation>
 <translation id="5804245609861364054">कन्नड लिपि रूपान्तरण</translation>
 <translation id="5814126672212206791">जडानको प्रकार</translation>
 <translation id="5817397429773072584">पारम्परिक चिनियाँ</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">आइसल्यान्डिक</translation>
 <translation id="7229570126336867161">EVDO आवश्यक छ</translation>
 <translation id="7230898482850090046">तपाईंका सहायकले तपाईंलाई "SIM लक गर्नुहोस्" सेटिङ अफ गर्न अनुरोध गर्नुभएको छ</translation>
+<translation id="7232750842195536390">पुनः नामकरण गर्न सकिएन</translation>
 <translation id="7238097264433196391">डिभाइसको नाम</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, विवरणहरू</translation>
 <translation id="7246947237293279874">FTP प्रोक्सी</translation>
+<translation id="725109152065019550">माफ गर्नुहोस्, तपाईंको व्यवस्थापकले तपाईंखो यन्त्रमा बाह्य भन्डारणलाई अक्षम बनाएको छ।</translation>
 <translation id="7256405249507348194">पहिचान नभएको त्रुटि: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">उपलब्ध सेवाहरू</translation>
 <translation id="7291818353625820805">कीहरू दोहोर्‍याउन चाहनुहुन्छ? किबोर्डका सेटिङमा गई "एक्सेन्ट चिन्हहरू" अफ गर्नुहोस्</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google नक्सा</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" रिस्टोर गरिँदै छ</translation>
 <translation id="7435577899926900307">अमेरिकी भोराक</translation>
+<translation id="7436921188514130341">ओहो! पुनः नामकरण गर्ने क्रममा कुनै त्रुटि भयो।</translation>
 <translation id="7458955835361612701">हालसालै कुनै पनि फोटो हेरिएको छैन</translation>
 <translation id="7469894403370665791">यो नेटवर्कमा स्वचालित रूपमा कनेक्ट गर्नुहोस्</translation>
 <translation id="7486315294984620427">फाइल ड्र्याग गरेर Parallels Desktop मा ड्रप गर्न सो फाइल कपी गरेर 'Windows फाइलहरू' फोल्डरमा पेस्ट गर्नु पर्ने हुन्छ।</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
 <translation id="7553492409867692754">Linux का एपलाई <ph name="FOLDER_NAME" /> फोल्डरमा रहेका फाइलहरूमाथि पहुँच राख्ने अनुमति दिनुहोस्</translation>
 <translation id="7555339735447658365">तपाईं अहिले अफलाइन हुनुहुन्छ। तपाईंको डिभाइस इन्टरनेटमा कनेक्ट भएपछि फाइल सिंक गर्ने सुविधा सुचारु गरिने छ</translation>
+<translation id="7589461650300748890">ओहो। ध्यान दिनुहोस्।</translation>
 <translation id="7589661784326793847">केवल एक सेकेन्ड प्रतिक्षा गर्नुहोस्</translation>
 <translation id="7600126690270271294">सर्बियाली</translation>
 <translation id="7603724359189955920">ग्रिडहरू</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> टि.बि.</translation>
 <translation id="7831491651892296503">नेटवर्क कन्फिगर गर्दा त्रुटि भयो</translation>
+<translation id="7839051173341654115">मिडिया हेर्नुहोस्/ब्याकअप गर्नुहोस्</translation>
 <translation id="7839804798877833423">यी फाइलहरू ल्याउने क्रममा लगभग <ph name="FILE_SIZE" /> को मोबाइल लगत प्रयोग गर्छ।</translation>
 <translation id="7846076177841592234">चयन रद्द गर्नुहोस्</translation>
 <translation id="7857117644404132472">अपवाद थप्नुहोस्</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">पोलिस</translation>
 <translation id="7874321682039004450">फिलिपिनी</translation>
 <translation id="78946041517601018">साझा ड्राइभहरू</translation>
+<translation id="7897900149154324287">भविष्यमा, तपाईंको हटाउन सकिने यन्त्रलाई अनप्लग गर्नुभन्दा अगाडि यसलाई फाइलहरू एपमा निश्चित रूपमा निकाल्नुहोस्।</translation>
 <translation id="7901567919203965902">अमेरिकी वर्कम्यान अन्तर्राष्ट्रिय</translation>
 <translation id="7903984238293908205">काटाकाना</translation>
+<translation id="7908378463497120834">माफ गर्नुहोला, तपाईंको भण्डारण साधनको कम्तीमा एक भाग माउन्ट हुन सकेन ।</translation>
 <translation id="7908793776359722643">तपाईंले कुनै पार्टिसन फर्म्याट गर्नुभयो भने उक्त पार्टिसनमा भण्डारण गरिएको सम्पूर्ण डेटा मेटिने छ। यो कार्य अन्डू गर्न सकिँदैन।</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">तपाईं "मेरो ड्राइभ" मा रहेका फाइलहरू इन्टरनेटविनै प्रयोग गर्न सक्नुहोस् भन्नाका लागि ती फाइलहरू तपाईंको Chromebook मा स्वतः सिंक हुने छन्।</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">तपाईं यी फाइलहरू रिस्टोर गर्न चाहनुहुन्छ भने ती फाइलहरू ड्र्याग गरेर नयाँ फोल्डरमा लैजानुहोस्। यी केही फाइलका मूल फोल्डरहरू मेटाइएका छन्।</translation>
 <translation id="8874184842967597500">जडित छैन</translation>
 <translation id="8876368061475701452">लाइनमा राखिएको</translation>
+<translation id="8893928184421379330">माफ गर्नुहोस्, यन्त्र <ph name="DEVICE_LABEL" /> पहिचान गर्न सकिएन।</translation>
 <translation id="8902208737522818687">अमेरिकी अन्तर्राष्ट्रिय (PC)</translation>
 <translation id="8903931173357132290">स्नातक</translation>
 <translation id="8912078710089354287">पुच्छर हल्लाइरहेको कुकुर</translation>

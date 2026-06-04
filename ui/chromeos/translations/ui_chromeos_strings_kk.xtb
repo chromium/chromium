@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Автоматты атау серверлері</translation>
 <translation id="1210831758834677569">Лаос</translation>
 <translation id="1221555006497674479">Орын аз, <ph name="TOTAL_SPACE" /> ортақ диск жадының <ph name="REMAINING_PERCENTAGE" />%-ы ғана қалды.</translation>
+<translation id="1239594683407221485">Files қолданбасында құрылғының контентін көріңіз.</translation>
 <translation id="1243314992276662751">Жүктеп салу</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Тікелей интернет қосылысы</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Жою мүмкін емес. Элемент қолданыста.</translation>
 <translation id="1307931752636661898">Linux файлдарын көру мүмкін емес</translation>
 <translation id="1313405956111467313">Автоматты прокси конфигурациясы</translation>
+<translation id="1340527397989195812">Файлдар қолданбасын пайдаланып құрылғыдағы мультимедианың сақтық көшірмесін жасаңыз.</translation>
 <translation id="134645005685694099">Құрылғыңызда файлды синхрондауды қосулы ұстау үшін жад көлемі жеткіліксіз. Жаңа файлдар бұдан былай автоматты түрде синхрондалмайды.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файл немесе каталог пайдаланылмайды.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Пайдаланушы сертификаты жоқ</translation>
 <translation id="1403008701842173542">Барлық жерде</translation>
 <translation id="1404323374378969387">Норвег тілі</translation>
+<translation id="1408504635543854729">Файлдар қолданбасында құрылғының контентін қарап шығыңыз. Контентке әкімші шектеу қойған және оны өзгертуге болмайды.</translation>
 <translation id="1412476183660741812">Қол қойылған веб-пакет</translation>
 <translation id="1433628812591023318">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына орналастыру керек.</translation>
 <translation id="1435838927755162558">Қалтаны Parallels Desktop арқылы бөлісу</translation>
 <translation id="1439919885608649279">Гүл ұстаған адам</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> шығарылсын</translation>
+<translation id="1464781208867302907">"Параметрлер" бөліміне өтіп, құрылғыда қалаған параметрді таңдай аласыз.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файлды көшіру мүмкін болмады, себебі олар шифрланған.</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1482884275703521657">Фин</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
 <translation id="2004942826429452291">Файлдар бұлтта және осы Chromebook-та сақталады.</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
+<translation id="2018352199541442911">Кешіріңіз, сыртқы жад құрылғысына қазір қолдау көрсетілмеген.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2029385776150020336">АҚШ (кеңейтілген)</translation>
 <translation id="2037845485764049925">Орыс</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470447085858632">Файлды синхрондау арқылы Google Drive файлдарыңызды офлайн пайдаланыңыз</translation>
 <translation id="2470939964922472929">PIN коды бірнеше рет қате енгізілді. Жаңа PIN кодын орнату үшін, оператор берген 8 цифрлы Жеке бөгеуден шығару кодын (PUK коды) енгізіңіз.</translation>
+<translation id="249113932447298600">Кешіріңіз, <ph name="DEVICE_LABEL" /> құрылғысына қазір қолдау көрсетілмеген.</translation>
 <translation id="2500392669976258912">Гуджарати (фонетикалық)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Іздеу</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Украин</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> қысылуда…</translation>
 <translation id="3335337277364016868">Жазылған жылы</translation>
+<translation id="3348038390189153836">Алынбалы құрылғы анықталды</translation>
 <translation id="3353984535370177728">Жүктеп салу үшін қалтаны таңдау</translation>
 <translation id="3356580349448036450">Аяқталған</translation>
 <translation id="3358452157379365236">Гитара</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_PROVIDER_NAME" /> провайдерінің <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="3973925058222872294">Ағылшын (БK)</translation>
 <translation id="3975895378829046965">Бенгал (фонетикалық)</translation>
+<translation id="3983764759749072418">Play Store қолданбалары осы құрылғыға кіре алады.</translation>
 <translation id="3999574733850440202">Жақында ашылған Microsoft файлдары OneDrive дискісіне көшірілді</translation>
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4017788180641807848">Ағылшын (АҚШ), Workman пернетақтасымен</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Бұл файлға кіру үшін желіде болуыңыз керек.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" қалтасы бұрыннан бар. Басқа атау таңдаңыз.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ерекше жағдайын өшіру</translation>
+<translation id="4242533952199664413">Параметрлерді ашу</translation>
 <translation id="4261901459838235729">Google көрсетілімі</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> сүзгісі қосулы.</translation>
 <translation id="4290535918735525311">1 қалта Linux жүйесімен бөлісілді</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google Drive жүйесінен қалпына келтірілген файлдар</translation>
 <translation id="5278111733643988471">Бұл элементті қалпына келтіру үшін оны себеттен жаңа қалтаға сүйреңіз. Элементке арналған "<ph name="PARENT_FOLDER_NAME" />" деп аталатын бастапқы қалта жойылған.</translation>
 <translation id="5288441970121584418">Бургер</translation>
+<translation id="529175790091471945">Бұл құрылғыны пішімдеу</translation>
 <translation id="5293615890992542006">Әкімші саясаты бұл файлды тасымалдауға тыйым салды.</translation>
 <translation id="5305688511332277257">Ешбірі орнатылмаған</translation>
 <translation id="5317780077021120954">Сақтау</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Мына хосттар мен домендер үшін прокси параметрлерін пайдаланбау:</translation>
 <translation id="541890217011173530">Сорани күрд (ағылшын тілі негізіндегі пернетақтамен)</translation>
 <translation id="5422221874247253874">Кіру нүктесі</translation>
+<translation id="5422781158178868512">Өкінішке орай, сыртқы жад құрылғыңызды анықтау мүмкін емес.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> үшін нәтиже жоқ.</translation>
 <translation id="5447680084201416734">Жадта орын жеткіліксіз.</translation>
 <translation id="5449551289610225147">Құпия сөз жарамсыз</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> элемент таңдалған</translation>
 <translation id="5763377084591234761">Неміс (Швейцария)</translation>
 <translation id="5769519078756170258">Қамтылмайтын хост не домен</translation>
+<translation id="5774295353725270860">Файлдар қолданбасын ашу</translation>
 <translation id="5775750595919327203">Урду</translation>
 <translation id="5776325638577448643">Өшіру және форматтау</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5788127256798019331">Play файлдары</translation>
+<translation id="5788367137662787332">Кешіріңіз, <ph name="DEVICE_LABEL" /> құрылғыңыздағы кемінде бір бөлімді орнату мүмкін емес.</translation>
 <translation id="5804245609861364054">Каннада (транслитерация)</translation>
 <translation id="5814126672212206791">Байланыс түрі</translation>
 <translation id="5817397429773072584">Қытай (дәстүрлі)</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Исланд</translation>
 <translation id="7229570126336867161">EVDO технологиясы қажет</translation>
 <translation id="7230898482850090046">Әкімшіңіз "SIM картасын құлыптау" параметрін өшіруді сұрады</translation>
+<translation id="7232750842195536390">Аты өзгертілмеді</translation>
 <translation id="7238097264433196391">Диск атауы</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Мәліметтер</translation>
 <translation id="7246947237293279874">FTP прокси-сервері</translation>
+<translation id="725109152065019550">Кешіріңіз, әкімшіңіз аккаунтыңызда сыртқы жадты өшірді.</translation>
 <translation id="7256405249507348194">Танылмаған қате: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Қолжетімді қызметтер</translation>
 <translation id="7291818353625820805">Таңбалар қайталанып енгізілуі керек пе? Пернетақта параметрлерінде екпін белгілерін өшіріңіз.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google картасы</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" файлы қалпына келтірілуде…</translation>
 <translation id="7435577899926900307">АҚШ (Dvorak)</translation>
+<translation id="7436921188514130341">Қап! Атын өзгерту кезінде қате пайда болды.</translation>
 <translation id="7458955835361612701">Жаңа кескіндер жоқ</translation>
 <translation id="7469894403370665791">Бұл желіге автоматты түрде қосылу</translation>
 <translation id="7486315294984620427">Файлдарды Parallels Desktop-қа апару үшін "Windows файлдары" қалтасына көшіру керек.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Сөреге бекіту</translation>
 <translation id="7553492409867692754">Linux қолданбаларына <ph name="FOLDER_NAME" /> қалтасындағы файлдарды пайдалануға рұқсат беріңіз.</translation>
 <translation id="7555339735447658365">Қазіргі уақытта офлайнсыз. Сіз интернетке қосылған кезде файлды синхрондау жалғасады</translation>
+<translation id="7589461650300748890">Байқаңыз!</translation>
 <translation id="7589661784326793847">Күте тұрыңыз</translation>
 <translation id="7600126690270271294">Серб</translation>
 <translation id="7603724359189955920">Торлар</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Желіні конфигурациялауда қате болды</translation>
+<translation id="7839051173341654115">Медианы көру/сақтық көшірмесін жасау</translation>
 <translation id="7839804798877833423">Бұл файлдарды алу үшін ұялы деректердің шамамен <ph name="FILE_SIZE" /> пайдаланылады.</translation>
 <translation id="7846076177841592234">Таңдаудан бас тарту</translation>
 <translation id="7857117644404132472">Ерекше жағдайды қосу</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Поляк</translation>
 <translation id="7874321682039004450">Филиппин</translation>
 <translation id="78946041517601018">Ортақ дискілер</translation>
+<translation id="7897900149154324287">Келешекте алынбалы құрылғыңызды шығарудың алдында оны Файлдар қолданбасынан босатыңыз. Болмаса деректеріңіз жоғалуы мүмкін.</translation>
 <translation id="7901567919203965902">АҚШ (Workman, халықаралық)</translation>
 <translation id="7903984238293908205">Катакана</translation>
+<translation id="7908378463497120834">Кешіріңіз, сыртқы жад құрылғыңыздағы кемінде бір бөлімді орнату мүмкін емес.</translation>
 <translation id="7908793776359722643">Бөлімді форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекетті кері қайтару мүмкін емес.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">"Жеке Drive" ішіндегі файлдарыңыз Chromebook-қа автоматты түрде синхрондалады, осылайша оларды интернет байланысынсыз пайдалана аласыз.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Бұл элементтерді қалпына келтіру үшін оларды жаңа қалтаға сүйреңіз. Кейбір элементтерге арналған бастапқы қалталар жойылған.</translation>
 <translation id="8874184842967597500">Қосылмаған</translation>
 <translation id="8876368061475701452">Кезекте</translation>
+<translation id="8893928184421379330">Кешіріңіз, <ph name="DEVICE_LABEL" /> құрылғысын анықтау мүмкін емес.</translation>
 <translation id="8902208737522818687">АҚШ (халықаралық, ДК)</translation>
 <translation id="8903931173357132290">Түлек</translation>
 <translation id="8912078710089354287">Құйрығын бұлғаңдатқан ит</translation>

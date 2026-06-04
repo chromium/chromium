@@ -149,6 +149,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1227224963052638717">Onbekend beleid.</translation>
 <translation id="1227677022489889280">Waarom wil je dit verplaatsen? (vereist)</translation>
 <translation id="1228893227497259893">Onjuiste entiteits-ID</translation>
+<translation id="122989279399348496">Als je bent ingelogd, kan <ph name="DOMAIN" /> <ph name="EMAIL" /> bevestigen op ondersteunde sites, zodat je je inbox niet hoeft te checken</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatisch gedetecteerd)</translation>
 <translation id="1232569758102978740">Naamloos</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> is vereist</translation>
@@ -510,6 +511,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, er zijn meerdere acties beschikbaar, druk op 'Tab' om erdoorheen te bladeren</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Gegevens van virtuele kaart</translation>
+<translation id="1802420021606590788">Chrome verwerkt paginatitels en URL's in een privégedeelte in de cloud</translation>
 <translation id="1803254472779303354">Muisvergrendeling toegestaan</translation>
 <translation id="1803351196216024260">Kan vragen of deze site je microfoon mag gebruiken</translation>
 <translation id="1804258830776932716">Zet Pix aan door je account snel te koppelen</translation>
@@ -873,6 +875,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2354001756790975382">Andere bookmarks</translation>
 <translation id="2355395290879513365">Aanvallers kunnen mogelijk de afbeeldingen zien die je op deze site bekijkt en je misleiden door de afbeeldingen aan te passen.</translation>
 <translation id="2356941001189392209">Een beperkte lijst met URL's van pagina's die je bezoekt waarop verouderde technologiegebeurtenissen plaatsvinden</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Deelt 1 tabblad}other{Deelt {NUM_TABS} tabbladen}}</translation>
 <translation id="2357481397660644965">Je apparaat wordt beheerd door <ph name="DEVICE_MANAGER" /> en je account wordt beheerd door <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Meerdere</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
@@ -3021,6 +3024,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5742806904559466333">Bars, clubs en nachtleven</translation>
 <translation id="5743684619253032786">Nagelverzorgingsproducten</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
+<translation id="5745586894920491759">Chrome verwerkt paginatitels en URL's in de cloud</translation>
 <translation id="5745733273847572235">Kan om je locatie vragen</translation>
 <translation id="5750869797196646528">Handen volgen</translation>
 <translation id="5752327398324808817">Voer 1 of 2 woorden in</translation>
@@ -3414,6 +3418,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Logboeken bekijken</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en configuratie voor beveiligde DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Je e-mails automatisch bevestigen</translation>
 <translation id="6366710531182496394">Twee nietjes links</translation>
 <translation id="6367196786591004737">Item verwijderen</translation>
 <translation id="6370022303958842211">Acties voor apparaattoegang, zoals inloggen (waaronder redenen voor mislukte logins), uitloggen, vergrendelen en ontgrendelen</translation>
@@ -5054,6 +5059,7 @@ Aanvullende informatie:
 <translation id="8963117664422609631">Naar de site-instellingen</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggesties:<ph name="MARKUP_2" />Controleer of er een gegevensverbinding beschikbaar is<ph name="MARKUP_3" />Laad deze pagina later opnieuw<ph name="MARKUP_4" />Controleer het adres dat je hebt opgegeven<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Je lokale bestanden worden over <ph name="HOURS" /> uur verwijderd</translation>
+<translation id="8964904785315870349">Geverifieerd e-mailadres</translation>
 <translation id="8968766641738584599">Pas opslaan</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8971063699422889582">Het servercertificaat is verlopen.</translation>

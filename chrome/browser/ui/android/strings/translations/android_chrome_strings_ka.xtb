@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF-ების ჩამოტვირთვა აქ შეგიძლიათ</translation>
 <translation id="107147699690128016">ფაილის გაფართოების შეცვლის შემთხვევაში, ფაილი შეიძლება გაიხსნას სხვა აპლიკაციაში და პოტენციურად შეუქმნას საფრთხე თქვენს მოწყობილობას.</translation>
 <translation id="1073328695547557412">შეეხეთ Google Lens-ის ხატულას</translation>
+<translation id="1080116354587839789">სიგანეზე მორგება</translation>
 <translation id="1086486568852410168">ძიება Google Lens-ით</translation>
 <translation id="1087799850623149508">მისამართთა ზოლის ქვემოთ გადასატანად ხანგრძლივად შეეხეთ</translation>
 <translation id="1089606299949659462">გადახედვა დასრულდა!</translation>
@@ -356,6 +357,7 @@
 <translation id="253498598929009420">საიტს შეეძლება თქვენს ეკრანზე არსებული კონტენტის ნახვა</translation>
 <translation id="2535807170289627159">ყველა ჩანართი</translation>
 <translation id="2536728043171574184">თქვენ ამ გვერდის ხაზგარეშე ასლს ნახულობთ</translation>
+<translation id="2537574774089209541">ზოგიერთი ხელსაწყო გადაადგილდა, რათა მოგცეთ მარტივი წვდომა Gemini-ზე დათვალიერებისას</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, არჩეულია ჩამაგრებული და დადუმებული ინკოგნიტო ჩანართი</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ჩანართი</translation>
@@ -404,6 +406,7 @@
 <translation id="2751271371269891762">თქვენს ყველა მოწყობილობაზე სანიშნეებისა და სხვა ინფორმაციის მისაღებად შედით ანგარიშით <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">თთ / წწ</translation>
 <translation id="2762000892062317888">ახლახან</translation>
+<translation id="276378135349383280">Gemini-ს ჩვენება ქვედა ხელსაწყოთა ზოლში</translation>
 <translation id="276969039800130567">შესულია, როგორც <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">დარჩენილია <ph name="SECONDS" /> წმ</translation>
 <translation id="2779651927720337254">ვერ მოხერხდა</translation>
@@ -536,6 +539,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 პაროლი შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში.}other{# პაროლი შენახულია მხოლოდ ამ მოწყობილობაში. თქვენს სხვა მოწყობილობებში მათ გამოსაყენებლად შეინახეთ ისინი თქვენს Google ანგარიშში.}}</translation>
 <translation id="3293181007446299124">თქვენი დათვალიერების ისტორია კონფიდენციალურად ინახება თქვენივე მოწყობილობაზე, ხოლო ანგარიშები დაყოვნებით იგზავნება, თქვენი ვინაობის დაცვის მიზნით</translation>
+<translation id="3301639354590628973">გსურთ ანგარიშების გადართვა?</translation>
 <translation id="3301936297336370235">პაროლის შემოთავაზების დადასტურება</translation>
 <translation id="3302615849591357577">ჩანართების ჯგუფის „<ph name="TITLE_OF_GROUP" />“ <ph name="COLOR_NAME" /> ფერის, როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
@@ -602,6 +606,7 @@
 <translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3614126103057878858">ფასების ანალიზი</translation>
 <translation id="3616113530831147358">აუდიო</translation>
+<translation id="3616798734782988169">დარწმუნდით, რომ <ph name="DOWNLOAD_DOMAIN" /> სანდოა</translation>
 <translation id="3619255692378312441">წვდომის მართვა</translation>
 <translation id="3622349720008044802">მართეთ ფანჯრები</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 საიტი}other{+ # საიტი}}</translation>
@@ -632,6 +637,7 @@
 <translation id="3738139272394829648">შეეხეთ ეკრანს ძიების დასაწყებად</translation>
 <translation id="3739455665973395693">თქვენს Google ანგარიშში გატეხილი პაროლები არ არის</translation>
 <translation id="3739899004075612870">სანიშნე შენახულია „<ph name="PRODUCT_NAME" />“-ში</translation>
+<translation id="3740290940447881599">დარწმუნდით, რომ ეს საიტი სანდოა</translation>
 <translation id="3740525748616366977">ამ მოწყობილობაზე ხმოვანი ძიება მიუწვდომელია</translation>
 <translation id="3763110477555836428">ამ ბარათით შეკვეთის გაფორმებისას მოხდება ვირტუალური ბარათის ნომრის შეყვანა, რათა ბარათის რეალური დეტალები დაცული იყოს. მართეთ Google საფულეში. <ph name="BEGIN_LINK1" />შეიტყვეთ მეტი ვირტუალური ბარათების შესახებ<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">ზოგიერთი მონაცემი ჯერ არ არის შენახული</translation>
@@ -640,6 +646,7 @@
 <translation id="3771290962915251154">ეს პარამეტრი გათიშულია, ვინაიდან ჩართულია მშობელთა მიერ კონტროლი</translation>
 <translation id="3771694256347217732">Google-ის მომსახურების პირობები</translation>
 <translation id="3777796259512476958">თქვენ გამოხვალთ სისტემიდან საიტების უმეტესობაზე</translation>
+<translation id="3786379886124795923">თქვენ დაასკანირეთ QR კოდი Chrome-ში შესასვლელად. დაადასტურეთ, რომ გსურთ ამ პროფილის პაროლების, სანიშნეებისა და სხვა მონაცემების მიღება.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ჩანართი}other{# ჩანართი}}</translation>
 <translation id="3792938779249970121">აირჩიეთ ანგარიში</translation>
 <translation id="3795154175078851242">სურათის კოპირება ბმულთან ერთად</translation>
@@ -678,6 +685,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ჩამაგრებული ეკრანი ეკრანში ჩანართი</translation>
 <translation id="3950820424414687140">შესვლა</translation>
 <translation id="395377504920307820">ანგარიშის გარეშე გამოყენება</translation>
+<translation id="3955353672249727801">გვერდები დაემატა საკითხავ სიას</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ჩატვირთავს თქვენს გვერდს, როცა ის მზად იქნება}other{Chrome ჩატვირთავს თქვენს გვერდებს, როცა ისინი მზად იქნება}}</translation>
 <translation id="3969142555815019568">Chrome ვერ ახერხებს თქვენი პაროლების შემოწმებას</translation>
 <translation id="3969863827134279083">გადაადგილება ზემოთ</translation>
@@ -824,6 +832,7 @@
 <translation id="4532845899244822526">აირჩიეთ საქაღალდე</translation>
 <translation id="4535755320005483982">ჩანართების გაზიარებული ჯგუფი „<ph name="GROUP_TITLE" />“</translation>
 <translation id="4537137366307982887">რჩევების შესახებ შეტყობინებებზე თანხმობის გვერდი გაიხსნა სრულ სიმაღლეზე</translation>
+<translation id="4537987892902330164">თქვენ კვლავ შესული ხართ, როგორც <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">წვდომის გასაღებების არარსებობის ფურცელი</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ჩანართი}other{<ph name="TAB_COUNT_MANY" /> ჩანართი, <ph name="TAB_COUNT_INCOGNITO" /> ინკოგნიტო}}</translation>
 <translation id="4558311620361989323">ვებგვერდის მალსახმობები</translation>
@@ -1281,6 +1290,7 @@
 <translation id="6411219469806822692">უფრო ზემოთ ასვლა ვერ მოხერხდება. ცადეთ გვერდის უფრო ზემოდან დაწყება.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩანართი</translation>
 <translation id="641643625718530986">ბეჭდვა…</translation>
+<translation id="6427723330233512782">სიმაღლეზე მორგება</translation>
 <translation id="6433501201775827830">აირჩიეთ საძიებო სისტემა</translation>
 <translation id="6434309073475700221">გაუქმება</translation>
 <translation id="6435307030888827407">გამოსულ მდგომარეობაში დარჩენა</translation>
@@ -1527,6 +1537,7 @@
 <translation id="7291910923717764901">ამ გვერდისთვის დამატებულია სურათების აღწერილობები</translation>
 <translation id="7293429513719260019">აირჩიეთ ენა</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, არჩეულია ჩამაგრებული ჩანართი, რომელიც აზიარებს კონტენტს</translation>
+<translation id="7304003340539141201">სთხოვეთ Gemini-ს დახმარება ჩანართებსა და ამოცანებთან დაკავშირებით</translation>
 <translation id="7311244614769792472">შედეგები ვერ მოიძებნა</translation>
 <translation id="7314734791127433392">პაროლების შემოწმება შეუძლებელია</translation>
 <translation id="7324354302972299151">გაგზავნეთ „Do Not Track“ მოთხოვნა</translation>
@@ -1873,6 +1884,7 @@
 <translation id="8696297579102085705">თქვენს მოწყობილობებში გაგზავნა</translation>
 <translation id="8697753151306746444">ფანჯრის ან ეკრანის გაზიარება</translation>
 <translation id="8699120352855309748">ამ ენების თარგმნის შემოთავაზების აკრძალვა</translation>
+<translation id="8700565880437506364">გაიცანით Gemini Chrome-ში</translation>
 <translation id="8712637175834984815">კარგი</translation>
 <translation id="8715286883001906001">გააძლიერეთ პაროლები თქვენს Google ანგარიშში</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> დაიხურება</translation>
@@ -1940,6 +1952,7 @@
 <translation id="8996847606757455498">სხვა პროვაიდერის არჩევა</translation>
 <translation id="8998837250940831980">ჩანართის ჩაკეცვა ვერ მოხერხდა. სცადეთ მოგვიანებით.</translation>
 <translation id="9001604755921395912">Chrome ინკოგნიტოთი გახსნა</translation>
+<translation id="9010094279589497751">სწრაფად გახსენით Gemini, როცა ის დაგჭირდებათ</translation>
 <translation id="9012585441087414258">დაგიცავთ ცნობილი სახიფათო საიტებისგან, ჩამოტვირთვებისა და გაფართოებებისგან. თუ გვერდზე რაიმე საეჭვო დაფიქსირდება, URL-ები და გვერდის კონტენტის ფრაგმენტები გაეგზავნება Google Safe Browsing-ს.</translation>
 <translation id="9019199799064251516">გსურთ, გააგრძელოთ მანქანის პროფილის ჩაკეტვის გარეშე?</translation>
 <translation id="9022774213089566801">ხშირად მონახულებული</translation>
@@ -1997,6 +2010,7 @@
 <translation id="9190355771000652811">მისამართთა ზოლში გამოიყენეთ კლავიატურის ეს მალსახმობი საძიებო სისტემებისა თუ საიტებში ძიების მალსახმობებთან ერთად.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, არჩეული ინკოგნიტო ჩანართი ჩამაგრებულია</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{შემოწმდა 1 წუთის წინ}other{შემოწმდა # წუთის წინ}}</translation>
+<translation id="9202894533863490414">გსურთ ამ საიტიდან ჩამოტვირთვა?</translation>
 <translation id="9204836675896933765">დარჩენილია 1 ფაილი</translation>
 <translation id="9205933215779845960">ამ გვერდის პოვნა ვერ ხერხდება. შეამოწმეთ მართლწერა ან ცადეთ მოძიება აქ: <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2014,9 +2028,11 @@
 <translation id="939598580284253335">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, ჩამაგრებული ეკრანი ეკრანში ინკოგნიტო ჩანართი</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
+<translation id="949667118776341807">შეტრიალება</translation>
 <translation id="95817756606698420">ჩინეთის ტერიტორიაზე ძიების განსახორციელებლად, Chrome-ს <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />-ს გამოყენება შეუძლია. ამის შეცვლა <ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> შეგიძლიათ.</translation>
 <translation id="961856697154696964">დათვალ. მონაცემების წაშლა</translation>
 <translation id="963246339335003378">ამოცანების მმართველის გახსნა</translation>
+<translation id="966337994629449077">თქვენ შესული ხართ, როგორც <ph name="FROM_EMAIL" />.\n\nკომპიუტერზე გასაგრძელებლად გადართეთ <ph name="TO_EMAIL" />-ზე. ამ ანგარიშიდან მიიღებთ პაროლებს, სანიშნეებსა და სხვა კონტენტს.</translation>
 <translation id="970715775301869095">დარჩენილია <ph name="MINUTES" /> წთ</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="983192555821071799">ყველა ჩანართის დახურვა</translation>

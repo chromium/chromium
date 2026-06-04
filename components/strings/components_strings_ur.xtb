@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">نامعلوم پالیسی۔</translation>
 <translation id="1227677022489889280">منتقل کرنے کی وجہ فراہم کریں (درکار ہے)</translation>
 <translation id="1228893227497259893">‏غلط entity شناخت کار</translation>
+<translation id="122989279399348496">آپ کے سائن ان ہونے کے دوران، <ph name="DOMAIN" /> تعاون یافتہ سائٹس پر <ph name="EMAIL" /> کی تصدیق کر سکتا ہے تاکہ آپ کو اپنا ان باکس چیک کرنے کی ضرورت نہ پڑے</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> از خود دریافت شدہ)</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
 <translation id="1234539281285007945">‫<ph name="FIELD_1" /> درکار ہے</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، متعدد کارروائیاں دستیاب ہیں، ہر ایک پر جانے کیلئے Tab دبائیں</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ورچوئل کارڈ کی تفصیلات</translation>
+<translation id="1802420021606590788">‏‫Chrome کلاؤڈ میں پرائیویٹ اسپیس میں صفحہ کے عنوانات اور URLs پر کارروائی کرتا ہے</translation>
 <translation id="1803254472779303354">ماؤس لاک کی اجازت ہے</translation>
 <translation id="1803351196216024260">سائٹ آپ کا مائیکروفون استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1804258830776932716">‏اپنے اکاؤنٹ کو جلدی سے لنک کر کے Pix کو فعال کریں</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">دیگر بُک مارکس</translation>
 <translation id="2355395290879513365">حملہ آور ان تصاویر کو دیکھ سکتے ہیں جنہیں آپ اس سائٹ پر دیکھ رہے ہیں اور ان میں ترمیم کر کے آپ کو دھوکہ دے سکتے ہیں۔</translation>
 <translation id="2356941001189392209">‏آپ کے ملاحظہ کردہ صفحات کے URLs کی ایک محدود کردہ فہرست جہاں ٹیکنالوجی کے پرانے ایونٹس رونما ہو رہے ہیں</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{‫1 ٹیب کا اشتراک کیا جائے گا}other{‫{NUM_TABS} ٹیبز کا اشتراک کیا جائے گا}}</translation>
 <translation id="2357481397660644965">آپ کا آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے اور آپ کا اکاؤنٹ <ph name="ACCOUNT_MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="2359629602545592467">متعدد</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
@@ -3028,6 +3031,7 @@
 <translation id="5742806904559466333">بارز، کلبز اور نائٹ لائف</translation>
 <translation id="5743684619253032786">ناخن کی نگہداشت کے پروڈکٹس</translation>
 <translation id="574392208103952083">متوسط</translation>
+<translation id="5745586894920491759">‏‫Chrome کلاؤڈ میں صفحہ کے عنوانات اور URLs پر کارروائی کرتا ہے</translation>
 <translation id="5745733273847572235">سائٹ آپ کا مقام پوچھ سکتی ہے</translation>
 <translation id="5750869797196646528">ہاتھ کی ٹریکنگ</translation>
 <translation id="5752327398324808817">ایک یا دو لفظ درج کریں</translation>
@@ -3423,6 +3427,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">لاگز دیکھیں</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />پراکسی، فائروال اور محفوظ DNS کنفیگریشن کو چیک کرنے کی کوشش کریں<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">اپنی ای میلز کی خودکار طور پر تصدیق کریں</translation>
 <translation id="6366710531182496394">بائیں طرف دُہری سٹیپل</translation>
 <translation id="6367196786591004737">اندراج حذف کریں</translation>
 <translation id="6370022303958842211">آلے تک رسائی کی کاروائیاں جیسے لاگ انز (بشمول لاگ ان کی ناکام وجوہات)، لاگ آؤٹس، لاکس اور ان لاکس</translation>
@@ -5062,6 +5067,7 @@
 <translation id="8963117664422609631">سائٹ ترتیبات پر جائیں</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />تجاویز:<ph name="MARKUP_2" />یقینی بنائیں کہ آپ کے پاس ڈیٹا کنکشن ہے<ph name="MARKUP_3" />یہ ویب صفحہ بعد میں دوبارہ لوڈ کریں<ph name="MARKUP_4" />اپنا درج کردہ پتہ چيک کریں<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">آپ کی مقامی فائلز <ph name="HOURS" /> گھنٹے میں حذف ہو جائیں گی</translation>
+<translation id="8964904785315870349">توثیق شدہ ای میل</translation>
 <translation id="8968766641738584599">کارڈ کو محفوظ کریں</translation>
 <translation id="8970887620466824814">کچھ غلط ہو گیا۔</translation>
 <translation id="8971063699422889582">سرور کے سرٹیفکیٹ کی میعاد ختم ہوگئی۔</translation>

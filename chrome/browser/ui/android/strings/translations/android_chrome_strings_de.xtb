@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Du kannst PDFs hier herunterladen</translation>
 <translation id="107147699690128016">Eine Änderung der Dateiendung kann zum Öffnen der Datei in einer anderen Anwendung führen und Schäden an deinem Gerät verursachen.</translation>
 <translation id="1073328695547557412">Tippe auf das Google Lens-Symbol</translation>
+<translation id="1080116354587839789">An Breite anpassen</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1087799850623149508">Du kannst die Adressleiste nach unten verschieben, indem du sie gedrückt hältst</translation>
 <translation id="1089606299949659462">Fertig!</translation>
@@ -536,6 +537,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> Tabs}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 Passwort ist nur auf diesem Gerät gespeichert. Wenn du es auf deinen anderen Geräten verwenden möchtest, speichere es in deinem Google-Konto.}other{# Passwörter sind nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto.}}</translation>
 <translation id="3293181007446299124">Dein Browserverlauf wird sicher auf deinem Gerät gespeichert und Berichte werden mit einer Verzögerung gesendet, um deine Identität zu schützen</translation>
+<translation id="3301639354590628973">Konto wechseln?</translation>
 <translation id="3301936297336370235">Bestätigung des Passwortvorschlags</translation>
 <translation id="3302615849591357577">Tabgruppe <ph name="TITLE_OF_GROUP" /> mit der Farbe <ph name="COLOR_NAME" /> als neue Tabgruppe im Hintergrund wiederherstellen.</translation>
 <translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
@@ -640,6 +642,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3771290962915251154">Diese Einstellung ist deaktiviert, weil die Jugendschutzeinstellungen aktiviert sind</translation>
 <translation id="3771694256347217732">Google-Nutzungsbedingungen</translation>
 <translation id="3777796259512476958">Du wirst von den meisten Websites abgemeldet</translation>
+<translation id="3786379886124795923">Du hast einen QR-Code gescannt, um dich in Chrome anzumelden. Bestätige, dass du Passwörter, Lesezeichen und andere Daten aus diesem Profil abrufen möchtest.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="3792938779249970121">Konto auswählen</translation>
 <translation id="3795154175078851242">Bild mit Link kopieren</translation>
@@ -678,6 +681,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, angepinnter Tab im Bild-im-Bild-Modus</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="395377504920307820">Ohne Konto verwenden</translation>
+<translation id="3955353672249727801">Seiten zur Leseliste hinzugefügt</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome lädt deine Seite, sobald diese bereit ist}other{Chrome lädt deine Seiten, sobald diese bereit sind}}</translation>
 <translation id="3969142555815019568">Chrome kann deine Passwörter nicht prüfen</translation>
 <translation id="3969863827134279083">Nach oben</translation>
@@ -824,6 +828,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4532845899244822526">Ordner auswählen</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" />, geteilte Tabgruppe</translation>
 <translation id="4537137366307982887">Opt-in für Benachrichtigungen mit Tipps vollständig geöffnet</translation>
+<translation id="4537987892902330164">Du bist weiterhin als <ph name="NAME_OR_EMAIL" /> angemeldet.</translation>
 <translation id="4543131175509360848">Ansicht „Keine Passkeys“</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Tab}other{<ph name="TAB_COUNT_MANY" /> Tabs, <ph name="TAB_COUNT_INCOGNITO" /> Inkognitotabs}}</translation>
 <translation id="4558311620361989323">Tastenkombinationen für Webseiten</translation>
@@ -1281,6 +1286,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6411219469806822692">Screenshot kann nicht nach oben erweitert werden. Beginne weiter oben auf der Seite.</translation>
 <translation id="6412215853589222273">„<ph name="TAB_TITLE" />“, mehrfach ausgewählter Tab</translation>
 <translation id="641643625718530986">Drucken...</translation>
+<translation id="6427723330233512782">An Höhe anpassen</translation>
 <translation id="6433501201775827830">Wähle deine Suchmaschine</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6435307030888827407">Abgemeldet bleiben</translation>
@@ -2014,9 +2020,11 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, angepinnter Inkognitotab im Bild-im-Bild-Modus</translation>
 <translation id="945522503751344254">Feedback geben</translation>
+<translation id="949667118776341807">Drehen</translation>
 <translation id="95817756606698420">Chrome kann in China <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> für die Suche verwenden. Du kannst dies unter <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> ändern.</translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>
 <translation id="963246339335003378">Task-Manager öffnen</translation>
+<translation id="966337994629449077">Du bist als <ph name="FROM_EMAIL" /> angemeldet.\n\nWenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="TO_EMAIL" />. Du erhältst die Passwörter, Lesezeichen und mehr aus diesem Konto.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> Minuten übrig</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>

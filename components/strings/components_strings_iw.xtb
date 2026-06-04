@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">מדיניות לא ידועה.</translation>
 <translation id="1227677022489889280">צריך לציין את הסיבה להעברה (חובה)</translation>
 <translation id="1228893227497259893">מזהה יישות שגוי</translation>
+<translation id="122989279399348496">אם התחברת לחשבון, <ph name="DOMAIN" /> יכול לאמת את <ph name="EMAIL" /> באתרים נתמכים ולחסוך ממך את הצורך לבדוק את הדואר הנכנס</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (בוצע זיהוי אוטומטי)</translation>
 <translation id="1232569758102978740">ללא שם</translation>
 <translation id="1234539281285007945">צריך לציין <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ניתן לבצע כמה פעולות, יש להקיש על Tab כדי לעבור ביניהן</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">פרטי הכרטיס הווירטואלי</translation>
+<translation id="1802420021606590788">‏‫Chrome מעבד את כותרות הדפים וכתובות ה-URL במרחב פרטי בענן</translation>
 <translation id="1803254472779303354">יש הרשאה לנעילת העכבר</translation>
 <translation id="1803351196216024260">האתר יכול לבקש הרשאה להשתמש במיקרופון</translation>
 <translation id="1804258830776932716">‏הפעלת Pix על ידי קישור מהיר של החשבון</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">סימניות אחרות</translation>
 <translation id="2355395290879513365">ייתכן שתוקפים יוכלו לראות את התמונות שבהן צפית באתר זה, ולאחר מכן הם ינסו להונות אותך על ידי שינוי התמונות.</translation>
 <translation id="2356941001189392209">‏רשימה חלקית של כתובות URL של דפים עם אירועי שימוש בטכנולוגיה מדור קודם שביקרת בהם</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{כרטיסייה אחת תשותף}one{‫{NUM_TABS} כרטיסיות ישותפו}two{‫{NUM_TABS} כרטיסיות ישותפו}other{‫{NUM_TABS} כרטיסיות ישותפו}}</translation>
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
 <translation id="2359808026110333948">המשך</translation>
@@ -3032,6 +3035,7 @@ Del</translation>
 <translation id="5742806904559466333">ברים, מועדונים וחיי לילה</translation>
 <translation id="5743684619253032786">מוצרי טיפוח לציפורניים</translation>
 <translation id="574392208103952083">בינוני</translation>
+<translation id="5745586894920491759">‏‫Chrome מעבד את כותרות הדפים וכתובות ה-URL בענן</translation>
 <translation id="5745733273847572235">האתר יכול לבקש הרשאת גישה למיקום המכשיר</translation>
 <translation id="5750869797196646528">מעקב אחר תנועות הידיים</translation>
 <translation id="5752327398324808817">צריך להזין מילה או שתיים</translation>
@@ -3426,6 +3430,7 @@ Del</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">הצגת היומנים</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />לבדוק את שרת ה-Proxy, תצורת ה-DNS המאובטח וחומת האש.<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">אישור אוטומטי של כתובות האימייל</translation>
 <translation id="6366710531182496394">שתי סיכות הידוק בצד שמאל</translation>
 <translation id="6367196786591004737">מחיקת הרשומה</translation>
 <translation id="6370022303958842211">פעולות של גישה למכשירים כמו התחברות (כולל סיבות לכישלון של ניסיונות התחברות), התנתקות, נעילה וביטול נעילה</translation>
@@ -5066,6 +5071,7 @@ Del</translation>
 <translation id="8963117664422609631">כניסה להגדרות האתר</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />הצעות:<ph name="MARKUP_2" />לוודא שקיים חיבור נתונים<ph name="MARKUP_3" />לטעון מחדש את דף האינטרנט הזה מאוחר יותר<ph name="MARKUP_4" />לבדוק את הכתובת שהזנת<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">הקבצים המקומיים שלך יימחקו בעוד <ph name="HOURS" /> שעות</translation>
+<translation id="8964904785315870349">כתובת אימייל מאומתת</translation>
 <translation id="8968766641738584599">שמירת הכרטיס</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8971063699422889582">פג תוקפו של אישור השרת.</translation>

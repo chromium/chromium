@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">O Chromium precisa de acesso ao Bluetooth para explorar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detetar idioma</translation>
+<translation id="1330742950061766891">Usar as definições do navegador recomendadas pelo Chromium</translation>
 <translation id="1342274909142618978">Eliminar também dados do Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fixado! Pode aceder novamente à Pesquisa de imagens através do novo botão na barra de ferramentas</translation>
 <translation id="1356661055722410047">Novo! Pode traduzir texto e imagens no ecrã</translation>
@@ -67,6 +68,7 @@
 <translation id="1749104137266986751">Quando o HTTPS não está disponível, o Chromium usa uma ligação insegura sem lhe enviar um aviso</translation>
 <translation id="1774152462503052664">Permitir que o Chromium seja executado em segundo plano</translation>
 <translation id="1779356040007214683">Para tornar o Chromium mais seguro, desativámos algumas extensões que não estão listadas na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e é possível que tenham sido adicionadas sem o seu conhecimento.</translation>
+<translation id="1793486931176048546">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para afixar o Chromium à barra de tarefas para um acesso rápido.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
 <translation id="1820835682567584003">O Chromium está a tentar <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para usar o Gestor de Palavras-passe da Google.</translation>
@@ -380,8 +382,10 @@
 <translation id="5294316920224716406">Ao navegar no Modo de navegação anónima, o Chromium envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
 <translation id="5313228254328109263">Serviço interno do atualizador do Chromium</translation>
 <translation id="5346389065299425353">Aprofunde a sua pesquisa adicionando vários separadores, ficheiros e ferramentas</translation>
+<translation id="5348677704241861105">Obtenha uma vista geral rápida deste documento e faça perguntas com o Gemini no Chromium</translation>
 <translation id="5352264705793813212">O Chromium encontrou algumas recomendações de segurança para sua revisão</translation>
 <translation id="5352361688875342522">Outros perfis do Chromium</translation>
+<translation id="535243042947607642">O ChromiumOS não conseguiu guardar os dados do Chromium na sua Conta Google porque os detalhes de início de sessão da sua conta estão desatualizados</translation>
 <translation id="5358375970380395591">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Chromium. Os seus dados do Chromium, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Para usar a personalização, inclua o Chromium na Atividade da Web e de apps</translation>
@@ -487,6 +491,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6390800440335263989">Para continuar, inicie sessão no Chromium como <ph name="EMAIL" />. Isto garante que tem as políticas da sua organização.</translation>
 <translation id="6400112897226594999">Logótipo do Chromium num ecrã de computador.</translation>
 <translation id="6403826409255603130">O Chromium é um navegador de internet que executa páginas Web e aplicações à velocidade da luz. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança, com proteção contra programas maliciosos e phishing integrada no Chromium.</translation>
+<translation id="6414624068245092115">Para se certificar de que pode sempre usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade</translation>
 <translation id="642132557830635295">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto</translation>
 <translation id="6436260184216827876">A pesquisa de imagens não está disponível. Tente mais tarde.</translation>
 <translation id="6442900851116057561">Reinicie o ChromiumOS</translation>
@@ -716,6 +721,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8852026904190808918">Este idioma é usado para apresentar menus, definições, alertas e outro texto no Chromium</translation>
 <translation id="8862326446509486874">Não tem os direitos adequados para uma instalação ao nível do sistema. Tente executar o programa de instalação novamente como Administrador.</translation>
 <translation id="8876044221123442390">Adicionar perfil do Chromium</translation>
+<translation id="8890569919834781711">O ChromiumOS não conseguiu guardar os dados do Chromium na sua Conta Google devido a um erro ao iniciar sessão</translation>
 <translation id="8891709362986793894">A sua organização requer que inicie sessão no Chromium</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="8932992523185907506">O Chromium já não é o seu navegador predefinido. Definir o Chromium como navegador predefinido?</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF-ləri buradan endirə bilərsiniz</translation>
 <translation id="107147699690128016">Fayl artırmasını dəyişsəniz, fayl başqa tətbiqdə açıla bilər və cihaz üçün potensial zərərli ola bilər.</translation>
 <translation id="1073328695547557412">Google Linza ikonuna toxunun</translation>
+<translation id="1080116354587839789">Eninə uyğunlaşdırın</translation>
 <translation id="1086486568852410168">Google Linza ilə axtarın</translation>
 <translation id="1087799850623149508">Ünvan panelini aşağıya keçirmək üçün toxunub saxlaya bilərsiniz</translation>
 <translation id="1089606299949659462">Nəzərdən keçirmə tamamlandı!</translation>
@@ -536,6 +537,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 parol yalnız bu cihazda yadda saxlanılır. Onu digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}other{# parol yalnız bu cihazda yadda saxlanılır. Onları digər cihazlarda istifadə etmək üçün Google Hesabınızda yadda saxlayın.}}</translation>
 <translation id="3293181007446299124">Baxış tarixçəniz cihazınızda məxfi saxlanılır və şəxsiyyətinizi qorumaq üçün hesabatlar gecikmə ilə göndərilir</translation>
+<translation id="3301639354590628973">Hesablar dəyişdirilsin?</translation>
 <translation id="3301936297336370235">Parol təklifinin təsdiqi</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> rəngli <ph name="TITLE_OF_GROUP" /> tab qrupunu yeni arxa fon tab qrupu olaraq bərpa edin.</translation>
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
@@ -678,6 +680,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Bərkidilmiş şəkildə şəkil tabı</translation>
 <translation id="3950820424414687140">Giriş</translation>
 <translation id="395377504920307820">Hesab olmadan istifadə edin</translation>
+<translation id="3955353672249727801">Səhifələr oxu siyahısına əlavə edildi</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome səhifəni cihaz onlayn olduqda yükləyəcək}other{Chrome səhifələri cihaz onlayn olduqda yükləyəcək}}</translation>
 <translation id="3969142555815019568">Chrome parollarınızı yoxlaya bilmir</translation>
 <translation id="3969863827134279083">Yuxarı Köçürün</translation>

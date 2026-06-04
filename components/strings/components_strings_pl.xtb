@@ -149,6 +149,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1227224963052638717">Nieznana zasada.</translation>
 <translation id="1227677022489889280">Podaj powód przeniesienia (wymagane)</translation>
 <translation id="1228893227497259893">Błędny identyfikator elementu</translation>
+<translation id="122989279399348496">Gdy się zalogujesz, <ph name="DOMAIN" /> może potwierdzić <ph name="EMAIL" /> w obsługiwanych witrynach, więc nie musisz sprawdzać skrzynki odbiorczej</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (wykryty automatycznie)</translation>
 <translation id="1232569758102978740">Bez tytułu</translation>
 <translation id="1234539281285007945">Pole <ph name="FIELD_1" /> jest wymagane</translation>
@@ -305,6 +306,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1458140305240870199">Bielizna</translation>
 <translation id="1458770162980644530">Ekran warunków korzystania z usługi „Kup teraz, zapłać później”. Klawiatura jest ukryta.</translation>
 <translation id="1459693405370120464">Pogoda</translation>
+<translation id="1460317464907341501">Automatycznie sprawdzić ten adres e-mail?</translation>
 <translation id="1461041542809785877">Wydajność</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">korzystać z czcionek zainstalowanych na komputerze w celu tworzenia treści wysokiej jakości</translation>
@@ -510,6 +512,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Dostępnych jest wiele czynności. Naciskaj Tab, by się między nimi przełączać.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Dane karty wirtualnej</translation>
+<translation id="1802420021606590788">Chrome przetwarza tytuły stron i adresy URL w przestrzeni prywatnej w chmurze</translation>
 <translation id="1803254472779303354">Blokowanie myszy jest dozwolone</translation>
 <translation id="1803351196216024260">Może prosić o dostęp do mikrofonu</translation>
 <translation id="1804258830776932716">Włącz Pix, szybko łącząc swoje konto</translation>
@@ -873,6 +876,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2354001756790975382">Inne zakładki</translation>
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356941001189392209">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują zdarzenia oparte na starszej technologii</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Zostanie udostępniona 1 karta}few{Zostaną udostępnione {NUM_TABS} karty}many{Zostanie udostępnionych {NUM_TABS} kart}other{Zostanie udostępnione {NUM_TABS} karty}}</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
 <translation id="2359808026110333948">Dalej</translation>
@@ -2002,6 +2006,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="412601465078863288">Przekroczono limit czasu przesyłania</translation>
 <translation id="4127317221386336246">Galanteria</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}many{# innych wpisów}other{# innego wpisu}}</translation>
+<translation id="4129810348470013900">Coś poszło nie tak. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="4129992181550680635">Materiały edukacyjne</translation>
 <translation id="4130226655945681476">Sprawdź kable sieciowe, modem i router</translation>
 <translation id="4132448310531350254">Lista „<ph name="POLICY_IDS_LIST" />” aplikacji odwołuje się do zduplikowanych modułów obsługi rozszerzenia pliku „<ph name="FILE_EXTENSION" />”.</translation>
@@ -3019,6 +3024,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5728246486828755318">Może prosić o dostęp do zaawansowanych funkcji drukarki</translation>
 <translation id="5729442113829771034">Wczesna edukacja dziecięca</translation>
 <translation id="5730040223043577876">Chrome zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
+<translation id="5735174108294025227">Tutaj pojawią się zweryfikowane adresy e-mail</translation>
 <translation id="573555826359077410">Przycisk Utwórz formularz; aktywuj, aby szybko utworzyć nowy formularz w Formularzach Google</translation>
 <translation id="5738385766833540397">Zarządzaj sposobami otrzymywania alertów o obniżkach cen produktów, które śledzisz</translation>
 <translation id="5739619009927381786">W następnym kroku odblokuj ekran, zazwyczaj za pomocą odcisku palca. Możesz też dokonać <ph name="BEGIN_LINK" />weryfikacji w inny sposób<ph name="END_LINK" />.</translation>
@@ -3027,6 +3033,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5742806904559466333">Bary, kluby i życie nocne</translation>
 <translation id="5743684619253032786">Produkty do pielęgnacji paznokci</translation>
 <translation id="574392208103952083">Średni</translation>
+<translation id="5745586894920491759">Chrome przetwarza tytuły stron i adresy URL w chmurze</translation>
 <translation id="5745733273847572235">Może prosić o dostęp do Twojej lokalizacji</translation>
 <translation id="5750869797196646528">Śledzenie rąk</translation>
 <translation id="5752327398324808817">Wpisz słowo lub dwa</translation>
@@ -3421,6 +3428,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Wyświetl logi</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />sprawdzić konfigurację serwera proxy, zapory sieciowej i bezpiecznego DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automatycznie potwierdzaj adresy e-mail</translation>
 <translation id="6366710531182496394">Dwie zszywki po lewej</translation>
 <translation id="6367196786591004737">Usuń wpis</translation>
 <translation id="6370022303958842211">Działania związane z dostępem do urządzenia, takie jak logowanie się (w tym przyczyny nieudanego logowania) i wylogowywanie się, blokowanie i odblokowywanie</translation>
@@ -5061,6 +5069,7 @@ Dodatkowe informacje:
 <translation id="8963117664422609631">Otwórz ustawienia witryny</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestie:<ph name="MARKUP_2" />Upewnij się, że działa połączenie transmisji danych.<ph name="MARKUP_3" />Załaduj tę stronę ponownie później.<ph name="MARKUP_4" />Sprawdź wpisany adres.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Za <ph name="HOURS" /> godziny Twoje pliki lokalne zostaną usunięte</translation>
+<translation id="8964904785315870349">Zweryfikowany adres e-mail</translation>
 <translation id="8968766641738584599">Zapisz kartę</translation>
 <translation id="8970887620466824814">Coś poszło nie tak.</translation>
 <translation id="8971063699422889582">Ważność certyfikatu serwera wygasła.</translation>

@@ -67,6 +67,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1651617469580841801">Če uporabljate Google Lens, se naslov strani, URL in vsebina, vključno s PDF-ji, pošljejo Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O sistemu ChromeOS Flex</translation>
+<translation id="1665867022636014702">Uporaba Googlovih priporočenih nastavitev brskalnika</translation>
 <translation id="1674870198290878346">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
 <translation id="1682634494516646069">Google Chrome ne more brati svojega imenika s podatki ali pisati vanj:
 
@@ -153,6 +154,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2580411288591421699">Ni mogoče namestiti različice Google Chroma, enake tisti, ki se trenutno izvaja. Zaprite Google Chrome in poskusite znova.</translation>
 <translation id="2586406160782125153">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Prenesenega namestitvenega programa ni bilo mogoče predpomniti. Napaka: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Pridobite hiter pregled tega dokumenta in postavljajte vprašanja z Geminijem v Chromu</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="263447411082773721">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah. Posodobite privzeti brskalnik na Chrome in preprosto dostopajte do funkcij, ki jih poznate in so vam všeč. Chrome bo pripet v opravilno vrstico za hitri dostop.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -242,6 +244,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="345171907106878721">Dodajte se v Chrome</translation>
 <translation id="3453763134178591239">Pogoji za Chrome OS</translation>
 <translation id="3503306920980160878">Chrome potrebuje dostop do vaše lokacije, da jo bo lahko delil s tem spletnim mestom</translation>
+<translation id="3539955434060988644">Odpri povezavo v Chromovem anoni&amp;mnem oknu</translation>
 <translation id="3576528680708590453">Skrbnik sistema je Google Chrome nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre drug brskalnik.</translation>
 <translation id="3582972582564653026">V vseh svojih napravah sinhronizirajte in prilagodite Chrome</translation>
 <translation id="3583751698304738917">V drugem profilu za Chrome ste že prijavljeni kot <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -751,6 +754,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="8624541899164515475">Nastavitve, odpre se na novem zavihku.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se bo znova zagnal čez eno minuto}one{Chrome se bo znova zagnal čez # minuto}two{Chrome se bo znova zagnal čez # minuti}few{Chrome se bo znova zagnal čez # minute}other{Chrome se bo znova zagnal čez # minut}}</translation>
 <translation id="8637932705841171563">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
+<translation id="8642497536370021917">Če želite poskrbeti, da boste v računu Google vedno lahko uporabljali in shranjevali podatke Chroma, potrdite, da ste to vi</translation>
 <translation id="8656634243791296665">Odpiranje Geminija v Chromu Dev</translation>
 <translation id="8669527147644353129">Pomočnik za Google Chrome</translation>
 <translation id="8679801911857917785">Določa tudi, katera stran je prikazana, ko zaženete Chrome.</translation>

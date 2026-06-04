@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> бағасы <ph name="PRICE_DROP" /> арзандады.</translation>
 <translation id="3078350928901129212">Қойындылар тобының <ph name="COLOR_NAME" /> түсті белгішесі</translation>
 <translation id="311432875115153175">Қойындылар тобының тізімі жабылды.</translation>
+<translation id="3152596030350326139">Қойындыларды көлденеңінен көрсету</translation>
+<translation id="31806439105337256">Қойындыларды тігінен көрсету</translation>
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындыны топқа қосу}other{<ph name="TABS_COUNT_MANY" /> қойындыны топқа қосу}}</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>

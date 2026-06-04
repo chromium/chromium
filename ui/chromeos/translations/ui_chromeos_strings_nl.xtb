@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatische naamservers</translation>
 <translation id="1210831758834677569">Lao</translation>
 <translation id="1221555006497674479">Weinig opslagruimte, nog <ph name="REMAINING_PERCENTAGE" />% over van je <ph name="TOTAL_SPACE" /> aan gedeelde Drive-opslag.</translation>
+<translation id="1239594683407221485">De content van het apparaat verkennen in de app Bestanden.</translation>
 <translation id="1243314992276662751">Uploaden</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Kan niet verwijderen. Item is in gebruik.</translation>
 <translation id="1307931752636661898">Kan Linux-bestanden niet bekijken</translation>
 <translation id="1313405956111467313">Automatische proxyconfiguratie</translation>
+<translation id="1340527397989195812">Back-ups van media op het apparaat maken via de app Bestanden.</translation>
 <translation id="134645005685694099">Je apparaat heeft onvoldoende opslagruimte om bestandssynchronisatie aan te houden. Nieuwe bestanden worden niet meer automatisch gesynchroniseerd.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Het bestand of de map is niet bruikbaar.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Geen gebruikerscertificaat</translation>
 <translation id="1403008701842173542">Overal</translation>
 <translation id="1404323374378969387">Noors</translation>
+<translation id="1408504635543854729">Verken de content op het apparaat in de app Bestanden. De content wordt beperkt door een beheerder en kan niet worden aangepast.</translation>
 <translation id="1412476183660741812">Ondertekende webbundel</translation>
 <translation id="1433628812591023318">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden verplaatst naar de map met Windows-bestanden.</translation>
 <translation id="1435838927755162558">Map delen met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met bloemen</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> verwijderen</translation>
+<translation id="1464781208867302907">Ga naar Instellingen voor apparaatvoorkeuren</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> bestanden kunnen niet worden gekopieerd omdat ze zijn versleuteld.</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1482884275703521657">Fins</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Beheren in Drive</translation>
 <translation id="2004942826429452291">Bestanden worden opgeslagen in de cloud en op deze Chromebook.</translation>
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
+<translation id="2018352199541442911">Je externe opslagapparaat wordt momenteel niet ondersteund.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2029385776150020336">Uitgebreid Amerikaans</translation>
 <translation id="2037845485764049925">Russisch</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Je Google Drive-bestanden offline openen met bestandssynchronisatie</translation>
 <translation id="2470939964922472929">Je hebt te vaak een verkeerde pincode opgegeven. Als je een nieuwe pincode wilt instellen, geef je de 8-cijferige pukcode op die je van je provider hebt gekregen.</translation>
+<translation id="249113932447298600">Het apparaat <ph name="DEVICE_LABEL" /> wordt momenteel niet ondersteund.</translation>
 <translation id="2500392669976258912">Gujarati (fonetisch)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Scannen</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Oekraïens</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> inpakken...</translation>
 <translation id="3335337277364016868">Opnamejaar</translation>
+<translation id="3348038390189153836">Verwisselbaar apparaat gedetecteerd</translation>
 <translation id="3353984535370177728">Een map voor uploaden selecteren</translation>
 <translation id="3356580349448036450">Voltooid</translation>
 <translation id="3358452157379365236">Gitaar</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Engels (VK)</translation>
 <translation id="3975895378829046965">Bangla (fonetisch)</translation>
+<translation id="3983764759749072418">Play Store-apps hebben toegang tot dit apparaat.</translation>
 <translation id="3999574733850440202">Onlangs geopende Microsoft-bestanden zijn verplaatst naar OneDrive</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engels (VS) met Workman-toetsenbord</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Je moet online zijn om dit bestand te openen.</translation>
 <translation id="4212740939091998969">Er bestaat al een map met de naam '<ph name="FOLDER_NAME" />'. Kies een andere naam.</translation>
 <translation id="4218274196133425560">Uitzondering voor <ph name="HOST_NAME" /> verwijderen</translation>
+<translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4261901459838235729">Google-presentatie</translation>
 <translation id="4277536868133419688">Het filter <ph name="FILTER_NAME" /> staat aan.</translation>
 <translation id="4290535918735525311">1 map gedeeld met Linux</translation>
@@ -556,6 +565,7 @@
 <translation id="5275973617553375938">Bestanden hersteld vanaf Google Drive</translation>
 <translation id="5278111733643988471">Als je dit item wilt herstellen, sleep je het naar een nieuwe map buiten de prullenbak. De oorspronkelijke map <ph name="PARENT_FOLDER_NAME" /> voor dit item is verwijderd.</translation>
 <translation id="5288441970121584418">Hamburger</translation>
+<translation id="529175790091471945">Dit apparaat formatteren</translation>
 <translation id="5293615890992542006">Verplaatsen is geblokkeerd door het beheerdersbeleid</translation>
 <translation id="5305688511332277257">Geen certificaten geïnstalleerd</translation>
 <translation id="5317780077021120954">Opslaan</translation>
@@ -571,6 +581,7 @@
 <translation id="5411472733320185105">De proxyinstellingen niet gebruiken voor deze hosts en domeinen:</translation>
 <translation id="541890217011173530">Koerdisch Sorani met Engels toetsenbord</translation>
 <translation id="5422221874247253874">Toegangspunt</translation>
+<translation id="5422781158178868512">Je externe opslagapparaat kan niet worden herkend.</translation>
 <translation id="5438282218546237410">Geen resultaten voor <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Onvoldoende opslagruimte.</translation>
 <translation id="5449551289610225147">Ongeldig wachtwoord</translation>
@@ -618,10 +629,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> items geselecteerd</translation>
 <translation id="5763377084591234761">Duits (Zwitserland)</translation>
 <translation id="5769519078756170258">Host of domein om uit te sluiten</translation>
+<translation id="5774295353725270860">App Bestanden openen</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Wissen en formatteren</translation>
 <translation id="57838592816432529">Geluid uitzetten</translation>
 <translation id="5788127256798019331">Play-bestanden</translation>
+<translation id="5788367137662787332">Ten minste één partitie op het apparaat <ph name="DEVICE_LABEL" /> kan niet worden gekoppeld.</translation>
 <translation id="5804245609861364054">Kannada (transliteratie)</translation>
 <translation id="5814126672212206791">Verbindingstype</translation>
 <translation id="5817397429773072584">Traditioneel Chinees</translation>
@@ -814,9 +827,11 @@
 <translation id="7224162581405244205">IJslands</translation>
 <translation id="7229570126336867161">EVDO vereist</translation>
 <translation id="7230898482850090046">Je beheerder heeft je gevraagd de instelling Simkaart vergrendelen uit te zetten</translation>
+<translation id="7232750842195536390">Kan naam niet wijzigen</translation>
 <translation id="7238097264433196391">Drive-naam</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, details</translation>
 <translation id="7246947237293279874">FTP-proxy</translation>
+<translation id="725109152065019550">Je beheerder heeft externe opslag uitgezet voor je account.</translation>
 <translation id="7256405249507348194">Onbekende fout: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Beschikbare services</translation>
 <translation id="7291818353625820805">Wil je dat toetsen worden herhaald? Zet accenttekens uit in de toetsenbordinstellingen.</translation>
@@ -839,6 +854,7 @@
 <translation id="7417705661718309329">Google-kaart</translation>
 <translation id="7419668828140929293"><ph name="FILENAME" /> herstellen</translation>
 <translation id="7435577899926900307">Amerikaans Dvorak</translation>
+<translation id="7436921188514130341">Oeps! Er is iets misgegaan bij het veranderen van de naam.</translation>
 <translation id="7458955835361612701">Geen recente afbeeldingen</translation>
 <translation id="7469894403370665791">Automatisch verbinding maken met dit netwerk</translation>
 <translation id="7486315294984620427">Als je bestanden wilt neerzetten in Parallels Desktop, moet het bestand worden gekopieerd naar de map met Windows-bestanden.</translation>
@@ -854,6 +870,7 @@
 <translation id="7551643184018910560">Vastzetten op plank</translation>
 <translation id="7553492409867692754">Linux-apps toegang geven tot bestanden in de map <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Je bent op dit moment offline. De synchronisatie wordt hervat als je verbinding hebt met internet.</translation>
+<translation id="7589461650300748890">Oei, wees voorzichtig!</translation>
 <translation id="7589661784326793847">Een ogenblik geduld</translation>
 <translation id="7600126690270271294">Servisch</translation>
 <translation id="7603724359189955920">Rasters</translation>
@@ -899,6 +916,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
+<translation id="7839051173341654115">Media bekijken/back-up maken</translation>
 <translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7857117644404132472">Uitzondering toevoegen</translation>
@@ -906,8 +924,10 @@
 <translation id="7868774406711971383">Pools</translation>
 <translation id="7874321682039004450">Filipijns</translation>
 <translation id="78946041517601018">Gedeelde Drives</translation>
+<translation id="7897900149154324287">Zorg ervoor dat je je verwijderbare apparaat voortaan in de app Bestanden uitwerpt voordat je deze loskoppelt, anders kun je gegevens verliezen.</translation>
 <translation id="7901567919203965902">Amerikaans Workman (internationaal)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Ten minste één partitie op je externe opslagapparaat kan niet worden gekoppeld.</translation>
 <translation id="7908793776359722643">Tijdens het formatteren van een partitie worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen.</translation>
@@ -1041,6 +1061,7 @@
 <translation id="8873014196523807561">Als je deze items wilt herstellen, sleep je ze naar een nieuwe map. De oorspronkelijke mappen voor sommige van deze items zijn verwijderd.</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
 <translation id="8876368061475701452">In wachtrij</translation>
+<translation id="8893928184421379330">Het apparaat <ph name="DEVICE_LABEL" /> kan niet worden herkend.</translation>
 <translation id="8902208737522818687">Amerikaans internationaal (pc)</translation>
 <translation id="8903931173357132290">Afgestudeerde</translation>
 <translation id="8912078710089354287">Hond die kwispelt</translation>

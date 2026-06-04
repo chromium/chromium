@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">Ідзе спампоўванне…</translation>
 <translation id="1651617469580841801">Пры выкарыстанні Google Аб’ектыва загаловак, URL-адрас і змесціва старонкі, у тым ліку файлы PDF, адпраўляюцца ў Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Пра Chrome OS Flex</translation>
+<translation id="1665867022636014702">Выкарыстоўвайце налады браўзера, якія рэкамендуе Google</translation>
 <translation id="1674870198290878346">Адкрыць спасылку ў акне інко&amp;гніта ў Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не можа чытаць з каталога даных і запісваць у яго:
 
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">Адкрыць спасылку ў новай &amp;укладцы Chrome</translation>
 <translation id="2665296953892887393">Дапамажыце палепшыць Google Chrome, адпраўляючы ў Google справаздачы аб збоях і <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Націсніце, каб выйсці з Google Аб’ектыва</translation>
+<translation id="2674238339205910678">Сістэма ChromeOS Flex не змагла захаваць даныя Chrome ў вашым Уліковым запісе Google, бо даныя для ўваходу ўстарэлі</translation>
 <translation id="2681444469812712297">Адкрыць <ph name="URL" /> у новай укладцы ў Google Chrome.</translation>
 <translation id="2699790011615497488">Адкрыць Gemini ў бэта-версіі Chrome</translation>
 <translation id="2712141162840347885">Паспрабуйце знайсці што-небудзь з дапамогай Google Аб’ектыва або націсніце Esc, каб закрыць яго</translation>
@@ -242,6 +244,7 @@
 <translation id="345171907106878721">Дадаць мяне ў Chrome</translation>
 <translation id="3453763134178591239">Умовы выкарыстання Chrome OS</translation>
 <translation id="3503306920980160878">Chrome патрабуе доступу да вашага месцазнаходжання, каб абагуліць яго з гэтым сайтам</translation>
+<translation id="3539955434060988644">Адкрыць спасылку ў акне інко&amp;гніта ў Chrome</translation>
 <translation id="3576528680708590453">Ваш сістэмны адміністратар наладзіў Google Chrome, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Сінхранізуйце і персаналізуйце Chrome на сваіх прыладах</translation>
 <translation id="3583751698304738917">Вы ўжо ўвайшлі ў іншы профіль Chrome як <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -536,6 +539,7 @@
 <translation id="6497147134301593682">Chrome аўтаматычна закрыты</translation>
 <translation id="6506909944137591434">Каб стварыць 3D-карту наваколля, Chrome запытвае дазвол на доступ да камеры</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome для распрацоўшчыкаў</translation>
+<translation id="6520608191273161151">Сістэма ChromeOS Flex не змагла захаваць даныя Chrome ў вашым Уліковым запісе Google з-за памылкі ўваходу</translation>
 <translation id="6520670145826811516">Каб выкарыстоўваць месцазнаходжанне, дайце Chrome адпаведны доступ у <ph name="BEGIN_LINK" />сістэмных наладах<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Гісторыя праглядаў Chrome</translation>
 <translation id="6532945796722480006">Адкрыць Gemini ў Chrome Canary</translation>
@@ -583,6 +587,7 @@
 <translation id="7011190694940573312">Усталяваць праграму не ўдалося, бо гэта версія аперацыйнай сістэмы не падтрымліваецца.</translation>
 <translation id="7024536598735240744">Памылка распакоўкі: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Пераключацца паміж профілямі Chrome можна тут</translation>
+<translation id="7026856149118332950">У апавяшчэнні Windows націсніце <ph name="BEGIN_BOLD" />Так<ph name="END_BOLD" />, каб замацаваць Chrome на панэлі задач для хуткага доступу.</translation>
 <translation id="7047386856539490735">Ці карысныя гэтыя вынікі?</translation>
 <translation id="7051685429025310665">Вы даўно не наведвалі сайт. Браўзер Chrome адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Дастасуйце Chrome да сваіх мэт</translation>
@@ -675,6 +680,7 @@
 <translation id="7890208801193284374">Калі камп’ютар выкарыстоўваюць некалькі чалавек, кожны з іх можа наладзіць Chrome для сябе і праглядаць старонкі асобна ад іншых.</translation>
 <translation id="7896673875602241923">Нехта раней увайшоў у Chrome на гэтым камп’ютары як <ph name="ACCOUNT_EMAIL_LAST" />. Стварыце новага карыстальніка Chrome, каб трымаць сваю інфармацыю асобна.</translation>
 <translation id="7904985524660297937">Паспрабаваць Gemini ў Google Chrome</translation>
+<translation id="7905880575591690197">Сістэма ChromeOS не змагла захаваць даныя Chrome ў вашым Уліковым запісе Google з-за памылкі ўваходу</translation>
 <translation id="7917876797003313048">У гэтым раздзеле можна кіраваць Уліковымі запісамі Google, у якія вы ўвайшлі. Вашы Уліковыя запісы Google выкарыстоўваюцца ў браўзеры Chrome, Краме Play, пошце Gmail і іншых сэрвісах. Калі вы хочаце дадаць уліковы запіс для каго-небудзь яшчэ (напрыклад, для ўдзельніка сямейнай групы), дадайце на прыладу "<ph name="DEVICE_TYPE" />" новага карыстальніка. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Браўзер Chrome заблакіраваў спампоўку, бо гэты файл з’яўляецца падманным і можа ўнесці нечаканыя змяненні на вашай прыладзе</translation>
 <translation id="7951272445806340501">Каб прымяніць абнаўленне, трэба перазапусціць Chrome OS Flex.</translation>
@@ -799,6 +805,7 @@
 <translation id="93760716455950538">Перазапуск Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome рэкамендуе праверыць гэты файл, бо ён можа быць небяспечным.</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
+<translation id="973195869036269770">Сістэма ChromeOS не змагла захаваць даныя Chrome ў вашым Уліковым запісе Google, бо даныя для ўваходу ўстарэлі</translation>
 <translation id="983803489796659991">Выканаць усталяванне не ўдалося, бо на серверы абнаўленняў адсутнічаюць хэш-даныя для праграмы.</translation>
 <translation id="989369509083708165">Google Chrome – ваш стандартны браўзер.</translation>
 <translation id="989816563149873169">Пераключацца паміж профілямі Chrome можна, выкарыстоўваючы спалучэнне клавіш <ph name="SHORTCUT" /></translation>

@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium memerlukan akses Bluetooth untuk meneroka 
 peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Kesan bahasa</translation>
+<translation id="1330742950061766891">Gunakan tetapan penyemak imbas yang disyorkan oleh Chromium</translation>
 <translation id="1342274909142618978">Padamkan juga data daripada Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Disematkan! Anda boleh mengakses Carian Imej lagi daripada butang baharu pada bar alat</translation>
 <translation id="1356661055722410047">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda</translation>
@@ -67,6 +68,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="1749104137266986751">Apabila HTTPS tidak tersedia, Chromium akan menggunakan sambungan yang tidak selamat tanpa memberi anda amaran</translation>
 <translation id="1774152462503052664">Benarkan Chromium dijalankan dalam latar belakang</translation>
 <translation id="1779356040007214683">Untuk menjadikan Chromium lebih selamat, kami melumpuhkan beberapa sambungan yang tidak disenaraikan dalam <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dan mungkin telah ditambahkan tanpa pengetahuan anda.</translation>
+<translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> dalam pemberitahuan Windows untuk menyematkan Chromium pada bar tugas anda untuk akses pantas.</translation>
 <translation id="1808667845054772817">Pasang semula Chromium</translation>
 <translation id="1820835682567584003">Chromium cuba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Apabila anda membuka Chromium pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk menggunakan Google Password Manager.</translation>
@@ -380,8 +382,10 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5294316920224716406">Apabila menyemak imbas dalam Mod Inkognito, Chromium akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="5313228254328109263">Perkhidmatan Dalaman Pengemas Kini Chromium</translation>
 <translation id="5346389065299425353">Perincikan carian anda dengan menambahkan berbilang tab, fail dan alatan</translation>
+<translation id="5348677704241861105">Gunakan Gemini dalam Chromium untuk mendapatkan ikhtisar pantas bagi dokumen ini dan mengemukakan pertanyaan</translation>
 <translation id="5352264705793813212">Chromium menemukan beberapa syor keselamatan untuk semakan anda</translation>
 <translation id="5352361688875342522">Profil Chromium Lain</translation>
+<translation id="535243042947607642">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="5358375970380395591">Anda log masuk menggunakan akaun yang terurus dan memberikan pentadbirnya kawalan ke atas profil Chromium anda. Data Chromium anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Google Account, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Kod tambahan: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Untuk mendapatkan pemeribadian, sertakan Chromium dalam Aktiviti Web &amp; Apl</translation>
@@ -487,6 +491,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6390800440335263989">Untuk meneruskan, log masuk ke Chromium sebagai <ph name="EMAIL" />. Tindakan ini untuk memastikan bahawa anda memahami dasar organisasi anda.</translation>
 <translation id="6400112897226594999">Logo Chromium dalam skrin komputer.</translation>
 <translation id="6403826409255603130">Chromium merupakan penyemak imbas yang mengendalikan laman web dan aplikasi dengan kelajuan sepantas kilat. Chromium cepat, stabil dan mudah digunakan. Semak imbas web lebih selamat dengan perlindungan perisian hasad dan pancingan data terbina dalam Chromium.</translation>
+<translation id="6414624068245092115">Untuk memastikan anda dapat menggunakan dan menyimpan data Chromium dalam Google Account anda pada bila-bila masa, sahkan identiti anda</translation>
 <translation id="642132557830635295">Chromium berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti yang direka bentuk</translation>
 <translation id="6436260184216827876">Carian Imej tidak tersedia. Cuba sebentar lagi.</translation>
 <translation id="6442900851116057561">Mulakan semula Chromium OS</translation>
@@ -716,6 +721,7 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8852026904190808918">Bahasa ini digunakan untuk memaparkan menu, tetapan, makluman dan teks lain dalam Chromium</translation>
 <translation id="8862326446509486874">Anda tidak mempunyai hak wajar untuk pemasangan peringkat sistem. Cuba jalankan pemasang semula sebagai Pentadbir.</translation>
 <translation id="8876044221123442390">Tambahkan Profil Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="8891709362986793894">Organisasi anda menghendaki anda untuk log masuk ke Chromium</translation>
 <translation id="8907580949721785412">Chromium cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>
 <translation id="8932992523185907506">Chromium bukan penyemak imbas lalai anda lagi. Jadikan Chromium penyemak imbas lalai?</translation>

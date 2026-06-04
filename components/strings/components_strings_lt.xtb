@@ -149,6 +149,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1227224963052638717">Nežinoma politika.</translation>
 <translation id="1227677022489889280">Nurodykite perkėlimo priežastį (būtina)</translation>
 <translation id="1228893227497259893">Netinkamas subjekto identifikatorius</translation>
+<translation id="122989279399348496">Kai esate prisijungę, <ph name="DOMAIN" /> gali patvirtinti <ph name="EMAIL" /> palaikomose svetainėse, kad jums nereikėtų tikrinti gautųjų</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (aptikta automatiškai)</translation>
 <translation id="1232569758102978740">Be pavadinimo</translation>
 <translation id="1234539281285007945">Laukas „<ph name="FIELD_1" />“ yra būtinas</translation>
@@ -510,6 +511,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, galimi keli veiksmai, paspauskite skirtuką, norėdami juos perjungti</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtualios kortelės išsami informacija</translation>
+<translation id="1802420021606590788">„Chrome“ apdoroja puslapių pavadinimus ir URL privačioje erdvėje debesyje</translation>
 <translation id="1803254472779303354">Pelės užraktas leidžiamas</translation>
 <translation id="1803351196216024260">Gali būti prašoma naudoti mikrofoną</translation>
 <translation id="1804258830776932716">Įgalinkite „Pix“ sparčiai susieję paskyrą</translation>
@@ -873,6 +875,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2354001756790975382">Kitos žymės</translation>
 <translation id="2355395290879513365">Užpuolikai galbūt galės matyti, kuriuos šios svetainės vaizdus peržiūrite, ir juos pakeis siekdami jus suklaidinti.</translation>
 <translation id="2356941001189392209">Ribotas puslapių, kuriuose lankotės ir kuriuose vyksta įvykiai, susiję su pasenusiomis technologijomis, URL sąrašas</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Bus bendrinamas vienas skirtukas}one{Bus bendrinamas {NUM_TABS} skirtukas}few{Bus bendrinami {NUM_TABS} skirtukai}many{Bus bendrinama {NUM_TABS} skirtuko}other{Bus bendrinama {NUM_TABS} skirtukų}}</translation>
 <translation id="2357481397660644965">Jūsų įrenginį valdo <ph name="DEVICE_MANAGER" />, o paskyrą – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Kelios</translation>
 <translation id="2359808026110333948">Tęskite</translation>
@@ -3028,6 +3031,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5742806904559466333">Barai, klubai ir naktinis gyvenimas</translation>
 <translation id="5743684619253032786">Nagų priežiūros produktai</translation>
 <translation id="574392208103952083">Vidutinis</translation>
+<translation id="5745586894920491759">„Chrome“ apdoroja puslapių pavadinimus ir URL debesyje</translation>
 <translation id="5745733273847572235">Gali būti prašoma jūsų vietovės informacijos</translation>
 <translation id="5750869797196646528">Rankų stebėjimas</translation>
 <translation id="5752327398324808817">Įveskite vieną ar du žodžius</translation>
@@ -3422,6 +3426,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Žr. žurnalus</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tikrinama tarpinio serverio, užkardos ir saugios DNS konfigūracija<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automatiškai patvirtinkite el. pašto adresus</translation>
 <translation id="6366710531182496394">Dvi sankabėlės kairėje</translation>
 <translation id="6367196786591004737">Ištrinti įrašą</translation>
 <translation id="6370022303958842211">Įrenginių prieigos veiksmai, pvz., prisijungimai (įskaitant nepavykusių prisijungimų priežastis), atsijungimai, užrakinimai ir atrakinimai</translation>
@@ -5063,6 +5068,7 @@ Papildoma išsami informacija:
 <translation id="8963117664422609631">Eiti į svetainės nustatymus</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Pasiūlymai:<ph name="MARKUP_2" />įsitikinkite, kad veikia duomenų ryšys;<ph name="MARKUP_3" />vėliau iš naujo įkelkite šį tinklalapį;<ph name="MARKUP_4" />patikrinkite įvestą adresą<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vietiniai failai bus ištrinti po <ph name="HOURS" /> val.</translation>
+<translation id="8964904785315870349">Patvirtintas el. pašto adresas</translation>
 <translation id="8968766641738584599">Išsaugoti kortelę</translation>
 <translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8971063699422889582">Baigėsi serverio sertifikato galiojimo laikas.</translation>

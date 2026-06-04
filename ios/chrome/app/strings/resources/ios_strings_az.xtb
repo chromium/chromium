@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Brauzeriniz idarə edilir. <ph name="BEGIN_LINK" />Ətraflı Məlumat<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Kopyalanmış Mətni Axtarın</translation>
 <translation id="2147127444698817042">Yalnız iPhone-da əlçatandır</translation>
+<translation id="2148326276832455306">Çatlar nəzərdən keçirilir və Google Sİ-ni təkmilləşdirmək üçün istifadə olunur. Məkanınız haqqında məlumat da daxil olmaqla <ph name="BEGIN_LINK" />fəaliyyətinizi idarə edə<ph name="END_LINK" /> bilərsiniz. <ph name="BEGIN_LINK" />Seçimləriniz haqqında ətraflı məlumat əldə edin<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Saxlanılmış parollarınızla saytlara və tətbiqlərə sürətlə daxil olun.</translation>
 <translation id="2149968176347646218">Bağlantı güvənli deyil</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Vahid seçicisi</translation>
 <translation id="2330607597130465898">Qoruma yoxdur</translation>
 <translation id="233375395665273385">Silin və çıxın</translation>
+<translation id="2340966584724330791">Google çatlarınızı və Gemini ilə paylaşdıqlarınızı (məsələn, fayllar, videolar, ekranlar və fotolar) toplayır. Rəyinizi, Gemini ilə daxil olduğunuz veb-saytlardakı məlumatları, məhsul istifadəsini və məkan məlumatlarını (cihazınızın ümumi məkanı, IP ünvanı və ya Google Hesabınızdakı ev və ya iş ünvanları daxil olmaqla) da toplayır.</translation>
 <translation id="2350463587705616331">Sepiya fon rəngi</translation>
 <translation id="2351097562818989364">Tərcümə ayarlarınız sıfırlanmışdır.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}=2{{DOMAIN_ONE} və {DOMAIN_TWO} parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} və digər {OTHER_DOMAINS_COUNT} domen parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}other{{DOMAIN_ONE}, {DOMAIN_TWO} və digər {OTHER_DOMAINS_COUNT} domen parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Məlumatlarınızı doldurarkən xəta baş verdi</translation>
 <translation id="2371084566192454134">Tablar və tab qrupları</translation>
 <translation id="2371303771137626249">Yeni</translation>
+<translation id="2375947780110007467">Google paylaşılan tabların kontent və URL-dən istifadə edir. Cari tab yeni çatlarda paylaşılır. Bu ayarı istənilən vaxt dəyişə bilərsiniz.</translation>
 <translation id="2381405137052800939">Əsaslar</translation>
 <translation id="2384692388811649784">Anonim tabları gizlədin</translation>
 <translation id="2386793615875593361">1 ədəd seçildi</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Səsli axtarış</translation>
 <translation id="3289505634533552500">Səsli Axtarış</translation>
 <translation id="3295904109373959849">Tab qrupları şəbəkəsi</translation>
+<translation id="3301639354590628973">Hesablar dəyişdirilsin?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, yeni fəaliyyət</translation>
 <translation id="3305294846493618482">ardı</translation>
 <translation id="3311748811247479259">Deaktiv</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Oxunmuş olaraq qeyd edin</translation>
 <translation id="428768789042547925">Yeniliklər</translation>
 <translation id="429074084062258019">{count,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
+<translation id="4294506173142861371"><ph name="FIRST_NAME" /> olaraq daxil olursunuz?</translation>
 <translation id="4300830875340617674">Kartı skanlayın və avtomatik doldurun</translation>
 <translation id="4302061870579014542">Mövqe ayarlayın</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Əlfəcinlər</translation>
 <translation id="5447973833955560753">Bərpa parolu</translation>
 <translation id="5452354193031718372">Güclü paroldan istifadə edin:</translation>
+<translation id="5453088693079603292">Hansı fəaliyyətlər toplanılır</translation>
 <translation id="5454211924362324495">Digərlərinin paroldan istifadə etməməsi üçün <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> veb-saytında onu dəyişin<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Axtarışa əlavə edin</translation>
 <translation id="5457226814769348910">Oflayn versiyanı açın</translation>
@@ -1522,6 +1528,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6253686838150111720">Daxil olun: <ph name="URL" /></translation>
 <translation id="6254066287920239840">Linkləri brauzer əvəzinə tətbiqdə açın</translation>
 <translation id="6259928806013786178">Oxu rejimi alınmadı</translation>
+<translation id="626335165106398104">Gemini digər xidmətlərlə əlaqəli şəkildə fəaliyyət göstərir</translation>
 <translation id="6268773951964630964">Kopiyalanmış şəkli axtarın</translation>
 <translation id="6271462272606946663">"Mobil sayt sorğusu" seçimini gizlədin</translation>
 <translation id="6271824294945464304">Parol paylaşılır</translation>
@@ -1637,6 +1644,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6609890790934458793"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> və <ph name="THIRD_WEBSITE" /> üçün parollar silinəcək. Hesablarınız silinməyəcək.</translation>
 <translation id="661266467055912436">Siz və vebdəki hər kəs üçün təhlükəsizliyi artırır.</translation>
 <translation id="6612912757320004438">Tab bildirişlərinə icazə verin…</translation>
+<translation id="6613372200395638275">Fərdi yardım təmin etmək üçün Gemini datanızın bir hissəsini (məsələn, bəzi çatlarınız, məkanınız və digər müvafiq məlumatlar) Xəritə və Uçuş kimi digər Google xidmətləri ilə paylaşır. Gemini tətbiq fəaliyyətinizi sonradan silsəniz belə, bu xidmətlər təkmilləşdirmə məqsədilə bu məlumatlardan istifadə edə bilər. <ph name="BEGIN_LINK" />Gemini tətbiqi məxfilik mərkəzində<ph name="END_LINK" /> ətraflı məlumat əldə edin.</translation>
 <translation id="6617761071025228250">Mətni silin</translation>
 <translation id="6619015782482868078">Dəniz mavisi tema</translation>
 <translation id="6620279676667515405">Ləğv edin</translation>
@@ -1712,6 +1720,9 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6858718102216837409">Dil əlavə edin…</translation>
 <translation id="6858855187367714033">Skan edildi</translation>
 <translation id="6859944681507688231">QR kod və ya kredit kartını skan etmək üçün ayarlardan kameranı aktiv edin.</translation>
+<translation id="6862212368460840758"><ph name="SIGNED_EMAIL" /> olaraq daxil olmusunuz.
+
+Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin. Bu hesabdan parollar, əlfəcinlər və s. əldə edəcəksiniz.</translation>
 <translation id="6867369562105931222">parol</translation>
 <translation id="6867400383614725881">Yeni Incognito tabı</translation>
 <translation id="686831807558000905">Daxil olmayın</translation>
@@ -1780,6 +1791,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7091023926159231962">{count,plural, =1{{count} parolu import etmək olmadı}other{{count} parolu import etmək olmadı}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> üçün Google Parol Menecerinə</translation>
 <translation id="7097046145876891318">Zamanla qiymət dəyişikliklərini görmək üçün ünvan panelində qiymət tarixçəsinə toxunun</translation>
+<translation id="7098554251807199977">Gemini ilə söhbətləriniz və ya <ph name="BEGIN_LINK" />Google Workspace datanız<ph name="END_LINK" /> nəzərdən keçirilməyəcək, yaxud generativ Sİ modellərini təkmilləşdirmək üçün istifadə olunmayacaq.</translation>
 <translation id="7102005569666697658">Endirilir… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menyu → Ayarlar → Ödəniş metodları</translation>
 <translation id="7108338896283013870">Gizlədin</translation>
@@ -2173,6 +2185,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8439758443371991593">"Oxu siyahısına əlavə edin" seçimini gizlədin</translation>
 <translation id="8443986842926457191">Keçid 2048 simvoldan uzundur</translation>
 <translation id="8449869326050867919">Parol paylaşıldı</translation>
+<translation id="8461708300275916315">18 yaşınız tamam olmayıbsa</translation>
 <translation id="8473815223723723001">Şəkli Gemini ilə redaktə edin</translation>
 <translation id="8473863474539038330">Ünvanlar və s.</translation>
 <translation id="8474378002946546633">Bildirişlərə icazə verin</translation>
@@ -2234,6 +2247,8 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8636825310635137004">Panelləri digər cihazlarınızdan əldə etmək üçün sinxronizasiyanı aktiv edin.</translation>
 <translation id="8637431369725868556">Təhlükəli saytlardan qorunun.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Oğurlanmış parol yoxdur}=1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
+<translation id="8639963783467694461">Avtodoldurma ayarları</translation>
+<translation id="8642417828095157370">Daha uyğun cavablar üçün tablar paylaşılır</translation>
 <translation id="8643403533759285912">Qrupu silin</translation>
 <translation id="8647280737650867362">Qiymət izlənmədi.</translation>
 <translation id="8654802032646794042">Ləğv edin</translation>
@@ -2247,6 +2262,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8672733398999596205">Hamısını aktiv edin</translation>
 <translation id="8674716540979958118">Oğurlanmış parollar var.</translation>
 <translation id="8679900250380464358">Oxu Siyahısına əlavə edin</translation>
+<translation id="8680643216091361291"><ph name="BEGIN_LINK" />Fəaliyyəti Saxlayın<ph name="END_LINK" /> ayarı defolt olaraq deaktivdir. Deaktiv olduqda Google çatlarınızı 3 gün yadda saxlayır. Gemini tətbiqlərinin düzgün fəaliyyət göstərməsi, onların təhlükəsizliyini təmin etmək, rəyinizdən istifadə edərək problemləri həll etmək üçün həmin çatlardan yararlanır. Google Sİ-ni hər kəs üçün təkmilləşdirməyə kömək etmək məqsədilə Fəaliyyəti Saxlayın funksiyasını aktiv edə bilərsiniz.</translation>
 <translation id="8680786875305615692">Vebdə hər kəsin güvənliyini artırmağa yardım edin</translation>
 <translation id="8680787084697685621">Hesaba avtomatik giriş detallarının vaxtı keçib.</translation>
 <translation id="8690752723634292147">Silinməni təsdiqləyin</translation>
@@ -2396,6 +2412,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="9162432979321511934">Parol Avto Doldurmasını aktiv edin</translation>
 <translation id="9165320910061267720">Qiymətin düşməsi xəbərdarlıqları ilə bağlı bildiriş almaq üçün iOS ayarlarında bildirişləri aktiv etməlisiniz.</translation>
 <translation id="9179151630575358778">Bu elementi gizlədir</translation>
+<translation id="9183563643084679152">Chrome-a daxil olmaq üçün QR kodunu skanladınız. Bu hesabdan parollar, əlfəcinlər və s. əldə edəcəksiniz.</translation>
 <translation id="9183733013282108610">Anonim axtarış</translation>
 <translation id="9186762474139509529">Qeydiyyata başlayın</translation>
 <translation id="9191031968346938109">Buraya əlavə edin:</translation>

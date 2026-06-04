@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Memuat turun...</translation>
 <translation id="1651617469580841801">Apabila anda menggunakan Google Lens, tajuk halaman, URL dan kandungan, termasuk PDF, akan dihantar kepada Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Perihal Chrome OS Flex</translation>
+<translation id="1665867022636014702">Gunakan tetapan penyemak imbas yang disyorkan oleh Google</translation>
 <translation id="1674870198290878346">Buka Pautan dalam Tetingkap Inko&amp;gnito Chrome</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca atau menulis pada direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Apabila anda menaip dalam bar alamat atau kotak carian, Chrome akan menghantar perkara yang anda taip kepada alatan carian, AI dan ejen organisasi anda untuk mendapatkan cadangan.</translation>
@@ -149,6 +150,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="2580411288591421699">Tidak dapat memasang versi Google Chrome yang sama yang kini dijalankan. Sila tutup Google Chrome dan cuba semula.</translation>
 <translation id="2586406160782125153">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Gagal mengcache pemasang yang dimuat turun. Ralat: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Gunakan Gemini dalam Chrome untuk mendapatkan ikhtisar pantas bagi dokumen ini dan mengemukakan pertanyaan</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="263447411082773721">Pastikan kata laluan, penanda halaman dan sejarah anda disegerakkan dengan sempurna merentas peranti. Akses ciri yang anda ketahui dan sukai dengan mudah dengan mengemaskinikan penyemak imbas lalai anda kepada Chrome. Chrome akan disematkan pada bar tugas anda untuk akses pantas.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -156,6 +158,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
 <translation id="2665296953892887393">Bantu jadikan Google Chrome lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
 <translation id="2668094785979141847">Klik untuk keluar daripada Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex tidak dapat menyimpan data Chrome dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="2681444469812712297">Buka <ph name="URL" /> dalam tab baharu dalam Google Chrome.</translation>
 <translation id="2699790011615497488">Buka Gemini dalam Chrome Beta</translation>
 <translation id="2712141162840347885">Pilih apa-apa sahaja untuk mencari dengan Google Lens atau tekan kekunci Esc untuk keluar daripada Google Lens</translation>
@@ -530,6 +533,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6497147134301593682">Chrome ditutup secara automatik</translation>
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex tidak dapat menyimpan data Chrome dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Sejarah Chrome</translation>
 <translation id="6532945796722480006">Buka Gemini dalam Chrome Canary</translation>
@@ -577,6 +581,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7011190694940573312">Pemasangan gagal kerana versi sistem operasi ini tidak disokong.</translation>
 <translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
+<translation id="7026856149118332950">Klik <ph name="BEGIN_BOLD" />Ya<ph name="END_BOLD" /> dalam pemberitahuan Windows untuk menyematkan Chrome pada bar tugas anda untuk akses pantas.</translation>
 <translation id="7047386856539490735">Adakah hasil carian ini berguna?</translation>
 <translation id="7051685429025310665">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Peribadikan Chrome Anda</translation>
@@ -669,6 +674,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7890208801193284374">Jika anda berkongsi komputer, rakan dan keluarga boleh menyemak imbas secara berasingan dan menyediakan Chrome sebagaimana yang mereka mahukan.</translation>
 <translation id="7896673875602241923">Sebelum ini, seseorang telah log masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Sila buat pengguna Chrome baharu untuk mengasingkan maklumat anda.</translation>
 <translation id="7904985524660297937">Cuba Gemini dalam Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS tidak dapat menyimpan data Chrome dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="7917876797003313048">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chrome, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome menyekat muat turun ini kerana fail mengelirukan dan mungkin membuat perubahan tidak dijangka pada peranti anda</translation>
 <translation id="7951272445806340501">Chrome OS Flex perlu dimulakan semula untuk mengenakan kemaskinian.</translation>
@@ -744,6 +750,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="8624541899164515475">Tetapan, dibuka dalam tab baharu.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan dilancarkan semula dalam masa seminit}other{Chrome akan dilancarkan semula dalam masa # minit}}</translation>
 <translation id="8637932705841171563">Untuk berkongsi tetingkap anda, benarkan rakaman skrin untuk Chrome dalam Tetapan Sistem</translation>
+<translation id="8642497536370021917">Untuk memastikan anda dapat menggunakan dan menyimpan data Chrome dalam Google Account anda pada bila-bila masa, sahkan identiti anda</translation>
 <translation id="8656634243791296665">Buka Gemini dalam Chrome Dev</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
 <translation id="8679801911857917785">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>
@@ -793,6 +800,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="93760716455950538">Mulakan semula Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome mengesyorkan pengimbasan fail ini kerana fail ini mungkin berbahaya.</translation>
 <translation id="945522503751344254">Hantar maklum balas</translation>
+<translation id="973195869036269770">ChromeOS tidak dapat menyimpan data Chrome dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="983803489796659991">Pemasangan gagal akibat pelayan kemaskinian tidak mengandungi sebarang data cincang untuk aplikasi.</translation>
 <translation id="989369509083708165">Google Chrome ialah penyemak imbas lalai anda</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> boleh digunakan untuk beralih antara profil Chrome</translation>

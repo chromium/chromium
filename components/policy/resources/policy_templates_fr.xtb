@@ -469,6 +469,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
       Inversement, si elle est activée, ils le sont aussi.
       Si elle n'est pas configurée, elle est désactivée pour les appareils gérés et activée pour les appareils non gérés.
       Notez qu'il s'agit d'une règle temporaire afin que les utilisateurs gérés puissent quand même utiliser les anciens raccourcis obsolètes. Elle prendra fin une fois que des raccourcis clavier personnalisés seront disponibles.</translation>
+<translation id="1359459742455216057">Identifiant unique de l'appli <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="1361661842732478894">Afficher le bouton Accueil dans la barre d'outils</translation>
 <translation id="1363275621236827384">Activer l'envoi de requêtes de profils matériels à Quirks Server</translation>
 <translation id="1363839375295535439">Si cette règle est activée ou qu'elle n'est pas configurée, le bac à sable LPAC est activé pour les services d'impression lorsque la configuration du système le permet.
@@ -2220,6 +2221,14 @@ Cette règle est provisoire et sera supprimée dans la version 157.</translatio
 
       La valeur de cette règle doit être indiquée en jours.</translation>
 <translation id="2466131534462628618">L'authentification de portail captif ignore le proxy</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+La fonctionnalité ServiceWorkerAutoPreload envoie une requête réseau pour une ressource principale en même temps qu'elle lance le processus d'amorçage ServiceWorker.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> active ServiceWorkerAutoPreload. La requête de navigation est automatiquement distribuée lors du démarrage de ServiceWorker dans certains scénarios, par exemple lorsque ServiceWorker n'est pas en cours d'exécution.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> n'activera pas ServiceWorkerAutoPreload. La requête de navigation est toujours distribuée après le démarrage de ServiceWorker.
+
+Cette règle est une mesure temporaire pour contrôler la fonctionnalité et sera supprimée dans M154.</translation>
 <translation id="2467181864598429837">Comportement par défaut du navigateur</translation>
 <translation id="2467896267442150508">Intervalle d'une semaine (au maximum). Si l'heure de début est postérieure à l'heure de fin, l'heure de fin sera décalée au jour suivant.</translation>
 <translation id="2475594733565572760">Cette règle définit le paramètre par défaut pour toutes les fonctionnalités d'IA générative couvertes. Par exemple, si cette règle est définie sur la valeur 1, cette valeur sera le paramètre par défaut pour toutes les fonctionnalités d'IA génératives couvertes. Cela n'aura aucune incidence sur les valeurs de règle définies manuellement. Ce paramètre définira les valeurs par défaut pour les fonctionnalités d'IA générative couvertes dans Chrome. Pour connaître la liste des fonctionnalités couvertes, consultez https://support.google.com/chrome/a?p=generative_ai_settings.
@@ -3847,7 +3856,7 @@ Si <ph name="NTP_SHORTCUTS_ALLOW_USER_DELETE_NAME" /> est définie sur "True", l
       Si cette règle est définie sur "False", l'appareil n'essaiera pas de contacter Quirks Server pour télécharger les fichiers de configuration.
 
       Si cette règle est définie sur "True" ou si elle n'est pas définie, <ph name="PRODUCT_OS_NAME" /> contactera automatiquement Quirks Server pour télécharger les fichiers de configuration, s'ils sont disponibles, et les enregistrer sur l'appareil  Ces fichiers pourront, par exemple, être utilisés pour améliorer la qualité d'affichage des moniteurs connectés.</translation>
-<translation id="3513864752694608929">Ne pas appliquer les modes de saisie activés</translation>
+<translation id="3513864752694608929">Ne pas imposer les modes de saisie activés</translation>
 <translation id="3515196503924273265">Permet d'activer la fonctionnalité NewBaseUrlInheritanceBehavior</translation>
 <translation id="351654132746710200">Une fois <ph name="LACROS_NAME" /> désactivé, la migration des données n'est pas effectuée. Le dossier <ph name="LACROS_NAME" /> est supprimé, et les utilisateurs continuent d'utiliser les données restantes.</translation>
 <translation id="3518293344797498431">Recharge la batterie à environ 80 % pour maximiser sa durée de vie.</translation>
@@ -4266,6 +4275,7 @@ Lorsque cette règle est désactivée ou n'est pas configurée, le service SSO f
 <translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
 <translation id="3785423718413114598">Ne pas autoriser les fonctionnalités d'IA générative</translation>
+<translation id="378626615843371785">Configurer les paramètres de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (BÊTA)</translation>
 <translation id="3788155044604525647">L'API Direct Sockets permet de communiquer avec des points de terminaison arbitraires via TCP et UDP.
 Pour en savoir plus, veuillez consulter https://github.com/WICG/direct-sockets.
 
@@ -4775,6 +4785,7 @@ Si elle est définie sur False, <ph name="PRODUCT_NAME" /> n'utilisera pas les n
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
 <translation id="4140646780789794190">Désactiver le partage des données de diagnostic avec Plugin VM</translation>
+<translation id="4141430435877011529">Emplacement ou emplacement multirégional de l'appli <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />. Pour en savoir plus sur l'emplacement de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, consultez https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">IA générative</translation>
 <translation id="4145383150978634398">Rendre le mode Bureau unifié accessible à l'utilisateur</translation>
 <translation id="4146319954420095470">(Avertissement : Cette dépendance sera bientôt supprimée, veuillez commencer à utiliser la règle <ph name="GLS_POLICY_NAME" /> à la place). Si cette règle est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />, les services système <ph name="PRODUCT_OS_NAME" /> et les applications Android ne peuvent pas accéder aux informations de localisation. Si vous attribuez toute autre valeur pour cette règle, ou que vous ne la définissez pas, l'utilisateur doit donner son accord lorsqu'une application Android veut accéder aux informations de localisation.</translation>
@@ -8892,6 +8903,7 @@ Si elle est activée, les données sont collectées et importées dans la <ph na
 
 Concernant <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'appareil est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6714333117401088746">ID du projet <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> correspondant à l'instance <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> qui doit être activée.</translation>
 <translation id="6720330829631914048">Heures écoulées depuis le début de la journée (format 24 heures).</translation>
 <translation id="6720862827454058309">Remplacer les mappages d'espace d'adressage IP</translation>
 <translation id="6721252203593581486">WebSQL dans des contextes tiers (ex. : les cadres iFrame intersites) est désactivé par défaut à partir de M97 et sera entièrement supprimé dans M101.
@@ -10187,6 +10199,15 @@ Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> ne se connecte aux 
 
 Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> ne se connecte aux appareils Cast que sur les adresses privées décrites dans la RFC 1918 ou la RFC 4193, sauf si la fonctionnalité CastAllowAllIPs est activée.</translation>
 <translation id="7534199150025803530">Cette règle n'a aucun effet sur l'application Google Drive pour Android. Si vous voulez empêcher l'utilisation de Google Drive en cas de connexion au réseau mobile, vous ne devez pas autoriser l'installation de cette application.</translation>
+<translation id="7537404002861344834">Configure les paramètres de connexion pour <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> afin d'améliorer les réponses des fonctionnalités de Gemini dans Chrome.
+
+Si cette règle est configurée, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> peut être utilisé afin d'améliorer les réponses de Gemini dans Chrome pour les utilisateurs connectés avec un compte géré qui est associé aux identifiants spécifiés pour le projet et l'appli. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas disponible pour les profils connectés avec des comptes personnels.
+
+Si cette règle n'est pas configurée, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas utilisé pour améliorer les réponses de Gemini dans Chrome.
+
+Notez que cette règle ne contrôle pas l'intégration générale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, qui peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Tous les paramètres de cette règle doivent correspondre à la configuration du projet <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dans la console <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />. Toute incohérence entraînera un comportement inattendu lors de l'utilisation de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Cette règle est activée par défaut. Elle contrôle les appareils enregistrés et rapporte le modèle, l'architecture et la fréquence d'horloge maximale du processeur (sur les versions M96 et ultérieures, le taux d'utilisation et la température sont également indiqués).
 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.

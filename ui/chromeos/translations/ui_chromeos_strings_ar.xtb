@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">خوادم الأسماء التلقائية</translation>
 <translation id="1210831758834677569">اللاوية</translation>
 <translation id="1221555006497674479">مساحة التخزين منخفضة. يتبقى %<ph name="REMAINING_PERCENTAGE" /> من إجمالي مساحة التخزين السحابي المشتركة التي تبلغ <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">يمكنك استكشاف محتوى الجهاز في تطبيق الملفات.</translation>
 <translation id="1243314992276662751">تحميل</translation>
 <translation id="1249250836236328755">النوع</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">يتعذر الحذف. العنصر قيد الاستخدام.</translation>
 <translation id="1307931752636661898">‏يتعذّر عرض ملفات نظام التشغيل Linux</translation>
 <translation id="1313405956111467313">ضبط تلقائي للخادم الوكيل</translation>
+<translation id="1340527397989195812">‏احتفظ بنسخة احتياطية للوسائط من الجهاز باستخدام تطبيق Files.</translation>
 <translation id="134645005685694099">لا تتوفّر مساحة تخزين كافية على جهازك لتظل مزامنة الملفات مفعّلة. ولن تتم مزامنة الملفات الجديدة تلقائيًا.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">الملف أو الدليل غير قابل للاستخدام.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">لا توجد شهادة مستخدم.</translation>
 <translation id="1403008701842173542">كل مكان</translation>
 <translation id="1404323374378969387">النرويجية</translation>
+<translation id="1408504635543854729">يمكنك استكشاف محتوى الجهاز في تطبيق الملفات. ويعد هذا المحتوى مقيدًا من قبل المشرف، ولا يمكن تعديله.</translation>
 <translation id="1412476183660741812">حزمة ويب موقَّعة</translation>
 <translation id="1433628812591023318">‏لإفلات ملفات في Parallels Desktop، يجب نقل الملف إلى مجلد ملفات Windows.</translation>
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1439919885608649279">شخص يحمل أزهارًا</translation>
 <translation id="1458457385801829801">إلغاء تثبيت <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">بالنسبة إلى الإعدادات المفضلة، يُرجى الانتقال إلى "الإعدادات".</translation>
 <translation id="146691674290220697">تعذّر نسخ <ph name="NUMBER_OF_FILES" /> ملف لأنّها مشفَّرة.</translation>
 <translation id="1471718551822868769">السلوفاكية</translation>
 <translation id="1482884275703521657">الفنلندية</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">‏الإدارة في Drive</translation>
 <translation id="2004942826429452291">‏سيتم تخزين الملفات في السحابة الإلكترونية وعلى جهاز Chromebook هذا.</translation>
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
+<translation id="2018352199541442911">عذرًا، لا يتوفر جهاز مساحة التخزين الخارجية للاستخدام في الوقت الحالي.</translation>
 <translation id="2025955442973426285">التغرينية</translation>
 <translation id="2029385776150020336">لوحة المفاتيح الموسَّعة (الولايات المتحدة)</translation>
 <translation id="2037845485764049925">الروسية</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">تماغوتشي</translation>
 <translation id="2468470447085858632">‏الوصول إلى ملفات Google Drive بلا اتصال بالإنترنت باستخدام مزامنة الملفات</translation>
 <translation id="2470939964922472929">‏لقد أدخلت رقم تعريف شخصي غير صحيح عدّة مرات. لإعداد رقم تعريف شخصي جديد، أدخِل مفتاح إزالة حظر رقم التعريف الشخصي (PUK) المكوّن من 8 أرقام والمتوفّر من خلال مشغّل شبكة الجوّال.</translation>
+<translation id="249113932447298600">عذرًا، لا يتوفر الجهاز <ph name="DEVICE_LABEL" /> في الوقت الحالي.</translation>
 <translation id="2500392669976258912">الغوجاراتية الصوتية</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">فحص</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">الأوكرانية</translation>
 <translation id="3326821416087822643">جارٍ ضغط <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">عام التسجيل</translation>
+<translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
 <translation id="3353984535370177728">حدد مجلدًا لتحميله</translation>
 <translation id="3356580349448036450">مكتمل</translation>
 <translation id="3358452157379365236">قيثارة</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">‏تنزيل الملف الشخصي لشريحة eSIM على الجهاز الجوّال، الشبكة رقم <ph name="NETWORK_INDEX" /> من أصل <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">الإنجليزية (المملكة المتحدة)</translation>
 <translation id="3975895378829046965">البنغالية الصوتية</translation>
+<translation id="3983764759749072418">‏يمكن لتطبيقات "متجر Play" الوصول إلى هذا الجهاز.</translation>
 <translation id="3999574733850440202">‏ملفات Microsoft التي تم فتحها مؤخرًا متوفّرة الآن في OneDrive.</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4017788180641807848">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">يجب أن تكون متصلاً بالإنترنت للدخول إلى هذا الملف.</translation>
 <translation id="4212740939091998969">المجلَّد الذي يحمل الاسم "<ph name="FOLDER_NAME" />" موجود مسبقًا. يُرجى اختيار اسم آخر.</translation>
 <translation id="4218274196133425560">إزالة الاستثناء للمضيف <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">فتح الإعدادات</translation>
 <translation id="4261901459838235729">‏عرض تقديمي من Google</translation>
 <translation id="4277536868133419688">تم تفعيل الفلتر <ph name="FILTER_NAME" />.</translation>
 <translation id="4290535918735525311">‏تمت مشاركة مجلد واحد مع نظام التشغيل Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">‏الملفات المستردة من Google Drive</translation>
 <translation id="5278111733643988471">لاستعادة هذا العنصر، اسحبه إلى مجلد جديد خارج المهملات. تم حذف المجلد الأصلي "<ph name="PARENT_FOLDER_NAME" />" لهذا العنصر.</translation>
 <translation id="5288441970121584418">برغر</translation>
+<translation id="529175790091471945">لإعداد هذا الجهاز</translation>
 <translation id="5293615890992542006">تحظر سياسة المشرف إمكانية نقل هذا الملف.</translation>
 <translation id="5305688511332277257">لم يتم تثبيت أي شهادات</translation>
 <translation id="5317780077021120954">حفظ</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">عدم استخدام إعدادات الخادم الوكيل لهذه المضيفات والنطاقات:</translation>
 <translation id="541890217011173530">السورانية الكردية باستخدام لوحة مفاتيح إنجليزية</translation>
 <translation id="5422221874247253874">نقطة الوصول</translation>
+<translation id="5422781158178868512">عذرًا، تعذر التعرف على جهاز مساحة التخزين الخارجية.</translation>
 <translation id="5438282218546237410">لا توجد نتائج تخص <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">مساحة التخزين غير كافية.</translation>
 <translation id="5449551289610225147">كلمة المرور غير صالحة</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">تم اختيار <ph name="SELECTED_FILES_COUNT" /> عنصر.</translation>
 <translation id="5763377084591234761">الألمانية (سويسرا)</translation>
 <translation id="5769519078756170258">المضيف أو النطاق المراد استبعاده</translation>
+<translation id="5774295353725270860">فتح تطبيق الملفات</translation>
 <translation id="5775750595919327203">الأردية</translation>
 <translation id="5776325638577448643">المحو والتنسيق</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5788127256798019331">‏ملفات Play</translation>
+<translation id="5788367137662787332">عذرًا، تعذر تركيب جزء واحد على الأقل على الجهاز <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">تحويل صوتي إلى اللغة الكنادية</translation>
 <translation id="5814126672212206791">نوع الاتصال</translation>
 <translation id="5817397429773072584">الصينية التقليدية</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">الأيسلندية</translation>
 <translation id="7229570126336867161">‏يلزم توفر EVDO</translation>
 <translation id="7230898482850090046">‏طلب المشرف منك إيقاف الإعداد "قفل شريحة SIM"</translation>
+<translation id="7232750842195536390">تعذّرت إعادة التسمية</translation>
 <translation id="7238097264433196391">اسم محرك الأقراص</translation>
 <translation id="7238643356913091553">الشبكة <ph name="NETWORK_NAME" />، التفاصيل</translation>
 <translation id="7246947237293279874">الخادم الوكيل لبروتوكول نقل الملفات</translation>
+<translation id="725109152065019550">عذرًا، أوقف المشرف التخزين الخارجي بحسابك.</translation>
 <translation id="7256405249507348194">خطأ غير معروف: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">الخدمات المتوفرة</translation>
 <translation id="7291818353625820805">هل تريد أن يتم تكرار الحرف الذي يكتبه المفتاح؟ يمكنك إيقاف ميزة إظهار علامات التشكيل من خلال "إعدادات لوحة المفاتيح".</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">‏خريطة Google</translation>
 <translation id="7419668828140929293">جارٍ استعادة "<ph name="FILENAME" />"…</translation>
 <translation id="7435577899926900307">‏لوحة مفاتيح Dvorak (الولايات المتحدة)</translation>
+<translation id="7436921188514130341">عذرًا، حدث خطأ في أثناء إعادة التسمية.</translation>
 <translation id="7458955835361612701">ما مِن صور حديثة.</translation>
 <translation id="7469894403370665791">الاتصال بهذه الشبكة تلقائيًا</translation>
 <translation id="7486315294984620427">‏لإفلات ملفات في Parallels Desktop، يجب نسخ الملف إلى مجلد ملفات Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">تثبيت في الرف</translation>
 <translation id="7553492409867692754">‏يمكنك منح التطبيقات التي تعمل بنظام التشغيل Linux الإذن للوصول إلى الملفات في مجلد <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">جهازك غير متصل بالإنترنت حاليًا. سيتم استئناف مزامنة الملفات بعدما يتصل جهازك بالإنترنت.</translation>
+<translation id="7589461650300748890">توقف، وكن حذرًا.</translation>
 <translation id="7589661784326793847">انتظر قليلاً</translation>
 <translation id="7600126690270271294">الصربية</translation>
 <translation id="7603724359189955920">شبكات</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> تيرابايت</translation>
 <translation id="7831491651892296503">حدث خطأ أثناء إعداد الشبكة</translation>
+<translation id="7839051173341654115">وسائط العرض/النسخ الاحتياطي</translation>
 <translation id="7839804798877833423">سيؤدي جلب هذه الملفات إلى استخدام حوالي <ph name="FILE_SIZE" /> من بيانات الجوال.</translation>
 <translation id="7846076177841592234">إلغاء الاختيار</translation>
 <translation id="7857117644404132472">إضافة استثناء</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">البولندية</translation>
 <translation id="7874321682039004450">الفلبينية</translation>
 <translation id="78946041517601018">‏مساحات Drive المشتركة</translation>
+<translation id="7897900149154324287">في المستقبل، تأكد من إخراج الجهاز القابل للإزالة في تطبيق الملفات قبل فصله؛ وإلا قد تفقد بيانات.</translation>
 <translation id="7901567919203965902">‏لوحة مفاتيح Workman (الأمريكية الدولية)</translation>
 <translation id="7903984238293908205">كاتاكانا</translation>
+<translation id="7908378463497120834">عذرًا، تعذر تركيب جزء واحد على الأقل من جهاز مساحة التخزين الخارجية.</translation>
 <translation id="7908793776359722643">ستؤدي تهيئة قسم إلى محو جميع البيانات المخزَّنة فيه. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7911118814695487383">‏نظام التشغيل Linux</translation>
 <translation id="7920501309908018401">‏ستتم مزامنة ملفاتك في مجلد "ملفاتي" مع Chromebook تلقائيًا لتتمكّن من الوصول إليها بدون اتصال بالإنترنت.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">لاستعادة هذه العناصر، اسحبها إلى مجلد جديد. تم حذف المجلدات الأصلية لبعض هذه العناصر.</translation>
 <translation id="8874184842967597500">غير متصل</translation>
 <translation id="8876368061475701452">تم الوضع في قائمة الانتظار</translation>
+<translation id="8893928184421379330">عذرًا، تعذر التعرف على الجهاز <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">الأمريكية الدولية (الكمبيوتر الشخصي)</translation>
 <translation id="8903931173357132290">خرّيج</translation>
 <translation id="8912078710089354287">كلب يهُز ذيله</translation>

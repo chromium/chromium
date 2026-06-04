@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Цвет значка палитры для группы вкладок: <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Список групп вкладок закрыт</translation>
+<translation id="3152596030350326139">Показать вкладки горизонтально</translation>
+<translation id="31806439105337256">Показать вкладки вертикально</translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Добавить в группу <ph name="TABS_COUNT_ONE" /> вкладку}one{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладку}few{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладки}many{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладок}other{Добавить в группу <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>

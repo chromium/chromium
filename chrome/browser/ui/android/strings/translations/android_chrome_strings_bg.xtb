@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Можете да изтегляте PDF файловете тук</translation>
 <translation id="107147699690128016">Ако промените файловото разширение, файлът може да се отвори в друго приложение и потенциално да навреди на устройството ви.</translation>
 <translation id="1073328695547557412">Докоснете иконата на Google Обектив.</translation>
+<translation id="1080116354587839789">Побиране на ширина</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
 <translation id="1087799850623149508">Можете да докоснете и задържите, за да преместите адресната лента в долната част</translation>
 <translation id="1089606299949659462">Прегледът завърши!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> раздела}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 парола е запазена само на това устройство. За да я използвате на другите си устройства, запазете я в профила си в Google.}other{# пароли са запазени само на това устройство. За да ги използвате на другите си устройства, запазете ги в профила си в Google.}}</translation>
 <translation id="3293181007446299124">Историята ви на сърфиране остава частна на устройството ви, а отчетите се изпращат със закъснение, за да защитим самоличността ви.</translation>
+<translation id="3301639354590628973">Да се превключи ли между профилите?</translation>
 <translation id="3301936297336370235">Потвърждаване на предложението за парола</translation>
 <translation id="3302615849591357577">Възстановяване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="COLOR_NAME" /> цвят като нова група на заден план.</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
@@ -640,6 +642,7 @@
 <translation id="3771290962915251154">Тази настройка е деактивирана, защото родителските контроли са включени</translation>
 <translation id="3771694256347217732">Общи условия на Google</translation>
 <translation id="3777796259512476958">Ще излезете от повечето сайтове</translation>
+<translation id="3786379886124795923">Сканирахте QR код, за да влезете в профила си в Chrome. Потвърдете, че искате да получите паролите, отметките и др. от този потребителски профил.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 раздел}other{# раздела}}</translation>
 <translation id="3792938779249970121">Избиране на профил</translation>
 <translation id="3795154175078851242">Копиране на изображението с връзка</translation>
@@ -678,6 +681,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" /> – фиксиран раздел „картина в картината“</translation>
 <translation id="3950820424414687140">Вход</translation>
 <translation id="395377504920307820">Използване без профил</translation>
+<translation id="3955353672249727801">Страниците са добавени към списъка за четене</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ще зареди страницата при готовност}other{Chrome ще зареди страниците при готовност}}</translation>
 <translation id="3969142555815019568">Chrome не може да провери паролите ви</translation>
 <translation id="3969863827134279083">Преместване нагоре</translation>
@@ -824,6 +828,7 @@
 <translation id="4532845899244822526">Избиране на папка</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> – споделена група раздели</translation>
 <translation id="4537137366307982887">Долният лист за включване на известията със съвети е отворен на пълната височина</translation>
+<translation id="4537987892902330164">Продължихте да сте влезли като <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Долен лист без налични ключове за достъп</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел}other{<ph name="TAB_COUNT_MANY" /> раздела, <ph name="TAB_COUNT_INCOGNITO" /> в режим „инкогнито“}}</translation>
 <translation id="4558311620361989323">Комбинации за уеб страници</translation>
@@ -1281,6 +1286,7 @@
 <translation id="6411219469806822692">Придвижването по-нагоре не е възможно. Започнете от по-горна част на страницата.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" /> – раздел, избран заедно с други</translation>
 <translation id="641643625718530986">Печат…</translation>
+<translation id="6427723330233512782">Побиране във височината</translation>
 <translation id="6433501201775827830">Изберете търсеща машина</translation>
 <translation id="6434309073475700221">Отхвърляне</translation>
 <translation id="6435307030888827407">Използване без вход в профил</translation>
@@ -2014,9 +2020,11 @@
 <translation id="939598580284253335">Въведете пропуск</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" /> – фиксиран раздел „картина в картината“ в режим „инкогнито“</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
+<translation id="949667118776341807">Завъртане</translation>
 <translation id="95817756606698420">Chrome може да използва <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> за търсене в Китай. Можете да промените това от <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="963246339335003378">Отваряне на „Диспечер на задачите“</translation>
+<translation id="966337994629449077">Влезли сте като <ph name="FROM_EMAIL" />.\n\nЗа да продължите от компютъра си, превключете към <ph name="TO_EMAIL" />. Ще получите паролите, отметките и др. от този профил.</translation>
 <translation id="970715775301869095">Остават <ph name="MINUTES" /> мин</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Затваряне на всички раздели</translation>

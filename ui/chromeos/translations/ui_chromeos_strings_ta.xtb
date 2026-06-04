@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">தானியங்கி பெயர் சேவையகங்கள்</translation>
 <translation id="1210831758834677569">லாவோ</translation>
 <translation id="1221555006497674479">சேமிப்பகம் குறைவாக உள்ளது. உங்கள் <ph name="TOTAL_SPACE" /> பகிர்ந்த இயக்ககச் சேமிப்பகத்தில் <ph name="REMAINING_PERCENTAGE" />% மீதமுள்ளது.</translation>
+<translation id="1239594683407221485">சாதனத்தின் உள்ளடத்தை Files ஆப்ஸில் பாருங்கள்.</translation>
 <translation id="1243314992276662751">பதிவேற்று</translation>
 <translation id="1249250836236328755">ஆடியோ வகை</translation>
 <translation id="1254593899333212300">நேரடி இணைய இணைப்பு</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ஃபைல் உபயோகத்தில் இருப்பதால் அதை நீக்க முடியவில்லை.</translation>
 <translation id="1307931752636661898">Linux ஃபைல்களைப் பார்க்க முடியவில்லை</translation>
 <translation id="1313405956111467313">தானியங்கு ப்ராக்ஸி உள்ளமைவு</translation>
+<translation id="1340527397989195812">Files ஆப்ஸைப் பயன்படுத்தி சாதனத்திலிருந்து மீடியாவைக் காப்புப்பிரதி எடுக்கவும்.</translation>
 <translation id="134645005685694099">ஃபைல் ஒத்திசைவை இயக்கத்தில் வைக்க உங்கள் சாதனத்தில் போதுமான சேமிப்பிடம் இல்லை. புதிய ஃபைல்கள் இனி தானாக ஒத்திசைக்கப்படாது.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ஃபைல் அல்லது கோப்பகம் உபயோகிக்கக்கூடியதில்லை.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">பயனர் சான்றிதழ் இல்லை</translation>
 <translation id="1403008701842173542">எல்லா இடங்களிலும்</translation>
 <translation id="1404323374378969387">நார்வேஜியன்</translation>
+<translation id="1408504635543854729">ஃபைல்கள்  பயன்பாட்டில் சாதனத்தின் உள்ளடக்கத்தைத் தேடவும். உள்ளடக்கத்தை நிர்வாகி கட்டுப்படுத்துவதால் அதைத் திருத்த முடியாது.</translation>
 <translation id="1412476183660741812">கையொப்பமிட்ட இணையத் தொகுப்பு</translation>
 <translation id="1433628812591023318">Parallels Desktopபிற்குள் ஃபைல்களை இழுத்து விட, அவற்றை ’Windows ஃபைல்கள் ’ ஃபோல்டருக்கு நகர்த்த வேண்டும்.</translation>
 <translation id="1435838927755162558">Parallels Desktop மூலம் ஃபோல்டரைப் பகிருங்கள்</translation>
 <translation id="1439919885608649279">பூக்களுடன் இருக்கும் நபர்</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ஐ வெளியேற்று</translation>
+<translation id="1464781208867302907">சாதன விருப்பத்தேர்வுகளைப் பார்க்க அமைப்புகளுக்குச் செல்லுங்கள்.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் என்க்ரிப்ஷன் செய்யப்பட்டுள்ளதால் அவற்றை நகலெடுக்க முடியவில்லை.</translation>
 <translation id="1471718551822868769">ஸ்லோவாக்</translation>
 <translation id="1482884275703521657">ஃபின்னிஷ்</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">இயக்ககத்தில் நிர்வகி</translation>
 <translation id="2004942826429452291">கிளவுடிலும் இந்த Chromebookகிலும் ஃபைல்கள் சேமிக்கப்படும்.</translation>
 <translation id="2009067268969781306">இயக்ககத்தை ஃபார்மேட் செய்தால் அதில் சேமிக்கப்பட்டுள்ள தரவு அனைத்தும் நீக்கப்படும். அவற்றைத் திரும்பப் பெற முடியாது.</translation>
+<translation id="2018352199541442911">இந்த நேரத்தில் உங்கள் வெளிப்புற சேகரிப்பு சாதனத்தை ஆதரிக்க முடியவில்லை. மன்னிக்கவும்.</translation>
 <translation id="2025955442973426285">டிக்ரின்யா</translation>
 <translation id="2029385776150020336">விரிவாக்கப்பட்ட அமெரிக்கன்</translation>
 <translation id="2037845485764049925">ரஷ்யன்</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">தாமகோட்சி</translation>
 <translation id="2468470447085858632">ஃபைல் ஒத்திசைவின் மூலம் Google Drive ஃபைல்களை ஆஃப்லைனில் அணுகுதல்</translation>
 <translation id="2470939964922472929">தவறான பின் (PIN) பலமுறை உள்ளிடப்பட்டுள்ளது. புதிய பின்னை (PIN) அமைக்க, உங்கள் மொபைல் நெட்வொர்க் நிறுவனம் வழங்கிய தடுப்பை நீக்குவதற்கான 8 இலக்கத் தனிப்பட்ட குறியீட்டை (Personal Unblocking Key - PUK) உள்ளிடவும்.</translation>
+<translation id="249113932447298600">இந்த நேரத்தில் <ph name="DEVICE_LABEL" /> சாதனத்தை ஆதரிக்க முடியவில்லை. மன்னிக்கவும்.</translation>
 <translation id="2500392669976258912">குஜராத்தி ஒலிப்புமுறை</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ஸ்கேன்</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">உக்ரைனியன்</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ஐ ஜிப் செய்கிறது...</translation>
 <translation id="3335337277364016868">பதிவுசெய்த ஆண்டு</translation>
+<translation id="3348038390189153836">அகற்றத்தக்க சாதனம் கண்டறியப்பட்டது</translation>
 <translation id="3353984535370177728">பதிவேற்ற ஃபோல்டரைத் தேர்வுசெய்யவும்</translation>
 <translation id="3356580349448036450">முடிந்தது</translation>
 <translation id="3358452157379365236">கிட்டார்</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ஆங்கிலம் (யுகே)</translation>
 <translation id="3975895378829046965">வங்காளம் ஒலிப்புமுறை</translation>
+<translation id="3983764759749072418">Play Store ஆப்ஸ் இந்தச் சாதனத்தைப் பயன்படுத்தும்.</translation>
 <translation id="3999574733850440202">சமீபத்தில் திறக்கப்பட்ட Microsoft ஃபைல்கள் OneDriveக்கு நகர்த்தப்பட்டுள்ளன</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
 <translation id="4017788180641807848">ஆங்கிலம் (யூஎஸ்) - வொர்க்மேன் கீபோர்டு</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">இந்த ஃபைலை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" என்ற பெயருள்ள ஃபோல்டர் ஏற்கனவே உள்ளது. வேறொரு பெயரைத் தேர்வுசெய்யவும்.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> க்கான விதிவிலக்கை அகற்றும்</translation>
+<translation id="4242533952199664413">அமைப்புகளைத் திற</translation>
 <translation id="4261901459838235729">Google விளக்கக்காட்சி</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> வடிப்பான் இயக்கப்பட்டுள்ளது.</translation>
 <translation id="4290535918735525311">Linuxஸுடன் 1 ஃபோல்டர் பகிரப்பட்டது</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google இயக்கத்திலிருந்து மீட்கப்பட்ட ஃபைல்கள் </translation>
 <translation id="5278111733643988471">இதை மீட்டெடுக்க நீக்கியவை ஃபோல்டரில் இருந்து புதிய ஃபோல்டருக்கு இழுத்து விடவும். இதற்கான "<ph name="PARENT_FOLDER_NAME" />" எனும் அசல் ஃபோல்டர் நீக்கப்பட்டுள்ளது.</translation>
 <translation id="5288441970121584418">பர்கர்</translation>
+<translation id="529175790091471945">இந்தச் சாதனத்தின் எல்லா தரவையும் அழி</translation>
 <translation id="5293615890992542006">இந்த ஃபைலை நகர்த்துவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="5305688511332277257">எதுவும் நிறுவப்படவில்லை</translation>
 <translation id="5317780077021120954">சேமி</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">இந்த வழங்குநர்களுக்கு மற்றும் டொமைன்களுக்கு, ப்ராக்ஸி அமைப்புகளைப் பயன்படுத்த வேண்டாம்:</translation>
 <translation id="541890217011173530">சொரானி குர்திஷ் - ஆங்கிலம் சார்ந்த கீபோர்டு</translation>
 <translation id="5422221874247253874">ஆக்சஸ் பாயிண்ட்</translation>
+<translation id="5422781158178868512">வெளிப்புற சேகரிப்பு சாதனத்தை அறிய முடியவில்லை. மன்னிக்கவும்.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> என்பதற்கான தேடல் முடிவுகள் எதுவும் கிடைக்கவில்லை.</translation>
 <translation id="5447680084201416734">போதுமான சேமிப்பகம் இல்லை.</translation>
 <translation id="5449551289610225147">தவறான கடவுச்சொல்</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ஃபோல்டர்களும் ஃபைல்களும் தேர்ந்தெடுக்கப்பட்டன</translation>
 <translation id="5763377084591234761">ஜெர்மன் (சுவிட்சர்லாந்து)</translation>
 <translation id="5769519078756170258">தவிர்க்க வேண்டிய ஹோஸ்ட் அல்லது டொமைன்</translation>
+<translation id="5774295353725270860">ஃபைல்கள்  பயன்பாட்டைத் திற</translation>
 <translation id="5775750595919327203">உருது</translation>
 <translation id="5776325638577448643">அழித்து ஃபார்மேட் செய்</translation>
 <translation id="57838592816432529">ஒலியடக்கு</translation>
 <translation id="5788127256798019331">Play ஃபைல்கள் </translation>
+<translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> சாதனத்தில் குறைந்தபட்சம் ஒரு பிரிவினை இருந்தாலும் அதை ஏற்ற முடியாது. மன்னிக்கவும்.</translation>
 <translation id="5804245609861364054">கன்னட ஒலிபெயர்ப்பு</translation>
 <translation id="5814126672212206791">இணைப்பு வகை</translation>
 <translation id="5817397429773072584">பாரம்பரிய சீனம்</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">ஐஸ்லாண்டிக்</translation>
 <translation id="7229570126336867161">EVDO தேவை</translation>
 <translation id="7230898482850090046">"சிம்மைப் பூட்டு" அமைப்பை முடக்க வேண்டுமென்று உங்கள் நிர்வாகி கோரியுள்ளார்</translation>
+<translation id="7232750842195536390">பெயரை மாற்ற முடியவில்லை</translation>
 <translation id="7238097264433196391">இயக்ககத்தின் பெயர்</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, விவரங்கள்</translation>
 <translation id="7246947237293279874">FTP ப்ராக்ஸி</translation>
+<translation id="725109152065019550">மன்னிக்கவும், உங்கள் கணக்கில் வெளிப்புறச் சேமிப்பை நிர்வாகி முடக்கியுள்ளார்.</translation>
 <translation id="7256405249507348194">அறியப்படாத பிழை: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">கிடைக்கும் சேவைகள்</translation>
 <translation id="7291818353625820805">பட்டன்களுக்கான செயல்பாடு மீண்டும் மீண்டும் நிகழ வேண்டுமா? கீபோர்டு அமைப்புகளில் ஆக்ஸண்ட் குறிகளை முடக்கவும்</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google Maps</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" ஐ மீட்டெடுக்கிறது</translation>
 <translation id="7435577899926900307">அமெரிக்கன் டிவோஜாக்</translation>
+<translation id="7436921188514130341">அச்சச்சோ! பெயரை மாற்றும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="7458955835361612701">சமீபத்திய படங்கள் எதுவும் இல்லை</translation>
 <translation id="7469894403370665791">இந்த நெட்வொர்க்குடன் தானாகவே இணைக்கவும்</translation>
 <translation id="7486315294984620427">Parallels Desktopபிற்குள் ஃபைல்களை இழுத்து விட, அவற்றை ’Windows ஃபைல்கள் ’ ஃபோல்டருக்கு நகலெடுக்க வேண்டும்.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">அடுக்கில் பொருத்து</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ஃபோல்டரில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸுக்கு வழங்கவும்</translation>
 <translation id="7555339735447658365">தற்போது ஆஃப்லைனில் உள்ளீர்கள். இணைய இணைப்பு கிடைத்ததும் ஃபைல் ஒத்திசைவு மீண்டும் தொடங்கும்</translation>
+<translation id="7589461650300748890">கவனமாக இருக்கவும்.</translation>
 <translation id="7589661784326793847">ஒரு வினாடி காத்திருக்கவும்</translation>
 <translation id="7600126690270271294">செர்பியன்</translation>
 <translation id="7603724359189955920">கட்டங்கள்</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> டெ.பை.</translation>
 <translation id="7831491651892296503">நெட்வொர்க்கை உள்ளமைப்பதில் பிழை</translation>
+<translation id="7839051173341654115">மீடியாவைக் காட்டு/காப்புப்பிரதி எடு</translation>
 <translation id="7839804798877833423">இந்த ஃபைல்களைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
 <translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
 <translation id="7857117644404132472">விதிவிலக்கைச் சேர்</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">போலிஷ்</translation>
 <translation id="7874321682039004450">ஃபிலிப்பினோ</translation>
 <translation id="78946041517601018">பகிர்ந்த இயக்ககங்கள்</translation>
+<translation id="7897900149154324287">எதிர்காலத்தில், துண்டிப்பதற்கு முன் ஃபைல்கள்  பயன்பாட்டிலிருந்து அகற்றக்கூடிய சாதனம் வெளியேற்றப்பட்டதை உறுதிப்படுத்திக்கொள்ளவும். இல்லையெனில், தரவை இழக்க நேரிடலாம்.</translation>
 <translation id="7901567919203965902">அமெரிக்கன் ஒர்க்மேன் இன்டர்நேஷனல்</translation>
 <translation id="7903984238293908205">கட்டாகனா</translation>
+<translation id="7908378463497120834">உங்கள் வெளிப்புற சேகரிப்பு சாதனத்தில் குறைந்தபட்சம் ஒரு பிரிவினை இருந்தாலும் அதை ஏற்ற முடியாது. மன்னிக்கவும்.</translation>
 <translation id="7908793776359722643">பார்ட்டிஷனை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">எனது Driveவில் உள்ள உங்கள் ஃபைல்கள் தானாகவே உங்கள் Chromebook உடன் ஒத்திசைக்கப்படும். இதனால் இணைய இணைப்பு இல்லாமலேயே ஃபைல்களை நீங்கள் அணுகலாம்.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">இவற்றை மீட்டெடுக்க புதிய ஃபோல்டருக்கு இழுத்து விடவும். இவற்றில் சிலவற்றின் அசல் ஃபோல்டர்கள் நீக்கப்பட்டுள்ளன.</translation>
 <translation id="8874184842967597500">இணைக்கப்படவில்லை</translation>
 <translation id="8876368061475701452">வரிசைப்படுத்தப்பட்டது</translation>
+<translation id="8893928184421379330"><ph name="DEVICE_LABEL" /> சாதனத்தை அறிய முடியவில்லை. மன்னிக்கவும்.</translation>
 <translation id="8902208737522818687">அமெரிக்கன் இன்டர்நேஷனல் (PC)</translation>
 <translation id="8903931173357132290">பட்டப் படிப்பு</translation>
 <translation id="8912078710089354287">வாலாட்டும் நாய்</translation>

@@ -149,6 +149,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1227224963052638717">Politikë e panjohur.</translation>
 <translation id="1227677022489889280">Jep arsyen për zhvendosjen (e detyrueshme)</translation>
 <translation id="1228893227497259893">Identifikues i gabuar i entitetit</translation>
+<translation id="122989279399348496">Kur je i identifikuar, <ph name="DOMAIN" /> mund të konfirmojë <ph name="EMAIL" /> në sajtet e mbështetura që të mos të të duhet të kontrollosh kutinë hyrëse</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (zbuluar automatikisht)</translation>
 <translation id="1232569758102978740">Pa titull</translation>
 <translation id="1234539281285007945">Kërkohet <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ofrohen shumë veprime, shtyp "Tab" për të kaluar në cikël mes tyre</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detajet e kartës virtuale</translation>
+<translation id="1802420021606590788">Chrome i përpunon titujt e faqeve dhe URL-të te një hapësirë private në renë kompjuterike</translation>
 <translation id="1803254472779303354">Kyçja e miut lejohet</translation>
 <translation id="1803351196216024260">Mund të kërkojë të përdorë mikrofonin tënd</translation>
 <translation id="1804258830776932716">Aktivizo Pix duke e lidhur llogarinë tënde me shpejtësi</translation>
@@ -873,6 +875,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2354001756790975382">Faqeshënues të tjerë</translation>
 <translation id="2355395290879513365">Sulmuesit mund të arrijnë t'i shikojnë imazhet që po shikon në këtë sajt dhe të të mashtrojnë duke i modifikuar ato.</translation>
 <translation id="2356941001189392209">Një listë e kufizuar e URL-ve të faqeve që viziton ti ku ka ngjarje të teknologjisë së vjetër</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Do të ndajë 1 skedë}other{Do të ndajë {NUM_TABS} skeda}}</translation>
 <translation id="2357481397660644965">Pajisja jote menaxhohet nga <ph name="DEVICE_MANAGER" /> dhe llogaria jote menaxhohet nga <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Disa</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
@@ -3027,6 +3030,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5742806904559466333">Bare, klube dhe jeta e natës</translation>
 <translation id="5743684619253032786">Produkte për kujdesin e thonjve</translation>
 <translation id="574392208103952083">Mesatar</translation>
+<translation id="5745586894920491759">Chrome i përpunon titujt e faqeve dhe URL-të në renë kompjuterike</translation>
 <translation id="5745733273847572235">Mund të kërkojë vendndodhjen tënde</translation>
 <translation id="5750869797196646528">Gjurmimi i duarve</translation>
 <translation id="5752327398324808817">Fut një ose dy fjalë</translation>
@@ -3420,6 +3424,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Shiko evidencat</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin, murin mbrojtës dhe konfigurimin e DNS-së së sigurt<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Konfirmo automatikisht email-et e tua</translation>
 <translation id="6366710531182496394">Dy kapje me tel majtas</translation>
 <translation id="6367196786591004737">Fshi hyrjen</translation>
 <translation id="6370022303958842211">Veprimet e qasjes te pajisja si p.sh. identifikimet (duke përfshirë arsyet e dështimit të identifikimit), daljet, kyçjet dhe shkyçjet</translation>
@@ -5059,6 +5064,7 @@ Detaje shtesë:
 <translation id="8963117664422609631">Shko te cilësimet e faqes</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugjerime:<ph name="MARKUP_2" />Sigurohu që të kesh një lidhje të të dhënave<ph name="MARKUP_3" />Ringarko këtë faqe uebi më vonë<ph name="MARKUP_4" />Kontrollo adresën që fute<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Skedarët e tu lokalë do të fshihen pas <ph name="HOURS" /> orësh</translation>
+<translation id="8964904785315870349">Email-i i verifikuar</translation>
 <translation id="8968766641738584599">Ruaj kartën</translation>
 <translation id="8970887620466824814">Ndodhi një gabim.</translation>
 <translation id="8971063699422889582">Certifikata e serverit ka skaduar.</translation>

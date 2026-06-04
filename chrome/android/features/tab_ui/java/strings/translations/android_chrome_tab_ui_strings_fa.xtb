@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">نماد رنگ گروه زبانه <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">فهرست گروه زبانه بسته شد</translation>
+<translation id="3152596030350326139">نمایش افقی زبانه‌ها</translation>
+<translation id="31806439105337256">نمایش عمودی زبانه‌ها</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{افزودن <ph name="TABS_COUNT_ONE" /> زبانه به گروه}one{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}other{افزودن <ph name="TABS_COUNT_MANY" /> زبانه به گروه}}</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>

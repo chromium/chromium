@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Anda dapat mendownload PDF di sini</translation>
 <translation id="107147699690128016">Jika ekstensi file diubah, file dapat terbuka di aplikasi lain dan berpotensi membahayakan perangkat Anda.</translation>
 <translation id="1073328695547557412">Ketuk ikon Google Lens</translation>
+<translation id="1080116354587839789">Paskan dengan lebar</translation>
 <translation id="1086486568852410168">Telusuri dengan Google Lens</translation>
 <translation id="1087799850623149508">Anda dapat menyentuh lama untuk memindahkan kolom URL ke bawah</translation>
 <translation id="1089606299949659462">Peninjauan selesai.</translation>
@@ -536,6 +537,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}other{# sandi hanya disimpan ke perangkat ini. Untuk menggunakannya di perangkat lain, simpan sandi di Akun Google Anda.}}</translation>
 <translation id="3293181007446299124">Histori penjelajahan Anda tetap bersifat pribadi di perangkat Anda dan laporan dikirim dengan penundaan untuk melindungi identitas Anda</translation>
+<translation id="3301639354590628973">Ganti akun?</translation>
 <translation id="3301936297336370235">Konfirmasi saran sandi</translation>
 <translation id="3302615849591357577">Pulihkan grup tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />, sebagai grup tab latar belakang baru.</translation>
 <translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
@@ -678,6 +680,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Tab Picture-in-Picture yang Disematkan</translation>
 <translation id="3950820424414687140">Login</translation>
 <translation id="395377504920307820">Gunakan tanpa akun</translation>
+<translation id="3955353672249727801">Halaman ditambahkan ke daftar bacaan</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome akan memuat halaman Anda setelah siap}other{Chrome akan memuat halaman Anda setelah siap}}</translation>
 <translation id="3969142555815019568">Chrome tidak dapat memeriksa sandi Anda</translation>
 <translation id="3969863827134279083">Pindah ke Atas</translation>

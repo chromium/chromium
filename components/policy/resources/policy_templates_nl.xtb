@@ -468,6 +468,7 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
       Als je dit beleid toepast, staan verbeterde sneltoetsen voor internationale toetsenborden aan.
       Als je dit beleid niet instelt, wordt het niet toegepast op beheerde apparaten en wel toegepast op apparaten van consumenten.
       Houd er rekening mee dat dit een tijdelijk beleid is zodat beheerde gebruikers nog steeds beëindigde verouderde sneltoetsen kunnen gebruiken. Dit beleid wordt beëindigd nadat aangepaste sneltoetsen beschikbaar zijn gekomen.</translation>
+<translation id="1359459742455216057">De unieke ID van de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-app.</translation>
 <translation id="1361661842732478894">Startknop op de werkbalk tonen</translation>
 <translation id="1363275621236827384">Query's naar Quirks Server sturen voor hardwareprofielen</translation>
 <translation id="1363839375295535439">Als je het beleid aanzet of niet instelt, wordt de LPAC-sandbox voor afdrukservices aangezet als de systeemconfiguratie dit ondersteunt.
@@ -2218,6 +2219,14 @@ Dit beleid is tijdelijk en wordt verwijderd in mijlpaal 157.</translation>
 
       De beleidswaarde moet worden opgegeven in dagen.</translation>
 <translation id="2466131534462628618">Captive portal-verificatie negeert proxyserver</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+De functie ServiceWorkerAutoPreload stuurt een netwerkverzoek voor een hoofdresource op hetzelfde moment dat het ServiceWorker-bootstrap-proces wordt gestart.
+
+Als je het beleid toepast of niet instelt, zet <ph name="PRODUCT_NAME" /> ServiceWorkerAutoPreload aan. Het navigatieverzoek wordt in sommige scenario's automatisch verstuurd terwijl de ServiceWorker wordt gestart, bijvoorbeeld als de ServiceWorker niet actief is.
+
+Als je het beleid niet toepast, zet <ph name="PRODUCT_NAME" /> ServiceWorkerAutoPreload niet aan. Het navigatieverzoek wordt altijd verstuurd nadat de ServiceWorker is gestart.
+
+Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt verwijderd in M154.</translation>
 <translation id="2467181864598429837">Standaard browsergedrag</translation>
 <translation id="2467896267442150508">Tijdsinterval van maximaal één week. Is de begintijd later dan de eindtijd, dan eindigt het interval op de aangegeven eindtijd op de volgende dag.</translation>
 <translation id="2475594733565572760">Dit beleid definieert de standaardinstelling voor alle gedekte generatieve AI-functies. Als je dit beleid bijvoorbeeld instelt op de waarde 1, is 1 de standaardinstelling voor alle gedekte generatieve AI-functies. Dit heeft geen invloed op handmatig ingestelde beleidswaarden. Met deze instelling definieer je de standaardwaarden voor gedekte generatieve AI-functies in Chrome. Raadpleeg de lijst met gedekte functies op https://support.google.com/chrome/a?p=generative_ai_settings.
@@ -4263,6 +4272,7 @@ Als je dit beleid niet toepast of niet instelt, synchroniseert zwevende SSO alle
 <translation id="3778689139323007309">Intrekkingscontroles uitvoeren voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
 <translation id="3785423718413114598">Generatieve AI-functies niet toestaan</translation>
+<translation id="378626615843371785">Instellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> instellen (bèta)</translation>
 <translation id="3788155044604525647">Met de Direct Sockets API kun je via TCP en UDP communiceren met willekeurige eindpunten.
 Ga naar https://github.com/WICG/direct-sockets voor meer informatie.
 
@@ -4772,6 +4782,7 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 <translation id="4136603825567209889">Rapportage van informatie over gebruikersidentificatie aanzetten</translation>
 <translation id="4138655880188755661">Tijdslimiet</translation>
 <translation id="4140646780789794190">Delen van diagnostische gegevens met PluginVm uitzetten</translation>
+<translation id="4141430435877011529">De multi-regio of locatie van de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-app. Meer informatie over de locatie van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> vind je op https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">Generatieve AI</translation>
 <translation id="4145383150978634398">Samengestelde desktopmodus beschikbaar maken voor de gebruiker</translation>
 <translation id="4146319954420095470">(Waarschuwing! Deze afhankelijkheid wordt binnenkort beëindigd. Gebruik in plaats daarvan <ph name="GLS_POLICY_NAME" />.) Als dit beleid is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, hebben systeemservices van <ph name="PRODUCT_OS_NAME" /> en Android-apps geen toegang tot locatiegegevens. Als je dit beleid instelt op een andere waarde of niet instelt, wordt de gebruiker gevraagd om toestemming te geven als een Android-app toegang wil tot locatiegegevens.</translation>
@@ -8850,6 +8861,7 @@ Als dit beleid wordt toegepast, worden de gegevens verzameld en geüpload naar <
 
 Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
+<translation id="6714333117401088746">De ID van het <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />-project dat overeenkomt met de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-instantie die moet worden aangezet.</translation>
 <translation id="6720330829631914048">Verstreken uren sinds het begin van de dag (in 24-uursnotatie).</translation>
 <translation id="6720862827454058309">Toewijzingen van IP-adresruimtes overschrijven</translation>
 <translation id="6721252203593581486">WebSQL in contexten van derden (bijv. iframes voor meerdere sites) staat standaard uit vanaf M97 en wordt helemaal verwijderd in M101.
@@ -10143,6 +10155,15 @@ Als je het beleid niet toepast, maakt <ph name="PRODUCT_NAME" /> alleen verbindi
 
 Als je het beleid niet instelt, maakt <ph name="PRODUCT_NAME" /> alleen verbinding met cast-apparaten op RFC1918/RFC4193, tenzij de functie CastAllowAllIPs aanstaat.</translation>
 <translation id="7534199150025803530">Dit beleid is niet van invloed op de Google Drive-app voor Android. Als je wilt voorkomen dat Google Drive kan worden gebruikt via een mobiele verbinding, moet je de installatie van de Google Drive-app voor Android blokkeren.</translation>
+<translation id="7537404002861344834">Stelt de verbindingsinstellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in om de reacties voor Gemini in Chrome-functies te verbeteren.
+
+Als je dit beleid instelt, kan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> worden gebruikt om de reacties van Gemini in Chrome te verbeteren voor gebruikers die zijn ingelogd met een beheerd account dat is gekoppeld aan de ingevoerde project- en app-ID. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> is niet beschikbaar voor profielen die zijn ingelogd met persoonlijke accounts.
+
+Als je het beleid niet instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet gebruikt om de reacties van Gemini in Chrome te verbeteren.
+
+Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Die kan worden beheerd door het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Alle instellingen van dit beleid moeten overeenkomen met de configuratie van het <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-project in de <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> Console. Als de instellingen niet overeenkomen, kan dit onverwacht gedrag veroorzaken tijdens het gebruik van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="7538583957913002726">Dit beleid wordt standaard toegepast. Het beheert de ingeschreven apparaten om de CPU-modelnaam, architectuur en maximale kloksnelheid (en CPU-gebruik en -temperatuur voor M96 en hoger) te rapporteren.
 
       Als je het beleid niet toepast, betekent dit dat ingeschreven apparaten geen CPU-informatie rapporteren.

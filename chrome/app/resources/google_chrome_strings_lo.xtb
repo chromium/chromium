@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">ກຳລັງດາວໂຫຼດ...</translation>
 <translation id="1651617469580841801">ເມື່ອທ່ານໃຊ້ Google Lens, ລະບົບຈະສົ່ງຊື່ໜ້າ, URL ແລະ ເນື້ອຫາ, ຮວມທັງ PDF ໄປຫາ Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ກ່ຽວກັບ ChromeOS Flex</translation>
+<translation id="1665867022636014702">ໃຊ້ການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບທີ່ Google ແນະນຳ</translation>
 <translation id="1674870198290878346">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ບໍ່ສາມາດອ່ານ ແລະຂຽນໄປໃສ່ໄດເຣັກຕໍຣີຂໍ້ມູນຂອງມັນ:
 
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">ເປີດລິ້ງໃນແຖບ Chrome ໃໝ່</translation>
 <translation id="2665296953892887393">ຊ່ວຍເຮັດໃຫ້ Google Chrome ດີຂຶ້ນໂດຍການສົ່ງລາຍງານການ​ຂັດຂ້ອງ ແລະ  <ph name="UMA_LINK" />  ຫາ Google.</translation>
 <translation id="2668094785979141847">ຄລິກເພື່ອອອກຈາກ Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ</translation>
 <translation id="2681444469812712297">ເປີດ <ph name="URL" /> ໃນແຖບໃໝ່ໃນ Google Chrome.</translation>
 <translation id="2699790011615497488">ເປີດ Gemini ໃນ Chrome Beta</translation>
 <translation id="2712141162840347885">ເລືອກຫຍັງກໍໄດ້ເພື່ອຊອກຫາດ້ວຍ Google Lens ຫຼື ກົດ Escape ເພື່ອອອກຈາກ Google Lens</translation>
@@ -242,6 +244,7 @@
 <translation id="345171907106878721">ເພີ່ມທ່ານເອງໃສ່ Chrome</translation>
 <translation id="3453763134178591239">ຂໍ້ກຳນົດ ChromeOS</translation>
 <translation id="3503306920980160878">Chrome ຕ້ອງການເຂົ້າເຖິງສະຖານທີ່ຂອງທ່ານເພື່ອແບ່ງປັນສະຖານທີ່ຂອງທ່ານກັບເວັບໄຊນີ້</translation>
+<translation id="3539955434060988644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="3576528680708590453">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ກຳນົດຄ່າໃຫ້ Google Chrome ເປີດໂປຣແກຣມທ່ອງເວັບສຳຮອງເພື່ອເຂົ້າເຖິງ <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">ຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງ Chrome ໃຫ້ເປັນແບບສ່ວນຕົວໃນທົ່ວອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3583751698304738917">ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="USER_EMAIL_ADDRESS" /> ໃນໂປຣໄຟລ໌ Chrome ອື່ນຢູ່ກ່ອນແລ້ວ</translation>
@@ -537,6 +540,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6497147134301593682">Chrome ຖືກປິດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6506909944137591434">Chrome ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງອ້ອມຕົວທ່ານ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຂໍ້ຜິດພາດໃນການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="6520670145826811516">ເພື່ອໃຊ້ສະຖານທີ່ຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">ປະຫວັດ Chrome</translation>
 <translation id="6532945796722480006">ເປີດ Gemini ໃນ Chrome Canary</translation>
@@ -584,6 +588,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7011190694940573312">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກລະບົບບໍ່ຮອງຮັບລະບົບປະຕິບັດການເວີຊັນນີ້.</translation>
 <translation id="7024536598735240744">ແຕກໄຟລ໌ຜິດພາດ: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">ທ່ານສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້ຢູ່ບ່ອນນີ້</translation>
+<translation id="7026856149118332950">ຄລິກ <ph name="BEGIN_BOLD" />ແມ່ນ<ph name="END_BOLD" /> ໃນການແຈ້ງເຕືອນ Windows ເພື່ອປັກໝຸດ Chrome ໄວ້ຢູ່ແຖບໜ້າວຽກຂອງທ່ານເພື່ອການເຂົ້າເຖິງດ່ວນ.</translation>
 <translation id="7047386856539490735">ຜົນການຊອກຫາເຫຼົ່ານີ້ມີປະໂຫຍດຫຼືບໍ່?</translation>
 <translation id="7051685429025310665">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chrome ໄດ້ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ອອກແລ້ວ.</translation>
 <translation id="7059914902409643750">ຕັ້ງຄ່າ Chrome ແບບກຳນົດເອງ</translation>
@@ -676,6 +681,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7890208801193284374">ຖ້າທ່ານແຊຣ໌ຄອມພິວເຕີ, ໝູ່​ເພື່ອນ ແລະຄອບຄົວຂອງທ່ານສາມາດທ່ອງເນັດໄດ້ແຍກຕ່າງຫາກ ແລະຕັ້ງ Chrome ​ໃນແບບ​ທີ່​ພວກ​ເຂົາຕ້ອງການ.</translation>
 <translation id="7896673875602241923">ຄົນອື່ນເຄີຍເຂົ້າສູ່ລະບົບ Chrome ໃນຄອມພິວເຕີນີ້ເປັນ <ph name="ACCOUNT_EMAIL_LAST" /> ມາກ່ອນແລ້ວ. ກະລຸນາສ້າງຜູ້ໃຊ້ Chrome ໃໝ່ເພື່ອເກັບຂໍ້ມູນຂອງທ່ານໃຫ້ແຍກກັນຕ່າງຫາກ.</translation>
 <translation id="7904985524660297937">ລອງໃຊ້ Gemini ໃນ Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຂໍ້ຜິດພາດໃນການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="7917876797003313048">ທ່ານສາມາດຈັດການບັນຊີ Google ທີ່ເຂົ້າສູ່ລະບົບແລ້ວຂອງທ່ານໄດ້. ບັນຊີ Google ຂອງທ່ານແມ່ນໃຊ້ສຳລັບໂປຣແກຣມທ່ອງເວັບ Chrome, Play Store, Gmail ແລະ ອື່ນໆ. ຫາກທ່ານຕ້ອງການເພີ່ມບັນຊີໃຫ້ຄົນອື່ນ ເຊັ່ນ: ສະມາຊິກຄອບຄົວ, ໃຫ້ເພີ່ມຄົນໃໝ່ໃສ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານແທນ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ມີການຫຼອກລວງ ແລະ ອາດເຮັດການປ່ຽນແປງທີ່ບໍ່ຄາດຄິດກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7951272445806340501">ຈຳເປັນຕ້ອງຣີສະຕາດ ChromeOS Flex ເພື່ອນຳໃຊ້ອັບເດດ.</translation>
@@ -800,6 +806,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="93760716455950538">ຣີສະຕາດ ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome ແນະນຳໃຫ້ສະແກນໄຟລ໌ນີ້ເນື່ອງຈາກມັນອາດເປັນອັນຕະລາຍໄດ້.</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
+<translation id="973195869036269770">ChromeOS ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານບໍ່ເປັນປັດຈຸບັນ</translation>
 <translation id="983803489796659991">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດບໍ່ມີຂໍ້ມູນ hash ໃດໆສຳລັບແອັບພລິເຄຊັນ.</translation>
 <translation id="989369509083708165">Google Chrome ແມ່ນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້</translation>

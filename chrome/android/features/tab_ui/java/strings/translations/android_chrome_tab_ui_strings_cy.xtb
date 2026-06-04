@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Mae <ph name="TABS_COUNT_ONE" /> tab wedi'i grwpio</translation>
 <translation id="1844381456014878100">Ar ôl 7 diwrnod yn anweithredol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> thab}many{<ph name="TABS_COUNT_MANY" /> thab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Ychwanegu tab at y rhestr ddarllen}zero{Ychwanegu tabiau at y rhestr ddarllen}two{Ychwanegu tabiau at y rhestr ddarllen}few{Ychwanegu tabiau at y rhestr ddarllen}many{Ychwanegu tabiau at y rhestr ddarllen}other{Ychwanegu tabiau at y rhestr ddarllen}}</translation>
 <translation id="1909810060368225529">Sylwer: Mae newidiadau i'r Grŵp Tabiau a Rennir hwn yn weladwy i bawb. Gall pawb wneud newidiadau i'ch grwpiau tabiau a rennir</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Pinio tab}zero{Pinio tabiau}two{Pinio tabiau}few{Pinio tabiau}many{Pinio tabiau}other{Pinio tabiau}}</translation>
 <translation id="1982637982196732906">Symud i adran anweithredol</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">Gostyngiad pris o <ph name="PRICE_DROP" /> ar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Eicon lliw grŵp tab <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Rhestr grwpiau tabiau ar gau</translation>
+<translation id="3152596030350326139">Dangos tabiau'n llorweddol</translation>
+<translation id="31806439105337256">Dangos tabiau'n fertigol</translation>
 <translation id="3194464645767632461">sgôr</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Ychwanegu <ph name="TABS_COUNT_ONE" /> tab at grŵp}zero{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}two{Ychwanegu <ph name="TABS_COUNT_MANY" /> dab at grŵp}few{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}many{Ychwanegu <ph name="TABS_COUNT_MANY" /> thab at grŵp}other{Ychwanegu <ph name="TABS_COUNT_MANY" /> tab at grŵp}}</translation>
 <translation id="3328308545011660196">Awgrym: Mae <ph name="NUMBER_OF_TABS" /> o dabiau yn ymddangos yn berthnasol. Grwpio nhw?</translation>

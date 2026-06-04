@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Unaweza kupakua PDF hapa</translation>
 <translation id="107147699690128016">Ukibadilisha kiendelezi cha faili, faili inaweza kufunguka katika programu tofauti na huenda ikawa hatari kwa kifaa chako.</translation>
 <translation id="1073328695547557412">Gusa aikoni ya Lenzi ya Google</translation>
+<translation id="1080116354587839789">Fanya itoshe kwenye upana</translation>
 <translation id="1086486568852410168">Tafuta ukitumia Lenzi ya Google</translation>
 <translation id="1087799850623149508">Unaweza kugusa na kushikilia ili usogeze sehemu ya anwani upande wa chini</translation>
 <translation id="1089606299949659462">Ukaguzi umekamilika!</translation>
@@ -536,6 +537,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, kichupo <ph name="TAB_COUNT_ONE" />}other{<ph name="TAB_GROUPS_PART" />, vichupo <ph name="TAB_COUNT_MANY" />}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Umehifadhi nenosiri 1 kwenye kifaa hiki pekee. Ili ulitumie kwenye vifaa vyako vingine, lihifadhi katika Akaunti yako ya Google.}other{Umehifadhi manenosiri # kwenye kifaa hiki pekee. Ili uyatumie kwenye vifaa vyako vingine, yahifadhi katika Akaunti yako ya Google.}}</translation>
 <translation id="3293181007446299124">Historia yako ya kuvinjari huwekwa kwa faragha kwenye kifaa chako na ripoti huchelewa kutumwa ili kulinda utambulisho wako</translation>
+<translation id="3301639354590628973">Ungependa kubadilisha akaunti?</translation>
 <translation id="3301936297336370235">Uthibitishaji wa pendekezo la nenosiri</translation>
 <translation id="3302615849591357577">Rejesha kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" />, chenye rangi ya <ph name="COLOR_NAME" />, kiwe kikundi kipya cha vichupo kinachofanya kazi chinichini.</translation>
 <translation id="3303855915957856445">Hakuna matokeo ya utafutaji yaliyopatikana</translation>
@@ -678,6 +680,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Umebandika Kichupo cha Kupachika Picha Ndani ya Picha Nyingine</translation>
 <translation id="3950820424414687140">Ingia katika akaunti</translation>
 <translation id="395377504920307820">Tumia bila akaunti</translation>
+<translation id="3955353672249727801">Kurasa zimewekwa kwenye orodha ya kusoma</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome itapakia ukurasa wako ukiwa tayari}other{Chrome itapakia kurasa zako zikiwa tayari}}</translation>
 <translation id="3969142555815019568">Chrome imeshindwa kukagua manenosiri yako</translation>
 <translation id="3969863827134279083">Sogeza Juu</translation>

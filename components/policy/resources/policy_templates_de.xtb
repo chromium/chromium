@@ -469,6 +469,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
       Wenn diese Richtlinie aktiviert ist, werden verbesserte internationale Tastenkürzel aktiviert.
       Ist die Richtlinie nicht konfiguriert, wird sie für verwaltete und nutzereigene Geräte aktiviert.
       Beachte, dass es sich hierbei um eine vorübergehende Richtlinie handelt, die dafür sorgt, dass alte Tastenkürzel weiterhin von verwalteten Nutzern verwendet werden können. Diese Richtlinie wird verworfen, sobald benutzerdefinierte Tastenkürzel verfügbar sind.</translation>
+<translation id="1359459742455216057">Die eindeutige Kennung der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> App.</translation>
 <translation id="1361661842732478894">„Home“-Button in der Symbolleiste anzeigen</translation>
 <translation id="1363275621236827384">Abfragen an Quirks-Server für Hardwareprofile aktivieren</translation>
 <translation id="1363839375295535439">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die LPAC-Sandbox für Druckdienste aktiviert, sofern dies von der Systemkonfiguration unterstützt wird.
@@ -2218,6 +2219,14 @@ Diese Richtlinie gilt vorübergehend und wird in Version 157 entfernt.</transla
 
       Der Wert der Richtlinie ist in Tagen anzugeben.</translation>
 <translation id="2466131534462628618">Captive-Portal-Authentifizierung ignoriert Proxy</translation>
+<translation id="246680587517417824">https://github.com/WICG/service-worker-auto-preload
+Die Funktion „ServiceWorkerAutoPreload“ sendet eine Netzwerkanfrage für eine Hauptressource, während sie gleichzeitig den Bootstrap-Prozess für den ServiceWorker startet.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird in <ph name="PRODUCT_NAME" /> „ServiceWorkerAutoPreload“ aktiviert. Die Navigationsanfrage wird in einigen Szenarien automatisch gesendet, während der ServiceWorker gestartet wird, z. B. wenn der ServiceWorker nicht ausgeführt wird.
+
+Wenn die Richtlinie deaktiviert ist, wird in <ph name="PRODUCT_NAME" /> „ServiceWorkerAutoPreload“ nicht aktiviert. Die Navigationsanfrage wird immer gesendet, nachdem der ServiceWorker gestartet wurde.
+
+Diese Richtlinie ist eine vorübergehende Maßnahme zur Steuerung der Funktion und wird in M154 entfernt.</translation>
 <translation id="2467181864598429837">Standardverhalten des Browsers</translation>
 <translation id="2467896267442150508">Zeitintervall, das maximal eine Woche abdeckt. Wenn die angegebene Startzeit nach der Endzeit liegt, läuft das Intervall über die natürliche Intervallgrenze hinaus.</translation>
 <translation id="2475594733565572760">Diese Richtlinie definiert die Standardeinstellung für alle abgedeckten Funktionen, die auf generativer KI basieren. Wenn diese Richtlinie beispielsweise auf den Wert „1“ gesetzt ist, ist dies die Standardeinstellung für alle abgedeckten Funktionen, die auf generativer KI basieren. Manuell festgelegte Richtlinienwerte sind davon nicht betroffen. Mit dieser Einstellung werden die Standardeinstellungen für die abgedeckten Funktionen in Chrome definiert, die auf generativer KI basieren. Unter https://support.google.com/chrome/a?p=generative_ai_settings findest du eine Liste der abgedeckten Funktionen.
@@ -4268,6 +4277,7 @@ Wenn sie deaktiviert oder nicht konfiguriert ist, synchronisiert Floating‑SSO 
 <translation id="3778689139323007309">Widerrufsprüfung für Serverzertifikate durchführen, die erfolgreich bestätigt und von lokal installierten CA-Zertifikaten signiert wurden</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
 <translation id="3785423718413114598">Auf generativer KI basierende Funktionen nicht zulassen</translation>
+<translation id="378626615843371785"><ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Einstellungen konfigurieren (BETA)</translation>
 <translation id="3788155044604525647">Die Direct Sockets API ermöglicht die Kommunikation mit beliebigen Endpunkten über TCP und UDP.
 Weitere Informationen findest du unter https://github.com/WICG/direct-sockets.
 
@@ -4777,6 +4787,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4136603825567209889">Erfassen personenbezogener Daten aktivieren</translation>
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4140646780789794190">Weitergabe von Diagnosedaten an PluginVm deaktivieren</translation>
+<translation id="4141430435877011529">Multiregion oder der Standort der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> App. Weitere Standortinformationen zu <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> findest du unter https://docs.cloud.google.com/gemini/enterprise/docs/locations.</translation>
 <translation id="4144417751555442768">Generative KI</translation>
 <translation id="4145383150978634398">Nutzern Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="4146319954420095470">(Warnung: Diese Abhängigkeit wird bald aufgehoben. Verwende stattdessen bitte „<ph name="GLS_POLICY_NAME" />“. Wenn diese Richtlinie auf „<ph name="BLOCK_GEOLOCATION_SETTING" />“ gesetzt ist, haben <ph name="PRODUCT_OS_NAME" />-Systemdienste und Android-Apps keinen Zugriff auf Standortinformationen. Wenn du diese Richtlinie auf einen anderen Wert setzt oder sie nicht konfigurierst, wird der Nutzer um seine Zustimmung gebeten, wenn eine Android-App auf Standortinformationen zugreifen möchte.</translation>
@@ -8880,6 +8891,7 @@ Wenn die Richtlinie aktiviert ist, werden Daten erhoben und in die <ph name="GOO
 
 Sie wird für <ph name="PRODUCT_NAME" /> nur angewendet, wenn das Gerät mit „<ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />“ registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
+<translation id="6714333117401088746">Die ID des Projekts „<ph name="GOOGLE_CLOUD_PRODUCT_NAME" />“, das der zu aktivierenden <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Instanz entspricht.</translation>
 <translation id="6720330829631914048">Zahl der seit Beginn des Tages verstrichenen Stunden (im 24-Stunden-Format).</translation>
 <translation id="6720862827454058309">Zuordnungen von IP-Adressbereichen überschreiben</translation>
 <translation id="6721252203593581486">WebSQL ist im Zusammenhang mit Drittanbietern (z. B. websiteübergreifende iFrames) ab M97 standardmäßig deaktiviert und wird in M101 vollständig entfernt.
@@ -10173,6 +10185,15 @@ Ist die Richtlinie deaktiviert, wird <ph name="PRODUCT_NAME" /> nur unter RFC191
 
 Wenn die Richtlinie nicht konfiguriert und die Funktion „CastAllowAllIPs“ deaktiviert ist, wird <ph name="PRODUCT_NAME" /> nur unter RFC1918-/RFC4193-Adressen mit Übertragungsgeräten verbunden.</translation>
 <translation id="7534199150025803530">Diese Richtlinie hat keine Auswirkungen auf die Android Google Drive App. Wenn du die Nutzung von Google Drive über Mobilfunkverbindungen verhindern möchtest, solltest du das Installieren der Android Google Drive App nicht zulassen.</translation>
+<translation id="7537404002861344834">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, um die Antworten für Funktionen von Gemini in Chrome zu verbessern.
+
+Wenn diese Richtlinie festgelegt ist, kann <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> verwendet werden, um die Antworten von Gemini in Chrome für Nutzer zu verbessern, wenn sie mit einem verwalteten Konto angemeldet sind, das mit der angegebenen Projekt- und App-ID verknüpft ist. <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ist nicht für Profile verfügbar, die mit einem privaten Konto angemeldet sind.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht verwendet, um die Antworten von Gemini in Chrome zu verbessern.
+
+Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.
+
+Alle Einstellungen dieser Richtlinie müssen mit der Konfiguration des Projekts „<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />“ in der <ph name="GOOGLE_CLOUD_PRODUCT_NAME" />-Konsole übereinstimmen. Wenn es Abweichungen gibt, kommt es bei der Verwendung von <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> zu unerwartetem Verhalten.</translation>
 <translation id="7538583957913002726">Diese Richtlinie ist standardmäßig aktiviert. Sie steuert, wie angemeldete Geräte die CPU-Modellbezeichnung, die Architektur und maximale Taktung (für M96 und höher auch CPU-Nutzung und -Temperatur) melden.
 
       Ist die Richtlinie deaktiviert, melden angemeldete Geräte keine Informationen zur CPU.

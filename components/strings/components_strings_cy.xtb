@@ -149,6 +149,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1227224963052638717">Polisi anhysbys.</translation>
 <translation id="1227677022489889280">Rhowch reswm dros symud (gofynnol)</translation>
 <translation id="1228893227497259893">Dynodwr endid anghywir</translation>
+<translation id="122989279399348496">Tra byddwch wedi mewngofnodi, gall <ph name="DOMAIN" /> gadarnhau <ph name="EMAIL" /> ar wefannau a gefnogir fel nad oes rhaid i chi wirio'ch mewnflwch</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (wedi'i ganfod yn awtomatig)</translation>
 <translation id="1232569758102978740">Di-deitl</translation>
 <translation id="1234539281285007945">Mae <ph name="FIELD_1" /> yn ofynnol</translation>
@@ -510,6 +511,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, mae mwy nag un weithred ar gael, pwyswch Tab i fynd drwyddynt</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Manylion cerdyn rhithwir</translation>
+<translation id="1802420021606590788">Mae Chrome yn prosesu teitlau tudalennau a chyfeiriadau URL mewn man preifat yn y cwmwl</translation>
 <translation id="1803254472779303354">Caniateir clo llygoden</translation>
 <translation id="1803351196216024260">Yn gallu gofyn am ddefnyddio'ch meicroffon</translation>
 <translation id="1804258830776932716">Galluogi Pix trwy gysylltu eich cyfrif yn gyflym</translation>
@@ -873,6 +875,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2354001756790975382">Nodau tudalen eraill</translation>
 <translation id="2355395290879513365">Mae'n bosib y bydd ymosodwyr yn gallu gweld y lluniau rydych yn edrych arnynt ar y wefan hon a'ch twyllo drwy eu haddasu.</translation>
 <translation id="2356941001189392209">Rhestr gyfyngedig o gyfeiriadau URL tudalennau rydych yn ymweld â nhw lle mae digwyddiadau technoleg etifeddol yn digwydd</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Bydd yn rhannu 1 tab}zero{Bydd yn rhannu {NUM_TABS} tab}two{Bydd yn rhannu {NUM_TABS} dab}few{Bydd yn rhannu {NUM_TABS} thab}many{Bydd yn rhannu {NUM_TABS} thab}other{Bydd yn rhannu {NUM_TABS} tab}}</translation>
 <translation id="2357481397660644965">Rheolir eich dyfais gan <ph name="DEVICE_MANAGER" /> a rheolir eich cyfrif gan <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mwy nad un</translation>
 <translation id="2359808026110333948">Parhau</translation>
@@ -3027,6 +3030,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5742806904559466333">Bariau, Clybiau a Bywyd Nos</translation>
 <translation id="5743684619253032786">Cynhyrchion Gofal Ewinedd</translation>
 <translation id="574392208103952083">Canolig</translation>
+<translation id="5745586894920491759">Mae Chrome yn prosesu teitlau tudalennau a chyfeiriadau URL yn y cwmwl</translation>
 <translation id="5745733273847572235">Yn gallu gofyn am eich lleoliad</translation>
 <translation id="5750869797196646528">Olrhain dwylo</translation>
 <translation id="5752327398324808817">Rhowch air neu ddau</translation>
@@ -3421,6 +3425,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Gweld cofnodion</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r dirprwy weinydd, y wal dân, a'r Ffurfweddiad DNS Diogel<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Cadarnhewch eich e-byst yn awtomatig</translation>
 <translation id="6366710531182496394">Dwy stapl ar y chwith</translation>
 <translation id="6367196786591004737">Dileu'r cofnod</translation>
 <translation id="6370022303958842211">Camau gweithredu mynediad at ddyfeisiau megis mewngofnodi (gan gynnwys rhesymau mewngofnodi aflwyddiannus), allgofnodi, cloeon, a datgloeon</translation>
@@ -5060,6 +5065,7 @@ Manylion ychwanegol:
 <translation id="8963117664422609631">Ewch i'r gosodiadau gwefan</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Awgrymiadau:<ph name="MARKUP_2" />Gwnewch yn siŵr bod gennych gysylltiad data<ph name="MARKUP_3" />Ail-lwythwch y dudalen we hon yn nes ymlaen<ph name="MARKUP_4" />Gwiriwch y cyfeiriad y gwnaethoch ei nodi<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Bydd eich ffeiliau lleol yn cael eu dileu mewn <ph name="HOURS" /> awr</translation>
+<translation id="8964904785315870349">E-bost wedi'i Ddilysu</translation>
 <translation id="8968766641738584599">Cadw'r cerdyn</translation>
 <translation id="8970887620466824814">Aeth rywbeth o'i le.</translation>
 <translation id="8971063699422889582">Mae tystysgrif y gweinydd wedi darfod.</translation>

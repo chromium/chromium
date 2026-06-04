@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">Descargando…</translation>
 <translation id="1651617469580841801">Cando usas Google Lens, envíanse a Google o contido (incluídos os PDF), o URL e o título da páxina. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Acerca de Chrome OS Flex</translation>
+<translation id="1665867022636014702">Usar a configuración do navegador Google recomendada</translation>
 <translation id="1674870198290878346">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non pode ler nin escribir no seu directorio de datos:
 
@@ -242,6 +243,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="345171907106878721">Engádete a Chrome</translation>
 <translation id="3453763134178591239">Condicións de Chrome OS</translation>
 <translation id="3503306920980160878">Chrome necesita acceder á túa localización para compartila con este sitio</translation>
+<translation id="3539955434060988644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="3576528680708590453">A persoa que administra o teu sistema configurou Google Chrome para abrir outro navegador co obxectivo de acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sincroniza e personaliza Chrome nos teus dispositivos</translation>
 <translation id="3583751698304738917">Xa tes a sesión iniciada como <ph name="USER_EMAIL_ADDRESS" /> noutro perfil de Chrome</translation>

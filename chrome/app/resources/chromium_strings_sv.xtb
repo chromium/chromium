@@ -36,6 +36,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1324107359134968521">Chromium behöver åtkomst till Bluetooth för att utforska 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Identifiera språk</translation>
+<translation id="1330742950061766891">Använd rekommenderade webbläsarinställningar för Chromium</translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Fäst! Du kan komma åt Bildsökning igen från den nya knappen i verktygsfältet</translation>
 <translation id="1356661055722410047">Nyhet! Du kan översätta både text och bilder på skärmen</translation>
@@ -69,6 +70,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1749104137266986751">När HTTPS inte är tillgängligt använder Chromium en osäker anslutning utan att varna dig</translation>
 <translation id="1774152462503052664">Låt Chromium köras i bakgrunden</translation>
 <translation id="1779356040007214683">Vi har gjort Chromium säkrare genom att inaktivera vissa tillägg som inte finns i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> och som kan ha lagts till utan att du vet om det.</translation>
+<translation id="1793486931176048546">Klicka på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-aviseringen för att fästa Chromium i aktivitetsfältet för snabb åtkomst.</translation>
 <translation id="1808667845054772817">Installera om Chromium</translation>
 <translation id="1820835682567584003">Chromium försöker att <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Nästa gång du öppnar Chromium på din <ph name="DEVICE_TYPE" /> visas en uppmaning om att använda Google Lösenordshantering.</translation>
@@ -373,6 +375,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5187123684706427865">Omautentisering krävs för Chromium-kontot</translation>
 <translation id="5231355151045086930">Logga ut från Chromium</translation>
 <translation id="5234764350956374838">Stäng</translation>
+<translation id="5249261924633168472">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
 <translation id="5254739261293693943">Ställ en fråga om den här videon</translation>
 <translation id="5276305953263010518">Skaffa Chromium-appen för att spara lösenord på språng</translation>
 <translation id="5277894862589591112">Ändringarna tillämpas när du startar om Chromium</translation>
@@ -381,8 +384,10 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="5294316920224716406">När du surfar i inkognitoläge visas en varning i Chromium innan en webbplats läses in med en osäker anslutning</translation>
 <translation id="5313228254328109263">Intern tjänst för Chromium-uppdatering</translation>
 <translation id="5346389065299425353">Fördjupa sökningen genom att lägga till flera flikar, filer och verktyg</translation>
+<translation id="5348677704241861105">Få en snabb översikt över det här dokumentet och ställ frågor med Gemini i Chromium</translation>
 <translation id="5352264705793813212">Chromium har hittat säkerhetsrekommendationer som du bör granska</translation>
 <translation id="5352361688875342522">Andra Chromium-profiler</translation>
+<translation id="535243042947607642">Det gick inte att spara Chromium-data i Google-kontot med ChromiumOS eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="5358375970380395591">Du loggar in med ett hanterat konto och ger dess administratör kontroll över din Chromium-profil. Dina uppgifter i Chromium, t.ex. dina appar, bokmärken, din historik, ditt lösenord och andra inställningar, kopplas då permanent till <ph name="USER_NAME" />. Du kommer att kunna ta bort dessa uppgifter via instrumentpanelen i Google Konton, men du kommer inte att kunna koppla dem till något annat konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Om du vill få tillgång till anpassning kan du ta med Chromium i webb- och appaktiviteten</translation>
@@ -488,6 +493,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="6390800440335263989">Logga in i Chromium som <ph name="EMAIL" /> om du vill fortsätta. Detta säkerställer att du har organisationens policyer.</translation>
 <translation id="6400112897226594999">Chromium-logotyp på en datorskärm.</translation>
 <translation id="6403826409255603130">Chromium är en webbläsare som kör webbsidor och appar blixtsnabbt. Den är snabb, stabil och lätt att använda. Surfa säkrare med Chromiums skydd mot skadliga program och lösenordsfiske.</translation>
+<translation id="6414624068245092115">Verifiera din identitet för att se till att du alltid kan använda och spara Chromium-data i Google-kontot</translation>
 <translation id="642132557830635295">Chromium körs snabbare och funktioner som använder JavaScript bör fungera som de ska (rekommenderas)</translation>
 <translation id="6436260184216827876">Bildsökning är inte tillgänglig. Försök igen senare.</translation>
 <translation id="6442900851116057561">Starta om Chromium OS</translation>
@@ -717,6 +723,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8852026904190808918">Menyer, inställningar, varningar och annan text i Chromium visas på det här språket</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
 <translation id="8876044221123442390">Lägg till Chromium-profil</translation>
+<translation id="8890569919834781711">Det gick inte att spara Chromium-data i Google-kontot med ChromiumOS på grund av ett inloggningsfel</translation>
 <translation id="8891709362986793894">Organisationen kräver att du loggar in i Chromium</translation>
 <translation id="8907580949721785412">Skriv ditt lösenord i Windows om du vill tillåta att lösenord visas i Chromium.</translation>
 <translation id="8932992523185907506">Chromium är inte längre din standardwebbläsare. Vill du använda Chromium som standardwebbläsare?</translation>

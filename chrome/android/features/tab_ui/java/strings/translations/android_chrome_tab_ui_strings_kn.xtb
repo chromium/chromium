@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ಉತ್ಪನ್ನದ ಮೇಲೆ <ph name="PRICE_DROP" /> ದರ ಇಳಿಕೆ</translation>
 <translation id="3078350928901129212">ಟ್ಯಾಬ್ ಗುಂಪಿನ ಬಣ್ಣದ ಐಕಾನ್ <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">ಟ್ಯಾಬ್ ಗುಂಪು ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
+<translation id="3152596030350326139">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅಡ್ಡಲಾಗಿ ತೋರಿಸಿ</translation>
+<translation id="31806439105337256">ಟ್ಯಾಬ್‌ಗಳನ್ನು ವರ್ಟಿಕಲ್ ಆಗಿ ತೋರಿಸಿ</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>

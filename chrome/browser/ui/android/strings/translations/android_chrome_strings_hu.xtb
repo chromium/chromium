@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Itt töltheti le a PDF-fájlokat</translation>
 <translation id="107147699690128016">Ha módosítja a fájl kiterjesztését, előfordulhat, hogy a fájlt másik alkalmazás nyitja meg, ami veszélyt jelenthet az eszközre.</translation>
 <translation id="1073328695547557412">Koppintson a Google Lens ikonra.</translation>
+<translation id="1080116354587839789">Szélességhez igazítás</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
 <translation id="1087799850623149508">A címsáv alulra való áthelyezéséhez tartsa lenyomva ujját</translation>
 <translation id="1089606299949659462">Az áttekintés befejeződött!</translation>
@@ -536,6 +537,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> lap}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> lap}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 jelszót csak erre az eszközre ment a rendszer. Ha szeretné más eszközökön is használni, mentse Google-fiókjába.}other{# jelszót csak erre az eszközre ment a rendszer. Ha a többi eszközén is használni szeretné őket, mentse őket Google-fiókjába.}}</translation>
 <translation id="3293181007446299124">Böngészési előzményeit privát módon tárolja a rendszer az eszközén, és személyazonosságának védelme érdekében késleltetve küldi el a rendszer a jelentéseket.</translation>
+<translation id="3301639354590628973">Fiókot vált?</translation>
 <translation id="3301936297336370235">Jelszójavaslat megerősítése</translation>
 <translation id="3302615849591357577">A(z) <ph name="TITLE_OF_GROUP" /> nevű, <ph name="COLOR_NAME" /> színű lapcsoport visszaállítása új háttérbeli lapcsoportként.</translation>
 <translation id="3303855915957856445">Nincs találat</translation>
@@ -678,6 +680,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, kitűzött lap kép a képben módban</translation>
 <translation id="3950820424414687140">Bejelentkezés</translation>
 <translation id="395377504920307820">Fiók nélküli használat</translation>
+<translation id="3955353672249727801">Oldalak felvéve az olvasólistára</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{A Chrome betölti az oldalt, amint lehetséges}other{A Chrome betölti az oldalakat, amint lehetséges}}</translation>
 <translation id="3969142555815019568">A Chrome nem tudja ellenőrizni a jelszavakat</translation>
 <translation id="3969863827134279083">Fel</translation>

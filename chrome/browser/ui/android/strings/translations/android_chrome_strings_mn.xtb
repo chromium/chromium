@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Та эндээс PDF татах боломжтой</translation>
 <translation id="107147699690128016">Хэрэв та файлын өргөтгөлийг өөрчилбөл файлыг өөр хэрэглээний программ дээр нээж болох бөгөөд таны төхөөрөмжид аюултай байж болзошгүй.</translation>
 <translation id="1073328695547557412">Google Lens-н дүрс тэмдэг дээр товшино уу</translation>
+<translation id="1080116354587839789">Өргөний хэмжээнд тааруулах</translation>
 <translation id="1086486568852410168">Google Lens-р хайх</translation>
 <translation id="1087799850623149508">Та хаяг оруулах хэсгийг доош зөөхийн тулд хүрээд удаан дарах боломжтой</translation>
 <translation id="1089606299949659462">Шалгаж дууслаа!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> таб}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> таб}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Үүнийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу.}other{# нууц үгийг зөвхөн энэ төхөөрөмжид хадгалсан. Эдгээрийг бусад төхөөрөмж дээрээ ашиглахын тулд Google Бүртгэлдээ хадгална уу.}}</translation>
 <translation id="3293181007446299124">Таны хөтчийн түүхийг төхөөрөмж дээр тань нууцалж, таныг таних мэдээллийг хамгаалах үүднээс тайлангуудыг саатуулан илгээдэг</translation>
+<translation id="3301639354590628973">Бүртгэлүүдийг сэлгэх үү?</translation>
 <translation id="3301936297336370235">Нууц үгний зөвлөмжийн баталгаажуулалт</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> өнгөтэй, <ph name="TITLE_OF_GROUP" /> нэртэй табын бүлгийг шинэ дэвсгэр табын бүлгээр сэргээх.</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Бэхэлсэн Дэлгэц доторх дэлгэц таб</translation>
 <translation id="3950820424414687140">Нэвтрэх</translation>
 <translation id="395377504920307820">Бүртгэлгүйгээр ашиглах</translation>
+<translation id="3955353672249727801">Хуудаснуудыг унших жагсаалтад нэмсэн</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome хуудсыг бэлэн болох үед ачаална}other{Chrome хуудаснуудыг бэлэн болох үед ачаална}}</translation>
 <translation id="3969142555815019568">Chrome таны нууц үгийг шалгах боломжгүй байна</translation>
 <translation id="3969863827134279083">Дээшээ зөөх</translation>

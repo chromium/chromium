@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Gemini in Chromium を使ってみる</translation>
 <translation id="1324107359134968521">Bluetooth デバイスを検出するには、Chromium に Bluetooth へのアクセスを許可する必要があります。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">検出言語</translation>
+<translation id="1330742950061766891">Chromium の推奨ブラウザ設定を使用する</translation>
 <translation id="1342274909142618978">Chromium（<ph name="URL" />）からもデータを削除する</translation>
 <translation id="1345251407431278948">固定しました。ツールバーの新しいボタンから、画像検索にアクセスできます</translation>
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
@@ -366,6 +367,7 @@
 <translation id="5187123684706427865">Chromium アカウントの再認証が必要です</translation>
 <translation id="5231355151045086930">Chromium からのログアウト</translation>
 <translation id="5234764350956374838">閉じる</translation>
+<translation id="5249261924633168472">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="5254739261293693943">この動画について質問する</translation>
 <translation id="5276305953263010518">Chromium アプリを入手して、外出先でパスワードを保存</translation>
 <translation id="5277894862589591112">変更を適用するには Chromium を再起動してください</translation>

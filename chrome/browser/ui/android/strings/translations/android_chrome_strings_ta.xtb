@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDFகளை இங்கே பதிவிறக்கலாம்</translation>
 <translation id="107147699690128016">ஃபைல் நீட்டிப்பை மாற்றினால் இந்த ஃபைல் வேறொரு ஆப்ஸில் திறக்கக்கூடும், இது உங்கள் சாதனத்திற்குத் தீங்கிழைக்கக்கூடும்.</translation>
 <translation id="1073328695547557412">Google Lens ஐகானைத் தட்டவும்</translation>
+<translation id="1080116354587839789">அகலத்திற்குப் பொருத்து</translation>
 <translation id="1086486568852410168">Google Lens மூலம் தேடு</translation>
 <translation id="1087799850623149508">முகவரிப் பட்டியைத் தொட்டுப் பிடித்திருப்பதன் மூலம் அதைக் கீழே நகர்த்தலாம்</translation>
 <translation id="1089606299949659462">சரிபார்ப்பு முடிந்தது!</translation>
@@ -356,6 +357,7 @@
 <translation id="253498598929009420">உங்கள் திரையில் உள்ளவற்றை இந்தத் தளத்தால் பார்க்க முடியும்</translation>
 <translation id="2535807170289627159">அனைத்து பக்கங்களும்</translation>
 <translation id="2536728043171574184">இந்தப் பக்கத்தின் ஆஃப்லைன் நகலைப் பார்க்கிறீர்கள்</translation>
+<translation id="2537574774089209541">நீங்கள் பிரவுஸ் பண்ணும்போது Geminiயை எளிதாக அணுகும் வகையில் சில கருவிகள் நகர்த்தப்பட்டுள்ளன</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட பின் செய்யப்பட்ட ஒலியடக்கப்பட்டுள்ள மறைநிலைப் பக்கம்</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, பக்கம்</translation>
@@ -404,6 +406,7 @@
 <translation id="2751271371269891762">புக்மார்க்குகள் மற்றும் பலவற்றை உங்கள் சாதனங்கள் எல்லாவற்றிலும் பெற <ph name="EMAIL" /> என்ற கணக்கில் உள்நுழையுங்கள்</translation>
 <translation id="2760805590727089264">MM/YY</translation>
 <translation id="2762000892062317888">சற்று முன்</translation>
+<translation id="276378135349383280">கீழ்ப்பட்டியில் Gemini காட்டு</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ஆக உள்நுழைந்துள்ளீர்கள்.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> வினாடிகள் மீதமுள்ளன</translation>
 <translation id="2779651927720337254">தோல்வியுற்றது</translation>
@@ -536,6 +539,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> பக்கம்}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> பக்கங்கள்}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 கடவுச்சொல் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. உங்களின் பிற சாதனங்களில் அதைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}other{# கடவுச்சொற்கள் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன. உங்களின் பிற சாதனங்களில் அவற்றைப் பயன்படுத்த, உங்கள் Google கணக்கில் சேமியுங்கள்.}}</translation>
 <translation id="3293181007446299124">'இதுவரை இணையத்தில் பார்த்தவை' உங்கள் சாதனத்தில் தனிப்பட்ட முறையில் சேமிக்கப்படும். மேலும் உங்கள் அடையாளத்தைப் பாதுகாக்கும் வகையில் அறிக்கைகள் சிறிது தாமதத்திற்குப் பிறகு அனுப்பப்படும்</translation>
+<translation id="3301639354590628973">கணக்குகளை மாற்றவா?</translation>
 <translation id="3301936297336370235">கடவுச்சொல் பரிந்துரைக்கான உறுதிப்படுத்தல்</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> பக்கக் குழுவையும் <ph name="COLOR_NAME" /> வண்ணத்தையும் புதிய பின்னணிப் பக்கக் குழுவாக மீட்டெடுக்கும்.</translation>
 <translation id="3303855915957856445">தேடல் முடிவுகள் எதுவுமில்லை</translation>
@@ -602,6 +606,7 @@
 <translation id="3602290021589620013">மாதிரிக்காட்சி</translation>
 <translation id="3614126103057878858">கட்டண விவரங்கள்</translation>
 <translation id="3616113530831147358">ஆடியோ</translation>
+<translation id="3616798734782988169"><ph name="DOWNLOAD_DOMAIN" /> நம்பகமானது என்பதை உறுதிசெய்துகொள்ளுங்கள்</translation>
 <translation id="3619255692378312441">அணுகலை நிர்வகித்தல்</translation>
 <translation id="3622349720008044802">சாளரங்களை நிர்வகித்தல்</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 தளம்}other{+ # தளங்கள்}}</translation>
@@ -632,6 +637,7 @@
 <translation id="3738139272394829648">தேடத் தொடவும்</translation>
 <translation id="3739455665973395693">உங்கள் Google கணக்கில் களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> இல் புத்தகக்குறியிடப்பட்டது</translation>
+<translation id="3740290940447881599">இந்தத் தளம் நம்பகமானது என்பதை உறுதிசெய்துகொள்ளுங்கள்</translation>
 <translation id="3740525748616366977">இந்தச் சாதனத்தில் குரல் தேடலைப் பயன்படுத்த முடியாது</translation>
 <translation id="3763110477555836428">இந்தக் கார்டு மூலம் நீங்கள் செக்-அவுட் செய்யும்போது, அசல் விவரங்களைப் பாதுகாப்பதற்காக விர்ச்சுவல் கார்டு எண் நிரப்பப்படும். Google Walletடில் நிர்வகிக்கலாம். <ph name="BEGIN_LINK1" />விர்ச்சுவல் கார்டுகள் குறித்து மேலும் தெரிந்துகொள்ளுங்கள்<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">சில தரவுகள் இன்னும் சேமிக்கப்படவில்லை</translation>
@@ -640,6 +646,7 @@
 <translation id="3771290962915251154">பெற்றோர் கட்டுப்பாடுகள் இயக்கத்தில் உள்ளதால் இந்த அமைப்பு முடக்கப்பட்டுள்ளது</translation>
 <translation id="3771694256347217732">Google சேவை விதிமுறைகள்</translation>
 <translation id="3777796259512476958">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்</translation>
+<translation id="3786379886124795923">Chromeமில் உள்நுழைய QR குறியீட்டை ஸ்கேன் செய்துள்ளீர்கள். இந்தச் சுயவிவரத்தில் இருந்து கடவுச்சொற்கள், புக்மார்க்குகள் மற்றும் பலவற்றைப் பெற விரும்புவதை உறுதிப்படுத்துங்கள்.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 பக்கம்}other{# பக்கங்கள்}}</translation>
 <translation id="3792938779249970121">கணக்கைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3795154175078851242">படத்தை இணைப்புடன் நகலெடு</translation>
@@ -825,6 +832,7 @@
 <translation id="4532845899244822526">ஃபோல்டரைத் தேர்வுசெய்யவும்</translation>
 <translation id="4535755320005483982">பகிரப்பட்ட <ph name="GROUP_TITLE" /> பக்கக் குழு</translation>
 <translation id="4537137366307982887">உதவிக்குறிப்பு அறிவிப்புகளுக்கு ஒப்புதல் அளிப்பதற்கான திரை முழு அளவிற்குத் திறந்துள்ளது</translation>
+<translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> கணக்கில் உள்நுழைந்தே இருக்கிறீர்கள்.</translation>
 <translation id="4543131175509360848">கடவுச்சாவிகள் எதுவுமில்லை என்று தெரிவிக்கும் தாள்</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> பக்கம்}other{<ph name="TAB_COUNT_MANY" /> பக்கங்கள், <ph name="TAB_COUNT_INCOGNITO" /> மறைநிலை}}</translation>
 <translation id="4558311620361989323">இணையப் பக்கக் ஷார்ட்கட்கள்</translation>
@@ -1282,6 +1290,7 @@
 <translation id="6411219469806822692">இதற்கும் மேல் செல்ல முடியாது. பக்கத்தின் மேற்பகுதியில் இருந்து எடுக்கவும்.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, பலமுறை தேர்ந்தெடுக்கப்பட்ட பக்கம்</translation>
 <translation id="641643625718530986">அச்சிடு...</translation>
+<translation id="6427723330233512782">உயரத்திற்கேற்ப பொருத்து</translation>
 <translation id="6433501201775827830">தேடல் இன்ஜினைத் தேர்வுசெய்யவும்</translation>
 <translation id="6434309073475700221">நிராகரி</translation>
 <translation id="6435307030888827407">வெளியேறிய நிலையிலேயே இரு</translation>
@@ -1528,6 +1537,7 @@
 <translation id="7291910923717764901">இந்தப் பக்கத்திற்கான பட விளக்கங்கள் சேர்க்கப்பட்டன</translation>
 <translation id="7293429513719260019">மொழியைத் தேர்ந்தெடு</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட பின் செய்யப்பட்ட பகிரப்படுகின்ற பக்கம்</translation>
+<translation id="7304003340539141201">பக்கங்கள் மற்றும் பணிகள் தொடர்பான உதவிக்கு Geminiயைக் கேளுங்கள்</translation>
 <translation id="7311244614769792472">முடிவுகள் எதுவுமில்லை</translation>
 <translation id="7314734791127433392">கடவுச்சொற்களைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="7324354302972299151">“Do Not Track” கோரிக்கையை அனுப்பு</translation>
@@ -1874,6 +1884,7 @@
 <translation id="8696297579102085705">வேறு சாதனத்திற்கு அனுப்பு</translation>
 <translation id="8697753151306746444">பக்கத்திற்குப் பதிலாகச் சாளரத்தையோ திரையையோ பகிருங்கள்</translation>
 <translation id="8699120352855309748">இந்த மொழிகளுக்கு மொழிபெயர்ப்பு வேண்டாம்:</translation>
+<translation id="8700565880437506364">Chromeமில் Geminiயை அறிமுகப்படுத்துகிறோம்</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8715286883001906001">உங்கள் Google கணக்கில் உள்ள கடவுச்சொற்களை வலுப்படுத்துங்கள்</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> மூடப்படும்</translation>
@@ -1941,6 +1952,7 @@
 <translation id="8996847606757455498">மற்றொரு வழங்குநரைத் தேர்வுசெய்க</translation>
 <translation id="8998837250940831980">பக்கத்தைச் சிறிதாக்க முடியவில்லை. பிறகு முயலவும்.</translation>
 <translation id="9001604755921395912">Chromeமின் மறைநிலையில் திற</translation>
+<translation id="9010094279589497751">தேவைப்படும்போது Geminiயை விரைவாகத் திறக்கலாம்</translation>
 <translation id="9012585441087414258">ஆபத்தானவை என அறியப்படுகின்ற இணையதளங்கள், பதிவிறக்கங்கள், நீட்டிப்புகள் ஆகியவற்றுக்கு எதிராக நிலையான பாதுகாப்பை வழங்கும். ஒரு பக்கத்தில் ஏதேனும் சந்தேகத்திற்கிடமான முறையில் நடந்தால், அதன் URLகளையும் பக்க உள்ளடக்கத்தின் சிறு பகுதிகளையும் Google பாதுகாப்பு உலாவலுக்கு அனுப்பும்.</translation>
 <translation id="9019199799064251516">கார் சுயவிவரப் பூட்டு இல்லாமல் தொடரவா?</translation>
 <translation id="9022774213089566801">அடிக்கடி பார்வையிட்டவை</translation>
@@ -1998,6 +2010,7 @@
 <translation id="9190355771000652811">தேடல் இன்ஜின்கள் மற்றும் தளத் தேடல்களுக்கான ஷார்ட்கட்களுடன் முகவரிப் பட்டியில் இந்தக் கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தவும்.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, தேர்ந்தெடுக்கப்பட்ட இடம் மாறாத மறைநிலைப் பக்கம்</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{சரிபார்த்தது: 1 நிமிடத்திற்கு முன்பு}other{சரிபார்த்தது: # நிமிடங்களுக்கு முன்பு}}</translation>
+<translation id="9202894533863490414">இந்தத் தளத்தில் இருந்து பதிவிறக்கவா?</translation>
 <translation id="9204836675896933765">1 ஃபைல் மீதமுள்ளது</translation>
 <translation id="9205933215779845960">அந்தப் பக்கத்தைக் கண்டறிய முடியவில்லை. தேடல் வினவலில் உள்ள எழுத்துகளைச் சரிபார்க்கவும் அல்லது <ph name="SEARCH_ENGINE" /> இல் தேடிப் பார்க்கவும்.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2015,9 +2028,11 @@
 <translation id="939598580284253335">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பிக்ச்சர்-இன்-பிக்ச்சர் மறைநிலைப் பக்கம்</translation>
 <translation id="945522503751344254">கருத்தை அனுப்பு</translation>
+<translation id="949667118776341807">சுழற்று</translation>
 <translation id="95817756606698420">சீனாவில் தேடுவதற்கு, Chromeமில் <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ஐப் பயன்படுத்தலாம். இதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று மாற்றலாம்.</translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>
 <translation id="963246339335003378">செயல் நிர்வாகியைத் திறக்கும்</translation>
+<translation id="966337994629449077"><ph name="FROM_EMAIL" /> என்ற கணக்கில் உள்நுழைந்துள்ளீர்கள்.\n\nஉங்கள் கம்ப்யூட்டரில் இருந்து தொடர, <ph name="TO_EMAIL" /> என்ற கணக்கிற்கு மாறுங்கள். இந்தக் கணக்கில் உள்ள கடவுச்சொற்கள், புக்மார்க்குகள் மற்றும் பலவற்றைப் பெறுவீர்கள்.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> நிமிடங்கள் மீதமுள்ளன</translation>
 <translation id="981121421437150478">ஆஃப்லைன்</translation>
 <translation id="983192555821071799">எல்லா தாவல்களையும் மூடு</translation>

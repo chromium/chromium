@@ -67,6 +67,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1640672724030957280">Sækir...</translation>
 <translation id="1651617469580841801">Þegar þú notar Google-linsu verða titill síðu, vefslóð og innihald, að meðtöldum PDF-skjölum, send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Um ChromeOS Flex</translation>
+<translation id="1665867022636014702">Notaðu ráðlagðar vafrastillingar Google</translation>
 <translation id="1674870198290878346">Opna tengil í h&amp;uliðsglugga í Chrome</translation>
 <translation id="1682634494516646069">Google Chrome getur ekki lesið eða skrifað í gagnamöppu sína:
 
@@ -153,6 +154,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="259935314519650377">Ekki tókst að vista uppsetningarforrit sem var sótt í skyndiminni. Villa: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Fáðu fljótlegt yfirlit yfir þetta skjal og spyrðu spurninga með Gemini í Chrome</translation>
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="263447411082773721">Haltu aðgangsorðunum þínum, bókamerkjum og ferli fullkomlega samstilltum á milli tækja. Fáðu greiðan aðgang að eiginleikunum sem þú þekkir og elskar með því að uppfæra sjálfgefna vafrann þinn í Chrome. Chrome verður festur við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -242,6 +244,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="345171907106878721">Bættu þér við Chrome</translation>
 <translation id="3453763134178591239">Skilmálar ChromeOS</translation>
 <translation id="3503306920980160878">Chrome þarf staðsetningaraðgang til að deila staðsetningu þinni með þessu vefsvæði</translation>
+<translation id="3539955434060988644">Opna tengil í huliðsglugga í Chrome</translation>
 <translation id="3576528680708590453">Kerfisstjórinn hefur stillt Google Chrome á að opna annan vafra fyrir <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Samstilltu Chrome á milli tækja og gerðu það að þínu</translation>
 <translation id="3583751698304738917">Þú ert þegar skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" /> á öðrum Chrome-prófíl</translation>
@@ -750,6 +753,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="8624541899164515475">Stillingar, opnast í nýjum flipa.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome verður endurræst eftir 1 mínútu}one{Chrome verður endurræst eftir # mínútu}other{Chrome verður endurræst eftir # mínútur}}</translation>
 <translation id="8637932705841171563">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila glugganum þínum</translation>
+<translation id="8642497536370021917">Staðfestu að þetta sért þú til að ganga úr skugga um að þú getir alltaf notað og vistað Chrome-gögn á Google-reikningnum þínum</translation>
 <translation id="8656634243791296665">Opna Gemini í Chrome Dev</translation>
 <translation id="8669527147644353129">Hjálparforrit Google Chrome</translation>
 <translation id="8679801911857917785">Þetta stýrir því einnig hvaða síða birtist þegar þú ræsir Chrome.</translation>

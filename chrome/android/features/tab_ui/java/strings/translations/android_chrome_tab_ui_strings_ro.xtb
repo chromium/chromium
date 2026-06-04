@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> filă grupată</translation>
 <translation id="1844381456014878100">După 7 zile de inactivitate</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Adaugă fila în Lista de lecturi}few{Adaugă filele în Lista de lecturi}other{Adaugă filele în Lista de lecturi}}</translation>
 <translation id="1909810060368225529">Notificare: modificările aduse acestui grup de file comun sunt vizibile pentru toată lumea. Oricine poate să facă modificări în grupurile de file comune</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixează fila}few{Fixează filele}other{Fixează filele}}</translation>
 <translation id="1982637982196732906">Mută în secțiunea inactivă</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Pictograma de culoare pentru grupul de file <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Lista de grupuri de file a fost închisă</translation>
+<translation id="3152596030350326139">Afișează filele pe orizontală</translation>
+<translation id="31806439105337256">Afișează filele pe verticală</translation>
 <translation id="3194464645767632461">evaluare</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adaugă <ph name="TABS_COUNT_ONE" /> filă în grup}few{Adaugă <ph name="TABS_COUNT_MANY" /> file în grup}other{Adaugă <ph name="TABS_COUNT_MANY" /> de file în grup}}</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>

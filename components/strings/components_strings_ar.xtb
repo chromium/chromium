@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">سياسة غير معروفة.</translation>
 <translation id="1227677022489889280">أدخِل سببًا للنقل (مطلوب).</translation>
 <translation id="1228893227497259893">معرف الكيان خاطئ</translation>
+<translation id="122989279399348496">بعد تسجيل دخولك، يمكن لـ <ph name="DOMAIN" /> تأكيد <ph name="EMAIL" /> على المواقع الإلكترونية المتوافقة ليوفّر عليك عناء التحقّق من بريدك الوارد</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (تم التعرّف عليها تلقائيًا)</translation>
 <translation id="1232569758102978740">بلا عنوان</translation>
 <translation id="1234539281285007945">يجب ملء الحقل "<ph name="FIELD_1" />"</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، تتوفّر عدة إجراءات، اضغط على مفتاح التبويب (Tab) للتنقّل بينها.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">تفاصيل البطاقة الافتراضية</translation>
+<translation id="1802420021606590788">‏يعالج Chrome عناوين الصفحات وعناوين URL في مساحة خاصّة في السحابة الإلكترونية</translation>
 <translation id="1803254472779303354">يُسمح بقفل الماوس</translation>
 <translation id="1803351196216024260">السماح للموقع الإلكتروني بطلب استخدام الميكروفون</translation>
 <translation id="1804258830776932716">‏يساعدك ربط حسابك بسرعة في تفعيل Pix</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">الإشارات المرجعية الأخرى</translation>
 <translation id="2355395290879513365">قد يتمكن المهاجمون من رؤية الصور التي تتطلع عليها على هذا الموقع وخداعك من خلال تعديلها.</translation>
 <translation id="2356941001189392209">‏قائمة تضم فقط عناوين URL للصفحات التي استخدمت تكنولوجيا قديمة عند زيارتك لها</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{ستتم مشاركة علامة تبويب واحدة}zero{ستتم مشاركة {NUM_TABS} علامة تبويب}two{ستتم مشاركة علامتَي تبويب ({NUM_TABS})}few{ستتم مشاركة {NUM_TABS} علامات تبويب}many{ستتم مشاركة {NUM_TABS} علامة تبويب}other{ستتم مشاركة {NUM_TABS} علامة تبويب}}</translation>
 <translation id="2357481397660644965">يدير <ph name="DEVICE_MANAGER" /> جهازك، ويدير <ph name="ACCOUNT_MANAGER" /> حسابك.</translation>
 <translation id="2359629602545592467">متعددة</translation>
 <translation id="2359808026110333948">متابعة</translation>
@@ -3019,6 +3022,7 @@
 <translation id="5728246486828755318">يمكن لهذا الموقع الإلكتروني طلب استخدام الميزات المتقدّمة الخاصة بالطابعة</translation>
 <translation id="5729442113829771034">تعليم في مرحلة الطفولة المبكرة</translation>
 <translation id="5730040223043577876">‏يُوصي Chrome بإعادة تحديد كلمة المرور في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
+<translation id="5735174108294025227">ستظهر هنا عناوين البريد الإلكتروني التي تم تأكيدها</translation>
 <translation id="573555826359077410">‏زر إنشاء نموذج: انقر على هذا الزر لإنشاء نموذج جديد في "نماذج Google" بسرعة.</translation>
 <translation id="5738385766833540397">يمكنك إدارة طريقة تلقّي التنبيهات بشأن انخفاض أسعار المنتجات التي يتم تتبُّعها.</translation>
 <translation id="5739619009927381786">يمكنك فتح قفل الشاشة في الخطوة التالية، وعادةً ما يتم ذلك باستخدام بصمة إصبعك، أو من خلال <ph name="BEGIN_LINK" />إثبات هويتك بطريقة أخرى<ph name="END_LINK" />.</translation>
@@ -3027,6 +3031,7 @@
 <translation id="5742806904559466333">حانات وأندية وحفلات ليلية</translation>
 <translation id="5743684619253032786">منتجات عناية بالأظافر</translation>
 <translation id="574392208103952083">متوسط</translation>
+<translation id="5745586894920491759">‏يعالج Chrome عناوين الصفحات وعناوين URL في السحابة الإلكترونية</translation>
 <translation id="5745733273847572235">السماح للموقع الإلكتروني بطلب معرفة موقعك الجغرافي</translation>
 <translation id="5750869797196646528">تتبُّع اليد</translation>
 <translation id="5752327398324808817">أدخِل كلمة أو كلمتين</translation>
@@ -3421,6 +3426,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">عرض السجلّات</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />التحقّق من ضبط الخادم الوكيل والجدار الناري ونظام أسماء النطاقات الآمن<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">تأكيد عناوين بريدك الإلكترونية تلقائيًا</translation>
 <translation id="6366710531182496394">وضع دبوسَين يسارًا</translation>
 <translation id="6367196786591004737">حذف الإدخال</translation>
 <translation id="6370022303958842211">إجراءات الوصول إلى الأجهزة، مثل عمليات تسجيل الدخول (بما في ذلك أسباب تعذّر تسجيل الدخول) وعمليات تسجيل الخروج وقفل الأجهزة وفتحها</translation>
@@ -5064,6 +5070,7 @@
 <translation id="8963117664422609631">الانتقال إلى إعدادات الموقع الإلكتروني</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />اقتراحات:<ph name="MARKUP_2" />التأكد من أن لديك اتصال بيانات<ph name="MARKUP_3" />إعادة تحميل صفحة الويب هذه لاحقًا<ph name="MARKUP_4" />التحقق من العنوان الذي أدخلته<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">سيتم حذف ملفاتك على الجهاز بعد <ph name="HOURS" /> من الساعات</translation>
+<translation id="8964904785315870349">عنوان البريد الإلكتروني الذي تم تأكيده</translation>
 <translation id="8968766641738584599">حفظ البطاقة</translation>
 <translation id="8970887620466824814">حدث خطأ.</translation>
 <translation id="8971063699422889582">انتهت صلاحية شهادة الخادم.</translation>

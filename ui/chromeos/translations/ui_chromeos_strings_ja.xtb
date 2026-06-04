@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">自動ネーム サーバー</translation>
 <translation id="1210831758834677569">ラオ語</translation>
 <translation id="1221555006497674479"><ph name="TOTAL_SPACE" /> の共有ドライブ ストレージは残り <ph name="REMAINING_PERCENTAGE" />% と少なくなっています。</translation>
+<translation id="1239594683407221485">ファイルアプリでデバイスのコンテンツを検索します。</translation>
 <translation id="1243314992276662751">アップロード</translation>
 <translation id="1249250836236328755">ジャンル</translation>
 <translation id="1254593899333212300">インターネットへの直接接続</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">削除できません。アイテムは使用中です。</translation>
 <translation id="1307931752636661898">[Linux ファイル] を表示できません</translation>
 <translation id="1313405956111467313">自動プロキシ設定</translation>
+<translation id="1340527397989195812">ファイルアプリを使用してデバイスからメディアをバックアップします。</translation>
 <translation id="134645005685694099">デバイスに十分な空き容量がないため、ファイルの同期を継続できません。新しいファイルは自動的に同期されなくなります。</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">このファイルまたはディレクトリは使用できません。</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">ユーザー証明書なし</translation>
 <translation id="1403008701842173542">すべてのプラットフォーム</translation>
 <translation id="1404323374378969387">ノルウェー語</translation>
+<translation id="1408504635543854729">ファイルアプリでデバイスの内容を確認できます。ただし管理者が制限を設定しているため、デバイスの内容を変更することはできません。</translation>
 <translation id="1412476183660741812">署名付きウェブバンドル</translation>
 <translation id="1433628812591023318">Parallels Desktop にファイルをドロップするには [Windows ファイル] にファイルを移動する必要があります。</translation>
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> を取り外す</translation>
+<translation id="1464781208867302907">デバイス設定を行うには、[設定] に移動してください。</translation>
 <translation id="146691674290220697">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルをコピーできませんでした。</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
 <translation id="1482884275703521657">フィンランド語</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ドライブで管理</translation>
 <translation id="2004942826429452291">ファイルはクラウドとこの Chromebook に保存されます。</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
+<translation id="2018352199541442911">お使いの外部ストレージ デバイスは現在サポートされていません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
 <translation id="2029385776150020336">US 拡張</translation>
 <translation id="2037845485764049925">ロシア語</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">たまごっち</translation>
 <translation id="2468470447085858632">ファイルを同期してオフラインで Google ドライブのファイルにアクセスする</translation>
 <translation id="2470939964922472929">間違った PIN が繰り返し入力されました。新しい PIN を設定するには、携帯通信会社が提供する 8 桁の PIN ブロック解除キー（PUK）を入力してください。</translation>
+<translation id="249113932447298600">デバイス <ph name="DEVICE_LABEL" /> は現在サポートされていません。</translation>
 <translation id="2500392669976258912">グジャラト語（表音）</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">スキャン</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ウクライナ語</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> を圧縮しています...</translation>
 <translation id="3335337277364016868">録音された年</translation>
+<translation id="3348038390189153836">リムーバブル デバイスが検出されました</translation>
 <translation id="3353984535370177728">アップロードするフォルダを選択</translation>
 <translation id="3356580349448036450">完了</translation>
 <translation id="3358452157379365236">ギター</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">英語（イギリス）</translation>
 <translation id="3975895378829046965">ベンガル語（表音）</translation>
+<translation id="3983764759749072418">Play ストアのアプリはこのデバイスにアクセスできます。</translation>
 <translation id="3999574733850440202">最近開いた Microsoft のファイルを OneDrive に移動しました</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4017788180641807848">英語（アメリカ）（Workman）キーボード</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">このファイルにアクセスするには、オンライン接続が必要です。</translation>
 <translation id="4212740939091998969">「<ph name="FOLDER_NAME" />」という名前のフォルダはすでに存在します。別の名前を選択してください。</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> の例外を削除します</translation>
+<translation id="4242533952199664413">設定を開く</translation>
 <translation id="4261901459838235729">Google プレゼンテーション</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> フィルタがオンになりました。</translation>
 <translation id="4290535918735525311">1 個のフォルダを Linux と共有しました</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google ドライブから復元されたファイル</translation>
 <translation id="5278111733643988471">このアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。このアイテムの元のフォルダ「<ph name="PARENT_FOLDER_NAME" />」は削除されています。</translation>
 <translation id="5288441970121584418">ハンバーガー</translation>
+<translation id="529175790091471945">このデバイスをフォーマット</translation>
 <translation id="5293615890992542006">このファイルの移動は管理者が設定したポリシーによってブロックされています</translation>
 <translation id="5305688511332277257">インストールされていません</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">以下のホストとドメインにはプロキシ設定を使用しない:</translation>
 <translation id="541890217011173530">ソラニークルド語（英語ベース）キーボード</translation>
 <translation id="5422221874247253874">アクセス ポイント</translation>
+<translation id="5422781158178868512">外部ストレージ デバイスを認識できませんでした。</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> に一致する検索結果はありません。</translation>
 <translation id="5447680084201416734">保存容量が不足しています。</translation>
 <translation id="5449551289610225147">パスワードが無効です</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> 個のアイテムが選択されています</translation>
 <translation id="5763377084591234761">ドイツ語（スイス）</translation>
 <translation id="5769519078756170258">除外するホストまたはドメイン</translation>
+<translation id="5774295353725270860">ファイルのアプリを開く</translation>
 <translation id="5775750595919327203">ウルドゥ語</translation>
 <translation id="5776325638577448643">消去してフォーマット</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5788127256798019331">Play ファイル</translation>
+<translation id="5788367137662787332">デバイス <ph name="DEVICE_LABEL" /> の少なくとも 1 つのパーティションがマウントできませんでした。</translation>
 <translation id="5804245609861364054">カンナダ語（文字変換）</translation>
 <translation id="5814126672212206791">接続タイプ</translation>
 <translation id="5817397429773072584">中国語（繁体字）</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">アイスランド語</translation>
 <translation id="7229570126336867161">EVDO が必要です</translation>
 <translation id="7230898482850090046">管理者が「SIM をロックする」設定をオフにするようリクエストしました</translation>
+<translation id="7232750842195536390">名前を変更できませんでした</translation>
 <translation id="7238097264433196391">ドライブ名</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />、詳細</translation>
 <translation id="7246947237293279874">FTP プロキシ</translation>
+<translation id="725109152065019550">このアカウントでの外部ストレージの使用は、管理者によって無効にされています。</translation>
 <translation id="7256405249507348194">不明なエラー: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">利用可能なサービス</translation>
 <translation id="7291818353625820805">キー入力を繰り返す場合は、キーボードの設定でアクセント記号をオフにします</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google マップ</translation>
 <translation id="7419668828140929293">「<ph name="FILENAME" />」を復元しています</translation>
 <translation id="7435577899926900307">US Dvorak 配列</translation>
+<translation id="7436921188514130341">名前の変更中にエラーが発生しました。</translation>
 <translation id="7458955835361612701">最近使用した画像はありません</translation>
 <translation id="7469894403370665791">このネットワークに自動接続する</translation>
 <translation id="7486315294984620427">Parallels Desktop にファイルをドロップするには、[Windows ファイル] にファイルをコピーする必要があります。</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">シェルフに固定</translation>
 <translation id="7553492409867692754">Linux アプリに対して、<ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="7555339735447658365">現在オフラインです。インターネットに接続すると、ファイルの同期が再開されます</translation>
+<translation id="7589461650300748890">データが失われる危険があります。</translation>
 <translation id="7589661784326793847">少々お待ちください</translation>
 <translation id="7600126690270271294">セルビア語</translation>
 <translation id="7603724359189955920">グリッド</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ネットワークの設定中にエラーが発生しました</translation>
+<translation id="7839051173341654115">メディアを表示 / バックアップ</translation>
 <translation id="7839804798877833423">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7857117644404132472">例外を追加</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">ポーランド語</translation>
 <translation id="7874321682039004450">フィリピン語</translation>
 <translation id="78946041517601018">共有ドライブ</translation>
+<translation id="7897900149154324287">今後、リムーバブル デバイスを取り外す場合はまずファイル アプリで取り外しアイコンをクリックしてください。アイコンをクリックしないで取り外した場合、データを失うことがあります。</translation>
 <translation id="7901567919203965902">US Workman インターナショナル配列</translation>
 <translation id="7903984238293908205">カタカナ</translation>
+<translation id="7908378463497120834">外部ストレージ デバイスの少なくとも 1 つのパーティションがマウントできませんでした。</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">これらのアイテムを復元するには、新しいフォルダにドラッグしてください。アイテムの元のフォルダは一部削除されています。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8876368061475701452">キューに追加済み</translation>
+<translation id="8893928184421379330">デバイス <ph name="DEVICE_LABEL" /> を認識できませんでした。</translation>
 <translation id="8902208737522818687">US インターナショナル（PC）</translation>
 <translation id="8903931173357132290">卒業</translation>
 <translation id="8912078710089354287">尻尾を振る犬</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Կարող եք ներբեռնել PDF ֆայլերն այստեղ</translation>
 <translation id="107147699690128016">Եթե փոխեք ընդլայնումը, ֆայլը կարող է բացվել այլ հավելվածով և վնասել ձեր սարքը:</translation>
 <translation id="1073328695547557412">Հպեք Google Տեսապակու պատկերակին</translation>
+<translation id="1080116354587839789">Հարմարեցնել լայնությանը</translation>
 <translation id="1086486568852410168">Որոնել Google Տեսապակու միջոցով</translation>
 <translation id="1087799850623149508">Հպեք և պահեք՝ հասցեագոտին ներքև տեղափոխելու համար</translation>
 <translation id="1089606299949659462">Ստուգումն ավարտված է</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ներդիր}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ներդիր}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ներդիր}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 գաղտնաբառ հասանելի է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}one{# գաղտնաբառ հասանելի է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար այն պահեք ձեր Google հաշվում։}other{# գաղտնաբառ հասանելի է միայն այս սարքում։ Մյուս սարքերում օգտագործելու համար դրանք պահեք ձեր Google հաշվում։}}</translation>
 <translation id="3293181007446299124">Ձեր այցելությունների պատմությունը պահվում է ձեր սարքում և հասանելի է միայն ձեզ, իսկ անձնական տվյալները պաշտպանելու նպատակով հաշվետվություններն ուղարկվում են ոչ անմիջապես</translation>
+<translation id="3301639354590628973">Փոխե՞լ հաշիվը</translation>
 <translation id="3301936297336370235">Առաջարկվող գաղտնաբառի հաստատում</translation>
 <translation id="3302615849591357577">Վերականգնել <ph name="TITLE_OF_GROUP" /> ներդիրների խումբը, որին տրված է <ph name="COLOR_NAME" /> գույնը, որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="3303855915957856445">Որոնման արդյունքներ չկան</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ամրացված ներդիր, որում նկարը նկարի մեջ է</translation>
 <translation id="3950820424414687140">Մուտք գործել</translation>
 <translation id="395377504920307820">Օգտագործել առանց հաշվի</translation>
+<translation id="3955353672249727801">Էջերն ավելացվել են ընթերցանության ցանկում</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}one{էջը կբեռնվի, երբ սարքը միացած լինի ցանցին}other{էջերը կբեռնվեն, երբ սարքը միացած լինի ցանցին}}</translation>
 <translation id="3969142555815019568">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը</translation>
 <translation id="3969863827134279083">Տեղափոխել վեր</translation>

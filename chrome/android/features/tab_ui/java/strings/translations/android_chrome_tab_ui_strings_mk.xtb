@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Создадена е група со <ph name="TABS_COUNT_ONE" /> картичка</translation>
 <translation id="1844381456014878100">По неактивност од 7 дена</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> картичка}one{<ph name="TABS_COUNT_MANY" /> картичка}other{<ph name="TABS_COUNT_MANY" /> картички}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Додај ја картичката во „Списокот за читање“}one{Додај ги картичките во „Списокот за читање“}other{Додај ги картичките во „Списокот за читање“}}</translation>
 <translation id="1909810060368225529">Известување: промените во споделенава група картички може да ги видат сите. Секој може да врши промени во вашите споделени групи картички</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Прикачи ја картичката}one{Прикачи ги картичките}other{Прикачи ги картичките}}</translation>
 <translation id="1982637982196732906">Преместете во делот со неактивни ставки</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> попуст на <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> икона за боја на група картички</translation>
 <translation id="311432875115153175">Списокот со групи картички е затворен</translation>
+<translation id="3152596030350326139">Прикажи ги картичките хоризонтално</translation>
+<translation id="31806439105337256">Прикажи ги картичките вертикално</translation>
 <translation id="3194464645767632461">оценување</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додајте <ph name="TABS_COUNT_ONE" /> картичка во групата}one{Додајте <ph name="TABS_COUNT_MANY" /> картичка во групата}other{Додајте <ph name="TABS_COUNT_MANY" /> картички во групата}}</translation>
 <translation id="3328308545011660196">Предлог: <ph name="NUMBER_OF_TABS" /> картички изгледаат поврзани. Да се групираат?</translation>

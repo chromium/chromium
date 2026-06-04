@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
 <translation id="1210831758834677569">Laotien</translation>
 <translation id="1221555006497674479">Il ne reste plus que <ph name="REMAINING_PERCENTAGE" /> % dans votre espace de stockage Disque partagé de <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Explorer le contenu de l'appareil dans l'application Fichiers.</translation>
 <translation id="1243314992276662751">Téléverser</translation>
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Suppression impossible. L'élément est en cours d'utilisation.</translation>
 <translation id="1307931752636661898">Impossible d'afficher les fichiers Linux</translation>
 <translation id="1313405956111467313">Configuration automatique du mandataire</translation>
+<translation id="1340527397989195812">Sauvegarder les fichiers médiatiques de l’appareil en utilisant l’application Fichiers.</translation>
 <translation id="134645005685694099">Votre appareil ne dispose pas d'un espace de stockage suffisant pour maintenir la synchronisation des fichiers activée. Les nouveaux fichiers ne seront plus synchronisés automatiquement.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" /> : <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Le fichier ou le répertoire n'est pas utilisable.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Aucun certificat utilisateur</translation>
 <translation id="1403008701842173542">Partout</translation>
 <translation id="1404323374378969387">Norvégien</translation>
+<translation id="1408504635543854729">Explorer le contenu de l'appareil dans l'application Fichiers. Le contenu est restreint par un administrateur et ne peut pas être modifié.</translation>
 <translation id="1412476183660741812">Ensemble Web signé</translation>
 <translation id="1433628812591023318">Pour déposer des fichiers dans Parallels Desktop, le fichier doit être déplacé vers le dossier Fichiers Windows.</translation>
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
 <translation id="1439919885608649279">Personne avec des fleurs</translation>
 <translation id="1458457385801829801">Exclure <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Pour ouvrir les préférences de l'appareil, accédez au menu Paramètres.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fichiers n'ont pas pu être copiés, car ils sont chiffrés.</translation>
 <translation id="1471718551822868769">Slovaque</translation>
 <translation id="1482884275703521657">Finnois</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Gérer dans Google Disque</translation>
 <translation id="2004942826429452291">Les fichiers seront stockés dans le nuage et sur ce Chromebook.</translation>
 <translation id="2009067268969781306">Le formatage d'un lecteur effacera toutes les données qu'il contient. Cette action est irréversible.</translation>
+<translation id="2018352199541442911">Désolés, votre périphérique de stockage externe n'est pas compatible pour le moment.</translation>
 <translation id="2025955442973426285">Tigrina</translation>
 <translation id="2029385776150020336">Clavier étendu américain</translation>
 <translation id="2037845485764049925">Russe</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Accédez à vos fichiers Google Disque hors ligne avec la synchronisation des fichiers</translation>
 <translation id="2470939964922472929">Un NIP incorrect a été entré un trop grand nombre de fois. Pour configurer un nouveau NIP, entrez la clé personnelle de déblocage à huit chiffres fournie par votre fournisseur de services.</translation>
+<translation id="249113932447298600">Désolés, le périphérique <ph name="DEVICE_LABEL" /> n'est pas compatible pour le moment.</translation>
 <translation id="2500392669976258912">Gujarati (phonétique)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Rechercher</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrainien</translation>
 <translation id="3326821416087822643">Compression du fichier <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="3335337277364016868">Année d'enregistrement</translation>
+<translation id="3348038390189153836">Appareil amovible détecté</translation>
 <translation id="3353984535370177728">Sélectionner le dossier à téléverser</translation>
 <translation id="3356580349448036450">Terminé</translation>
 <translation id="3358452157379365236">Guitare</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Télécharger le profil cellulaire, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Anglais (R.-U.)</translation>
 <translation id="3975895378829046965">Bangla (phonétique)</translation>
+<translation id="3983764759749072418">Les applications provenant de la boutique Play Store ont accès à cet appareil.</translation>
 <translation id="3999574733850440202">Les fichiers Microsoft récemment ouverts ont été déplacés vers OneDrive</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4017788180641807848">Anglais (É.-U.) avec clavier Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Pour accéder à ce fichier, vous devez être connecté à Internet.</translation>
 <translation id="4212740939091998969">Le dossier nommé « <ph name="FOLDER_NAME" /> » existe déjà. Veuillez choisir un autre nom.</translation>
 <translation id="4218274196133425560">Retirer l'exception pour <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4261901459838235729">Présentation Google</translation>
 <translation id="4277536868133419688">Le filtre <ph name="FILTER_NAME" /> est activé.</translation>
 <translation id="4290535918735525311">1 dossier partagé avec Linux</translation>
@@ -557,6 +566,7 @@
 <translation id="5275973617553375938">Fichiers récupérés de Google Disque</translation>
 <translation id="5278111733643988471">Pour restaurer cet élément, faites-le glisser vers un nouveau dossier en dehors de la corbeille. Le dossier d'origine « <ph name="PARENT_FOLDER_NAME" /> » de cet élément a été supprimé.</translation>
 <translation id="5288441970121584418">Hamburger</translation>
+<translation id="529175790091471945">Formater cet appareil</translation>
 <translation id="5293615890992542006">La politique de l'administrateur bloque le transfert de ce fichier</translation>
 <translation id="5305688511332277257">Aucun certificat installé</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
@@ -572,6 +582,7 @@
 <translation id="5411472733320185105">Ne pas utiliser les paramètres de mandataire pour ces hôtes et domaines :</translation>
 <translation id="541890217011173530">Kurde sorani avec clavier basé sur l'anglais</translation>
 <translation id="5422221874247253874">Point d'accès</translation>
+<translation id="5422781158178868512">Désolés, il est impossible de reconnaître votre périphérique de stockage externe.</translation>
 <translation id="5438282218546237410">Aucun résultat pour <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Espace de stockage insuffisant.</translation>
 <translation id="5449551289610225147">Mot de passe non valide</translation>
@@ -619,10 +630,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> éléments sélectionnés</translation>
 <translation id="5763377084591234761">Allemand (Suisse)</translation>
 <translation id="5769519078756170258">Hôte ou domaine à exclure</translation>
+<translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
 <translation id="5775750595919327203">Ourdou</translation>
 <translation id="5776325638577448643">Effacer et formater</translation>
 <translation id="57838592816432529">Désactiver le son</translation>
 <translation id="5788127256798019331">Fichiers Google Play</translation>
+<translation id="5788367137662787332">Nous sommes désolés, il y a au moins une partition sur le périphérique <ph name="DEVICE_LABEL" /> qui n'est pas installable.</translation>
 <translation id="5804245609861364054">Kannada (translittération)</translation>
 <translation id="5814126672212206791">Type de connexion</translation>
 <translation id="5817397429773072584">Chinois traditionnel</translation>
@@ -815,9 +828,11 @@
 <translation id="7224162581405244205">Islandais</translation>
 <translation id="7229570126336867161">Technologie EvDo requise</translation>
 <translation id="7230898482850090046">Votre administrateur vous a demandé de désactiver le paramètre « Verrouiller la carte SIM »</translation>
+<translation id="7232750842195536390">Échec du changement de nom</translation>
 <translation id="7238097264433196391">Nom du lecteur</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, détails</translation>
 <translation id="7246947237293279874">Mandataire FTP</translation>
+<translation id="725109152065019550">Désolés, votre administrateur a désactivé le stockage externe pour votre compte.</translation>
 <translation id="7256405249507348194">Erreur non reconnue : <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Services disponibles</translation>
 <translation id="7291818353625820805">Voulez-vous que les touches se répètent? Désactiver les accents dans les paramètres du clavier</translation>
@@ -840,6 +855,7 @@
 <translation id="7417705661718309329">Carte Google</translation>
 <translation id="7419668828140929293">Restauration de « <ph name="FILENAME" /> » en cours…</translation>
 <translation id="7435577899926900307">Dvorak américain</translation>
+<translation id="7436921188514130341">Oups… Une erreur s'est produite lors du changement de nom.</translation>
 <translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
 <translation id="7486315294984620427">Pour déposer des fichiers dans Parallels Desktop, le fichier doit être copié dans le dossier Fichiers Windows.</translation>
@@ -855,6 +871,7 @@
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>
 <translation id="7553492409867692754">Autoriser les applications Linux à accéder aux fichiers du dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Vous êtes actuellement hors ligne. La synchronisation des fichiers reprendra lorsque vous serez connecté à Internet.</translation>
+<translation id="7589461650300748890">Attention!</translation>
 <translation id="7589661784326793847">Veuillez patienter un court instant.</translation>
 <translation id="7600126690270271294">Serbe</translation>
 <translation id="7603724359189955920">Grilles</translation>
@@ -900,6 +917,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> To</translation>
 <translation id="7831491651892296503">Erreur de configuration réseau</translation>
+<translation id="7839051173341654115">Afficher/Sauvegarder les médias</translation>
 <translation id="7839804798877833423">L'obtention de ces fichiers utilisera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7857117644404132472">Ajouter une exception</translation>
@@ -907,8 +925,10 @@
 <translation id="7868774406711971383">Polonais</translation>
 <translation id="7874321682039004450">Tagalog</translation>
 <translation id="78946041517601018">Disques partagés</translation>
+<translation id="7897900149154324287">À l'avenir, assurez-vous d'éjecter votre périphérique amovible dans l'application Fichiers avant de le débrancher. Sinon, vous risquez de perdre des données.</translation>
 <translation id="7901567919203965902">Workman américain international</translation>
 <translation id="7903984238293908205">katakana</translation>
+<translation id="7908378463497120834">Nous sommes désolés, il y a au moins une partition sur votre périphérique externe qui n'est pas installable.</translation>
 <translation id="7908793776359722643">Le formatage d'une partition entraîne la suppression de toutes les données qui y sont stockées. Cette action est irréversible.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Vos fichiers dans Mon Disque seront automatiquement synchronisés avec votre Chromebook afin que vous puissiez y accéder sans connexion Internet.</translation>
@@ -1042,6 +1062,7 @@
 <translation id="8873014196523807561">Pour restaurer ces éléments, faites-les glisser vers un nouveau dossier. Les dossiers d'origine de certains de ces éléments ont été supprimés.</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8876368061475701452">En file d'attente</translation>
+<translation id="8893928184421379330">Désolés, le dispositif <ph name="DEVICE_LABEL" /> n'est pas reconnu.</translation>
 <translation id="8902208737522818687">Américain international (PC)</translation>
 <translation id="8903931173357132290">Diplômé</translation>
 <translation id="8912078710089354287">Chien remuant la queue</translation>

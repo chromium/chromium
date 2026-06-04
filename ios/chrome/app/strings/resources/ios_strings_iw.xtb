@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">הדפדפן שלך מנוהל. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">חיפוש טקסט שהעתקת</translation>
 <translation id="2147127444698817042">‏התכונה זמינה רק ב-iPhone</translation>
+<translation id="2148326276832455306">‏השיחות ייבדקו, ונשתמש בהן כדי לשפר את Google AI. אפשר <ph name="BEGIN_LINK" />לשנות את הגדרות הפעילות<ph name="END_LINK" />, כולל מידע על המיקום שלך. <ph name="BEGIN_LINK" />מידע נוסף על הבחירות שלך<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">תתבצע כניסה אוטומטית לאתרים ולאפליקציות באמצעות הסיסמאות השמורות.</translation>
 <translation id="2149968176347646218">החיבור אינו מאובטח</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">בורר היחידות</translation>
 <translation id="2330607597130465898">ללא הגנה</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
+<translation id="2340966584724330791">‏‫Google אוספת את השיחות שלך ואת מה ששיתפת עם Gemini (כמו קבצים, סרטונים, צילומי מסך ותמונות). היא אוספת גם את המשוב שלך, מידע מאתרים שביקרת בהם עם Gemini, פרטי השימוש במוצרים ונתוני המיקום (כולל המיקום הכללי של המכשיר, כתובת ה-IP, או הכתובת בבית או בעבודה שרשומה בחשבון Google).</translation>
 <translation id="2350463587705616331">צבע רקע חום-ספיה</translation>
 <translation id="2351097562818989364">הגדרות התרגום שלך אופסו.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏אפשר לשמור את הסיסמה בשביל {DOMAIN_ONE} בחשבון Google שלך, {EMAIL}.}=2{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE} וגם {DOMAIN_TWO} בחשבון Google שלך, {EMAIL}.}=3{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}one{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}other{‏אפשר לשמור את הסיסמאות בשביל {DOMAIN_ONE},‏ {DOMAIN_TWO} ועוד {OTHER_DOMAINS_COUNT} בחשבון Google שלך, {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">הייתה בעיה במילוי הפרטים</translation>
 <translation id="2371084566192454134">כרטיסיות וקבוצות של כרטיסיות</translation>
 <translation id="2371303771137626249">חדש</translation>
+<translation id="2375947780110007467">‏‫Google משתמשת בתוכן ובכתובת ה-URL של הכרטיסיות המשותפות. הכרטיסייה הנוכחית משותפת בשיחות חדשות. אפשר לשנות את ההגדרה הזו בכל שלב.</translation>
 <translation id="2381405137052800939">הגדרות בסיסיות</translation>
 <translation id="2384692388811649784">הסתרת הכרטיסיות הפרטיות</translation>
 <translation id="2386793615875593361">נבחרה תמונה אחת</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3289505634533552500">חיפוש קולי</translation>
 <translation id="3295904109373959849">תצוגה של קבוצות כרטיסיות</translation>
+<translation id="3301639354590628973">לעבור לחשבון אחר?</translation>
 <translation id="3302837541200840455">‫<ph name="TAB_TITLE" />, פעילות חדשה</translation>
 <translation id="3305294846493618482">עוד</translation>
 <translation id="3311748811247479259">כבוי</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">סימון כ'נקרא'</translation>
 <translation id="428768789042547925">מה חדש</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
+<translation id="4294506173142861371">להיכנס לחשבון בתור <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">סריקת כרטיס ומילוי אוטומטי</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">סימניות</translation>
 <translation id="5447973833955560753">סיסמה לשחזור</translation>
 <translation id="5452354193031718372">שימוש בסיסמה חזקה:</translation>
+<translation id="5453088693079603292">אילו נתוני פעילות אנחנו אוספים</translation>
 <translation id="5454211924362324495">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, <ph name="BEGIN_LINK" />עליך לשנות אותה באתר <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
 <translation id="5457226814769348910">פתיחה של גרסת אופליין</translation>
@@ -1522,6 +1528,7 @@
 <translation id="6253686838150111720">כניסה אל <ph name="URL" /></translation>
 <translation id="6254066287920239840">פתיחת קישורים באפליקציה ולא בדפדפן.</translation>
 <translation id="6259928806013786178">מצב הקריאה לא הופעל</translation>
+<translation id="626335165106398104">‏‫Gemini פועל עם שירותים אחרים</translation>
 <translation id="6268773951964630964">חיפוש תמונה שהועתקה</translation>
 <translation id="6271462272606946663">הסתרת האפשרות 'בקשת אתר שמותאם לנייד'</translation>
 <translation id="6271824294945464304">שיתוף הסיסמה</translation>
@@ -1637,6 +1644,7 @@
 <translation id="6609890790934458793">הסיסמאות של <ph name="WEBSITE" />, של <ph name="SECOND_WEBSITE" /> ושל <ph name="THIRD_WEBSITE" /> יימחקו. החשבונות שלך לא יימחקו.</translation>
 <translation id="661266467055912436">רמת אבטחה משופרת עבורך ועבור כל מי שמתחבר לאינטרנט.</translation>
 <translation id="6612912757320004438">הרשאה לקבלת התראות על כרטיסיות…</translation>
+<translation id="6613372200395638275">‏כדי לספק עזרה בהתאמה אישית, Gemini משתף חלק מהנתונים שלך (למשל חלקים מהשיחות שלך, המיקום שלך ופרטים רלוונטיים נוספים) עם שירותי Google אחרים, כמו מפות וטיסות. נשתמש במידע הזה כדי לשפר את השירותים האלה, גם אם הפעילות שלך בממשקי Gemini תימחק בהמשך. מידע נוסף מופיע <ph name="BEGIN_LINK" />במרכז המידע על פרטיות בממשקי Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">מחיקת הטקסט</translation>
 <translation id="6619015782482868078">עיצוב טורקיז</translation>
 <translation id="6620279676667515405">ביטול</translation>
@@ -1712,6 +1720,9 @@
 <translation id="6858718102216837409">הוספת שפה…</translation>
 <translation id="6858855187367714033">נסרק</translation>
 <translation id="6859944681507688231">‏כדי לסרוק קוד QR או כרטיס אשראי, יש להפעיל את המצלמה דרך ההגדרות.</translation>
+<translation id="6862212368460840758">התחברת בתור: <ph name="SIGNED_EMAIL" />
+
+כדי להמשיך מהמחשב, עליך לעבור אל <ph name="OTHER_EMAIL" />. נעביר לשם את הסיסמאות, הסימניות ונתונים נוספים מהחשבון הזה.</translation>
 <translation id="6867369562105931222">סיסמה</translation>
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="686831807558000905">אני לא רוצה להיכנס</translation>
@@ -1780,6 +1791,7 @@
 <translation id="7091023926159231962">{count,plural, =1{לא ניתן לייבא סיסמה אחת ({count})}one{לא ניתן לייבא {count} סיסמאות}two{לא ניתן לייבא {count} סיסמאות}other{לא ניתן לייבא {count} סיסמאות}}</translation>
 <translation id="7095110968493193530">‏נשמרה במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">בסרגל הכתובות, לוחצים על היסטוריית המחירים כדי לראות את השינויים במחיר לאורך הזמן</translation>
+<translation id="7098554251807199977">‏השיחות שלך עם Gemini <ph name="BEGIN_LINK" />והנתונים שלך ב-Google Workspace<ph name="END_LINK" /> לא ייבדקו, ולא נשתמש בהם כדי לשפר מודלים של AI גנרטיבי.</translation>
 <translation id="7102005569666697658">ההורדה מתבצעת… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">תפריט ← הגדרות ← אמצעי תשלום</translation>
 <translation id="7108338896283013870">הסתרה</translation>
@@ -2173,6 +2185,7 @@
 <translation id="8439758443371991593">הסתרה של 'הוספה לרשימת הקריאה'</translation>
 <translation id="8443986842926457191">‏כתובת ה-URL מכילה יותר מ-2048 תווים</translation>
 <translation id="8449869326050867919">הסיסמה שותפה</translation>
+<translation id="8461708300275916315">אם עוד לא מלאו לך 18</translation>
 <translation id="8473815223723723001">‏צריך לערוך את התמונה עם Gemini</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474378002946546633">אפשר התראות</translation>
@@ -2234,6 +2247,8 @@
 <translation id="8636825310635137004">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון.</translation>
 <translation id="8637431369725868556">הגנה מפני אתרים מסוכנים.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({COUNT}) שנחשפה}one{יש {COUNT} סיסמאות שנחשפו}two{יש {COUNT} סיסמאות שנחשפו}other{יש {COUNT} סיסמאות שנחשפו}}</translation>
+<translation id="8639963783467694461">הגדרות מילוי אוטומטי</translation>
+<translation id="8642417828095157370">הכרטיסיות משותפות כדי ליצור תשובות רלוונטיות יותר</translation>
 <translation id="8643403533759285912">מחיקת הקבוצה</translation>
 <translation id="8647280737650867362">לא ניתן לבטל את המעקב אחר המחירים.</translation>
 <translation id="8654802032646794042">ביטול</translation>
@@ -2247,6 +2262,7 @@
 <translation id="8672733398999596205">הפעלת הכול</translation>
 <translation id="8674716540979958118">יש לך סיסמאות שנחשפו.</translation>
 <translation id="8679900250380464358">הוספה לרשימת הקריאה</translation>
+<translation id="8680643216091361291">‏ההגדרה <ph name="BEGIN_LINK" />שמירת נתוני פעילות<ph name="END_LINK" /> מושבתת כברירת מחדל. כשהיא מושבתת, Google שומרת את השיחות שלך למשך 3 ימים. היא משתמשת בהן כדי לוודא שממשקי Gemini פועלים בצורה תקינה ובטוחה, ונעזרת במשוב שלך כדי לפתור בעיות. כדי לעזור לנו לשפר את Google AI לכולם, אפשר להפעיל את ההגדרה "שמירת נתוני פעילות".</translation>
 <translation id="8680786875305615692">עזרה בשיפור האבטחה באינטרנט לכולם</translation>
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
 <translation id="8690752723634292147">אישור של המחיקה</translation>
@@ -2396,6 +2412,7 @@
 <translation id="9162432979321511934">מפעילים את האפשרות מילוי אוטומטי של סיסמאות.</translation>
 <translation id="9165320910061267720">‏כדי לקבל התראות על הנחות, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="9179151630575358778">הפריט הזה יוסתר</translation>
+<translation id="9183563643084679152">‏סרקת קוד QR כדי להיכנס לחשבון שלך ב-Chrome. נעביר לשם את הסיסמאות, הסימניות ונתונים נוספים מהחשבון הזה.</translation>
 <translation id="9183733013282108610">חיפוש במצב פרטי</translation>
 <translation id="9186762474139509529">תחילת רישום ביומן</translation>
 <translation id="9191031968346938109">הוספה אל…</translation>

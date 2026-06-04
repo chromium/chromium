@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF များကို ဤနေရာတွင် ဒေါင်းလုဒ်လုပ်နိုင်သည်</translation>
 <translation id="107147699690128016">ဖိုင်နောက်ဆက်တွဲကို ပြောင်းပါက ဖိုင်သည် အခြားအပလီကေးရှင်းတွင် ပွင့်သွားပြီး သင့်စက်အတွက် အန္တရာယ်ရှိနိုင်သည်။</translation>
 <translation id="1073328695547557412">Google Lens သင်္ကေတကို တို့ပါ</translation>
+<translation id="1080116354587839789">အနံ အပြည့်</translation>
 <translation id="1086486568852410168">Google Lens ဖြင့် ရှာရန်</translation>
 <translation id="1087799850623149508">လိပ်စာဘားကို အောက်ခြေသို့ရွှေ့ရန် ထိပြီးဖိထားနိုင်သည်</translation>
 <translation id="1089606299949659462">ပြန်စိစစ်ခြင်း ပြီးပြီ။</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />၊ တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{<ph name="TAB_GROUPS_PART" />၊ တဘ် <ph name="TAB_COUNT_MANY" /> ခု}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{စကားဝှက် ၁ ခုကို ဤစက်တွင်သာ သိမ်းသည်။ အခြားစက်များ၌သုံးရန် ၎င်းကို သင်၏ Google Account တွင် သိမ်းပါ။}other{စကားဝှက် # ခုကို ဤစက်တွင်သာ သိမ်းသည်။ အခြားစက်များ၌သုံးရန် ၎င်းတို့ကို သင်၏ Google Account တွင် သိမ်းပါ။}}</translation>
 <translation id="3293181007446299124">ကြည့်ရှုမှုမှတ်တမ်းကို သင့်စက်တွင် သီးသန့်ထားရှိပြီး သင့်အထောက်အထားကို ကာကွယ်ရန် အစီရင်ခံစာများအား စောင့်ဆိုင်း၍ ပို့သည်</translation>
+<translation id="3301639354590628973">အကောင့်ပြောင်းမလား</translation>
 <translation id="3301936297336370235">စကားဝှက်အကြံပြုချက် အတည်ပြုခြင်း</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> ရောင် <ph name="TITLE_OF_GROUP" /> တဘ်အုပ်စုကို နောက်ခံတဘ်အုပ်စုအသစ်အဖြစ် ပြန်ပြောင်းနိုင်သည်။</translation>
 <translation id="3303855915957856445">မည်သည့်ရှာဖွေမှု ရလဒ်မျှ မတွေ့ပါ</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း တဘ်ကို ပင်ထိုးထားသည်</translation>
 <translation id="3950820424414687140">ဝင်ရောက်</translation>
 <translation id="395377504920307820">အကောင့်မပါဘဲ သုံးရန်</translation>
+<translation id="3955353672249727801">ဖတ်ရန်စာရင်းသို့ စာမျက်နှာများ ထည့်လိုက်သည်</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{အဆင်သင့်ဖြစ်သည့်အခါ Chrome က သင့်စာမျက်နှာကို ဖွင့်ပါမည်}other{အဆင်သင့်ဖြစ်သည့်အခါ Chrome က သင့်စာမျက်နှာများကို ဖွင့်ပါမည်}}</translation>
 <translation id="3969142555815019568">Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="3969863827134279083">အပေါ်ရွှေ့</translation>

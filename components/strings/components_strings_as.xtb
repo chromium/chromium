@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">অজ্ঞাত নীতি।</translation>
 <translation id="1227677022489889280">স্থানান্তৰ কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
 <translation id="1228893227497259893">ভুল বস্তু চিনাক্তকাৰী</translation>
+<translation id="122989279399348496">আপুনি ছাইন ইন হৈ থাকিলে, <ph name="DOMAIN" />এ সমৰ্থিত ছাইটসমূহত <ph name="EMAIL" /> নিশ্চিত কৰিব পাৰে যাতে আপুনি আপোনাৰ ইনবক্স পৰীক্ষা কৰিব নালাগে</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (স্বয়ংক্ৰিয়ভাৱে চিনাক্ত কৰা)</translation>
 <translation id="1232569758102978740">শিৰোনামবিহীন</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" />ৰ আৱশ্যক</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, একাধিক কাৰ্য উপলব্ধ, সেইবিলাক এটা এটাকৈ চাবলৈ টেব টিপক</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ভাৰ্চুৱেল কাৰ্ডৰ সবিশেষ</translation>
+<translation id="1802420021606590788">Chromeএ ক্লাউডত এক প্ৰাইভেট স্পে’চত পৃষ্ঠাৰ শিৰোনাম আৰু URL প্ৰক্ৰিয়াকৰণ কৰে</translation>
 <translation id="1803254472779303354">মাউছ লক কৰাৰ অনুমতি আছে</translation>
 <translation id="1803351196216024260">মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="1804258830776932716">আপোনাৰ একাউণ্টটো ক্ষিপ্ৰভাৱে লিংক কৰি Pix সক্ষম কৰক</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">অন্য বুকমাৰ্কসমূহ</translation>
 <translation id="2355395290879513365">আক্ৰমণকাৰীয়ে আপুনি এই ছাইটটোত চাই থকা প্ৰতিচ্ছবিসমূহ চাব পাৰিব পাৰে আৰু সেইসমূহ সলনি কৰি আপোনাক জালত পেলাব পাৰে।</translation>
 <translation id="2356941001189392209">লিগেচী প্ৰযুক্তিৰ লগত জড়িত ঘটনাসমূহ সংঘটিত হোৱা আপুনি চোৱা পৃষ্ঠাসমূহৰ URLসমূহৰ এখন সীমিত সূচী</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{১ টা টেব শ্বেয়াৰ কৰিব}one{{NUM_TABS} টা টেব শ্বেয়াৰ কৰিব}other{{NUM_TABS} টা টেব শ্বেয়াৰ কৰিব}}</translation>
 <translation id="2357481397660644965">আপোনাৰ ডিভাইচটো <ph name="DEVICE_MANAGER" />এ আৰু আপোনাৰ একাউণ্টটো <ph name="ACCOUNT_MANAGER" />এ পৰিচালনা কৰে।</translation>
 <translation id="2359629602545592467">একাধিক</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
@@ -3023,6 +3026,7 @@
 <translation id="5742806904559466333">বাৰ, ক্লাব আৰু নাইটলাইফ</translation>
 <translation id="5743684619253032786">নখৰ যত্ন লোৱা প্ৰ’ডাক্ট</translation>
 <translation id="574392208103952083">মধ্যমীয়া</translation>
+<translation id="5745586894920491759">Chromeএ পৃষ্ঠাৰ শিৰোনাম আৰু URL ক্লাউডত প্ৰক্ৰিয়াকৰণ কৰে</translation>
 <translation id="5745733273847572235">আপোনাৰ অৱস্থান বিচাৰিব পাৰে</translation>
 <translation id="5750869797196646528">হাতৰ ট্ৰেকিং</translation>
 <translation id="5752327398324808817">এটা বা দুটা শব্দ দিয়ক</translation>
@@ -3416,6 +3420,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">লগসমূহ চাওক</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />প্ৰক্সি, ফায়াৰৱাল আৰু সুৰক্ষিত DNS কনফিগাৰেশ্বন পৰীক্ষা কৰি থকা হৈছে<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">আপোনাৰ ইমেইলসমূহ স্বয়ংক্ৰিয়ভাৱে নিশ্চিত কৰক</translation>
 <translation id="6366710531182496394">বাওঁফালে দুবাৰ ষ্টে'পল কৰক</translation>
 <translation id="6367196786591004737">প্ৰৱিষ্টি মচক</translation>
 <translation id="6370022303958842211">ডিভাইচ এক্সেছৰ কাৰ্যসমূহ যেনে লগইন (ব্যৰ্থ লগইনৰ কাৰণসমূহকে ধৰি), লগআউট, লক কৰা আৰু আনলক কৰা</translation>
@@ -5055,6 +5060,7 @@
 <translation id="8963117664422609631">ছাইটৰ ছেটিঙলৈ যাওক</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />পৰামৰ্শ:<ph name="MARKUP_2" />আপোনাৰ এটা ডেটা সংযোগ থকাটো নিশ্চিত কৰক<ph name="MARKUP_3" />এই ৱেবপে‘জটো পাছত ৰিল‘ড কৰক<ph name="MARKUP_4" />আপুনি দিয়া ঠিকনাটো পৰীক্ষা কৰক<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">আপোনাৰ স্থানীয় ফাইলসমূহ <ph name="HOURS" /> ঘণ্টাত মচা হ’ব</translation>
+<translation id="8964904785315870349">সত্যাপিত ইমেইল</translation>
 <translation id="8968766641738584599">কার্ড ছেভ কৰক</translation>
 <translation id="8970887620466824814">কিবা ভুল হ’ল।</translation>
 <translation id="8971063699422889582">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰৰ ম্যাদ উকলিছে।</translation>

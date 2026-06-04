@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">તમે અહીં PDFs ડાઉનલોડ કરી શકો છો</translation>
 <translation id="107147699690128016">જો તમે ફાઇલનું એક્સ્ટેંશન બદલશો, તો તે કોઈ અલગ ઍપ્લિકેશનમાં ખુલી શકે છે અને તમારા ડિવાઇસ માટે નુકસાનકારક હોવાનું સંભવિત હોય શકે.</translation>
 <translation id="1073328695547557412">Google Lensના આઇકન પર ટૅપ કરો</translation>
+<translation id="1080116354587839789">પહોળાઈ પ્રમાણે ફિટ કરો</translation>
 <translation id="1086486568852410168">Google Lens વડે શોધો</translation>
 <translation id="1087799850623149508">ઍડ્રેસ બારને સૌથી નીચે ખસેડવા માટે તમે તેને ટચ કરીને થોડીવાર દબાવીને રાખી શકો છો</translation>
 <translation id="1089606299949659462">રિવ્યૂ પૂર્ણ થયો!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ટૅબ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}one{# પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યો છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}other{# પાસવર્ડને માત્ર આ ડિવાઇસમાં સાચવવામાં આવ્યા છે. તમારા અન્ય ડિવાઇસમાં તેનો ઉપયોગ કરવા માટે, તેને તમારા Google એકાઉન્ટમાં સાચવો.}}</translation>
 <translation id="3293181007446299124">તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે અને તમારી ઓળખને સુરક્ષિત રાખવા માટે રિપોર્ટને થોડા વિલંબ પછી મોકલવામાં આવે છે</translation>
+<translation id="3301639354590628973">એકાઉન્ટ સ્વિચ કરીએ?</translation>
 <translation id="3301936297336370235">પાસવર્ડના સૂચનનું કન્ફર્મેશન</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપ <ph name="TITLE_OF_GROUP" />ને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>

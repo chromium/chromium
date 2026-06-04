@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Ваш браўзер знаходзіцца пад кіраваннем. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Пошук скапіраванага тэксту</translation>
 <translation id="2147127444698817042">Даступна толькі на iPhone</translation>
+<translation id="2148326276832455306">Чаты правяраюцца і выкарыстоўваюцца для паляпшэння AI ад Google. Вы можаце <ph name="BEGIN_LINK" />кіраваць данымі пра свае дзеянні<ph name="END_LINK" />, у прыватнасці інфармацыяй пра сваё месцазнаходжанне. <ph name="BEGIN_LINK" />Даведацца больш пра ваш выбар.<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">Выкарыстоўвайце захаваныя паролі, каб хутка ўваходзіць на сайты і ў праграмы.</translation>
 <translation id="2149968176347646218">Падключэнне не з’яўляецца бяспечным</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Інструмент выбару адзінак</translation>
 <translation id="2330607597130465898">Без абароны</translation>
 <translation id="233375395665273385">Выдаліць і выйсці</translation>
+<translation id="2340966584724330791">Google збірае даныя з вашых чатаў і змесціва, якое вы абагульваеце з Gemini (напрыклад, файлы, відэа, здымкі экрана і фота). Google таксама збірае вашы водгукі, інфармацыю з вэб-сайтаў, якія вы наведваеце з Gemini, звесткі пра выкарыстанне прадуктаў і даныя пра месцазнаходжанне (у тым ліку прыблізнае месцазнаходжанне вашай прылады, IP-адрас, хатні ці працоўны адрас у вашым Уліковым запісе Google).</translation>
 <translation id="2350463587705616331">Колер фону "Сепія"</translation>
 <translation id="2351097562818989364">Налады перакладу скінуты.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Вы можаце захаваць пароль для {DOMAIN_ONE} ва Уліковым запісе Google {EMAIL}.}=2{Вы можаце захаваць паролі для {DOMAIN_ONE} і {DOMAIN_TWO} ва Уліковым запісе Google {EMAIL}.}=3{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}one{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}few{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}many{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}other{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Не ўдаецца запоўніць інфармацыю</translation>
 <translation id="2371084566192454134">Укладкі і групы ўкладак</translation>
 <translation id="2371303771137626249">Новая</translation>
+<translation id="2375947780110007467">Google выкарыстоўвае змесціва і URL-адрасы абагуленых укладак. Бягучая ўкладка абагульваецца ў новых чатах. Гэту наладу можна змяніць у любы час.</translation>
 <translation id="2381405137052800939">Асновы</translation>
 <translation id="2384692388811649784">Хаваць укладкі ў рэжыме інкогніта</translation>
 <translation id="2386793615875593361">1 выбрана</translation>
@@ -484,6 +487,7 @@
 <translation id="2640733327287333451">Няма імені карыстальніка ••••••</translation>
 <translation id="264215785133931186">Праверка праводзілася толькі што</translation>
 <translation id="2647434099613338025">Дадаць мову</translation>
+<translation id="2648812801228676606">Вы засталіся ў сістэме як <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Вы збіраецеся выдаліць даныя Менеджара пароляў Google</translation>
 <translation id="2652129567809778422">Выберыце пароль</translation>
 <translation id="2658056020748144467">Немагчыма адкрыць файл</translation>
@@ -657,6 +661,7 @@
 <translation id="3280562213547448728">Галасавы пошук</translation>
 <translation id="3289505634533552500">Галасавы пошук</translation>
 <translation id="3295904109373959849">Групы ўкладак у выглядзе сеткі</translation>
+<translation id="3301639354590628973">Пераключыцца на іншы ўліковы запіс?</translation>
 <translation id="3302837541200840455">Укладка "<ph name="TAB_TITLE" />", новае дзеянне</translation>
 <translation id="3305294846493618482">яшчэ</translation>
 <translation id="3311748811247479259">Выключана</translation>
@@ -934,6 +939,7 @@
 <translation id="4287172530684295552">Пазначыць як прачытанае</translation>
 <translation id="428768789042547925">Што новага</translation>
 <translation id="429074084062258019">{count,plural, =1{Дадаць укладку ў групу}one{Дадаць укладкі ў групу}few{Дадаць укладкі ў групу}many{Дадаць укладкі ў групу}other{Дадаць укладкі ў групу}}</translation>
+<translation id="4294506173142861371">Увайсці як <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">Сканіраваць картку і запоўніць даныя аўтаматычна</translation>
 <translation id="4302061870579014542">Наладзіць размяшчэнне</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
@@ -1273,6 +1279,7 @@
 <translation id="5444892875087332195">Закладкі</translation>
 <translation id="5447973833955560753">Пароль для аднаўлення</translation>
 <translation id="5452354193031718372">Выкарыстоўвайце надзейны пароль:</translation>
+<translation id="5453088693079603292">Якія даныя пра дзеянні мы збіраем</translation>
 <translation id="5454211924362324495">Каб іншыя не змаглі выкарыстаць ваш пароль, <ph name="BEGIN_LINK" />змяніце яго на старонцы <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Дадайце да пошукавага запыту</translation>
 <translation id="5457226814769348910">Адкрыць пазасеткавую версію</translation>
@@ -1522,6 +1529,7 @@
 <translation id="6253686838150111720">Уваход на сайт <ph name="URL" /></translation>
 <translation id="6254066287920239840">Адкрываць спасылкі ў праграме замест браўзера.</translation>
 <translation id="6259928806013786178">Не ўдалося ўключыць рэжым чытання</translation>
+<translation id="626335165106398104">Gemini працуе з іншымі сэрвісамі</translation>
 <translation id="6268773951964630964">Пошук скапіраванага відарыса</translation>
 <translation id="6271462272606946663">Схаваць пункт "Запытаць мабільны сайт"</translation>
 <translation id="6271824294945464304">Ідзе абагульванне пароля</translation>
@@ -1637,6 +1645,7 @@
 <translation id="6609890790934458793">Паролі для вэб-сайтаў <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і <ph name="THIRD_WEBSITE" /> будуць выдалены. Вашы ўліковыя запісы захаваюцца.</translation>
 <translation id="661266467055912436">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце.</translation>
 <translation id="6612912757320004438">Дазволіць апавяшчэнні пра ўкладкі…</translation>
+<translation id="6613372200395638275">Каб даваць персаналізаваныя парады, Gemini абагульвае некаторыя вашы даныя (напрыклад, фрагменты чатаў, інфармацыю пра месцазнаходжанне і іншыя рэлевантныя звесткі) з іншымі сэрвісамі Google, такімі як Карты і Авіябілеты. Гэтыя сэрвісы змогуць выкарыстоўваць атрыманыя звесткі для паляпшэння, нават калі пазней вы выдаліце гісторыю дзеянняў у праграмах Gemini. Даведацца больш можна ў <ph name="BEGIN_LINK" />Цэнтры прыватнасці праграм Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Выдаліць тэкст</translation>
 <translation id="6619015782482868078">Аквамарынавая тэма</translation>
 <translation id="6620279676667515405">Скасаваць</translation>
@@ -1712,6 +1721,9 @@
 <translation id="6858718102216837409">Дадаць мову…</translation>
 <translation id="6858855187367714033">Сканіраваны</translation>
 <translation id="6859944681507688231">Каб сканіраваць QR-код ці крэдытную картку, уключыце ў наладах камеру.</translation>
+<translation id="6862212368460840758">Вы ўвайшлі як <ph name="SIGNED_EMAIL" />.
+
+Каб працягнуць на камп’ютары, перайдзіце ва ўліковы запіс <ph name="OTHER_EMAIL" />. Вы атрымаеце доступ да пароляў, закладак і іншых даных з гэтага ўліковага запісу.</translation>
 <translation id="6867369562105931222">пароль</translation>
 <translation id="6867400383614725881">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="686831807558000905">Не ўваходзіць</translation>
@@ -1780,6 +1792,7 @@
 <translation id="7091023926159231962">{count,plural, =1{Не ўдалося імпартаваць {count} пароль}one{Не ўдалося імпартаваць {count} пароль}few{Не ўдалося імпартаваць {count} паролі}many{Не ўдалося імпартаваць {count} пароляў}other{Не ўдалося імпартаваць {count} пароля}}</translation>
 <translation id="7095110968493193530">У Менеджары пароляў Google для ўліковага запісу <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">У адрасным радку націсніце на гісторыю цэн, каб паглядзець, як цана змянялася з цягам часу</translation>
+<translation id="7098554251807199977">Вашы размовы з Gemini і <ph name="BEGIN_LINK" />даныя з Google Workspace<ph name="END_LINK" /> не будуць разглядацца або выкарыстоўвацца для паляпшэння мадэлей генератыўнага штучнага інтэлекту.</translation>
 <translation id="7102005569666697658">Ідзе спампоўванне… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Налады → Спосабы аплаты</translation>
 <translation id="7108338896283013870">Схаваць</translation>
@@ -2173,6 +2186,7 @@
 <translation id="8439758443371991593">Схаваць пункт "Дадаць у спіс на прагляд"</translation>
 <translation id="8443986842926457191">Даўжыня URL-адраса перавышае 2048 знакаў.</translation>
 <translation id="8449869326050867919">Пароль абагулены</translation>
+<translation id="8461708300275916315">Калі вам менш за 18 гадоў</translation>
 <translation id="8473815223723723001">Рэдагаваць відарыс з дапамогай Gemini</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8474378002946546633">Дазволіць апавяшчэнні</translation>
@@ -2234,6 +2248,8 @@
 <translation id="8636825310635137004">Каб глядзець укладкі са сваіх іншых прылад, уключыце сінхранізацыю.</translation>
 <translation id="8637431369725868556">Абараніцеся ад небяспечных сайтаў.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
+<translation id="8639963783467694461">Налады аўтазапаўнення</translation>
+<translation id="8642417828095157370">Укладкі абагульваюцца, каб адказы былі больш рэлевантнымі</translation>
 <translation id="8643403533759285912">Выдаліць групу</translation>
 <translation id="8647280737650867362">Не ўдалося скасаваць адсочванне цаны.</translation>
 <translation id="8654802032646794042">Скасаваць</translation>
@@ -2247,6 +2263,7 @@
 <translation id="8672733398999596205">Уключыць усё</translation>
 <translation id="8674716540979958118">У вас ёсць раскрытыя паролі.</translation>
 <translation id="8679900250380464358">Дадаць у Спіс на прагляд</translation>
+<translation id="8680643216091361291">Налада <ph name="BEGIN_LINK" />Захоўваць гісторыю дзеянняў<ph name="END_LINK" /> стандартна выключана. Калі гэта налада выключана, Google захоўвае вашы чаты на працягу трох дзён. Гэта дапамагае забяспечваць правільную работу і бяспеку праграм Gemini і дазваляе выкарыстоўваць вашы водгукі для вырашэння праблем. Вы можаце ўключыць наладу "Захоўваць гісторыю дзеянняў", каб дапамагчы палепшыць AI ад Google для ўсіх карыстальнікаў.</translation>
 <translation id="8680786875305615692">Дапамажыце павысіць бяспеку ў інтэрнэце для кожнага</translation>
 <translation id="8680787084697685621">Даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="8690752723634292147">Пацвердзіце выдаленне</translation>
@@ -2396,6 +2413,7 @@
 <translation id="9162432979321511934">Уключыце аўтазапаўненне пароляў</translation>
 <translation id="9165320910061267720">Каб атрымліваць абвесткі аб зніжэнні цэн, уключыце апавяшчэнні ў наладах iOS.</translation>
 <translation id="9179151630575358778">Аб’ект будзе схаваны</translation>
+<translation id="9183563643084679152">Вы адсканіравалі QR-код, каб увайсці ў Chrome. Вы атрымаеце доступ да пароляў, закладак і іншых даных з гэтага ўліковага запісу.</translation>
 <translation id="9183733013282108610">Пошук у рэжыме інкогніта</translation>
 <translation id="9186762474139509529">Пачаць вядзенне журнала</translation>
 <translation id="9191031968346938109">Дадаць у…</translation>

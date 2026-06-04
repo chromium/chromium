@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Règle inconnue.</translation>
 <translation id="1227677022489889280">Fournir la raison du déplacement (obligatoire)</translation>
 <translation id="1228893227497259893">Identifiant d'entité incorrect</translation>
+<translation id="122989279399348496">Lorsque vous êtes connecté, <ph name="DOMAIN" /> peut confirmer <ph name="EMAIL" /> sur les sites pris en charge afin que vous n'ayez pas à consulter votre boîte de réception</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (détectée automatiquement)</translation>
 <translation id="1232569758102978740">Sans titre</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> est obligatoire</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, plusieurs actions sont possibles, appuyez sur la touche Tabulation pour les parcourir</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Détails de la carte virtuelle</translation>
+<translation id="1802420021606590788">Chrome traite les titres de pages et les URL dans un espace privé dans le nuage</translation>
 <translation id="1803254472779303354">Verrouillage de la souris autorisé</translation>
 <translation id="1803351196216024260">Les sites peuvent demander à utiliser votre microphone</translation>
 <translation id="1804258830776932716">Activez Pix en associant rapidement votre compte</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">Autres favoris</translation>
 <translation id="2355395290879513365">Des pirates pourraient être en mesure de voir les images que vous regardez sur ce site et vous tromper en les modifiant.</translation>
 <translation id="2356941001189392209">Une liste limitée d'URL de pages que vous visitez où se produisent des événements relatifs aux technologies patrimoniales</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Partagera 1 onglet}one{Partagera {NUM_TABS} onglet}other{Partagera {NUM_TABS} onglets}}</translation>
 <translation id="2357481397660644965">Votre appareil est géré par <ph name="DEVICE_MANAGER" />, et votre compte est géré par <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Plusieurs</translation>
 <translation id="2359808026110333948">Continuer</translation>
@@ -3027,6 +3030,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5742806904559466333">Bars, clubs et vie nocturne</translation>
 <translation id="5743684619253032786">Produits de soins des ongles</translation>
 <translation id="574392208103952083">Moyenne</translation>
+<translation id="5745586894920491759">Chrome traite les titres de pages et les URL dans le nuage</translation>
 <translation id="5745733273847572235">Les sites peuvent demander votre position</translation>
 <translation id="5750869797196646528">Suivi des mains</translation>
 <translation id="5752327398324808817">Saisissez un mot ou deux</translation>
@@ -3421,6 +3425,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Afficher les journaux</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Vérifier la configuration du mandataire, du pare-feu et du DNS sécurisé<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Confirmer automatiquement vos adresses courriel</translation>
 <translation id="6366710531182496394">Double agrafe à gauche</translation>
 <translation id="6367196786591004737">Supprimer l'entrée</translation>
 <translation id="6370022303958842211">Actions du programme Accès aux appareils telles que les connexions (y compris les raisons des échecs de la connexion), les déconnexions, les verrouillages et les déverrouillages</translation>
@@ -5060,6 +5065,7 @@ Détails supplémentaires :
 <translation id="8963117664422609631">Accéder aux paramètres du site</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions : <ph name="MARKUP_2" />Assurez-vous de disposer d’une connexion de données<ph name="MARKUP_3" />Actualisez cette page Web plus tard<ph name="MARKUP_4" />Vérifiez l'adresse que vous avez entrée<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vos fichiers locaux seront supprimés dans <ph name="HOURS" /> heures</translation>
+<translation id="8964904785315870349">Adresse courriel vérifiée</translation>
 <translation id="8968766641738584599">Enregistrer la carte</translation>
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>
 <translation id="8971063699422889582">Le certificat du serveur a expiré.</translation>

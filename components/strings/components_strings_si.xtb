@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">නොදන්නා ප්‍රතිපත්තිය.</translation>
 <translation id="1227677022489889280">චලනය වීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
 <translation id="1228893227497259893">වැරදි ස්ථීති හඳුන්වනය</translation>
+<translation id="122989279399348496">ඔබ පුරනය වී සිටින අතරේ, <ph name="DOMAIN" /> හට සහය දක්වන අඩවිවල <ph name="EMAIL" /> තහවුරු කළ හැකි නිසා ඔබට ඔබේ එන ලිපි පරීක්ෂා කිරීමට සිදු නොවේ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ස්වයංව අනාවරණය වූ)</translation>
 <translation id="1232569758102978740">මාතෘකා නොමැති</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> අවශ්‍යය වේ</translation>
@@ -305,6 +306,7 @@
 <translation id="1458140305240870199">යට ඇඳුම්</translation>
 <translation id="1458770162980644530">දැන් මිල දී ගන්න-පසුව ගෙවන්න සේවා නියම තිරය. යතුරු පුවරුව සැඟවී ඇත.</translation>
 <translation id="1459693405370120464">කාලගුණය</translation>
+<translation id="1460317464907341501">මෙම ඉ-තැපෑල ස්වයංක්‍රීයව සත්‍යාපනය කරන්න ද?</translation>
 <translation id="1461041542809785877">ක්‍රියාකාරීත්වය</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ඔබේ පරිගණකයේ ෆොන්ට භාවිත කරන්න එවිට ඔබට ඉහළ විශ්වාසදායක අන්තර්ගතයක් නිර්මාණය කළ හැකිය</translation>
@@ -510,6 +512,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, බහුවිධ ක්‍රියාමාර්ග ලබා ගත හැකිය, ඒවා හරහා චක්‍රීය කිරීමට Tab ඔබන්න</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">අතථ්‍ය කාඩ්පත් විස්තර</translation>
+<translation id="1802420021606590788">Chrome ක්ලවුඩ් තුළ පෞද්ගලික අවකාශයක පිටු මාතෘකා සහ URL සකසයි</translation>
 <translation id="1803254472779303354">මූසික අගුලට ඉඩ ඇත</translation>
 <translation id="1803351196216024260">ඔබගේ මයික්‍රෆෝනය භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="1804258830776932716">ඔබේ ගිණුම ඉක්මනින් සම්බන්ධ කිරීමෙන් Pix සබල කරන්න</translation>
@@ -873,6 +876,7 @@
 <translation id="2354001756790975382">වෙනත් පිටු සලකුණු</translation>
 <translation id="2355395290879513365">ප්‍රහාරකයන්ට ඔබ මෙම වෙබ් අඩවියේදී සොයන රූප දැක ඒවා විකරණය කිරීමෙන් ඔබව රැවටීමට හැකි වනු ඇත.</translation>
 <translation id="2356941001189392209">ඔබ පිවිසෙන පිටුවල URL ලිපිනවල සීමිත ලැයිස්තුවක් ලෙගසි තාක්ෂණ සිදුවීම් සිදු වේ</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 පටිත්තක් බෙදා ගනු ඇත}one{පටිති {NUM_TABS}ක් බෙදා ගනු ඇත}other{පටිති {NUM_TABS}ක් බෙදා ගනු ඇත}}</translation>
 <translation id="2357481397660644965">ඔබගේ උපාංගය <ph name="DEVICE_MANAGER" /> විසින් කළමනාකරණය කරන අතර ඔබගේ ගිණුම <ph name="ACCOUNT_MANAGER" /> විසින් කළමනාකරණය කෙරේ.</translation>
 <translation id="2359629602545592467">බහුවිධ</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
@@ -2002,6 +2006,7 @@
 <translation id="412601465078863288">උඩුගත කිරීමේ කාලය නිමා විය</translation>
 <translation id="4127317221386336246">ඇඳුම් ආයිත්තම්</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{වෙනත් 1}one{වෙනත් #}other{වෙනත් #}}</translation>
+<translation id="4129810348470013900">යමක් වැරදී ඇත. ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="4129992181550680635">අධ්‍යාපනික සම්පත්</translation>
 <translation id="4130226655945681476">ජාල කේබල, මොඩමය, සහ රවුටරය පරීක්ෂා කරමින්</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" යෙදුම් මගින් යොමු කරන ලද "<ph name="FILE_EXTENSION" />" file_extension සඳහා අනුපත් හසුරු.</translation>
@@ -3019,6 +3024,7 @@
 <translation id="5728246486828755318">උසස් මුද්‍රණ යන්ත්‍ර විශේෂාංග භාවිත කිරීමට ඉල්ලා සිටිය හැක</translation>
 <translation id="5729442113829771034">පූර්ව ළමාවිය අධ්‍යාපනය</translation>
 <translation id="5730040223043577876">Chrome ඔබේ මුරපදය ඔබ වෙනත් අඩවිවල නැවත භාවිත කර තිබේ නම් යළි සැකසීමට නිර්දේශ කරයි.</translation>
+<translation id="5735174108294025227">සත්‍යාපිත ඉ-තැපැල් ලිපින මෙහි දිස් වනු ඇත</translation>
 <translation id="573555826359077410">පෝරමය තනන්න බොත්තම, Google පෝරම තුළ ඉක්මනින් නව පෝරමයක් තැනීමට සක්‍රිය කරන්න</translation>
 <translation id="5738385766833540397">ඔබ නිරීක්ෂණය කරන නිෂ්පාදන සඳහා මිල පහත වැටීමේ ඇඟවීම් ලැබෙන ආකාරය කළමනා කරන්න</translation>
 <translation id="5739619009927381786">මීළඟ පියවරේ දී, සාමාන්‍යයෙන් ඔබේ ඇඟිලි සලකුණ භාවිතයෙන් ඔබේ තිරය අගුළු හරින්න. නැතහොත්, ඔබට <ph name="BEGIN_LINK" />වෙනත් ක්‍රමයකින් සත්‍යාපනය කළ<ph name="END_LINK" /> හැක.</translation>
@@ -3027,6 +3033,7 @@
 <translation id="5742806904559466333">බාර්, සමාජ ශාලා සහ රාත්‍රී ජීවිතය</translation>
 <translation id="5743684619253032786">නිය සත්කාර නිෂ්පාදන</translation>
 <translation id="574392208103952083">මධ්‍යම</translation>
+<translation id="5745586894920491759">Chrome ක්ලවුඩ් තුළ පිටු මාතෘකා සහ URL සකසයි</translation>
 <translation id="5745733273847572235">ඔබගේ ස්ථානය විමසිය හැකිය</translation>
 <translation id="5750869797196646528">දෑත් නිරීක්ෂණය</translation>
 <translation id="5752327398324808817">වචනයක් හෝ දෙකක් ඇතුළු කරන්න</translation>
@@ -3421,6 +3428,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ලොග බලන්න</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ප්‍රොක්සි, සුරැකුම් පවුර සහ සුරක්‍ෂිත DNS වින්‍යාස කිරීම පරීක්‍ෂා කිරීම<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">ඔබේ ඉ-තැපැල් ස්වයංක්‍රීයව තහවුරු කරන්න</translation>
 <translation id="6366710531182496394">වමට දෙවරක් ස්ටේපල් කරන්න</translation>
 <translation id="6367196786591004737">ඇතුළත් කිරීම මකන්න</translation>
 <translation id="6370022303958842211">පිවිසුම් (අසාර්ථක පිවිසුම් හේතු ඇතුළුව), පිටවීම්, අගුළු දැමීම්, සහ අගුළු හැරීම් වැනි උපාංග ප්‍රවේශ ක්‍රියා</translation>
@@ -5060,6 +5068,7 @@
 <translation id="8963117664422609631">අඩවි සැකසීම් වෙත යන්න</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />යෝජනා:<ph name="MARKUP_2" />ඔබට දත්ත සබැඳුමක් ඇති බව සහතික කර ගන්න<ph name="MARKUP_3" />මෙම වෙබ් පිටුව පසුව පූරණය කරන්න<ph name="MARKUP_4" />ඔබ ඇතුළත් කළ ලිපිනය පරීක්ෂා කරන්න<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ඔබගේ දේශීය ගොනු පැය <ph name="HOURS" /> කින් මකා දැමෙනු ඇත</translation>
+<translation id="8964904785315870349">සත්‍යාපිත ඉ-තැපෑල</translation>
 <translation id="8968766641738584599">කාඩ්පත සුරකින්න</translation>
 <translation id="8970887620466824814">යම් දෙයක් වැරදිණි</translation>
 <translation id="8971063699422889582">සේවාදායකයේ සහතිකය කල් ඉකුත්වී ඇත.</translation>

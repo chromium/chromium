@@ -67,6 +67,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1640672724030957280">Stahování...</translation>
 <translation id="1651617469580841801">Když použijete Google Lens, název stránky, adresa URL a obsah, včetně souborů PDF, se odešlou do Googlu. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">O systému ChromeOS Flex</translation>
+<translation id="1665867022636014702">Používejte nastavení prohlížeče doporučená Googlem</translation>
 <translation id="1674870198290878346">Otevřít odkaz v &amp;anonymním okně Chrome</translation>
 <translation id="1682634494516646069">Aplikace Google Chrome nemůže číst ani zapisovat do svého datového adresáře:
 
@@ -242,6 +243,7 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="345171907106878721">Přidejte do Chromu svůj účet</translation>
 <translation id="3453763134178591239">Smluvní podmínky systému ChromeOS</translation>
 <translation id="3503306920980160878">Chrome potřebuje přístup k vaší poloze, aby ji mohl sdílet s tímto webem</translation>
+<translation id="3539955434060988644">Otevřít odkaz v &amp;anonymním okně Chromu</translation>
 <translation id="3576528680708590453">Administrátor systému nakonfiguroval prohlížeč Google Chrome tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
 <translation id="3582972582564653026">Synchronizujte a upravte si Chrome na různých zařízeních</translation>
 <translation id="3583751698304738917">Jako <ph name="USER_EMAIL_ADDRESS" /> už jste přihlášeni v jiném profilu Chrome</translation>

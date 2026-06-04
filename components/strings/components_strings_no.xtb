@@ -149,6 +149,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1227224963052638717">Ukjent innstilling.</translation>
 <translation id="1227677022489889280">Oppgi årsaken til flyttingen (obligatorisk)</translation>
 <translation id="1228893227497259893">Feil enhetsidentifikator</translation>
+<translation id="122989279399348496">Når du er logget på, kan <ph name="DOMAIN" /> bekrefte <ph name="EMAIL" /> på støttede nettsteder, slik at du slipper å sjekke innboksen din</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (identifisert automatisk)</translation>
 <translation id="1232569758102978740">Uten tittel</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> kreves</translation>
@@ -510,6 +511,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – flere handlinger er tilgjengelige. Trykk på Tab for å bla gjennom dem</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detaljer om virtuelt kort</translation>
+<translation id="1802420021606590788">Chrome behandler sidetitler og nettadresser i et privat område i skyen</translation>
 <translation id="1803254472779303354">Muselås er tillatt</translation>
 <translation id="1803351196216024260">Kan be om å få bruke mikrofonen din</translation>
 <translation id="1804258830776932716">Aktiver Pix ved å knytte sammen kontoen din raskt</translation>
@@ -873,6 +875,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2354001756790975382">Andre bokmerker</translation>
 <translation id="2355395290879513365">Angripere kan kanskje se bildene du ser på dette nettstedet, og lure deg ved å endre dem.</translation>
 <translation id="2356941001189392209">En begrenset liste over nettadressene til sider du besøker som bruker hendelser fra eldre teknologi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Deler 1 fane}other{Deler {NUM_TABS} faner}}</translation>
 <translation id="2357481397660644965">Enheten administreres av <ph name="DEVICE_MANAGER" />, og kontoen administreres av <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsett</translation>
@@ -3019,6 +3022,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5728246486828755318">Kan be om å få bruke avanserte skriverfunksjoner</translation>
 <translation id="5729442113829771034">Tidlig barneutdannelse</translation>
 <translation id="5730040223043577876">Chrome anbefaler at du tilbakestiller passordet ditt hvis du også har brukt det på andre nettsteder.</translation>
+<translation id="5735174108294025227">Bekreftede e-postadresser vises her</translation>
 <translation id="573555826359077410">Knappen «Opprett skjema» – aktiver for å opprette et nytt skjema i Google Skjemaer raskt</translation>
 <translation id="5738385766833540397">Administrer hvordan du mottar varsler om avslag for produkter du sporer</translation>
 <translation id="5739619009927381786">Lås opp skjermen i neste trinn, vanligvis med fingeravtrykket ditt. Alternativt kan du prøve å <ph name="BEGIN_LINK" />bekrefte på en annen måte<ph name="END_LINK" />.</translation>
@@ -3027,6 +3031,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5742806904559466333">Barer, nattklubber og uteliv</translation>
 <translation id="5743684619253032786">Neglepleieprodukter</translation>
 <translation id="574392208103952083">Medium</translation>
+<translation id="5745586894920491759">Chrome behandler sidetitler og nettadresser i skyen</translation>
 <translation id="5745733273847572235">Kan be om posisjonen din</translation>
 <translation id="5750869797196646528">Håndsporing</translation>
 <translation id="5752327398324808817">Skriv inn et ord eller to</translation>
@@ -3421,6 +3426,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Se loggene</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />å sjekke konfigurasjonen for proxy-tjener, brannmur og sikker DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Bekreft e-postene automatisk</translation>
 <translation id="6366710531182496394">To stifter venstre</translation>
 <translation id="6367196786591004737">Slett oppføringen</translation>
 <translation id="6370022303958842211">Handlinger knyttet til enhetstilgang, for eksempel pålogginger (inkludert mislykkede pålogginger), avlogginger, låsinger og opplåsinger</translation>
@@ -5060,6 +5066,7 @@ Mer informasjon:
 <translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Forslag:<ph name="MARKUP_2" />Sjekk at du har datatilkobling.<ph name="MARKUP_3" />Last inn denne nettsiden på nytt senere.<ph name="MARKUP_4" />Kontroller adressen du har skrevet inn.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">De lokale filene dine slettes om <ph name="HOURS" /> timer</translation>
+<translation id="8964904785315870349">Verifisert e-postadresse</translation>
 <translation id="8968766641738584599">Lagre kortet</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8971063699422889582">Tjenerens sertifikat er utløpt.</translation>

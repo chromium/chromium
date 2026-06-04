@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Gallwch lawrlwytho PDFs yma</translation>
 <translation id="107147699690128016">Os byddwch yn newid yr estyniad ffeil, gall y ffeil agor mewn apiau gwahanol ac mae'n bosib y bydd yn berygl i'ch dyfais.</translation>
 <translation id="1073328695547557412">Tapiwch yr eicon Google Lens</translation>
+<translation id="1080116354587839789">Ffitio i'r lled</translation>
 <translation id="1086486568852410168">Chwilio â Google Lens</translation>
 <translation id="1087799850623149508">Gallwch gyffwrdd a dal i symud y bar cyfeiriad i'r gwaelod</translation>
 <translation id="1089606299949659462">Adolygiad wedi'i gwblhau!</translation>
@@ -537,6 +538,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tab}zero{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}two{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> dab}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> thab}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> thab}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tab}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Mae 1 cyfrinair wedi'i gadw i'r ddyfais hon yn unig. Er mwyn ei defnyddio ar eich dyfeisiau eraill, cadwch hi yn eich Cyfrif Google.}zero{Mae # cyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}two{Mae # gyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}few{Mae # chyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}many{Mae # chyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}other{Mae # cyfrinair wedi'u cadw i'r ddyfais hon yn unig. Er mwyn eu defnyddio ar eich dyfeisiau eraill, cadwch nhw yn eich Cyfrif Google.}}</translation>
 <translation id="3293181007446299124">Mae eich hanes pori yn cael ei gadw'n breifat ar eich dyfais ac anfonir adroddiadau gydag oedi er mwyn diogelu eich hunaniaeth</translation>
+<translation id="3301639354590628973">Newid cyfrif?</translation>
 <translation id="3301936297336370235">Cadarnhad awgrym cyfrinair</translation>
 <translation id="3302615849591357577">Adfer grŵp tabiau <ph name="TITLE_OF_GROUP" />, lliw <ph name="COLOR_NAME" />, fel grŵp tabiau cefndirol newydd.</translation>
 <translation id="3303855915957856445">Ni chanfuwyd unrhyw ganlyniadau chwilio</translation>
@@ -679,6 +681,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Tab Llun-mewn-Llun wedi'i Binio</translation>
 <translation id="3950820424414687140">Mewngofnodwch</translation>
 <translation id="395377504920307820">Defnyddio heb gyfrif</translation>
+<translation id="3955353672249727801">Tudalennau wedi'u hychwanegu at y rhestr ddarllen</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Bydd Chrome yn llwytho'ch tudalen pan fydd yn barod}zero{Bydd Chrome yn llwytho'ch tudalennau pan fyddant yn barod}two{Bydd Chrome yn llwytho'ch tudalennau pan fyddant yn barod}few{Bydd Chrome yn llwytho'ch tudalennau pan fyddant yn barod}many{Bydd Chrome yn llwytho'ch tudalennau pan fyddant yn barod}other{Bydd Chrome yn llwytho'ch tudalennau pan fyddant yn barod}}</translation>
 <translation id="3969142555815019568">Ni all Chrome wirio'ch cyfrineiriau</translation>
 <translation id="3969863827134279083">Symud i Fyny</translation>

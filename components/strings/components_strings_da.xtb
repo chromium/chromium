@@ -149,6 +149,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1227224963052638717">Ukendt politik.</translation>
 <translation id="1227677022489889280">Angiv årsag til flytning (påkrævet)</translation>
 <translation id="1228893227497259893">Forkert enheds-id</translation>
+<translation id="122989279399348496">Når du er logget ind, kan <ph name="DOMAIN" /> bekræfte <ph name="EMAIL" /> på understøttede websites, så du ikke behøver at tjekke din indbakke</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatisk registreret)</translation>
 <translation id="1232569758102978740">Unavngivet</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> skal udfyldes</translation>
@@ -510,6 +511,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, flere handlinger er tilgængelige, tryk på Tab-tasten for at gennemse dem</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Oplysninger om virtuelt kort</translation>
+<translation id="1802420021606590788">Chrome behandler sidetitler og webadresser i et privat område i skyen</translation>
 <translation id="1803254472779303354">Lås af musen er tilladt</translation>
 <translation id="1803351196216024260">Websitet kan anmode om tilladelse til at bruge din mikrofon</translation>
 <translation id="1804258830776932716">Aktivér Pix ved at tilknytte din konto hurtigt</translation>
@@ -873,6 +875,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2354001756790975382">Andre bogmærker</translation>
 <translation id="2355395290879513365">Hackere kan muligvis se de billeder, du kigger på på dette website, og narre dig ved at ændre dem.</translation>
 <translation id="2356941001189392209">En begrænset liste over webadresser for sider, du besøger, hvor der forekommer hændelser relateret til forældet teknologi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Deler 1 fane}one{Deler {NUM_TABS} fane}other{Deler {NUM_TABS} faner}}</translation>
 <translation id="2357481397660644965">Din enhed administreres af <ph name="DEVICE_MANAGER" />, og din konto administreres af <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flere</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
@@ -3027,6 +3030,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5742806904559466333">Barer, klubber og natteliv</translation>
 <translation id="5743684619253032786">Negleplejeprodukter</translation>
 <translation id="574392208103952083">Mellem</translation>
+<translation id="5745586894920491759">Chrome behandler sidetitler og webadresser i skyen</translation>
 <translation id="5745733273847572235">Websitet kan anmode om adgang til din lokation</translation>
 <translation id="5750869797196646528">Registrering af håndbevægelser</translation>
 <translation id="5752327398324808817">Angiv et eller to ord</translation>
@@ -3421,6 +3425,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Se logfiler</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Tjekker konfigurationen af proxy, firewall og sikker DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Bekræft automatisk dine mails</translation>
 <translation id="6366710531182496394">Dobbelthæftning i venstre side</translation>
 <translation id="6367196786591004737">Slet post</translation>
 <translation id="6370022303958842211">Handlinger i forbindelse med enhedsadgang som f.eks. loginforsøg (herunder mislykkede loginforsøg), logoutforsøg, låsninger og oplåsninger</translation>
@@ -5062,6 +5067,7 @@ Yderligere oplysninger:
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Forslag:<ph name="MARKUP_2" />Kontrollér, at du har en dataforbindelse<ph name="MARKUP_3" />Genindlæs denne webside senere<ph name="MARKUP_4" />Kontrollér den indtastede adresse<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Dine lokale filer slettes om <ph name="HOURS" /> timer</translation>
+<translation id="8964904785315870349">Verificeret mailadresse</translation>
 <translation id="8968766641738584599">Gem kort</translation>
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8971063699422889582">Serverens certifikat er udløbet.</translation>

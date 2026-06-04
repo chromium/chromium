@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">您可以在此处下载 PDF 文件</translation>
 <translation id="107147699690128016">如果您更改文件扩展名，此文件可能会在另一应用中打开并对您的设备造成危害。</translation>
 <translation id="1073328695547557412">点按“Google 智能镜头”图标</translation>
+<translation id="1080116354587839789">适合窗口宽度</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
 <translation id="1087799850623149508">您可以轻触并按住地址栏将其移到底部</translation>
 <translation id="1089606299949659462">查看完毕！</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_MANY" /> 个标签页}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。}other{有 # 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。}}</translation>
 <translation id="3293181007446299124">您的浏览记录会私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
+<translation id="3301639354590628973">要切换账号吗？</translation>
 <translation id="3301936297336370235">密码建议确认</translation>
 <translation id="3302615849591357577">将标签页分组“<ph name="TITLE_OF_GROUP" />”（颜色为<ph name="COLOR_NAME" />）恢复为新的背景标签页分组。</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />，固定的画中画标签页</translation>
 <translation id="3950820424414687140">登录</translation>
 <translation id="395377504920307820">在不登录账号的情况下使用</translation>
+<translation id="3955353672249727801">网页已添加到阅读清单</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{待准备就绪后，Chrome 即会加载您的网页}other{待准备就绪后，Chrome 即会加载您的网页}}</translation>
 <translation id="3969142555815019568">Chrome 无法检查您的密码</translation>
 <translation id="3969863827134279083">上移</translation>
@@ -1976,7 +1979,7 @@
 <translation id="9106148373857059373">书签保存流程已关闭</translation>
 <translation id="9108808586816295166">安全 DNS 未必一直可用</translation>
 <translation id="9112483451228487295">快速删除浏览数据</translation>
-<translation id="9124978074365039456">使用相机和图库购买、翻译和识别所见内容</translation>
+<translation id="9124978074365039456">打开相机和图库，轻松购物、实时翻译、拍照识物</translation>
 <translation id="9130135798965366513">如果您继续，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。您可查看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />服务条款<ph name="END_LINK2" />。</translation>
 <translation id="9131209053278896908">已屏蔽的网站会显示在这里</translation>
 <translation id="9133397713400217035">离线浏览</translation>

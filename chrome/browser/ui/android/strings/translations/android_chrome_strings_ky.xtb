@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Бул жерде PDF файлдарды жүктөй аласыз</translation>
 <translation id="107147699690128016">Файлдын кеңейтүүсүн өзгөртсөңүз, ал башка колдонмодо ачылып, түзмөгүңүзгө зыян келтириши мүмкүн.</translation>
 <translation id="1073328695547557412">Google Lens сүрөтчөсүн басыңыз</translation>
+<translation id="1080116354587839789">Терезенин туурасына чактоо</translation>
 <translation id="1086486568852410168">Google Lens аркылуу издөө</translation>
 <translation id="1087799850623149508">Дарек тилкесин коё бербей басып туруп, ылдый жакка жылдыра аласыз</translation>
 <translation id="1089606299949659462">Карап чыгуу аяктады!</translation>
@@ -536,6 +537,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 сырсөз ушул түзмөккө гана сакталды. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.}other{# сырсөз ушул түзмөккө гана сакталды. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.}}</translation>
 <translation id="3293181007446299124">Серепчиден көргөн нерселериңиз түзмөктө сакталып, өзүңүзгө гана көрүнөт. Жеке маалыматыңызды сактоо үчүн отчёттор бир аз кечигип жөнөтүлөт.</translation>
+<translation id="3301639354590628973">Башка аккаунтка которуласызбы?</translation>
 <translation id="3301936297336370235">Сунушталган сырсөздү ырастоо</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобун, <ph name="COLOR_NAME" /> түсүн фондогу жаңы өтмөктөр тобу катары калыбына келтирүү.</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
@@ -678,6 +680,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Кадалган сүрөттөгү сүрөт өтмөгү</translation>
 <translation id="3950820424414687140">Кирүү</translation>
 <translation id="395377504920307820">Аккаунтсуз пайдалануу</translation>
+<translation id="3955353672249727801">Беттер окуу тизмесине кошулду</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Барагыңыз тармакка туташуу аткарылганда жүктөлөт}other{Барактарыңыз тармакка туташуу аткарылганда жүктөлөт}}</translation>
 <translation id="3969142555815019568">Chrome сырсөздөрүңүздү текшере албай жатат</translation>
 <translation id="3969863827134279083">Өйдө жылуу</translation>

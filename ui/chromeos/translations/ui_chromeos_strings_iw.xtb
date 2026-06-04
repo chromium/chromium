@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">שרתי שמות אוטומטיים</translation>
 <translation id="1210831758834677569">לאו</translation>
 <translation id="1221555006497674479">נפח האחסון כמעט ריק. יש עוד <ph name="REMAINING_PERCENTAGE" />% מתוך האחסון השיתופי שמוקצה לך בנפח <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">‏באפליקציה Files אפשר לעיין בתוכן של המכשיר.</translation>
 <translation id="1243314992276662751">העלאה</translation>
 <translation id="1249250836236328755">ז'אנר</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">לא ניתן למחוק את הפריט כי הוא בשימוש.</translation>
 <translation id="1307931752636661898">‏לא ניתן להציג קובצי Linux</translation>
 <translation id="1313405956111467313">‏תצורה אוטומטית של שרת proxy</translation>
+<translation id="1340527397989195812">‏גיבוי המדיה מהמכשיר באמצעות אפליקציית Files.</translation>
 <translation id="134645005685694099">אין במכשיר מספיק מקום אחסון כדי לאפשר סנכרון קבצים. קבצים חדשים לא יסונכרנו יותר באופן אוטומטי.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">לא ניתן להשתמש בקובץ או בספרייה.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">אין אישור משתמש</translation>
 <translation id="1403008701842173542">בכל מקום</translation>
 <translation id="1404323374378969387">נורווגית</translation>
+<translation id="1408504635543854729">ניתן לעיין בתוכן של המכשיר באמצעות האפליקציה 'קבצים'. התוכן מוגבל על-ידי מנהל מערכת, ואי אפשר לשנות אותו.</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
 <translation id="1433628812591023318">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעביר אותו לקובצי Windows.</translation>
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
 <translation id="1439919885608649279">אדם עם פרחים</translation>
 <translation id="1458457385801829801">הוצאה של <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">דרך ההגדרות אפשר לגשת להעדפות המכשיר.</translation>
 <translation id="146691674290220697">לא ניתן להעתיק <ph name="NUMBER_OF_FILES" /> קבצים כי הם מוצפנים.</translation>
 <translation id="1471718551822868769">סלובקית</translation>
 <translation id="1482884275703521657">פינית</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
 <translation id="2004942826429452291">‏הקבצים יישמרו בענן וב-Chromebook הזה.</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
+<translation id="2018352199541442911">מצטערים, מכשיר האחסון החיצוני שלך אינו נתמך בשלב זה.</translation>
 <translation id="2025955442973426285">תיגרינית</translation>
 <translation id="2029385776150020336">ארה"ב - מורחבת</translation>
 <translation id="2037845485764049925">רוסית</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">טמגוצ'י</translation>
 <translation id="2468470447085858632">‏גישה לקבצים ב-Google Drive במצב אופליין בעזרת סנכרון קבצים</translation>
 <translation id="2470939964922472929">‏הוזן קוד אימות שגוי יותר מדי פעמים. כדי להגדיר קוד אימות חדש, יש להזין את המפתח האישי לביטול החסימה (PUK) שניתן על ידי הספק.</translation>
+<translation id="249113932447298600">מצטערים, המכשיר <ph name="DEVICE_LABEL" /> אינו נתמך בשלב זה.</translation>
 <translation id="2500392669976258912">גוג'ראטית פונטית</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">סריקה</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">אוקראינית</translation>
 <translation id="3326821416087822643">מתבצע כיווץ של <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">שנת הקלטה</translation>
+<translation id="3348038390189153836">זוהה התקן נשלף</translation>
 <translation id="3353984535370177728">בחירת תיקייה להעלאה</translation>
 <translation id="3356580349448036450">בוצע</translation>
 <translation id="3358452157379365236">גיטרה</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">אנגלית (בריטניה)</translation>
 <translation id="3975895378829046965">בנגלית פונטית</translation>
+<translation id="3983764759749072418">‏לאפליקציות מחנות Play יש גישה למכשיר הזה.</translation>
 <translation id="3999574733850440202">‏קובצי Microsoft שנפתחו לאחרונה עברו ל-OneDrive</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4017788180641807848">‏מקלדת Workman באנגלית (ארה"ב)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">עליך להיות במצב מקוון כדי לגשת לקובץ זה.</translation>
 <translation id="4212740939091998969">כבר קיימת תיקייה בשם "<ph name="FOLDER_NAME" />". יש לבחור שם אחר.</translation>
 <translation id="4218274196133425560">הסרת החריגה של <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4261901459838235729">‏מצגת Google</translation>
 <translation id="4277536868133419688">המסנן <ph name="FILTER_NAME" /> פעיל.</translation>
 <translation id="4290535918735525311">‏תיקייה אחת שותפה עם Linux</translation>
@@ -556,6 +565,7 @@
 <translation id="5275973617553375938">‏קבצים ששוחזרו מ-Google Drive</translation>
 <translation id="5278111733643988471">כדי לשחזר את הפריט הזה, גוררים אותו לתיקייה חדשה מחוץ לאשפה. התיקייה המקורית '<ph name="PARENT_FOLDER_NAME" />' של הפריט הזה נמחקה.</translation>
 <translation id="5288441970121584418">המבורגר</translation>
+<translation id="529175790091471945">פרמוט מכשיר זה</translation>
 <translation id="5293615890992542006">בהתאם למדיניות האדמין, העברת הקובץ הזה חסומה</translation>
 <translation id="5305688511332277257">לא מותקנים אישורים</translation>
 <translation id="5317780077021120954">שמירה</translation>
@@ -571,6 +581,7 @@
 <translation id="5411472733320185105">‏אין להשתמש בהגדרות proxy עבור מארחים ודומיינים אלה:</translation>
 <translation id="541890217011173530">כורדית סוראנית עם מקלדת מבוססת-אנגלית</translation>
 <translation id="5422221874247253874">נקודת גישה</translation>
+<translation id="5422781158178868512">מצטערים, לא ניתן לזהות את מכשיר האחסון החיצוני שלך.</translation>
 <translation id="5438282218546237410">אין תוצאות עבור <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">אין מספיק נפח אחסון פנוי.</translation>
 <translation id="5449551289610225147">סיסמה לא חוקית</translation>
@@ -618,10 +629,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> פריטים נבחרו</translation>
 <translation id="5763377084591234761">גרמנית (שוויץ)</translation>
 <translation id="5769519078756170258">המארח או הדומיין שיש להחריג</translation>
+<translation id="5774295353725270860">‏פתיחת היישום Files</translation>
 <translation id="5775750595919327203">אורדו</translation>
 <translation id="5776325638577448643">מחיקה ופירמוט</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5788127256798019331">‏קובצי Play</translation>
+<translation id="5788367137662787332">מצטערים, לא ניתן להעלות לפחות מחיצה אחת במכשיר <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">תעתיק קנאדה</translation>
 <translation id="5814126672212206791">סוג חיבור</translation>
 <translation id="5817397429773072584">סינית מסורתית</translation>
@@ -814,9 +827,11 @@
 <translation id="7224162581405244205">איסלנדית</translation>
 <translation id="7229570126336867161">‏יש צורך ב-EVDO</translation>
 <translation id="7230898482850090046">‏לבקשת האדמין, עליך להשבית את ההגדרה 'נעילת כרטיס ה-SIM'</translation>
+<translation id="7232750842195536390">המערכת לא הצליחה לשנות את השם</translation>
 <translation id="7238097264433196391">שם התקן האחסון</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, פרטים</translation>
 <translation id="7246947237293279874">‏שרת proxy של FTP</translation>
+<translation id="725109152065019550">מצטערים, מנהל המערכת השבית את האחסון החיצוני בחשבונך.</translation>
 <translation id="7256405249507348194">שגיאה לא מזוהה: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">שירותים זמינים</translation>
 <translation id="7291818353625820805">רוצה שבלחיצה ארוכה על מקשים, הפעולה שלהם תתבצע שוב ושוב? צריך להשבית את הסימנים הדיאקריטיים בהגדרות המקלדת</translation>
@@ -839,6 +854,7 @@
 <translation id="7417705661718309329">‏מפת Google</translation>
 <translation id="7419668828140929293">בתהליך שחזור של הקובץ <ph name="FILENAME" /></translation>
 <translation id="7435577899926900307">‏ארה"ב - Dvorak</translation>
+<translation id="7436921188514130341">אופס! אירעה שגיאה במהלך שינוי השם.</translation>
 <translation id="7458955835361612701">אין תמונות מהזמן האחרון</translation>
 <translation id="7469894403370665791">התחברות באופן אוטומטי לרשת זו.</translation>
 <translation id="7486315294984620427">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעתיק אותו לקובצי Windows.</translation>
@@ -854,6 +870,7 @@
 <translation id="7551643184018910560">הצמדה למדף</translation>
 <translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">אין חיבור לאינטרנט כרגע. סנכרון הקבצים ימשיך כשיהיה חיבור לאינטרנט.</translation>
+<translation id="7589461650300748890">היי! זהירות.</translation>
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
 <translation id="7600126690270271294">סרבית</translation>
 <translation id="7603724359189955920">רשתות</translation>
@@ -899,6 +916,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
 <translation id="7831491651892296503">אירעה שגיאה בהגדרת הרשת</translation>
+<translation id="7839051173341654115">הצגה/גיבוי של מדיה</translation>
 <translation id="7839804798877833423">הבאת קבצים אלה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7857117644404132472">להוספת מקרה חריג</translation>
@@ -906,8 +924,10 @@
 <translation id="7868774406711971383">פולנית</translation>
 <translation id="7874321682039004450">פיליפינית</translation>
 <translation id="78946041517601018">‏כונני Drive משותפים</translation>
+<translation id="7897900149154324287">בעתיד, יש להקפיד ללחוץ על סמל הניתוק עבור ההתקן הנשלף דרך אפליקציית 'קבצים' לפני שמנתקים אותו פיזית. אם לא עושים זאת, אפשר לאבד נתונים.</translation>
 <translation id="7901567919203965902">‏מקלדת Workman בינלאומית - ארה"ב</translation>
 <translation id="7903984238293908205">קאטקאנה</translation>
+<translation id="7908378463497120834">מצטערים, לא ניתן להעלות לפחות מחיצה אחת במכשיר האחסון החיצוני שלך.</translation>
 <translation id="7908793776359722643">פרמוט מחיצה ימחק את כל הנתונים המאוחסנים בה. לא ניתן לבטל פעולה זו.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט.</translation>
@@ -1041,6 +1061,7 @@
 <translation id="8873014196523807561">כדי לשחזר את הפריטים האלה, גוררים אותם לתיקייה חדשה. התיקיות המקוריות של חלק מהפריטים נמחקו.</translation>
 <translation id="8874184842967597500">לא מחובר</translation>
 <translation id="8876368061475701452">בהמתנה בתור</translation>
+<translation id="8893928184421379330">מצטערים, לא ניתן לזהות את המכשיר <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">‏מקלדת ארה"ב בינלאומית (PC)</translation>
 <translation id="8903931173357132290">בוגר/ת אוניברסיטה</translation>
 <translation id="8912078710089354287">כלב מקשקש בזנב</translation>

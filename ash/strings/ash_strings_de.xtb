@@ -38,9 +38,11 @@
 <translation id="109647177154844434">Durch die Deinstallation von Parallels Desktop wird dein Windows-Image gelöscht. Dazu gehören auch die darin enthaltenen Anwendungen, Einstellungen und Daten. Möchtest du wirklich fortfahren?</translation>
 <translation id="1104084341931202936">Einstellungen für Bedienungshilfen anzeigen</translation>
 <translation id="1104621072296271835">Vorteile durch das Verbinden deiner Geräte</translation>
+<translation id="1107300737351978027">Darf keine sich wiederholenden Ziffern enthalten</translation>
 <translation id="1111021433905331574">Du kannst die Farbe der Hintergrundbeleuchtung der Tastatur in den Einstellungen &gt; „<ph name="APP_TITLE" />“ ändern</translation>
 <translation id="1117719261843403176">Mobile Daten aktivieren/deaktivieren. <ph name="STATE" />.</translation>
 <translation id="1118738876271697201">Das System konnte das Gerätemodell oder die Seriennummer nicht ermitteln.</translation>
+<translation id="1119447706177454957">Interner Fehler</translation>
 <translation id="1122849163460178706">Probiere diese Beispielrechnungen aus</translation>
 <translation id="112308213915226829">Ablage autom. ausblenden</translation>
 <translation id="1129383337808748948">„<ph name="CONTENT_TITLE" />“ aktualisieren</translation>
@@ -96,6 +98,7 @@
 <translation id="1247519845643687288">Zuletzt verwendete Apps</translation>
 <translation id="1252999807265626933">Wird über ein <ph name="POWER_SOURCE" /> aufgeladen</translation>
 <translation id="126156426083987769">Ein Problem mit den Gerätelizenzen für den Demomodus ist aufgetreten.</translation>
+<translation id="1264337193001759725">Wenn du Netzwerk-UI-Protokolle ansehen möchtest, gehe zu: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1269405891096105529">Peripheriegerät wird im Gastmodus nicht unterstützt</translation>
 <translation id="1270290102613614947">Bildschirmtastatur deaktiviert</translation>
 <translation id="1272079795634619415">Stoppen</translation>
@@ -105,6 +108,7 @@
 <translation id="1276975447697633661">Datei auswählen und dann <ph name="KEY" /> drücken</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> konnte nicht deinstalliert werden</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1283126956823499975">Bei der Einrichtung des Geräts ist ein Fehler aufgetreten</translation>
 <translation id="1285992161347843613">Smartphone suchen</translation>
 <translation id="1287002645302686982">Es gibt bereits einen gespeicherten Desktop mit dem Namen „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="1288276784862223576">Anzeige der letzten Fotos und Medien auf deinem Smartphone einrichten</translation>
@@ -228,6 +232,7 @@
 <translation id="1604857178818051494">Medienwiedergabe pausieren</translation>
 <translation id="1607312127821884567">Anzeige der Apps auf deinem Smartphone nicht einrichten</translation>
 <translation id="1610778689852195798">„Rückgängig machen“</translation>
+<translation id="1611432201750675208">Gerät gesperrt</translation>
 <translation id="1611993646327628135">An</translation>
 <translation id="1612679292338846734">Wenn du diese Funktionen aktivierst, werden der eingegebene Text, der Dokumentinhalt und die URL der Webseite möglicherweise an Google AI-Server gesendet. Diese Informationen werden gemäß den <ph name="LINK_TO_SERVICE_TERMS" /> verwendet, um Vorschläge für Formulierungen zu generieren, Zusammenfassungen zu erstellen, Fragen zu beantworten und das Produkt zu verbessern. Gib keine persönlichen, sensiblen oder vertraulichen Informationen an.</translation>
 <translation id="1619879934359211038">Keine Verbindung mit Google Play möglich. Prüfe deine Netzwerkverbindung und versuche es noch einmal. Fehlercode: <ph name="ERROR_CODE" />.</translation>
@@ -241,6 +246,7 @@
 <translation id="1647986356840967552">Vorherige Seite</translation>
 <translation id="1651914502370159744">Verlaufsseite öffnen</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
+<translation id="1668979692599483141">Weitere Informationen zu Vorschlägen</translation>
 <translation id="1673232940951031776">Konzentrationsmodus beenden. Noch <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675570947608765064">Andere können die Änderungen sehen, die du an dieser Aufgabe vornimmst</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
@@ -354,6 +360,7 @@
 <translation id="2011174342667534258">SDK-Version:</translation>
 <translation id="2017998995161831444">„Hilfe“ in der App „Entdecken“ öffnen</translation>
 <translation id="2021864487439853900">Zum Entsperren klicken</translation>
+<translation id="2023167225947895179">Diese PIN kann leicht erraten werden</translation>
 <translation id="2034971124472263449">Trotzdem speichern</translation>
 <translation id="2041220428661959602">Akkustand: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="204259843076055848">Die Tastenkombination für <ph name="SIX_PACK_KEY_NAME" /> ist derzeit deaktiviert</translation>
@@ -433,6 +440,7 @@
 <translation id="2326112202058075478">Mehr Emojis anzeigen</translation>
 <translation id="2328561734797404498">Bitte starte dein Gerät neu, um <ph name="APP_NAME" /> verwenden zu können.</translation>
 <translation id="2335091074961603075">Auf deinem Chromebook oder Bluetooth-Gerät wird eine ältere Bluetooth-Version genutzt. Verwende für eine bessere Audioqualität das interne Mikrofon.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{Für <ph name="MANAGER" /> ist es erforderlich, dass du heute eine Verbindung zu einem WLAN herstellst, um ein Update herunterzuladen. Das Update kann auch über eine getaktete Verbindung heruntergeladen werden (hierfür können Gebühren anfallen).}other{Für <ph name="MANAGER" /> ist es erforderlich, dass du vor Ablauf der Frist eine Verbindung zu einem WLAN herstellst, um ein Update herunterzuladen. Das Update kann auch über eine getaktete Verbindung heruntergeladen werden (hierfür können Gebühren anfallen).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Tippe auf den Eingabestift-Button in der Ablage, um Notizen oder Screenshots zu erstellen, den Laserpointer oder die Vergrößerungsfunktion zu verwenden.</translation>
 <translation id="2341729377289034582">Vertikale Ausrichtung aktiv</translation>
@@ -561,6 +569,7 @@
 <translation id="2687510499067466116">Die Tastenkombination wurde geändert</translation>
 <translation id="2689613560355655046">Desktop 8</translation>
 <translation id="2692092709110488417">Drücke die Tabulatortaste, um den ausgewählten Bereich hervorzuheben und zu verschieben</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Letzter Tag für die Aktualisierung deines Geräts (<ph name="DEVICE_TYPE" />)}other{Aktualisiere dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_DAYS} Tagen}}</translation>
 <translation id="2695305337569143674">Web</translation>
 <translation id="2697697418792422688">Tastatureinstellungen anzeigen. <ph name="KEYBOARD_NAME" /> ist ausgewählt.</translation>
 <translation id="2699913284398121653">Mit der App „Inhaltsübertragung“ kannst du die Daten aus dem Konto einer Bildungseinrichtung in dein privates Konto übertragen</translation>
@@ -787,6 +796,7 @@ Ansonsten wird das integrierte Touchpad in <ph name="TIMEOUT_SECONDS" /> wieder 
 <translation id="334927402682780278">Text von Cursor bis Zeilenende auswählen</translation>
 <translation id="3349345708646875009">Task-Manager öffnen</translation>
 <translation id="3353786022389205125">„Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird“ aktivieren und noch einmal versuchen</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Aktualisiere dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von 1 Woche}other{Aktualisiere dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_WEEKS} Wochen}}</translation>
 <translation id="3364721542077212959">Eingabestift-Tools</translation>
 <translation id="3365281428003534650">Timer und Aufgabe festlegen</translation>
 <translation id="3365977133351922112">Dein Smartphone ist zu weit weg. Hole es näher heran.</translation>
@@ -946,6 +956,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="3741482431277446954">Rechte Maustaste</translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
 <translation id="3743775386021959186">Konzentrationsmodus ist aktiviert, noch <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{Für <ph name="MANAGER" /> ist es erforderlich, dass du deine Daten sicherst und dein Gerät (<ph name="DEVICE_TYPE" />) heute zurückgibst.}other{Für <ph name="MANAGER" /> ist es erforderlich, dass du deine Daten sicherst und dein Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist zurückgibst.}}</translation>
 <translation id="3750403286520637847">Wettervorschlag ausblenden</translation>
 <translation id="3752253558646317685">Bitte dein Kind, den Finger zu heben und wieder abzulegen, um den Fingerabdruck zu speichern</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />App-Daten können alle Daten sein, die eine App aufgrund der Einstellungen des Entwicklers gespeichert hat, wie z. B. Kontakte, Nachrichten und Fotos.<ph name="END_PARAGRAPH1" />
@@ -1059,6 +1070,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="4099874310852108874">Ein Netzwerkfehler ist aufgetreten.</translation>
 <translation id="4101772068965291327">Startseite öffnen</translation>
 <translation id="4102906002417106771">Für Powerwash neu starten</translation>
+<translation id="411052834366185695">Muss mindestens 1 Ziffer enthalten</translation>
 <translation id="4113030288477039509">Von deinem Administrator verwaltet</translation>
 <translation id="4114315158543974537">Phone Hub aktivieren</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -1069,6 +1081,9 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="412298498316631026">Fenster</translation>
 <translation id="4123259114412175274">Prüfe zum Entsperren deines Chromebooks, ob Bluetooth auf dem Smartphone aktiviert ist</translation>
 <translation id="4123868835475902435">Das waren die Grundlagen. Jetzt kannst du in „Entdecken“ fortfahren, unserer integrierten App für Tipps und Hilfe. Dort findest du Informationen zu den ersten Schritte, Angeboten und den neuesten <ph name="PRODUCT_NAME" />-Funktionen.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Dein Gerät (<ph name="DEVICE_TYPE" />) wird in # Sekunde automatisch gesperrt.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}other{Dein Gerät (<ph name="DEVICE_TYPE" />) wird automatisch in # Sekunden gesperrt.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}}</translation>
 <translation id="4125970834901680537">Apps können im Tabletmodus nicht gestreamt werden. Bitte versuch es noch einmal im Laptopmodus.</translation>
 <translation id="4131973331381812765">Temperatur: <ph name="TEMPERATURE" /> °C – Aktuelle Geschwindigkeit: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Bis Sonnenaufgang aktiviert</translation>
@@ -1274,6 +1289,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4659419629803378708">ChromeVox aktiviert</translation>
 <translation id="4666911709726371538">Weitere Apps</translation>
 <translation id="4667099493359681081">„<ph name="FILENAME" />“ wird heruntergeladen</translation>
+<translation id="4668936527507421457">PIN darf nur Ziffern enthalten</translation>
 <translation id="4672539464599646374">Energiesparmodus aktiviert</translation>
 <translation id="4673427585974421255">Aktiviert lassen</translation>
 <translation id="4677040906536311086">Google-Tabelle</translation>
@@ -1304,6 +1320,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4762573482154983647">Apps ausblenden</translation>
 <translation id="4762718786438001384">Speicherplatz auf Gerät äußerst niedrig</translation>
 <translation id="4763885921995354846">Dadurch erhalten alle Apps und Websites mit Kameraberechtigung Zugriff auf die Kamera. Möglicherweise musst du die Webseite aktualisieren oder die App neu starten.</translation>
+<translation id="4769359569327438364">Muss mindestens 4 Ziffern lang sein</translation>
 <translation id="4774338217796918551">Du darfst das Gerät um <ph name="COME_BACK_TIME" /> wieder verwenden.</translation>
 <translation id="4776584068981882959">Dein Passwort konnte noch immer nicht bestätigt werden. Versuche es noch einmal.</translation>
 <translation id="4776917500594043016">Passwort für <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1358,6 +1375,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
 <translation id="493076006037866439">Auf dem Bildschirm herauszoomen</translation>
 <translation id="4932733599132424254">Datum</translation>
+<translation id="4934763315031217818">Darf keine aufeinanderfolgenden Ziffern enthalten</translation>
 <translation id="4936329710968938986">Alle, aus</translation>
 <translation id="4937170330762390348">Mit der Spracheingabe kannst du Text diktieren. Drücke die Spracheingabetaste oder wähle das Mikrofonsymbol unten auf dem Bildschirm aus, wenn du dich in einem Textfeld befindest. Deine Spracheingabesprache ist auf <ph name="LANGUAGE" /> festgelegt. Sprachdateien werden heruntergeladen, damit du die Spracheingabe offline verwenden kannst. Du kannst die Sprache der Spracheingabe jederzeit unter „Einstellungen“ &gt; „Bedienungshilfen“ ändern.</translation>
 <translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
@@ -1374,6 +1392,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4964188651935955085">Wenn du Bluetooth deaktivierst, wird die Verbindung dieses externen Geräts von deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="4966431234408005599">Lautstärke erhöhen</translation>
 <translation id="496999337731226334">Einführung: Schritt <ph name="STEP" /> von <ph name="TOTAL_STEPS" />. Häufig verwendete Einstellungen wie WLAN, Bluetooth und Lautstärke sind in den Schnelleinstellungen verfügbar. Du kannst hier auch Screenshots aufnehmen. Drücke „Alt + Umschalttaste + S“, um die Schnelleinstellungen zu öffnen.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{Für <ph name="MANAGER" /> ist es erforderlich, dass du heute ein Update herunterlädst. Das Update wird automatisch heruntergeladen, sobald du eine Verbindung zum Internet herstellst.}other{Für <ph name="MANAGER" /> ist es erforderlich, dass du vor Ablauf der Frist ein Update herunterlädst. Das Update wird automatisch heruntergeladen, sobald du eine Verbindung zum Internet herstellst.}}</translation>
 <translation id="4975771730019223894">App-Benachrichtigungssymbol</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1437,6 +1456,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5147567197700016471">Entsperrt</translation>
 <translation id="5150070631291639005">Datenschutzeinstellungen</translation>
 <translation id="5155897006997040331">Lesegeschwindigkeit</translation>
+<translation id="5158206172605340248">Akzent-Menü geschlossen.</translation>
 <translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Es handelt sich um allgemeine Informationen zu deinem Gerät und dessen Nutzung, zum Beispiel zum Akkustand, zu System- und App-Aktivitäten und zu Fehlern. Die Daten werden dazu verwendet, Android zu verbessern. Einige zusammengefasste Daten helfen auch Apps und Partnern von Google, beispielsweise Android-Entwicklern, ihre Apps und Produkte weiter zu verbessern.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Wenn du diese Funktion deaktivierst, kann dein Gerät weiterhin Informationen senden, die für grundlegende Dienste wie Systemupdates und Sicherheit erforderlich sind.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Diese Funktion kann vom Inhaber über die Einstellungen &gt; „Erweitert“ &gt; „Diagnose- und Nutzungsdaten automatisch an Google senden“ gesteuert werden.<ph name="END_PARAGRAPH3" />
@@ -1449,6 +1469,7 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5176318573511391780">Teil des Bildschirms aufzeichnen</translation>
 <translation id="5187627942836026988">Hotspot-Details anzeigen. Der Hotspot wird von deinem Administrator blockiert.</translation>
 <translation id="5188648870018555788">Standort verwenden. ChromeOS- und Android-Apps, ‑Websites und ‑Dienste mit Berechtigung zur Standortermittlung dürfen den Standort deines Geräts nutzen. Die Standortgenauigkeit ermöglicht eine genauere Standortermittlung für Android-Apps und ‑Dienste. Dafür verarbeitet Google in regelmäßigen Abständen Informationen über Gerätesensoren und Funksignale von deinem Gerät und den Geräten anderer Nutzer und kombiniert diese Informationen zur Standortbestimmung. Die so gewonnenen Daten bleiben anonym und werden verwendet, um die Standortgenauigkeit und die standortbezogenen Dienste zu verbessern und um Google-Dienste auf der Grundlage der berechtigten Interessen von Google und Dritten mit Blick auf die Anforderungen der Nutzer zu optimieren, bereitzustellen und zu verwalten. <ph name="BEGIN_LINK1" />Weitere Informationen zur Standortnutzung<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Gib dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_WEEKS} Woche zurück}other{Gib dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_WEEKS} Wochen zurück}}</translation>
 <translation id="5198039720391525849">Empfohlene GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> Termine</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> wurde mit <ph name="IN_PLACE_APP" /> kombiniert, um einen neuen Ordner zu erstellen.</translation>
@@ -1469,9 +1490,11 @@ Du kannst auch die entsprechende Tastenkombination verwenden. Markiere dazu zuer
 <translation id="5238719049014159442">Launcher öffnen/schließen</translation>
 <translation id="5240725217819182328">Schnellzugriff auf bestimmte Seiten oder Aktionen in installierten Apps</translation>
 <translation id="5243355658487390559">Nach Datum suchen</translation>
+<translation id="5243477050423867768">Muss mindestens 8 Ziffern lang sein und darf keine wiederholten oder aufeinanderfolgenden Ziffern enthalten</translation>
 <translation id="5243522832766285132">Bitte versuche es in einigen Minuten noch einmal</translation>
 <translation id="5245201184978705914">Transkript konnte nicht erstellt werden</translation>
 <translation id="5251174953851719648">Inhalte aktualisieren</translation>
+<translation id="5252653240322147470">PIN muss weniger als <ph name="MAXIMUM" /> Ziffern umfassen</translation>
 <translation id="5253783950165989294">Mit einem Gerät namens „<ph name="DEVICE_NAME" />“ verbunden, <ph name="BATTERY_PERCENTAGE" /> % Akku</translation>
 <translation id="52550593576409946">Die Kioskanwendung konnte nicht gestartet werden.</translation>
 <translation id="5256939106029293271">Mikrofon testen</translation>
@@ -1510,6 +1533,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="5329548388331921293">Wird verbunden…</translation>
 <translation id="5331975486040154427">USB-C-Gerät (Port hinten links)</translation>
 <translation id="533282197239610265">Übertragungsgeräte anzeigen</translation>
+<translation id="5342091991439452114">PIN muss mindestens <ph name="MINIMUM" /> Ziffern umfassen</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
 <translation id="5352250171825660495">Dunkles Design ist aktiviert</translation>
 <translation id="5354804064646502504">Dadurch können Datennutzungskosten anfallen.
@@ -1738,6 +1762,7 @@ Keine Geräte verbunden.</translation>
 <translation id="602001110135236999">Nach links scrollen</translation>
 <translation id="6020147141355393792">Anzeige der Benachrichtigungen und Apps auf deinem Smartphone einrichten</translation>
 <translation id="6022924867608035986">Text im Suchfeld löschen</translation>
+<translation id="6023643151125006053">Dieses Gerät (SN: <ph name="SERIAL_NUMBER" />) wurde durch den Administrator von <ph name="SAML_DOMAIN" /> gesperrt.</translation>
 <translation id="602472752137106327">Fenster von allen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
 <translation id="6024768346262692989">Dateien für die Steuerung mit dem Gesicht konnten nicht heruntergeladen werden</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von deinem Administrator verwaltet</translation>
@@ -1745,6 +1770,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6030495522958826102">Menü wurde nach links unten auf dem Bildschirm verschoben.</translation>
 <translation id="6030608926359652298">Touchpad anpassen</translation>
 <translation id="6032620807120418574">Klicke auf eine beliebige Stelle, um den ganzen Bildschirm aufzunehmen</translation>
+<translation id="603539183851330738">Taste zum Rückgängigmachen der Autokorrektur. „<ph name="TYPED_WORD" />“ wiederherstellen.  Drücke zum Aktivieren die Enter-Taste und zum Ablehnen die Escape-Taste.</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6042308850641462728">Mehr</translation>
 <translation id="6043212731627905357">Dieser Monitor ist mit deinem <ph name="DEVICE_TYPE" /> nicht kompatibel (wird nicht unterstützt).</translation>
@@ -1761,6 +1787,9 @@ Keine Geräte verbunden.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> automatisch abgemeldet.</translation>
 <translation id="6068258534237496331">Einstellungen für Videoanrufe</translation>
+<translation id="6070081109266557120">{0,plural, =1{Du wirst in # Sekunde automatisch abgemeldet.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}other{Du wirst in # Sekunden automatisch abgemeldet.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.}}</translation>
 <translation id="6071576563962215370">Das System konnte die Attributsperre für die Geräteinstallationszeit nicht vornehmen.</translation>
 <translation id="6072442788591997866"><ph name="APP_NAME" /> ist auf diesem Gerät nicht zulässig. Wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
@@ -1880,6 +1909,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6418511932144861495">Wichtiges Update installieren</translation>
 <translation id="641867537956679916">Dein Administrator hat sich angemeldet, um ein Problem zu untersuchen. Du kannst das Gerät wieder verwenden, nachdem dir der Administrator die Kontrolle zurückgegeben hat.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="642469772702851743">Dieses Gerät (SN: <ph name="SERIAL_NUMBER" />) wurde vom Eigentümer gesperrt.</translation>
 <translation id="642644398083277086">Alle Benachrichtigungen löschen</translation>
 <translation id="6426905245930183644">Wird erstellt…</translation>
 <translation id="6430225033895752525">Einstellungen für den Konzentrationsmodus anzeigen</translation>
@@ -1905,6 +1935,7 @@ Keine Geräte verbunden.</translation>
 <translation id="6485086611007560630">Wetter (nicht verfügbar)</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="6491376743066338510">Fehler bei Autorisierung</translation>
+<translation id="6494483173119160146">Auf dem Gerät ist ein nicht behebbarer Fehler aufgetreten. Bitte setze dein Gerät zurück (dadurch werden alle Nutzerdaten gelöscht) und versuch es noch einmal.</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>
 <translation id="6495322433318104734">Bildschirmschoner wird angezeigt. Drücke zum Beenden eine beliebige Taste.</translation>
 <translation id="6495400115277918834">„Bild im Bild“ gestartet, zum Hervorheben Alt + Umschalttaste + V drücken</translation>
@@ -1928,6 +1959,7 @@ Keine Geräte verbunden.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Neuinstallation</translation>
 <translation id="6559158502366839560">Weitere Apps und Spiele entdecken</translation>
+<translation id="6560151649238390891">Vorschlag eingefügt</translation>
 <translation id="6562447480759345110">Konzentrationsmodus beenden</translation>
 <translation id="6565007273808762236">eSIM-Verbindung nicht verfügbar</translation>
 <translation id="6570831796530454248">{0,plural, =1{Gerät innerhalb von einer Stunde neu starten}other{Gerät innerhalb von # Stunden neu starten}}</translation>
@@ -1949,6 +1981,7 @@ Neuinstallation</translation>
 <translation id="6612889377159412215">Unteraufgabe</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> Speicher verwendet | <ph name="STORAGE_TOTAL_SIZE" /> insgesamt</translation>
 <translation id="6614169507485700968">Der Datenschutzbildschirm ist momentan aktiviert</translation>
+<translation id="6622212269189717101">Muss mindestens 6 Ziffern lang sein und darf keine wiederholten oder aufeinanderfolgenden Ziffern enthalten</translation>
 <translation id="6622679827379792051">Anzeige der Apps auf deinem Smartphone einrichten</translation>
 <translation id="662279009180869175">Verwende die Links- und Rechtspfeile, um die Größe des geteilten Bildschirms anzupassen</translation>
 <translation id="6624493541160101248">Aktueller Desktop: <ph name="DESK_NAME" />. Desktop <ph name="DESK_INDEX" /> von <ph name="DESK_COUNT" />.</translation>
@@ -2106,6 +2139,8 @@ Neuinstallation</translation>
 <translation id="7076878155205969899">Ton stummschalten</translation>
 <translation id="7083848064787091821">Konzentrationsmodus</translation>
 <translation id="7084678090004350185">Hotspot aktivieren oder deaktivieren. Hotspot ist aktiviert, <ph name="DEVICECOUNT" /> Geräte sind verbunden.</translation>
+<translation id="7086438436964931440">Du wirst jetzt automatisch abgemeldet.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="7086931198345821656">Für dieses Update muss auf deinem Gerät (<ph name="DEVICE_TYPE" />) ein Powerwash durchgeführt werden. Sämtliche Daten auf dem Gerät werden gelöscht. Weitere Informationen zum aktuellen <ph name="SYSTEM_APP_NAME" />-Update.</translation>
 <translation id="7088960765736518739">Schalterzugriff</translation>
 <translation id="709015856939120012">Seite heranzoomen</translation>
@@ -2142,6 +2177,7 @@ Neuinstallation</translation>
 <translation id="7228968829656641943">Auswählen, um meinen Bildschirm zu durchsuchen. Tabulatortaste und dann Leertaste drücken, um über die Tastatur zu navigieren.</translation>
 <translation id="7229029500464092426">Arbeitsspeicher <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> insgesamt</translation>
 <translation id="7234010996000898150">Linux-Wiederherstellung wird abgebrochen</translation>
+<translation id="7238609589076576185">Akzent eingefügt.</translation>
 <translation id="7239814253344511868">Beide Maustasten</translation>
 <translation id="7240636904654154599">Google-Tabelle erstellt</translation>
 <translation id="7244725679040769470">Der Akkustand beträgt noch <ph name="PERCENTAGE" /> %. Schließ dein Gerät an eine Steckdose an.</translation>
@@ -2223,6 +2259,7 @@ Neuinstallation</translation>
 <translation id="7489261257412536105">Vollbildmodus starten oder beenden</translation>
 <translation id="7490157877815329797">Wenn du dir Musik ohne Werbeunterbrechung und personalisierte Playlists mit Musik zum Konzentrieren wünschst, probiere jetzt YouTube Music Premium aus</translation>
 <translation id="7490360161041035804">Du kannst wichtige Dateien anpinnen, auch Google Drive-Dateien. Bewege dazu den Mauszeiger auf ein Element oder öffne die App „Dateien“ und klicke mit der rechten Maustaste auf ein Element.</translation>
+<translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Sprache und Tastatur auswählen</translation>
 <translation id="7507162824403726948">Überprüfung deiner Identität abschließen</translation>
 <translation id="7508690557411636492">Im letzten Monat geöffnet</translation>
@@ -2459,6 +2496,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8091153018031979607">Beginnt um <ph name="START_TIME" /> Uhr <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Einstellungen für Scrollen</translation>
+<translation id="80974698889265265">Die PINs stimmen nicht überein</translation>
 <translation id="810637681351706236">App von Ablage loslösen</translation>
 <translation id="8107015733319732394">Google Play Store wird auf deinem <ph name="DEVICE_TYPE" /> installiert. Dies kann ein paar Minuten dauern.</translation>
 <translation id="8113515504791187892">Vorlesen-Button</translation>
@@ -2486,10 +2524,12 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8168435359814927499">Inhalte</translation>
 <translation id="8169177848833352618">Die Anforderungen zum Installieren von Bruschetta werden nicht erfüllt. Fehlercode: <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Ziehpunkt links oben ausgewählt – zum Verschieben Pfeiltasten verwenden</translation>
+<translation id="8179976553408161302">Eingabetaste</translation>
 <translation id="81817143961839203">Fehler beim Einfügen des Bildes</translation>
 <translation id="8182105986296479640">App antwortet nicht.</translation>
 <translation id="8182412589359523143">Um alle Daten von diesem <ph name="DEVICE_TYPE" /> zu löschen, <ph name="BEGIN_LINK" />klicke hier<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">Menü für die Größenänderungssperre öffnen/schließen</translation>
+<translation id="8186047833733689201">Akzentzeichen-Menü geöffnet. Drücke die Links-, Rechts- oder Zifferntasten, um zwischen den Zeichen zu wechseln, und die Eingabetaste, um ein Zeichen einzufügen.</translation>
 <translation id="8192727139462702395">Wenn du Bluetooth deaktivierst, wird die Verbindung dieser externen Geräte mit deiner/m <ph name="DEVICE_TYPE" /> getrennt:</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
 <translation id="8200772114523450471">Fortsetzen</translation>
@@ -2503,17 +2543,20 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> hinzufügen</translation>
 <translation id="8228175756124063692">Diesen Vorschlag ausblenden</translation>
 <translation id="8230305195727960608">Farbumkehrmodus</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Sofortige Rückgabe erforderlich}other{Gib dein Gerät (<ph name="DEVICE_TYPE" />) innerhalb von {NUM_DAYS} Tagen zurück}}</translation>
 <translation id="8236042855478648955">Zeit für eine Pause</translation>
 <translation id="8237964652943995219">Nächster Desktop: <ph name="DESK_NAME" />. Desktop <ph name="DESK_INDEX" /> von <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Sieh dir eine kurze Einführung zur Bedienung deines <ph name="PRODUCT_NAME" /> an. Nach 5 Schritten bist du startklar.</translation>
 <translation id="8239034820133090126">Desktop rechts aktivieren</translation>
 <translation id="8241650983304689286">Tab zu neuer geteilter Ansicht hinzufügen</translation>
+<translation id="8244201515061746038">Button „Weitere Informationen“ für die Autokorrektur. Rufe die Seite mit den Einstellungen für die Autokorrektur auf. Drücke zum Aktivieren die Enter-Taste und zum Ablehnen die Escape-Taste.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, Smartphone-Akku bei <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">OEM-Ordner</translation>
 <translation id="825129991941217170">Alle Google Drive-Inhalte anzeigen</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="8261625296061301062">Scanner-Software installiert</translation>
 <translation id="8262312463845990408">Wiedergabe aktivieren/deaktivieren</translation>
+<translation id="8266751606569906450">Muss mindestens <ph name="MINIMUM" /> Zeichen lang sein</translation>
 <translation id="8268302343625273732">Alle Aufgaben in Google Classroom ansehen</translation>
 <translation id="8277261673056602147">Text auf dem Bildschirm markieren</translation>
 <translation id="8281886186245836920">Überspringen</translation>
@@ -2549,6 +2592,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8388750414311082622">Letzter Desktop kann nicht entfernt werden.</translation>
 <translation id="8390392581097975659">Scanner-Software wird installiert</translation>
 <translation id="8394567579869570560">Deine Eltern haben dieses Gerät gesperrt</translation>
+<translation id="839949601275221554">Auf dem Gerät ist ein Fehler aufgetreten. Bitte starte dein Gerät neu und versuch es noch einmal.</translation>
 <translation id="8401850874595457088">Sprachmenü öffnen</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Displayeinstellungen anzeigen</translation>
@@ -2675,6 +2719,8 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8756799553341497810">Du kannst dein App-Layout anpassen, sobald du diese Ansicht geschlossen hast.</translation>
 <translation id="8759408218731716181">Mehrfachanmeldung kann nicht eingerichtet werden</translation>
 <translation id="8759753423332885148">Weitere Informationen</translation>
+<translation id="8760172428247796445">Dein Gerät (<ph name="DEVICE_TYPE" />) wird jetzt gesperrt.
+        Für <ph name="DOMAIN" /> ist es erforderlich, dass deine Smartcard eingesteckt ist.</translation>
 <translation id="8763883995157866248">Gerät in den Ruhemodus versetzen</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, installierte App, gesperrt</translation>
 <translation id="8782565991310229362">Start der Kiosk-App abgebrochen</translation>
@@ -2708,6 +2754,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8858369206579825206">Datenschutzeinstellungen</translation>
 <translation id="8859402192569844210">Nutzungsbedingungen konnten nicht geladen werden</translation>
 <translation id="8860366331836346216">eSIM hinzufügen</translation>
+<translation id="8864458770072227512"><ph name="EMAIL" /> wurde von diesem Gerät entfernt</translation>
 <translation id="8869149849311827122">Möchtest du die Mauszeigersteuerung wirklich deaktivieren?</translation>
 <translation id="8870509716567206129">Splitscreen wird in dieser App nicht unterstützt.</translation>
 <translation id="8871551568777368300">Vom Administrator angepinnt</translation>
@@ -2844,6 +2891,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="956452277966142925">Einstellungen für das Dashboard für Spiele</translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> Suchergebnisse für "<ph name="QUERY" />"</translation>
+<translation id="976499800099896273">Dialogfeld zum Rückgängigmachen der Autokorrektur wird für <ph name="TYPED_WORD" /> angezeigt, das zu <ph name="CORRECTED_WORD" /> geändert wurde.  Wenn du auf das Dialogfeld zugreifen möchtest, drücke den Aufwärtspfeil, wenn du es ignorieren möchtest, drücke die Escape-Taste.</translation>
 <translation id="97905529126098460">Dieses Fenster wird nach Abbruch der Installation geschlossen.</translation>
 <translation id="981011780479609956">Kein Abgabetermin</translation>
 <translation id="981121421437150478">Offline</translation>

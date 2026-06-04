@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Je kunt hier pdf's downloaden</translation>
 <translation id="107147699690128016">Als je de bestandsextensie wijzigt, wordt het bestand mogelijk in een andere app geopend. Daardoor kan het een gevaar vormen voor je apparaat.</translation>
 <translation id="1073328695547557412">Tik op het Google Lens-icoon</translation>
+<translation id="1080116354587839789">Aanpassen aan breedte</translation>
 <translation id="1086486568852410168">Zoeken met Google Lens</translation>
 <translation id="1087799850623149508">Je kunt de adresbalk naar beneden verplaatsen door je vinger erop te houden</translation>
 <translation id="1089606299949659462">Beoordeling voltooid</translation>
@@ -536,6 +537,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> tabblad}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabbladen}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 wachtwoord wordt alleen op dit apparaat opgeslagen. Als je het wilt gebruiken op je andere apparaten, sla je het op in je Google-account.}other{# wachtwoorden worden alleen op dit apparaat opgeslagen. Als je ze wilt gebruiken op je andere apparaten, sla je ze op in je Google-account.}}</translation>
 <translation id="3293181007446299124">Je browsegeschiedenis blijft privé op je apparaat en rapporten worden met vertraging verstuurd om je identiteit te beschermen</translation>
+<translation id="3301639354590628973">Ander account?</translation>
 <translation id="3301936297336370235">Bevestiging van wachtwoordsuggestie</translation>
 <translation id="3302615849591357577">Tabbladgroep <ph name="TITLE_OF_GROUP" />, kleur <ph name="COLOR_NAME" />, herstellen als een nieuwe tabbladgroep op de achtergrond.</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
@@ -678,6 +680,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, vastgezet tabblad voor scherm-in-scherm</translation>
 <translation id="3950820424414687140">Inloggen</translation>
 <translation id="395377504920307820">Gebruiken zonder account</translation>
+<translation id="3955353672249727801">Pagina's toegevoegd aan leeslijst</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome laadt de pagina wanneer deze klaar is}other{Chrome laadt de pagina's wanneer deze klaar zijn}}</translation>
 <translation id="3969142555815019568">Chrome kan je wachtwoorden niet checken</translation>
 <translation id="3969863827134279083">Naar boven</translation>

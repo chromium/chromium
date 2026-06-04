@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Mund t'i shkarkosh skedarët PDF këtu</translation>
 <translation id="107147699690128016">Nëse e ndryshon prapashtesën e skedarit, skedari mund të hapet në një aplikacion tjetër dhe mund të jetë një rrezik për pajisjen tënde.</translation>
 <translation id="1073328695547557412">Trokit tek ikona e "Lentes së Google"</translation>
+<translation id="1080116354587839789">Përshtate sipas gjerësisë</translation>
 <translation id="1086486568852410168">Kërko me "Lenten e Google"</translation>
 <translation id="1087799850623149508">Mund të prekësh dhe të mbash shtypur për të zhvendosur shiritin e adresave në fund</translation>
 <translation id="1089606299949659462">Shqyrtimi përfundoi!</translation>
@@ -536,6 +537,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skeda}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 fjalëkalim është ruajtur vetëm në këtë pajisje. Për ta përdorur atë në pajisje të tjera, ruaje në "Llogarinë tënde të Google".}other{# fjalëkalime janë ruajtur vetëm në këtë pajisje. Për t'i përdorur në pajisjet e tua të tjera, ruaji në "Llogarinë tënde të Google".}}</translation>
 <translation id="3293181007446299124">Historiku yt i shfletimit ruhet privat në pajisjen tënde dhe raportet dërgohen me një vonesë për të mbrojtur identitetin tënd</translation>
+<translation id="3301639354590628973">Të ndërrohen llogaritë?</translation>
 <translation id="3301936297336370235">Konfirmimi i sugjerimit të fjalëkalimit</translation>
 <translation id="3302615849591357577">Restauro grupin e skedave "<ph name="TITLE_OF_GROUP" />", ngjyrë <ph name="COLOR_NAME" />, si një grup të ri skedash në sfond.</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
@@ -678,6 +680,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, skeda e gozhduar e "Figurë brenda figurës"</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
 <translation id="395377504920307820">Përdor pa një llogari</translation>
+<translation id="3955353672249727801">Faqet u shtuan te lista e leximit</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome do ta ngarkojë faqen tënde kur të jesh gati}other{Chrome do të ngarkojë faqet e tua kur të jesh gati}}</translation>
 <translation id="3969142555815019568">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua</translation>
 <translation id="3969863827134279083">Lëviz lart</translation>

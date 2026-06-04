@@ -149,6 +149,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1227224963052638717">Neznáme pravidlo.</translation>
 <translation id="1227677022489889280">Poskytnite dôvod premiestnenia (povinné)</translation>
 <translation id="1228893227497259893">Nesprávny identifikátor entity</translation>
+<translation id="122989279399348496">Keď budete mať prihlásený účet, <ph name="DOMAIN" /> bude môcť na podporovaných weboch overovať adresu <ph name="EMAIL" />, aby ste si nemuseli kontrolovať doručenú poštu</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automaticky rozpoznané)</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
 <translation id="1234539281285007945">Pole <ph name="FIELD_1" /> je povinné</translation>
@@ -510,6 +511,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, k dispozícii je viac akcií, stlačením klávesa Tab po nich prechádzajte</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Podrobnosti virtuálnej karty</translation>
+<translation id="1802420021606590788">Chrome spracúva názvy stránok a webové adresy v súkromnom priestore v cloude</translation>
 <translation id="1803254472779303354">Uzamknutie myši je povolené</translation>
 <translation id="1803351196216024260">Môže žiadať o povolenie používať mikrofón</translation>
 <translation id="1804258830776932716">Povoľte Pix rýchlym pripojením účtu</translation>
@@ -873,6 +875,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2354001756790975382">Ostatné</translation>
 <translation id="2355395290879513365">Útočníci môžu vidieť obrázky, ktoré si prehliadate na tomto webe, a môžu vás napadnúť tým, že ich podvodným spôsobom upravia.</translation>
 <translation id="2356941001189392209">Obmedzený zoznam webových adries stránok, ktoré navštívite a na ktorých sa vyskytujú udalosti využívajúce starú technológiu</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Bude sa zdieľať 1 karta}few{Budú sa zdieľať {NUM_TABS} karty}many{Will share {NUM_TABS} tabs}other{Bude sa zdieľať {NUM_TABS} kariet}}</translation>
 <translation id="2357481397660644965">Vaše zariadenie spravuje <ph name="DEVICE_MANAGER" /> a váš účet spravuje <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Viaceré</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
@@ -3023,6 +3026,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5742806904559466333">Bary, kluby a nočný život</translation>
 <translation id="5743684619253032786">Výrobky na starostlivosť o nechty</translation>
 <translation id="574392208103952083">Stredné</translation>
+<translation id="5745586894920491759">Chrome spracúva názvy stránok a webové adresy v cloude</translation>
 <translation id="5745733273847572235">Môže žiadať o povolenie používať vašu polohu</translation>
 <translation id="5750869797196646528">Sledovanie rúk</translation>
 <translation id="5752327398324808817">Zadajte slovo alebo dve</translation>
@@ -3416,6 +3420,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Zobraziť denníky</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Skontrolujte proxy server, bránu firewall a konfiguráciu zabezpečeného servera DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automaticky overovať vaše e‑mailové adresy</translation>
 <translation id="6366710531182496394">Dve spinky vľavo</translation>
 <translation id="6367196786591004737">Odstrániť záznam</translation>
 <translation id="6370022303958842211">Akcie prístupu k zariadeniam, ako sú prihlásenia (vrátane dôvodov neúspešných prihlásení), odhlásenia, uzamknutia a odomknutia</translation>
@@ -5057,6 +5062,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8963117664422609631">Prejsť na nastavenia webu</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Návrhy:<ph name="MARKUP_2" />Skontrolujte, či máte dátové pripojenie<ph name="MARKUP_3" />Načítajte túto webovú stránku znova neskôr<ph name="MARKUP_4" />Skontrolujte zadanú adresu<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vaše miestne súbory budú odstránené o <ph name="HOURS" /> h</translation>
+<translation id="8964904785315870349">Overený e‑mail</translation>
 <translation id="8968766641738584599">Uložiť kartu</translation>
 <translation id="8970887620466824814">Niečo sa pokazilo.</translation>
 <translation id="8971063699422889582">Platnosť certifikátu servera vypršala.</translation>

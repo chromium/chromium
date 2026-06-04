@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">ຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບແລ້ວ</translation>
 <translation id="1844381456014878100">ຫຼັງຈາກບໍ່ເຄື່ອນໄຫວ 7 ມື້</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{ເພີ່ມແຖບໃສ່ໃນລາຍຊື່ການອ່ານ}other{ເພີ່ມແຖບໃສ່ໃນລາຍຊື່ການອ່ານ}}</translation>
 <translation id="1909810060368225529">ແຈ້ງການ: ການປ່ຽນແປງຕໍ່ກັບກຸ່ມແຖບທີ່ແບ່ງປັນແລ້ວນີ້ແມ່ນເຫັນໄດ້ໂດຍທຸກຄົນ. ທຸກຄົນສາມາດປ່ຽນແປງກຸ່ມແຖບທີ່ແບ່ງປັນຂອງທ່ານໄດ້</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ປັກໝຸດແຖບ}other{ປັກໝຸດແຖບ}}</translation>
 <translation id="1982637982196732906">ຍ້າຍໄປໃສ່ພາກສ່ວນທີ່ບໍ່ເຄື່ອນໄຫວ</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">ໄອຄອນສີກຸ່ມແຖບ <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">ປິດລາຍຊື່ກຸ່ມແຖບແລ້ວ</translation>
+<translation id="3152596030350326139">ສະແດງແຖບໃນແນວນອນ</translation>
+<translation id="31806439105337256">ສະແດງແຖບໃນແນວຕັ້ງ</translation>
 <translation id="3194464645767632461">ການຈັດອັນດັບ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ເພີ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບໃສ່ກຸ່ມ}other{ເພີ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="3328308545011660196">ຄຳແນະນຳ: ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບທີ່ກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>

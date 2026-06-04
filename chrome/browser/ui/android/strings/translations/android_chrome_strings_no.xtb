@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Du kan laste ned PDF-filer her</translation>
 <translation id="107147699690128016">Hvis du endrer filetternavnet, kan filen bli åpnet i et annet program og muligens utgjøre en fare for enheten.</translation>
 <translation id="1073328695547557412">Trykk på Google Lens-ikonet</translation>
+<translation id="1080116354587839789">Tilpass til vindusbredden</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
 <translation id="1087799850623149508">Du kan trykke og holde for å flytte adressefeltet til bunnen</translation>
 <translation id="1089606299949659462">Gjennomgangen er fullført.</translation>
@@ -356,6 +357,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="253498598929009420">Nettstedet kan se innholdet på skjermen din</translation>
 <translation id="2535807170289627159">Alle faner</translation>
 <translation id="2536728043171574184">Ser på en lokalt lagret versjon av denne siden</translation>
+<translation id="2537574774089209541">Noen verktøy er flyttet for å gi deg enkel tilgang til Gemini mens du surfer</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, valgt festet inkognitofane med dempet lyd</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> – fane</translation>
@@ -404,6 +406,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2751271371269891762">For å få bokmerkene med mer på alle enhetene dine, logg på som <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/ÅÅ</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
+<translation id="276378135349383280">Vis Gemini på bunnverktøylinjen</translation>
 <translation id="276969039800130567">Pålogget som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekunder igjen</translation>
 <translation id="2779651927720337254">mislyktes</translation>
@@ -536,6 +539,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> faner}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 passord er bare lagret på denne enheten. For å bruke det på andre enheter, lagre det i Google-kontoen din.}other{# passord er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
 <translation id="3293181007446299124">Nettleserloggen din holdes privat på enheten din, og rapporter sendes med en forsinkelse for å beskytte identiteten din</translation>
+<translation id="3301639354590628973">Vil du bytte konto?</translation>
 <translation id="3301936297336370235">Bekreftelse av passordforslag</translation>
 <translation id="3302615849591357577">Gjenopprett fanegruppen <ph name="TITLE_OF_GROUP" />, med fargen <ph name="COLOR_NAME" />, som en ny bakgrunnsfanegruppe.</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
@@ -602,6 +606,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3602290021589620013">Forhåndsvisning</translation>
 <translation id="3614126103057878858">Prisstatistikk</translation>
 <translation id="3616113530831147358">Lyd</translation>
+<translation id="3616798734782988169">Forsikre deg om at du stoler på <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Administrer tilgang</translation>
 <translation id="3622349720008044802">Administrer vinduer</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 nettsted}other{+ # nettsteder}}</translation>
@@ -632,6 +637,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3738139272394829648">Trykk for å søke</translation>
 <translation id="3739455665973395693">Ingen kompromitterte passord i Google-kontoen din</translation>
 <translation id="3739899004075612870">Satt som bokmerke i <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Sørg for at du stoler på dette nettstedet</translation>
 <translation id="3740525748616366977">Talesøk er ikke tilgjengelig på denne enheten</translation>
 <translation id="3763110477555836428">Når du betaler med dette kortet, fylles et virtuelt kortnummer inn for å beskytte kortopplysningene dine. Administrer dette i Google Wallet.  <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Noen av dataene er ikke lagret ennå</translation>
@@ -678,6 +684,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, festet til bilde-i-bilde-fane</translation>
 <translation id="3950820424414687140">Logg på</translation>
 <translation id="395377504920307820">Bruk uten konto</translation>
+<translation id="3955353672249727801">Sidene er lagt til på leselisten</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome laster inn siden når den er klar}other{Chrome laster inn sidene når de er klare}}</translation>
 <translation id="3969142555815019568">Chrome kan ikke sjekke passordene dine</translation>
 <translation id="3969863827134279083">Flytt opp</translation>
@@ -1527,6 +1534,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7291910923717764901">Bildebeskrivelser er lagt til for denne siden</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, valgt festet delingsfane</translation>
+<translation id="7304003340539141201">Be Gemini om hjelp med fanene og oppgavene dine</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
 <translation id="7314734791127433392">Kan ikke sjekke passordene</translation>
 <translation id="7324354302972299151">Send en «Do Not Track»-forespørsel</translation>
@@ -1873,6 +1881,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="8697753151306746444">Del vinduet eller skjermen i stedet</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
+<translation id="8700565880437506364">Vi lanserer Gemini i Chrome</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8715286883001906001">Gjør passordene i Google-kontoen din sikrere</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> lukkes</translation>
@@ -1940,6 +1949,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8996847606757455498">Velg en annen leverandør</translation>
 <translation id="8998837250940831980">Kunne ikke minimere fanen. Prøv igjen senere.</translation>
 <translation id="9001604755921395912">Åpne på Chrome-inkognitofane</translation>
+<translation id="9010094279589497751">Åpne Gemini raskt når du trenger det</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>
 <translation id="9019199799064251516">Vil du fortsette uten profillås for bilen?</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>
@@ -1997,6 +2007,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9190355771000652811">Bruk denne hurtigtasten sammen med snarveier til søkemotorer og nettstedsøk i adressefeltet.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, festet valgt inkognitofane</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Sjekket for ett minutt siden}other{Sjekket for # minutter siden}}</translation>
+<translation id="9202894533863490414">Vil du laste ned fra dette nettstedet?</translation>
 <translation id="9204836675896933765">1 fil gjenstår</translation>
 <translation id="9205933215779845960">Finner ikke den siden. Kontroller stavemåten, eller prøv et søk på <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ta varaq guruhlandi</translation>
 <translation id="1844381456014878100">7 kun nofaol boʻlganidan keyin</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Varaqni oʻqish roʻyxatiga kiritish}other{Varaqlarni oʻqish roʻyxatiga kiritish}}</translation>
 <translation id="1909810060368225529">Eslatma: Ushbu umumiy varaqlar guruhidagi oʻzgarishlar hammaga koʻrinadi. Umumiy varaqlar guruhiga har qanday ishtirokchi oʻzgartirish kiritishi mumkin</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Varaqni mahkamlash}other{Varaqlarni mahkamlash}}</translation>
 <translation id="1982637982196732906">Nofaol seansga olish</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> narxlari <ph name="PRICE_DROP" /> ga tushdi</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> rangli varaqlar guruhi belgisi</translation>
 <translation id="311432875115153175">Varaqlar guruhlari roʻyxati yopildi</translation>
+<translation id="3152596030350326139">Varaqlarni gorizontal chiqarish</translation>
+<translation id="31806439105337256">Varaqlarni vertikal chiqarish</translation>
 <translation id="3194464645767632461">reyting</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni guruhga kiritish}other{<ph name="TABS_COUNT_MANY" /> ta varaqni guruhga kiritish}}</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>

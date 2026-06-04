@@ -36,6 +36,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1324107359134968521">Chromium potrebuje dostop do Bluetootha za raziskovanje 
  naprav Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Zaznaj jezik</translation>
+<translation id="1330742950061766891">Uporaba priporočenih nastavitev brskalnika Chromium</translation>
 <translation id="1342274909142618978">Iz Chromiuma izbriši tudi podatke (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Pripeto. Do slikovnega iskanja lahko znova dostopate z novim gumbom v orodni vrstici.</translation>
 <translation id="1356661055722410047">Novo! Prevedete lahko besedilo in slike na zaslonu.</translation>
@@ -373,6 +374,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5187123684706427865">Račun Chromium zahteva vnovično preverjanje pristnosti</translation>
 <translation id="5231355151045086930">Odjava iz Chromiuma</translation>
 <translation id="5234764350956374838">Opusti</translation>
+<translation id="5249261924633168472">Odpri povezavo v Chromiumovem anon&amp;imnem oknu</translation>
 <translation id="5254739261293693943">Vprašajte o tem videoposnetku</translation>
 <translation id="5276305953263010518">Prenesite aplikacijo Chromium in shranjujte gesla na poti</translation>
 <translation id="5277894862589591112">Če želite uporabiti spremembe, znova zaženite Chromium</translation>
@@ -381,6 +383,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5294316920224716406">Pri brskanju v anonimnem načinu vas bo Chromium opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="5313228254328109263">Chromiumova notranja storitev za posodabljanje</translation>
 <translation id="5346389065299425353">Poglobite iskanje tako, da dodate več zavihkov, datotek in orodij</translation>
+<translation id="5348677704241861105">Pridobite hiter pregled tega dokumenta in postavljajte vprašanja z Geminijem v Chromiumu</translation>
 <translation id="5352264705793813212">Chromium je za vaš pregled našel nekaj varnostnih priporočil</translation>
 <translation id="5352361688875342522">Drugi profili v Chromiumu</translation>
 <translation id="5358375970380395591">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. <ph name="LEARN_MORE" /></translation>
@@ -488,6 +491,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6390800440335263989">Če želite nadaljevati, se prijavite v Chromium kot <ph name="EMAIL" />. S tem zagotovite, da imate pravilnike organizacije.</translation>
 <translation id="6400112897226594999">Chromiumov logotip na zaslonu računalnika.</translation>
 <translation id="6403826409255603130">Chromium je spletni brskalnik, ki bliskovito odpira spletne strani in izvaja aplikacije. Je hiter, stabilen in preprost za uporabo. Z vgrajeno zaščito pred zlonamerno programsko opremo in lažnim predstavljanjem je brskanje po spletu varno.</translation>
+<translation id="6414624068245092115">Če želite poskrbeti, da boste v računu Google vedno lahko uporabljali in shranjevali podatke Chromiuma, potrdite, da ste to vi</translation>
 <translation id="642132557830635295">Chromium se izvaja hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno</translation>
 <translation id="6436260184216827876">Slikovno iskanje ni na voljo. Poskusite znova pozneje.</translation>
 <translation id="6442900851116057561">Vnovičen zagon sistema Chromium OS</translation>

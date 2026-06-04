@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Politică necunoscută.</translation>
 <translation id="1227677022489889280">Specifică motivul mutării (obligatoriu)</translation>
 <translation id="1228893227497259893">Identificator greșit pentru entitate</translation>
+<translation id="122989279399348496">Când te conectezi, <ph name="DOMAIN" /> poate confirma <ph name="EMAIL" /> pe site-urile acceptate, astfel încât să nu fie nevoie să-ți verifici mesajele primite</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (detectată automat)</translation>
 <translation id="1232569758102978740">Fără titlu</translation>
 <translation id="1234539281285007945">Este necesar <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sunt disponibile mai multe acțiuni, apasă pe Tab pentru a le răsfoi</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detaliile cardului virtual</translation>
+<translation id="1802420021606590788">Chrome procesează titlurile paginilor și adresele URL într-un spațiu privat în cloud</translation>
 <translation id="1803254472779303354">Blocarea mouse-ului este permisă</translation>
 <translation id="1803351196216024260">Poate solicita permisiunea de a folosi microfonul</translation>
 <translation id="1804258830776932716">Activează Pix conectându-ți rapid contul</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">Alte marcaje</translation>
 <translation id="2355395290879513365">Este posibil ca atacatorii să poată vedea imaginile la care te uiți pe acest site și să te păcălească prin modificarea lor.</translation>
 <translation id="2356941001189392209">O listă limitată de adrese URL ale paginilor pe care le accesezi și unde au loc evenimente privind tehnologia veche</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Se va permite accesul la o filă}few{Se va permite accesul la {NUM_TABS} file}other{Se va permite accesul la {NUM_TABS} de file}}</translation>
 <translation id="2357481397660644965">Dispozitivul este gestionat de <ph name="DEVICE_MANAGER" />, iar contul tău este gestionat de <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Mai multe</translation>
 <translation id="2359808026110333948">Continuă</translation>
@@ -3027,6 +3030,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5742806904559466333">Baruri, cluburi și viață de noapte</translation>
 <translation id="5743684619253032786">Produse de îngrijire pentru unghii</translation>
 <translation id="574392208103952083">Mediu</translation>
+<translation id="5745586894920491759">Chrome procesează titlurile paginilor și adresele URL în cloud</translation>
 <translation id="5745733273847572235">Poate solicita permisiunea de a accesa locația</translation>
 <translation id="5750869797196646528">Urmărirea mâinilor</translation>
 <translation id="5752327398324808817">Introdu un cuvânt sau două</translation>
@@ -3421,6 +3425,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Consultă jurnalele</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />să verifici configurația pentru proxy, firewall și DNS-ul securizat;<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Confirmă automat adresele de e-mail</translation>
 <translation id="6366710531182496394">Capsare dublă în stânga</translation>
 <translation id="6367196786591004737">Șterge intrarea</translation>
 <translation id="6370022303958842211">Acțiuni de acces la dispozitive, cum ar fi conectări (inclusiv motive de conectare nereușite), deconectări, blocări și deblocări</translation>
@@ -5062,6 +5067,7 @@ Detalii suplimentare:
 <translation id="8963117664422609631">Accesează setările site-ului</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugestii:<ph name="MARKUP_2" />asigură-te că ai o conexiune de date;<ph name="MARKUP_3" />reîncarcă mai târziu această pagină web;<ph name="MARKUP_4" />verifică adresa pe care ai introdus-o.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Fișierele locale se vor șterge în <ph name="HOURS" /> ore</translation>
+<translation id="8964904785315870349">Adresă de e-mail confirmată</translation>
 <translation id="8968766641738584599">Salvează cardul</translation>
 <translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8971063699422889582">Certificatul serverului a expirat.</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF-je lahko prenesete tukaj</translation>
 <translation id="107147699690128016">Če spremenite pripono datoteke, se lahko datoteka odpre v drugem programu in je lahko morebitno škodljiva za vašo napravo.</translation>
 <translation id="1073328695547557412">Dotaknite se ikone za Google Lens</translation>
+<translation id="1080116354587839789">Prilagoditev prikaza širini</translation>
 <translation id="1086486568852410168">Iskanje z Googlom Lens</translation>
 <translation id="1087799850623149508">Naslovno vrstico lahko premaknete na dno tako, da se je dotaknete in jo pridržite</translation>
 <translation id="1089606299949659462">Pregled je končan!</translation>
@@ -356,6 +357,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="253498598929009420">Spletnemu mestu bo vidna vsebina vašega zaslona.</translation>
 <translation id="2535807170289627159">Vsi zavihki</translation>
 <translation id="2536728043171574184">Ogled kopije te strani za način brez povezave.</translation>
+<translation id="2537574774089209541">Nekatera orodja so bila premaknjena, da imate med brskanjem preprost dostop do Geminija</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, izbrani pripeti anonimni zavihek z izklopljenim zvokom</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, zavihek</translation>
@@ -404,6 +406,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2751271371269891762">Če želite dostopati do zaznamkov in drugega v vseh napravah, se prijavite kot <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/LL</translation>
 <translation id="2762000892062317888">pravkar</translation>
+<translation id="276378135349383280">Prikaz Geminija v spodnji orodni vrstici</translation>
 <translation id="276969039800130567">Prijavljen kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Še <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">ni uspelo</translation>
@@ -536,6 +539,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> zavihek}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> zavihek}two{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> zavihka}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> zavihki}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> zavihkov}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 geslo je shranjeno samo v tej napravi. Če ga želite uporabljati v drugih napravah, ga shranite v računu Google.}one{# geslo je shranjeno samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}two{# gesli sta shranjeni samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}few{# gesla so shranjena samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}other{# gesel je shranjenih samo v tej napravi. Če jih želite uporabljati v drugih napravah, jih shranite v računu Google.}}</translation>
 <translation id="3293181007446299124">Vaša zgodovina brskanja je zasebna v napravi, poročila pa so zaradi zaščite vaše identitete poslana z zakasnitvijo.</translation>
+<translation id="3301639354590628973">Želite preklopiti račun?</translation>
 <translation id="3301936297336370235">Potrditev predloga gesla</translation>
 <translation id="3302615849591357577">Obnovitev skupine zavihkov <ph name="TITLE_OF_GROUP" /> barve <ph name="COLOR_NAME" /> kot nove skupine zavihkov v ozadju.</translation>
 <translation id="3303855915957856445">Ni rezultatov iskanja</translation>
@@ -602,6 +606,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3602290021589620013">Predogled</translation>
 <translation id="3614126103057878858">Vpogled v cene</translation>
 <translation id="3616113530831147358">Zvok</translation>
+<translation id="3616798734782988169">Prepričajte se, da zaupate domeni <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Upravljanje dostopa</translation>
 <translation id="3622349720008044802">Upravljanje oken</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{in še 1 spletno mesto}one{in še # spletno mesto}two{in še # spletni mesti}few{in še # spletna mesta}other{in še # spletnih mest}}</translation>
@@ -632,6 +637,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3738139272394829648">Dotaknite se za iskanje</translation>
 <translation id="3739455665973395693">V računu Google ni ogroženih gesel</translation>
 <translation id="3739899004075612870">Dodano med zaznamke v izdelku <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Prepričajte se, da zaupate temu spletnemu mestu</translation>
 <translation id="3740525748616366977">Glasovno iskanje ni na voljo v tej napravi.</translation>
 <translation id="3763110477555836428">Pri zaključku nakupa s to kartico bo vnesena številka navidezne kartice, da bodo vaši dejanski podatki zaščiteni. Upravljajte v Google Denarnici. <ph name="BEGIN_LINK1" />Preberite več o navideznih karticah<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Nekateri podatki še niso shranjeni</translation>
@@ -678,6 +684,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pripeti zavihek s sliko v sliki</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="395377504920307820">Uporabi brez računa</translation>
+<translation id="3955353672249727801">Strani so bile dodane na bralni seznam</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome bo naložil stran, ko bo pripravljen}one{Chrome bo naložil strani, ko bo pripravljen}two{Chrome bo naložil strani, ko bo pripravljen}few{Chrome bo naložil strani, ko bo pripravljen}other{Chrome bo naložil strani, ko bo pripravljen}}</translation>
 <translation id="3969142555815019568">Chrome ne more preveriti vaših gesel</translation>
 <translation id="3969863827134279083">Premik gor</translation>
@@ -1527,6 +1534,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7291910923717764901">Opisi slik so dodani za to stran</translation>
 <translation id="7293429513719260019">Izbira jezika</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, izbrani pripeti zavihek za deljenje</translation>
+<translation id="7304003340539141201">Geminiju naročite, naj vam pomaga pri zavihkih in opravilih</translation>
 <translation id="7311244614769792472">Ni rezultatov</translation>
 <translation id="7314734791127433392">Gesel ni mogoče preveriti</translation>
 <translation id="7324354302972299151">Pošlji zahtevo »Do Not Track«</translation>
@@ -1873,6 +1881,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8696297579102085705">Pošlji v napravo</translation>
 <translation id="8697753151306746444">Namesto tega delite okno ali zaslon</translation>
 <translation id="8699120352855309748">Ne ponudi prevajanja teh jezikov</translation>
+<translation id="8700565880437506364">Predstavljamo Geminija v Chromu</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="8715286883001906001">Okrepite gesla v računu Google</translation>
 <translation id="8715300232952757586">Zaprl se bo zavihek <ph name="TAB_TITLE" /></translation>
@@ -1940,6 +1949,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
 <translation id="8998837250940831980">Zavihka ni bilo mogoče minimirati. Poskusite znova pozneje.</translation>
 <translation id="9001604755921395912">Odpri na anonimnem zavihku v Chromu</translation>
+<translation id="9010094279589497751">Hitro odprite Geminija, ko ga potrebujete</translation>
 <translation id="9012585441087414258">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Če se na strani zgodi kaj sumljivega, se URL-ji in delčki vsebine strani pošljejo v Google Varno brskanje.</translation>
 <translation id="9019199799064251516">Želite nadaljevati brez zaklepanja profila za avtomobil?</translation>
 <translation id="9022774213089566801">Pogosto obiskano</translation>
@@ -1997,6 +2007,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="9190355771000652811">V naslovni vrstici uporabite te bližnjične tipke z bližnjicami za iskalnike in iskanje po spletnem mestu.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pripeti izbrani anonimni zavihek</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Preverjeno pred 1 minuto}one{Preverjeno pred # minuto}two{Preverjeno pred # minutama}few{Preverjeno pred # minutami}other{Preverjeno pred # minutami}}</translation>
+<translation id="9202894533863490414">Želite prenesti s tega spletnega mesta?</translation>
 <translation id="9204836675896933765">Še 1 datoteka</translation>
 <translation id="9205933215779845960">Te strani ni mogoče najti. Preverite črkovanje ali poskusite iskanje v iskalniku <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

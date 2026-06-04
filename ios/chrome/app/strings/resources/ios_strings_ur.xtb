@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">آپ کا براؤزر نظم کردہ ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="2147127444698817042">‏صرف iPhone پر دستیاب ہے</translation>
+<translation id="2148326276832455306">‏‫Google AI کو بہتر بنانے کے لیے چیٹس کا جائزہ لیا جاتا ہے اور انہیں استعمال کیا جاتا ہے۔ آپ اپنے مقام کے بارے میں معلومات سمیت <ph name="BEGIN_LINK" />اپنی سرگرمی کا نظم<ph name="END_LINK" /> کر سکتے ہیں۔ <ph name="BEGIN_LINK" />اپنے انتخابات کے بارے میں مزید جانیں<ph name="END_LINK" />۔</translation>
 <translation id="2148799636999124959">اپنے محفوظ کردہ پاس ورڈز کے ساتھ تیزی سے سائٹس اور ایپس میں سائن ان کریں۔</translation>
 <translation id="2149968176347646218">کنکشن محفوظ نہیں ہے</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">یونٹ کا منتخب کنندہ</translation>
 <translation id="2330607597130465898">کوئی تحفظ نہیں</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
+<translation id="2340966584724330791">‏‫Google آپ کی چیٹس اور آپ Gemini کے ساتھ جو اشتراک کرتے ہیں کو جمع کرتا ہے (جیسے فائلز، ویڈیوز، اسکرینز اور تصاویر)۔ یہ آپ کے تاثرات، Gemini کے ساتھ آپ کی ملاحظہ کردہ ویب سائٹس کی معلومات، پروڈکٹ کا استعمال اور مقام کی معلومات (بشمول آپ کے آلے کا عمومی مقام، IP پتہ یا آپ کے Google اکاؤنٹ میں موجود گھر یا دفتر کے پتے) بھی جمع کرتا ہے۔</translation>
 <translation id="2350463587705616331">گہرا بھوراگہرا بھورا پس منظر کا رنگ</translation>
 <translation id="2351097562818989364">ترجمہ کی آپ کی ترتیبات دوبارہ ترتیب دی گئیں ہیں۔</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} کے لیے اپنا پاس ورڈ محفوظ کر سکتے ہیں۔}=2{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE} اور {DOMAIN_TWO} کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}=3{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}other{‏آپ اپنے Google اکاؤنٹ {EMAIL} میں {DOMAIN_ONE}، {DOMAIN_TWO} اور {OTHER_DOMAINS_COUNT} دیگر کے لیے اپنے پاس ورڈز محفوظ کر سکتے ہیں۔}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">اپنی معلومات پُر کرنے میں دشواری پیش آ رہی ہے</translation>
 <translation id="2371084566192454134">ٹیبز اور ٹیب گروپس</translation>
 <translation id="2371303771137626249">نئی</translation>
+<translation id="2375947780110007467">‏‫Google اشتراک کردہ ٹیبز کے مواد اور URL کا استعمال کرتا ہے۔ آپ کے موجودہ ٹیب کا اشتراک نئی چیٹس میں کیا جاتا ہے۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="2381405137052800939">مبادیات</translation>
 <translation id="2384692388811649784">پوشیدگی ٹیبز کو چھپائیں</translation>
 <translation id="2386793615875593361">1 کو منتخب کیا گیا</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">صوتی تلاش</translation>
 <translation id="3289505634533552500">صوتی تلاش</translation>
 <translation id="3295904109373959849">ٹیب گروپس گرڈ</translation>
+<translation id="3301639354590628973">اکاؤنٹس سوئچ کریں؟</translation>
 <translation id="3302837541200840455">‫<ph name="TAB_TITLE" />، نئی سرگرمی</translation>
 <translation id="3305294846493618482">مزید</translation>
 <translation id="3311748811247479259">آف</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">پڑھی ہوئی کا نشان لگائیں</translation>
 <translation id="428768789042547925">نیا کیا ہے</translation>
 <translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
+<translation id="4294506173142861371">‫<ph name="FIRST_NAME" /> کے بطور سائن ان کریں؟</translation>
 <translation id="4300830875340617674">کارڈ اسکین کریں اور آٹو فل کریں</translation>
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">بُک مارکس</translation>
 <translation id="5447973833955560753">بازیابی پاس ورڈ</translation>
 <translation id="5452354193031718372">مضبوط پاس ورڈ استعمال کریں:</translation>
+<translation id="5453088693079603292">کون سی سرگرمی جمع کی جاتی ہے</translation>
 <translation id="5454211924362324495">دوسروں کو اپنا پاس ورڈ استعمال کرنے سے روکنے کے لیے، <ph name="BEGIN_LINK" />اسے <ph name="WEBSITE" /> پر تبدیل کریں<ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">اپنی تلاش میں شامل کریں</translation>
 <translation id="5457226814769348910">آف لائن ورژن کھولیں</translation>
@@ -1522,6 +1528,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6253686838150111720">‫<ph name="URL" /> میں سائن ان کریں</translation>
 <translation id="6254066287920239840">براؤزر کی بجائے لنکس کو ایپ میں کھولیں۔</translation>
 <translation id="6259928806013786178">ریڈنگ موڈ ناکام ہو گیا</translation>
+<translation id="626335165106398104">‏‫Gemini دیگر سروسز کے ساتھ کام کرتا ہے</translation>
 <translation id="6268773951964630964">کاپی کردہ تصویر تلاش کریں</translation>
 <translation id="6271462272606946663">موبائل سائٹ کی درخواست کو چھپائیں</translation>
 <translation id="6271824294945464304">پاس ورڈ کا اشتراک کرنا</translation>
@@ -1637,6 +1644,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6609890790934458793"><ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" /> اور <ph name="THIRD_WEBSITE" /> کے پاسورڈز حذف ہو جائيں گے۔ آپ کے اکاؤنٹس حذف نہیں ہوں گے۔</translation>
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6612912757320004438">ٹیبز کی اطلاعات کی اجازت دیں…</translation>
+<translation id="6613372200395638275">‏حسب ضرورت مدد فراہم کرنے کے لیے، Gemini آپ کے کچھ ڈیٹا (جیسے آپ کی چیٹس، مقام اور دیگر متعلقہ معلومات کے حصے) کا اشتراک Maps اور فلائٹس جیسی دیگر Google سروسز کے ساتھ کرتا ہے۔ یہ سروسز معلومات کو بہتر بنانے کے لیے استعمال کی جا سکتی ہیں، چاہے آپ بعد میں اپنی Gemini ایپس کی سرگرمی کو حذف کر دیں۔ ‫<ph name="BEGIN_LINK" />Gemini ایپس کا رازداری ہب<ph name="END_LINK" /> میں مزید جانیں۔</translation>
 <translation id="6617761071025228250">ٹیکسٹ صاف کریں</translation>
 <translation id="6619015782482868078">فیروزی تھیم</translation>
 <translation id="6620279676667515405">منسوخ کریں</translation>
@@ -1712,6 +1720,9 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6858718102216837409">زبان شامل کریں…</translation>
 <translation id="6858855187367714033">اسکین کیا گیا</translation>
 <translation id="6859944681507688231">‏QR کوڈ یا کریڈٹ کارڈ اسکین کرنے کیلئے، ترتیبات سے کیمرا کو فعال کریں۔</translation>
+<translation id="6862212368460840758">آپ <ph name="SIGNED_EMAIL" /> کے بطور سائن ان ہیں۔
+
+اپنے کمپیوٹر سے جاری رکھنے کے لیے، <ph name="OTHER_EMAIL" /> پر سوئچ کریں۔ آپ کو اس اکاؤنٹ سے پاس ورڈز، بُک مارکس اور بہت کچھ ملے گا۔</translation>
 <translation id="6867369562105931222">پاس ورڈ</translation>
 <translation id="6867400383614725881">نیا پوشیدگی ٹیب</translation>
 <translation id="686831807558000905">سائن ان نہ کریں</translation>
@@ -1780,6 +1791,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7091023926159231962">{count,plural, =1{‫{count} پاس ورڈ کو درآمد نہیں کیا جا سکا}other{‫{count} پاس ورڈز کو درآمد نہیں کیا جا سکا}}</translation>
 <translation id="7095110968493193530">‏<ph name="EMAIL" /> کے لیے Google پاس ورڈ مینیجر میں محفوظ کریں</translation>
 <translation id="7097046145876891318">ایڈریس بار میں، وقت کے ساتھ قیمت میں تبدیلیاں دیکھنے کے لیے قیمت کی سرگزشت پر تھپتھپائیں</translation>
+<translation id="7098554251807199977">‏نہ تو Gemini کے ساتھ آپ کی گفتگوؤں اور نہ ہی آپ کے <ph name="BEGIN_LINK" />Google Workspace ڈیٹا<ph name="END_LINK" /> کا جائزہ لیا جائے گا یا تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے استعمال کیا جائے گا۔</translation>
 <translation id="7102005569666697658">ڈاؤن لوڈ ہو رہی ہے… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">مینو ← ترتیبات ← ادائیگی کے طریقے</translation>
 <translation id="7108338896283013870">چھپائیں</translation>
@@ -2173,6 +2185,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8439758443371991593">'پڑھنے کی فہرست میں شامل کریں' کو چھپائیں</translation>
 <translation id="8443986842926457191">‏URL ‏2048 حروف سے زیادہ ہے</translation>
 <translation id="8449869326050867919">پاس ورڈ کا اشتراک کر دیا گیا</translation>
+<translation id="8461708300275916315">اگر آپ کی عمر 18 سال سے کم ہے</translation>
 <translation id="8473815223723723001">‏‫Gemini کے ساتھ تصویر میں ترمیم کریں</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="8474378002946546633">اطلاعات کی اجازت دیں</translation>
@@ -2234,6 +2247,8 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8636825310635137004">اپنے دیگر آلات سے اپنے ٹیبز حاصل کرنے کیلئے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="8637431369725868556">خطرناک سائٹس سے تحفظ حاصل کریں۔</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{{COUNT} متاثرہ پاس ورڈ}other{{COUNT} متاثرہ پاس ورڈز}}</translation>
+<translation id="8639963783467694461">آٹو فل ترتیبات</translation>
+<translation id="8642417828095157370">مزید متعلقہ جوابات کے لیے ٹیبز کا اشتراک کیا جاتا ہے</translation>
 <translation id="8643403533759285912">گروپ حذف کریں</translation>
 <translation id="8647280737650867362">قیمت کے ٹریک کو کالعدم نہیں کیا جا سکا۔</translation>
 <translation id="8654802032646794042">منسوخ کریں</translation>
@@ -2247,6 +2262,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8672733398999596205">تمام کو فعال کریں</translation>
 <translation id="8674716540979958118">آپ کے پاس متاثرہ پاس ورڈز ہیں۔</translation>
 <translation id="8679900250380464358">پڑھنے کی فہرست میں شامل کریں</translation>
+<translation id="8680643216091361291">‏آپ کی <ph name="BEGIN_LINK" />سرگرمی برقرار رکھیں<ph name="END_LINK" /> کی ترتیب بطور ڈیفالٹ آف ہے۔ جب یہ آف ہو تو Google آپ کی چیٹس کو 3 دنوں کے لیے محفوظ کرتا ہے۔ یہ Gemini ایپس کو صحیح طریقے سے کام کرنے، انہیں محفوظ رکھنے میں مدد کرنے اور مسائل کو حل کرنے کی غرض سے آپ کے تاثرات کا استعمال کرنے کے لیے ان کا استعمال کرتا ہے۔ آپ سبھی کیلئے Google AI کو بہتر بنانے میں مدد کرنے کے لیے 'سرگرمی برقرار رکھیں' کو آن کر سکتے ہیں۔</translation>
 <translation id="8680786875305615692">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="8680787084697685621">اکاؤنٹ سائن ان کی تفصیلات پرانی ہیں۔</translation>
 <translation id="8690752723634292147">حذف کرنے کی توثیق کریں</translation>
@@ -2396,6 +2412,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9162432979321511934">آٹو فل پاس ورڈز آن کریں</translation>
 <translation id="9165320910061267720">‏قیمت میں کمی کے الرٹس کی اطلاعات حاصل کرنے کے لیے، آپ کو اپنے iOS کی ترتیبات میں اطلاعات کو آن کرنا ہوگا۔</translation>
 <translation id="9179151630575358778">اس آئٹم کو چھپاتا ہے</translation>
+<translation id="9183563643084679152">‏آپ نے Chrome میں سائن ان کرنے کے لیے ایک QR کوڈ اسکین کیا۔ آپ کو اس اکاؤنٹ سے پاس ورڈز، بُک مارکس اور بہت کچھ ملے گا۔</translation>
 <translation id="9183733013282108610">پوشیدگی تلاش</translation>
 <translation id="9186762474139509529">لاگ کرنا شروع کریں</translation>
 <translation id="9191031968346938109">اس میں شامل کریں…</translation>

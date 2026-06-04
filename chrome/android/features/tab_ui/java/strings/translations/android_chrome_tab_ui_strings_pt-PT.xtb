@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: descida do preço de <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Ícone da cor do grupo de separadores <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Lista de grupos de separadores fechada</translation>
+<translation id="3152596030350326139">Mostrar separadores na horizontal</translation>
+<translation id="31806439105337256">Mostrar separadores na vertical</translation>
 <translation id="3194464645767632461">classificação</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> separador ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> separadores ao grupo}}</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Quer agrupá-los?</translation>

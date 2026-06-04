@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Изтегля се...</translation>
 <translation id="1651617469580841801">Когато използвате Google Обектив, заглавието, URL адресът и съдържанието на страницата, включително PDF файловете, се изпращат до Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Всичко за ChromeOS Flex</translation>
+<translation id="1665867022636014702">Използване на препоръчаните от Google настройки на браузъра</translation>
 <translation id="1674870198290878346">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chrome</translation>
 <translation id="1682634494516646069">Google Chrome не може да чете и записва в директорията си за данни:
 
@@ -158,6 +159,7 @@
 <translation id="2652691236519827073">Отваряне на връзката в нов &amp;раздел на Chrome</translation>
 <translation id="2665296953892887393">Помогнете ни да подобрим Google Chrome, като ни изпращате <ph name="UMA_LINK" /> му и сигнали за сривове</translation>
 <translation id="2668094785979141847">Кликнете, за да излезете от Google Обектив</translation>
+<translation id="2674238339205910678">ChromeOS Flex не успя да запази данните от Chrome в профила ви в Google, защото данните ви за вход в профила не са актуални</translation>
 <translation id="2681444469812712297">Отваряне на <ph name="URL" /> в нов раздел в Google Chrome.</translation>
 <translation id="2699790011615497488">Отваряне на Gemini в Chrome бета</translation>
 <translation id="2712141162840347885">Изберете каквото и да е, за да търсите с Google Обектив, или натиснете Escape за изход</translation>
@@ -240,6 +242,7 @@
 <translation id="345171907106878721">Добавяне на вас към Chrome</translation>
 <translation id="3453763134178591239">Общи условия на Chrome OS</translation>
 <translation id="3503306920980160878">Chrome се нуждае от достъп до данните за местоположението ви, за да ги сподели с този сайт</translation>
+<translation id="3539955434060988644">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chrome</translation>
 <translation id="3576528680708590453">Системният ви администратор е конфигурирал Google Chrome да отваря алтернативен браузър за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Синхронизирайте и персонализирайте Chrome на всичките си устройства</translation>
 <translation id="3583751698304738917">Вече сте влезли като <ph name="USER_EMAIL_ADDRESS" /> в друг потребителски профил в Chrome</translation>
@@ -531,6 +534,7 @@
 <translation id="6497147134301593682">Chrome бе затворен автоматично</translation>
 <translation id="6506909944137591434">Chrome се нуждае от разрешение за достъп до камерата, за да създаде триизмерна карта на заобикалящата ви среда</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex не успя да запази данните от Chrome в профила ви в Google поради грешка при влизане в профила</translation>
 <translation id="6520670145826811516">За да се използва местоположението ви, дайте достъп на Chrome от <ph name="BEGIN_LINK" />системните настройки<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">История в Chrome</translation>
 <translation id="6532945796722480006">Отваряне на Gemini в Chrome Canary</translation>
@@ -578,6 +582,7 @@
 <translation id="7011190694940573312">Инсталирането не бе успешно, защото тази версия на операционната система не се поддържа.</translation>
 <translation id="7024536598735240744">Грешка при разпакетирането: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Оттук можете да превключвате между потребителските профили в Chrome</translation>
+<translation id="7026856149118332950">Кликнете върху <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> в известието от Windows, за да фиксирате Chrome в лентата на задачите за бърз достъп.</translation>
 <translation id="7047386856539490735">Полезни ли са тези резултати?</translation>
 <translation id="7051685429025310665">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“.</translation>
 <translation id="7059914902409643750">Персонализирайте Chrome според вкуса си</translation>
@@ -670,6 +675,7 @@
 <translation id="7890208801193284374">Ако споделяте компютър, близките и приятелите ви могат да сърфират отделно и да настроят Chrome точно така, както искат.</translation>
 <translation id="7896673875602241923">По-рано някой влезе в Chrome на този компютър като <ph name="ACCOUNT_EMAIL_LAST" />. Моля, създайте нов потребител в браузъра, така че информацията ви да се съхранява отделно.</translation>
 <translation id="7904985524660297937">Изпробвайте Gemini в Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS не успя да запази данните от Chrome в профила ви в Google поради грешка при влизане в профила</translation>
 <translation id="7917876797003313048">Можете да управлявате профилите си в Google, в които сте влезли. Те се използват за браузъра Chrome, Google Play Магазин, Gmail и др. Ако искате да добавите профил за друго лице, като например член на семейството, вместо това добавете нов човек към вашия <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome блокира това изтегляне, защото файлът е измамнически и може да извърши неочаквани промени на устройството ви</translation>
 <translation id="7951272445806340501">ChromeOS Flex трябва да се рестартира, за да бъде приложена актуализацията.</translation>
@@ -794,6 +800,7 @@
 <translation id="93760716455950538">Рестартиране на ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome препоръчва този файл да бъде сканиран, защото може да е опасен.</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
+<translation id="973195869036269770">ChromeOS не успя да запази данните от Chrome в профила ви в Google, защото данните ви за вход в профила не са актуални</translation>
 <translation id="983803489796659991">Инсталирането не бе успешно, защото сървърът за актуализиране няма хеш данни за приложението.</translation>
 <translation id="989369509083708165">Google Chrome е браузърът ви по подразбиране</translation>
 <translation id="989816563149873169">Посредством <ph name="SHORTCUT" /> можете да превключвате между потребителските профили в Chrome</translation>

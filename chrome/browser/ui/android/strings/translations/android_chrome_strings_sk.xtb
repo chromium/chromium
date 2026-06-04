@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Tu si môžete stiahnuť súbory PDF</translation>
 <translation id="107147699690128016">Ak zmeníte príponu súboru, súbor sa môže otvoriť v inej aplikácii a potenciálne ohroziť vaše zariadenie.</translation>
 <translation id="1073328695547557412">Klepnite na ikonu Google Lens</translation>
+<translation id="1080116354587839789">Prispôsobiť šírke</translation>
 <translation id="1086486568852410168">Vyhľadávať pomocou funkcie Google Lens</translation>
 <translation id="1087799850623149508">Panel s adresou môžete pridržaním presunúť nadol</translation>
 <translation id="1089606299949659462">Kontrola bola dokončená.</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> tabs}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kariet}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 heslo je uložené iba v tomto zariadení. Ak ju chcete používať v ďalších zariadeniach, uložte si ju v účte Google.}few{# heslá sú uložené iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}many{# passwords are saved only to this device. To use them on your other devices, save them in your Google Account.}other{# hesiel je uložených iba v tomto zariadení. Ak ich chcete používať v ďalších zariadeniach, uložte si ich v účte Google.}}</translation>
 <translation id="3293181007446299124">Vaša história prehliadania je v zariadení uchovaná v súkromí a hlásenia sa z dôvodu ochrany vašej totožnosti odosielajú s oneskorením</translation>
+<translation id="3301639354590628973">Chcete prepnúť účet?</translation>
 <translation id="3301936297336370235">Potvrdenie návrhu hesla</translation>
 <translation id="3302615849591357577">Obnovte skupinu kariet <ph name="TITLE_OF_GROUP" /> vo farbe <ph name="COLOR_NAME" /> ako novú skupinu kariet na pozadí.</translation>
 <translation id="3303855915957856445">Nič sa nenašlo</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pripnutá karta s obrazom v obraze</translation>
 <translation id="3950820424414687140">Prihlásiť sa</translation>
 <translation id="395377504920307820">Použiť bez účtu</translation>
+<translation id="3955353672249727801">Stránky boli pridané do čitateľského zoznamu</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načíta, keď bude k dispozícii}few{Chrome stránku načíta, keď bude k dispozícii}many{Chrome stránku načíta, keď bude k dispozícii}other{Chrome stránku načíta, keď bude k dispozícii}}</translation>
 <translation id="3969142555815019568">Chrome nemôže skontrolovať heslá</translation>
 <translation id="3969863827134279083">Presunúť nahor</translation>

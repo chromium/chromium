@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Непозната политика.</translation>
 <translation id="1227677022489889280">Наведете причина за преместувањето (задолжително)</translation>
 <translation id="1228893227497259893">Погрешен идентификувач на ентитет</translation>
+<translation id="122989279399348496">Додека сте најавени, <ph name="DOMAIN" /> може да ја потврдува <ph name="EMAIL" /> на поддржаните сајтови за да не мора да го проверувате приемното сандаче</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (откриено автоматски)</translation>
 <translation id="1232569758102978740">Без наслов</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> е задолжително поле</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, достапни се повеќе дејства, притискајте Tab за да ги менувате</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Податоци за виртуелна картичка</translation>
+<translation id="1802420021606590788">Chrome ги обработува URL-адресите и насловите на страниците во приватен простор во облакот</translation>
 <translation id="1803254472779303354">Заклучувањето на глувчето е дозволено</translation>
 <translation id="1803351196216024260">Може да прашува за да го користи микрофонот</translation>
 <translation id="1804258830776932716">Овозможете го Pix така што ќе ја поврзете вашата сметка брзо</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">Други обележувачи</translation>
 <translation id="2355395290879513365">Напаѓачите можеби ќе можат да ги видат сликите што ги гледате на сајтов и да ве измамат со тоа што ќе ги модифицираат.</translation>
 <translation id="2356941001189392209">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат настани со застарена технологија</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Ќе се сподели 1 картичка}one{Ќе се споделат {NUM_TABS} картичка}other{Ќе се споделат {NUM_TABS} картички}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> управува со уредот, а <ph name="ACCOUNT_MANAGER" /> управува со сметката.</translation>
 <translation id="2359629602545592467">Повеќе</translation>
 <translation id="2359808026110333948">Продолжи</translation>
@@ -3027,6 +3030,7 @@
 <translation id="5742806904559466333">Барови, клубови и ноќен живот</translation>
 <translation id="5743684619253032786">Производи за нега на ноктите</translation>
 <translation id="574392208103952083">Медиум</translation>
+<translation id="5745586894920491759">Chrome ги обработува URL-адресите и насловите на страниците во облакот</translation>
 <translation id="5745733273847572235">Може да прашува за вашата локација</translation>
 <translation id="5750869797196646528">Следење раце</translation>
 <translation id="5752327398324808817">Внесете еден или два збора</translation>
@@ -3421,6 +3425,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Погледнете ја евиденцијата</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />да ги проверите проксито, заштитниот ѕид и конфигурацијата на безбедниот DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Автоматски потврдувајте ги вашите е-поштите</translation>
 <translation id="6366710531182496394">Двојно спојување лево</translation>
 <translation id="6367196786591004737">Избриши го записот</translation>
 <translation id="6370022303958842211">Дејства за пристап до уредот како најавувања (вклучително со причините за неуспешни најавувања), одјавувања, заклучувања и отклучувања</translation>
@@ -5060,6 +5065,7 @@
 <translation id="8963117664422609631">Оди на поставките за сајтот</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предлози:<ph name="MARKUP_2" />Проверете дали имате врска со интернет<ph name="MARKUP_3" />Подоцна вчитајте ја веб-страницата повторно<ph name="MARKUP_4" />Проверете ја адресата што ја внесовте<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Вашите локални датотеки ќе се избришат по <ph name="HOURS" /> часа</translation>
+<translation id="8964904785315870349">Потврдена е-пошта</translation>
 <translation id="8968766641738584599">Зачувај ја картичката</translation>
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="8971063699422889582">Сертификатот на серверот истече.</translation>

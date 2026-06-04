@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Downloader...</translation>
 <translation id="1651617469580841801">Når du bruger Google Lens, sendes sidetitlen, webadressen og indholdet, herunder PDF-filer, til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
+<translation id="1665867022636014702">Brug de browserindstillinger, der anbefales af Google</translation>
 <translation id="1674870198290878346">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan ikke læse og skrive i sin egen datamappe: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Når du skriver i adresselinjen eller søgefeltet, sender Chrome det, du skriver, til din organisations søge-, AI- og agentværktøjer for at få forslag.</translation>
@@ -238,6 +239,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="345171907106878721">Tilføj dig selv i Chrome</translation>
 <translation id="3453763134178591239">Vilkår for ChromeOS</translation>
 <translation id="3503306920980160878">Chrome skal have adgang til din lokation for at dele din lokation med dette website</translation>
+<translation id="3539955434060988644">Åbn linket i et inkognitovindue i Chrome</translation>
 <translation id="3576528680708590453">Din systemadministrator har konfigureret Google Chrome til at åbne en anden browser for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Synkroniser og personligt tilpas Chrome på alle dine enheder</translation>
 <translation id="3583751698304738917">Du er allerede logget ind som <ph name="USER_EMAIL_ADDRESS" /> på en anden Chrome-profil</translation>

@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium trenger Bluetooth-tilgang for å utforske 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Gjenkjenn språk</translation>
+<translation id="1330742950061766891">Bruk de anbefalte nettleserinnstillingene for Chromium</translation>
 <translation id="1342274909142618978">Slett også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Festet. Du kan åpne bildesøk igjen via den nye knappen på verktøylinjen</translation>
 <translation id="1356661055722410047">Nyhet! Du kan oversette både tekst og bilder på skjermen</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">Chromium-kontoen krever ny autentisering</translation>
 <translation id="5231355151045086930">Vil du logge av Chromium?</translation>
 <translation id="5234764350956374838">Lukk</translation>
+<translation id="5249261924633168472">Åpne linken i et inkognitovindu i Chromium</translation>
 <translation id="5254739261293693943">Spør om denne videoen</translation>
 <translation id="5276305953263010518">Skaff deg Chromium-appen for å lagre passord uansett hvor du er</translation>
 <translation id="5277894862589591112">For å bruke endringene dine må du starte Chromium på nytt</translation>
@@ -379,6 +381,7 @@
 <translation id="5294316920224716406">Når du surfer i inkognitomodus, advarer Chromium deg før nettsteder lastes inn via usikre tilkoblinger</translation>
 <translation id="5313228254328109263">Intern Chromium-oppdateringstjeneste</translation>
 <translation id="5346389065299425353">Gjør søket mer omfattende ved å legge til flere faner, filer og verktøy</translation>
+<translation id="5348677704241861105">Få en rask oversikt over dette dokumentet, og still spørsmål med Gemini i Chromium</translation>
 <translation id="5352264705793813212">Chromium har noen sikkerhetsanbefalinger til deg</translation>
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
 <translation id="5358375970380395591">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
@@ -486,6 +489,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="6390800440335263989">For å fortsette, logg på Chromium som <ph name="EMAIL" />. Dette sikrer at du har organisasjonens regler.</translation>
 <translation id="6400112897226594999">Chromium-logo på en dataskjerm.</translation>
 <translation id="6403826409255603130">Chromium er en nettleser som kjører nettsider og programmer i lynets hastighet. Den er rask, stabil og enkel å bruke. Surf på nettet på en tryggere måte med Chromium, som har innebygd beskyttelse mot skadelig programvare og nettfisking.</translation>
+<translation id="6414624068245092115">For å sikre at du alltid kan bruke og lagre Chromium-data i Google-kontoen din, må du bekrefte at det er deg</translation>
 <translation id="642132557830635295">Chromium kjører raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet</translation>
 <translation id="6436260184216827876">Bildesøk er ikke tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="6442900851116057561">Start ChromiumOS på nytt</translation>

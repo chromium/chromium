@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">ນະ​ໂຍ​ບາຍ​ທີ່ບໍ່ຮູ້​ຈັກ​</translation>
 <translation id="1227677022489889280">ໃຫ້ເຫດຜົນສໍາລັບການຍ້າຍ (ຈຳເປັນ)</translation>
 <translation id="1228893227497259893">ຕົວລະບຸ​ເອກະລັກ​ທີ່​ບໍ່​ຖືກຕ້ອງ</translation>
+<translation id="122989279399348496">ໃນລະຫວ່າງທີ່ທ່ານເຂົ້າສູ່ລະບົບ, <ph name="DOMAIN" /> ສາມາດຢືນຢັນ <ph name="EMAIL" /> ຢູ່ເວັບໄຊທີ່ຮອງຮັບໄດ້ເພື່ອໃຫ້ທ່ານບໍ່ຕ້ອງກວດສອບກ່ອງອີເມວຂອງທ່ານ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ກວດພົບອັດຕະໂນມັດ)</translation>
 <translation id="1232569758102978740">ບໍ່ມີຫົວຂໍ້</translation>
 <translation id="1234539281285007945">ຕ້ອງລະບຸ <ph name="FIELD_1" /></translation>
@@ -305,6 +306,7 @@
 <translation id="1458140305240870199">ຊຸດຊັ້ນໃນ</translation>
 <translation id="1458770162980644530">ໜ້າຈໍຂໍ້ກຳນົດບໍລິການຂອງຊື້ກ່ອນຈ່າຍນຳຫຼັງ. ແປ້ນພິມເຊື່ອງຢູ່.</translation>
 <translation id="1459693405370120464">ສະພາບອາກາດ</translation>
+<translation id="1460317464907341501">ຢັ້ງຢືນອີເມວນີ້ໂດຍອັດຕະໂນມັດບໍ?</translation>
 <translation id="1461041542809785877">ການ​ປະ​ຕິ​ບັດ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ໃຊ້ຟອນໃນຄອມພິວເຕີຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດສ້າງເນື້ອຫາທີ່ມີຄວາມຖືກຕ້ອງສູງໄດ້</translation>
@@ -510,6 +512,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ມີຫຼາຍຄຳສັ່ງພ້ອມໃຫ້ນຳໃຊ້, ກົດ Tab ເພື່ອເບິ່ງພວກມັນ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ລາຍລະອຽດບັດສະເໝືອນ</translation>
+<translation id="1802420021606590788">Chrome ຈະປະມວນຜົນຊື່ໜ້າ ແລະ URL ໃນພື້ນທີ່ສ່ວນບຸກຄົນໃນຄລາວ</translation>
 <translation id="1803254472779303354">ອະນຸຍາດໃຫ້ລັອກເມົ້າ</translation>
 <translation id="1803351196216024260">ສາມາດຂໍໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="1804258830776932716">ເປີດການນຳໃຊ້ Pix ໂດຍການລິ້ງບັນຊີຂອງທ່ານຢ່າງວ່ອງໄວ</translation>
@@ -873,6 +876,7 @@
 <translation id="2354001756790975382">ບຸກມາກສ໌ອື່ນໆ</translation>
 <translation id="2355395290879513365">ຜູ້ໂຈມຕີອາດຈະສາມາດເຫັນຮູບພາບທີ່ທ່ານກຳລັງເບິ່ງຢູ່ໃນເວັບໄຊນີ້ ແລະ ຫຼອກລວງທ່ານໂດຍການດັດແປງຮູບພາບເຫຼົ່ານັ້ນ.</translation>
 <translation id="2356941001189392209">ລາຍຊື່ URL ທີ່ຈຳກັດໄວ້ຂອງໜ້າເວັບທີ່ທ່ານເຂົ້າເບິ່ງເຊິ່ງໃຊ້ເຫດການເທັກໂນໂລຢີແບບເກົ່າ</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{ຈະແບ່ງປັນ 1 ແຖບ}other{ຈະແບ່ງປັນ {NUM_TABS} ແຖບ}}</translation>
 <translation id="2357481397660644965">ອຸປະກອນຂອງທ່ານຖືກຈັດການໂດຍ <ph name="DEVICE_MANAGER" /> ແລະ ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">ຫຼາຍສະກຸນເງິນ</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
@@ -2002,6 +2006,7 @@
 <translation id="412601465078863288">ການອັບໂຫຼດໝົດເວລາແລ້ວ</translation>
 <translation id="4127317221386336246">ເຄື່ອງປະດັບເສື້ອຜ້າ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ລາຍການອື່ນ}other{# ລາຍການອື່ນ}}</translation>
+<translation id="4129810348470013900">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່.</translation>
 <translation id="4129992181550680635">ແຫຼ່ງຂໍ້ມູນການສຶກສາ</translation>
 <translation id="4130226655945681476">ກຳລັງກວດເບິ່ງສາຍເຊື່ອມຕໍ່ເຄືອຂ່າຍ, ໂມເດັມ ແລະ ເຣົາເຕີ</translation>
 <translation id="4132448310531350254">ຕົວຈັດການຊ້ຳກັນສຳລັບ file_extension "<ph name="FILE_EXTENSION" />" ທີ່ອ້າງອີງໂດຍແອັບ "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3027,6 +3032,7 @@
 <translation id="5742806904559466333">ບາ, ຄລັບ ແລະ ສະຖານບັນເທີງຍາມກາງຄືນ</translation>
 <translation id="5743684619253032786">ຜະລິດຕະພັນເບິ່ງແຍງເລັບ</translation>
 <translation id="574392208103952083">ສື່ກາງ</translation>
+<translation id="5745586894920491759">Chrome ຈະປະມວນຜົນຊື່ໜ້າ ແລະ URL ໃນຄລາວ</translation>
 <translation id="5745733273847572235">ສາມາດຂໍສະຖານທີ່ຂອງທ່ານ</translation>
 <translation id="5750869797196646528">ການຕິດຕາມມື</translation>
 <translation id="5752327398324808817">ລະບຸ 1 ຄຳ ຫຼື 2 ຄຳ</translation>
@@ -3421,6 +3427,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ເບິ່ງບັນທຶກ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າພຣັອກຊີ, ໄຟລ໌ວໍ ແລະ DNS ທີ່ປອດໄພ<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">ຢືນຢັນອີເມວຂອງທ່ານໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6366710531182496394">ໜີບກະຫຼັບເຟີຢູ່ເບື້ອງຊ້າຍສອງເທື່ອ</translation>
 <translation id="6367196786591004737">ລຶບລາຍການ</translation>
 <translation id="6370022303958842211">ຄຳສັ່ງສິດເຂົ້າເຖິງອຸປະກອນ ເຊັ່ນ: ການເຂົ້າສູ່ລະບົບ (ຮວມທັງເຫດຜົນການເຂົ້າສູ່ລະບົບບໍ່ສຳເລັດ), ການອອກຈາກລະບົບ, ການລັອກ ແລະ ປົດລັອກ</translation>
@@ -5060,6 +5067,7 @@
 <translation id="8963117664422609631">ໄປຫາການຕັ້ງຄ່າເວັບໄຊ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ຄຳ​ແນະ​ນຳ:<ph name="MARKUP_2" />ເບິ່ງ​ໃຫ້​ແນ່​ໃຈ​ວ່າ ທ່ານ​ມີ​ການ​ເຊື່ອມ​ຕໍ່​ຂໍ້​ມູນ​ຖືກ​ຕ້ອງ​ແລ້ວ<ph name="MARKUP_3" />ໂຫຼຼດ​ໜ້າ​ເວັບ​ນີ້​ພາຍ​ຫຼັງ<ph name="MARKUP_4" />ກວດ​ເບິ່ງ​ທີ່​ຢູ່​ທີ່​ທ່ານ​ປ້ອນ​ເຂົ້າ​<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ໄຟລ໌ໃນເຄື່ອງຂອງທ່ານຈະຖືກລຶບໃນ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
+<translation id="8964904785315870349">ອີເມວທີ່ຢັ້ງຢືນແລ້ວ</translation>
 <translation id="8968766641738584599">ບັນທຶກບັດໄວ້</translation>
 <translation id="8970887620466824814">ມີບາງຢ່າງຜິດພາດ.</translation>
 <translation id="8971063699422889582">ໃບ​ຢັ້ງ​ຢືນ​ຂອງເຊີບເວີໝົດອາຍຸແລ້ວ​.</translation>

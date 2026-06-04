@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> flipi flokkaður</translation>
 <translation id="1844381456014878100">Eftir sjö daga aðgerðaleysi</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flipi}one{<ph name="TABS_COUNT_MANY" /> flipi}other{<ph name="TABS_COUNT_MANY" /> flipar}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Bæta flipa við leslista}one{Bæta flipa við leslista}other{Bæta flipum við leslista}}</translation>
 <translation id="1909810060368225529">Tilkynning: Allir geta séð breytingar sem gerðar eru á þessum sameiginlega flipahópi. Allir geta gert breytingar á sameiginlegum flipahópum</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Festa flipa}one{Festa flipa}other{Festa flipa}}</translation>
 <translation id="1982637982196732906">Færa yfir í óvirkan hluta</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> verðlækkun á <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> litatákn flipahóps</translation>
 <translation id="311432875115153175">Flipahópalisti lokaður</translation>
+<translation id="3152596030350326139">Sýna flipa lárétt</translation>
+<translation id="31806439105337256">Sýna flipa lóðrétt</translation>
 <translation id="3194464645767632461">einkunn</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Bæta <ph name="TABS_COUNT_ONE" /> flipa við hópinn}one{Bæta <ph name="TABS_COUNT_MANY" /> flipa við hópinn}other{Bæta <ph name="TABS_COUNT_MANY" /> flipum við hópinn}}</translation>
 <translation id="3328308545011660196">Tillaga: <ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>

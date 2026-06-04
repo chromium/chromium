@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Вашим веб-переглядачем керує адміністратор. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
 <translation id="2147127444698817042">Доступно лише на iPhone</translation>
+<translation id="2148326276832455306">Ми переглядаємо чати й використовуємо їх для покращення ШІ від Google. Ви можете <ph name="BEGIN_LINK" />керувати історією дій<ph name="END_LINK" />, зокрема інформацією про своє місцезнаходження. <ph name="BEGIN_LINK" />Докладніше про доступні опції.<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">Швидко входьте в облікові записи на сайтах і в додатках за допомогою збережених паролів.</translation>
 <translation id="2149968176347646218">З'єднання ненадійне</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Засіб вибору одиниць</translation>
 <translation id="2330607597130465898">Захист вимкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
+<translation id="2340966584724330791">Google збирає ваші чати й контент, яким ви ділитеся з Gemini (наприклад, файли, відео, екрани й фотографії). Крім того, ми збираємо ваші відгуки, відомості з вебсайтів, які ви відвідуєте за допомогою Gemini, інформацію про використання продуктів і геодані (зокрема приблизне місцеположення вашого пристрою, IP-адресу або домашню чи робочу адресу в обліковому записі Google).</translation>
 <translation id="2350463587705616331">Колір фону "Сепія"</translation>
 <translation id="2351097562818989364">Налаштування перекладу скинуто.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Ви можете зберегти пароль для веб-сайту {DOMAIN_ONE} у своєму обліковому записі Google ({EMAIL}).}=2{Ви можете зберегти паролі для веб-сайтів {DOMAIN_ONE} і {DOMAIN_TWO} у своєму обліковому записі Google ({EMAIL}).}=3{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}one{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}few{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}many{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}other{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Не вдалося заповнити інформацію</translation>
 <translation id="2371084566192454134">Вкладки й групи вкладок</translation>
 <translation id="2371303771137626249">Додати</translation>
+<translation id="2375947780110007467">Google використовує контент і URL-адреси вкладок, до яких надано доступ. У нових чатах Gemini отримує доступ до поточної вкладки. Це налаштування можна будь-коли змінити.</translation>
 <translation id="2381405137052800939">Основні</translation>
 <translation id="2384692388811649784">Приховувати анонімні вкладки</translation>
 <translation id="2386793615875593361">Вибрано 1</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Голосовий пошук</translation>
 <translation id="3289505634533552500">Голосовий пошук</translation>
 <translation id="3295904109373959849">Сітка груп вкладок</translation>
+<translation id="3301639354590628973">Змінити обліковий запис?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, нові дії</translation>
 <translation id="3305294846493618482">більше</translation>
 <translation id="3311748811247479259">Вимкнено</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Позначити як прочитане</translation>
 <translation id="428768789042547925">Що нового</translation>
 <translation id="429074084062258019">{count,plural, =1{Додати вкладку в групу}one{Додати вкладки в групу}few{Додати вкладки в групу}many{Додати вкладки в групу}other{Додати вкладки в групу}}</translation>
+<translation id="4294506173142861371">Увійти як <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">Відсканувати картку й заповнювати автоматично</translation>
 <translation id="4302061870579014542">Вибрати</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Закладки</translation>
 <translation id="5447973833955560753">Пароль для відновлення</translation>
 <translation id="5452354193031718372">Використати надійний пароль:</translation>
+<translation id="5453088693079603292">Які дані про дії збираються</translation>
 <translation id="5454211924362324495">Щоб інші люди не використовували ваш пароль, <ph name="BEGIN_LINK" />змініть його на сайті <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Додати в пошуковий запит</translation>
 <translation id="5457226814769348910">Відкрити офлайн-версію</translation>
@@ -1522,6 +1528,7 @@
 <translation id="6253686838150111720">Увійдіть в обліковий запис на вебсайті <ph name="URL" /></translation>
 <translation id="6254066287920239840">Відкривайте посилання в додатку, а не у веб-переглядачі.</translation>
 <translation id="6259928806013786178">Не вдалося перейти в режим читання</translation>
+<translation id="626335165106398104">Gemini працює з іншими сервісами</translation>
 <translation id="6268773951964630964">Шукати скопійоване зображення</translation>
 <translation id="6271462272606946663">Сховати опцію "Мобільна версія сайту"</translation>
 <translation id="6271824294945464304">Надсилання пароля</translation>
@@ -1637,6 +1644,7 @@
 <translation id="6609890790934458793">Паролі для веб-сайтів <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> і <ph name="THIRD_WEBSITE" /> буде видалено. Ваші облікові записи не буде видалено.</translation>
 <translation id="661266467055912436">Покращує захист усіх користувачів в Інтернеті.</translation>
 <translation id="6612912757320004438">Дозволити сповіщення про вкладки…</translation>
+<translation id="6613372200395638275">Щоб надавати персоналізовану допомогу, Gemini ділиться певною інформацією (наприклад, фрагментами чатів, геоданими й іншими пов’язаними відомостями) з іншими сервісами Google, такими як Карти й Авіарейси. Ці сервіси можуть використовувати таку інформацію для покращення своїх функцій, навіть якщо ви згодом видалите історію дій у додатках Gemini. Щоб дізнатися більше, відвідайте <ph name="BEGIN_LINK" />Центр конфіденційності додатків Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Очистити текст</translation>
 <translation id="6619015782482868078">Аквамаринова тема</translation>
 <translation id="6620279676667515405">Скасувати</translation>
@@ -1712,6 +1720,9 @@
 <translation id="6858718102216837409">Додати мову…</translation>
 <translation id="6858855187367714033">Зіскановано</translation>
 <translation id="6859944681507688231">Щоб відсканувати QR-код або кредитну картку, увімкніть камеру в налаштуваннях.</translation>
+<translation id="6862212368460840758">Ви ввійшли як <ph name="SIGNED_EMAIL" />.
+
+Щоб продовжити на комп’ютері, перейдіть в обліковий запис <ph name="OTHER_EMAIL" />. Ви отримаєте доступ до паролів, закладок і інших даних із цього облікового запису.</translation>
 <translation id="6867369562105931222">пароль</translation>
 <translation id="6867400383614725881">Нова анонімна вкладка</translation>
 <translation id="686831807558000905">Не входити</translation>
@@ -1780,6 +1791,7 @@
 <translation id="7091023926159231962">{count,plural, =1{Не вдалось імпортувати {count} пароль}one{Не вдалось імпортувати {count} пароль}few{Не вдалось імпортувати {count} паролі}many{Не вдалось імпортувати {count} паролів}other{Не вдалось імпортувати {count} пароля}}</translation>
 <translation id="7095110968493193530">У Google Менеджері паролів для облікового запису <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Щоб переглянути, як змінювалися ціни із часом, натисніть "Історія цін" в адресному рядку</translation>
+<translation id="7098554251807199977">Ані ваші розмови з Gemini, ані <ph name="BEGIN_LINK" />дані Google Workspace<ph name="END_LINK" /> не будуть перевірятися чи використовуватися для покращення моделей генеративного штучного інтелекту.</translation>
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Меню → Налаштування → Способи оплати</translation>
 <translation id="7108338896283013870">Сховати</translation>
@@ -2173,6 +2185,7 @@
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>
 <translation id="8443986842926457191">URL-адреса містить більше ніж 2048 символів</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
+<translation id="8461708300275916315">Якщо вам не виповнилося 18 років</translation>
 <translation id="8473815223723723001">Редагувати зображення за допомогою Gemini</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8474378002946546633">Дозволити сповіщення</translation>
@@ -2234,6 +2247,8 @@
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="8637431369725868556">Захистіть себе від небезпечних сайтів.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
+<translation id="8639963783467694461">Налаштування автозаповнення</translation>
+<translation id="8642417828095157370">Gemini отримує доступ до ваших вкладок, щоб надавати доречніші відповіді</translation>
 <translation id="8643403533759285912">Видалити групу</translation>
 <translation id="8647280737650867362">Не вдалося скасувати відстеження ціни.</translation>
 <translation id="8654802032646794042">Скасувати</translation>
@@ -2247,6 +2262,7 @@
 <translation id="8672733398999596205">Увімкнути всі</translation>
 <translation id="8674716540979958118">У вас є зламані паролі.</translation>
 <translation id="8679900250380464358">Додати в список читання</translation>
+<translation id="8680643216091361291">Налаштування <ph name="BEGIN_LINK" />Зберігати історію дій<ph name="END_LINK" /> вимкнено за умовчанням. Якщо його вимкнено, Google зберігає ваші чати протягом 3 днів. Це допомагає підтримувати належну роботу додатків Gemini, дбати про їх безпеку й вирішувати проблеми завдяки вашим відгукам. Ви можете ввімкнути налаштування "Зберігати історію дій", щоб допомогти нам покращувати ШІ від Google для всіх користувачів.</translation>
 <translation id="8680786875305615692">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="8680787084697685621">Дані для входу в обліковий запис застаріли.</translation>
 <translation id="8690752723634292147">Підтвердьте видалення</translation>
@@ -2396,6 +2412,7 @@
 <translation id="9162432979321511934">Увімкніть автозаповнення паролів</translation>
 <translation id="9165320910061267720">Щоб отримувати сповіщення про зниження цін, увімкніть їх у налаштуваннях iOS.</translation>
 <translation id="9179151630575358778">Цей об’єкт буде сховано</translation>
+<translation id="9183563643084679152">Ви відсканували QR-код, щоб увійти в Chrome. Ви отримаєте доступ до паролів, закладок і інших даних із цього облікового запису.</translation>
 <translation id="9183733013282108610">Пошук в анонімному режимі</translation>
 <translation id="9186762474139509529">Почати запис у журналі</translation>
 <translation id="9191031968346938109">Додати в…</translation>

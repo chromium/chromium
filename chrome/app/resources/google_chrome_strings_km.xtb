@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">កំពុងទាញ​យក...</translation>
 <translation id="1651617469580841801">នៅពេលអ្នកប្រើ Google Lens នោះចំណងជើងទំព័រ, URL និងខ្លឹមសារ រួមទាំង PDF នឹងត្រូវបានបញ្ជូនទៅ Google។ <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">អំពី ChromeOS Flex</translation>
+<translation id="1665867022636014702">ប្រើ​ការកំណត់​កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​ដែលបាន​ណែនាំ​ដោយ Google</translation>
 <translation id="1674870198290878346">បើក​តំណ​នៅក្នុងវិនដូ​ឯកជន Chrome</translation>
 <translation id="1682634494516646069">Google Chrome មិនអាចអាន និងសរសេរទៅថតឯកសារទិន្នន័យរបស់វាបានទេ៖
 
@@ -153,6 +154,7 @@
 <translation id="2580411288591421699">មិនអាចតំឡើងកំណែ Google Chrome ដូចគ្នាទៅនឹងកំណែដែលកំពុងដំណើរការបច្ចុប្បន្នទេ។ សូមបិទ Google Chrome ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="2586406160782125153">វា​នឹង​លុប​ទិន្នន័យ​រុករក​របស់អ្នក​ចេញ​ពី​ឧបករណ៍​នេះ។ ដើម្បី​ទាញ​យក​ទិន្នន័យ​របស់អ្នក​មកវិញ​នៅ​ពេល​ក្រោយ សូម​ចូល​ទៅ​កាន់ Chrome ជា <ph name="USER_EMAIL" /> ។</translation>
 <translation id="259935314519650377">មិនអាច​ទុកកម្មវិធី​ដំឡើង​ដែលបាន​ទាញយក​ក្នុងឃ្លាំងបម្រុង​បានទេ។ បញ្ហា៖ <ph name="UNPACK_CACHING_ERROR_CODE" />។</translation>
+<translation id="2608461706055011366">ទទួលបាន​ទិដ្ឋភាព​រួមត្រួសៗនៃ​ឯកសារនេះ និង​សួរសំណួរ​ដោយប្រើ Gemini ក្នុង Chrome</translation>
 <translation id="2620436844016719705">ប្រព័ន្ធ</translation>
 <translation id="263447411082773721">បន្តធ្វើ​សមកាលកម្ម​ពាក្យសម្ងាត់ ចំណាំ និង​ប្រវត្តិ​របស់អ្នក​បានយ៉ាងល្អ​ឥតខ្ចោះ​នៅលើ​ឧបករណ៍​នានា។ ងាយស្រួល​ចូលប្រើ​មុខងារ​ដែលអ្នក​ស្គាល់ និង​ពេញចិត្ត​ដោយ​ប្ដូរកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម​របស់អ្នក​ទៅ Chrome។ Chrome នឹង​ត្រូវបានខ្ទាស់​ទៅរបារកិច្ចការ​របស់អ្នក ដើម្បី​ចូលប្រើបានរហ័ស។</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +162,7 @@
 <translation id="2652691236519827073">បើក​តំណ​នៅក្នុង​ផ្ទាំង Chrome ថ្មី</translation>
 <translation id="2665296953892887393">ជួយធ្វើឲ្យ Google Chrome ប្រសើរជាងមុនដោយការផ្ញើរបាយការណ៍គាំង និង <ph name="UMA_LINK" /> ទៅ Google</translation>
 <translation id="2668094785979141847">ចុចដើម្បីចាកចេញពី Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex មិនអាច​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក​បានទេ ដោយសារ​ព័ត៌មាន​លម្អិត​អំពី​ការចូល​គណនី​របស់អ្នក​ហួសសម័យ​ហើយ</translation>
 <translation id="2681444469812712297">បើក <ph name="URL" /> នៅក្នុង​ផ្ទាំងថ្មី​នៅក្នុង Google Chrome។</translation>
 <translation id="2699790011615497488">បើក Gemini ក្នុង Chrome បេតា</translation>
 <translation id="2712141162840347885">ជ្រើសរើសអ្វីមួយ ដើម្បីស្វែងរកដោយប្រើ Google Lens ឬចុច escape ដើម្បីចាកចេញពី Google Lens</translation>
@@ -242,6 +245,7 @@
 <translation id="345171907106878721">បន្ថែមខ្លួនអ្នកទៅ Chrome</translation>
 <translation id="3453763134178591239">លក្ខខណ្ឌ ChromeOS</translation>
 <translation id="3503306920980160878">Chrome ត្រូវការ​សិទ្ធិចូលប្រើ​ទីតាំង​របស់អ្នក​ ដើម្បី​ចែករំលែក​ទីតាំង​​របស់អ្នកជាមួយ​ទំព័រនេះ</translation>
+<translation id="3539955434060988644">បើក​តំណ​នៅក្នុង​ផ្ទាំង&amp;ឯកជន Chrome</translation>
 <translation id="3576528680708590453">អ្នក​គ្រប់គ្រង​ប្រព័ន្ធ​របស់អ្នកបាន​កំណត់​រចនាសម្ព័ន្ធ Google Chrome ឱ្យបើក​កម្មវិធីរុករកតាម​អ៊ីនធឺណិត​ផ្សេងសម្រាប់​ចូលប្រើ <ph name="TARGET_URL_HOSTNAME" /> ។</translation>
 <translation id="3582972582564653026">ធ្វើ​សមកាលកម្ម និង​កំណត់ Chrome ​ឱ្យ​ស្រប​នឹង​អ្នកនៅលើ​ឧបករណ៍នានា​</translation>
 <translation id="3583751698304738917">អ្នកបាន​ចូលគណនីជា <ph name="USER_EMAIL_ADDRESS" /> រួចហើយ​នៅក្នុង​កម្រងព័ត៌មាន Chrome ផ្សេងទៀត</translation>
@@ -536,6 +540,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="6497147134301593682">Chrome ត្រូវបានបិទ​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="6506909944137591434">Chrome ត្រូវការ​ការអនុញ្ញាត​កាមេរ៉ា ដើម្បីបង្កើត​ផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញ​របស់អ្នក</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex មិនអាច​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក​បានទេ ដោយសារតែ​មានបញ្ហា​ក្នុងការ​ចូលគណនី</translation>
 <translation id="6520670145826811516">ដើម្បីប្រើ​ទីតាំង​របស់អ្នក សូមផ្ដល់​សិទ្ធិចូលប្រើឱ្យ Chrome នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់ប្រព័ន្ធ<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">ប្រវត្តិ Chrome</translation>
 <translation id="6532945796722480006">បើក Gemini ក្នុង Chrome Canary</translation>
@@ -583,6 +588,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7011190694940573312">ការដំឡើង​មិនបានសម្រេចទេ ដោយសារ​កំណែ​ប្រព័ន្ធ​ប្រតិបត្តិការ​នេះមិនអាចប្រើបាន។</translation>
 <translation id="7024536598735240744">បញ្ហា​ក្នុងការពន្លា៖ <ph name="UNPACK_ERROR" />។</translation>
 <translation id="7025800014283535195">អ្នកអាចប្ដូររវាងកម្រងព័ត៌មាន Chrome នៅទីនេះ</translation>
+<translation id="7026856149118332950">ចុច <ph name="BEGIN_BOLD" />"បាទ/ចាស"<ph name="END_BOLD" /> នៅក្នុង​ការជូនដំណឹង​របស់ Windows ដើម្បី​ខ្ទាស់ Chrome ទៅរបារកិច្ចការ​របស់អ្នក ដើម្បី​ចូលប្រើ​បានរហ័ស។</translation>
 <translation id="7047386856539490735">តើលទ្ធផល​ទាំងនេះ​មានប្រយោជន៍​ដែរទេ?</translation>
 <translation id="7051685429025310665">អ្នក​មិនបាន​ចូលមើល​នាពេល​ថ្មីៗនេះទេ។ Chrome បានដក​ការអនុញ្ញាត​ឱ្យប្រើ<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> <ph name="PERMISSION_3" />ចេញ។</translation>
 <translation id="7059914902409643750">កំណត់ឱ្យ Chrome ក្លាយជា​របស់អ្នក</translation>
@@ -675,6 +681,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="7890208801193284374">ប្រសិនបើអ្នកចែករំលែកកុំព្យូទ័រ មិត្តភ័ក្ត និងគ្រួសារអាចរុករកដាច់ដោយឡែក ហើយតំឡើង Chrome តាមរបៀបដែលអ្នកចង់បាន។</translation>
 <translation id="7896673875602241923">មាននរណាម្នាក់បានចូលទៅកាន់ Chrome នៅលើកុំព្យូទ័រនេះកាលពីមុន ជា <ph name="ACCOUNT_EMAIL_LAST" /> ។ សូមបង្កើតអ្នកប្រើ Chrome ថ្មី ដើម្បីរក្សាព័ត៌មានរបស់អ្នកដាច់ដោយឡែក។</translation>
 <translation id="7904985524660297937">សាកល្បង​ប្រើ Gemini ក្នុង Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS មិនអាច​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក​បានទេ ដោយសារតែ​មានបញ្ហា​ក្នុងការ​ចូលគណនី</translation>
 <translation id="7917876797003313048">អ្នកអាចគ្រប់គ្រង​គណនី Google ដែលអ្នកចូល។ គណនី Google របស់អ្នក​ត្រូវបានប្រើ​សម្រាប់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត Chrome, Play Store, Gmail និងអ្វីៗជាច្រើនទៀត។ ប្រសិនបើអ្នក​ចង់បញ្ចូល​គណនីសម្រាប់​អ្នកផ្សេងទៀត​ដូចជា សមាជិកគ្រួសារជាដើម សូមបញ្ចូលមនុស្សថ្មី​ទៅក្នុង <ph name="DEVICE_TYPE" /> របស់អ្នក​ជំនួសវិញ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome បានទប់ស្កាត់​ការទាញយកនេះ ដោយសារ​ឯកសារនេះ​មានលក្ខណៈ​បោកប្រាស់ និង​អាចធ្វើការផ្លាស់ប្ដូរ​ដែលមិនបានរំពឹងទុក​ចំពោះ​ឧបករណ៍​របស់អ្នក</translation>
 <translation id="7951272445806340501">ChromeOS Flex ត្រូវការចាប់ផ្ដើមឡើងវិញ ដើម្បីប្រើកំណែថ្មី។</translation>
@@ -750,6 +757,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="8624541899164515475">ការ​កំណត់, បើក​នៅក្នុង​ផ្ទាំងថ្មី។</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល 1 នាទីទៀត}other{Chrome នឹង​ចាប់ផ្ដើមឡើងវិញ​ក្នុងរយៈពេល # នាទីទៀត}}</translation>
 <translation id="8637932705841171563">ដើម្បី​បង្ហាញ​វិនដូ​របស់អ្នក សូម​អនុញ្ញាតឱ្យ Chrome ថតវីដេអូ​អេក្រង់​នៅក្នុង "ការកំណត់​ប្រព័ន្ធ"</translation>
+<translation id="8642497536370021917">ដើម្បី​ប្រាកដថា​អ្នកអាចប្រើ និង​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក​បានជានិច្ច សូម​ផ្ទៀងផ្ទាត់​ថាជាអ្នក</translation>
 <translation id="8656634243791296665">បើក Gemini ក្នុង Chrome Dev</translation>
 <translation id="8669527147644353129">ជំនួួយការ Google Chrome</translation>
 <translation id="8679801911857917785">វាក៏គ្រប់គ្រងអ្វីដែលត្រូវបានបង្ហាញនៅលើទំព័រដែរ នៅពេលអ្នកចាប់ផ្តើម Chrome។</translation>
@@ -799,6 +807,7 @@ Google Chrome មិនអាចសង្គ្រោះការកំណត់
 <translation id="93760716455950538">ចាប់ផ្ដើម ChromeOS Flex ឡើងវិញ</translation>
 <translation id="943390475793766444">Chrome ណែនាំឱ្យស្កេនឯកសារនេះ ដោយសារវាអាចបង្កគ្រោះថ្នាក់។</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
+<translation id="973195869036269770">ChromeOS មិនអាច​រក្សាទុក​ទិន្នន័យ Chrome នៅក្នុង​គណនី Google របស់អ្នក​បានទេ ដោយសារ​ព័ត៌មានលម្អិត​អំពី​ការចូល​គណនី​របស់អ្នក​ហួសសម័យ​ហើយ</translation>
 <translation id="983803489796659991">ការដំឡើងមិនបានសម្រេចទេ ដោយសារម៉ាស៊ីនមេដំឡើងកំណែមិនមានទិន្នន័យកូដតំណាងសម្រាប់កម្មវិធី។</translation>
 <translation id="989369509083708165">Google Chrome គឺជា​កម្មវិធី​រុករក​តាមអ៊ីនធឺណិត​លំនាំដើម​របស់​អ្នក</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> អាចប្ដូររវាងកម្រងព័ត៌មាន Chrome</translation>

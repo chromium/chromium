@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">ଅଜଣା ନୀତି।</translation>
 <translation id="1227677022489889280">ମୁଭ କରିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
 <translation id="1228893227497259893">ଭୁଲ୍‍ ଅସ୍ତିତ୍ୱ ଚିହ୍ନଟକାରୀ</translation>
+<translation id="122989279399348496">ଆପଣ ସାଇନ ଇନ କରିଥିବା ସମୟରେ, <ph name="DOMAIN" /> ସପୋର୍ଟ କରୁଥିବା ସାଇଟଗୁଡ଼ିକରେ <ph name="EMAIL" />କୁ ସୁନିଶ୍ଚିତ କରିପାରିବ ଯାହା ଫଳରେ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଇନବକ୍ସ ଯାଞ୍ଚ କରିବାକୁ ହେବ ନାହିଁ</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (ସ୍ୱତଃ-ଚିହ୍ନଟ କରାଯାଇଛି)</translation>
 <translation id="1232569758102978740">ବେନାମୀ</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> ଆବଶ୍ୟକ</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ଏକାଧିକ କାର୍ଯ୍ୟ ଉପଲବ୍ଧ ଅଛି, ସେଗୁଡ଼ିକୁ ଗୋଟିଏ ଗୋଟିଏ କରି ଦେଖିବା ପାଇଁ Tab ଦବାନ୍ତୁ</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">ଭର୍ଚୁଆଲ କାର୍ଡ ବିବରଣୀ</translation>
+<translation id="1802420021606590788">Chrome କ୍ଲାଉଡରେ ଏକ ପ୍ରାଇଭେଟ ସ୍ପେସରେ ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରେ</translation>
 <translation id="1803254472779303354">ମାଉସ ଲକ ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="1803351196216024260">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="1804258830776932716">ଆପଣଙ୍କ ଆକାଉଣ୍ଟକୁ ଶୀଘ୍ର ଲିଙ୍କ କରି Pixକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">ଅନ୍ୟ ବୁକମାର୍କସ୍</translation>
 <translation id="2355395290879513365">ଆପଣ ଏହି ସାଇଟ୍‌ରେ ଦେଖୁଥିବା ଛବିଗୁଡ଼ିକୁ ଆକ୍ରମଣକାରୀ ଦେଖିବାରେ ସକ୍ଷମ ହୋ‍ଇପାରେ ଏବଂ ସେଗୁଡ଼ିକୁ ସଂଶୋଧନ କରି ଆପଣଙ୍କ ସହିତ ଛଳନା କରିପାରେ।</translation>
 <translation id="2356941001189392209">ଲିଗାସି ଟେକ୍ନୋଲୋଜି ଇଭେଣ୍ଟଗୁଡ଼ିକ ହେଉଥିବା ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URLର ଏକ ସୀମିତ ତାଲିକା</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 ଟାବ ସେୟାର କରାଯିବ}other{{NUM_TABS} ଟାବ ସେୟାର କରାଯିବ}}</translation>
 <translation id="2357481397660644965">ଆପଣଙ୍କର ଡିଭାଇସ୍ <ph name="DEVICE_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ <ph name="ACCOUNT_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="2359629602545592467">ଏକାଧିକ</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
@@ -3024,6 +3027,7 @@
 <translation id="5742806904559466333">ବାର, କ୍ଲବ ଏବଂ ନାଇଟଲାଇଫ</translation>
 <translation id="5743684619253032786">ନେଲ କେୟାର ପ୍ରଡକ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="574392208103952083">ମଧ୍ୟମ</translation>
+<translation id="5745586894920491759">Chrome କ୍ଲାଉଡରେ ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକୁ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରେ</translation>
 <translation id="5745733273847572235">ଆପଣଙ୍କ ଲୋକେସନ୍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="5750869797196646528">ହେଣ୍ଡ ଟ୍ରାକିଂ</translation>
 <translation id="5752327398324808817">ଗୋଟିଏ କିମ୍ବା ଦୁଇଟି ଶବ୍ଦ ଲେଖନ୍ତୁ</translation>
@@ -3417,6 +3421,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">ଲଗଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ପ୍ରକ୍ସି, ଫାୟାରୱାଲ୍ ଏବଂ ସୁରକ୍ଷିତ DNS କନଫିଗରେସନ୍ ଯାଞ୍ଚ କରାଯାଉଛି<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">ଆପଣଙ୍କ ଇମେଲଗୁଡ଼ିକୁ ସ୍ୱତଃ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6366710531182496394">ବାମ ପଟରେ ଦୁଇଟି ଷ୍ଟାପଲ୍</translation>
 <translation id="6367196786591004737">ଏଣ୍ଟ୍ରିକୁ ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="6370022303958842211">ଲଗଇନ (ବିଫଳ ଲଗଇନର କାରଣଗୁଡ଼ିକ ସମେତ), ଲଗଆଉଟ, ଲକ ଓ ଅନଲକ ପରି ଡିଭାଇସ ଆକ୍ସେସ ଆକ୍ସନଗୁଡ଼ିକ</translation>
@@ -5056,6 +5061,7 @@
 <translation id="8963117664422609631">ସାଇଟ୍ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />ପ୍ରସ୍ତାବଗୁଡ଼ିକ:<ph name="MARKUP_2" />ସୁନିଶ୍ଚିତ କରନ୍ତୁ ଯେ ଆପଣଙ୍କର ଗୋଟିଏ ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଅଛି <ph name="MARKUP_3" />ଏହି ୱେବ୍-ପୃଷ୍ଠାକୁ ପରେ ପୁଣି ଲୋଡ୍ କରନ୍ତୁ<ph name="MARKUP_4" /> ଆପଣ ଲେଖିଥିବା ଠିକଣାକୁ ଯାଞ୍ଚ କରନ୍ତୁ<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକ <ph name="HOURS" /> ଘଣ୍ଟାରେ ଡିଲିଟ ହୋଇଯିବ</translation>
+<translation id="8964904785315870349">ଯାଞ୍ଚ କରାଯାଇଥିବା ଇମେଲ</translation>
 <translation id="8968766641738584599">କାର୍ଡ ସେଭ୍‌ କରନ୍ତୁ</translation>
 <translation id="8970887620466824814">କିଛି ଭୁଲ ହୋଇଗଲା।</translation>
 <translation id="8971063699422889582">ସର୍ଭରର ସାର୍ଟିଫିକେଟ୍‍ର ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଯାଇଛି।</translation>

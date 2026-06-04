@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Аўтаматычныя серверы даменных імён</translation>
 <translation id="1210831758834677569">Лаоская</translation>
 <translation id="1221555006497674479">У вашым сховішчы абагуленага дыска мала месца. Застаецца <ph name="REMAINING_PERCENTAGE" />% з <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Глядзець змесціва прылады ў праграме "Файлы".</translation>
 <translation id="1243314992276662751">Запампаваць</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прамое падключэнне да інтэрнэту</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Не ўдалося выдаліць элемент: ён выкарыстоўваецца.</translation>
 <translation id="1307931752636661898">Не ўдалося праглядзець файлы Linux</translation>
 <translation id="1313405956111467313">Аўтаматычная канфігурацыя проксі-сервера</translation>
+<translation id="1340527397989195812">Стварыце рэзервовыя копіі файлаў мультымедыя з прылады з дапамогай праграмы "Файлы".</translation>
 <translation id="134645005685694099">У сховішчы прылады недастаткова месца для сінхранізацыі файлаў. Новыя файлы больш не будуць сінхранізавацца аўтаматычна.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Файл або папка непрыдатныя да выкарыстання.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Не выкарыстоўваць сертыфікат карыстальніка</translation>
 <translation id="1403008701842173542">Усюды</translation>
 <translation id="1404323374378969387">Нарвежская</translation>
+<translation id="1408504635543854729">Глядзець змесціва прылады ў праграме "Файлы". Змесціва нельга мадыфікаваць: дазволы на яго абмежаваны адміністратарам.</translation>
 <translation id="1412476183660741812">Падпісаны вэб-пакет</translation>
 <translation id="1433628812591023318">Каб перацягнуць файл у Parallels Desktop, яго неабходна перамясціць у папку "Файлы Windows".</translation>
 <translation id="1435838927755162558">Абагульванне папкі з Parallels Desktop</translation>
 <translation id="1439919885608649279">Чалавек з кветкамі</translation>
 <translation id="1458457385801829801">Выняць <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Каб адкрыць параметры прылады, перайдзіце ў Налады.</translation>
 <translation id="146691674290220697">Не ўдалося скапіраваць файлы (<ph name="NUMBER_OF_FILES" />), бо яны зашыфраваны.</translation>
 <translation id="1471718551822868769">Славацкая</translation>
 <translation id="1482884275703521657">Фінская</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2004942826429452291">Файлы будуць захоўвацца ў воблаку і на гэтым Chromebook.</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
+<translation id="2018352199541442911">На жаль, знешнія сховішчы пакуль што не падтрымліваюцца.</translation>
 <translation id="2025955442973426285">Тыгрынья</translation>
 <translation id="2029385776150020336">ЗША, пашыраная</translation>
 <translation id="2037845485764049925">Руская</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Тамагочы</translation>
 <translation id="2468470447085858632">Сінхранізацыя файлаў дазваляе атрымліваць доступ да файлаў Google Дыска ў пазасеткавым рэжыме</translation>
 <translation id="2470939964922472929">Занадта шмат разоў быў уведзены няправільны PIN-код. Каб наладзіць новы PIN-код, увядзіце 8-значны PUK-код, атрыманы ад аператара.</translation>
+<translation id="249113932447298600">На жаль, прылада <ph name="DEVICE_LABEL" /> зараз не падтрымліваецца.</translation>
 <translation id="2500392669976258912">Гуджараці (фанетычная раскладка)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Пошук</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Украінская</translation>
 <translation id="3326821416087822643">Файл "<ph name="FILE_NAME" />" архівуецца...</translation>
 <translation id="3335337277364016868">Год запісу</translation>
+<translation id="3348038390189153836">Выяўлена здымная прылада</translation>
 <translation id="3353984535370177728">Выберыце папку для запампоўвання</translation>
 <translation id="3356580349448036450">Гатова</translation>
 <translation id="3358452157379365236">Гітара</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Спампаваць мабільны профіль, сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, "<ph name="NETWORK_NAME" />", <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Англійская (Вялікабрытанія)</translation>
 <translation id="3975895378829046965">Бенгальская (фанетычная раскладка)</translation>
+<translation id="3983764759749072418">Праграмы з Крамы Play маюць доступ да гэтай прылады.</translation>
 <translation id="3999574733850440202">Файлы Microsoft, якія нядаўна адкрываліся, былі перамешчаны на OneDrive</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4017788180641807848">Англійская (ЗША) з раскладкай Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Каб атрымаць доступ да гэтага файла, трэба выйсці ў інтэрнэт.</translation>
 <translation id="4212740939091998969">Папка пад назвай "<ph name="FOLDER_NAME" />" ужо існуе. Выберыце іншую назву.</translation>
 <translation id="4218274196133425560">Выдаліць выключэнне для <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4261901459838235729">Прэзентацыя Google</translation>
 <translation id="4277536868133419688">Уключаны фільтр "<ph name="FILTER_NAME" />".</translation>
 <translation id="4290535918735525311">1 папка абагулена з Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Адноўленыя файлы з Google Дыска</translation>
 <translation id="5278111733643988471">Каб аднавіць гэты элемент, перацягніце яго са сметніцы ў новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", у якім гэты элемент знаходзіўся раней, была выдалена.</translation>
 <translation id="5288441970121584418">Бургер</translation>
+<translation id="529175790091471945">Фармаціраваць прыладу</translation>
 <translation id="5293615890992542006">Зададзеная адміністратарам палітыка блакіруе магчымасць перамяшчаць гэты файл</translation>
 <translation id="5305688511332277257">Нічога не ўсталявана</translation>
 <translation id="5317780077021120954">Захаваць</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Не выкарыстоўваць налады проксі-сервера для гэтых хостаў і даменаў:</translation>
 <translation id="541890217011173530">Курдская (сарані) (раскладка на аснове англійскай)</translation>
 <translation id="5422221874247253874">Пункт доступу</translation>
+<translation id="5422781158178868512">На жаль, знешняе сховішча распазнаць не ўдалося.</translation>
 <translation id="5438282218546237410">Няма вынікаў па запыце "<ph name="SEARCH_TERM" />".</translation>
 <translation id="5447680084201416734">Не хапае месца ў сховішчы.</translation>
 <translation id="5449551289610225147">Несапраўдны пароль</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Выбрана элементаў: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Нямецкая (Швейцарыя)</translation>
 <translation id="5769519078756170258">Хост або дамен, які трэба дадаць у выключэнні</translation>
+<translation id="5774295353725270860">Адкрыць праграму "Файлы"</translation>
 <translation id="5775750595919327203">Урду</translation>
 <translation id="5776325638577448643">Сцерці даныя і фармаціраваць дыск</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5788127256798019331">Файлы Play</translation>
+<translation id="5788367137662787332">Як мінімум адзін раздзел на прыладзе <ph name="DEVICE_LABEL" /> не ўдалося падключыць.</translation>
 <translation id="5804245609861364054">Канада (транслітарацыя)</translation>
 <translation id="5814126672212206791">Тып падключэння</translation>
 <translation id="5817397429773072584">Традыцыйная кітайская</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Ісландская</translation>
 <translation id="7229570126336867161">Патрабуецца EvDo</translation>
 <translation id="7230898482850090046">Адміністратар папрасіў вас выключыць наладу блакіроўкі SIM-карты</translation>
+<translation id="7232750842195536390">Не ўдалося перайменаваць</translation>
 <translation id="7238097264433196391">Назва дыска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, падрабязныя звесткі</translation>
 <translation id="7246947237293279874">Проксі-сервер FTP</translation>
+<translation id="725109152065019550">На жаль, адміністратар выключыў знешняе сховішча ў вашым уліковым запісе.</translation>
 <translation id="7256405249507348194">Невядомая памылка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Даступныя сэрвісы</translation>
 <translation id="7291818353625820805">Хочаце, каб можна было ўводзіць сімвалы паўторна? Выключыце дыякрытычныя знакі ў наладах клавіятуры.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Карта Google</translation>
 <translation id="7419668828140929293">Файл "<ph name="FILENAME" />" аднаўляецца</translation>
 <translation id="7435577899926900307">ЗША (раскладка Дворака)</translation>
+<translation id="7436921188514130341">На жаль, падчас перайменавання адбылася памылка.</translation>
 <translation id="7458955835361612701">Няма нядаўніх відарысаў</translation>
 <translation id="7469894403370665791">Падключацца да гэтай сеткі аўтаматычна</translation>
 <translation id="7486315294984620427">Каб перацягнуць файл у Parallels Desktop, яго неабходна скапіраваць у папку "Файлы Windows".</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
 <translation id="7553492409867692754">Даць праграмам Linux доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Вы зараз па-за сеткай. Сінхранізацыя файлаў узновіцца, калі вы падключыцеся да інтэрнэту.</translation>
+<translation id="7589461650300748890">Гэй! Асцярожней.</translation>
 <translation id="7589661784326793847">Пачакайце</translation>
 <translation id="7600126690270271294">Сербская</translation>
 <translation id="7603724359189955920">Сеткі</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Памылка наладжвання сеткі</translation>
+<translation id="7839051173341654115">Паглядзець (стварыць рэзервовую копію) медыяфайлаў</translation>
 <translation id="7839804798877833423">Каб атрымаць гэтыя файлы, будзе выкарыстана прыкладна <ph name="FILE_SIZE" /> мабільнага трафіка.</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
 <translation id="7857117644404132472">Дадаць выключэнне</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Польская</translation>
 <translation id="7874321682039004450">Філіпінская</translation>
 <translation id="78946041517601018">Абагуленыя дыскі</translation>
+<translation id="7897900149154324287">У далейшым не забывайце адключаць здымную прыладу праз праграму "Файлы", перад тым як вымаць яе, інакш вы можаце страціць даныя.</translation>
 <translation id="7901567919203965902">ЗША (Workman, міжнародная)</translation>
 <translation id="7903984238293908205">Катакана</translation>
+<translation id="7908378463497120834">На жаль, як мінімум адзін раздзел на знешнім сховішчы падключыць не ўдалося.</translation>
 <translation id="7908793776359722643">Фармаціраванне раздзела прывядзе да сцірання ўсіх захаваных у ім даных. Гэта дзеянне немагчыма адрабіць.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Вашы файлы ў Маім Дыску будуць аўтаматычна сінхранізавацца з вашым Chromebook, каб вы маглі атрымаць да іх доступ без падключэння да інтэрнэту.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Каб аднавіць гэтыя элементы, перацягніце іх у новую папку. Папкі, у якіх некаторыя з гэтых элементаў знаходзіліся раней, былі выдалены.</translation>
 <translation id="8874184842967597500">Не падключана</translation>
 <translation id="8876368061475701452">У чарзе</translation>
+<translation id="8893928184421379330">На жаль, распазнаць прыладу <ph name="DEVICE_LABEL" /> не ўдалося.</translation>
 <translation id="8902208737522818687">ЗША, міжнародная (ПК)</translation>
 <translation id="8903931173357132290">Выпускнік</translation>
 <translation id="8912078710089354287">Сабака віляе хвастом</translation>

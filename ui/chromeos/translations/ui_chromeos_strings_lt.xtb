@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Automatiniai pavadinimų serveriai</translation>
 <translation id="1210831758834677569">Laosiečių k.</translation>
 <translation id="1221555006497674479">Mažai vietos saugykloje: liko <ph name="REMAINING_PERCENTAGE" /> proc. bendro disko saugyklos vietos iš <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Naršykite įrenginio turinį programoje „Failai“.</translation>
 <translation id="1243314992276662751">Įkelti</translation>
 <translation id="1249250836236328755">Žanras</translation>
 <translation id="1254593899333212300">Tiesioginis interneto ryšys</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Nepavyksta ištrinti. Elementas naudojamas.</translation>
 <translation id="1307931752636661898">Nepavyko peržiūrėti „Linux“ failų</translation>
 <translation id="1313405956111467313">Automatinė tarpinio serverio konfigūracija</translation>
+<translation id="1340527397989195812">Sukurkite atsarginę įrenginio medijos kopiją naudodami programą „Failai“.</translation>
 <translation id="134645005685694099">Įrenginyje nėra pakankamai saugyklos vietos, kad būtų įjungtas failų sinchronizavimas. Nauji failai nebebus sinchronizuojami automatiškai.</translation>
 <translation id="1353686479385938207">„<ph name="PROVIDER_NAME" />“: „<ph name="NETWORK_NAME" />“</translation>
 <translation id="1358735829858566124">Failas arba katalogas nenaudojamas.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Naudotojo sertifikato nereikia</translation>
 <translation id="1403008701842173542">Visur</translation>
 <translation id="1404323374378969387">Norvegų k.</translation>
+<translation id="1408504635543854729">Naršykite įrenginio turinį programoje „Failai“. Turinį riboja administratorius, todėl jo negalima keisti.</translation>
 <translation id="1412476183660741812">Pasirašyta žiniatinklio grupė</translation>
 <translation id="1433628812591023318">Kad galėtumėte nuvilkti failus į „Parallels Desktop“, jie turi būti perkelti į „Windows“ failų aplanką.</translation>
 <translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439919885608649279">Žmogus su gėlėmis</translation>
 <translation id="1458457385801829801">Pašalinti <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Įrenginio nuostatas rasite skiltyje „Nustatymai“.</translation>
 <translation id="146691674290220697">Nepavyko nukopijuoti failų (iš viso: <ph name="NUMBER_OF_FILES" />), nes jie šifruoti.</translation>
 <translation id="1471718551822868769">Slovakų k.</translation>
 <translation id="1482884275703521657">Suomių k.</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Tvarkyti Diske</translation>
 <translation id="2004942826429452291">Failai bus saugomi debesyje ir šiame „Chromebook“.</translation>
 <translation id="2009067268969781306">Formatuojant atmintuką bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
+<translation id="2018352199541442911">Apgailestaujame, tačiau jūsų išorinis atmintinės įrenginys šiuo metu nepalaikomas.</translation>
 <translation id="2025955442973426285">Tigrinų k.</translation>
 <translation id="2029385776150020336">JAV išplėstinė</translation>
 <translation id="2037845485764049925">Rusų k.</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagočis</translation>
 <translation id="2468470447085858632">Galimybė pasiekti „Google“ disko failus neprisijungus naudojant failų sinchronizavimo funkciją</translation>
 <translation id="2470939964922472929">Per daug kartų įvestas netinkamas PIN kodas. Jei norite nustatyti naują PIN kodą, įveskite operatoriaus pateiktą aštuonių skaitmenų asmeninį blokavimo panaikinimo raktą (PUK kodą).</translation>
+<translation id="249113932447298600">Apgailestaujame, tačiau įrenginys <ph name="DEVICE_LABEL" /> šiuo metu nepalaikomas.</translation>
 <translation id="2500392669976258912">Gudžaratų k. fonetinė</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Nuskaityti</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrainiečių k.</translation>
 <translation id="3326821416087822643">Glaudinamas failas „<ph name="FILE_NAME" />“...</translation>
 <translation id="3335337277364016868">Įrašymo metai</translation>
+<translation id="3348038390189153836">Aptiktas pašalintinas įrenginys</translation>
 <translation id="3353984535370177728">Pasirinkite norimą įkelti aplanką</translation>
 <translation id="3356580349448036450">Baigta</translation>
 <translation id="3358452157379365236">Gitara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Atsisiųsti mobiliojo ryšio tinklo profilį; <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, „<ph name="NETWORK_PROVIDER_NAME" />“</translation>
 <translation id="3973925058222872294">Anglų k. (JK)</translation>
 <translation id="3975895378829046965">Bengalų k. fonetinė</translation>
+<translation id="3983764759749072418">„Play“ parduotuvės programos turi prieigą prie šio įrenginio.</translation>
 <translation id="3999574733850440202">Neseniai atidaryti „Microsoft“ failai perkelti į „OneDrive“</translation>
 <translation id="4002066346123236978">Pavadinimas</translation>
 <translation id="4017788180641807848">Anglų k. (JAV) su „Workman“ klaviatūra</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Jei norite pasiekti šį failą, turite prisijungti.</translation>
 <translation id="4212740939091998969">Aplankas pavadinimu „<ph name="FOLDER_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="4218274196133425560">Pašalinti išimtį iš „<ph name="HOST_NAME" />“</translation>
+<translation id="4242533952199664413">Atidaryti nustatymus</translation>
 <translation id="4261901459838235729">„Google“ pristatymas</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtras įjungtas.</translation>
 <translation id="4290535918735525311">1 aplankas bendrinamas su „Linux“</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Atkurti failai iš „Google“ disko</translation>
 <translation id="5278111733643988471">Norėdami atkurti šį elementą, nuvilkite jį į naują aplanką, esantį už šiukšliadėžės ribų. Pradinis šio elemento aplankas „<ph name="PARENT_FOLDER_NAME" />“ buvo ištrintas.</translation>
 <translation id="5288441970121584418">Mėsainis</translation>
+<translation id="529175790091471945">Formatuoti šį įrenginį</translation>
 <translation id="5293615890992542006">Šio failo perkėlimas užblokuotas pagal administratoriaus politiką</translation>
 <translation id="5305688511332277257">Nėra įdiegtų</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Nenaudoti įgaliotojo serverio nustatymų šioms priegloboms ir domenams:</translation>
 <translation id="541890217011173530">Soranių kurdų su anglų k. klaviatūra</translation>
 <translation id="5422221874247253874">Prieigos taškas</translation>
+<translation id="5422781158178868512">Apgailestaujame, tačiau jūsų išorinis atmintinės įrenginys yra neatpažįstamas.</translation>
 <translation id="5438282218546237410">Nėra jokių rezultatų pagal užklausą „<ph name="SEARCH_TERM" />“.</translation>
 <translation id="5447680084201416734">Trūksta saugyklos vietos.</translation>
 <translation id="5449551289610225147">Netinkamas slaptažodis</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Pasirinkta elementų: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Vokiečių k. (Šveicarija)</translation>
 <translation id="5769519078756170258">Norima išskirti priegloba arba domenas</translation>
+<translation id="5774295353725270860">Atidaryti failų programą</translation>
 <translation id="5775750595919327203">Urdų k.</translation>
 <translation id="5776325638577448643">Ištrinti ir formatuoti</translation>
 <translation id="57838592816432529">Nutildyti</translation>
 <translation id="5788127256798019331">„Play“ failai</translation>
+<translation id="5788367137662787332">Apgailestaujame, tačiau neįmanoma įrengti bent vieno įrenginio <ph name="DEVICE_LABEL" /> disko skaidinio.</translation>
 <translation id="5804245609861364054">Kanadų k. transliteracija</translation>
 <translation id="5814126672212206791">Ryšio tipas</translation>
 <translation id="5817397429773072584">Tradicinė kinų k.</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Islandų</translation>
 <translation id="7229570126336867161">Reikia EVDO</translation>
 <translation id="7230898482850090046">Administratorius pateikė užklausą išjungti nustatymą „Užrakinti SIM kortelę“</translation>
+<translation id="7232750842195536390">Nepavyko pervardyti</translation>
 <translation id="7238097264433196391">Atmintuko pavadinimas</translation>
 <translation id="7238643356913091553">„<ph name="NETWORK_NAME" />“, išsami informacija</translation>
 <translation id="7246947237293279874">FTP tarpinis serveris</translation>
+<translation id="725109152065019550">Deja, jūsų administratorius išjungė išorinę paskyros atmintinę.</translation>
 <translation id="7256405249507348194">Neatpažinta klaida: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Prieinamos paslaugos</translation>
 <translation id="7291818353625820805">Norite, kad klavišai būtų kartojami? Išjunkite kirčio ženklus klaviatūros nustatymuose</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">„Google“ žemėlapis</translation>
 <translation id="7419668828140929293">Failas „<ph name="FILENAME" />“ atkuriamas</translation>
 <translation id="7435577899926900307">JAV Dvorako</translation>
+<translation id="7436921188514130341">Oi, pervardijant įvyko klaida.</translation>
 <translation id="7458955835361612701">Nėra naujausių vaizdų</translation>
 <translation id="7469894403370665791">Automatiškai prisijungti prie šio tinklo</translation>
 <translation id="7486315294984620427">Kad galėtumėte nuvilkti failus į „Parallels Desktop“, jie turi būti nukopijuoti į „Windows“ failų aplanką.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Prisegti prie lentynos</translation>
 <translation id="7553492409867692754">Suteikite „Linux“ programoms leidimą pasiekti failus aplanke „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Šiuo metu esate neprisijungę. Sinchronizavimas bus atnaujintas, kai būsite prisijungę prie interneto</translation>
+<translation id="7589461650300748890">Oi, būkite atsargūs.</translation>
 <translation id="7589661784326793847">Luktelėkite sekundėlę</translation>
 <translation id="7600126690270271294">Serbų k.</translation>
 <translation id="7603724359189955920">Tinkleliai</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Klaida konfigūruojant tinklą</translation>
+<translation id="7839051173341654115">Peržiūrėti mediją / kurti jos atsarginę kopiją</translation>
 <translation id="7839804798877833423">Šiems failams gauti reikės apytiksliai <ph name="FILE_SIZE" /> duomenų mobiliesiems.</translation>
 <translation id="7846076177841592234">Atšaukti pasirinkimą</translation>
 <translation id="7857117644404132472">Pridėti išimtį</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Lenkų k.</translation>
 <translation id="7874321682039004450">Filipiniečių k.</translation>
 <translation id="78946041517601018">Bendri diskai</translation>
+<translation id="7897900149154324287">Ateityje būtinai prieš atjungdami keičiamąjį įrenginį išimkite jį naudodami Failų programą. Kitaip galite prarasti duomenis.</translation>
 <translation id="7901567919203965902">JAV „Workman“ tarptautinė</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Apgailestaujame, tačiau neįmanoma įrengti mažiausiai vieno išorinio atmintinės įrenginio disko skaidinio.</translation>
 <translation id="7908793776359722643">Formatuojant skaidinį bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Mano Diske esantys failai bus automatiškai sinchronizuojami su „Chromebook“, kad galėtumėte juos pasiekti be interneto ryšio.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Norėdami atkurti šiuos elementus, nuvilkite juos į naują aplanką. Kai kurių šių elementų pirminiai aplankai buvo ištrinti.</translation>
 <translation id="8874184842967597500">Neprisijungta</translation>
 <translation id="8876368061475701452">Laukia eilėje</translation>
+<translation id="8893928184421379330">Apgailestaujame, tačiau įrenginys <ph name="DEVICE_LABEL" /> neatpažįstamas.</translation>
 <translation id="8902208737522818687">JAV tarptautinė (AK) klaviatūra</translation>
 <translation id="8903931173357132290">Absolventas</translation>
 <translation id="8912078710089354287">Uodegą vizginantis šuo</translation>

@@ -149,6 +149,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1227224963052638717">Bilinmeyen politika.</translation>
 <translation id="1227677022489889280">Taşıma nedenini belirtin (zorunlu)</translation>
 <translation id="1228893227497259893">Yanlış varlık tanımlayıcı</translation>
+<translation id="122989279399348496">Oturumunuz açıkken <ph name="DOMAIN" />, desteklenen sitelerde <ph name="EMAIL" /> işlemini onaylayabilir. Böylece gelen kutunuzu kontrol etmeniz gerekmez.</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (autootomatik algılandı)</translation>
 <translation id="1232569758102978740">Adsız</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> zorunludur</translation>
@@ -510,6 +511,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, birden fazla işlem mevcut, işlemler arasında geçiş yapmak için Sekme'ye basın</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Sanal kart ayrıntıları</translation>
+<translation id="1802420021606590788">Chrome, sayfa başlıklarını ve URL'leri buluttaki özel bir alanda işler</translation>
 <translation id="1803254472779303354">Fare kilidine izin veriliyor</translation>
 <translation id="1803351196216024260">Mikrofonunuzu kullanmak isteyebilir</translation>
 <translation id="1804258830776932716">Hesabınızı hızlıca bağlayarak Pix'i etkinleştirin</translation>
@@ -873,6 +875,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2354001756790975382">Diğer yer işaretleri</translation>
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
 <translation id="2356941001189392209">Eski teknoloji etkinliklerinin gerçekleştiği, ziyaret ettiğiniz sayfaların URL'lerinin sınırlı bir listesi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 sekme paylaşılacak}other{{NUM_TABS} sekme paylaşılacak}}</translation>
 <translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
 <translation id="2359808026110333948">Devam</translation>
@@ -3027,6 +3030,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5742806904559466333">Barlar, Kulüpler ve Gece Hayatı</translation>
 <translation id="5743684619253032786">Tırnak Bakım Ürünleri</translation>
 <translation id="574392208103952083">Orta</translation>
+<translation id="5745586894920491759">Chrome, sayfa başlıklarını ve URL'leri bulutta işler</translation>
 <translation id="5745733273847572235">Konumunuzu bilmek isteyebilir</translation>
 <translation id="5750869797196646528">El takibi</translation>
 <translation id="5752327398324808817">Bir veya iki kelime girin</translation>
@@ -3421,6 +3425,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Günlükleri göster</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxy'yi, güvenlik duvarını ve Güvenli DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">E-postalarınızı otomatik olarak onaylayın</translation>
 <translation id="6366710531182496394">Solda ikili tel zımba</translation>
 <translation id="6367196786591004737">Girişi sil</translation>
 <translation id="6370022303958842211">Giriş yapma (başarısız giriş denemeleri dahil), çıkış yapma, kilitleme ve kilit açma gibi cihaz erişimi işlemleri</translation>
@@ -5062,6 +5067,7 @@ Ek ayrıntılar:
 <translation id="8963117664422609631">Site ayarlarına gidin</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Öneriler:<ph name="MARKUP_2" />Veri bağlantınızın olduğundan emin olun<ph name="MARKUP_3" />Bu web sayfasını daha sonra yükleyin<ph name="MARKUP_4" />Girdiğiniz adresi kontrol edin<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Yerel dosyalarınız <ph name="HOURS" /> saat içinde silinecek</translation>
+<translation id="8964904785315870349">Doğrulanmış E-posta</translation>
 <translation id="8968766641738584599">Kartı kaydet</translation>
 <translation id="8970887620466824814">Bir hata oluştu.</translation>
 <translation id="8971063699422889582">Sunucu sertifikasının süresi doldu.</translation>

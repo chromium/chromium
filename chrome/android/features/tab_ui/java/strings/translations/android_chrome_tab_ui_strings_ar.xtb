@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">تم تجميع علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)</translation>
 <translation id="1844381456014878100">بعد 7 أيام من عدم النشاط</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{إضافة علامة التبويب إلى قائمة القراءة}zero{إضافة علامات التبويب إلى قائمة القراءة}two{إضافة علامتَي التبويب إلى قائمة القراءة}few{إضافة علامات التبويب إلى قائمة القراءة}many{إضافة علامات التبويب إلى قائمة القراءة}other{إضافة علامات التبويب إلى قائمة القراءة}}</translation>
 <translation id="1909810060368225529">ملاحظة: يمكن للجميع الاطّلاع على التغييرات التي يتم إجراؤها على مجموعة علامات التبويب المشتركة هذه. يمكن للجميع إجراء تغييرات على مجموعات علامات التبويب المشتركة</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{تثبيت علامة تبويب واحدة}zero{تثبيت علامات التبويب}two{تثبيت علامتَي التبويب}few{تثبيت علامات التبويب}many{تثبيت علامات التبويب}other{تثبيت علامات التبويب}}</translation>
 <translation id="1982637982196732906">نقل إلى القسم غير النشط</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">رمز مجموعة علامات التبويب باللون <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">تم إغلاق قائمة مجموعات علامات التبويب</translation>
+<translation id="3152596030350326139">عرض علامات التبويب أفقيًا</translation>
+<translation id="31806439105337256">عرض علامات التبويب عموديًا</translation>
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{إضافة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) إلى المجموعة}zero{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}two{إضافة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) إلى المجموعة}few{إضافة <ph name="TABS_COUNT_MANY" /> علامات تبويب إلى المجموعة}many{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}other{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب إلى المجموعة}}</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>

@@ -77,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
 <translation id="3078350928901129212">ट्याब समूहको आइकनको रङ <ph name="COLOR_NAME" /> छ</translation>
 <translation id="311432875115153175">ट्याब समूहको सूची बन्द गरियो</translation>
+<translation id="3152596030350326139">ट्याबहरू तेर्सो रूपमा देखाउनुहोस्</translation>
+<translation id="31806439105337256">ट्याबहरू ठाडो रूपमा देखाउनुहोस्</translation>
 <translation id="3194464645767632461">मूल्याङ्कन</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{समूहमा <ph name="TABS_COUNT_ONE" /> ट्याब हाल्नुहोस्}other{समूहमा <ph name="TABS_COUNT_MANY" /> वटा ट्याब हाल्नुहोस्}}</translation>
 <translation id="3328308545011660196">सुझाव: <ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">‏آپ یہاں PDFs کو ڈاؤن لوڈ کر سکتے ہیں</translation>
 <translation id="107147699690128016">اگر آپ فائل ایکسٹینشن تبدیل کرتے ہیں تو فائل مختلف ایپلیکیشن میں کھل سکتی ہے اور ممکنہ طور پر آپ کے آلہ کے لیے نقصان دہ ہو سکتی ہے۔</translation>
 <translation id="1073328695547557412">‏‫Google لینز آئیکن پر تھپتھپائیں</translation>
+<translation id="1080116354587839789">چوڑائی میں فٹ کریں</translation>
 <translation id="1086486568852410168">‏Google لینز سے تلاش کریں</translation>
 <translation id="1087799850623149508">آپ ایڈریس بار کو نیچے منتقل کرنے کے لیے ٹچ کر کے دبائے رکھ سکتے ہیں</translation>
 <translation id="1089606299949659462">جائزہ مکمل ہو گیا!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_GROUPS_PART" />، <ph name="TAB_COUNT_MANY" /> ٹیبز}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{‏‫1 پاس ورڈ صرف اس آلے پر محفوظ ہے۔ اپنے دیگر آلات پر اس کا استعمال کرنے کیلئے، اسے اپنے Google اکاؤنٹ میں محفوظ کریں۔}other{‏‫# پاس ورڈز صرف اس آلے پر محفوظ ہیں۔ اپنے دیگر آلات پر ان کا استعمال کرنے کیلئے، انہیں اپنے Google اکاؤنٹ میں محفوظ کریں۔}}</translation>
 <translation id="3293181007446299124">آپ کی براؤزنگ کی سرگزشت کو آپ کے آلے پر نجی رکھا جاتا ہے اور رپورٹس کو تاخیر سے بھیجا جاتا ہے تاکہ آپ کی شناخت کی حفاظ کی جائے</translation>
+<translation id="3301639354590628973">اکاؤنٹس سوئچ کریں؟</translation>
 <translation id="3301936297336370235">پاس ورڈ کی تجویز کی تصدیق</translation>
 <translation id="3302615849591357577"><ph name="COLOR_NAME" /> رنگ کے <ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو پس منظر کے ایک نئے ٹیب گروپ کے بطور بحال کریں۔</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />، پن کردہ تصویر میں تصویر ٹیب</translation>
 <translation id="3950820424414687140">سائن ان کریں</translation>
 <translation id="395377504920307820">اکاؤنٹ کے بغیر استعمال کریں</translation>
+<translation id="3955353672249727801">صفحات کو پڑھنے کی فہرست میں شامل کیا گیا</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{‏آپ کا صفحہ تیار ہونے پر Chrome اسے لوڈ کرے گا}other{‏آپ کے صفحات تیار ہونے پر Chrome انہیں لوڈ کرے گا}}</translation>
 <translation id="3969142555815019568">‏Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے</translation>
 <translation id="3969863827134279083">اوپر جائیں</translation>

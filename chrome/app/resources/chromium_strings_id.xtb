@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium memerlukan akses Bluetooth untuk menjelajah 
  perangkat Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
+<translation id="1330742950061766891">Gunakan setelan browser yang direkomendasikan Chromium</translation>
 <translation id="1342274909142618978">Hapus juga data dari Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Disematkan. Anda dapat mengakses Penelusuran Gambar lagi dari tombol baru di toolbar</translation>
 <translation id="1356661055722410047">Baru! Anda dapat menerjemahkan teks dan gambar di layar</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">Akun Chromium memerlukan autentikasi ulang</translation>
 <translation id="5231355151045086930">Keluar dari Chromium</translation>
 <translation id="5234764350956374838">Tutup</translation>
+<translation id="5249261924633168472">Buka link di jendela Sam&amp;aran Chromium</translation>
 <translation id="5254739261293693943">Tanyakan info tentang video ini</translation>
 <translation id="5276305953263010518">Dapatkan aplikasi Chromium untuk menyimpan sandi kapan saja di mana saja</translation>
 <translation id="5277894862589591112">Untuk menerapkan perubahan Anda, luncurkan ulang Chromium</translation>

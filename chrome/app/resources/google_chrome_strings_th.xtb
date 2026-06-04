@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">กำลังดาวน์โหลด...</translation>
 <translation id="1651617469580841801">เมื่อคุณใช้ Google Lens ระบบจะส่งชื่อหน้า, URL และเนื้อหา รวมถึง PDF ไปยัง Google <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">เกี่ยวกับ Chrome OS Flex</translation>
+<translation id="1665867022636014702">ใช้การตั้งค่าเบราว์เซอร์ที่ Google แนะนำ</translation>
 <translation id="1674870198290878346">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chrome</translation>
 <translation id="1682634494516646069">Google Chrome ไม่สามารถอ่านและเขียนข้อมูลในไดเรกทอรีข้อมูล: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">เมื่อคุณพิมพ์ในแถบที่อยู่หรือช่องค้นหา Chrome จะส่งสิ่งที่คุณพิมพ์ไปยังเครื่องมือค้นหา, AI และเครื่องมือตัวแทนขององค์กรเพื่อรับคำแนะนำ</translation>
@@ -238,6 +239,7 @@
 <translation id="345171907106878721">เพิ่มตัวคุณเองใน Chrome</translation>
 <translation id="3453763134178591239">ข้อกำหนดของ Chrome OS</translation>
 <translation id="3503306920980160878">Chrome ต้องการสิทธิ์เข้าถึงตำแหน่งของคุณเพื่อแชร์ตำแหน่งกับเว็บไซต์นี้</translation>
+<translation id="3539955434060988644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chrome</translation>
 <translation id="3576528680708590453">ผู้ดูแลระบบของคุณกำหนดค่าให้ Google Chrome เปิดเบราว์เซอร์สำรองเพื่อเข้าถึง <ph name="TARGET_URL_HOSTNAME" /></translation>
 <translation id="3582972582564653026">ซิงค์และปรับเปลี่ยน Chrome ในอุปกรณ์ต่างๆ</translation>
 <translation id="3583751698304738917">คุณลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL_ADDRESS" /> ในโปรไฟล์ Chrome อื่นอยู่แล้ว</translation>

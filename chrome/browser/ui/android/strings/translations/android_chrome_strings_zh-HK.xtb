@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">你可在此下載 PDF</translation>
 <translation id="107147699690128016">如果變更副檔名，此檔案可能會在其他應用程式中開啟，並可能對裝置造成損害。</translation>
 <translation id="1073328695547557412">輕按「Google 智能鏡頭」圖示</translation>
+<translation id="1080116354587839789">縮放至符合畫面寬度</translation>
 <translation id="1086486568852410168">使用「Google 智能鏡頭」搜尋</translation>
 <translation id="1087799850623149508">按住網址列即可移到底部</translation>
 <translation id="1089606299949659462">審核已完成！</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_GROUPS_PART" />、<ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}other{# 個密碼只會儲存至此裝置。如要在其他裝置上使用，請將項目儲存至 Google 帳戶。}}</translation>
 <translation id="3293181007446299124">瀏覽記錄會保留在裝置上以保私隱。系統亦會延遲傳送報告以保護您的身分</translation>
+<translation id="3301639354590628973">要切換帳戶嗎？</translation>
 <translation id="3301936297336370235">密碼建議確認</translation>
 <translation id="3302615849591357577">將「<ph name="TITLE_OF_GROUP" />」分頁群組 (<ph name="COLOR_NAME" />) 還原為新的背景分頁群組。</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>

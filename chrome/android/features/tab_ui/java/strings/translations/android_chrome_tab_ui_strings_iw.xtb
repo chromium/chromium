@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) מקובצת</translation>
 <translation id="1844381456014878100">אחרי 7 ימים ללא פעילות</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{הוספת הכרטיסייה לרשימת הקריאה}one{הוספת כרטיסיות לרשימת הקריאה}two{הוספת כרטיסיות לרשימת הקריאה}other{הוספת כרטיסיות לרשימת הקריאה}}</translation>
 <translation id="1909810060368225529">כדאי לשים לב: השינויים שמבוצעים בקבוצת הכרטיסיות המשותפת הזו גלויים לכולם. כולם יכולים לבצע שינויים בקבוצות הכרטיסיות ששיתפת</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{הצמדת הכרטיסייה}one{הצמדת הכרטיסיות}two{הצמדת הכרטיסיות}other{הצמדת הכרטיסיות}}</translation>
 <translation id="1982637982196732906">העברה לקטע הלא פעיל</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">סמל בצבע <ph name="COLOR_NAME" /> של קבוצת הכרטיסיות</translation>
 <translation id="311432875115153175">רשימת קבוצות הכרטיסיות נסגרה</translation>
+<translation id="3152596030350326139">הצגת הכרטיסיות לרוחב</translation>
+<translation id="31806439105337256">הצגת הכרטיסיות לאורך</translation>
 <translation id="3194464645767632461">דירוג</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{הוספת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) לקבוצה}one{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}two{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}other{הוספת <ph name="TABS_COUNT_MANY" /> כרטיסיות לקבוצה}}</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>

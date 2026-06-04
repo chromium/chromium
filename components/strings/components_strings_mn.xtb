@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Үл мэдэгдэх тохиргоо.</translation>
 <translation id="1227677022489889280">Зөөж буй шалтгааныг өгнө үү (шаардлагатай)</translation>
 <translation id="1228893227497259893">Буруу өгөгдөл тодорхойлогч</translation>
+<translation id="122989279399348496">Таныг нэвтэрсэн үед <ph name="DOMAIN" /> дэмжигдсэн сайтууд дээр <ph name="EMAIL" />-г баталгаажуулах боломжтой тул та ирсэн имэйлийн хайрцгаа шалгах шаардлагагүй</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматаар илрүүлсэн)</translation>
 <translation id="1232569758102978740">Гарчиггүй</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" />-г бөглөх шаардлагатай</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, олон үйлдэл хийх боломжтой, үйлдэл хооронд шилжихийн тулд Таб дээр дарна уу</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуал картын дэлгэрэнгүй</translation>
+<translation id="1802420021606590788">Chrome хуудасны гарчиг, URL-г үүлэн дэх хаалттай орон зайд боловсруулдаг</translation>
 <translation id="1803254472779303354">Хулганын түгжээг зөвшөөрсөн</translation>
 <translation id="1803351196216024260">Таны микрофоныг ашиглахыг хүсэх боломжтой</translation>
 <translation id="1804258830776932716">Бүртгэлээ түргэн холбож Pix-г идэвхжүүлнэ үү</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">Бусад хайлтын жагсаалтууд</translation>
 <translation id="2355395290879513365">Халдагч таны энэ сайтаас харж буй зургийг харах бөгөөд тэдгээрийг өөрчлөх замаар таныг хуурч болзошгүй.</translation>
 <translation id="2356941001189392209">Уламжлалт технологийн үйл явдлууд тохиолдож буй таны зочилсон хуудаснуудын URL-н хязгаарлагдмал жагсаалт</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 таб хуваалцана}other{{NUM_TABS} таб хуваалцана}}</translation>
 <translation id="2357481397660644965">Таны төхөөрөмжийг <ph name="DEVICE_MANAGER" />, харин бүртгэлийг тань <ph name="ACCOUNT_MANAGER" /> удирддаг.</translation>
 <translation id="2359629602545592467">Олон</translation>
 <translation id="2359808026110333948">Цааш</translation>
@@ -3028,6 +3031,7 @@
 <translation id="5742806904559466333">Баар, клуб болон шөнийн амьдрал</translation>
 <translation id="5743684619253032786">Хумс арчилгааны бүтээгдэхүүнүүд</translation>
 <translation id="574392208103952083">Дунд зэрэг</translation>
+<translation id="5745586894920491759">Chrome хуудасны гарчиг, URL-г үүлэнд боловсруулдаг</translation>
 <translation id="5745733273847572235">Таны байршлыг хүсэх боломжтой</translation>
 <translation id="5750869797196646528">Гар хянах</translation>
 <translation id="5752327398324808817">Нэг эсвэл хоёр үг оруулна уу</translation>
@@ -3421,6 +3425,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Логуудыг харах</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси, галт хана болон Аюулгүй DNS тохируулгыг шалгах<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Имэйлээ автоматаар баталгаажуулах</translation>
 <translation id="6366710531182496394">Зүүн ирмэг дагуу хоёр удаа үдэх</translation>
 <translation id="6367196786591004737">Оруулгыг устгах</translation>
 <translation id="6370022303958842211">Нэвтрэлт (амжилтгүй болсон нэвтрэлтийн шалтгааныг оруулаад), гаралт, түгжээ болон түгжээг тайлах зэрэг төхөөрөмжийн хандалтын үйлдлүүд</translation>
@@ -5060,6 +5065,7 @@
 <translation id="8963117664422609631">Сайтын тохиргоо руу очих</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Зөвлөмж:<ph name="MARKUP_2" />Ta датанд холбогдсон эсэхээ шалгана уу<ph name="MARKUP_3" />Энэ вэв хуудсыг дараа дахин ачаална уу<ph name="MARKUP_4" />Оруулсан хаягаа шалгана уу<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Таны дотоод файлуудыг <ph name="HOURS" /> цагийн дараа устгана</translation>
+<translation id="8964904785315870349">Баталгаажсан имэйл</translation>
 <translation id="8968766641738584599">Картыг хадгалах</translation>
 <translation id="8970887620466824814">Алдаа гарлаа.</translation>
 <translation id="8971063699422889582">Серверийн сертификатын хугацаа дууссан байна.</translation>

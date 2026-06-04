@@ -149,6 +149,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1227224963052638717">Unknown policy.</translation>
 <translation id="1227677022489889280">Provide reason for moving (required)</translation>
 <translation id="1228893227497259893">Wrong entity identifier</translation>
+<translation id="122989279399348496">While you're signed in, <ph name="DOMAIN" /> can confirm <ph name="EMAIL" /> on supported sites so that you don't have to check your inbox</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (auto-detected)</translation>
 <translation id="1232569758102978740">Untitled</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> is required</translation>
@@ -510,6 +511,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, multiple actions are available; press 'Tab' to cycle through them</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtual card details</translation>
+<translation id="1802420021606590788">Chrome processes page titles and URLs in a private space in the cloud</translation>
 <translation id="1803254472779303354">Mouse lock allowed</translation>
 <translation id="1803351196216024260">Can ask to use your microphone</translation>
 <translation id="1804258830776932716">Enable Pix by linking your account quickly</translation>
@@ -873,6 +875,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2354001756790975382">Other bookmarks</translation>
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
 <translation id="2356941001189392209">A limited list of URLs of pages that you visit where legacy technology events are occurring</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Will share 1 tab}other{Will share {NUM_TABS} tabs}}</translation>
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continue</translation>
@@ -3027,6 +3030,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5742806904559466333">Bars, Clubs and Nightlife</translation>
 <translation id="5743684619253032786">Nail care products</translation>
 <translation id="574392208103952083">Medium</translation>
+<translation id="5745586894920491759">Chrome processes page titles and URLs in the cloud</translation>
 <translation id="5745733273847572235">Can ask for your location</translation>
 <translation id="5750869797196646528">Hand tracking</translation>
 <translation id="5752327398324808817">Enter a word or two</translation>
@@ -3421,6 +3425,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">View logs</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Checking the proxy, firewall and secure DNS configuration<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automatically confirm your emails</translation>
 <translation id="6366710531182496394">Dual staple left</translation>
 <translation id="6367196786591004737">Delete entry</translation>
 <translation id="6370022303958842211">Device access actions such as logins (including failed login reasons), logouts, locks and unlocks</translation>
@@ -5061,6 +5066,7 @@ Additional details:
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions:<ph name="MARKUP_2" />Make sure that you have a data connection<ph name="MARKUP_3" />Reload this web page later<ph name="MARKUP_4" />Check the address that you entered<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Your local files will be deleted in <ph name="HOURS" /> hours</translation>
+<translation id="8964904785315870349">Verified email</translation>
 <translation id="8968766641738584599">Save card</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8971063699422889582">Server's certificate has expired.</translation>

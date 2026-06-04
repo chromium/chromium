@@ -8,14 +8,12 @@
 <translation id="204914487372604757">Създаване на пряк път</translation>
 <translation id="2065911435109240297">Възстановяване на уеб приложенията ви</translation>
 <translation id="2111649875343992405">Прегледайте кои уеб приложения да бъдат възстановени</translation>
-<translation id="2139186145475833000">Добавяне към началния екран</translation>
 <translation id="2172982519592313442">Преглед на уеб приложенията</translation>
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
 <translation id="3470954020960831923">Това приложение не може да се инсталира.</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
 <translation id="3910402514791813257">Инсталирането не бе успешно</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
-<translation id="4338600611020922010">Добавяне към началния екран</translation>
 <translation id="4665282149850138822">Добавихте <ph name="NAME" /> към началния екран</translation>
 <translation id="5037411519220435935">Един момент\u2026</translation>
 <translation id="5250483651202458397">Екранна снимка. Докоснете за затваряне.</translation>
@@ -25,6 +23,7 @@
 <translation id="5972844218283131174">Премахване на избора от всички</translation>
 <translation id="6838423508083736333">Уеб приложения, използвани през последния месец</translation>
 <translation id="6847654118050428901">Въведете името на прекия път</translation>
+<translation id="6923899737874692938">Инсталиране и създаване на пряк път</translation>
 <translation id="6990079615885386641">Изтегляне на приложението от Google Play Магазин: <ph name="APP_ACTION" /></translation>
 <translation id="7333031090786104871">Още се добавя предишният сайт</translation>
 <translation id="7672888405515738928">Изберете уеб приложенията, които да бъдат възстановени на това устройство. Показаните тук са въз основа на историята ви в Chrome.</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Grupēta <ph name="TABS_COUNT_ONE" /> cilne</translation>
 <translation id="1844381456014878100">Pēc septiņām neaktivitātes dienām</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Pievienot cilni lasīšanas sarakstam}zero{Pievienot cilnes lasīšanas sarakstam}one{Pievienot cilnes lasīšanas sarakstam}other{Pievienot cilnes lasīšanas sarakstam}}</translation>
 <translation id="1909810060368225529">Paziņojums: šīs kopīgotās ciļņu grupas izmaiņas ir redzamas visiem. Ikviens var veikt izmaiņas jūsu kopīgotajās ciļņu grupās</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Piespraust cilni}zero{Piespraust cilnes}one{Piespraust cilnes}other{Piespraust cilnes}}</translation>
 <translation id="1982637982196732906">Pārvietot uz neaktīvo ciļņu sadaļu</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
 <translation id="3078350928901129212">Ciļņu grupas ikonas krāsa ir <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Ciļņu grupu saraksts ir aizvērts.</translation>
+<translation id="3152596030350326139">Rādīt cilnes horizontāli</translation>
+<translation id="31806439105337256">Rādīt cilnes vertikāli</translation>
 <translation id="3194464645767632461">vērtējums</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pievienot grupai <ph name="TABS_COUNT_ONE" /> cilni}zero{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}one{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilni}other{Pievienot grupai <ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>

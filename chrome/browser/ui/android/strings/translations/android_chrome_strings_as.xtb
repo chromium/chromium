@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">আপুনি PDFসমূহ ইয়াত ডাউনল’ড কৰিব পাৰে</translation>
 <translation id="107147699690128016">আপুনি যদি ফাইল এক্সটেনশ্বন সলনি কৰে ফাইলটো হয়তো বেলেগ এটা এপ্লিকেশ্বনত খুলিব আৰু সেয়া আপোনাৰ ডিভাইচটোৰ বাবে এক সম্ভাব্য বিপদ হ’ব পাৰে।</translation>
 <translation id="1073328695547557412">Google Lensৰ চিহ্নটোত টিপক</translation>
+<translation id="1080116354587839789">প্ৰস্থৰ সৈতে খাপ খুৱাওক</translation>
 <translation id="1086486568852410168">Google Lensৰে সন্ধান কৰক</translation>
 <translation id="1087799850623149508">ঠিকনাৰ বাৰডাল একেবাৰে তললৈ নিবলৈ আপুনি স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে</translation>
 <translation id="1089606299949659462">পৰ্যালোচনা সম্পূৰ্ণ হ’ল!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> টা টেব}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> টা টেব}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> টা টেব}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{১ টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্টত ছেভ কৰক।}one{# টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}other{# টা পাছৱৰ্ড কেৱল এই ডিভাইচটোত ছেভ কৰা হৈছে। সেইসমূহ আপোনাৰ অন্য ডিভাইচত ব্যৱহাৰ কৰিবলৈ, সেইসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰক।}}</translation>
 <translation id="3293181007446299124">আপোনাৰ ডিভাইচটোত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস ব্যক্তিগত কৰি ৰখা হয় আৰু ৰিপ’ৰ্টসমূহ আপোনাৰ পৰিচয় সুৰক্ষিত কৰিবলৈ পলমকৈ পঠিওৱা হয়</translation>
+<translation id="3301639354590628973">একাউণ্ট সলনি কৰিব নেকি?</translation>
 <translation id="3301936297336370235">পাছৱৰ্ডৰ পৰামৰ্শৰ নিশ্চিতকৰণ</translation>
 <translation id="3302615849591357577">এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে <ph name="TITLE_OF_GROUP" /> টা টেবৰ গোট, <ph name="COLOR_NAME" /> ৰং পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, পিন কৰি থোৱা Picture-in-Picture টেব</translation>
 <translation id="3950820424414687140">ছাইন ইন কৰক</translation>
 <translation id="395377504920307820">একাউণ্টৰ অবিহনে ব্যৱহাৰ কৰক</translation>
+<translation id="3955353672249727801">পৃষ্ঠাকেইখন পঢ়াৰ সূচীত যোগ দিয়া হ’ল</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{আপোনাৰ পৃষ্ঠাটো সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}one{আপোনাৰ পৃষ্ঠাসমূহ সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}other{আপোনাৰ পৃষ্ঠাসমূহ সাজু হ'লে Chromeএ সেইটো ল'ড কৰিব}}</translation>
 <translation id="3969142555815019568">Chromeএ আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="3969863827134279083">ওপৰলৈ নিয়ক</translation>

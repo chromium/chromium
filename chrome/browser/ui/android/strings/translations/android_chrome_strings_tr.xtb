@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF'leri buradan indirebilirsiniz</translation>
 <translation id="107147699690128016">Dosya uzantısını değiştirirseniz dosya farklı bir uygulamada açılabilir ve cihazınız için tehlikeli olabilir.</translation>
 <translation id="1073328695547557412">Google Lens simgesine dokunun.</translation>
+<translation id="1080116354587839789">Genişliğe sığdır</translation>
 <translation id="1086486568852410168">Google Lens ile ara</translation>
 <translation id="1087799850623149508">Adres çubuğunu en alta taşımak için dokunup basılı tutabilirsiniz</translation>
 <translation id="1089606299949659462">İnceleme tamamlandı</translation>
@@ -536,6 +537,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> sekme}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 şifre yalnızca bu cihaza kayıtlı. Diğer cihazlarınızda kullanmak için Google Hesabınıza kaydedin.}other{# şifre yalnızca bu cihaza kayıtlı. Diğer cihazlarınızda kullanmak için Google Hesabınıza kaydedin.}}</translation>
 <translation id="3293181007446299124">Tarama geçmişiniz cihazınızda gizli tutulur ve raporlar, kimliğinizin korunması için gecikmeli olarak gönderilir</translation>
+<translation id="3301639354590628973">Hesap değiştirilsin mi?</translation>
 <translation id="3301936297336370235">Şifre önerisi onayı</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> sekme grubunu, <ph name="COLOR_NAME" /> rengini yeni bir arka plan sekme grubu olarak geri yükleyin.</translation>
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
@@ -678,6 +680,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, Sabit Pencere İçinde Pencere Sekmesi</translation>
 <translation id="3950820424414687140">Oturum açın</translation>
 <translation id="395377504920307820">Hesap olmadan kullan</translation>
+<translation id="3955353672249727801">Sayfalar, okuma listesine eklendi</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome, hazır olduğunda sayfanızı yükler}other{Chrome, hazır olduğunda sayfalarınızı yükler}}</translation>
 <translation id="3969142555815019568">Chrome, şifrelerinizi kontrol edemiyor</translation>
 <translation id="3969863827134279083">Yukarı Git</translation>

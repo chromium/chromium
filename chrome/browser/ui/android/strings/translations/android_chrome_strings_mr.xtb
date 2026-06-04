@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">तुम्ही इथे PDFs डाउनलोड करू शकता</translation>
 <translation id="107147699690128016">तुम्ही फाइल एक्स्टेंशन बदलल्यास, फाइल कदाचित दुसऱ्या ॲप्लिकेशनमध्ये उघडू शकते आणि यामुळे तुमच्या डिव्हाइसला संभाव्य धोका असू शकतो.</translation>
 <translation id="1073328695547557412">Google Lens आयकनवर टॅप करा</translation>
+<translation id="1080116354587839789">रूंदीत फिट करा</translation>
 <translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
 <translation id="1087799850623149508">तुम्ही अ‍ॅड्रेस बार तळाशी हलवण्यासाठी स्पर्श करून धरून ठेवू शकता</translation>
 <translation id="1089606299949659462">पुनरावलोकन पूर्ण झाले आहे!</translation>
@@ -356,6 +357,7 @@
 <translation id="253498598929009420">साइट तुमच्या स्क्रीनवरील आशय पाहू शकेल</translation>
 <translation id="2535807170289627159">सर्व टॅब</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
+<translation id="2537574774089209541">तुम्ही ब्राउझ करत असताना Gemini चा सहज ॲक्सेस मिळावा यासाठी काही टूल हलवली आहेत.</translation>
 <translation id="2539002604555291451">साँ सेरिफ</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, निवडलेला पिन केलेला म्यूट केलेला गुप्त टॅब</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, टॅब</translation>
@@ -404,6 +406,7 @@
 <translation id="2751271371269891762">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
+<translation id="276378135349383280">तळाशी असलेल्या टूलबारमध्ये Gemini दाखवा</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन केले</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकंद शिल्लक</translation>
 <translation id="2779651927720337254">अयशस्वी झाले</translation>
@@ -536,6 +539,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> टॅब}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{१ पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तो तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}other{# पासवर्ड फक्त या डिव्हाइसवर सेव्ह केले आहेत. ते तुमच्या इतर डिव्हाइसवर वापरण्यासाठी, तुमच्या Google खाते मध्ये सेव्ह करा.}}</translation>
 <translation id="3293181007446299124">तुमचा ब्राउझिंग इतिहास तुमच्या डिव्हाइसवर खाजगी ठेवला जातो आणि तुमची ओळख संरक्षित करण्यासाठी अहवाल विलंबाने पाठवले जातात</translation>
+<translation id="3301639354590628973">खाती स्विच करायची आहेत का?</translation>
 <translation id="3301936297336370235">पासवर्डसंबंधित सूचना कन्फर्म करणे</translation>
 <translation id="3302615849591357577">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TITLE_OF_GROUP" /> टॅब गट, <ph name="COLOR_NAME" /> रंग रिस्टोअर करा.</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
@@ -602,6 +606,7 @@
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3614126103057878858">किमतीचे इनसाइट</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
+<translation id="3616798734782988169">तुमचा <ph name="DOWNLOAD_DOMAIN" /> वर विश्वास असल्याची खात्री करा</translation>
 <translation id="3619255692378312441">ॲक्सेस व्यवस्थापित करा</translation>
 <translation id="3622349720008044802">विंडो व्यवस्थापित करा</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{आणि १ साइट}other{आणि # साइट}}</translation>
@@ -632,6 +637,7 @@
 <translation id="3738139272394829648">शोधण्यासाठी स्विच करा</translation>
 <translation id="3739455665973395693">तुमच्या Google खाते मध्ये धोक्यात असलेले पासवर्ड नाहीत</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> मध्ये बुकमार्क केले</translation>
+<translation id="3740290940447881599">या साइटवर तुमचा विश्वास असल्याची खात्री करा</translation>
 <translation id="3740525748616366977">या डिव्हाइसवर व्हॉइस शोध उपलब्ध नाही</translation>
 <translation id="3763110477555836428">तुमच्या वास्तविक तपशिलांचे संरक्षण करण्यासाठी तुम्ही हे कार्ड वापरून चेक आउट कराल, तेव्हा व्हर्चुअल कार्ड नंबर भरला जाईल. Google Wallet मध्ये व्यवस्थापित करा. <ph name="BEGIN_LINK1" />व्हर्चुअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">काही डेटा अद्याप सेव्ह केला गेलेला नाही</translation>
@@ -1528,6 +1534,7 @@
 <translation id="7291910923717764901">या पेजसाठी इमेजची वर्णने जोडली</translation>
 <translation id="7293429513719260019">भाषा निवडा</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, निवडलेला पिन केलेला शेअर करत असलेला टॅब</translation>
+<translation id="7304003340539141201">तुमचे टॅब आणि टास्कमध्ये मदतीसाठी Gemini ला विचारा</translation>
 <translation id="7311244614769792472">कोणतेही परिणाम आढळले नाहीत</translation>
 <translation id="7314734791127433392">पासवर्ड तपासू शकत नाही</translation>
 <translation id="7324354302972299151">“Do Not Track” विनंती पाठवा</translation>
@@ -1874,6 +1881,7 @@
 <translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8697753151306746444">त्याऐवजी विंडो किंवा स्क्रीन शेअर करा</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
+<translation id="8700565880437506364">सादर आहे Chrome मधील Gemini</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8715286883001906001">तुमच्या Google खाते मधील तुमचे पासवर्ड मजबूत करा</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> बंद केला जाईल</translation>
@@ -1941,6 +1949,7 @@
 <translation id="8996847606757455498">दुसरा पुरवठादार निवडा</translation>
 <translation id="8998837250940831980">टॅब मिनिमाइझ करता आला नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="9001604755921395912">गुप्त मोड Chrome टॅबमध्ये उघडा</translation>
+<translation id="9010094279589497751">तुम्हाला गरज असेल तेव्हा पटकन Gemini उघडा</translation>
 <translation id="9012585441087414258">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण. एखाद्या पेजमध्ये काहीतरी संशयास्पद आढळल्यास, URLs आणि पेजच्या आशयाचे भाग हे Google सुरक्षित ब्राउझिंग ला पाठवले जातात.</translation>
 <translation id="9019199799064251516">कार प्रोफाइल लॉकशिवाय पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="9022774213089566801">वारंवार भेट दिलेल्या</translation>
@@ -1998,6 +2007,7 @@
 <translation id="9190355771000652811">अ‍ॅड्रेस बारमध्ये, सर्च इंजीन आणि साइट शोध यासाठीच्या शॉर्टकटसह हा कीबोर्ड शॉर्टकट वापरा.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, निवडलेला गुप्त टॅब पिन केलेला आहे</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>
+<translation id="9202894533863490414">या साइटवरून डाउनलोड करायचे आहे क?</translation>
 <translation id="9204836675896933765">1 फाइल शिल्लक</translation>
 <translation id="9205933215779845960">ते पेज सापडले नाही. तुमचे शब्दलेखन तपासा किंवा <ph name="SEARCH_ENGINE" /> वर शोधून पहा.</translation>
 <translation id="9206873250291191720">A</translation>

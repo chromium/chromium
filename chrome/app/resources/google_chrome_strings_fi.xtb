@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Ladataan...</translation>
 <translation id="1651617469580841801">Kun käytät Google Lensia, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään Googlelle. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tietoa ChromeOS Flexistä</translation>
+<translation id="1665867022636014702">Käytä Googlen suosittelemia selainasetuksia</translation>
 <translation id="1674870198290878346">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
 <translation id="1682634494516646069">Chrome ei voi lukea tietohakemistoaan <ph name="USER_DATA_DIRECTORY" /> tai kirjoittaa siihen</translation>
 <translation id="1688214853608504530">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin organisaatiosi haku-, tekoäly- ja agenttityökaluille, jotta saat ehdotuksia.</translation>
@@ -238,6 +239,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="345171907106878721">Lisää itsesi Chromeen</translation>
 <translation id="3453763134178591239">Chrome-käyttöjärjestelmän käyttöehdot</translation>
 <translation id="3503306920980160878">Chrome tarvitsee oikeuden käyttää sijaintiasi, jotta se voidaan jakaa tämän sivuston kanssa.</translation>
+<translation id="3539955434060988644">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
 <translation id="3576528680708590453">Järjestelmänvalvojasi on määrittänyt Chromen käynnistämään vaihtoehtoisen selaimen, kun <ph name="TARGET_URL_HOSTNAME" /> avataan.</translation>
 <translation id="3582972582564653026">Voit synkronoida Chromen ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="3583751698304738917">Olet jo kirjautunut sisään tilillä <ph name="USER_EMAIL_ADDRESS" /> toisessa Chrome-profiilissa</translation>

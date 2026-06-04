@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">PDF failus galite atsisiųsti čia</translation>
 <translation id="107147699690128016">Jei pakeisite failo plėtinį, failas gali būti atidaromas naudojant kitą programą ir galimai pakenkti įrenginiui.</translation>
 <translation id="1073328695547557412">Palieskite „Google Lens“ piktogramą</translation>
+<translation id="1080116354587839789">Pritaikyti pagal plotį</translation>
 <translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1087799850623149508">Palietę ir palaikę galite perkelti adreso juostą į apačią</translation>
 <translation id="1089606299949659462">Peržiūra baigta!</translation>
@@ -536,6 +537,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> skirtukas}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtukas}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtukai}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtuko}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> skirtukų}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Vienas slaptažodis išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}one{# slaptažodis išsaugotas tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}few{# slaptažodžiai išsaugoti tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}many{# slaptažodžio išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}other{# slaptažodžių išsaugota tik šiame įrenginyje. Jei norite juos naudoti kituose įrenginiuose, išsaugokite „Google“ paskyroje.}}</translation>
 <translation id="3293181007446299124">Naršymo istorija saugoma privačiai įrenginyje, o ataskaitos siunčiamos su delsa, siekiant apsaugoti jūsų tapatybę</translation>
+<translation id="3301639354590628973">Perjungti paskyras?</translation>
 <translation id="3301936297336370235">Slaptažodžio pasiūlymo patvirtinimas</translation>
 <translation id="3302615849591357577">Atkurkite skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurios spalva <ph name="COLOR_NAME" />, kaip naują foninę skirtukų grupę.</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
@@ -678,6 +680,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3943322906274039960">„<ph name="TAB_TITLE" />“, prisegtas vaizdo vaizde skirtukas</translation>
 <translation id="3950820424414687140">Prisijungti</translation>
 <translation id="395377504920307820">Naudoti be paskyros</translation>
+<translation id="3955353672249727801">Puslapiai pridėti prie skaitymo sąrašo</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{„Chrome“ įkels puslapį, kai bus paruošta}one{„Chrome“ įkels puslapius, kai bus paruošta}few{„Chrome“ įkels puslapius, kai bus paruošta}many{„Chrome“ įkels puslapius, kai bus paruošta}other{„Chrome“ įkels puslapius, kai bus paruošta}}</translation>
 <translation id="3969142555815019568">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="3969863827134279083">Perkelti į viršų</translation>

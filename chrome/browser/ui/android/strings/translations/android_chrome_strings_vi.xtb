@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Bạn có thể tải tệp PDF xuống tại đây</translation>
 <translation id="107147699690128016">Nếu bạn thay đổi đuôi tệp, thì tệp có thể mở trong một ứng dụng khác và tiềm ẩn nguy cơ đối với thiết bị.</translation>
 <translation id="1073328695547557412">Nhấn vào biểu tượng Google Ống kính</translation>
+<translation id="1080116354587839789">Vừa với chiều rộng</translation>
 <translation id="1086486568852410168">Tìm bằng Google Ống kính</translation>
 <translation id="1087799850623149508">Bạn có thể chạm và giữ để di chuyển thanh địa chỉ xuống dưới cùng</translation>
 <translation id="1089606299949659462">Đã hoàn tất quá trình xem xét!</translation>
@@ -536,6 +537,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> thẻ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Có 1 mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn.}other{Có # mật khẩu chỉ được lưu trên thiết bị này. Để sử dụng những mật khẩu này trên các thiết bị khác, hãy lưu mật khẩu vào Tài khoản Google của bạn.}}</translation>
 <translation id="3293181007446299124">Nhật ký duyệt web của bạn được bảo mật trên thiết bị của bạn. Các báo cáo gửi đi sẽ được trì hoãn để bảo vệ danh tính của bạn</translation>
+<translation id="3301639354590628973">Bạn muốn đổi tài khoản?</translation>
 <translation id="3301936297336370235">Xác nhận đề xuất về mật khẩu</translation>
 <translation id="3302615849591357577">Khôi phục nhóm thẻ <ph name="TITLE_OF_GROUP" />, màu <ph name="COLOR_NAME" />, dưới dạng một nhóm thẻ mới trong nền.</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>

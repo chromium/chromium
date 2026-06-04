@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">ທ່ານສາມາດດາວໂຫຼດ PDF ໄດ້ບ່ອນນີ້</translation>
 <translation id="107147699690128016">ຖ້າທ່ານປ່ຽນແປງນາມສະກຸນໄຟລ໌, ໄຟລ໌ອາດຈະເປີດໃນແອັບພລິເຄຊັນອື່ນ ແລະ ເປັນໄປໄດ້ວ່າອາດຈະເປັນອັນຕະລາຍຕໍ່ກັບອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="1073328695547557412">ແຕະໄອຄອນ Google Lens</translation>
+<translation id="1080116354587839789">ເຮັດ​ໃຫ້​ເຂົ້າ​ກັນ​ກັບ​ລວງ​ກ້​ວາງ</translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
 <translation id="1087799850623149508">ທ່ານສາມາດແຕະຄ້າງໄວ້ເພື່ອຍ້າຍແຖບທີ່ຢູ່ໄປລຸ່ມສຸດໄດ້</translation>
 <translation id="1089606299949659462">ກວດສອບສຳເລັດແລ້ວ!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ແຖບ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{ລະບົບຈະບັນທຶກລະຫັດຜ່ານ 1 ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.}other{ລະບົບຈະບັນທຶກລະຫັດຜ່ານ # ລາຍການໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເພື່ອນຳໃຊ້ຢູ່ອຸປະກອນເຄື່ອງອື່ນຂອງທ່ານ, ໃຫ້ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ.}}</translation>
 <translation id="3293181007446299124">ປະຫວັດການທ່ອງເວັບຂອງທ່ານຖືກເກັບຮັກສາໄວ້ເປັນສ່ວນຕົວຢູ່ອຸປະກອນຂອງທ່ານ ແລະ ລາຍງານແມ່ນຖືກສົ່ງແບບໜ່ວງເວລາເພື່ອປົກປ້ອງຕົວຕົນຂອງທ່ານ</translation>
+<translation id="3301639354590628973">ສະຫຼັບບັນຊີບໍ?</translation>
 <translation id="3301936297336370235">ການຢືນຢັນການແນະນຳລະຫັດຜ່ານ</translation>
 <translation id="3302615849591357577">ກູ້ຄືນກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" />, ສີ <ph name="COLOR_NAME" />, ເປັນກຸ່ມແຖບໃໝ່ໃນພື້ນຫຼັງ.</translation>
 <translation id="3303855915957856445">ບໍ່ພົບຜົນການຊອກຫາໃດໆ</translation>
@@ -640,6 +642,7 @@
 <translation id="3771290962915251154">ການຕັ້ງຄ່ານີ້ຖືກປິດການນຳໃຊ້ເນື່ອງຈາກວ່າການຄວບຄຸມຂອງພໍ່ແມ່ເປີດຢູ່</translation>
 <translation id="3771694256347217732">ຂໍ້ກຳນົດການບໍລິການຂອງ Google</translation>
 <translation id="3777796259512476958">ພາທ່ານອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່</translation>
+<translation id="3786379886124795923">ທ່ານໄດ້ສະແກນລະຫັດ QR ເພື່ອເຂົ້າສູ່ລະບົບ Chrome. ກະລຸນາຍືນຢັນວ່າທ່ານຕ້ອງການຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ອື່ນໆຈາກໂປຣໄຟລ໌ນີ້.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ແຖບ}other{# ແຖບ}}</translation>
 <translation id="3792938779249970121">ເລືອກບັນຊີ</translation>
 <translation id="3795154175078851242">ສຳເນົາຮູບພ້ອມລິ້ງ</translation>
@@ -678,6 +681,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ແຖບການສະແດງຜົນຊ້ອນກັນທີ່ປັກໝຸດໄວ້</translation>
 <translation id="3950820424414687140">ລົງຊື່ເຂົ້າ​ໃຊ້</translation>
 <translation id="395377504920307820">ໃຊ້ໂດຍບໍ່ມີບັນຊີ</translation>
+<translation id="3955353672249727801">ເພີ່ມໜ້າໃສ່ໃນລາຍຊື່ການອ່ານແລ້ວ</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ຈະໂຫຼດໜ້າເວັບຂອງທ່ານເມື່ອພ້ອມແລ້ວ}other{Chrome ຈະໂຫຼດໜ້າເວັບຂອງທ່ານເມື່ອພ້ອມແລ້ວ}}</translation>
 <translation id="3969142555815019568">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
 <translation id="3969863827134279083">ຍ້າຍຂຶ້ນ</translation>
@@ -824,6 +828,7 @@
 <translation id="4532845899244822526">ເລືອກ​ໂຟລເດີ</translation>
 <translation id="4535755320005483982">ກຸ່ມແຖບ <ph name="GROUP_TITLE" /> ທີ່ແບ່ງປັນ</translation>
 <translation id="4537137366307982887">ການເລືອກຮັບການແຈ້ງເຕືອນເຄັດລັບເປີດຢູ່ລະດັບຄວາມສູງເຕັມໜ້າຈໍ</translation>
+<translation id="4537987892902330164">ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="NAME_OR_EMAIL" /> ໄວ້.</translation>
 <translation id="4543131175509360848">ບໍ່ມີຊີດກະແຈຜ່ານ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ແຖບ}other{<ph name="TAB_COUNT_MANY" /> ແຖບ, <ph name="TAB_COUNT_INCOGNITO" /> ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ}}</translation>
 <translation id="4558311620361989323">ທາງລັດໜ້າເວັບ</translation>
@@ -1281,6 +1286,7 @@
 <translation id="6411219469806822692">ບໍ່ສາມາດຂຶ້ນໄປສູງກວ່ານີ້ໄດ້. ໃຫ້ລອງເລີ່ມຈາກທາງເທິງຂອງໜ້າ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ແຖບທີ່ເລືອກຫຼາຍລາຍການ</translation>
 <translation id="641643625718530986">ພິມ</translation>
+<translation id="6427723330233512782">ຂະຫຍາຍພໍດີຄວາມສູງ</translation>
 <translation id="6433501201775827830">ເລືອກໂປຣແກຣມຊອກຫາຂອງທ່ານ</translation>
 <translation id="6434309073475700221">ກໍາຈັດຖິ້ມ</translation>
 <translation id="6435307030888827407">ອອກຈາກລະບົບໄວ້</translation>
@@ -2014,9 +2020,11 @@
 <translation id="939598580284253335">ປ້ອນວະລີຜ່ານໃສ່</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, ແຖບບໍ່ເປີດເຜີຍຕົວຕົນແບບການສະແດງຜົນຊ້ອນກັນທີ່ປັກໝຸດໄວ້</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
+<translation id="949667118776341807">ໝຸນ</translation>
 <translation id="95817756606698420">Chrome ສາມາດໃຊ້ <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ສຳລັບການຊອກຫາໃນປະເທດຈີນ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="963246339335003378">ເປີດຕົວຈັດການໜ້າວຽກ</translation>
+<translation id="966337994629449077">ທ່ານເຂົ້າສູ່ລະບົບໃນນາມ <ph name="FROM_EMAIL" />.\n\nເພື່ອສືບຕໍ່ຈາກຄອມພິວເຕີຂອງທ່ານ, ໃຫ້ປ່ຽນໄປໃຊ້ <ph name="TO_EMAIL" />. ທ່ານຈະໄດ້ຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຈາກບັນຊີນີ້.</translation>
 <translation id="970715775301869095">ຍັງເຫຼືອ <ph name="MINUTES" /> ນາທີ</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>
 <translation id="983192555821071799">ປິດ​ທຸກແຖບ</translation>

@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Browser Anda dikelola. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Telusuri Teks yang Anda Salin</translation>
 <translation id="2147127444698817042">Hanya tersedia di iPhone</translation>
+<translation id="2148326276832455306">Percakapan ditinjau dan digunakan untuk meningkatkan kualitas AI Google. Anda dapat <ph name="BEGIN_LINK" />mengelola aktivitas<ph name="END_LINK" />, termasuk info tentang lokasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut pilihan Anda<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Login dengan cepat ke situs dan aplikasi menggunakan sandi tersimpan.</translation>
 <translation id="2149968176347646218">Koneksi tidak aman</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Pemilih satuan</translation>
 <translation id="2330607597130465898">Tidak ada perlindungan</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
+<translation id="2340966584724330791">Google mengumpulkan percakapan Anda dan hal yang Anda bagikan kepada Gemini (seperti file, video, layar, dan foto). Google juga mengumpulkan masukan Anda, info dari situs yang Anda kunjungi dengan Gemini, penggunaan produk, dan info lokasi (termasuk lokasi umum perangkat Anda, alamat IP, atau alamat Rumah atau Kantor di Akun Google Anda).</translation>
 <translation id="2350463587705616331">Warna latar belakang sepia</translation>
 <translation id="2351097562818989364">Setelan terjemah telah direset.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE} di Akun Google Anda, {EMAIL}.}=2{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE} dan {DOMAIN_TWO} di Akun Google Anda, {EMAIL}.}=3{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE}, {DOMAIN_TWO}, dan {OTHER_DOMAINS_COUNT} lainnya di Akun Google Anda, {EMAIL}.}other{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE}, {DOMAIN_TWO}, dan {OTHER_DOMAINS_COUNT} lainnya di Akun Google Anda, {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Terjadi masalah saat mengisi info Anda</translation>
 <translation id="2371084566192454134">Tab dan grup tab</translation>
 <translation id="2371303771137626249">Baru</translation>
+<translation id="2375947780110007467">Google menggunakan konten dan URL tab yang dibagikan. Tab Anda saat ini dibagikan di percakapan baru. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="2381405137052800939">Dasar</translation>
 <translation id="2384692388811649784">Sembunyikan tab Samaran</translation>
 <translation id="2386793615875593361">1 dipilih</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Penelusuran suara</translation>
 <translation id="3289505634533552500">Penelusuran Suara</translation>
 <translation id="3295904109373959849">Petak Grup Tab</translation>
+<translation id="3301639354590628973">Ganti akun?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, aktivitas baru</translation>
 <translation id="3305294846493618482">lainnya</translation>
 <translation id="3311748811247479259">Nonaktif</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Tandai telah dibaca</translation>
 <translation id="428768789042547925">Yang Baru</translation>
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab ke Grup}other{Tambahkan Tab ke Grup}}</translation>
+<translation id="4294506173142861371">Login sebagai <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">Pindai kartu dan isi otomatis</translation>
 <translation id="4302061870579014542">Tetapkan posisi</translation>
 <translation id="4304713468139749426">Pengelola Sandi</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Bookmark</translation>
 <translation id="5447973833955560753">Sandi pemulihan</translation>
 <translation id="5452354193031718372">Gunakan sandi kuat:</translation>
+<translation id="5453088693079603292">Aktivitas yang dikumpulkan</translation>
 <translation id="5454211924362324495">Untuk mencegah orang lain menggunakan sandi Anda, <ph name="BEGIN_LINK" />ubah sandi di <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Tambahkan ke penelusuran</translation>
 <translation id="5457226814769348910">Buka Versi Offline</translation>
@@ -1522,6 +1528,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6253686838150111720">Login ke <ph name="URL" /></translation>
 <translation id="6254066287920239840">Buka link di aplikasi, bukan di browser.</translation>
 <translation id="6259928806013786178">Gagal mengaktifkan mode baca</translation>
+<translation id="626335165106398104">Gemini berfungsi dengan layanan lain</translation>
 <translation id="6268773951964630964">Telusuri gambar yang disalin</translation>
 <translation id="6271462272606946663">Sembunyikan Minta Situs Seluler</translation>
 <translation id="6271824294945464304">Berbagi sandi</translation>
@@ -1637,6 +1644,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6609890790934458793">Sandi untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, dan <ph name="THIRD_WEBSITE" /> akan dihapus. Akun Anda tidak akan dihapus.</translation>
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>
 <translation id="6612912757320004438">Izinkan Notifikasi Tab…</translation>
+<translation id="6613372200395638275">Untuk memberikan bantuan yang disesuaikan, Gemini membagikan beberapa data Anda (seperti sebagian dari percakapan Anda, lokasi, dan info relevan lainnya) ke layanan Google lainnya, seperti Maps dan Penerbangan. Layanan ini mungkin menggunakan info tersebut untuk meningkatkan kualitasnya, meskipun Anda menghapus aktivitas Aplikasi Gemini Anda nanti. Pelajari lebih lanjut di <ph name="BEGIN_LINK" />Hub Privasi Aplikasi Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Hapus teks</translation>
 <translation id="6619015782482868078">Tema biru air</translation>
 <translation id="6620279676667515405">Batal</translation>
@@ -1712,6 +1720,9 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6858718102216837409">Tambahkan bahasa…</translation>
 <translation id="6858855187367714033">Dipindai</translation>
 <translation id="6859944681507688231">Untuk memindai kode QR code atau kartu kredit, aktifkan kamera dari setelan.</translation>
+<translation id="6862212368460840758">Anda login sebagai <ph name="SIGNED_EMAIL" />.
+
+Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda akan mendapatkan sandi, bookmark, dan info lainnya dari akun ini.</translation>
 <translation id="6867369562105931222">sandi</translation>
 <translation id="6867400383614725881">Tab Samaran baru</translation>
 <translation id="686831807558000905">Jangan login</translation>
@@ -1780,6 +1791,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7091023926159231962">{count,plural, =1{Tidak dapat mengimpor {count} sandi}other{Tidak dapat mengimpor {count} sandi}}</translation>
 <translation id="7095110968493193530">Ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Di kolom URL, ketuk histori harga untuk melihat perubahan harga dari waktu ke waktu</translation>
+<translation id="7098554251807199977">Percakapan Anda dengan Gemini serta <ph name="BEGIN_LINK" />data Google Workspace<ph name="END_LINK" /> tidak akan ditinjau atau digunakan untuk meningkatkan kualitas model AI generatif.</translation>
 <translation id="7102005569666697658">Mendownload… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Setelan → Metode pembayaran</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
@@ -2173,6 +2185,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8439758443371991593">Sembunyikan Tambahkan ke Daftar Bacaan</translation>
 <translation id="8443986842926457191">URL berisi lebih dari 2048 karakter</translation>
 <translation id="8449869326050867919">Sandi dibagikan</translation>
+<translation id="8461708300275916315">Jika Anda berusia di bawah 18 tahun</translation>
 <translation id="8473815223723723001">Edit Gambar dengan Gemini</translation>
 <translation id="8473863474539038330">Alamat dan lainnya</translation>
 <translation id="8474378002946546633">Izinkan pemberitahuan</translation>
@@ -2234,6 +2247,8 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8636825310635137004">Untuk mengakses tab Anda dari perangkat lainnya, aktifkan sinkronisasi.</translation>
 <translation id="8637431369725868556">Dapatkan perlindungan dari situs berbahaya.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Tidak ada sandi yang telah dibobol}=1{{COUNT} sandi telah dibobol}other{{COUNT} sandi telah dibobol}}</translation>
+<translation id="8639963783467694461">Setelan Isi-otomatis</translation>
+<translation id="8642417828095157370">Tab dibagikan untuk menghasilkan jawaban yang lebih relevan</translation>
 <translation id="8643403533759285912">Hapus Grup</translation>
 <translation id="8647280737650867362">Tidak dapat membatalkan pemantauan harga.</translation>
 <translation id="8654802032646794042">Batal</translation>
@@ -2247,6 +2262,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8672733398999596205">Aktifkan Semua</translation>
 <translation id="8674716540979958118">Anda memiliki sandi yang telah dibobol.</translation>
 <translation id="8679900250380464358">Tambahkan ke Daftar Bacaan</translation>
+<translation id="8680643216091361291">Setelan <ph name="BEGIN_LINK" />Simpan Aktivitas<ph name="END_LINK" /> Anda dinonaktifkan secara default. Jika setelan ini dinonaktifkan, Google akan menyimpan percakapan Anda selama 3 hari. Kami menggunakannya untuk memastikan Aplikasi Gemini berfungsi dengan benar, membantu menjaganya tetap aman, dan menggunakan masukan Anda untuk memperbaiki masalah. Anda dapat mengaktifkan setelan Simpan Aktivitas untuk membantu meningkatkan kualitas AI Google bagi semua orang.</translation>
 <translation id="8680786875305615692">Bantu tingkatkan keamanan di Web untuk semuanya</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
 <translation id="8690752723634292147">Konfirmasi penghapusan</translation>
@@ -2396,6 +2412,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="9162432979321511934">Aktifkan Isi Otomatis Sandi</translation>
 <translation id="9165320910061267720">Untuk mendapatkan notifikasi diskon, Anda harus mengaktifkan notifikasi di setelan iOS.</translation>
 <translation id="9179151630575358778">Menyembunyikan item ini</translation>
+<translation id="9183563643084679152">Anda memindai kode QR untuk login ke Chrome. Anda akan mendapatkan sandi, bookmark, dan info lainnya dari akun ini.</translation>
 <translation id="9183733013282108610">Penelusuran Samaran</translation>
 <translation id="9186762474139509529">Mulai logging</translation>
 <translation id="9191031968346938109">Tambahkan ke…</translation>

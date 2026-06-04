@@ -67,6 +67,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1640672724030957280">Po shkarkohet...</translation>
 <translation id="1651617469580841801">Kur përdor "Lenten e Google", titulli i faqes, URL-ja dhe përmbajtja, duke përfshirë skedarët PDF, dërgohen te Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Rreth Chrome OS Flex</translation>
+<translation id="1665867022636014702">Përdor cilësimet e rekomanduara të shfletuesit të Google</translation>
 <translation id="1674870198290878346">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="1682634494516646069">Google Chrome nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
@@ -242,6 +243,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="345171907106878721">Shtoje veten te Chrome</translation>
 <translation id="3453763134178591239">Kushtet e ChromeOS</translation>
 <translation id="3503306920980160878">Chrome ka nevojë për qasje te vendndodhja jote për të ndarë vendndodhjen me këtë sajt</translation>
+<translation id="3539955434060988644">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="3576528680708590453">Administratori i sistemit ka konfiguruar Google Chrome që të hapë një shfletues alternativ për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Sinkronizo dhe personalizo Chrome nëpër pajisjet e tua</translation>
 <translation id="3583751698304738917">Je i identifikuar tashmë si <ph name="USER_EMAIL_ADDRESS" /> në një profil tjetër të Chrome</translation>

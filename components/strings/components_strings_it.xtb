@@ -149,6 +149,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1227224963052638717">Norma sconosciuta.</translation>
 <translation id="1227677022489889280">Specifica il motivo dello spostamento (obbligatorio)</translation>
 <translation id="1228893227497259893">Identificatore entità errato</translation>
+<translation id="122989279399348496">Quando hai effettuato l'accesso, <ph name="DOMAIN" /> può verificare <ph name="EMAIL" /> sui siti supportati, così non dovrai controllare la posta in arrivo</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (rilevamento automatico)</translation>
 <translation id="1232569758102978740">Senza titolo</translation>
 <translation id="1234539281285007945">Il campo <ph name="FIELD_1" /> è obbligatorio</translation>
@@ -510,6 +511,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sono disponibili diverse azioni; premi Tab per scorrerle</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Dati della carta virtuale</translation>
+<translation id="1802420021606590788">Chrome elabora i titoli delle pagine e gli URL in uno spazio privato nel cloud</translation>
 <translation id="1803254472779303354">Blocco del mouse consentito</translation>
 <translation id="1803351196216024260">Può richiedere l'autorizzazione per utilizzare il microfono</translation>
 <translation id="1804258830776932716">Attiva Pix collegando rapidamente il tuo account</translation>
@@ -873,6 +875,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2354001756790975382">Altri preferiti</translation>
 <translation id="2355395290879513365">Gli attaccanti potrebbero riuscire a vedere le immagini che visualizzi in questo sito e ingannarti modificandole.</translation>
 <translation id="2356941001189392209">Un elenco limitato di URL di pagine visitate in cui si verificano eventi tecnologici legacy</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Verrà condivisa 1 scheda}other{Verranno condivise {NUM_TABS} schede}}</translation>
 <translation id="2357481397660644965">Il tuo dispositivo è gestito da <ph name="DEVICE_MANAGER" /> e il tuo account da <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -3024,6 +3027,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5742806904559466333">Bar, locali e vita notturna</translation>
 <translation id="5743684619253032786">Prodotti per la cura delle unghie</translation>
 <translation id="574392208103952083">Medio</translation>
+<translation id="5745586894920491759">Chrome elabora i titoli delle pagine e gli URL nel cloud</translation>
 <translation id="5745733273847572235">Può chiedere la tua posizione</translation>
 <translation id="5750869797196646528">Tracciamento delle mani</translation>
 <translation id="5752327398324808817">Inserisci una o due parole</translation>
@@ -3417,6 +3421,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Visualizza log</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Controllare la configurazione del proxy, del firewall e del sistema DNS sicuro<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Conferma automaticamente le email</translation>
 <translation id="6366710531182496394">Doppia pinzatura a sinistra</translation>
 <translation id="6367196786591004737">Elimina voce</translation>
 <translation id="6370022303958842211">Azioni di accesso ai dispositivi, ad esempio accessi (inclusi i motivi di accesso non riuscito), uscite, blocchi e sblocchi</translation>
@@ -5057,6 +5062,7 @@ Ulteriori dettagli:
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggerimenti.<ph name="MARKUP_2" />Assicurati di avere una connessione dati<ph name="MARKUP_3" />Ricarica la pagina web in un secondo momento<ph name="MARKUP_4" />Controlla l'indirizzo inserito<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">I tuoi file locali verranno eliminati tra <ph name="HOURS" /> ore</translation>
+<translation id="8964904785315870349">Email verificata</translation>
 <translation id="8968766641738584599">Salva carta</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8971063699422889582">Il certificato del server è scaduto.</translation>

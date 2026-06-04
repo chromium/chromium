@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Mit Gemini in Chromium ausprobieren</translation>
 <translation id="1324107359134968521">Chromium benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Sprache erkennen</translation>
+<translation id="1330742950061766891">Empfohlene Browsereinstellungen von Chromium verwenden</translation>
 <translation id="1342274909142618978">Auch Daten aus Chromium löschen (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Angepinnt! Über den neuen Button in der Symbolleiste kannst du wieder auf die Bildersuche zugreifen.</translation>
 <translation id="1356661055722410047">Neu! Du kannst sowohl Text als auch Bilder auf deinem Bildschirm übersetzen lassen</translation>
@@ -66,6 +67,7 @@
 <translation id="1749104137266986751">Wenn HTTPS nicht verfügbar ist, verwendet Chromium eine unsichere Verbindung ohne Warnung</translation>
 <translation id="1774152462503052664">Chromium im Hintergrund ausführen</translation>
 <translation id="1779356040007214683">Um Chromium sicherer zu machen, haben wir einige Erweiterungen deaktiviert, die nicht im <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> aufgeführt sind und möglicherweise ohne dein Wissen hinzugefügt wurden.</translation>
+<translation id="1793486931176048546">Klicke in der Windows-Benachrichtigung auf <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" />, um Chromium für den Schnellzugriff an die Taskleiste anzupinnen.</translation>
 <translation id="1808667845054772817">Chromium neu installieren</translation>
 <translation id="1820835682567584003">Chromium versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Wenn du Chromium das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du aufgefordert, den Google Passwortmanager zu verwenden.</translation>
@@ -370,6 +372,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="5187123684706427865">Chromium-Konto muss noch einmal authentifiziert werden</translation>
 <translation id="5231355151045086930">Von Chromium abmelden</translation>
 <translation id="5234764350956374838">Schließen</translation>
+<translation id="5249261924633168472">Link in Inkognitofenster in Chromium öffnen</translation>
 <translation id="5254739261293693943">Nach Infos zu diesem Video fragen</translation>
 <translation id="5276305953263010518">Mit der Chromium App kannst du Passwörter unterwegs speichern</translation>
 <translation id="5277894862589591112">Starte Chromium neu, um die Änderungen zu übernehmen</translation>
@@ -380,6 +383,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="5346389065299425353">Die Suche verfeinern, indem du mehrere Tabs, Dateien und Tools hinzufügst</translation>
 <translation id="5352264705793813212">Chromium hat einige Sicherheitsempfehlungen gefunden, die du überprüfen solltest</translation>
 <translation id="5352361688875342522">Andere Chromium-Profile</translation>
+<translation id="535243042947607642">Chromium OS konnte die Chromium-Daten nicht in deinem Google-Konto speichern, da die Anmeldedaten für das Konto nicht mehr aktuell sind</translation>
 <translation id="5358375970380395591">Du meldest dich mit einem verwalteten Konto an und ermöglichst dessen Administrator Zugriff auf dein Chromium-Profil. Deine Chromium-Daten, wie Apps, Lesezeichen, Verlauf, Passwörter und andere Einstellungen, werden dauerhaft mit <ph name="USER_NAME" /> verknüpft. Du kannst diese Daten über das Google Konten-Dashboard löschen, aber nicht mit einem anderen Konto verknüpfen. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Zusätzlicher Code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Für die Personalisierung musst du Chromium in die Web- &amp; App-Aktivitäten aufnehmen</translation>
@@ -714,6 +718,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8852026904190808918">In dieser Sprache werden Menüs, Einstellungen, Benachrichtigungen und andere Texte in Chromium angezeigt</translation>
 <translation id="8862326446509486874">Du verfügst nicht über die erforderlichen Rechte für eine systemweite Installation. Starte das Installationsprogramm noch einmal als Admin.</translation>
 <translation id="8876044221123442390">Chromium-Profil hinzufügen</translation>
+<translation id="8890569919834781711">Chromium OS konnte aufgrund eines Fehlers bei der Anmeldung die Chromium-Daten nicht in deinem Google-Konto speichern</translation>
 <translation id="8891709362986793894">Deine Organisation verlangt, dass du dich in Chromium anmeldest</translation>
 <translation id="8907580949721785412">Chromium möchte Passwörter anzeigen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="8932992523185907506">Chromium ist nicht mehr dein Standardbrowser. Chromium als Standardbrowser verwenden?</translation>

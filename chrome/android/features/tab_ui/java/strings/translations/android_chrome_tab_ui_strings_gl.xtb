@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> pestana agrupada</translation>
 <translation id="1844381456014878100">Despois de 7 días sen actividade</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Engadir a pestana á lista de lectura}other{Engadir as pestanas á lista de lectura}}</translation>
 <translation id="1909810060368225529">Aviso: Todo o mundo poderá ver os cambios neste grupo de pestanas compartido. Todos os membros do grupo poden facer cambios nos grupos de pestanas compartidos</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Fixar a pestana}other{Fixar as pestanas}}</translation>
 <translation id="1982637982196732906">Mover á sección de elementos inactivos</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Icona de cor <ph name="COLOR_NAME" /> do grupo de pestanas</translation>
 <translation id="311432875115153175">Lista dos grupos de pestanas pechada</translation>
+<translation id="3152596030350326139">Mostrar pestanas en horizontal</translation>
+<translation id="31806439105337256">Mostrar pestanas en vertical</translation>
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Engadir <ph name="TABS_COUNT_ONE" /> pestana ao grupo}other{Engadir <ph name="TABS_COUNT_MANY" /> pestanas ao grupo}}</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>

@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">جارٍ التنزيل...</translation>
 <translation id="1651617469580841801">‏عند استخدام "عدسة Google"، يتم إرسال عنوان الصفحة وعنوان URL والمحتوى (بما في ذلك ملفات PDF) إلى Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏لمحة عن نظام التشغيل ChromeOS Flex</translation>
+<translation id="1665867022636014702">‏استخدام إعدادات المتصفِّح المقترَحة من Google</translation>
 <translation id="1674870198290878346">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="1682634494516646069">‏يتعذر على Google Chrome القراءة والكتابة في دليل البيانات الخاص به:
 
@@ -151,6 +152,7 @@
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">‏يمكنك الحصول على نظرة عامة سريعة على هذا المستند وطرح أسئلة باستخدام "Gemini في Chrome"</translation>
 <translation id="2620436844016719705">النظام</translation>
 <translation id="263447411082773721">‏يمكنك الحفاظ على مزامنة كلمات المرور والإشارات المرجعية والسجلّ بشكل مثالي على جميع الأجهزة، وكذلك الوصول بسهولة إلى الميزات المألوفة والمفضَّلة لديك من خلال ضبط Chrome كمتصفِّحك التلقائي، وتثبيته في شريط المهام للوصول إليه بسرعة.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -240,6 +242,7 @@
 <translation id="345171907106878721">‏إضافة نفسك إلى Chrome</translation>
 <translation id="3453763134178591239">‏بنود نظام التشغيل Chrome</translation>
 <translation id="3503306920980160878">‏يحتاج Chrome للوصول إلى موقعك الجغرافي لمشاركته مع الموقع الإلكتروني هذا.</translation>
+<translation id="3539955434060988644">‏فتح الرابط في نافذة "التصفّح المت&amp;خفي" في Chrome</translation>
 <translation id="3576528680708590453">‏ضَبَط مشرف النظام Google Chrome لفتح متصفِّح بديل للوصول إلى <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">‏يمكنك مزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
 <translation id="3583751698304738917">‏سبق أن سجّلت الدخول باستخدام <ph name="USER_EMAIL_ADDRESS" /> في ملف شخصي آخر على Chrome</translation>
@@ -747,6 +750,7 @@
 <translation id="8624541899164515475">الإعدادات (يفتح الرابط في علامة تبويب جديدة)</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏ستتم إعادة تشغيل Chrome في غضون دقيقة واحدة}zero{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}two{‏ستتم إعادة تشغيل Chrome في غضون دقيقتين}few{‏ستتم إعادة تشغيل Chrome في غضون # دقائق}many{‏ستتم إعادة تشغيل Chrome في غضون # دقيقةً}other{‏ستتم إعادة تشغيل Chrome في غضون # دقيقة}}</translation>
 <translation id="8637932705841171563">‏لمشاركة النافذة، يجب السماح بتسجيل الشاشة في Chrome ضِمن "إعدادات النظام" (System Settings)</translation>
+<translation id="8642497536370021917">‏لضمان إمكانية استخدامك لبيانات Chrome وحفظها في حسابك على Google متى شئت، يجب إثبات هويتك</translation>
 <translation id="8656634243791296665">‏فتح Gemini في إصدار مطوّري البرامج من Chrome</translation>
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>
 <translation id="8679801911857917785">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome.</translation>

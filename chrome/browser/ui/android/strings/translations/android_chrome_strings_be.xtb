@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Спампаваць файлы PDF можна тут</translation>
 <translation id="107147699690128016">Калі вы зменіце пашырэнне файла, ён можа адкрыцца ў іншай праграме, што можа быць небяспечным для вашай прылады.</translation>
 <translation id="1073328695547557412">Націсніце на значок Google Аб’ектыва.</translation>
+<translation id="1080116354587839789">Дапасаваць да шырыні старонкі</translation>
 <translation id="1086486568852410168">Пошук праз Google Аб’ектыў</translation>
 <translation id="1087799850623149508">Націсніце і ўтрымлівайце адрасны радок, каб перамясціць яго ў ніжнюю частку экрана</translation>
 <translation id="1089606299949659462">Праверка завершана!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> укладка}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладка}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладкі}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладак}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> укладкі}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 пароль захаваны толькі на гэтай прыладзе. Каб выкарыстоўваць яго на іншых прыладах, захавайце гэты пароль ва Уліковым запісе Google.}one{# пароль захаваны толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}few{# паролі захаваны толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}many{# пароляў захавана толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}other{# пароля захавана толькі на гэтай прыладзе Каб выкарыстоўваць іх на іншых прыладах, захавайце гэтыя паролі ва Уліковым запісе Google.}}</translation>
 <translation id="3293181007446299124">Ваша гісторыя прагляду сайтаў пры гэтым захоўваецца прыватна на вашай прыладзе, а справаздачы адпраўляюцца з затрымкай, каб прадухіліць раскрыццё вашай асобы.</translation>
+<translation id="3301639354590628973">Пераключыцца на іншы ўліковы запіс?</translation>
 <translation id="3301936297336370235">Пацвярджэнне прапанаванага пароля</translation>
 <translation id="3302615849591357577">Аднавіць групу ўкладак "<ph name="TITLE_OF_GROUP" />", колер "<ph name="COLOR_NAME" />", як новую фонавую групу ўкладак.</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
@@ -640,6 +642,7 @@
 <translation id="3771290962915251154">Гэта налада выключана, бо ўключаны бацькоўскі кантроль</translation>
 <translation id="3771694256347217732">Умовы выкарыстання Google</translation>
 <translation id="3777796259512476958">Будзе выкананы выхад з уліковых запісаў на большасці сайтаў</translation>
+<translation id="3786379886124795923">Вы адсканіравалі QR-код, каб увайсці ў Chrome. Пацвердзіце, што хочаце атрымаць доступ да пароляў, закладак і іншых даных з гэтага профілю.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 укладка}one{# укладка}few{# укладкі}many{# укладак}other{# укладкі}}</translation>
 <translation id="3792938779249970121">Выбар уліковага запісу</translation>
 <translation id="3795154175078851242">Капіраваць відарыс са спасылкай</translation>
@@ -678,6 +681,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, замацаваная ўкладка "Відарыс у відарысе"</translation>
 <translation id="3950820424414687140">Увайсці</translation>
 <translation id="395377504920307820">Выкарыстоўваць без уліковага запісу</translation>
+<translation id="3955353672249727801">Старонкі дададзены ў спіс на прагляд</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome загрузіць старонку па гатоўнасці}one{Chrome загрузіць старонкі па гатоўнасці}few{Chrome загрузіць старонкі па гатоўнасці}many{Chrome загрузіць старонкі па гатоўнасці}other{Chrome загрузіць старонкі па гатоўнасці}}</translation>
 <translation id="3969142555815019568">Браўзеру Chrome не ўдаецца праверыць паролі</translation>
 <translation id="3969863827134279083">Перамясціць уверх</translation>
@@ -824,6 +828,7 @@
 <translation id="4532845899244822526">Выберыце папку</translation>
 <translation id="4535755320005483982">Абагуленая група ўкладак "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">Прапанова ўключыць апавяшчэнні з парадамі адкрыта на ўсю вышыню</translation>
+<translation id="4537987892902330164">Вы засталіся ў сістэме як <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Аркуш з інфармацыяй пра адсутнасць ключоў доступу</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}few{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}many{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}other{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}}</translation>
 <translation id="4558311620361989323">Ярлыкі вэб-старонак</translation>
@@ -1281,6 +1286,7 @@
 <translation id="6411219469806822692">Не ўдаецца перамясціцца вышэй. Паспрабуйце пачаць з месца, якое б знаходзілася вышэй на старонцы.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, выбраная ўкладка</translation>
 <translation id="641643625718530986">Друк…</translation>
+<translation id="6427723330233512782">Дапасаваць да вышыні экрана</translation>
 <translation id="6433501201775827830">Выберыце пошукавую сістэму</translation>
 <translation id="6434309073475700221">Адхіліць</translation>
 <translation id="6435307030888827407">Не ўваходзіць</translation>
@@ -2014,9 +2020,11 @@
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, замацаваная ўкладка "Відарыс у відарысе" ў рэжыме інкогніта</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
+<translation id="949667118776341807">Павярнуць</translation>
 <translation id="95817756606698420">Для пошуку ў Кітаі Chrome можа выкарыстоўваць <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Гэта можна змяніць у <ph name="BEGIN_LINK" />Наладах<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="963246339335003378">Адкрыць менеджар заданняў</translation>
+<translation id="966337994629449077">Вы ўвайшлі як <ph name="FROM_EMAIL" />.\n\nКаб працягнуць на камп’ютары, перайдзіце ва ўліковы запіс <ph name="TO_EMAIL" />. Вы атрымаеце доступ да пароляў, закладак і іншых даных з гэтага ўліковага запісу.</translation>
 <translation id="970715775301869095">Засталося часу: <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="983192555821071799">Закрыць усе ўкладкі</translation>

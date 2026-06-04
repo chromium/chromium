@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Shfletuesi yt është i menaxhuar. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Kërko për tekstin që kopjove</translation>
 <translation id="2147127444698817042">Ofrohet vetëm në iPhone</translation>
+<translation id="2148326276832455306">Bisedat shqyrtohen dhe përdoren për të përmirësuar IA-në e Google. Mund të <ph name="BEGIN_LINK" />menaxhosh aktivitetin tënd<ph name="END_LINK" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Identifikohu me shpejtësi në sajte dhe aplikacione me fjalëkalimet e tua të ruajtura.</translation>
 <translation id="2149968176347646218">Lidhja nuk është e sigurt</translation>
 <translation id="2149973817440762519">Redakto faqeshënuesin</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Përzgjedhësi i njësisë</translation>
 <translation id="2330607597130465898">Nuk ka mbrojtje</translation>
 <translation id="233375395665273385">Fshi dhe dil</translation>
+<translation id="2340966584724330791">Google mbledh bisedat e tua dhe ato që ndan me Gemini (si p.sh. skedarët, videot, ekranet dhe fotografitë). Ai mbledh gjithashtu komentet e tua, informacionet nga uebsajtet që viziton me Gemini, përdorimin e produkteve dhe informacionet e vendndodhjes (duke përfshirë vendndodhjen e përgjithshme të pajisjes, adresën IP ose adresat e shtëpisë ose të punës në "Llogarinë tënde të Google").</translation>
 <translation id="2350463587705616331">Ngjyra e sfondit në ngjyrë sepje</translation>
 <translation id="2351097562818989364">Cilësimet e tua të përkthimit janë rivendosur.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Mund ta ruash fjalëkalimin tënd për {DOMAIN_ONE} në "Llogarinë tënde të Google", {EMAIL}.}=2{Mund t'i ruash fjalëkalimet e tua për {DOMAIN_ONE} dhe {DOMAIN_TWO} në "Llogarinë tënde të Google", {EMAIL}.}=3{Mund t'i ruash fjalëkalimet e tua për {DOMAIN_ONE}, {DOMAIN_TWO} dhe {OTHER_DOMAINS_COUNT} tjetër në "Llogarinë tënde të Google", {EMAIL}.}other{Mund t'i ruash fjalëkalimet e tua për {DOMAIN_ONE}, {DOMAIN_TWO} dhe {OTHER_DOMAINS_COUNT} të tjerë në "Llogarinë tënde të Google", {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Problem me plotësimin e informacioneve të tua</translation>
 <translation id="2371084566192454134">Skedat dhe grupet e skedave</translation>
 <translation id="2371303771137626249">E re</translation>
+<translation id="2375947780110007467">Google përdor përmbajtjen dhe URL-në e skedave të ndara. Skeda jote aktuale ndahet me bisedat e reja. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="2381405137052800939">Bazat</translation>
 <translation id="2384692388811649784">Fshih skedat "e fshehta"</translation>
 <translation id="2386793615875593361">1 e përzgjedhur</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Kërkimi me zë</translation>
 <translation id="3289505634533552500">Kërkimi me zë</translation>
 <translation id="3295904109373959849">Rrjeta e grupeve të skedave</translation>
+<translation id="3301639354590628973">Të ndërrohen llogaritë?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, aktivitet i ri</translation>
 <translation id="3305294846493618482">më shumë</translation>
 <translation id="3311748811247479259">Joaktiv</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Shëno si të lexuar</translation>
 <translation id="428768789042547925">Ç'të reja ka</translation>
 <translation id="429074084062258019">{count,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
+<translation id="4294506173142861371">Do të identifikohesh si <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">Skano kartën dhe plotëso automatikisht</translation>
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Faqeshënuesit</translation>
 <translation id="5447973833955560753">Fjalëkalimi i rikuperimit</translation>
 <translation id="5452354193031718372">Përdor një fjalëkalim të fortë:</translation>
+<translation id="5453088693079603292">Çfarë aktiviteti mblidhet</translation>
 <translation id="5454211924362324495">Për t'i ndaluar të tjerët që të mos përdorin fjalëkalimin tënd, <ph name="BEGIN_LINK" />ndryshoje atë në <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Shto në kërkimin tënd</translation>
 <translation id="5457226814769348910">Hap versionin offline</translation>
@@ -1522,6 +1528,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6253686838150111720">Identifikohu në "<ph name="URL" />"</translation>
 <translation id="6254066287920239840">Hapi lidhjet në aplikacion në vend të shfletuesit.</translation>
 <translation id="6259928806013786178">Modaliteti i leximit dështoi</translation>
+<translation id="626335165106398104">Gemini funksionon me shërbime të tjera</translation>
 <translation id="6268773951964630964">Kërko për imazhin e kopjuar</translation>
 <translation id="6271462272606946663">Fshih "Kërko sajtin për celular"</translation>
 <translation id="6271824294945464304">Fjalëkalimi po ndahet</translation>
@@ -1637,6 +1644,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6609890790934458793">Fjalëkalimet për <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> dhe <ph name="THIRD_WEBSITE" /> do të fshihen. Llogaritë e tua nuk do të fshihen.</translation>
 <translation id="661266467055912436">Përmirëson sigurinë për ty dhe këdo në ueb.</translation>
 <translation id="6612912757320004438">Lejo njoftimet e skedave…</translation>
+<translation id="6613372200395638275">Për të ofruar ndihmë të personalizuar, Gemini i ndan disa nga të dhënat e tua (si p.sh. pjesë të bisedave të tua, vendndodhjen dhe informacione të tjera përkatëse) me shërbime të tjera të Google, si p.sh. Maps dhe Flights. Këto shërbime mund t'i përdorin ato informacione për përmirësim, edhe nëse ti e fshin më vonë aktivitetin tënd të aplikacioneve Gemini. Mëso më shumë te <ph name="BEGIN_LINK" />Qendra e privatësisë e aplikacioneve Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Pastro tekstin</translation>
 <translation id="6619015782482868078">Tema Akuamarinë</translation>
 <translation id="6620279676667515405">Anulo</translation>
@@ -1712,6 +1720,9 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6858718102216837409">Shto gjuhën…</translation>
 <translation id="6858855187367714033">Skanuar</translation>
 <translation id="6859944681507688231">Për të skanuar një kod QR ose kartë krediti, aktivizo kamerën nga cilësimet.</translation>
+<translation id="6862212368460840758">Je i identifikuar si <ph name="SIGNED_EMAIL" />.
+
+Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marrësh fjalëkalimet, faqeshënuesit dhe më shumë nga kjo llogari.</translation>
 <translation id="6867369562105931222">fjalëkalimi</translation>
 <translation id="6867400383614725881">Skedë e re "e fshehtë"</translation>
 <translation id="686831807558000905">Mos u identifiko</translation>
@@ -1780,6 +1791,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7091023926159231962">{count,plural, =1{{count} fjalëkalim nuk mund të importohej}other{{count} fjalëkalime nuk mund të importoheshin}}</translation>
 <translation id="7095110968493193530">Te "Menaxheri i fjalëkalimeve i Google" për <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Në shiritin e adresave, trokit te historiku i çmimeve për të shikuar ndryshimet e çmimeve me kalimin e kohës</translation>
+<translation id="7098554251807199977">As bisedat e tua me Gemini dhe as <ph name="BEGIN_LINK" />të dhënat e tua të Google Workspace<ph name="END_LINK" /> nuk do të shqyrtohen apo përdoren për të përmirësuar modelet e IA-së gjeneruese.</translation>
 <translation id="7102005569666697658">Po shkarkon… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menyja → Cilësimet → Mënyrat e pagesës</translation>
 <translation id="7108338896283013870">Fshih</translation>
@@ -2173,6 +2185,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8439758443371991593">Fshih "Shto te 'Lista e leximit'"</translation>
 <translation id="8443986842926457191">URL-ja është më shumë se 2048 karaktere</translation>
 <translation id="8449869326050867919">Fjalëkalimi u nda</translation>
+<translation id="8461708300275916315">Nëse je nën 18 vjeç</translation>
 <translation id="8473815223723723001">Modifiko imazhin me Gemini</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474378002946546633">Lejo njoftimet</translation>
@@ -2234,6 +2247,8 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8636825310635137004">Për të marrë skedat e tua nga pajisjet e tjera, aktivizo sinkronizimin.</translation>
 <translation id="8637431369725868556">Merr mbrojtjen nga sajtet e rrezikshme.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Asnjë fjalëkalim i komprometuar}=1{{COUNT} fjalëkalim i komprometuar}other{{COUNT} fjalëkalime të komprometuara}}</translation>
+<translation id="8639963783467694461">Cilësimet e plotësimit automatik</translation>
+<translation id="8642417828095157370">Skedat ndahen për përgjigje më të përshtatshme</translation>
 <translation id="8643403533759285912">Fshi grupin</translation>
 <translation id="8647280737650867362">Monitorimi i çmimeve nuk mund të anulohej.</translation>
 <translation id="8654802032646794042">Anulo</translation>
@@ -2247,6 +2262,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8672733398999596205">Aktivizo të gjitha</translation>
 <translation id="8674716540979958118">Ke fjalëkalime të komprometuara.</translation>
 <translation id="8679900250380464358">Shto te lista e leximit</translation>
+<translation id="8680643216091361291">Cilësimi <ph name="BEGIN_LINK" />Mbaj aktivitetin<ph name="END_LINK" /> është joaktiv si parazgjedhje. Kur është joaktiv, Google i ruan bisedat e tua për 3 ditë. Ai i përdor ato për t'i bërë aplikacionet Gemini të funksionojnë siç duhet, ndihmon për t'i mbajtur ato të sigurta dhe përdor komentet e tua për të rregulluar problemet. Mund ta aktivizosh "Mbaj aktivitetin" për të ndihmuar në përmirësimin e IA-së së Google për të gjithë.</translation>
 <translation id="8680786875305615692">Ndihmo në përmirësimin e sigurisë në ueb për të gjithë</translation>
 <translation id="8680787084697685621">Detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="8690752723634292147">Konfirmo fshirjen</translation>
@@ -2396,6 +2412,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="9162432979321511934">Aktivizo "Plotëso automatikisht fjalëkalimet"</translation>
 <translation id="9165320910061267720">Për të marrë njoftime me sinjalizime për ulje çmimi, do të duhet të aktivizosh njoftimet në cilësimet e iOS.</translation>
 <translation id="9179151630575358778">E fsheh këtë artikull</translation>
+<translation id="9183563643084679152">Skanove një kod QR për t'u identifikuar në Chrome. Do të marrësh fjalëkalimet, faqeshënuesit dhe më shumë nga kjo llogari.</translation>
 <translation id="9183733013282108610">Kërkimi "I fshehtë"</translation>
 <translation id="9186762474139509529">Fillo regjistrimin</translation>
 <translation id="9191031968346938109">Shto në…</translation>

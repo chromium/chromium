@@ -149,6 +149,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1227224963052638717">Política desconocida</translation>
 <translation id="1227677022489889280">Indica el motivo del cambio de ubicación (obligatorio)</translation>
 <translation id="1228893227497259893">Identificador de entidad incorrecto</translation>
+<translation id="122989279399348496">Mientras tengas la sesión iniciada, <ph name="DOMAIN" /> puede confirmar <ph name="EMAIL" /> en los sitios compatibles para que no tengas que consultar tu bandeja de entrada</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (autodetectado)</translation>
 <translation id="1232569758102978740">Sin título</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> es obligatorio</translation>
@@ -510,6 +511,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hay varias acciones disponibles, pulsa Tabulador para desplazarte entre ellas</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Información de la tarjeta virtual</translation>
+<translation id="1802420021606590788">Chrome procesa los títulos de las páginas y las URLs en un espacio privado en la nube</translation>
 <translation id="1803254472779303354">Bloqueo del ratón permitido</translation>
 <translation id="1803351196216024260">Puede solicitar permiso para usar el micrófono</translation>
 <translation id="1804258830776932716">Habilita Pix vinculando tu cuenta rápidamente</translation>
@@ -873,6 +875,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2354001756790975382">Otros marcadores</translation>
 <translation id="2355395290879513365">Es posible que los atacantes puedan ver las imágenes que ves en este sitio web y que las modifiquen para engañarte.</translation>
 <translation id="2356941001189392209">Una lista limitada de URLs de las páginas que visitas donde se producen eventos tecnológicos antiguos</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Se compartirá 1 pestaña}other{Se compartirán {NUM_TABS} pestañas}}</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> gestiona tu dispositivo y <ph name="ACCOUNT_MANAGER" /> gestiona tu cuenta.</translation>
 <translation id="2359629602545592467">Varias</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -3027,6 +3030,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5742806904559466333">Bares, clubes y vida nocturna</translation>
 <translation id="5743684619253032786">Productos para el cuidado de las uñas</translation>
 <translation id="574392208103952083">Media</translation>
+<translation id="5745586894920491759">Chrome procesa los títulos de las páginas y las URLs en la nube</translation>
 <translation id="5745733273847572235">Puede solicitar permiso para acceder a tu ubicación</translation>
 <translation id="5750869797196646528">Seguimiento de manos</translation>
 <translation id="5752327398324808817">Introduce una o dos palabras</translation>
@@ -3421,6 +3425,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Ver registros</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprobar la configuración de proxy, cortafuegos y DNS seguro<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Confirmar automáticamente tus correos</translation>
 <translation id="6366710531182496394">Grapado doble en la parte izquierda</translation>
 <translation id="6367196786591004737">Eliminar entrada</translation>
 <translation id="6370022303958842211">Acciones de acceso a los dispositivos, como inicios de sesión (incluidos los motivos por los que ha fallado un inicio de sesión), cierres de sesión, bloqueos y desbloqueos</translation>
@@ -5061,6 +5066,7 @@ Más información:
 <translation id="8963117664422609631">Ir a configuración del sitio</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugerencias:<ph name="MARKUP_2" />Comprueba que tienes una conexión de datos<ph name="MARKUP_3" />Vuelve a cargar esta página web más tarde<ph name="MARKUP_4" />Comprueba la dirección que has introducido<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Tus archivos locales se eliminarán dentro de <ph name="HOURS" /> horas</translation>
+<translation id="8964904785315870349">Correo verificado</translation>
 <translation id="8968766641738584599">Guardar tarjeta</translation>
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8971063699422889582">El certificado del servidor ha caducado.</translation>

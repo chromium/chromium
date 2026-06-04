@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Puoi scaricare i file PDF qui</translation>
 <translation id="107147699690128016">Se cambi l'estensione del file, il file potrebbe essere aperto in un'altra applicazione e costituire un pericolo per il dispositivo.</translation>
 <translation id="1073328695547557412">Tocca l'icona di Google Lens</translation>
+<translation id="1080116354587839789">Adatta in larghezza</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1087799850623149508">Puoi toccare e tenere premuta la barra degli indirizzi per spostarla in basso</translation>
 <translation id="1089606299949659462">Revisione completata.</translation>
@@ -536,6 +537,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> schede}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 password è stata salvata solo su questo dispositivo. Per usarla sugli altri dispositivi, salvala nel tuo Account Google.}other{# password sono state salvate solo su questo dispositivo. Per usarle sugli altri dispositivi, salvale nel tuo Account Google.}}</translation>
 <translation id="3293181007446299124">La cronologia di navigazione rimane privata sul tuo dispositivo e i report vengono inviati in ritardo per proteggere la tua identità</translation>
+<translation id="3301639354590628973">Cambiare account?</translation>
 <translation id="3301936297336370235">Conferma suggerimento password</translation>
 <translation id="3302615849591357577">Ripristina il gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />, come nuovo gruppo di schede in background.</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
@@ -678,6 +680,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, scheda Picture in picture fissata</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="395377504920307820">Utilizza senza un account</translation>
+<translation id="3955353672249727801">Pagine aggiunte all'elenco di lettura</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome caricherà la tua pagina quando sarà pronta}other{Chrome caricherà le tue pagine quando saranno pronte}}</translation>
 <translation id="3969142555815019568">Chrome non può controllare le tue password</translation>
 <translation id="3969863827134279083">Sposta su</translation>

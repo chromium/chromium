@@ -149,6 +149,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1227224963052638717">Neznámá zásada.</translation>
 <translation id="1227677022489889280">Uveďte důvod přesunutí (povinné)</translation>
 <translation id="1228893227497259893">Nesprávný identifikátor subjektu</translation>
+<translation id="122989279399348496">Když budete přihlášení, může <ph name="DOMAIN" /> na podporovaných webech ověřovat e‑mail <ph name="EMAIL" />, abyste nemuseli kontrolovat svou doručenou poštu</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (zjištěno automaticky)</translation>
 <translation id="1232569758102978740">Bez názvu</translation>
 <translation id="1234539281285007945">Pole <ph name="FIELD_1" /> je povinné</translation>
@@ -510,6 +511,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, je k dispozici několik akcí, můžete je procházet stisknutím klávesy Tab</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Podrobnosti virtuální karty</translation>
+<translation id="1802420021606590788">Chrome zpracovává názvy stránek a adresy URL v soukromém prostoru v cloudu</translation>
 <translation id="1803254472779303354">Zámek myši povolen</translation>
 <translation id="1803351196216024260">Může žádat o použití mikrofonu</translation>
 <translation id="1804258830776932716">Rychlým připojením účtu povolte službu Pix</translation>
@@ -873,6 +875,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2354001756790975382">Ostatní záložky</translation>
 <translation id="2355395290879513365">Útočníci mohou vidět obrázky, které si na tomto webu prohlížíte, a oklamat vás tím, že tyto obrázky upraví.</translation>
 <translation id="2356941001189392209">Omezený seznam navštívených adres URL stránek, na kterých dochází k událostem starších technologií</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Bude sdílena 1 karta}few{Budou sdíleny {NUM_TABS} karty}many{Bude sdíleno {NUM_TABS} karty}other{Bude sdíleno {NUM_TABS} karet}}</translation>
 <translation id="2357481397660644965">Vaše zařízení spravuje doména <ph name="DEVICE_MANAGER" /> a váš účet spravuje doména <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Několik</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
@@ -2207,7 +2210,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="443673843213245140">Využití proxy serveru je zakázáno, je však určena explicitní konfigurace proxy serveru.</translation>
 <translation id="4438821706955556403">Obvyklá cena</translation>
-<translation id="4439687924334332880">Automatickým sdílením otevřených karet v tomto okně, pokud souvisejí s tímto vláknem, můžete získat přizpůsobenější odpovědi. V Nastavení můžete tuhle funkci zapnout pro všechna vlákna.</translation>
+<translation id="4439687924334332880">Automatickým sdílením otevřených karet v tomto okně, pokud souvisejí s tímto vláknem, můžete získat relevantnější odpovědi. V Nastavení můžete tuhle funkci zapnout pro všechna vlákna.</translation>
 <translation id="4441832193888514600">Ignorováno, protože zásadu lze nastavit pouze jako zásadu cloudového uživatele.</translation>
 <translation id="4444062564459679679">Už odesláno do Chromu na zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter vyhledáte karty</translation>
@@ -3023,6 +3026,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5742806904559466333">Bary, kluby a noční život</translation>
 <translation id="5743684619253032786">Produkty péče o nehty</translation>
 <translation id="574392208103952083">Střední</translation>
+<translation id="5745586894920491759">Chrome zpracovává názvy stránek a adresy URL v cloudu</translation>
 <translation id="5745733273847572235">Může žádat o vaši polohu</translation>
 <translation id="5750869797196646528">Sledování rukou</translation>
 <translation id="5752327398324808817">Zadejte jedno nebo dvě slova</translation>
@@ -3416,6 +3420,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Zobrazit protokoly</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Zkontrolovat proxy server, firewall a konfiguraci zabezpečeného DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automaticky potvrzovat e‑maily</translation>
 <translation id="6366710531182496394">Dvě sponky vlevo</translation>
 <translation id="6367196786591004737">Smazat záznam</translation>
 <translation id="6370022303958842211">Akce s přístupem k zařízením, například přihlášení (včetně důvodů neúspěšného přihlášení), odhlášení, zamknutí a odemknutí</translation>
@@ -4713,7 +4718,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8381674639488873545">Může se jednat o jednorázové nebo opakované poplatky, které nemusejí být jasně patrné. <ph name="BEGIN_LINK" />Přesto zobrazit<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">automatický režim celé obrazovky</translation>
 <translation id="838307841291975086">Kombi a dodávkové vozy</translation>
-<translation id="838953173259347825">Automatickým sdílením otevřených karet v tomto okně, pokud souvisejí s tímto vláknem, můžete získat přizpůsobenější odpovědi. Pokud tuto funkce chcete zapnout pro všechna vlákna, můžete to provést v</translation>
+<translation id="838953173259347825">Automatickým sdílením otevřených karet v tomto okně, pokud souvisejí s tímto vláknem, můžete získat relevantnější odpovědi. Pokud tuto funkce chcete zapnout pro všechna vlákna, můžete to provést v</translation>
 <translation id="8389532092404711541">Obvykle <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Upravená a výkonná vozidla</translation>
 <translation id="8390725133630534698">Sdílení ze zdroje <ph name="ORIGIN_NAME" /> do umístění <ph name="VM_NAME" /> blokuje zásada administrátora</translation>
@@ -5056,6 +5061,7 @@ Další podrobnosti:
 <translation id="8963117664422609631">Přejít do nastavení webu</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Návrhy:<ph name="MARKUP_2" />Zkontrolujte, zda máte datové připojení.<ph name="MARKUP_3" />Načtěte tuto webovou stránku znovu později.<ph name="MARKUP_4" />Zkontrolujte zadanou adresu.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vaše místní soubory budou za <ph name="HOURS" /> h smazány</translation>
+<translation id="8964904785315870349">Ověřený e‑mail</translation>
 <translation id="8968766641738584599">Uložit kartu</translation>
 <translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="8971063699422889582">Platnost certifikátu serveru vypršela.</translation>

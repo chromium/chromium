@@ -306,6 +306,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1458140305240870199">Roupa interior</translation>
 <translation id="1458770162980644530">Ecrã dos Termos de Utilização do método Comprar agora e pagar depois. Teclado oculto.</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
+<translation id="1460317464907341501">Validar este email automaticamente?</translation>
 <translation id="1461041542809785877">Desempenho</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar os tipos de letra presentes no computador para que possa criar conteúdo de alta-fidelidade.</translation>
@@ -875,6 +876,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2354001756790975382">Outros marcadores</translation>
 <translation id="2355395290879513365">Os atacantes podem ver as imagens que está a visualizar neste site e enganá-lo ao modificá-las.</translation>
 <translation id="2356941001189392209">Uma lista limitada de URLs de páginas que visita onde estão a ocorrer eventos de tecnologia antiga</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Vai partilhar 1 separador}other{Vai partilhar {NUM_TABS} separadores}}</translation>
 <translation id="2357481397660644965">O seu dispositivo é gerido por <ph name="DEVICE_MANAGER" /> e a sua conta é gerida por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
 <translation id="2359808026110333948">Continuar</translation>
@@ -2004,6 +2006,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="412601465078863288">O carregamento excedeu o tempo limite</translation>
 <translation id="4127317221386336246">Acessórios de vestuário</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
+<translation id="4129810348470013900">Algo correu mal. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="4129992181550680635">Recursos educacionais</translation>
 <translation id="4130226655945681476">Rever os cabos de rede, o modem e o router</translation>
 <translation id="4132448310531350254">Controladores duplicados para a file_extension "<ph name="FILE_EXTENSION" />" referenciada pelas apps "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3021,6 +3024,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5728246486828755318">Pode pedir para usar funcionalidades avançadas da impressora</translation>
 <translation id="5729442113829771034">Educação para a primeira infância</translation>
 <translation id="5730040223043577876">O Chrome recomenda a reposição da palavra-passe se a tiver reutilizado noutros sites.</translation>
+<translation id="5735174108294025227">Os endereços de email validados são apresentados aqui</translation>
 <translation id="573555826359077410">Botão Criar formulário; ative para criar rapidamente um novo formulário no Google Forms</translation>
 <translation id="5738385766833540397">Faça a gestão da forma como recebe alertas de descida do preço relativos a produtos que monitoriza</translation>
 <translation id="5739619009927381786">Desbloqueie o ecrã no passo seguinte, normalmente, com a sua impressão digital. Em alternativa, pode <ph name="BEGIN_LINK" />usar outro método de validação<ph name="END_LINK" />.</translation>
@@ -4070,7 +4074,6 @@ Detalhes adicionais:
 <translation id="7388380253839603603">Preços dos combustíveis e abastecimento de veículos</translation>
 <translation id="7388594495505979117">{0,plural, =1{O seu dispositivo será reiniciado dentro de 1 minuto}other{O seu dispositivo será reiniciado dentro de # minutos}}</translation>
 <translation id="7393161616326137353">Jogos de aventura</translation>
-<translation id="7393243238767102021">Permitir que o domínio <ph name="DOMAIN" /> valide este email automaticamente?</translation>
 <translation id="7393475648162498734">Mostrar que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento</translation>
 <translation id="7393971683644170444">A estabelecer ligação ao seu fornecedor do cartão…</translation>
 <translation id="739728382607845710">Ícone do controlador de pagamentos</translation>

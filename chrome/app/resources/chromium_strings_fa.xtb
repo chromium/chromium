@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">‏‫Chromium برای کاوش دستگاه‌های بلوتوث
 باید به بلوتوث دسترسی داشته باشد. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">تشخیص دادن زبان</translation>
+<translation id="1330742950061766891">‏استفاده از تنظیمات مرورگر توصیه‌شده Chromium</translation>
 <translation id="1342274909142618978">‏داده‌ها از Chromium هم حذف شود (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">سنجاق شد! دفعه بعد می‌توانید «جستجوی تصویر» را ازطریق این دکمه جدید در نوارابزار باز کنید</translation>
 <translation id="1356661055722410047">جدید! می‌توانید هم نوشتار و هم تصاویر روی صفحه‌نمایش را ترجمه کنید</translation>
@@ -67,6 +68,7 @@
 <translation id="1749104137266986751">‏وقتی HTTPS دردسترس نباشد، Chromium بدون دادن هشدار به شما از اتصال ناامن استفاده می‌کند</translation>
 <translation id="1774152462503052664">‏اجازه به Chromium برای اجرا در پس‌زمینه</translation>
 <translation id="1779356040007214683">‏برای ایمن‌تر کردن Chromium، برخی از افزونه‌هایی را که در <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فهرست شده‌اند و ممکن است بدون اطلاع شما اضافه شده باشند، غیرفعال کردیم.</translation>
+<translation id="1793486931176048546">‏روی <ph name="BEGIN_BOLD" />بله<ph name="END_BOLD" /> در اعلان Windows کلیک کنید تا Chromium را برای دسترسی سریع به نوار وظیفه سنجاق کنید.</translation>
 <translation id="1808667845054772817">‏نصب مجدد Chromium</translation>
 <translation id="1820835682567584003">‏Chromium در تلاش است <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">‏دفعه بعد که Chromium را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای استفاده از «مدیر گذرواژه Google» خواهید دید.</translation>
@@ -379,8 +381,10 @@
 <translation id="5294316920224716406">‏هنگام مرور «درحالت ناشناس»، Chromium قبل‌از اینکه سایت را ازطریق اتصال ناامن بار کند به شما هشدار می‌دهد</translation>
 <translation id="5313228254328109263">‏سرویس داخلی به‌روزرسان Chromium</translation>
 <translation id="5346389065299425353">جستجویتان را با افزودن چند زبانه، فایل، و ابزار عمیق‌تر کنید</translation>
+<translation id="5348677704241861105">‏با «Gemini در Chromium»، خلاصه سریعی از این سند دریافت کنید و سؤال بپرسید</translation>
 <translation id="5352264705793813212">‏Chromium چند توصیه ایمنی برای بررسی پیدا کرد</translation>
 <translation id="5352361688875342522">‏دیگر نمایه‌های Chromium</translation>
+<translation id="535243042947607642">‏‫ChromiumOS نتوانست داده‌های Chromium را در «حساب Google» شما ذخیره کند زیرا جزئیات ورود به سیستم حسابتان به‌روز نیست</translation>
 <translation id="5358375970380395591">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Chromium خود را می‌دهید. داده‌های Chromium شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">کد اضافی: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">‏برای گرفتن شخصی‌سازی‌ها، Chromium را به «فعالیت‌ها در وب و برنامه» اضافه کنید</translation>
@@ -486,6 +490,7 @@
 <translation id="6390800440335263989">‏برای ادامه دادن، با حساب <ph name="EMAIL" /> به سیستم Chromium وارد شوید. با این کار مطمئن می‌شوید که خط‌مشی‌های سازمانتان اعمال شده‌اند.</translation>
 <translation id="6400112897226594999">‏نشان‌واره Chromium درون صفحه‌نمایش رایانه.</translation>
 <translation id="6403826409255603130">‏‫Chromium یک مرورگر وب است که صفحات وب و برنامه‌ها را با سرعت بسیار زیاد اجرا می‌کند. این مرورگر خیلی سریع و پایدار است کار کردن با آن آسان است. با محافظت دربرابر بدافزار و رمزگیری تعبیه‌شده در Chromium، با امنیت بیشتری وب را مرور کنید.</translation>
+<translation id="6414624068245092115">‏برای اینکه مطمئن شوید همیشه می‌توانید از داده‌های Chromium در «حساب Google» خود استفاده کنید و آن‌ها را ذخیره کنید، هویتتان را درستی‌سنجی کنید</translation>
 <translation id="642132557830635295">‏‫Chromium سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند</translation>
 <translation id="6436260184216827876">«جستجوی تصویر» دردسترس نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="6442900851116057561">‏بازراه‌اندازی ChromiumOS</translation>
@@ -714,6 +719,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8852026904190808918">‏این زبان برای نمایش منوها، تنظیمات، هشدارها، و نوشتارهای دیگر در Chromium استفاده می‌شود</translation>
 <translation id="8862326446509486874">شما حقوق لازم برای نصب در سطح سیستم را ندارید. دوباره به‌عنوان سرپرست نصب‌کننده را اجرا کنید.</translation>
 <translation id="8876044221123442390">‏افزودن نمایه Chromium</translation>
+<translation id="8890569919834781711">‏به‌دلیل بروز خطا هنگام ورود به سیستم، ChromiumOS نتوانست داده‌های Chromium را در «حساب Google» شما ذخیره کند</translation>
 <translation id="8891709362986793894">‏سازمانتان شما را ملزم می‌کند به سیستم Chromium وارد شوید</translation>
 <translation id="8907580949721785412">‏Chromium در حال تلاش برای نشان دادن گذرواژه‌هاست. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="8932992523185907506">‏‫Chromium دیگر مرورگر پیش‌فرض شما نیست. Chromium  مرورگر پیش‌فرض شود</translation>

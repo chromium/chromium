@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Tady si soubory PDF můžete stáhnout</translation>
 <translation id="107147699690128016">Pokud změníte příponu souboru, může se soubor otevřít v jiné aplikaci a potenciálně může být rizikem pro vaše zařízení.</translation>
 <translation id="1073328695547557412">Klepněte na ikonu Google Lens</translation>
+<translation id="1080116354587839789">Přizpůsobit na šířku</translation>
 <translation id="1086486568852410168">Vyhledat pomocí Google Lens</translation>
 <translation id="1087799850623149508">Klepnutím a podržením přesunete adresní řádek dolů</translation>
 <translation id="1089606299949659462">Kontrola dokončena.</translation>
@@ -536,6 +537,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}many{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karty}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> karet}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 heslo je uloženo pouze na tomto zařízení. Pokud ji chcete používat i na jiných zařízeních, uložte ji do svého účtu Google.}few{# hesla jsou uložena pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}many{# hesla je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}other{# hesel je uloženo pouze na tomto zařízení. Pokud je chcete používat i na jiných zařízeních, uložte je do svého účtu Google.}}</translation>
 <translation id="3293181007446299124">Vaše historie prohlížení zůstává soukromá ve vašem zařízení a přehledy se z důvodu ochrany vaší totožnosti odesílají se zpožděním.</translation>
+<translation id="3301639354590628973">Přepnout účty?</translation>
 <translation id="3301936297336370235">Potvrzení návrhu hesla</translation>
 <translation id="3302615849591357577">Obnovit skupinu karet <ph name="TITLE_OF_GROUP" /> v barvě <ph name="COLOR_NAME" /> jako novou skupinu karet na pozadí.</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
@@ -678,6 +680,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, připnutá karta s obrazem v obraze</translation>
 <translation id="3950820424414687140">Přihlaste se</translation>
 <translation id="395377504920307820">Používat bez účtu</translation>
+<translation id="3955353672249727801">Stránky byly přidány do seznamu četby</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome stránku načte, až bude připraven}few{Chrome stránky načte, až bude připraven}many{Chrome stránky načte, až bude připraven}other{Chrome stránky načte, až bude připraven}}</translation>
 <translation id="3969142555815019568">Chrome nemůže zkontrolovat vaše hesla</translation>
 <translation id="3969863827134279083">Přesunout nahoru</translation>
@@ -726,7 +729,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4164642020717536140">Rychlé a bezpečné prohlížení webu</translation>
 <translation id="4165077084524712774">Další nástroje</translation>
 <translation id="4170577491341606575">Načítání vašich věcí\u2026</translation>
-<translation id="4176838562184310003">Chrome nebyl řádně ukončen a může se pokusit obnovit ztracená okna a karty. Některá okna mohou být při obnovení minimalizována.</translation>
+<translation id="4176838562184310003">Chrome nebyl řádně ukončen a může se pokusit obnovit ztracená okna a karty. Některá okna se možná při obnovení minimalizují.</translation>
 <translation id="4177222230309051052">Získejte všechny své záložky</translation>
 <translation id="4177501066905053472">Témata reklam</translation>
 <translation id="417865198503699526">Vyhledat nastavení</translation>

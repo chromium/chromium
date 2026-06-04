@@ -33,6 +33,7 @@
 <translation id="132092532143527429">Wypróbuj z Gemini w Chromium</translation>
 <translation id="1324107359134968521">Aby można było przeglądać urządzenia Bluetooth, Chromium musi mieć dostęp do Bluetootha. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Wykryj język</translation>
+<translation id="1330742950061766891">Użyj zalecanych ustawień przeglądarki Chromium</translation>
 <translation id="1342274909142618978">Usuń też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Przypięto. Możesz ponownie uzyskać dostęp do wyszukiwania obrazów za pomocą nowego przycisku na pasku narzędzi</translation>
 <translation id="1356661055722410047">Nowość! Możesz tłumaczyć tekst i obrazy na ekranie</translation>
@@ -66,6 +67,7 @@
 <translation id="1749104137266986751">Gdy protokół HTTPS będzie niedostępny, Chromium bez ostrzeżenia użyje połączenia niezabezpieczonego</translation>
 <translation id="1774152462503052664">Zezwól Chromium na działanie w tle</translation>
 <translation id="1779356040007214683">Aby poprawić bezpieczeństwo Chromium, wyłączyliśmy niektóre rozszerzenia niedostępne w <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, które mogły zostać dodane bez Twojej wiedzy.</translation>
+<translation id="1793486931176048546">Kliknij <ph name="BEGIN_BOLD" />Tak<ph name="END_BOLD" /> w powiadomieniu systemu Windows, aby przypiąć przeglądarkę Chromium do paska zadań i mieć do niej szybki dostęp.</translation>
 <translation id="1808667845054772817">Ponownie zainstaluj Chromium</translation>
 <translation id="1820835682567584003">Chromium próbuje <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Gdy następnym razem otworzysz Chromium na urządzeniu <ph name="DEVICE_TYPE" />, zobaczysz prośbę o użycie Menedżera haseł Google.</translation>
@@ -368,6 +370,7 @@
 <translation id="5187123684706427865">Konto Chromium wymaga ponownego uwierzytelnienia</translation>
 <translation id="5231355151045086930">Wylogowanie z Chromium</translation>
 <translation id="5234764350956374838">Zamknij</translation>
+<translation id="5249261924633168472">Otwórz link w oknie inco&amp;gnito Chromium</translation>
 <translation id="5254739261293693943">Zapytaj o ten film</translation>
 <translation id="5276305953263010518">Pobierz aplikację Chromium, aby zapisywać hasła, gdziekolwiek jesteś</translation>
 <translation id="5277894862589591112">Aby zastosować zmiany, uruchom ponownie Chromium</translation>
@@ -376,8 +379,10 @@
 <translation id="5294316920224716406">Podczas przeglądania w trybie incognito Chromium będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
 <translation id="5313228254328109263">Wewnętrzna usługa aktualizatora Chromium</translation>
 <translation id="5346389065299425353">Pogłębiaj wyszukiwanie, dodając kilka kart, plików i narzędzi</translation>
+<translation id="5348677704241861105">Uzyskaj szybki przegląd tego dokumentu i zadaj pytania dzięki Gemini w Chromium</translation>
 <translation id="5352264705793813212">Przeglądarka Chromium znalazła rekomendacje dotyczące bezpieczeństwa do sprawdzenia</translation>
 <translation id="5352361688875342522">Inne profile Chromium</translation>
+<translation id="535243042947607642">ChromiumOS nie może zapisać danych Chromium na Twoim koncie Google, ponieważ dane logowania na Twoje konto są nieaktualne</translation>
 <translation id="5358375970380395591">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Chromium. Twoje dane Chromium, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Dodatkowy kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Aby korzystać z personalizacji, uwzględnij Chromium w Aktywności w internecie i aplikacjach</translation>
@@ -483,6 +488,7 @@ Jeśli ta strona nie działa zgodnie z oczekiwaniami, spróbuj zezwolić na opt
 <translation id="6390800440335263989">Aby przejść dalej, zaloguj się w Chromium jako <ph name="EMAIL" />. Dzięki temu zachowasz zgodność z zasadami organizacji.</translation>
 <translation id="6400112897226594999">Logo Chromium na ekranie komputera.</translation>
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>
+<translation id="6414624068245092115">Potwierdź swoją tożsamość, aby móc zawsze używać danych Chromium na koncie Google i je zapisywać</translation>
 <translation id="642132557830635295">Chromium działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami</translation>
 <translation id="6436260184216827876">Wyszukiwanie obrazów jest niedostępne. Spróbuj ponownie później.</translation>
 <translation id="6442900851116057561">Uruchom ponownie Chromium OS</translation>
@@ -712,6 +718,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8852026904190808918">Ten język jest używany do wyświetlania menu, ustawień, alertów i innego tekstu w Chromium</translation>
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>
 <translation id="8876044221123442390">Dodaj profil Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS nie może zapisać danych Chromium na Twoim koncie Google z powodu błędu podczas logowania</translation>
 <translation id="8891709362986793894">Twoja organizacja wymaga od Ciebie zalogowania się w Chromium</translation>
 <translation id="8907580949721785412">Chromium próbuje pokazać hasła. Podaj swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="8932992523185907506">Chromium nie jest już przeglądarką domyślną. Czy ma nią być?</translation>

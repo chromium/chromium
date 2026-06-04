@@ -36,6 +36,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1324107359134968521">Chromium necesita acceso al Bluetooth para buscar 
  dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
+<translation id="1330742950061766891">Usar la configuración de navegador recomendada de Chromium</translation>
 <translation id="1342274909142618978">Eliminar también los datos de Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">¡Fijada! Puedes volver a acceder a la búsqueda por imágenes desde el nuevo botón de la barra de herramientas.</translation>
 <translation id="1356661055722410047">¡Novedad! Puedes traducir tanto texto como imágenes en tu pantalla.</translation>
@@ -373,6 +374,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5187123684706427865">La cuenta de Chromium debe volver a autenticarse</translation>
 <translation id="5231355151045086930">Cerrar sesión en Chromium</translation>
 <translation id="5234764350956374838">Cerrar</translation>
+<translation id="5249261924633168472">Abrir enlace en una ventana de incó&amp;gnito de Chromium</translation>
 <translation id="5254739261293693943">Pregunta sobre este vídeo</translation>
 <translation id="5276305953263010518">Descarga la aplicación Chromium para guardar contraseñas estés donde estés</translation>
 <translation id="5277894862589591112">Reinicia Chromium para aplicar los cambios</translation>

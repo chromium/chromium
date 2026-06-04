@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Vous pouvez télécharger les PDF ici</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, celui-ci pourrait s'ouvrir dans une application différente et potentiellement endommager votre appareil.</translation>
 <translation id="1073328695547557412">Appuyez sur l'icône Google Lens</translation>
+<translation id="1080116354587839789">Ajuster à la largeur</translation>
 <translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1087799850623149508">Vous pouvez appuyer de manière prolongée pour déplacer la barre d'adresse vers le bas</translation>
 <translation id="1089606299949659462">Examen terminé</translation>
@@ -536,6 +537,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglet}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> onglets}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}one{# mot de passe n'est enregistré que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-le dans votre compte Google.}other{# mots de passe ne sont enregistrés que sur cet appareil. Pour les utiliser sur vos autres appareils, enregistrez-les dans votre compte Google.}}</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
+<translation id="3301639354590628973">Changer de compte ?</translation>
 <translation id="3301936297336370235">Confirmation de la suggestion de mot de passe</translation>
 <translation id="3302615849591357577">Restaurer le groupe d'onglets "<ph name="TITLE_OF_GROUP" />" (couleur : <ph name="COLOR_NAME" />) en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
@@ -678,6 +680,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, onglet épinglé en Picture-in-picture</translation>
 <translation id="3950820424414687140">Se connecter</translation>
 <translation id="395377504920307820">Utiliser l'appli sans compte</translation>
+<translation id="3955353672249727801">Pages ajoutées à la liste de lecture</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome chargera votre page dès qu'elle sera prête}one{Chrome chargera votre page dès qu'elle sera prête}other{Chrome chargera vos pages dès qu'elles seront prêtes}}</translation>
 <translation id="3969142555815019568">Chrome ne parvient pas à vérifier vos mots de passe</translation>
 <translation id="3969863827134279083">Déplacer vers le haut</translation>

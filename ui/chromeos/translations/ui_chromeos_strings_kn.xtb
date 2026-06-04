@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">ಸ್ವಯಂಚಾಲಿತ ಹೆಸರು ಸರ್ವರ್‌ಗಳು</translation>
 <translation id="1210831758834677569">ಲಾವೋ</translation>
 <translation id="1221555006497674479">ಸಂಗ್ರಹಣೆ ಕಡಿಮೆಯಿದೆ, ನಿಮ್ಮ <ph name="TOTAL_SPACE" />ಹಂಚಿಕೊಂಡ ಡ್ರೈವ್‌ನ ಸಂಗ್ರಹಣೆಯಲ್ಲಿ <ph name="REMAINING_PERCENTAGE" />% ಉಳಿದಿದೆ.</translation>
+<translation id="1239594683407221485">'ಫೈಲ್‌ಗಳು' ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಾಧನದ ವಿಷಯವನ್ನು ಅನ್ವೇಷಿಸಿ.</translation>
 <translation id="1243314992276662751">ಅಪ್‌ಲೋಡ್</translation>
 <translation id="1249250836236328755">ಪ್ರಕಾರ</translation>
 <translation id="1254593899333212300">ನೇರ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕ</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ಅಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಐಟಂ ಬಳಕೆಯಲ್ಲಿದೆ.</translation>
 <translation id="1307931752636661898">Linux ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1313405956111467313">ಸ್ವಯಂಚಾಲಿತ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್</translation>
+<translation id="1340527397989195812">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್ ಬಳಸಿಕೊಂಡು ಸಾಧನದಿಂದ ಮಾಧ್ಯಮವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ.</translation>
 <translation id="134645005685694099">ಫೈಲ್ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಆನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಾಧನವು ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆಯ ಸ್ಥಳವನ್ನು ಹೊಂದಿಲ್ಲ. ಹೊಸ ಫೈಲ್‌ಗಳು ಇನ್ನು ಮುಂದೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ಫೈಲ್ ಅಥವಾ ಡೈರೆಕ್ಟರಿ ಬಳಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">ಯಾವುದೇ ಬಳಕೆದಾರ ಪ್ರಮಾಣಪತ್ರವಿಲ್ಲ</translation>
 <translation id="1403008701842173542">ಎಲ್ಲೆಲ್ಲೂ</translation>
 <translation id="1404323374378969387">ನಾರ್ವೆಜಿಯನ್</translation>
+<translation id="1408504635543854729">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಸಾಧನದ ವಿಷಯವನ್ನು ಅನ್ವೇಷಿಸಿ. ನಿರ್ವಾಹಕರಿಂದ ವಿಷಯವನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ ಮತ್ತು ಮಾರ್ಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="1412476183660741812">ಸಹಿ ಮಾಡಲಾದ ವೆಬ್ ಬಂಡಲ್</translation>
 <translation id="1433628812591023318">‌Parallels Desktop ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರಾಪ್ ಮಾಡಲು, ಫೈಲ್ ಅನ್ನು Windows ಫೈಲ್‌ಗಳಿಗೆ ಸರಿಸಬೇಕು.</translation>
 <translation id="1435838927755162558">Parallels Desktop ಮೂಲಕ ಫೋಲ್ಡರ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="1439919885608649279">ಹೂವುಗಳನ್ನು ಹಿಡಿದುಕೊಂಡಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ಎಜೆಕ್ಟ್</translation>
+<translation id="1464781208867302907">ಸಾಧನದ ಪ್ರಾಶಸ್ತ್ಯಗಳಿಗಾಗಿ, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ.</translation>
 <translation id="146691674290220697">ಅವುಗಳು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ <ph name="NUMBER_OF_FILES" /> ಫೈಲ್‌ಗಳನ್ನು ಕಾಪಿ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="1471718551822868769">ಸ್ಲೋವೇಕ್</translation>
 <translation id="1482884275703521657">ಫಿನ್ನಿಷ್</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ಡ್ರೈವ್‌ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2004942826429452291">ಫೈಲ್‌ಗಳನ್ನು ಕ್ಲೌಡ್‌ನಲ್ಲಿ ಮತ್ತು ಈ Chromebook ನಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="2009067268969781306">ಡ್ರೈವ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುವುದರಿಂದ, ಅದರಲ್ಲಿ ಸಂಗ್ರಣೆಯಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಪಡಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
+<translation id="2018352199541442911">ಕ್ಷಮಿಸಿ, ಈ ಸಮಯದಲ್ಲಿ ನಿಮ್ಮ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯ ಸಾಧನಕ್ಕೆ ಬೆಂಬಲ ದೊರೆಯುತ್ತಿಲ್ಲ.</translation>
 <translation id="2025955442973426285">ಟಿಗ್ರಿನ್ಯಾ</translation>
 <translation id="2029385776150020336">US ವಿಸ್ತೃತ</translation>
 <translation id="2037845485764049925">ರಷ್ಯನ್</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">ತಮಗೋಟ್ಚಿ</translation>
 <translation id="2468470447085858632">ಫೈಲ್ ಸಿಂಕ್‌ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ Google Drive ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಿ</translation>
 <translation id="2470939964922472929">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿಲಾಗಿದೆ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡಲು, ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಒದಗಿಸಿದ 8-ಸಂಖ್ಯೆಯ ಪರ್ಸನಲ್ ಅನ್‌ಬ್ಲಾಕಿಂಗ್ ಕೀ (PUK) ಅನ್ನು ನಮೂದಿಸಿ.</translation>
+<translation id="249113932447298600">ಕ್ಷಮಿಸಿ, ಈ ಸಮಯದಲ್ಲಿ <ph name="DEVICE_LABEL" /> ಸಾಧನಕ್ಕೆ ಬೆಂಬಲ ದೊರೆಯುತ್ತಿಲ್ಲ.</translation>
 <translation id="2500392669976258912">ಗುಜರಾತಿ ಫೋನೆಟಿಕ್</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">ಸ್ಕ್ಯಾನ್</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ಉಕ್ರೇನಿಯನ್</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ಅನ್ನು ಜಿಪ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3335337277364016868">ರೆಕಾರ್ಡ್ ಮಾಡಿದ ವರ್ಷ</translation>
+<translation id="3348038390189153836">ತೆಗೆದುಹಾಕಬಹುದಾದ ಸಾಧನವನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="3353984535370177728">ಅಪ್‌ಲೋಡ್‌ ಮಾಡಲು ಫೋಲ್ಡರ್‌ವೊಂದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="3356580349448036450">ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3358452157379365236">ಗಿಟಾರ್</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">ಮೊಬೈಲ್ ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ, ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ಇಂಗ್ಲಿಷ್ (ಯುಕೆ)</translation>
 <translation id="3975895378829046965">ಬಾಂಗ್ಲಾ ಫೋನೆಟಿಕ್</translation>
+<translation id="3983764759749072418">Play Store ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಈ ಸಾಧನಕ್ಕೆ ಪ್ರವೇಶವನ್ನು ಹೊಂದಿವೆ.</translation>
 <translation id="3999574733850440202">ಇತ್ತೀಚೆಗೆ ತೆರೆದಿರುವ Microsoft ಫೈಲ್‌ಗಳನ್ನು OneDrive ಗೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4017788180641807848">ವರ್ಕ್‌ಮ್ಯಾನ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">ಈ ಫೈಲ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ನೀವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರಬೇಕು.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" ಹೆಸರಿನ ಫೋಲ್ಡರ್ ಈಗಾಗಲೇ ಇದೆ. ಬೇರೊಂದು ಹೆಸರನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> ಗಾಗಿ ವಿನಾಯಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4261901459838235729">Google ಪ್ರೆಸೆಂಟೇಷನ್</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ಫಿಲ್ಟರ್ ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="4290535918735525311">Linux ಮೂಲಕ 1 ಫೋಲ್ಡರ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -557,6 +566,7 @@
 <translation id="5275973617553375938">Google ಡ್ರೈವ್‌ನಿಂದ ಮರುಪಡೆಯಲಾದ ಫೈಲ್‌ಗಳು</translation>
 <translation id="5278111733643988471">ಈ ಐಟಂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಐಟಂಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್ "<ph name="PARENT_FOLDER_NAME" />" ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="5288441970121584418">ಬರ್ಗರ್</translation>
+<translation id="529175790091471945">ಈ ಸಾಧನವನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿ</translation>
 <translation id="5293615890992542006">ಈ ಫೈಲ್ ಅನ್ನು ಸರಿಸುವುದನ್ನು ನಿರ್ವಾಹಕ ನೀತಿಯಿಂದ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5305688511332277257">ಯಾವುದನ್ನೂ ಸ್ಥಾಪನೆ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="5317780077021120954">ಸೇವ್ ಮಾಡಿ</translation>
@@ -572,6 +582,7 @@
 <translation id="5411472733320185105">ಈ ಹೋಸ್ಟ್‌ಗಳಿಗೆ ಮತ್ತು ಡೊಮೇನ್‌ಗಳಿಗೆ ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಉಪಯೋಗಿಸಬೇಡಿ:</translation>
 <translation id="541890217011173530">ಇಂಗ್ಲಿಷ್-ಆಧಾರಿತ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಸೊರಾನಿ ಕುರ್ದಿಶ್</translation>
 <translation id="5422221874247253874">ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್</translation>
+<translation id="5422781158178868512">ಕ್ಷಮಸಿ, ನಿಮ್ಮ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯ ಸಾಧನವನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ಗಾಗಿ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ.</translation>
 <translation id="5447680084201416734">ಸಾಕಷ್ಟು ಸಂಗ್ರಹಣೆಯಿಲ್ಲ.</translation>
 <translation id="5449551289610225147">ಅಮಾನ್ಯ ಪಾಸ್‌ವರ್ಡ್</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ಐಟಂಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5763377084591234761">ಜರ್ಮನ್ (ಸ್ವಿಟ್ಜರ್‌ಲ್ಯಾಂಡ್)</translation>
 <translation id="5769519078756170258">ಹೊರಗಿರಿಸಬೇಕಾದ ಹೋಸ್ಟ್ ಅಥವಾ ಡೊಮೇನ್</translation>
+<translation id="5774295353725270860">ಫೈಲ್‌ಗಳ ಆ್ಯಪ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5775750595919327203">ಉರ್ದು</translation>
 <translation id="5776325638577448643">ಅಳಿಸಿ ಮತ್ತು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿ</translation>
 <translation id="57838592816432529">ಮ್ಯೂಟ್</translation>
 <translation id="5788127256798019331">Play ಫೈಲ್‌ಗಳು</translation>
+<translation id="5788367137662787332">ಕ್ಷಮಿಸಿ, <ph name="DEVICE_LABEL" /> ಸಾಧನದಲ್ಲಿನ ಕನಿಷ್ಠ ಒಂದೇ ಒಂದು ಭಾಗವನ್ನೂ ಜೋಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="5804245609861364054">ಕನ್ನಡ ಲಿಪ್ಯಂತರಣ</translation>
 <translation id="5814126672212206791">ಸಂಪರ್ಕ ಪ್ರಕಾರ</translation>
 <translation id="5817397429773072584">ಸಾಂಪ್ರದಾಯಿಕ ಚೈನೀಸ್</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
 <translation id="7229570126336867161">EVDO ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7230898482850090046">"SIM ಅನ್ನು ಲಾಕ್ ಮಾಡಿ" ಎಂಬ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮಲ್ಲಿ ವಿನಂತಿಸಿಕೊಂಡಿದ್ದಾರೆ</translation>
+<translation id="7232750842195536390">ಮರುಹೆಸರಿಸುವಿಕೆ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7238097264433196391">ಡ್ರೈವ್ ಹೆಸರು</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, ವಿವರಗಳು</translation>
 <translation id="7246947237293279874">FTP ಪ್ರಾಕ್ಸಿ</translation>
+<translation id="725109152065019550">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಖಾತೆಯಲ್ಲಿರುವ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="7256405249507348194">ಗುರುತಿಸದಿರುವ ದೋಷ: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ಲಭ್ಯವಿರುವ ಸೇವೆಗಳು</translation>
 <translation id="7291818353625820805">ಕೀಗಳನ್ನು ಪುನರಾವರ್ತಿಸಲು ಬಯಸುವಿರಾ? ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳನ್ನು ಆಫ್ ಮಾಡಿ</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google ನಕ್ಷೆ</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7435577899926900307">US ಡ್ವೋರಕ್</translation>
+<translation id="7436921188514130341">ಓಹ್, ಹೋಯ್ತು! ಮರುಹೆಸರಿಸುವ ಸಂದರ್ಭದಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ.</translation>
 <translation id="7458955835361612701">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="7469894403370665791">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="7486315294984620427">‌Parallels Desktop ನಲ್ಲಿ ಫೈಲ್‌ಗಳನ್ನು ಡ್ರಾಪ್ ಮಾಡಲು, ಫೈಲ್ ಅನ್ನು Windows ಫೈಲ್‌ಗಳಿಗೆ ನಕಲಿಸಬೇಕು.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">ಶೆಲ್ಫ್‌ಗೆ ಪಿನ್‌ ಮಾಡು</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು, Linux ಆ್ಯಪ್‍ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ</translation>
 <translation id="7555339735447658365">ನೀವು ಪ್ರಸ್ತುತ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆದಾಗ ಫೈಲ್ ಸಿಂಕ್ ಮಾಡುವಿಕೆ ಪುನರಾರಂಭಗೊಳ್ಳುತ್ತದೆ</translation>
+<translation id="7589461650300748890">ವಾಹ್, ಇಲ್ಲ. ಜಾಗರೂಕರಾಗಿರಿ.</translation>
 <translation id="7589661784326793847">ಸ್ವಲ್ಪ ಕಾಯಿರಿ</translation>
 <translation id="7600126690270271294">ಸೆರ್ಬಿಯನ್</translation>
 <translation id="7603724359189955920">ಗ್ರಿಡ್‌ಗಳು</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ನೆಟ್‌ವರ್ಕ್‌ ಕಾನ್ಫಿಗರ್‌ ಮಾಡುವಾಗ ದೋಷ</translation>
+<translation id="7839051173341654115">ಮಾಧ್ಯಮವನ್ನು ವೀಕ್ಷಿಸಿ/ಬ್ಯಾಕಪ್ ಮಾಡಿ</translation>
 <translation id="7839804798877833423">ಈ ಫೈಲ್‌ಗಳನ್ನು ಪಡೆಯುವುದರಿಂದ ಮೊಬೈಲ್ ಡೇಟಾದ ಸುಮಾರು <ph name="FILE_SIZE" /> ಅನ್ನು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="7846076177841592234">ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
 <translation id="7857117644404132472">ವಿನಾಯಿತಿ ಸೇರಿಸು</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">ಪೋಲಿಷ್</translation>
 <translation id="7874321682039004450">ಫಿಲಿಪಿನೋ</translation>
 <translation id="78946041517601018">ಹಂಚಿಕೊಂಡಿರುವ ಡ್ರೈವ್‌ಗಳು</translation>
+<translation id="7897900149154324287">ಇನ್ನು ಮುಂದೆ, ನಿಮ್ಮ ತೆಗೆದುಹಾಕುವಂತಹ ಸಾಧನಗಳನ್ನು ಹೊರತೆಗೆಯುವ ಮೊದಲು ಅದನ್ನು ಇಜೆಕ್ಟ್ ಮಾಡಲು ಖಚಿತವಾಗಿರಿ. ಇಲ್ಲದಿದ್ದರೆ, ನೀವು ಡೇಟಾವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="7901567919203965902">US ವರ್ಕ್‌ಮ್ಯಾನ್ ಅಂತಾರಾಷ್ಟ್ರೀಯ</translation>
 <translation id="7903984238293908205">ಕಟಾಕನಾ</translation>
+<translation id="7908378463497120834">ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ ಸಾಧನದಲ್ಲಿನ ಕನಿಷ್ಠ ಒಂದು ಭಾಗವನ್ನು ಜೋಡಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="7908793776359722643">ವಿಭಾಗವನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿದರೆ, ಅದರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಿಹೋಗುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">ನನ್ನ ಡ್ರೈವ್‌ನಲ್ಲಿರುವ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ನಿಮ್ಮ Chromebook ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸಿಂಕ್ ಆಗುತ್ತವೆ ಇದರಿಂದ ನೀವು ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವಿಲ್ಲದೆಯೇ ಅವುಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">ಈ ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು, ಅದನ್ನು ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ. ಈ ಕೆಲವು ಐಟಂಗಳಿಗಾಗಿ ಮೂಲ ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="8874184842967597500">ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="8876368061475701452">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
+<translation id="8893928184421379330">ಕ್ಷಮಿಸಿ, <ph name="DEVICE_LABEL" />ಸಾಧನವನ್ನು ಗುರುತಿಸಲಾಗಲಿಲ್ಲ.</translation>
 <translation id="8902208737522818687">US ಅಂತಾರಾಷ್ಟ್ರೀಯ (PC)</translation>
 <translation id="8903931173357132290">ಪದವೀಧರ</translation>
 <translation id="8912078710089354287">ಬಾಲ ಅಲ್ಲಾಡಿಸುತ್ತಿರುವ ನಾಯಿ</translation>

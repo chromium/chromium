@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="2147127444698817042">‏متوفّرة فقط على iPhone</translation>
+<translation id="2148326276832455306">‏يتم استخدام المحادثات ومراجعتها لتحسين ذكاء Google الاصطناعي. يمكنك <ph name="BEGIN_LINK" />إدارة نشاطك<ph name="END_LINK" />، بما في ذلك المعلومات حول موقعك الجغرافي. <ph name="BEGIN_LINK" />مزيد من المعلومات حول خياراتك<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">يمكنك تسجيل الدخول بسرعة إلى المواقع الإلكترونية والتطبيقات باستخدام كلمات المرور المحفوظة.</translation>
 <translation id="2149968176347646218">الاتصال بهذا الموقع الإلكتروني غير آمن</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">مُحدِّد الوحدات</translation>
 <translation id="2330607597130465898">بلا حماية</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
+<translation id="2340966584724330791">‏تجمع Google محادثاتك والمحتوى الذي تتم مشاركته مع Gemini (مثل الملفات والفيديوهات ولقطات الشاشة والصور) وملاحظاتك، والمعلومات من المواقع الإلكترونية التي تزار من خلال Gemini، وطريقة استخدامك للمنتج، ومعلومات عن الموقع الجغرافي (بما في ذلك الموقع الجغرافي العام لجهازك أو عنوان IP أو عنوانَا المنزل أو العمل المحفوظَين في حسابك على Google).</translation>
 <translation id="2350463587705616331">لون خلفية بني داكن</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google ({EMAIL}).}=2{‏يمكنك حفظ كلمتَي المرور الخاصتين بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google ({EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google ({EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google ({EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">حدثت مشكلة أثناء ملء معلوماتك</translation>
 <translation id="2371084566192454134">علامات التبويب ومجموعات علامات التبويب</translation>
 <translation id="2371303771137626249">جديد</translation>
+<translation id="2375947780110007467">‏تستخدم Google محتوى علامات التبويب التي تتم مشاركتها وعناوين URL الخاصة بها. وتتم مشاركة علامة التبويب الحالية في المحادثات الجديدة. ويمكنك تغيير هذه الإعدادات متى شئت.</translation>
 <translation id="2381405137052800939">الإعدادات الأساسية</translation>
 <translation id="2384692388811649784">إخفاء علامات التبويب في وضع التصفّح المتخفي</translation>
 <translation id="2386793615875593361">تم اختيار عنصر واحد</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">بحث صوتي</translation>
 <translation id="3289505634533552500">البحث الصوتي</translation>
 <translation id="3295904109373959849">شبكة مجموعة علامات التبويب</translation>
+<translation id="3301639354590628973">تبديل الحسابات؟</translation>
 <translation id="3302837541200840455">علامة التبويب "<ph name="TAB_TITLE" />" بها نشاط جديد</translation>
 <translation id="3305294846493618482">عرض المزيد</translation>
 <translation id="3311748811247479259">غير مفعَّل</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">وضع علامة "مقروءة"</translation>
 <translation id="428768789042547925">الميزات الجديدة</translation>
 <translation id="429074084062258019">{count,plural, =1{إضافة علامة التبويب إلى المجموعة}zero{إضافة علامات التبويب إلى المجموعة}two{إضافة علامتَي التبويب إلى المجموعة}few{إضافة علامات التبويب إلى المجموعة}many{إضافة علامات التبويب إلى المجموعة}other{إضافة علامات التبويب إلى المجموعة}}</translation>
+<translation id="4294506173142861371">تسجيل الدخول بحساب "<ph name="FIRST_NAME" />"؟</translation>
 <translation id="4300830875340617674">مسح البطاقة ضوئيًا وملء البيانات تلقائيًا</translation>
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
 <translation id="5447973833955560753">كلمة مرور الاسترداد</translation>
 <translation id="5452354193031718372">ننصحك باستخدام كلمة مرور قوية كما يلي:</translation>
+<translation id="5453088693079603292">الأنشطة التي يتم جمعها</translation>
 <translation id="5454211924362324495">لمنع الآخرين من استخدام كلمة مرورك، <ph name="BEGIN_LINK" />عليك تغييرها من خلال<ph name="WEBSITE" /><ph name="END_LINK" />.</translation>
 <translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
 <translation id="5457226814769348910">فتح نسخة بلا إنترنت</translation>
@@ -1520,6 +1526,7 @@
 <translation id="6253686838150111720">تسجيل الدخول إلى <ph name="URL" /></translation>
 <translation id="6254066287920239840">فتح الروابط في التطبيق بدلاً من المتصفح.</translation>
 <translation id="6259928806013786178">تعذَّر تفعيل "وضع القراءة"</translation>
+<translation id="626335165106398104">‏‫Gemini يعمل مع خدمات أخرى</translation>
 <translation id="6268773951964630964">البحث عن الصورة التي نسختها</translation>
 <translation id="6271462272606946663">إخفاء خيار "طلب موقع جهاز جوّال"</translation>
 <translation id="6271824294945464304">مشاركة كلمة المرور</translation>
@@ -1635,6 +1642,7 @@
 <translation id="6609890790934458793">سيتم حذف كلمات المرور المحفوظة في <ph name="WEBSITE" /> و<ph name="SECOND_WEBSITE" /> و<ph name="THIRD_WEBSITE" />. لن يتم حذف حساباتك.</translation>
 <translation id="661266467055912436">تحسين الأمان من أجلك ومن أجل جميع المستخدمين على الإنترنت</translation>
 <translation id="6612912757320004438">السماح بإشعارات علامات التبويب…</translation>
+<translation id="6613372200395638275">‏لتقديم مساعدة مخصّصة، يشارك Gemini بعض بياناتك (مثل أجزاء من محادثاتك وموقعك الجغرافي ومعلومات أخرى ذات صلة) مع خدمات Google الأخرى، مثل "خرائط Google" و"رحلات جوية من Google". وقد تستخدم الخدمات تلك المعلومات لتحسين أدائها، حتى إذا حذفْت سجلّ نشاطك على "تطبيقات Gemini" لاحقًا. يمكنك الاطّلاع على مزيد من المعلومات في <ph name="BEGIN_LINK" />مركز الخصوصية على "تطبيقات Gemini"<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">محو النص</translation>
 <translation id="6619015782482868078">مظهر باللون الأزرق الفيروزي</translation>
 <translation id="6620279676667515405">إلغاء</translation>
@@ -1710,6 +1718,9 @@
 <translation id="6858718102216837409">إضافة لغة…</translation>
 <translation id="6858855187367714033">تم مسحه ضوئيًا.</translation>
 <translation id="6859944681507688231">لمسح رمز الاستجابة السريعة أو بطاقة ائتمان ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات.</translation>
+<translation id="6862212368460840758">لقد سجّلت الدخول باستخدام <ph name="SIGNED_EMAIL" />.
+
+للمتابعة من الكمبيوتر، يُرجى التبديل إلى <ph name="OTHER_EMAIL" />. بإمكانك الوصول إلى كلمات المرور والإشارات المرجعية وغيرها من هذا الحساب.</translation>
 <translation id="6867369562105931222">كلمة المرور</translation>
 <translation id="6867400383614725881">علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
 <translation id="686831807558000905">عدم تسجيل الدخول</translation>
@@ -1778,6 +1789,7 @@
 <translation id="7091023926159231962">{count,plural, =1{تعذَّر استيراد كلمة مرور واحدة ({count})}zero{تعذَّر استيراد {count} كلمة مرور}two{تعذَّر استيراد كلمتَي مرور ({count})}few{تعذَّر استيراد {count} كلمات مرور}many{تعذَّر استيراد {count} كلمة مرور}other{تعذَّر استيراد {count} كلمة مرور}}</translation>
 <translation id="7095110968493193530">‏سيتم حفظ كلمة المرور الخاصة بالحساب <ph name="EMAIL" /> في "مدير كلمات المرور في Google"</translation>
 <translation id="7097046145876891318">في شريط العناوين، انقر على سجلّ الأسعار للاطّلاع على تغييرات الأسعار بمرور الوقت</translation>
+<translation id="7098554251807199977">‏لن تتم مراجعة محادثاتك مع Gemini أو <ph name="BEGIN_LINK" />بياناتك على Google Workspace<ph name="END_LINK" /> ولن تُستخدَم لتحسين نماذج الذكاء الاصطناعي التوليدي.</translation>
 <translation id="7102005569666697658">جارٍ تنزيل… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">"القائمة" ← "الإعدادات" ← "طُرق الدفع"</translation>
 <translation id="7108338896283013870">إخفاء</translation>
@@ -2172,6 +2184,7 @@
 <translation id="8439758443371991593">إخفاء خيار "الإضافة إلى قائمة القراءة"</translation>
 <translation id="8443986842926457191">‏يجب ألّا يزيد عدد أحرف عنوان URL عن 2048 حرفًا.</translation>
 <translation id="8449869326050867919">تمت مشاركة كلمة المرور</translation>
+<translation id="8461708300275916315">إذا كنت دون الـ 18 عامًا</translation>
 <translation id="8473815223723723001">‏تعديل الصورة باستخدام Gemini</translation>
 <translation id="8473863474539038330">العناوين والمزيد</translation>
 <translation id="8474378002946546633">السماح بالإشعارات</translation>
@@ -2233,6 +2246,8 @@
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>
 <translation id="8637431369725868556">يمكنك حماية متصفّحك من المواقع الإلكترونية الخطيرة.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ما مِن كلمات مرور محتمَل تعرّضها للاختراق}=1{هناك كلمة مرور واحدة ({COUNT}) محتمَل تعرّضها للاختراق}two{هناك كلمتا مرور ({COUNT}) محتمَل تعرّضهما للاختراق}few{هناك {COUNT} كلمات مرور محتمَل تعرّضها للاختراق}many{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق}other{هناك {COUNT} كلمة مرور محتمَل تعرّضها للاختراق}}</translation>
+<translation id="8639963783467694461">إعدادات الملء التلقائي</translation>
+<translation id="8642417828095157370">تتم مشاركة علامات التبويب لتقديم ردود أكثر صلةً</translation>
 <translation id="8643403533759285912">حذف المجموعة</translation>
 <translation id="8647280737650867362">تعذَّر إيقاف تتبُّع السعر.</translation>
 <translation id="8654802032646794042">إلغاء</translation>
@@ -2246,6 +2261,7 @@
 <translation id="8672733398999596205">تفعيل الكل</translation>
 <translation id="8674716540979958118">لديك كلمات مرور محتمَل تعرّضها للاختراق.</translation>
 <translation id="8679900250380464358">الإضافة إلى "قائمة القراءة"</translation>
+<translation id="8680643216091361291">‏يكون الإعداد <ph name="BEGIN_LINK" />الاحتفاظ بالنشاط<ph name="END_LINK" /> غير مفعّل تلقائيًا. وعند إيقافه، تحفظ Google محادثاتك لمدة 3 أيام، وتستخدمها في تحسين عمل "تطبيقات Gemini" والحفاظ على أمانها واستخدام ملاحظاتك لإصلاح المشاكل. يمكنك تفعيل الإعداد "الاحتفاظ بالنشاط" للمساعدة في تحسين ذكاء Google الاصطناعي للجميع.</translation>
 <translation id="8680786875305615692">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
 <translation id="8690752723634292147">تأكيد الحذف</translation>
@@ -2395,6 +2411,7 @@
 <translation id="9162432979321511934">‏فعِّل AutoFill Passwords (الملء التلقائي لكلمات المرور).</translation>
 <translation id="9165320910061267720">‏لتلقِّي تنبيهات بشأن انخفاض الأسعار، عليك تفعيل الإشعارات من إعدادات iOS.</translation>
 <translation id="9179151630575358778">يؤدي هذا الإجراء إلى إخفاء هذا العنصر</translation>
+<translation id="9183563643084679152">‏لقد مسحت رمز استجابة سريعة ضوئيًا لتسجيل الدخول إلى Chrome. بإمكانك الوصول إلى كلمات المرور والإشارات المرجعية وغيرها من هذا الحساب.</translation>
 <translation id="9183733013282108610">البحث في وضع التصفُّح المتخفي</translation>
 <translation id="9186762474139509529">بدء تسجيل الدخول</translation>
 <translation id="9191031968346938109">إضافة إلى…</translation>

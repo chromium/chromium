@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Seu navegador é gerenciado. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Pesquisar o texto que você copiou</translation>
 <translation id="2147127444698817042">Disponível apenas no iPhone</translation>
+<translation id="2148326276832455306">As conversas são analisadas e usadas para aprimorar a IA do Google. Você pode <ph name="BEGIN_LINK" />gerenciar a sua atividade<ph name="END_LINK" />, incluindo informações sobre a sua localização. <ph name="BEGIN_LINK" />Saiba mais sobre suas escolhas<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Faça login em sites e apps com rapidez usando as senhas salvas.</translation>
 <translation id="2149968176347646218">A conexão não é segura</translation>
 <translation id="2149973817440762519">Editar favoritos</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Seletor de unidade de medida</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Excluir e sair</translation>
+<translation id="2340966584724330791">O Google coleta suas conversas e tudo que você compartilha com o Gemini (como arquivos, vídeos, telas e fotos). Ele também coleta seu feedback, informações dos sites que você visita com o Gemini, uso do produto e informações de localização (incluindo a localização do seu dispositivo, endereço IP ou endereços de casa ou do trabalho na sua Conta do Google).</translation>
 <translation id="2350463587705616331">Cor de fundo sépia</translation>
 <translation id="2351097562818989364">As configurações de tradução foram redefinidas.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Você pode salvar a senha de {DOMAIN_ONE} na sua Conta do Google {EMAIL}.}=2{Você pode salvar as senhas de {DOMAIN_ONE} e {DOMAIN_TWO} na sua Conta do Google {EMAIL}.}=3{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} site na sua Conta do Google {EMAIL}.}one{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} sites na sua Conta do Google {EMAIL}.}other{Você pode salvar as senhas de {DOMAIN_ONE}, {DOMAIN_TWO} e mais {OTHER_DOMAINS_COUNT} sites na sua Conta do Google {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Erro ao preencher suas informações</translation>
 <translation id="2371084566192454134">Guias e grupos de guias</translation>
 <translation id="2371303771137626249">Novo</translation>
+<translation id="2375947780110007467">O Google usa o conteúdo e o URL das guias compartilhadas. A guia atual é compartilhada em novas conversas. É possível mudar essa configuração a qualquer momento.</translation>
 <translation id="2381405137052800939">Conceitos básicos</translation>
 <translation id="2384692388811649784">Ocultar guias anônimas</translation>
 <translation id="2386793615875593361">Uma selecionada</translation>
@@ -484,6 +487,7 @@
 <translation id="2640733327287333451">Sem nome de usuário ••••••</translation>
 <translation id="264215785133931186">Verificadas agora mesmo</translation>
 <translation id="2647434099613338025">Adicionar idioma</translation>
+<translation id="2648812801228676606">A conta <ph name="NAME_OR_EMAIL" /> continua conectada.</translation>
 <translation id="2649592894792404568">Você está prestes a excluir seus dados do Gerenciador de senhas do Google</translation>
 <translation id="2652129567809778422">Selecionar senha</translation>
 <translation id="2658056020748144467">Não foi possível abrir arquivo</translation>
@@ -657,6 +661,7 @@
 <translation id="3280562213547448728">Pesquisa por voz</translation>
 <translation id="3289505634533552500">Pesquisa por voz</translation>
 <translation id="3295904109373959849">Grade de grupos de guias</translation>
+<translation id="3301639354590628973">Quer trocar de conta?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nova atividade</translation>
 <translation id="3305294846493618482">mais</translation>
 <translation id="3311748811247479259">Desativada</translation>
@@ -934,6 +939,7 @@
 <translation id="4287172530684295552">Marcar como lida</translation>
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
+<translation id="4294506173142861371">Fazer login como <ph name="FIRST_NAME" />?</translation>
 <translation id="4300830875340617674">Digitalizar cartão e preencher automaticamente</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
@@ -1273,6 +1279,7 @@
 <translation id="5444892875087332195">Favoritos</translation>
 <translation id="5447973833955560753">Senha de recuperação</translation>
 <translation id="5452354193031718372">Use uma senha forte:</translation>
+<translation id="5453088693079603292">Quais atividades são coletadas</translation>
 <translation id="5454211924362324495"><ph name="BEGIN_LINK" />Mude sua senha em <ph name="WEBSITE" /><ph name="END_LINK" /> para impedir que ela seja usada por outras pessoas</translation>
 <translation id="5457082343331641453">Adicione à pesquisa</translation>
 <translation id="5457226814769348910">Abrir versão off-line</translation>
@@ -1522,6 +1529,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6253686838150111720">Fazer login em <ph name="URL" /></translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6259928806013786178">Falha no modo de leitura</translation>
+<translation id="626335165106398104">O Gemini funciona com outros serviços</translation>
 <translation id="6268773951964630964">Pesquisar imagem copiada</translation>
 <translation id="6271462272606946663">Ocultar opção "Solicitar o site móvel"</translation>
 <translation id="6271824294945464304">Compartilhando senha</translation>
@@ -1637,6 +1645,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6609890790934458793">As senhas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="THIRD_WEBSITE" /> vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6612912757320004438">Permitir notificações de guias…</translation>
+<translation id="6613372200395638275">Para oferecer ajuda personalizada, o Gemini compartilha alguns dos seus dados (como partes das suas conversas, sua localização e outras informações relevantes) com outros Serviços do Google, como o Maps e o Voos. Mesmo que você exclua sua atividade nos apps do Gemini depois, esses serviços podem usar as informações para aprimoramento. Saiba mais na <ph name="BEGIN_LINK" />Central de privacidade dos apps do Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Limpar texto</translation>
 <translation id="6619015782482868078">Tema aqua</translation>
 <translation id="6620279676667515405">Cancelar</translation>
@@ -1712,6 +1721,9 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6858718102216837409">Adicionar idioma…</translation>
 <translation id="6858855187367714033">Lido</translation>
 <translation id="6859944681507688231">Para ler um QR code ou cartão de crédito, ative a câmera nas configurações.</translation>
+<translation id="6862212368460840758">Você fez login como <ph name="SIGNED_EMAIL" />.
+
+Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai receber as senhas, os favoritos e outros itens desta conta.</translation>
 <translation id="6867369562105931222">senha</translation>
 <translation id="6867400383614725881">Nova guia anônima</translation>
 <translation id="686831807558000905">Não fazer login</translation>
@@ -1780,6 +1792,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7091023926159231962">{count,plural, =1{Não foi possível importar {count} senha}one{Não foi possível importar {count} senha}other{Não foi possível importar {count} senhas}}</translation>
 <translation id="7095110968493193530">No Gerenciador de senhas do Google da conta <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Na barra de endereço, toque no histórico de preços para ver as mudanças ao longo do tempo</translation>
+<translation id="7098554251807199977">Suas conversas com o Gemini e seus <ph name="BEGIN_LINK" />dados do Google Workspace<ph name="END_LINK" /> não serão revisados nem usados para aprimorar modelos de IA generativa.</translation>
 <translation id="7102005569666697658">Fazendo o download… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Configurações → Formas de pagamento</translation>
 <translation id="7108338896283013870">Ocultar</translation>
@@ -2173,6 +2186,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8439758443371991593">Ocultar "Adicionar à Lista de leitura"</translation>
 <translation id="8443986842926457191">O URL tem mais de 2.048 caracteres</translation>
 <translation id="8449869326050867919">Senha compartilhada</translation>
+<translation id="8461708300275916315">Se você tiver menos de 18 anos</translation>
 <translation id="8473815223723723001">Editar imagem com o Gemini</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
@@ -2234,6 +2248,8 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8636825310635137004">Para acessar suas guias abertas em outros dispositivos, ative a sincronização.</translation>
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
+<translation id="8639963783467694461">Configurações de preenchimento automático</translation>
+<translation id="8642417828095157370">As guias são compartilhadas para deixar as respostas mais relevantes</translation>
 <translation id="8643403533759285912">Excluir grupo</translation>
 <translation id="8647280737650867362">Não foi possível remover o monitoramento do preço.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
@@ -2247,6 +2263,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8672733398999596205">Ativar tudo</translation>
 <translation id="8674716540979958118">Você tem senhas comprometidas.</translation>
 <translation id="8679900250380464358">Adicionar à Lista de leitura</translation>
+<translation id="8680643216091361291">A configuração <ph name="BEGIN_LINK" />Manter Atividade<ph name="END_LINK" /> fica desativada por padrão. Nesse caso, o Google salva suas conversas por 3 dias. Esses dados são usados para garantir o bom funcionamento e a segurança dos apps do Gemini e para corrigir problemas com base no seu feedback. Você pode ativar a opção Manter Atividade para ajudar a aprimorar a IA do Google para todo mundo.</translation>
 <translation id="8680786875305615692">Ajude a melhorar a segurança para todos na Web</translation>
 <translation id="8680787084697685621">Os detalhes de login da conta estão desatualizados.</translation>
 <translation id="8690752723634292147">Confirmar exclusão</translation>
@@ -2396,6 +2413,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
 <translation id="9179151630575358778">Oculta este item</translation>
+<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome. Você vai receber as senhas, os favoritos e outros itens desta conta.</translation>
 <translation id="9183733013282108610">Pesquisa anônima</translation>
 <translation id="9186762474139509529">Iniciar registro</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>

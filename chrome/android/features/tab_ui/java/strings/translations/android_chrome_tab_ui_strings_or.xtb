@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ଟାବ ଗ୍ରୁପ କରାଯାଇଛି</translation>
 <translation id="1844381456014878100">ନିଷ୍କ୍ରିୟ ରହିବାର 7 ଦିନ ପରେ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ୍}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{ପଢ଼ିବା ତାଲିକାରେ ଟାବ ଯୋଗ କରନ୍ତୁ}other{ପଢ଼ିବା ତାଲିକାରେ ଟାବଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="1909810060368225529">ନୋଟିସ: ସେୟାର କରାଯାଇଥିବା ଏହି ଟାବ ଗ୍ରୁପରେ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସମସ୍ତଙ୍କୁ ଦେଖାଯିବ। ଆପଣଙ୍କର ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପରେ ସମସ୍ତେ ପରିବର୍ତ୍ତନ କରିପାରିବେ</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ଟାବ ପିନ କରନ୍ତୁ}other{ଟାବଗୁଡ଼ିକ ପିନ କରନ୍ତୁ}}</translation>
 <translation id="1982637982196732906">ନିଷ୍କ୍ରିୟ ବିଭାଗକୁ ମୁଭ କରନ୍ତୁ</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ର ମୂଲ୍ୟ <ph name="PRICE_DROP" /> କମ୍ ହୋଇଛି</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> ଟାବ ଗ୍ରୁପ ରଙ୍ଗ ଆଇକନ</translation>
 <translation id="311432875115153175">ଟାବ ଗ୍ରୁପ ତାଲିକା ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="3152596030350326139">ଟାବଗୁଡ଼ିକୁ ହରିଜୋଣ୍ଟାଲ ଭାବେ ଦେଖାନ୍ତୁ</translation>
+<translation id="31806439105337256">ଟାବଗୁଡ଼ିକୁ ଭର୍ଟିକାଲ ଭାବେ ଦେଖାନ୍ତୁ</translation>
 <translation id="3194464645767632461">ରେଟିଂ</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{ଗ୍ରୁପରେ <ph name="TABS_COUNT_ONE" /> ଟାବ ଯୋଗ କରନ୍ତୁ}other{ଗ୍ରୁପରେ <ph name="TABS_COUNT_MANY" /> ଟାବ ଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="3328308545011660196">ପରାମର୍ଶ: <ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଜଣାପଡ଼ୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>

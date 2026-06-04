@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Ovdje možete preuzeti PDF datoteke</translation>
 <translation id="107147699690128016">Ako promijenite datotečni nastavak, datoteka bi se mogla otvoriti u nekoj drugoj aplikaciji i mogla bi izložiti vaš uređaj opasnosti.</translation>
 <translation id="1073328695547557412">Dodirnite ikonu Google objektiva</translation>
+<translation id="1080116354587839789">Prilagođavanje širini</translation>
 <translation id="1086486568852410168">Pretraži pomoću Google objektiva</translation>
 <translation id="1087799850623149508">Možete dodirnuti i zadržati pritisak da biste adresnu traku premjestili na dno</translation>
 <translation id="1089606299949659462">Pregled je dovršen!</translation>
@@ -536,6 +537,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartica}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartice}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> kartica}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Jedna zaporka sprema se samo na ovaj uređaj. Da biste je upotrebljavali na svojim drugim uređajima, spremite je na svoj Google račun.}one{Ukupno # zaporka sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}few{Ukupno # zaporke spremaju se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}other{Ukupno # zaporki sprema se samo na ovaj uređaj. Da biste ih upotrebljavali na svojim drugim uređajima, spremite ih na svoj Google račun.}}</translation>
 <translation id="3293181007446299124">Vaša povijest pregledavanja ostaje privatna na vašem uređaju, a izvješća se šalju s odgodom radi zaštite vašeg identiteta</translation>
+<translation id="3301639354590628973">Želite li promijeniti račun?</translation>
 <translation id="3301936297336370235">Potvrda prijedloga zaporke</translation>
 <translation id="3302615849591357577">Vratite grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja, kao novu pozadinsku grupu kartica.</translation>
 <translation id="3303855915957856445">Nisu pronađeni rezultati pretraživanja</translation>
@@ -678,6 +680,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, prikvačena kartica sa slikom u slici</translation>
 <translation id="3950820424414687140">Prijava</translation>
 <translation id="395377504920307820">Koristite bez računa</translation>
+<translation id="3955353672249727801">Stranice su dodane na popis za čitanje</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome će učitati stranicu kad bude spreman}one{Chrome će učitati stranice kad bude spreman}few{Chrome će učitati stranice kad bude spreman}other{Chrome će učitati stranice kad bude spreman}}</translation>
 <translation id="3969142555815019568">Chrome ne može provjeriti vaše zaporke</translation>
 <translation id="3969863827134279083">Premjesti prema gore</translation>

@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Sugrupuota skirtukų: <ph name="TABS_COUNT_ONE" /></translation>
 <translation id="1844381456014878100">Po septintos neaktyvumo dienos</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Pridėti skirtuką prie skaitomų sąrašo}one{Pridėti skirtukus prie skaitomų sąrašo}few{Pridėti skirtukus prie skaitomų sąrašo}many{Pridėti skirtukus prie skaitomų sąrašo}other{Pridėti skirtukus prie skaitomų sąrašo}}</translation>
 <translation id="1909810060368225529">Pranešimas: šios bendrinamos skirtukų grupės pakeitimai matomi visiems. Visi žmonės gali keisti bendrinamas skirtukų grupes</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Prisegti skirtuką}one{Prisegti skirtukus}few{Prisegti skirtukus}many{Prisegti skirtukus}other{Prisegti skirtukus}}</translation>
 <translation id="1982637982196732906">Perkelti į neaktyvią skiltį</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> skirtukų grupės spalvos piktograma</translation>
 <translation id="311432875115153175">Skirtukų grupių sąrašas uždarytas</translation>
+<translation id="3152596030350326139">Rodyti skirtukus horizontaliai</translation>
+<translation id="31806439105337256">Rodyti skirtukus vertikaliai</translation>
 <translation id="3194464645767632461">įvertinimas</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pridėti <ph name="TABS_COUNT_ONE" /> skirtuką prie grupės}one{Pridėti <ph name="TABS_COUNT_MANY" /> skirtuką prie grupės}few{Pridėti <ph name="TABS_COUNT_MANY" /> skirtukus prie grupės}many{Pridėti <ph name="TABS_COUNT_MANY" /> skirtuko prie grupės}other{Pridėti <ph name="TABS_COUNT_MANY" /> skirtukų prie grupės}}</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>

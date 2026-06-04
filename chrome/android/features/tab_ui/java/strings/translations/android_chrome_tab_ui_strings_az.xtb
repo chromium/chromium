@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab qruplaşdırıldı</translation>
 <translation id="1844381456014878100">7 gün qeyri-aktiv olduqdan sonra</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Tabı oxu siyahısına əlavə edin}other{Tabları oxu siyahısına əlavə edin}}</translation>
 <translation id="1909810060368225529">Bildiriş: Bu paylaşılan Tab Qrupuna edilən dəyişikliklər hər kəsə görünür. Hər kəs paylaşılan tab qruplarınıza dəyişiklik edə bilər</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Tabı bərkidin}other{Tabları bərkidin}}</translation>
 <translation id="1982637982196732906">Qeyri-aktiv bölməsinə köçürün</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> tab qrupu rəngi ikonası</translation>
 <translation id="311432875115153175">Tab qrupu siyahısı bağlandı</translation>
+<translation id="3152596030350326139">Tabları üfüqi formada göstərin</translation>
+<translation id="31806439105337256">Tabları şaquli formada göstərin</translation>
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabı qrupa əlavə edin}other{<ph name="TABS_COUNT_MANY" /> tabı qrupa əlavə edin}}</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>

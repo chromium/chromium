@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">Votre navigateur est géré. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Rechercher le texte copié</translation>
 <translation id="2147127444698817042">Uniquement disponible sur iPhone</translation>
+<translation id="2148326276832455306">Les discussions sont examinées et utilisées pour améliorer l'IA de Google. Vous pouvez <ph name="BEGIN_LINK" />gérer votre activité<ph name="END_LINK" />, y compris les informations sur votre position. <ph name="BEGIN_LINK" />En savoir plus sur les options qui s'offrent à vous<ph name="END_LINK" /></translation>
 <translation id="2148799636999124959">Connectez-vous rapidement à des sites et des applis avec vos mots de passe enregistrés.</translation>
 <translation id="2149968176347646218">La connexion n'est pas sécurisée</translation>
 <translation id="2149973817440762519">Modifier le favori</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">Sélecteur d'unité</translation>
 <translation id="2330607597130465898">Aucune protection</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
+<translation id="2340966584724330791">Google collecte vos discussions et ce que vous partagez avec Gemini (comme des fichiers, des vidéos, des écrans et des photos). Il collecte aussi vos commentaires, des informations sur les sites Web que vous consultez avec Gemini, des informations sur l'utilisation du produit et des informations sur votre position (y compris la position générale de votre appareil, votre adresse IP ou les adresses personnelle ou professionnelle figurant dans votre compte Google).</translation>
 <translation id="2350463587705616331">Couleur d'arrière-plan sépia</translation>
 <translation id="2351097562818989364">Les paramètres de traduction ont été réinitialisés.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Vous pouvez enregistrer votre mot de passe pour {DOMAIN_ONE} dans votre compte Google ({EMAIL}).}=2{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE} et {DOMAIN_TWO} dans votre compte Google ({EMAIL}).}=3{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autre domaine dans votre compte Google ({EMAIL}).}one{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autre domaine dans votre compte Google ({EMAIL}).}other{Vous pouvez enregistrer vos mots de passe pour {DOMAIN_ONE}, {DOMAIN_TWO} et {OTHER_DOMAINS_COUNT} autres domaines dans votre compte Google ({EMAIL}).}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">Erreur lors de la saisie de vos informations</translation>
 <translation id="2371084566192454134">Onglets et groupes d'onglets</translation>
 <translation id="2371303771137626249">Nouveau</translation>
+<translation id="2375947780110007467">Google utilise le contenu et l'URL des onglets partagés. L'onglet actuel est partagé dans les nouvelles discussions. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="2381405137052800939">Paramètres de base</translation>
 <translation id="2384692388811649784">Masquer les onglets de navigation privée</translation>
 <translation id="2386793615875593361">1 photo sélectionnée</translation>
@@ -657,6 +660,7 @@
 <translation id="3280562213547448728">Recherche vocale</translation>
 <translation id="3289505634533552500">Recherche vocale</translation>
 <translation id="3295904109373959849">Grille des groupes d'onglets</translation>
+<translation id="3301639354590628973">Changer de compte ?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, nouvelle activité</translation>
 <translation id="3305294846493618482">plus</translation>
 <translation id="3311748811247479259">Désactivé</translation>
@@ -934,6 +938,7 @@
 <translation id="4287172530684295552">Marquer comme lu</translation>
 <translation id="428768789042547925">Nouveautés</translation>
 <translation id="429074084062258019">{count,plural, =1{Ajouter l'onglet à un groupe}one{Ajouter l'onglet à un groupe}other{Ajouter les onglets à un groupe}}</translation>
+<translation id="4294506173142861371">Se connecter en tant que <ph name="FIRST_NAME" /> ?</translation>
 <translation id="4300830875340617674">Scanner la carte et compléter automatiquement</translation>
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
@@ -1273,6 +1278,7 @@
 <translation id="5444892875087332195">Favoris</translation>
 <translation id="5447973833955560753">Mot de passe de récupération</translation>
 <translation id="5452354193031718372">Utiliser un mot de passe sécurisé :</translation>
+<translation id="5453088693079603292">Quelles activités sont collectées</translation>
 <translation id="5454211924362324495">Pour empêcher d'autres personnes d'utiliser votre mot de passe, <ph name="BEGIN_LINK" />modifiez-le sur <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">Précisez votre recherche</translation>
 <translation id="5457226814769348910">Ouvrir la version hors connexion</translation>
@@ -1522,6 +1528,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6253686838150111720">Connectez-vous à <ph name="URL" /></translation>
 <translation id="6254066287920239840">Ouvrir les liens dans l'application et non dans le navigateur.</translation>
 <translation id="6259928806013786178">Échec du mode Lecture</translation>
+<translation id="626335165106398104">Gemini fonctionne avec d'autres services</translation>
 <translation id="6268773951964630964">Rechercher l'image copiée</translation>
 <translation id="6271462272606946663">Masquer "Demander le site mobile"</translation>
 <translation id="6271824294945464304">Partage des mots de passe…</translation>
@@ -1637,6 +1644,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6609890790934458793">Les mots de passe pour <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et <ph name="THIRD_WEBSITE" /> seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="661266467055912436">Renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6612912757320004438">Autoriser les notifications des onglets…</translation>
+<translation id="6613372200395638275">Pour vous fournir une aide personnalisée, Gemini partage certaines de vos données (comme des extraits de vos discussions, votre position et d'autres informations utiles) avec d'autres services Google, comme Maps et Vols. Ces services pourront utiliser ces informations pour s'améliorer, même si vous supprimez par la suite votre activité dans les applications Gemini. Pour en savoir plus, consultez le <ph name="BEGIN_LINK" />Guide sur la confidentialité dans les applications Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">Effacer le texte</translation>
 <translation id="6619015782482868078">Thème Aqua</translation>
 <translation id="6620279676667515405">Annuler</translation>
@@ -1712,6 +1720,9 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6858718102216837409">Ajouter une langue…</translation>
 <translation id="6858855187367714033">Scanné</translation>
 <translation id="6859944681507688231">Pour scanner un QR code ou une carte de crédit, activez l'appareil photo dans Réglages.</translation>
+<translation id="6862212368460840758">Vous êtes connecté en tant que <ph name="SIGNED_EMAIL" />.
+
+Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL" />. Vous pourrez accéder aux mots de passe, aux favoris et à d'autres données de ce compte.</translation>
 <translation id="6867369562105931222">mot de passe</translation>
 <translation id="6867400383614725881">Nouvel onglet de navigation privée</translation>
 <translation id="686831807558000905">Ne pas se connecter</translation>
@@ -1780,6 +1791,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7091023926159231962">{count,plural, =1{Impossible d'importer {count} mot de passe}one{Impossible d'importer {count} mot de passe}other{Impossible d'importer {count} mots de passe}}</translation>
 <translation id="7095110968493193530">Dans le Gestionnaire de mots de passe de Google pour <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">Dans la barre d'adresse, appuyez sur l'historique des prix pour voir les changements de prix au fil du temps</translation>
+<translation id="7098554251807199977">Vos conversations avec Gemini et vos <ph name="BEGIN_LINK" />données Google Workspace<ph name="END_LINK" /> ne seront pas examinées ni utilisées pour améliorer les modèles d'IA générative.</translation>
 <translation id="7102005569666697658">Téléchargement… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Réglages → Modes de paiement</translation>
 <translation id="7108338896283013870">Masquer</translation>
@@ -2173,6 +2185,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8439758443371991593">Masquer "Ajouter à la liste de lecture"</translation>
 <translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
+<translation id="8461708300275916315">Si vous avez moins de 18 ans</translation>
 <translation id="8473815223723723001">Modifier l'image avec Gemini</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
@@ -2234,6 +2247,8 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8636825310635137004">Activez la synchronisation pour accéder à vos onglets sur vos autres appareils.</translation>
 <translation id="8637431369725868556">Protégez-vous contre les sites dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
+<translation id="8639963783467694461">Paramètres de saisie automatique</translation>
+<translation id="8642417828095157370">Les onglets sont partagés pour fournir des réponses plus adaptées</translation>
 <translation id="8643403533759285912">Supprimer le groupe</translation>
 <translation id="8647280737650867362">Impossible de désactiver le suivi du prix.</translation>
 <translation id="8654802032646794042">Annuler</translation>
@@ -2247,6 +2262,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8672733398999596205">Tout activer</translation>
 <translation id="8674716540979958118">Vous avez des mots de passe compromis.</translation>
 <translation id="8679900250380464358">Ajouter à la liste de lecture</translation>
+<translation id="8680643216091361291">Le paramètre <ph name="BEGIN_LINK" />Conserver l'activité<ph name="END_LINK" /> est désactivé par défaut. Lorsqu'il est désactivé, Google enregistre vos discussions pendant trois jours. Il les utilise pour assurer le bon fonctionnement des applications Gemini, contribuer à les sécuriser et résoudre les problèmes grâce à vos commentaires. Vous pouvez activer "Conserver l'activité" pour contribuer à améliorer l'IA de Google pour tous les utilisateurs.</translation>
 <translation id="8680786875305615692">Contribuer à renforcer la sécurité sur le Web pour tous</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
 <translation id="8690752723634292147">Confirmer la suppression</translation>
@@ -2396,6 +2412,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="9162432979321511934">Activez "Préremplir les mots de passe"</translation>
 <translation id="9165320910061267720">Pour recevoir des alertes en cas de baisse de prix, vous devez activer les notifications dans les paramètres iOS.</translation>
 <translation id="9179151630575358778">Masque cet élément</translation>
+<translation id="9183563643084679152">Vous avez scanné un QR code pour vous connecter à Chrome. Vous pourrez accéder aux mots de passe, aux favoris et à d'autres données de ce compte.</translation>
 <translation id="9183733013282108610">Recherche en navigation privée</translation>
 <translation id="9186762474139509529">Démarrer la journalisation</translation>
 <translation id="9191031968346938109">Ajouter à…</translation>

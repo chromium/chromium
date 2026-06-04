@@ -38,9 +38,11 @@
 <translation id="109647177154844434">‏Parallels ڈیسک ٹاپ کو اَن انسٹال کرنے سے آپ کی Windows کی تصویر حذف ہو جائے گی۔ اس میں اس کی ایپلیکیشنز، ترتیبات اور ڈیٹا شامل ہیں۔ کیا آپ واقعی جاری رکھنا چاہتے ہیں؟</translation>
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
+<translation id="1107300737351978027">اعادی ہندسوں پر مشتمل نہیں ہو سکتا</translation>
 <translation id="1111021433905331574">آپ ترتیبات میں اپنے کی بورڈ کی بیک لائٹ کا رنگ تبدیل کر سکتے ہیں &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">موبائل ڈیٹا کو ٹوگل کریں۔ <ph name="STATE" />۔</translation>
 <translation id="1118738876271697201">سسٹم آلہ کے ماڈل یا نمبر شمار کا تعین کرنے میں ناکام ہو گیا۔</translation>
+<translation id="1119447706177454957">داخلی خرابی</translation>
 <translation id="1122849163460178706">کوشش کرنے کیلئے چند چیزیں</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
 <translation id="1129383337808748948"><ph name="CONTENT_TITLE" /> کو ریفریش کریں</translation>
@@ -96,6 +98,7 @@
 <translation id="1247519845643687288">حالیہ ایپس</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> سے چارج ہو رہا ہے</translation>
 <translation id="126156426083987769">ڈیمو موڈ میں آلہ کے لائسنسز سے متعلق ایک مسئلہ پیش آگیا۔</translation>
+<translation id="1264337193001759725">‏نیٹ ورک UI لاگز کا ملاحظہ کرنے کیلئے، دیکھیں: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
 <translation id="1270290102613614947">آن اسکرین کی بورڈ غیر فعال کر دیا گیا</translation>
 <translation id="1272079795634619415">روکیں</translation>
@@ -105,6 +108,7 @@
 <translation id="1276975447697633661">فائل منتخب کریں پھر <ph name="KEY" /> دبائیں</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> اَن انسٹال نہیں ہو سکی</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1283126956823499975">آلے کو سیٹ اپ کرنے کے ساتھ کچھ غلط ہو گیا</translation>
 <translation id="1285992161347843613">فون کا پتہ لگائیں</translation>
 <translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> نام کا ایک محفوظ کردہ ڈیسک پہلے سے موجود ہے</translation>
 <translation id="1288276784862223576">اپنے فون کی حالیہ تصاویر اور میڈیا دیکھنے کو سیٹ اپ کریں</translation>
@@ -228,6 +232,7 @@
 <translation id="1604857178818051494">میڈیا موقوف کریں</translation>
 <translation id="1607312127821884567">اپنے فون کی ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="1610778689852195798">"کالعدم کریں"</translation>
+<translation id="1611432201750675208">آپ کا آلہ مقفل ہے</translation>
 <translation id="1611993646327628135">آن</translation>
 <translation id="1612679292338846734">‏جب آپ ان خصوصیات کو آن کرتے ہیں تو ان پٹ ٹیکسٹ، دستاویز کا مواد اور ویب صفحہ کا URL ‏Google AI سرورز کو بھیجا جا سکتا ہے۔ اس معلومات کا استعمال لکھنے سے متعلق تجویز تیار کرنے، خلاصے تیار کرنے، سوالات کے جوابات دینے اور پروڈکٹ کو بہتر بنانے کے لیے کیا جاتا ہے، جو کہ <ph name="LINK_TO_SERVICE_TERMS" /> کے ساتھ مشروط ہے۔ کوئی بھی ذاتی، حساس یا رازدارانہ چیز شامل نہ کریں۔</translation>
 <translation id="1619879934359211038">‏Google Play سے منسلک نہیں ہو سکا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
@@ -241,6 +246,7 @@
 <translation id="1647986356840967552">گزشتہ صفحہ</translation>
 <translation id="1651914502370159744">سرگزشت کا صفحہ کھولیں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
+<translation id="1668979692599483141">تجاویز کے بارے میں جانیں</translation>
 <translation id="1673232940951031776">فوکس ختم کریں۔ <ph name="REMAINING_TIME" /> باقی ہے۔</translation>
 <translation id="1675570947608765064">دوسرے وہ تبدیلیاں دیکھ سکتے ہیں جو آپ اس ٹاسک میں کرتے ہیں</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
@@ -354,6 +360,7 @@
 <translation id="2011174342667534258">‏SDK ورژن:</translation>
 <translation id="2017998995161831444">دریافت ایپ میں 'مدد' کھولیں</translation>
 <translation id="2021864487439853900">غیر مقفل کرنے کے لیے کلک کریں</translation>
+<translation id="2023167225947895179">‏ممکن ہے کہ PIN کا آسان سے اندازہ لگایا جا سکتا ہو</translation>
 <translation id="2034971124472263449">بہرحال محفوظ کریں</translation>
 <translation id="2041220428661959602">بیٹری لیول: <ph name="BATTERY_PERCENTAGE" /> فیصد</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> کا شارٹ کٹ فی الحال آف ہے</translation>
@@ -433,6 +440,7 @@
 <translation id="2326112202058075478">مزید ایموجیز دکھائیں</translation>
 <translation id="2328561734797404498"><ph name="APP_NAME" /> کو استعمال کرنے کے لیے براہ کرم اپنا آلہ ری سٹارٹ کریں۔</translation>
 <translation id="2335091074961603075">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے اندرونی مائیکروفون استعمال کریں۔</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{‏‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آج آپ Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}other{‏‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}}</translation>
 <translation id="2336381494582898602">پاور واش</translation>
 <translation id="2339073806695260576">ایک نوٹ، اسکرین شاٹ لینے، لیزر پوائنٹر یا میگنیفائنگ گلاس استعمال کرنے کے لیے شیلف پر اسٹائلس بٹن تھپتھپائیں۔</translation>
 <translation id="2341729377289034582">عمودی پر مقفل ہے</translation>
@@ -561,6 +569,7 @@
 <translation id="2687510499067466116">کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے</translation>
 <translation id="2689613560355655046">ڈیسک 8</translation>
 <translation id="2692092709110488417">فوکس کرنے اور منتخب کردہ علاقے کو منتقل کرنے کے لیے ٹیب دبائیں</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{‫<ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کرنے کا آخری دن}other{‫{NUM_DAYS} دنوں کے اندر <ph name="DEVICE_TYPE" /> اپ ڈیٹ کریں}}</translation>
 <translation id="2695305337569143674">ویب</translation>
 <translation id="2697697418792422688">کی بورڈ کی ترتیبات دکھائیں۔ <ph name="KEYBOARD_NAME" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="2699913284398121653">اپنے اسکول کے اکاؤنٹ ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کیلئے، مواد کی منتقلی ایپ کا استعمال کریں</translation>
@@ -787,6 +796,7 @@
 <translation id="334927402682780278">کرسر سے لائن کے آخر تک ٹیکسٹ منتخب کریں</translation>
 <translation id="3349345708646875009">ٹاسک مینیجر کھولیں</translation>
 <translation id="3353786022389205125">سلیپ وضع سے بیدار وضع میں جاتے وقت "مقفل اسکرین دکھائیں" آن کریں اور دوبارہ کوشش کریں</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{‫<ph name="DEVICE_TYPE" /> 1 ہفتہ کے اندر اپ ڈیٹ کریں}other{‫<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر اپ ڈیٹ کریں}}</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
 <translation id="3365281428003534650">ٹائمر، ٹاسک اور موسیقی سیٹ کریں</translation>
 <translation id="3365977133351922112">آپ کا فون بہت دور ہے۔ اپنے فون کو قریب لائیں۔</translation>
@@ -946,6 +956,7 @@
 <translation id="3741482431277446954">ماؤس کا دایاں بٹن</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
 <translation id="3743775386021959186">فوکس آن ہے، <ph name="REMAINING_TIME" /> باقی ہے</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ لیں اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کریں۔}other{‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ ليں اور آخری تاریخ سے پہلے اس <ph name="DEVICE_TYPE" /> کو واپس کریں۔}}</translation>
 <translation id="3750403286520637847">موسم کی تجویز چھپائیں</translation>
 <translation id="3752253558646317685">فنگر پرنٹ کو بچانے کے لیے اپنے بچے سے کہیں کہ انگلی اٹھاتا رہے</translation>
 <translation id="3755239467337474637">‏<ph name="BEGIN_PARAGRAPH1" />ایپ کا ڈیٹا رابطے، پیغامات اور تصاویر سمیت کوئی بھی ایسا ڈیٹا ہو سکتا ہے جسے کسی ایپ نے (ڈویلپر کی ترتیبات کی بنیاد پر) محفوظ کیا ہو۔<ph name="END_PARAGRAPH1" />
@@ -1059,6 +1070,7 @@
 <translation id="4099874310852108874">نیٹ ورک کی خرابی پیش آگئی۔</translation>
 <translation id="4101772068965291327">ہوم صفحہ کھولیں</translation>
 <translation id="4102906002417106771">پاور واش کے لیے ری سٹارٹ کریں</translation>
+<translation id="411052834366185695">کم از کم 1 ہندسہ ہونا چاہیے</translation>
 <translation id="4113030288477039509">آپ کے منتظم کے زیر انتظام</translation>
 <translation id="4114315158543974537">‏Phone Hub آن کریں</translation>
 <translation id="4115378294792113321">میجنٹا</translation>
@@ -1069,6 +1081,9 @@
 <translation id="412298498316631026">ونڈو</translation>
 <translation id="4123259114412175274">‏اپنے Chromebook کو غیر مقفل کرنے کے لے یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے</translation>
 <translation id="4123868835475902435">وہ بنیادی باتیں تھیں! تجاویز اور مدد کے لیے ہماری پہلے سے شامل ایپ دریافت میں جاری رکھیں۔ آپ کو شروع کرنے کے لیے تجاویز، خصوصی پیشکشیں اور <ph name="PRODUCT_NAME" /> کی جدید ترین خصوصیات ملیں گی۔</translation>
+<translation id="4124779003103520737">{0,plural, =1{آپ کا <ph name="DEVICE_TYPE" /> # سیکنڈ میں خودکار طور پر مقفل ہو جائے گا۔
+        ‫<ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}other{آپ کا <ph name="DEVICE_TYPE" /> # سیکنڈ میں خودکار طور پر مقفل ہو جائے گا۔
+        ‫<ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}}</translation>
 <translation id="4125970834901680537">ٹیبلیٹ وضع میں ایپس کی سلسلہ بندی نہیں کی جا سکتی۔ لیپ ٹاپ وضع میں دوبارہ کوشش کریں۔</translation>
 <translation id="4131973331381812765">‏درجہ حرارت: ‎°C<ph name="TEMPERATURE" /> - موجودہ رفتار: GHz<ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /></translation>
 <translation id="4136724716305260864">طلوع آفتاب تک آن کریں</translation>
@@ -1274,6 +1289,7 @@
 <translation id="4659419629803378708">‏ChromeVox فعال ہے</translation>
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
+<translation id="4668936527507421457">‏‫PIN میں صرف نمبرز ہونے چاہئیں</translation>
 <translation id="4672539464599646374">بیٹری سیور کو آن کیا گیا</translation>
 <translation id="4673427585974421255">آن رکھیں</translation>
 <translation id="4677040906536311086">Google Sheet</translation>
@@ -1304,6 +1320,7 @@
 <translation id="4762573482154983647">ایپس چھپائیں</translation>
 <translation id="4762718786438001384">آلہ کے ڈسک کی جگہ انتہائی کم ہے</translation>
 <translation id="4763885921995354846">اس سے کیمرے کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے کیمرے تک رسائی کی اجازت ملتی ہے۔ آپ کو ویب صفحہ کو ریفریش کرنے یا ایپ کو دوبارہ شروع کرنے کی ضرورت پڑ سکتی ہے۔</translation>
+<translation id="4769359569327438364">کم از کم 4 ہندسوں کا ہونا ضروری ہے</translation>
 <translation id="4774338217796918551">کل <ph name="COME_BACK_TIME" /> پر پھر استعمال کریں۔</translation>
 <translation id="4776584068981882959">آپ کے پاس ورڈ کی اب بھی تصدیق نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> کیلئے پاس ورڈ</translation>
@@ -1358,6 +1375,7 @@
 <translation id="4925542575807923399">اس اکاؤنٹ کے منتظم کا تقاضہ ہے کہ یہ اکاؤنٹ متعدد سائن سیشن میں پہلا سائن ان کردہ اکاؤنٹ ہو۔</translation>
 <translation id="493076006037866439">اسکرین کو زوم آؤٹ کریں</translation>
 <translation id="4932733599132424254">تاریخ</translation>
+<translation id="4934763315031217818">ترتیب والی سیکوئنسز پر مشتمل نہیں ہو سکتا</translation>
 <translation id="4936329710968938986">ہر کوئی، آف</translation>
 <translation id="4937170330762390348">ڈکٹیشن کے ساتھ، آپ اپنی آواز کا استعمال کرتے ہوئے ٹائپ کر سکتے ہیں۔ جب آپ ٹیکسٹ فیلڈ پر ہوں تو ڈکٹیشن کلید دبائیں یا اسکرین کے نیچے مائیکروفون آئیکن کو منتخب کریں۔ آپ کی ڈکٹیشن زبان <ph name="LANGUAGE" /> پر سیٹ ہے۔ اسپیچ فائلز ڈاؤن لوڈ کی جائیں گی تاکہ آپ ڈکٹیشن آف لائن استعمال کر سکیں۔ آپ ترتیبات &gt; ایکسیسبیلٹی میں کسی بھی وقت ڈکٹیشن کی زبان تبدیل کر سکتے ہیں۔</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
@@ -1374,6 +1392,7 @@
 <translation id="4964188651935955085">جب آپ بلوٹوتھ آف کرتے ہیں، تو یہ بیرونی آلہ آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائے گا:</translation>
 <translation id="4966431234408005599">والیوم بڑھائیں</translation>
 <translation id="496999337731226334">‏<ph name="TOTAL_STEPS" /> میں سے <ph name="STEP" /> ٹؤر قدم۔ Wi-Fi، بلوٹوتھ اور والیوم جیسے اکثر استعمال ہونے والے کنٹرولز فوری ترتیبات میں موجود ہیں۔ آپ اسکرین شاٹس لینے کے لیے یہاں بھی جا سکتے ہیں۔ فوری ترتیبات کو کھولنے کے لیے Alt + Shift + S دبائیں۔</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آج ہی ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گی۔}other{‫<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ آپ کے انٹرنیٹ سے منسلک ہونے پر اپ ڈیٹ خودکار طور پر ڈاؤن لوڈ ہو جائے گی۔}}</translation>
 <translation id="4975771730019223894">ایپ بیجینگ</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
@@ -1437,6 +1456,7 @@
 <translation id="5147567197700016471">غیر مقفل</translation>
 <translation id="5150070631291639005">رازداری کی ترتیبات</translation>
 <translation id="5155897006997040331">پڑھنے کی رفتار</translation>
+<translation id="5158206172605340248">لہجے کے نشانات کا مینیو مسترد کر دیا گیا۔</translation>
 <translation id="5161445389876829235">‏<ph name="BEGIN_PARAGRAPH1" />یہ آپ کے آلہ اور اس کے استعمال کے طریقے کے بارے میں عام معلومات ہیں (جیسے بیٹری کی سطح، سسٹم اور ایپ کی سرگرمی، اور خرابیاں)۔ ‫Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا، اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />اس خصوصیت کو آف کرنے سے سسٹم اپ ڈیٹس اور سیکیورٹی جیسی لازمی سروسز کے لیے درکار معلومات بھیجنے کی آپ کے آلے کی اہلیت متاثر نہیں ہوتی ہے۔<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />مالک ترتیبات &gt; اعلی &gt; Google کو خودکار طور پر ڈائیگناسٹک اور استعمال کا ڈیٹا بھیجیں سے اس خصوصیت کو کنٹرول کر سکتا ہے۔<ph name="END_PARAGRAPH3" />
@@ -1449,6 +1469,7 @@
 <translation id="5176318573511391780">جزوی اسکرین کو ریکارڈ کریں</translation>
 <translation id="5187627942836026988">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ آپ کے منتظم نے ہاٹ اسپاٹ کو مسدود کیا ہوا ہے۔</translation>
 <translation id="5188648870018555788">‏مقام استعمال کریں۔ مقام کی اجازت والی ChromeOS اور Android ایپس، ویب سائٹس اور سروسز کو اپنے آلے کا مقام استعمال کرنے کی اجازت دیں۔ مقام کی درستگی Android ایپس اور سروسز کے لیے مزید درست مقام فراہم کرتی ہے۔ ایسا کرنے کے لیے، Google وقتاً فوقتاً آپ کے آلے سے وائرلیس سگنل کے مقامات کو کراؤڈ سورس کرنے کے لیے آلے کے سینسرز اور وائرلیس سگنلز سے متعلق معلومات پر کارروائی کرتا ہے۔ ان کا استعمال آپ کی شناخت کیے بغیر مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے، ساتھ ہی Google اور فریقین ثالث کی جائز دلچسپیوں پر مبنی Google کی سروسز کو بھی بہتر بنانے، انہیں فراہم کرنے اور ان کو برقرار رکھنے کے لیے کیا جاتا ہے تاکہ صارفین کی ضروریات کو پورا کیا جا سکے۔ <ph name="BEGIN_LINK1" />مقام استعمال کرنے کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{‫<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتے کے اندر واپس کریں}other{‫<ph name="DEVICE_TYPE" /> {NUM_WEEKS} ہفتوں کے اندر واپس کریں}}</translation>
 <translation id="5198039720391525849">‏نمایاں کردہ GIFs</translation>
 <translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹس</translation>
 <translation id="5198715732953550718">نیا فولڈر بنانے کے لیے <ph name="MOVED_APP_NAME" /> کو <ph name="IN_PLACE_APP" /> کے ساتھ جوڑ دیا گیا ہے۔</translation>
@@ -1469,9 +1490,11 @@
 <translation id="5238719049014159442">لانچر کھولیں/بند کریں</translation>
 <translation id="5240725217819182328">انسٹال کردہ ایپس کے اندر مخصوص صفحات یا کارروائیوں تک فوری رسائی</translation>
 <translation id="5243355658487390559">تلاش کی تاریخ</translation>
+<translation id="5243477050423867768">کم از کم 8 ہندسوں کا ہونا چاہیے اور اس میں دہرائی جانے والی یا ترتیب والی سیکوئنسز نہیں ہونی چاہئیں</translation>
 <translation id="5243522832766285132">براہ کرم کچھ دیر میں دوبارہ کوشش کریں</translation>
 <translation id="5245201184978705914">ٹرانسکرپٹ کو تیار نہیں کیا جا سکتا</translation>
 <translation id="5251174953851719648">مواد ریفریش کریں</translation>
+<translation id="5252653240322147470">‏PIN کا <ph name="MAXIMUM" /> ہندسے سے کم ہونا ضروری ہے</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
 <translation id="52550593576409946">کیوسک ایپلیکیشن کو شروع نہیں کیا جا سکا۔</translation>
 <translation id="5256939106029293271">اپنے مائیک کا ٹیسٹ کریں</translation>
@@ -1510,6 +1533,7 @@
 <translation id="5329548388331921293">منسلک ہو رہا ہے…</translation>
 <translation id="5331975486040154427">‏USB-C آلہ (بائیں طرف کا پچھلا پورٹ)</translation>
 <translation id="533282197239610265">‏cast آلات دکھائیں</translation>
+<translation id="5342091991439452114">‏PIN کا کم از کم <ph name="MINIMUM" /> ہندسے کا ہونا ضروری ہے</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (دائیں)</translation>
 <translation id="5352250171825660495">گہری تھیم آن ہے</translation>
 <translation id="5354804064646502504">اس کے نتیجے میں ڈیٹا چارجز لگ سکتے ہیں۔
@@ -1738,6 +1762,7 @@
 <translation id="602001110135236999">بائیں اسکرول کریں</translation>
 <translation id="6020147141355393792">اپنے فون کی اطلاعات اور ایپس دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="6022924867608035986">تلاش کے خانے کا ٹیکسٹ صاف کریں</translation>
+<translation id="6023643151125006053">‏اس آلہ (SN: <ph name="SERIAL_NUMBER" />‎) کو <ph name="SAML_DOMAIN" /> منتظم نے مقفل کیا تھا۔</translation>
 <translation id="602472752137106327">تمام ڈیسکس سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="6024768346262692989">فیس کنٹرول فائلز ڈاؤن لوڈ نہیں ہو سکیں</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
@@ -1745,6 +1770,7 @@
 <translation id="6030495522958826102">مینیو کو اسکرین کو نچلے بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="6030608926359652298">اپنے ٹچ پیڈ کو حسب ضرورت بنائیں</translation>
 <translation id="6032620807120418574">فُل اسکرین ریکارڈ کرنے کے لیے کہیں بھی کلک کریں</translation>
+<translation id="603539183851330738">خودکار تصحیح بٹن کو کالعدم کریں۔ <ph name="TYPED_WORD" /> پر لوٹائیں۔  فعال کرنے کے لیے اینٹر، برخاست کرنے کے لیے ایسکیپ دبائیں۔</translation>
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6042308850641462728">مزید</translation>
 <translation id="6043212731627905357">یہ مانیٹر آپ کے <ph name="DEVICE_TYPE" /> کے ساتھ ٹھیک طرح سے کام نہیں کر رہا (مانیٹر تعاون یافتہ نہیں ہے)۔</translation>
@@ -1761,6 +1787,9 @@
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="6068258534237496331">ویڈیو کال کنٹرولز</translation>
+<translation id="6070081109266557120">{0,plural, =1{آپ خودکار طور پر # سیکنڈ میں سائن آؤٹ ہو جائیں گے۔
+        ‫<ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}other{آپ خودکار طور پر # سیکنڈ میں سائن آؤٹ ہو جائیں گے۔
+        ‫<ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔}}</translation>
 <translation id="6071576563962215370">سسٹم آلہ کے انسٹالیشن کے وقت کے انتسابات کا لاک تشکیل دینے میں ناکام ہوگیا۔</translation>
 <translation id="6072442788591997866">اس آلہ پر <ph name="APP_NAME" /> کی اجازت نہیں ہے۔ اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
@@ -1880,6 +1909,7 @@
 <translation id="6418511932144861495">اہم اپ ڈیٹ انسٹال کریں</translation>
 <translation id="641867537956679916">آپ کے منتظم نے کسی مسئلے کو دیکھنے کے لیے لاگ ان کیا ہے۔ منتظم کے آپ کو کنٹرول واپس دینے کے بعد آپ آلے کا استعمال جاری رکھ سکتے ہیں۔</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="642469772702851743">‏اس آلہ (SN: <ph name="SERIAL_NUMBER" />‎) کو مالک نے مقفل کیا تھا۔</translation>
 <translation id="642644398083277086">تمام اطلاعات صاف کریں</translation>
 <translation id="6426905245930183644">تخلیق ہو رہی ہے…</translation>
 <translation id="6430225033895752525">فوکس کی ترتیبات دکھائیں</translation>
@@ -1905,6 +1935,7 @@
 <translation id="6485086611007560630">موسم (دستیاب نہیں ہے)</translation>
 <translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
 <translation id="6491376743066338510">اجازت دہندگی ناکام ہو گئی</translation>
+<translation id="6494483173119160146">آلے میں ایک ناقابل بازیابی کی خرابی پیش آگئی۔ براہ کرم اپنا آلہ ری سیٹ کریں (اس سے صارف کا تمام ڈیٹا مٹ جائے گا) اور دوبارہ کوشش کریں۔</translation>
 <translation id="649452524636452238">‏اسمارٹ کارڈ PIN</translation>
 <translation id="6495322433318104734">اسکرین سیور ڈسپلے کر رہا ہے، باہر نکلنے کے لیے کسی بھی کلید کو دبائیں</translation>
 <translation id="6495400115277918834">‏تصویر میں تصویر شروع ہو گئی ہے، فوکس کرنے کے لیے Alt+Shift+V دبائیں</translation>
@@ -1927,6 +1958,7 @@
 <translation id="6555373427270923730">ایڈریس بار میں ایک ویب پتہ ٹائپ کریں، پھر <ph name="MODIFIER" /><ph name="KEY" /> دبائیں</translation>
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
 <translation id="6559158502366839560">مزید ایپس اور گیمز دریافت کریں</translation>
+<translation id="6560151649238390891">تجویز داخل کر دی گئی</translation>
 <translation id="6562447480759345110">فوکس ختم کریں</translation>
 <translation id="6565007273808762236">‏eSIM کنکشن دستیاب نہیں ہے</translation>
 <translation id="6570831796530454248">{0,plural, =1{ایک گھنٹے کے اندر آلہ اپ ڈیٹ کریں}other{# گھنٹے کے اندر آلہ اپ ڈیٹ کریں}}</translation>
@@ -1948,6 +1980,7 @@
 <translation id="6612889377159412215">ذیلی ٹاسک</translation>
 <translation id="6613765291890844037"><ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج استعمال میں ہے | کل <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">رازداری کی اسکرین آن ہے</translation>
+<translation id="6622212269189717101">کم از کم 6 ہندسوں کا ہونا چاہیے اور اس میں دہرائی جانے والی یا ترتیب والی سیکوئنسز نہیں ہونی چاہئیں</translation>
 <translation id="6622679827379792051">اپنے فون کی ایپس دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="662279009180869175">اسپلٹ اسکرین کا سائز تبدیل کرنے کیلئے، بائیں اور دائیں تیر کے نشانات والی کلیدوں کا استعمال کریں</translation>
 <translation id="6624493541160101248">موجودہ ڈیسک: <ph name="DESK_NAME" />۔ <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
@@ -2105,6 +2138,8 @@
 <translation id="7076878155205969899">آواز خاموش کریں</translation>
 <translation id="7083848064787091821">فوکس کریں</translation>
 <translation id="7084678090004350185">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، <ph name="DEVICECOUNT" /> آلات منسلک ہیں۔</translation>
+<translation id="7086438436964931440">اب آپ خودکار طور پر سائن آؤٹ ہو جائیں گے۔
+        ‫<ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔</translation>
 <translation id="7086931198345821656">اس اپ ڈیٹ کے لیے آپ کے <ph name="DEVICE_TYPE" /> کی پاور واشنگ درکار ہے۔ تمام ڈیٹا حذف کر دیا جائے گا۔ تازہ ترین <ph name="SYSTEM_APP_NAME" /> اپ ڈیٹ کے بارے میں مزید جانیں۔</translation>
 <translation id="7088960765736518739">سوئچ رسائی</translation>
 <translation id="709015856939120012">صفحہ پر زوم ان کریں</translation>
@@ -2141,6 +2176,7 @@
 <translation id="7228968829656641943">میری اسکرین پر تلاش کرنے کے لیے منتخب کریں۔ کی بورڈ نیویگیشن کے لیے ٹیب پھر اسپیس دبائیں۔</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
 <translation id="7234010996000898150">‏Linux کی بحالی کا عمل منسوخ ہو رہا ہے</translation>
+<translation id="7238609589076576185">لہجہ کا نشان داخل کر دیا گیا۔</translation>
 <translation id="7239814253344511868">ماؤس کے دونوں بٹنز</translation>
 <translation id="7240636904654154599">‏نئی Google Sheet تخلیق کی گئی</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% بیٹری باقی ہے۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
@@ -2222,6 +2258,7 @@
 <translation id="7489261257412536105">فُل اسکرین میں داخل ہوں یا اس سے باہر نکلیں</translation>
 <translation id="7490157877815329797">‏اشتہارات سے پاک موسیقی سننے اور ذاتی نوعیت کی فوکس والی موسیقی سے لطف اندوز ہونے کے لیے، YouTube Music Premium آزمائیں</translation>
 <translation id="7490360161041035804">‏آپ اہم فائز کو پن کر سکتے ہیں، بشمول Google Drive فائلز۔ پن کرنے کے لیے، کسی آئٹم پر گھمائیں یا فائلز کھولیں اور کسی آئٹم پر دائیں کلک کریں۔</translation>
+<translation id="7491962110804786152">ٹیب</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
 <translation id="7507162824403726948">اپنی شناخت کی تصدیق مکمل کریں</translation>
 <translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
@@ -2458,6 +2495,7 @@
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> کو شروع ہوگا</translation>
 <translation id="8092380135549145188">اسکرول کنٹرولز</translation>
+<translation id="80974698889265265">‏PINs مماثل نہیں ہیں</translation>
 <translation id="810637681351706236">ایپ کا پن شیلف سے ہٹائیں</translation>
 <translation id="8107015733319732394">‏آپ کے <ph name="DEVICE_TYPE" /> پر Google Play اسٹور انسٹال کیا جا رہا ہے۔ اس میں کچھ منٹ کا وقت لگ سکتا ہے۔</translation>
 <translation id="8113515504791187892">سننے کیلئے منتخب کریں بٹن</translation>
@@ -2485,10 +2523,12 @@
 <translation id="8168435359814927499">مواد</translation>
 <translation id="8169177848833352618">‏بدقسمتی سے، یہ مشین Bruschetta کو انسٹال کرنے سے تقاضوں کو پورا نہیں کرتی ہے۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="8172370561760918656">اوپری بائیں ہینڈل کو منتخب کیا گیا، منتقل کرنے کے لیے تیر والی کلیدوں کا استعمال کریں</translation>
+<translation id="8179976553408161302">انٹر</translation>
 <translation id="81817143961839203">تصویر داخل نہیں ہو سکی</translation>
 <translation id="8182105986296479640">ایپلیکیشن جواب نہیں دے رہی ہے۔</translation>
 <translation id="8182412589359523143">اس <ph name="DEVICE_TYPE" /> کا تمام ڈیٹا حذف کرنے کے لئے، <ph name="BEGIN_LINK" />یہاں کلک کریں<ph name="END_LINK" />۔</translation>
 <translation id="8185090165691050712">قفل موڈ کا سائز تبدیل کرنے کے لیے مینیو کو آن/آف کریں</translation>
+<translation id="8186047833733689201">ایکسینٹ نشانات کا مینو کھلا ہے۔ نیویگیٹ کرنے کیلئے بائیں، دائیں یا نمبر کی کلیدیں دبائیں اور داخل کرنے کیلئے انٹر دبائیں۔</translation>
 <translation id="8192727139462702395">جب آپ بلوٹوتھ کو آف کرتے ہیں، تو یہ بیرونی آلات آپ کے <ph name="DEVICE_TYPE" /> سے غیر منسلک ہو جائیں گے:</translation>
 <translation id="8198456017687137612">کاسٹنگ ٹیب</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
@@ -2502,17 +2542,20 @@
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> شامل کریں</translation>
 <translation id="8228175756124063692">یہ تجویز چھپائیں</translation>
 <translation id="8230305195727960608">رنگوں کی تقلیب کی وضع</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{فوری طور پر واپسی درکار ہے}other{‫<ph name="DEVICE_TYPE" /> {NUM_DAYS} دن کے اندر واپس کریں}}</translation>
 <translation id="8236042855478648955">وقفے کا وقت ہو گیا</translation>
 <translation id="8237964652943995219">اگلا ڈیسک: <ph name="DESK_NAME" /> <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
 <translation id="8238817965863339552">اپنے <ph name="PRODUCT_NAME" /> کے استعمال کا طریقہ جاننے کے لیے مختصر ٹؤر لیں۔ آگے بڑھے اور 5 اقدام مکمل کریں۔</translation>
 <translation id="8239034820133090126">دائیں ڈیسک کی طرف فعال کریں</translation>
 <translation id="8241650983304689286">نئے اسپلٹ ویو میں ٹیب شامل کریں</translation>
+<translation id="8244201515061746038">‏خودکار تصحیح کے بارے میں مزید جانیں بٹن خودکار تصحیح کی ترتیبات کے صفحہ پر جائیں۔ فعال کرنے کے لیے Enter، برخاست کرنے کے لیے Escape دبائیں۔</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، فون کی بیٹری <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">‏OEM فولڈر</translation>
 <translation id="825129991941217170">‏‫Google Drive کا تمام مواد دکھائیں</translation>
 <translation id="8261506727792406068">حذف کریں</translation>
 <translation id="8261625296061301062">سکینر سافٹ ویئر انسٹال ہو گیا</translation>
 <translation id="8262312463845990408">پلے بیک ٹوگل کریں</translation>
+<translation id="8266751606569906450">کم از کم <ph name="MINIMUM" /> حروف ہونے چاہئیں</translation>
 <translation id="8268302343625273732">‏‫Google کلاس روم میں تمام اسائنمنٹس دیکھیں</translation>
 <translation id="8277261673056602147">اپنی اسکرین پر ٹیکسٹ کو نمایاں کریں</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
@@ -2548,6 +2591,7 @@
 <translation id="8388750414311082622">آخری ڈیسک ہٹایا نہیں جا سکا۔</translation>
 <translation id="8390392581097975659">سکینر سافٹ ویئر انسٹال ہو رہا ہے</translation>
 <translation id="8394567579869570560">آپ کے والد/والدہ نے اس آلے کو مقفل کر دیا</translation>
+<translation id="839949601275221554">آلے میں ایک خرابی پیش آگئی۔ براہ کرم اپنا آلہ ری اسٹارٹ کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="8401850874595457088">زبان مینیو درج کریں</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">ڈسپلے کی ترتیبات دکھائیں</translation>
@@ -2674,6 +2718,8 @@
 <translation id="8756799553341497810">اس منظر سے باہر نکلنے کے بعد آپ اپنے ایپ لے آؤٹ کو حسب ضرورت بنانا شروع کر سکتے ہیں۔</translation>
 <translation id="8759408218731716181">متعدد سائن ان ترتیب نہیں دے سکتے</translation>
 <translation id="8759753423332885148">مزید جانیں۔</translation>
+<translation id="8760172428247796445">آپ کے <ph name="DEVICE_TYPE" /> کو ابھی مقفل کر دیا جائے گا۔
+        ‫<ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔</translation>
 <translation id="8763883995157866248">آلہ کو سلیپ وضع میں بھیجیں</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، انسٹال کردہ ایپ، مسدود ہے</translation>
 <translation id="8782565991310229362">کیوسک ایپلیکیشن کی شروعات منسوخ ہو گئی۔</translation>
@@ -2707,6 +2753,7 @@
 <translation id="8858369206579825206">رازداری سے متعلق کنٹرولز</translation>
 <translation id="8859402192569844210">سروس کی شرائط لوڈ نہیں ہو سکیں</translation>
 <translation id="8860366331836346216">‏eSIM شامل کریں</translation>
+<translation id="8864458770072227512"><ph name="EMAIL" /> کو اس اکاؤنٹ سے ہٹا دیا گیا</translation>
 <translation id="8869149849311827122">کیا آپ واقعی ماؤس کرسر کنٹرول کو آف کرنا چاہتے ہیں؟</translation>
 <translation id="8870509716567206129">ایپ اسپلٹ اسکرین کو سپورٹ نہیں کرتی ہے۔</translation>
 <translation id="8871551568777368300">منتظم کی جانب سے پن کردہ</translation>
@@ -2843,6 +2890,7 @@
 <translation id="956452277966142925">گیم ڈیش بورڈ کی ترتیبات</translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> کے <ph name="RESULT_COUNT" /> نتائج دکھائے جا رہے ہیں</translation>
+<translation id="976499800099896273">خودکار تصحیح کو کالعدم کرنے کا ڈائیلاگ <ph name="TYPED_WORD" /> کے لیے دکھایا گیا ہے جسے درست کر کے <ph name="CORRECTED_WORD" /> کیا گيا ہے۔  رسائی حاصل کرنے کے لیے اوپر تیر کا نشان دبائیں، نظر انداز کرنے کے لئے ایسکیپ دبائیں۔</translation>
 <translation id="97905529126098460">منسوخی کا عمل مکمل ہونے کے بعد یہ ونڈو بند ہو جائے گی۔</translation>
 <translation id="981011780479609956">کوئی آخری تاریخ متعین نہیں ہے</translation>
 <translation id="981121421437150478">آف لائن</translation>

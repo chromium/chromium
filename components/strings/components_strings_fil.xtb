@@ -149,6 +149,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1227224963052638717">Hindi kilalang patakaran</translation>
 <translation id="1227677022489889280">Magbigay ng dahilan para sa paglipat (nire-require)</translation>
 <translation id="1228893227497259893">Maling tagatukoy ng entity</translation>
+<translation id="122989279399348496">Habang naka-sign in ka, makukumpirma ng <ph name="DOMAIN" /> ang <ph name="EMAIL" /> sa mga sinusuportahang site para hindi mo na kailangang tingnan ang iyong inbox</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (awtomatikong na-detect)</translation>
 <translation id="1232569758102978740">Walang pamagat</translation>
 <translation id="1234539281285007945">Nire-require ang <ph name="FIELD_1" /></translation>
@@ -510,6 +511,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, maraming available na pagkilos, pindutin ang Tab para makita ang mga ito</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Mga detalye ng virtual card</translation>
+<translation id="1802420021606590788">Pinoproseso ng Chrome ang mga pamagat ng page at URL sa pribadong space sa cloud</translation>
 <translation id="1803254472779303354">Pinapayagan ang pag-lock ng mouse</translation>
 <translation id="1803351196216024260">Puwedeng hilinging gamitin ang iyong mikropono</translation>
 <translation id="1804258830776932716">I-enable ang Pix sa pamamagitan ng mabilis na pag-link ng account mo</translation>
@@ -873,6 +875,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
 <translation id="2355395290879513365">Maaaring makita ng mga umaatake ang mga larawang tinitingnan mo sa site na ito at lilinlangin ka sa pamamagitan ng pagbago sa mga ito.</translation>
 <translation id="2356941001189392209">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may mga event ng legacy na teknolohiya</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Magse-share ng 1 tab}one{Magse-share ng {NUM_TABS} tab}other{Magse-share ng {NUM_TABS} na tab}}</translation>
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
 <translation id="2359629602545592467">Marami</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
@@ -3027,6 +3030,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5742806904559466333">Mga Bar, Club, at Nightlife</translation>
 <translation id="5743684619253032786">Mga Produkto para sa Pangangalaga ng Kuko</translation>
 <translation id="574392208103952083">Katamtaman</translation>
+<translation id="5745586894920491759">Pinoproseso ng Chrome ang mga pamagat ng page at URL sa cloud</translation>
 <translation id="5745733273847572235">Puwedeng hingin ang iyong lokasyon</translation>
 <translation id="5750869797196646528">Pag-track sa kamay</translation>
 <translation id="5752327398324808817">Maglagay ng ilang salita</translation>
@@ -3421,6 +3425,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Tingnan ang mga log</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall, at Secure na DNS<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Awtomatikong kumpirmahin ang iyong mga email</translation>
 <translation id="6366710531182496394">Dual staple left</translation>
 <translation id="6367196786591004737">I-delete ang entry</translation>
 <translation id="6370022303958842211">Mga pagkilos sa access sa device gaya ng mga pag-log in (kabilang ang mga dahilan ng hindi nagtagumpay na pag-log in), pag-log out, pag-lock, at pag-unlock</translation>
@@ -5061,6 +5066,7 @@ Mga karagdagang detalye:
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Mga suhestyon:<ph name="MARKUP_2" />Tiyaking may koneksyon ka ng data<ph name="MARKUP_3" />Muling i-load ang webpage na ito sa ibang pagkakataon<ph name="MARKUP_4" />Tingnan ang inilagay mong address<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Made-delete ang iyong mga lokal na file sa loob ng <ph name="HOURS" /> (na) oras</translation>
+<translation id="8964904785315870349">Na-verify na Email</translation>
 <translation id="8968766641738584599">I-save ang card</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8971063699422889582">Nag-expire na ang certificate ng server.</translation>

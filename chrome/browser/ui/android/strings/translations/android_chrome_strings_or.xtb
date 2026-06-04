@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">ଆପଣ ଏଠାରେ PDFଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରିପାରିବେ</translation>
 <translation id="107147699690128016">ଯଦି ଆପଣ ଫାଇଲ୍‍ର ଏକ୍ସଟେନ୍‍ସନ୍ ବଦଳାନ୍ତି, ତେବେ ଫାଇଲ୍‍ଟି ଏକ ଭିନ୍ନ ଆପ୍ଲିକେସନ୍‍‍ରେ ଖୋଲିପାରେ ଏବଂ ଆପଣଙ୍କର ଡିଭାଇସ୍ ପାଇଁ ଏକ ସମ୍ଭାବ୍ୟ ବିପଦ ହୋଇପାରେ।</translation>
 <translation id="1073328695547557412">Google Lens ଆଇକନରେ ଟାପ କରନ୍ତୁ</translation>
+<translation id="1080116354587839789">ପ୍ରସ୍ଥ ସହିତ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="1086486568852410168">Google Lens ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1087799850623149508">ଠିକଣା ବାରକୁ ନିମ୍ନକୁ ମୁଭ କରିବା ପାଇଁ ଆପଣ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ</translation>
 <translation id="1089606299949659462">ସମୀକ୍ଷା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> ଟାବ}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> ଟାବ}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଏହାକୁ ସେଭ କରନ୍ତୁ।}other{# ପାସୱାର୍ଡକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯାଏ। ଆପଣଙ୍କର ଅନ୍ୟ ଡିଭାଇସରେ ସେଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଗୁଡ଼ିକୁ ସେଭ କରନ୍ତୁ।}}</translation>
 <translation id="3293181007446299124">ଆପଣଙ୍କ ଡିଭାଇସରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସକୁ ବ୍ୟକ୍ତିଗତ ରଖାଯାଏ ଏବଂ ଆପଣଙ୍କର ପରିଚୟକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ବିଳମ୍ବରେ ରିପୋର୍ଟଗୁଡ଼ିକ ପଠାଯାଏ</translation>
+<translation id="3301639354590628973">ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସ୍ୱିଚ କରିବେ?</translation>
 <translation id="3301936297336370235">ପାସୱାର୍ଡର ପରାମର୍ଶର ସୁନିଶ୍ଚିତକରଣ</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> ଟାବ ଗ୍ରୁପ, <ph name="COLOR_NAME" /> ରଙ୍ଗକୁ ଏକ ନୂଆ ବେକେଗ୍ରାଉଣ୍ଡ ଟାବ ଗ୍ରୁପ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।</translation>
 <translation id="3303855915957856445">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ପିକଚର-ଇନ-ପିକଚର ଟାବ</translation>
 <translation id="3950820424414687140">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="395377504920307820">କୌଣସି ଆକାଉଣ୍ଟ ବିନା ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="3955353672249727801">ପଢ଼ିବା ତାଲିକାରେ ପୃଷ୍ଠା ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{ଯେତେବେଳେ ପ୍ରସ୍ତୁତ ହୋ‍ଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କର ପୃଷ୍ଠା ଲୋଡ୍‌ କରିବ}other{ଯେତେବେଳେ ପ୍ରସ୍ତୁତ ହୋ‍ଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କର ପୃଷ୍ଠା ଲୋଡ୍‌ କରିବ}}</translation>
 <translation id="3969142555815019568">Chrome ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="3969863827134279083">ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>

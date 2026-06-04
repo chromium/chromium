@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium tarvitsee pääsyn Bluetoothiin etsiäkseen
  Bluetooth-laitteita. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Tunnista kieli</translation>
+<translation id="1330742950061766891">Käytä Chromiumin suositeltuja selainasetuksia</translation>
 <translation id="1342274909142618978">Poista data myös Chromiumista (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Kiinnitetty! Voit käyttää kuvahakua jatkossa yläpalkin uudella painikkeella</translation>
 <translation id="1356661055722410047">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">Chromium-tili edellyttää uudelleentodennusta</translation>
 <translation id="5231355151045086930">Kirjaudu ulos Chromiumista</translation>
 <translation id="5234764350956374838">Hylkää</translation>
+<translation id="5249261924633168472">Avaa linkki Chromiumin Inco&amp;gnito-ikkunassa</translation>
 <translation id="5254739261293693943">Kysy tästä videosta</translation>
 <translation id="5276305953263010518">Lataa Chromium-sovellus, niin voit tallentaa salasanoja missä tahansa</translation>
 <translation id="5277894862589591112">Ota muutokset käyttöön käynnistämällä Chromium uudelleen</translation>

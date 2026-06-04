@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> tab ang naigrupo</translation>
 <translation id="1844381456014878100">Pagkalipas ng 7 araw na hindi aktibo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Idagdag ang tab sa listahan ng babasahin}one{Idagdag ang mga tab sa listahan ng babasahin}other{Idagdag ang mga tab sa listahan ng babasahin}}</translation>
 <translation id="1909810060368225529">Paunawa: Nakikita ng lahat ang mga pagbabago sa naka-share na Grupo ng Tab na ito. Makakagawa ang lahat ng mga pagbabago sa iyong mga naka-share na grupo ng tab</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{I-pin ang tab}one{I-pin ang mga tab}other{I-pin ang mga tab}}</translation>
 <translation id="1982637982196732906">Ilipat sa seksyon ng mga hindi aktibong item</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> na icon ng kulay ng grupo ng tab</translation>
 <translation id="311432875115153175">Isinara ang listahan ng grupo ng tab</translation>
+<translation id="3152596030350326139">Ipakita ang mga tab nang pahalang</translation>
+<translation id="31806439105337256">Ipakita ang mga tab nang patayo</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Magdagdag ng <ph name="TABS_COUNT_ONE" /> tab sa grupo}one{Magdagdag ng <ph name="TABS_COUNT_MANY" /> tab sa grupo}other{Magdagdag ng <ph name="TABS_COUNT_MANY" /> na tab sa grupo}}</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>

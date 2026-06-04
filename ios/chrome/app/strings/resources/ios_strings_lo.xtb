@@ -344,6 +344,7 @@
 <translation id="2122754583996902531">ມີການຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">ຊອກຫາຂໍ້ຄວາມທີ່ທ່ານສຳເນົາ</translation>
 <translation id="2147127444698817042">ມີໃຫ້ບໍລິການສະເພາະຢູ່ iPhone ເທົ່ານັ້ນ</translation>
+<translation id="2148326276832455306">ການສົນທະນາຈະໄດ້ຮັບການກວດສອບ ແລະ ນຳໄປໃຊ້ເພື່ອປັບປຸງ Google AI. ທ່ານສາມາດ <ph name="BEGIN_LINK" />ຈັດການການເຄື່ອນໄຫວຂອງທ່ານ<ph name="END_LINK" />, ເຊິ່ງຮວມທັງຂໍ້ມູນກ່ຽວກັບສະຖານທີ່ຂອງທ່ານໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວເລືອກຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງວ່ອງໄວດ້ວຍລະຫັດຜ່ານທີ່ໄດ້ບັນທຶກໄວ້ຂອງທ່ານ.</translation>
 <translation id="2149968176347646218">ການເຊື່ອມຕໍ່ບໍ່ປອດໄພ</translation>
 <translation id="2149973817440762519">ແກ້​ໄຂບຸກມາກສ໌</translation>
@@ -402,6 +403,7 @@
 <translation id="2326302612031521902">ຕົວເລືອກຫົວໜ່ວຍ</translation>
 <translation id="2330607597130465898">ບໍ່ມີການປົກປ້ອງ</translation>
 <translation id="233375395665273385">ລຶບ ແລະ ອອກຈາກລະບົບ</translation>
+<translation id="2340966584724330791">Google ຈະຮວບຮວມການສົນທະນາຂອງທ່ານ ແລະ ສິ່ງທີ່ທ່ານແບ່ງປັນກັບ Gemini (ເຊັ່ນ: ໄຟລ໌, ວິດີໂອ, ໜ້າຈໍ ແລະ ຮູບພາບ). ນອກຈາກນີ້, ຍັງຮວບຮວມຄຳຕິຊົມຂອງທ່ານ, ຂໍ້ມູນຈາກເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງດ້ວຍ Gemini, ການນຳໃຊ້ຜະລິດຕະພັນ ແລະ ຂໍ້ມູນສະຖານທີ່ (ເຊິ່ງຮວມທັງສະຖານທີ່ທົ່ວໄປຂອງອຸປະກອນ, ທີ່ຢູ່ IP ຫຼື ທີ່ຢູ່ເຮືອນ ຫຼື ທີ່ຢູ່ບ່ອນເຮັດວຽກຂອງທ່ານໃນບັນຊີ Google ຂອງທ່ານ).</translation>
 <translation id="2350463587705616331">ສີພື້ນຫຼັງຊີເປຍ</translation>
 <translation id="2351097562818989364">ການ​ຕັ້ງຄ່າ​ແປ​ພາ​ສາ​ຂອງ​ທ່ານ​ໄດ້​ຖືກຕັ້ງໃໝ່​ແລ້ວ.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE} ໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}=2{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE} ແລະ {DOMAIN_TWO} ໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}=3{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE}, {DOMAIN_TWO} ແລະ {OTHER_DOMAINS_COUNT} ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}other{ທ່ານສາມາດບັນທຶກລະຫັດຜ່ານຂອງທ່ານສຳລັບ {DOMAIN_ONE}, {DOMAIN_TWO} ແລະ {OTHER_DOMAINS_COUNT} ອື່ນໆໃນບັນຊີ Google ຂອງທ່ານໄດ້, {EMAIL}.}}</translation>
@@ -414,6 +416,7 @@
 <translation id="2367025302166767427">ເກີດບັນຫາໃນການຕື່ມຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="2371084566192454134">ແຖບ ແລະ ກຸ່ມແຖບ</translation>
 <translation id="2371303771137626249">ໃໝ່</translation>
+<translation id="2375947780110007467">Google ຈະໃຊ້ເນື້ອຫາ ແລະ URL ຂອງແຖບທີ່ແບ່ງປັນ. ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານໃນການສົນທະນາໃໝ່. ທ່ານສາມາດປ່ຽນແປງການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="2381405137052800939">ພື້ນ​ຖານ</translation>
 <translation id="2384692388811649784">ເຊື່ອງແຖບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2386793615875593361">1 ຖືກເລືອກແລ້ວ</translation>
@@ -484,6 +487,7 @@
 <translation id="2640733327287333451">ບໍ່ມີຊື່ຜູ້ໃຊ້ ••••••</translation>
 <translation id="264215785133931186">ຫາກໍກວດສອບຫວ່າງກີ້ນີ້</translation>
 <translation id="2647434099613338025">ເພີ່ມພາສາ</translation>
+<translation id="2648812801228676606">ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="NAME_OR_EMAIL" /> ໄວ້</translation>
 <translation id="2649592894792404568">ທ່ານກຳລັງຈະລຶບຂໍ້ມູນໃນຕົວຈັດການລະຫັດຜ່ານ Google ຂອງທ່ານ</translation>
 <translation id="2652129567809778422">ເລືອກລະຫັດຜ່ານ</translation>
 <translation id="2658056020748144467">ບໍ່ສາມາດເປີດໄຟລ໌ໄດ້</translation>
@@ -657,6 +661,7 @@
 <translation id="3280562213547448728">ຊອກຫາດ້ວຍສຽງ</translation>
 <translation id="3289505634533552500">ຊອກຫາດ້ວຍສຽງ</translation>
 <translation id="3295904109373959849">ຕາຕະລາງຂອງກຸ່ມແຖບ</translation>
+<translation id="3301639354590628973">ສະຫຼັບບັນຊີບໍ?</translation>
 <translation id="3302837541200840455"><ph name="TAB_TITLE" />, ການເຄື່ອນໄຫວໃໝ່</translation>
 <translation id="3305294846493618482">ເພີ່ມເຕີມ</translation>
 <translation id="3311748811247479259">ປິດ</translation>
@@ -934,6 +939,7 @@
 <translation id="4287172530684295552">ໝາຍວ່າອ່ານແລ້ວ</translation>
 <translation id="428768789042547925">ມີຫຍັງໃໝ່</translation>
 <translation id="429074084062258019">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
+<translation id="4294506173142861371">ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="FIRST_NAME" /> ບໍ?</translation>
 <translation id="4300830875340617674">ສະແກນບັດ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="4302061870579014542">ກຳນົດຕຳແໜ່ງ</translation>
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
@@ -1273,6 +1279,7 @@
 <translation id="5444892875087332195">ບຸກມາກ</translation>
 <translation id="5447973833955560753">ລະຫັດຜ່ານສຳລັບການກູ້ຄືນ</translation>
 <translation id="5452354193031718372">ໃຊ້ລະຫັດຜ່ານຍາກ:</translation>
+<translation id="5453088693079603292">ການເຄື່ອນໄຫວທີ່ຮວບຮວມ</translation>
 <translation id="5454211924362324495">ເພື່ອຢຸດຄົນອື່ນບໍ່ໃຫ້ໃຊ້ລະຫັດຜ່ານຂອງທ່ານ, ກະລຸນາ <ph name="BEGIN_LINK" />ປ່ຽນມັນຢູ່ <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
 <translation id="5457082343331641453">ເພີ່ມໃສ່ການຊອກຫາຂອງທ່ານ</translation>
 <translation id="5457226814769348910">ເປີດເວີຊັນອອບລາຍ</translation>
@@ -1522,6 +1529,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6253686838150111720">ເຂົ້າສູ່ລະບົບ <ph name="URL" /></translation>
 <translation id="6254066287920239840">ເປີດລິ້ງຕ່າງໆໃນແອັບແທນໂປຣແກຣມທ່ອງເວັບ.</translation>
 <translation id="6259928806013786178">ເປີດນຳໃຊ້ໂໝດການອ່ານບໍ່ສຳເລັດ</translation>
+<translation id="626335165106398104">Gemini ເຮັດວຽກກັບບໍລິການອື່ນໆ</translation>
 <translation id="6268773951964630964">ຊອກຫາຮູບພາບທີ່ສຳເນົາ</translation>
 <translation id="6271462272606946663">ເຊື່ອງ ຮ້ອງຂໍເວັບໄຊມືຖື</translation>
 <translation id="6271824294945464304">ການແບ່ງປັນລະຫັດຜ່ານ</translation>
@@ -1637,6 +1645,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6609890790934458793">ລະຫັດຜ່ານສຳລັບ <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ແລະ <ph name="THIRD_WEBSITE" /> ຈະບໍ່ຖືກລຶບ. ບັນຊີຂອງທ່ານຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="661266467055912436">ປັບປຸງຄວາມປອດໄພສຳລັບທ່ານ ແລະ ທຸກຄົນໃນເວັບ.</translation>
 <translation id="6612912757320004438">ອະນຸຍາດການແຈ້ງເຕືອນແຖບ…</translation>
+<translation id="6613372200395638275">ເພື່ອໃຫ້ຄວາມຊ່ວຍເຫຼືອທີ່ປັບແຕ່ງໃຫ້ເໝາະສົມກັບຄວາມຕ້ອງການຂອງທ່ານ, Gemini ຈະແບ່ງປັນຂໍ້ມູນບາງຢ່າງຂອງທ່ານ (ເຊັ່ນ: ການສົນທະນາບາງສ່ວນ, ສະຖານທີ່ ແລະ ຂໍ້ມູນອື່ນໆທີ່ກ່ຽວຂ້ອງຂອງທ່ານ) ກັບບໍລິການອື່ນໆຂອງ Google ເຊັ່ນ: ແຜນທີ່ ແລະ ຖ້ຽວບິນ. ບໍລິການເຫຼົ່ານີ້ອາດໃຊ້ຂໍ້ມູນດັ່ງກ່າວເພື່ອປັບປຸງ, ເຖິງແມ່ນວ່າທ່ານຈະລຶບການເຄື່ອນໄຫວແອັບ Gemini ຂອງທ່ານໃນພາຍຫຼັງກໍຕາມ. ສຶກສາເພີ່ມເຕີມໃນ <ph name="BEGIN_LINK" />ສູນຄວາມເປັນສ່ວນຕົວແອັບ Gemini<ph name="END_LINK" />.</translation>
 <translation id="6617761071025228250">ລຶບລ້າງຂໍ້ຄວາມ</translation>
 <translation id="6619015782482868078">ຮູບແບບສີສັນສີຟ້າທະເລ</translation>
 <translation id="6620279676667515405">ຍົກເລີກ</translation>
@@ -1712,6 +1721,9 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6858718102216837409">ເພີ່ມພາສາ…</translation>
 <translation id="6858855187367714033">ສະແກນແລ້ວ</translation>
 <translation id="6859944681507688231">ເພື່ອສະແກນລະຫັດ QR ຫຼື ບັດເຄຣດິດ, ກະລຸນາເປີດນຳໃຊ້ກ້ອງຖ່າຍຮູບຈາກການຕັ້ງຄ່າ.</translation>
+<translation id="6862212368460840758">ທ່ານເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="SIGNED_EMAIL" />.
+
+ເພື່ອສືບຕໍ່ຈາກຄອມພິວເຕີຂອງທ່ານ, ໃຫ້ສະຫຼັບໄປໃຊ້ <ph name="OTHER_EMAIL" />. ທ່ານຈະໄດ້ຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຈາກບັນຊີນີ້.</translation>
 <translation id="6867369562105931222">ລະຫັດຜ່ານ</translation>
 <translation id="6867400383614725881">ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="686831807558000905">ບໍ່ເຂົ້າສູ່ລະບົບ</translation>
@@ -1780,6 +1792,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7091023926159231962">{count,plural, =1{ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານ {count} ລາຍການໄດ້}other{ບໍ່ສາມາດນຳເຂົ້າລະຫັດຜ່ານ {count} ລາຍການໄດ້}}</translation>
 <translation id="7095110968493193530">ຫາຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /></translation>
 <translation id="7097046145876891318">ໃນແຖບທີ່ຢູ່, ໃຫ້ແຕະປະຫວັດລາຄາເພື່ອເບິ່ງການປ່ຽນແປງຂອງລາຄາໃນຊ່ວງເວລາຕ່າງໆ</translation>
+<translation id="7098554251807199977">ການສົນທະນາຂອງທ່ານກັບ Gemini ຫຼື <ph name="BEGIN_LINK" />ຂໍ້ມູນໃນ Google Workspace<ph name="END_LINK" /> ຂອງທ່ານຈະບໍ່ໄດ້ຮັບການກວດສອບ ຫຼື ນຳໄປໃຊ້ເພື່ອປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ.</translation>
 <translation id="7102005569666697658">ກຳລັງດາວໂຫຼດ… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">ເມນູ → ການຕັ້ງຄ່າ → ວິທີການຈ່າຍເງິນ</translation>
 <translation id="7108338896283013870">ເຊື່ອງ</translation>
@@ -2173,6 +2186,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8439758443371991593">ເຊື່ອງ ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="8443986842926457191">URL ແມ່ນຫຼາຍກວ່າ 2048 ຕົວອັກສອນ.</translation>
 <translation id="8449869326050867919">ແບ່ງປັນລະຫັດຜ່ານແລ້ວ</translation>
+<translation id="8461708300275916315">ຫາກທ່ານອາຍຸຕ່ຳກວ່າ 18 ປີ</translation>
 <translation id="8473815223723723001">ແກ້ໄຂຮູບພາບດ້ວຍ Gemini</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
 <translation id="8474378002946546633">ອະນຸຍາດການແຈ້ງເຕືອນ</translation>
@@ -2234,6 +2248,8 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8636825310635137004">ເພື່ອໂຫຼດແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນ, ໃຫ້ເປີດການຊິ້ງຂໍ້ມູນກ່ອນ.</translation>
 <translation id="8637431369725868556">ຮັບການປົກປ້ອງຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}}</translation>
+<translation id="8639963783467694461">ການຕັ້ງຄ່າການຕື່ມອັດຕະໂນມັດ</translation>
+<translation id="8642417828095157370">ລະບົບໄດ້ແບ່ງປັນແຖບເພື່ອໃຫ້ໄດ້ຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ</translation>
 <translation id="8643403533759285912">ລຶບກຸ່ມ</translation>
 <translation id="8647280737650867362">ບໍ່ສາມາດຍົກເລີກການຕິດຕາມລາຄາໄດ້.</translation>
 <translation id="8654802032646794042">ຍົກເລີກ</translation>
@@ -2247,6 +2263,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8672733398999596205">ເປີດການນຳໃຊ້ທັງໝົດ</translation>
 <translation id="8674716540979958118">ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ.</translation>
 <translation id="8679900250380464358">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ</translation>
+<translation id="8680643216091361291">ການຕັ້ງຄ່າ <ph name="BEGIN_LINK" />ເກັບການເຄື່ອນໄຫວໄວ້<ph name="END_LINK" /> ຂອງທ່ານຈະປິດຢູ່ໂດຍຄ່າເລີ່ມຕົ້ນ. ເມື່ອການຕັ້ງຄ່າດັ່ງກ່າວປິດຢູ່, Google ຈະບັນທຶກການສົນທະນາຂອງທ່ານໄວ້ເປັນເວລາ 3 ມື້. ໂດຍຈະໃຊ້ຂໍ້ມູນດັ່ງກ່າວເພື່ອໃຫ້ແອັບ Gemini ເຮັດວຽກໄດ້ຢ່າງຖືກຕ້ອງ, ຊ່ວຍຮັກສາຄວາມປອດໄພ ແລະ ໃຊ້ຄຳຕິຊົມຂອງທ່ານເພື່ອແກ້ໄຂບັນຫາ. ທ່ານສາມາດເປີດເກັບການເຄື່ອນໄຫວໄວ້ເພື່ອຊ່ວຍປັບປຸງ Google AI ສຳລັບທຸກຄົນໄດ້.</translation>
 <translation id="8680786875305615692">ຊ່ວຍປັບປຸງຄວາມປອດໄພໃນອິນເຕີເນັດສຳລັບທຸກຄົນ</translation>
 <translation id="8680787084697685621">ລາຍ​ລະ​ອຽດ​ການລົງຊື່ເຂົ້າໃຊ້ບັນຊີລ້າສະໄໝແລ້ວ.</translation>
 <translation id="8690752723634292147">ຢືນຢັນການລຶບ</translation>
@@ -2396,6 +2413,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="9162432979321511934">ເປີດການຕື່ມລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="9165320910061267720">ເພື່ອຮັບການແຈ້ງເຕືອນການຫຼຸດລາຄາ, ທ່ານຈະຕ້ອງເປີດການແຈ້ງເຕືອນໃນການຕັ້ງຄ່າ iOS ຂອງທ່ານ.</translation>
 <translation id="9179151630575358778">ເຊື່ອງລາຍການນີ້</translation>
+<translation id="9183563643084679152">ທ່ານສະແກນລະຫັດ QR ເພື່ອເຂົ້າສູ່ລະບົບ Chrome. ທ່ານຈະໄດ້ຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຈາກບັນຊີນີ້.</translation>
 <translation id="9183733013282108610">ຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="9186762474139509529">ເລີ່ມຕົ້ນການບັນທຶກ</translation>
 <translation id="9191031968346938109">ເພີ່ມໃສ່…</translation>

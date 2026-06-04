@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Автоматические серверы имен</translation>
 <translation id="1210831758834677569">Лаосский</translation>
 <translation id="1221555006497674479">Заканчивается место на общем диске. Свободное пространство: <ph name="REMAINING_PERCENTAGE" /> % от <ph name="TOTAL_SPACE" />.</translation>
+<translation id="1239594683407221485">Чтобы посмотреть контент, хранящийся на устройстве, откройте приложение "Файлы".</translation>
 <translation id="1243314992276662751">Загрузить</translation>
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Прямое подключение к интернету</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Не получилось удалить объект, так как с ним кто-то работает.</translation>
 <translation id="1307931752636661898">Нет доступа к файлам Linux</translation>
 <translation id="1313405956111467313">Автоматическая настройка прокси-сервера</translation>
+<translation id="1340527397989195812">Создайте резервную копию медиафайлов, размещенных на устройстве, с помощью приложения "Файлы".</translation>
 <translation id="134645005685694099">На устройстве недостаточно места для синхронизации файлов. Новые файлы не будут синхронизироваться автоматически.</translation>
 <translation id="1353686479385938207"><ph name="NETWORK_NAME" /> (<ph name="PROVIDER_NAME" />)</translation>
 <translation id="1358735829858566124">Этот файл или каталог непригоден для использования.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Не использовать сертификат пользователя</translation>
 <translation id="1403008701842173542">Везде</translation>
 <translation id="1404323374378969387">Норвежский</translation>
+<translation id="1408504635543854729">Чтобы просмотреть контент, хранящийся на устройстве, перейдите в приложение "Файлы". Администратор запретил изменять этот контент.</translation>
 <translation id="1412476183660741812">Подписанный веб-пакет</translation>
 <translation id="1433628812591023318">Чтобы загрузить файлы в Parallels Desktop, переместите их в папку "Файлы Windows".</translation>
 <translation id="1435838927755162558">Предоставление Parallels Desktop доступа к папке</translation>
 <translation id="1439919885608649279">Человек с цветами</translation>
 <translation id="1458457385801829801">Извлечь <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Чтобы изменить параметры устройства, откройте приложение "Настройки".</translation>
 <translation id="146691674290220697">Не удалось скопировать несколько файлов (<ph name="NUMBER_OF_FILES" />), так как они зашифрованы.</translation>
 <translation id="1471718551822868769">Словацкий</translation>
 <translation id="1482884275703521657">Финский</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Открыть на Google Диске</translation>
 <translation id="2004942826429452291">Файлы будут храниться в облаке и на этом устройстве Chromebook.</translation>
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
+<translation id="2018352199541442911">Внешний накопитель не поддерживается.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2029385776150020336">США (расширенная)</translation>
 <translation id="2037845485764049925">Русский</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Тамагочи</translation>
 <translation id="2468470447085858632">Синхронизация позволит работать с файлами Google Диска в офлайн-режиме</translation>
 <translation id="2470939964922472929">Слишком много попыток ввести PIN-код. Чтобы задать новый PIN-код, введите 8-значный PUK-код, предоставленный оператором связи.</translation>
+<translation id="249113932447298600">Устройство <ph name="DEVICE_LABEL" /> не поддерживается.</translation>
 <translation id="2500392669976258912">Гуджарати, фонетический</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Сканировать</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Украинский</translation>
 <translation id="3326821416087822643">Файл "<ph name="FILE_NAME" />" архивируется…</translation>
 <translation id="3335337277364016868">Год записи</translation>
+<translation id="3348038390189153836">Обнаружено съемное устройство</translation>
 <translation id="3353984535370177728">Выберите папку для загрузки</translation>
 <translation id="3356580349448036450">Готово</translation>
 <translation id="3358452157379365236">Гитара</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Английский (Великобритания)</translation>
 <translation id="3975895378829046965">Бенгальский, фонетический</translation>
+<translation id="3983764759749072418">Приложениям из Play Маркета разрешен доступ к этому устройству.</translation>
 <translation id="3999574733850440202">Недавно открытые файлы Microsoft были перенесены на OneDrive</translation>
 <translation id="4002066346123236978">Название</translation>
 <translation id="4017788180641807848">Английский (США), раскладка Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Для доступа к файлу необходимо подключение к Интернету.</translation>
 <translation id="4212740939091998969">Папка "<ph name="FOLDER_NAME" />" уже существует. Укажите другое название.</translation>
 <translation id="4218274196133425560">Удалить исключение для <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4261901459838235729">Презентация Google</translation>
 <translation id="4277536868133419688">Фильтр "<ph name="FILTER_NAME" />" включен.</translation>
 <translation id="4290535918735525311">Linux предоставлен доступ к 1 папке</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Восстановленные файлы с Google Диска</translation>
 <translation id="5278111733643988471">Чтобы восстановить этот объект, перетащите его из корзины в новую папку. Папка "<ph name="PARENT_FOLDER_NAME" />", в которой он находился ранее, была удалена.</translation>
 <translation id="5288441970121584418">Бургер</translation>
+<translation id="529175790091471945">Форматировать устройство</translation>
 <translation id="5293615890992542006">Администратор запретил перемещать этот файл.</translation>
 <translation id="5305688511332277257">Не установлено</translation>
 <translation id="5317780077021120954">Сохранить</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Не использовать прокси-сервер для подключения к следующим хостам и доменам:</translation>
 <translation id="541890217011173530">Сорани, раскладка с латиницей</translation>
 <translation id="5422221874247253874">Точка доступа</translation>
+<translation id="5422781158178868512">Не удалось распознать внешнее запоминающее устройство.</translation>
 <translation id="5438282218546237410">По запросу "<ph name="SEARCH_TERM" />" ничего не найдено.</translation>
 <translation id="5447680084201416734">Недостаточно свободного места.</translation>
 <translation id="5449551289610225147">Неправильный пароль</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Выбрано элементов: <ph name="SELECTED_FILES_COUNT" /></translation>
 <translation id="5763377084591234761">Немецкий (Швейцария)</translation>
 <translation id="5769519078756170258">Хост или домен, который вы хотите исключить</translation>
+<translation id="5774295353725270860">Открыть приложение "Файлы"</translation>
 <translation id="5775750595919327203">Урду</translation>
 <translation id="5776325638577448643">Очистить и отформатировать</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5788127256798019331">Файлы Google Play</translation>
+<translation id="5788367137662787332">Не удалось добавить один или несколько разделов устройства <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">Каннада, транслитерация</translation>
 <translation id="5814126672212206791">Тип подключения</translation>
 <translation id="5817397429773072584">Китайский (традиционный)</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Исландская</translation>
 <translation id="7229570126336867161">Необходимо наличие EV-DO</translation>
 <translation id="7230898482850090046">Администратор отправил вам запрос на отключение блокировки SIM-карты.</translation>
+<translation id="7232750842195536390">Название не изменено</translation>
 <translation id="7238097264433196391">Название диска</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, подробная информация</translation>
 <translation id="7246947237293279874">FTP-прокси</translation>
+<translation id="725109152065019550">Администратор запретил использовать внешний накопитель для этого аккаунта.</translation>
 <translation id="7256405249507348194">Неопознанная ошибка: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Доступные сервисы</translation>
 <translation id="7291818353625820805">Хотите, чтобы символы вводились повторно? Отключите диакритические знаки в настройках клавиатуры.</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Карта Google</translation>
 <translation id="7419668828140929293">Восстановление объекта "<ph name="FILENAME" />"…</translation>
 <translation id="7435577899926900307">США (раскладка Дворака)</translation>
+<translation id="7436921188514130341">При изменении названия произошла ошибка.</translation>
 <translation id="7458955835361612701">Нет недавних изображений.</translation>
 <translation id="7469894403370665791">Автоматически подключаться к этой сети</translation>
 <translation id="7486315294984620427">Чтобы загрузить файлы в Parallels Desktop, скопируйте их в папку "Файлы Windows".</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7553492409867692754">Приложения Linux смогут получать доступ к файлам папки "<ph name="FOLDER_NAME" />".</translation>
 <translation id="7555339735447658365">Сейчас включен офлайн-режим. Синхронизация файлов возобновится, когда вы подключитесь к интернету.</translation>
+<translation id="7589461650300748890">Осторожно!</translation>
 <translation id="7589661784326793847">Подождите…</translation>
 <translation id="7600126690270271294">Сербский</translation>
 <translation id="7603724359189955920">Сетка</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
+<translation id="7839051173341654115">Просмотреть/сохранить медиафайлы</translation>
 <translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7857117644404132472">Добавить исключение</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Польский</translation>
 <translation id="7874321682039004450">Филиппинский</translation>
 <translation id="78946041517601018">Общие диски</translation>
+<translation id="7897900149154324287">В будущем, прежде чем отключать накопитель, воспользуйтесь командой "Извлечь" в приложении "Файлы", чтобы не потерять данные.</translation>
 <translation id="7901567919203965902">США (Workman, международная)</translation>
 <translation id="7903984238293908205">Катакана</translation>
+<translation id="7908378463497120834">Не удалось добавить один или несколько разделов внешнего накопителя.</translation>
 <translation id="7908793776359722643">При форматировании раздела все хранящиеся в нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Файлы из раздела "Мой диск" будут автоматически синхронизироваться с Chromebook, чтобы у вас был доступ к ним без подключения к интернету.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Чтобы восстановить эти объекты, перетащите их в новую папку. Папки, в которых находились некоторые из этих объектов ранее, были удалены.</translation>
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8876368061475701452">В очереди</translation>
+<translation id="8893928184421379330">Не удалось распознать устройство <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">США (международная, ПК)</translation>
 <translation id="8903931173357132290">Выпускник</translation>
 <translation id="8912078710089354287">Собака виляет хвостом</translation>

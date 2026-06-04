@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Ціну на товар "<ph name="PRODUCT_NAME" />" знижено на <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Значок кольору "<ph name="COLOR_NAME" />" для групи вкладок</translation>
 <translation id="311432875115153175">Список груп вкладок закрито</translation>
+<translation id="3152596030350326139">Показувати вкладки горизонтально</translation>
+<translation id="31806439105337256">Показувати вкладки вертикально</translation>
 <translation id="3194464645767632461">оцінка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Додати <ph name="TABS_COUNT_ONE" /> вкладку в групу}one{Додати <ph name="TABS_COUNT_MANY" /> вкладку в групу}few{Додати <ph name="TABS_COUNT_MANY" /> вкладки в групу}many{Додати <ph name="TABS_COUNT_MANY" /> вкладок у групу}other{Додати <ph name="TABS_COUNT_MANY" /> вкладки в групу}}</translation>
 <translation id="3328308545011660196">Підказка: схоже, ви відкрили кілька пов'язаних вкладок (<ph name="NUMBER_OF_TABS" />). Додати їх у групу?</translation>

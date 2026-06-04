@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Згрупавана <ph name="TABS_COUNT_ONE" /> укладка</translation>
 <translation id="1844381456014878100">Праз 7 дзён бяздзейнасці</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Дадаць укладку ў спіс на прагляд}one{Дадаць укладкі ў спіс на прагляд}few{Дадаць укладкі ў спіс на прагляд}many{Дадаць укладкі ў спіс на прагляд}other{Дадаць укладкі ў спіс на прагляд}}</translation>
 <translation id="1909810060368225529">Апавяшчэнне. Усе карыстальнікі бачаць змяненні, унесеныя ў гэту абагуленую групу ўкладак. Кожны карыстальнік можа ўносіць змяненні ў вашы абагуленыя групы ўкладак</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Замацаваць укладку}one{Замацаваць укладкі}few{Замацаваць укладкі}many{Замацаваць укладкі}other{Замацаваць укладкі}}</translation>
 <translation id="1982637982196732906">Перамяшчаць у раздзел "Неактыўныя"</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">Зніжэнне цаны на <ph name="PRODUCT_NAME" /> на <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Колер значка гэтай групы ўкладак: <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Спіс груп укладак закрыты</translation>
+<translation id="3152596030350326139">Паказваць укладкі гарызантальна</translation>
+<translation id="31806439105337256">Паказваць укладкі вертыкальна</translation>
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Дадаць <ph name="TABS_COUNT_ONE" /> укладку ў групу}one{Дадаць <ph name="TABS_COUNT_MANY" /> укладку ў групу}few{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}many{Дадаць <ph name="TABS_COUNT_MANY" /> укладак у групу}other{Дадаць <ph name="TABS_COUNT_MANY" /> укладкі ў групу}}</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>

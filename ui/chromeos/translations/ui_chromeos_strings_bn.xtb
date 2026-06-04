@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">স্বয়ংক্রিয় নাম সার্ভার</translation>
 <translation id="1210831758834677569">লাও</translation>
 <translation id="1221555006497674479">স্টোরেজে স্পেস কম আছে আপনার <ph name="TOTAL_SPACE" /> শেয়ার্ড ড্রাইভ স্টোরেজের <ph name="REMAINING_PERCENTAGE" />% বাকি আছে।</translation>
+<translation id="1239594683407221485">Files অ্যাপে ডিভাইসের কন্টেন্ট ঘুরে দেখুন।</translation>
 <translation id="1243314992276662751">আপলোড</translation>
 <translation id="1249250836236328755">প্রকার</translation>
 <translation id="1254593899333212300">সরাসরি ইন্টারনেট সংযোগ</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">মোছা যাচ্ছে না। আইটেম ব্যবহার করা হচ্ছে।</translation>
 <translation id="1307931752636661898">Linux ফাইল দেখা যায়নি</translation>
 <translation id="1313405956111467313">স্বয়ংক্রিয় প্রক্সি কনফিগারেশন</translation>
+<translation id="1340527397989195812">ফাইল অ্যাপ ব্যবহার করে ডিভাইস থেকে মিডিয়া ব্যাক আপ নিন৷</translation>
 <translation id="134645005685694099">ফাইল সিঙ্ক করার প্রসেস চালু রাখার জন্য আপনার ডিভাইসে পর্যাপ্ত স্টোরেজের জায়গা নেই। নতুন ফাইল আর অটোমেটিক সিঙ্ক করা হবে না।</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" /> : <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ফাইল বা ডিরেক্টরি ব্যবহারযোগ্য নয়৷</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">কোনও ব্যবহারকারীর সার্টিফিকেট নেই</translation>
 <translation id="1403008701842173542">সব জায়গায়</translation>
 <translation id="1404323374378969387">নরওয়েজিয়ান</translation>
+<translation id="1408504635543854729">ফাইল অ্যাপে ডিভাইসের কন্টেন্ট খুঁজে দেখুন। একজন অ্যাডমিনিস্ট্রেটর কন্টেন্টটি সীমাবদ্ধ করে আছে এবং মডিফাই করা যাবে না।</translation>
 <translation id="1412476183660741812">Signed Web Bundle</translation>
 <translation id="1433628812591023318">Parallels Desktop-এ ফাইল রাখতে হলে ফাইলকে অবশ্যই Windows ফাইলের ফোল্ডারে সরাতে হবে।</translation>
 <translation id="1435838927755162558">Parallels Desktop-এর সাথে ফোল্ডার শেয়ার করুন</translation>
 <translation id="1439919885608649279">ফুলের সাথে ব্যক্তির ছবি</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> সরিয়ে দিন</translation>
+<translation id="1464781208867302907">ডিভাইস প্রেফারেন্সের জন্য সেটিংসে যান।</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" />টি ফাইল কপি করা যায়নি কারণ সেগুলি এনক্রিপ্ট করা আছে।</translation>
 <translation id="1471718551822868769">স্লোভাক</translation>
 <translation id="1482884275703521657">ফিনিশ</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ড্রাইভে পরিচালনা করুন</translation>
 <translation id="2004942826429452291">ক্লাউড ও এই Chromebook-এ ফাইল স্টোর করা হবে।</translation>
 <translation id="2009067268969781306">ড্রাইভ ফরম্যাট করা হলে, সেটিতে সেভ করা সব ডেটা মুছে যাবে। সেটিকে আর আগের অবস্থায় ফেরানো যাবে না।</translation>
+<translation id="2018352199541442911">আপনার বাহ্যিক স্টোরেজের ডিভাইসটি এই মুহুর্তে সমর্থিত নয়৷</translation>
 <translation id="2025955442973426285">টাইগ্রিনা</translation>
 <translation id="2029385776150020336">মার্কিন যুক্তরাষ্ট্রীয় বর্ধিত</translation>
 <translation id="2037845485764049925">রুশ</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">তামাগচি</translation>
 <translation id="2468470447085858632">ফাইল সিঙ্ক করার প্রসেসের মাধ্যমে আপনার Google Drive-এর ফাইল অফলাইনে অ্যাক্সেস করুন</translation>
 <translation id="2470939964922472929">একটি ভুল পিন অনেকবার লেখা হয়েছে। নতুন একটি পিন সেট করতে আপনার পরিষেবা প্রদানকারীর থেকে পাওয়া ৮-সংখ্যার 'পার্সোনাল আনব্লকিং কী' (PUK) লিখুন।</translation>
+<translation id="249113932447298600">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইসটি এই মুহুর্তে সমর্থিত নয়৷</translation>
 <translation id="2500392669976258912">গুজরাতি ফোনেটিক</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ইউক্রেনিয়ান</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> জিপ করা হচ্ছে...</translation>
 <translation id="3335337277364016868">যে বছর রেকর্ড করা হয়েছে</translation>
+<translation id="3348038390189153836">সরানোযোগ্য ডিভাইস শনাক্ত করা হয়েছে</translation>
 <translation id="3353984535370177728">আপলোড করতে একটি ফোল্ডার বেছে নিন</translation>
 <translation id="3356580349448036450">সম্পূর্ণ</translation>
 <translation id="3358452157379365236">গিটার</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ইংরেজি (যুক্তরাজ্য)</translation>
 <translation id="3975895378829046965">বাংলা ফোনেটিক</translation>
+<translation id="3983764759749072418">Play Store অ্যাপ্লিকেশন এই ডিভাইস অ্যাক্সেস করতে পারে।</translation>
 <translation id="3999574733850440202">সম্প্রতি খোলা হয়েছে এমন Microsoft ফাইল OneDrive-এ সরানো হয়েছে</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4017788180641807848">ইংরেজি (মার্কিন যুক্তরাষ্ট্র) ওয়ার্কম্যান কীবোর্ড</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">আপনার এই ফাইলটিতে অ্যাক্সেস পেতে অনলাইন হওয়া আবশ্যক৷</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" নামের ফোল্ডার আগে থেকেই আছে। অন্য একটি নাম লিখুন।</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-এর জন্য ব্যতিক্রম সরানোর বোতাম</translation>
+<translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4261901459838235729">Google উপস্থাপনা</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> চালু আছে।</translation>
 <translation id="4290535918735525311">Linux ব্যবহার করে ১টি ফোল্ডার শেয়ার করা হয়েছে</translation>
@@ -554,6 +563,7 @@
 <translation id="5275973617553375938">Google ড্রাইভ থেকে উদ্ধার করা ফাইলগুলি</translation>
 <translation id="5278111733643988471">এই আইটেম ফিরিয়ে আনতে, ট্র্যাশের বাইরে নতুন কোনও ফোল্ডারে এটি টেনে আনুন। এই আইটেমের জন্য থাকা আসল ফোল্ডার "<ph name="PARENT_FOLDER_NAME" />", মুছে ফেলা হয়েছে।</translation>
 <translation id="5288441970121584418">বার্গার</translation>
+<translation id="529175790091471945">এই ডিভাইসটি ফর্ম্যাট করুন</translation>
 <translation id="5293615890992542006">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী এই ফাইল সরিয়ে দেওয়ার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="5305688511332277257">কিছুই ইনস্টল নেই</translation>
 <translation id="5317780077021120954">সেভ করুন</translation>
@@ -569,6 +579,7 @@
 <translation id="5411472733320185105">এই হোস্টগুলি এবং ডোমেনগুলির জন্য প্রক্সি সেটিংস ব্যবহার করবেন না:</translation>
 <translation id="541890217011173530">সোরানি কুর্দিশ ভাষায় ইংরেজি-ভিত্তিক কীবোর্ড</translation>
 <translation id="5422221874247253874">অ্যাক্সেস পয়েন্ট</translation>
+<translation id="5422781158178868512">আপনার বাহ্যিক স্টোরেজের ডিভাইসটি শনাক্ত করা যায়নি৷</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" />-এর জন্য কোনও ফলাফল পাওয়া যায়নি।</translation>
 <translation id="5447680084201416734">পর্যাপ্ত স্টোরেজ নেই।</translation>
 <translation id="5449551289610225147">ভুল পাসওয়ার্ড</translation>
@@ -616,10 +627,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" />টি আইটেম বেছে নেওয়া হয়েছে</translation>
 <translation id="5763377084591234761">জার্মান (সুইজারল্যান্ড)</translation>
 <translation id="5769519078756170258">বাদ দিতে হবে এমন হোস্ট বা ডোমেন</translation>
+<translation id="5774295353725270860">ফাইল অ্যাপ খুলুন</translation>
 <translation id="5775750595919327203">উর্দু</translation>
 <translation id="5776325638577448643">মুছে ফেলুন ও ফর্ম্যাট করুন</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5788127256798019331">Play ফাইল</translation>
+<translation id="5788367137662787332">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইসটির কমপক্ষে একটি ভাগ আটকানো যায়নি৷</translation>
 <translation id="5804245609861364054">কন্নড় লিপ্যন্তর</translation>
 <translation id="5814126672212206791">সংযোগের প্রকার</translation>
 <translation id="5817397429773072584">ঐতিহ্যবাহি চীনা</translation>
@@ -812,9 +825,11 @@
 <translation id="7224162581405244205">আইসল্যান্ডিক</translation>
 <translation id="7229570126336867161">EVDO এর প্রয়োজন</translation>
 <translation id="7230898482850090046">আপনার অ্যাডমিনিস্ট্রেটর "সিম কার্ড লক করা" সেটিং বন্ধ করার অনুরোধ জানিয়েছেন</translation>
+<translation id="7232750842195536390">নাম পরিবর্তন করা যায়নি</translation>
 <translation id="7238097264433196391">ড্রাইভের নাম</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, বিবরণ</translation>
 <translation id="7246947237293279874">এফটিপি প্রক্সি</translation>
+<translation id="725109152065019550">দুঃখিত, আপনার প্রশাসক আপনার অ্যাকাউন্টে এক্সটার্নাল স্টোরেজ বন্ধ করেছে৷</translation>
 <translation id="7256405249507348194">অস্বীকৃত ত্রুটি: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">উপলব্ধ পরিষেবাসমূহ</translation>
 <translation id="7291818353625820805">'কী' রিপিট করতে চান? কীবোর্ড সেটিংস থেকে অ্যাকসেন্ট চিহ্ন বন্ধ করুন</translation>
@@ -837,6 +852,7 @@
 <translation id="7417705661718309329">Google ম্যাপ</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" ফিরিয়ে আনা হচ্ছে</translation>
 <translation id="7435577899926900307">মার্কিন যুক্তরাষ্ট্রীয় দভোরাক</translation>
+<translation id="7436921188514130341">নাম পরিবর্তনের সময় একটি ত্রুটি হয়েছিল।</translation>
 <translation id="7458955835361612701">কোনও সাম্প্রতিক ছবি নেই</translation>
 <translation id="7469894403370665791">স্বয়ংক্রিয়ভাবে এই নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="7486315294984620427">Parallels Desktop-এ ফাইল রাখতে হলে ফাইলকে অবশ্যই Windows ফাইলের ফোল্ডারে কপি করতে হবে।</translation>
@@ -852,6 +868,7 @@
 <translation id="7551643184018910560">শেল্ফে পিন করুন</translation>
 <translation id="7553492409867692754">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="7555339735447658365">আপনি বর্তমানে অফলাইন আছেন। আপনি ইন্টারনেটের সাথে কানেক্ট করলে, ফাইল সিঙ্ক করার প্রসেস আবার চালু হবে</translation>
+<translation id="7589461650300748890">দাঁড়ান। সাবধান।</translation>
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
 <translation id="7600126690270271294">সার্বিয়ান</translation>
 <translation id="7603724359189955920">গ্রিড</translation>
@@ -897,6 +914,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> টিবি</translation>
 <translation id="7831491651892296503">নেটওয়ার্ক কনফিগার করার সময় ত্রুটি</translation>
+<translation id="7839051173341654115">মিডিয়া দেখুন/ব্যাক-আপ নিন</translation>
 <translation id="7839804798877833423">এই ফাইলগুলি আনতে আনুমানিক মোবাইল ডেটা <ph name="FILE_SIZE" /> ব্যবহার হবে</translation>
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7857117644404132472">ব্যতিক্রম যোগ করুন</translation>
@@ -904,8 +922,10 @@
 <translation id="7868774406711971383">পোলিশ</translation>
 <translation id="7874321682039004450">ফিলিপিনো</translation>
 <translation id="78946041517601018">শেয়ার করা ডিভাইস</translation>
+<translation id="7897900149154324287">ভবিষ্যতে, আপনার সরানো যাবে এমন ডিভাইসটিকে আনপ্লাগ করার আগে ফাইল অ্যাপ থেকে এটি যে বের করে নেওয়া হয়েছে সেই বিষয়ে নিশ্চিত হয়ে নিন। অন্যথায় আপনি ডেটা হারাতে পারেন।</translation>
 <translation id="7901567919203965902">মার্কিন ওয়ার্কম্যান আন্তর্জাতিক</translation>
 <translation id="7903984238293908205">কাটাকানা</translation>
+<translation id="7908378463497120834">দুঃখিত, ডিভাইসটির কমপক্ষে একটি ভাগ আটকানো যায়নি৷</translation>
 <translation id="7908793776359722643">পার্টিশন ফর্ম্যাট করলে তাতে সেভ থাকা সব ডেটা মুছে যাবে। সেটি আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">আমার ড্রাইভে থাকা আপনার ফাইল অটোমেটিক আপনার Chromebook-এ সিঙ্ক করে যাবে, তাই ইন্টারনেট কানেকশন ছাড়াই আপনি সেগুলি অ্যাক্সেস করতে পারবেন।</translation>
@@ -1039,6 +1059,7 @@
 <translation id="8873014196523807561">এইসব আইটেম ফিরিয়ে আনতে, একটি নতুন ফোল্ডারে সেগুলি টেনে আনুন। এইসব আইটেমের মধ্যে কয়েকটির আসল ফোল্ডার মুছে ফেলা হয়েছে।</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8876368061475701452">সারিবদ্ধ</translation>
+<translation id="8893928184421379330">দুঃখিত, <ph name="DEVICE_LABEL" />ডিভাইসটি স্বীকৃত হতে পারেনি৷</translation>
 <translation id="8902208737522818687">US ইন্টারন্যাশনাল (PC)</translation>
 <translation id="8903931173357132290">স্নাতক</translation>
 <translation id="8912078710089354287">কুকুরের লেজ নাড়ানোর ছবি</translation>

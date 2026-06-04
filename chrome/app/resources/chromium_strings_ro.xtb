@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium are nevoie de acces la Bluetooth pentru a explora 
  Dispozitive Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Identifică limba</translation>
+<translation id="1330742950061766891">Folosește setările recomandate pentru browserul Chromium</translation>
 <translation id="1342274909142618978">Șterge și datele din Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">S-a fixat! Poți să accesezi din nou Căutarea de imagini folosind noul buton din bara de instrumente</translation>
 <translation id="1356661055722410047">Nou! Poți traduce atât textul, cât și imaginile de pe ecran</translation>
@@ -371,6 +372,7 @@
 <translation id="5187123684706427865">Este necesară reautentificarea în contul Chromium</translation>
 <translation id="5231355151045086930">Deconectează-te de la Chromium</translation>
 <translation id="5234764350956374838">Închide</translation>
+<translation id="5249261924633168472">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
 <translation id="5254739261293693943">Întreabă despre acest videoclip</translation>
 <translation id="5276305953263010518">Descarcă aplicația Chromium pentru a salva parole din mers</translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>

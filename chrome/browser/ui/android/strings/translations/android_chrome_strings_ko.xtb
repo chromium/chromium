@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">여기에서 PDF를 다운로드할 수 있습니다.</translation>
 <translation id="107147699690128016">파일 확장자를 변경하면 파일이 다른 애플리케이션에서 열리고 기기가 위험에 노출될 수도 있습니다.</translation>
 <translation id="1073328695547557412">Google 렌즈 아이콘을 탭합니다.</translation>
+<translation id="1080116354587839789">너비에 맞춤</translation>
 <translation id="1086486568852410168">Google 렌즈로 검색</translation>
 <translation id="1087799850623149508">길게 터치하여 주소 표시줄을 하단으로 이동할 수 있습니다.</translation>
 <translation id="1089606299949659462">검토 완료</translation>
@@ -536,6 +537,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" />개 탭}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" />개 탭}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{비밀번호 1개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}other{비밀번호 #개가 이 기기에만 저장됩니다. 다른 기기에서 사용하려면 Google 계정에 저장하세요.}}</translation>
 <translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
+<translation id="3301639354590628973">계정을 전환하시겠습니까?</translation>
 <translation id="3301936297336370235">비밀번호 추천 확인</translation>
 <translation id="3302615849591357577"><ph name="TITLE_OF_GROUP" /> 탭 그룹, <ph name="COLOR_NAME" /> 색상을 새 백그라운드 탭 그룹으로 복원합니다.</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
@@ -678,6 +680,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, 고정된 PIP 모드 탭</translation>
 <translation id="3950820424414687140">로그인</translation>
 <translation id="395377504920307820">계정 없이 사용</translation>
+<translation id="3955353672249727801">읽기 목록에 페이지가 추가됨</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{준비가 완료되면 Chrome에서 페이지를 로드합니다.}other{준비가 완료되면 Chrome에서 페이지를 로드합니다.}}</translation>
 <translation id="3969142555815019568">Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="3969863827134279083">위로 이동</translation>

@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Fazendo download...</translation>
 <translation id="1651617469580841801">Quando você usa o Google Lens, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados ao Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Sobre o ChromeOS Flex</translation>
+<translation id="1665867022636014702">Usar as configurações do navegador recomendadas do Google</translation>
 <translation id="1674870198290878346">Abrir link na janela &amp;sem rastros do Chrome</translation>
 <translation id="1682634494516646069">O Google Chrome não pode ler e gravar neste diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">O Chrome envia o que você digitou na barra de endereço ou na caixa de pesquisa para as ferramentas de pesquisa, IA e agente da sua organização e recebe sugestões.</translation>
@@ -149,6 +150,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="2580411288591421699">Não é possível instalar a mesma versão do Google Chrome que está em execução. Feche o Google Chrome e tente novamente.</translation>
 <translation id="2586406160782125153">Essa ação excluirá seus dados de navegação desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Falha de cache após o download do instalador. Erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Confira uma visão geral rápida deste documento e faça perguntas com o Gemini no Chrome</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="263447411082773721">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos. Acesse com facilidade seus recursos favoritos definindo o Chrome como o navegador padrão. O Chrome será fixado na barra de tarefas para agilizar o acesso.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -156,6 +158,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="2652691236519827073">Abrir link em nova &amp;guia do Chrome</translation>
 <translation id="2665296953892887393">Ajude a melhorar o Google Chrome. Envie relatórios de erros e  <ph name="UMA_LINK" /> para o Google</translation>
 <translation id="2668094785979141847">Clique para sair do Google Lens</translation>
+<translation id="2674238339205910678">O ChromeOS Flex não pôde salvar dados do Chrome na sua Conta do Google porque as informações de login dela estão desatualizadas</translation>
 <translation id="2681444469812712297">Abrir <ph name="URL" /> em uma nova guia do Google Chrome.</translation>
 <translation id="2699790011615497488">Abrir o Gemini no Chrome Beta</translation>
 <translation id="2712141162840347885">Selecione o que quiser para pesquisar com o Google Lens ou pressione "Esc" para sair</translation>
@@ -530,6 +533,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6497147134301593682">O Chrome foi fechado automaticamente</translation>
 <translation id="6506909944137591434">O Chrome precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome Dev</translation>
+<translation id="6520608191273161151">O ChromeOS Flex não pôde salvar dados do Chrome na sua Conta do Google devido a um erro durante o login</translation>
 <translation id="6520670145826811516">Para usar a localização, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6532945796722480006">Abrir o Gemini no Chrome Canary</translation>
@@ -577,6 +581,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7011190694940573312">A instalação falhou porque não há suporte para esta versão do sistema operacional.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Aqui, você pode alternar entre os perfis do Chrome</translation>
+<translation id="7026856149118332950">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para fixar o Chrome na barra de tarefas e ter acesso rápido.</translation>
 <translation id="7047386856539490735">Esses resultados ajudaram?</translation>
 <translation id="7051685429025310665">Você não visitou os sites recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>
@@ -669,6 +674,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7890208801193284374">Se você usa um computador compartilhado, seus amigos e familiares podem navegar separadamente e configurar o Google Chrome da maneira que desejarem.</translation>
 <translation id="7896673875602241923">Anteriormente, alguém fez login no Chrome neste computador como <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo usuário do Chrome para manter suas informações separadas.</translation>
 <translation id="7904985524660297937">Teste o Gemini no Google Chrome</translation>
+<translation id="7905880575591690197">O ChromeOS não pôde salvar dados do Chrome na sua Conta do Google devido a um erro durante o login</translation>
 <translation id="7917876797003313048">Você pode gerenciar as Contas do Google conectadas. Elas são usadas no navegador Chrome, na Play Store, no Gmail e muito mais. Se quiser adicionar uma conta para outra pessoa, como um membro da família, adicione um novo usuário ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">O Chrome bloqueou o download porque o arquivo é enganoso e pode fazer mudanças inesperadas no seu dispositivo</translation>
 <translation id="7951272445806340501">É necessário reiniciar o ChromeOS Flex para que a atualização seja aplicada.</translation>
@@ -744,6 +750,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8624541899164515475">Configurações, abre em uma nova guia.</translation>
 <translation id="8625237574518804553">{0,plural, =1{O Chrome será reiniciado em 1 minuto}one{O Chrome será reiniciado em # minuto}other{O Chrome será reiniciado em # minutos}}</translation>
 <translation id="8637932705841171563">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chrome</translation>
+<translation id="8642497536370021917">Para garantir que você sempre possa usar e salvar dados do Chrome na sua Conta do Google, confirme sua identidade</translation>
 <translation id="8656634243791296665">Abrir o Gemini no Chrome Dev</translation>
 <translation id="8669527147644353129">Auxiliar do Google Chrome</translation>
 <translation id="8679801911857917785">Controla também qual página deve ser exibida quando você inicia o Chrome.</translation>
@@ -793,6 +800,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="93760716455950538">Reiniciar o ChromeOS Flex</translation>
 <translation id="943390475793766444">O Chrome recomenda verificar esse arquivo, porque ele pode ser perigoso.</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
+<translation id="973195869036269770">O ChromeOS não pôde salvar dados do Chrome na sua Conta do Google porque as informações de login dela estão desatualizadas</translation>
 <translation id="983803489796659991">A instalação falhou porque o servidor de atualização não tem o hash dos dados para o aplicativo.</translation>
 <translation id="989369509083708165">O Google Chrome é seu navegador padrão</translation>
 <translation id="989816563149873169">O atalho <ph name="SHORTCUT" /> permite alternar entre os perfis do Chrome</translation>

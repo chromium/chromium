@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">डाऊनलोड करीत आहे...</translation>
 <translation id="1651617469580841801">तुम्ही Google Lens वापरता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex बद्दल</translation>
+<translation id="1665867022636014702">Google ने शिफारस केलेली ब्राउझर सेटिंग्ज वापरा</translation>
 <translation id="1674870198290878346">लिंक Chrome गुप्त विंडोमध्ये उघडा</translation>
 <translation id="1682634494516646069">Google Chrome त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
@@ -151,6 +152,7 @@
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइसमधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">या दस्तऐवजाचे त्वरित अवलोकन करा आणि Chrome मधील Gemini च्या मदतीने प्रश्न विचारा</translation>
 <translation id="2620436844016719705">सिस्टीम</translation>
 <translation id="263447411082773721">तुमचे पासवर्ड, बुकमार्क आणि इतिहास या गोष्टी सर्व डिव्हाइसवर योग्यरीत्या सिंक केलेल्या ठेवा. तुमचा डीफॉल्ट ब्राउझर Chrome वर अपडेट करून, तुम्हाला माहीत असलेली आणि आवडणारी वैशिष्ट्ये सहज ॲक्सेस करा. झटपट ॲक्सेससाठी Chrome तुमच्या टास्कबारवर पिन केले जाईल.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -749,6 +751,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8624541899164515475">सेटिंग्ज, नवीन टॅबमध्ये उघडते.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome एका मिनिटामध्ये पुन्हा लॉंच होईल}other{Chrome # मिनिटांमध्ये पुन्हा लॉंच होईल}}</translation>
 <translation id="8637932705841171563">तुमची विंडो शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या</translation>
+<translation id="8642497536370021917">तुम्ही तुमच्या Google खात्यामध्ये Chrome डेटा नेहमी वापरू आणि सेव्ह करू शकाल याची खात्री करण्यासाठी, ही व्यक्ती तुम्हीच आहात याची पडताळणी करा</translation>
 <translation id="8656634243791296665">Chrome डेव्हलपर मधील Gemini उघडा</translation>
 <translation id="8669527147644353129">Google Chrome मदतनीस</translation>
 <translation id="8679801911857917785">तुम्ही Chrome सुरू करता तेव्हा कोणते पेज दर्शविले जाते हेदेखील हे नियंत्रित करते.</translation>

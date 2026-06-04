@@ -149,6 +149,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1227224963052638717">Kebijakan tidak dikenal.</translation>
 <translation id="1227677022489889280">Berikan alasan pemindahan (wajib)</translation>
 <translation id="1228893227497259893">Pengidentifikasi entitas salah</translation>
+<translation id="122989279399348496">Saat Anda login, <ph name="DOMAIN" /> dapat mengonfirmasi <ph name="EMAIL" /> di situs yang didukung sehingga Anda tidak perlu memeriksa kotak masuk</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (deteksi otomatis)</translation>
 <translation id="1232569758102978740">Tanpa Judul</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> wajib diisi</translation>
@@ -511,6 +512,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, beberapa tindakan tersedia, tekan Tab untuk melihat semua tindakan</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Detail kartu virtual</translation>
+<translation id="1802420021606590788">Chrome memproses judul halaman dan URL di ruang privasi di cloud</translation>
 <translation id="1803254472779303354">Kunci mouse diizinkan</translation>
 <translation id="1803351196216024260">Dapat meminta untuk menggunakan mikrofon Anda</translation>
 <translation id="1804258830776932716">Aktifkan Pix dengan secara cepat menautkan akun Anda</translation>
@@ -874,6 +876,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2354001756790975382">Bookmark lain</translation>
 <translation id="2355395290879513365">Penyerang mungkin dapat melihat gambar yang sedang Anda lihat di situs dan mengelabui Anda dengan memodifikasinya.</translation>
 <translation id="2356941001189392209">Daftar terbatas URL halaman yang Anda buka tempat peristiwa teknologi lama terjadi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Akan membagikan 1 tab}other{Akan membagikan {NUM_TABS} tab}}</translation>
 <translation id="2357481397660644965">Perangkat Anda dikelola oleh <ph name="DEVICE_MANAGER" /> dan akun Anda dikelola oleh <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Beberapa</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
@@ -3027,6 +3030,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5742806904559466333">Bar, Klub, &amp; Kehidupan Malam</translation>
 <translation id="5743684619253032786">Produk Perawatan Kuku</translation>
 <translation id="574392208103952083">Sedang</translation>
+<translation id="5745586894920491759">Chrome memproses judul halaman dan URL di cloud</translation>
 <translation id="5745733273847572235">Dapat meminta lokasi Anda</translation>
 <translation id="5750869797196646528">Pelacakan tangan</translation>
 <translation id="5752327398324808817">Masukkan satu atau dua kata</translation>
@@ -3421,6 +3425,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Lihat log</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Memeriksa proxy, firewall, dan konfigurasi DNS Aman<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Konfirmasi email Anda secara otomatis</translation>
 <translation id="6366710531182496394">Dua jepretan di kiri</translation>
 <translation id="6367196786591004737">Hapus entri</translation>
 <translation id="6370022303958842211">Tindakan akses perangkat seperti login (termasuk alasan login yang gagal), logout, kunci, dan buka kunci</translation>
@@ -5057,6 +5062,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8963117664422609631">Buka setelan situs</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Saran:<ph name="MARKUP_2" />Pastikan Anda memiliki sambungan data<ph name="MARKUP_3" />Coba muat ulang halaman web ini nanti<ph name="MARKUP_4" />Periksa alamat yang Anda masukkan<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">File lokal Anda akan dihapus dalam <ph name="HOURS" /> jam</translation>
+<translation id="8964904785315870349">Email Terverifikasi</translation>
 <translation id="8968766641738584599">Simpan kartu</translation>
 <translation id="8970887620466824814">Terjadi error.</translation>
 <translation id="8971063699422889582">Sertifikat server telah kedaluwarsa.</translation>

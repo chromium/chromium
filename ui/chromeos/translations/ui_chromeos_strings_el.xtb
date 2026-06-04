@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Αυτόματοι διακομιστές ονομάτων</translation>
 <translation id="1210831758834677569">Λάο</translation>
 <translation id="1221555006497674479">Περιορισμένος αποθηκευτικός χώρος. Απομένει το <ph name="REMAINING_PERCENTAGE" />% από τα <ph name="TOTAL_SPACE" /> του αποθηκευτικού χώρου του κοινού Drive.</translation>
+<translation id="1239594683407221485">Εξερευνήστε το περιεχόμενο της συσκευής σας στην εφαρμογή Αρχεία.</translation>
 <translation id="1243314992276662751">Μεταφόρτωση</translation>
 <translation id="1249250836236328755">Είδος</translation>
 <translation id="1254593899333212300">Άμεση σύνδεση στο διαδίκτυο</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Δεν είναι δυνατή η διαγραφή. Το στοιχείο χρησιμοποιείται.</translation>
 <translation id="1307931752636661898">Δεν είναι δυνατή η προβολή αρχείων Linux</translation>
 <translation id="1313405956111467313">Αυτόματη διαμόρφωση διακομιστή μεσολάβησης</translation>
+<translation id="1340527397989195812">Δημιουργία αντιγράφων ασφαλείας μέσων από τη συσκευή με χρήση της εφαρμογής "Αρχεία".</translation>
 <translation id="134645005685694099">Η συσκευή σας δεν διαθέτει αρκετό αποθηκευτικό χώρο για να παραμείνει ενεργοποιημένος ο συγχρονισμός αρχείων. Τα νέα αρχεία δεν θα συγχρονίζονται πλέον αυτόματα.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Δεν υπάρχει πιστοποιητικό χρήστη</translation>
 <translation id="1403008701842173542">Παντού</translation>
 <translation id="1404323374378969387">Νορβηγικά</translation>
+<translation id="1408504635543854729">Εξερευνήστε το περιεχόμενο της συσκευής στην εφαρμογή "Αρχεία". Το περιεχόμενο περιορίζεται από κάποιον διαχειριστή και δεν είναι δυνατή η τροποποίησή του.</translation>
 <translation id="1412476183660741812">Υπογεγραμμένο πακέτο ιστού</translation>
 <translation id="1433628812591023318">Για να αποθέσετε αρχεία στο Parallels Desktop, το αρχείο θα πρέπει να μετακινηθεί στα αρχεία των Windows.</translation>
 <translation id="1435838927755162558">Κοινή χρήση φακέλου με το Parallels Desktop</translation>
 <translation id="1439919885608649279">Άτομο με λουλούδια</translation>
 <translation id="1458457385801829801">Αποσύνδεση <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Για τις προτιμήσεις συσκευής, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="146691674290220697">Δεν ήταν δυνατή η αντιγραφή <ph name="NUMBER_OF_FILES" /> αρχείων επειδή είναι κρυπτογραφημένα.</translation>
 <translation id="1471718551822868769">Σλοβακικά</translation>
 <translation id="1482884275703521657">Φινλανδικά</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Διαχείριση στο Drive</translation>
 <translation id="2004942826429452291">Τα αρχεία θα αποθηκευτούν στο cloud και σε αυτό το Chromebook.</translation>
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
+<translation id="2018352199541442911">Λυπούμαστε, η εξωτερική συσκευή αποθήκευσης δεν υποστηρίζεται προς το παρόν.</translation>
 <translation id="2025955442973426285">Τιγκρίνια</translation>
 <translation id="2029385776150020336">Εκτεταμένο ΗΠΑ</translation>
 <translation id="2037845485764049925">Ρωσικά</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Ταμαγκότσι</translation>
 <translation id="2468470447085858632">Αποκτήστε πρόσβαση στα αρχεία σας στο Google Drive όταν είστε εκτός σύνδεσης με τον συγχρονισμό αρχείων</translation>
 <translation id="2470939964922472929">Έγινε εισαγωγή εσφαλμένου PIN πάρα πολλές φορές. Για να ρυθμίσετε ένα νέο PIN, εισαγάγετε το προσωπικό κλειδί ξεκλειδώματος 8 ψηφίων (PUK) που παρασχέθηκε από την εταιρεία κινητής τηλεφωνίας σας.</translation>
+<translation id="249113932447298600">Λυπούμαστε, η συσκευή <ph name="DEVICE_LABEL" /> δεν υποστηρίζεται προς το παρόν.</translation>
 <translation id="2500392669976258912">Φωνητική εισαγωγή Γκουγιαράτι</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Σάρωση</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ουκρανικά</translation>
 <translation id="3326821416087822643">Συμπίεση αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="3335337277364016868">Έτος ηχογράφησης</translation>
+<translation id="3348038390189153836">Ανιχνεύτηκε αφαιρούμενη συσκευή</translation>
 <translation id="3353984535370177728">Επιλέξτε έναν φάκελο για μεταφόρτωση</translation>
 <translation id="3356580349448036450">Ολοκληρώθηκε</translation>
 <translation id="3358452157379365236">Κιθάρα</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">Αγγλικά (ΗΒ)</translation>
 <translation id="3975895378829046965">Φωνητική εισαγωγή Βεγγαλικών</translation>
+<translation id="3983764759749072418">Οι εφαρμογές του Play Store έχουν πρόσβαση σε αυτήν τη συσκευή.</translation>
 <translation id="3999574733850440202">Τα αρχεία Microsoft που έχουν ανοιχτεί πρόσφατα μετακινήθηκαν στο OneDrive</translation>
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4017788180641807848">Αγγλικά (ΗΠΑ) με πληκτρολόγιο Workman</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτό το αρχείο.</translation>
 <translation id="4212740939091998969">Ο φάκελος με την ονομασία "<ph name="FOLDER_NAME" />" υπάρχει ήδη. Επιλέξτε διαφορετικό όνομα.</translation>
 <translation id="4218274196133425560">Κατάργηση εξαίρεσης για τον ιστότοπο <ph name="HOST_NAME" /></translation>
+<translation id="4242533952199664413">Ανοίξτε τις ρυθμίσεις</translation>
 <translation id="4261901459838235729">Παρουσίαση Google</translation>
 <translation id="4277536868133419688">Το φίλτρο <ph name="FILTER_NAME" /> είναι ενεργό.</translation>
 <translation id="4290535918735525311">1 φάκελος που κοινοποιήθηκε με Linux</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
 <translation id="5278111733643988471">Για να επαναφέρετε αυτό το στοιχείο, σύρετέ το σε έναν νέο φάκελο εκτός του κάδου. Ο αρχικός φάκελος "<ph name="PARENT_FOLDER_NAME" />" αυτού του στοιχείου έχει διαγραφεί.</translation>
 <translation id="5288441970121584418">Μπέργκερ</translation>
+<translation id="529175790091471945">Μορφοποίηση αυτής της συσκευής</translation>
 <translation id="5293615890992542006">Η μετακίνηση αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="5305688511332277257">Δεν υπάρχει εγκατεστημένο</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Μην χρησιμοποιείτε τις ρυθμίσεις διακομιστή μεσολάβησης για αυτούς τους κεντρικούς υπολογιστές και τομείς:</translation>
 <translation id="541890217011173530">Σορανί κουρδικά με πληκτρολόγιο βασισμένο στα Αγγλικά</translation>
 <translation id="5422221874247253874">Σημείο πρόσβασης</translation>
+<translation id="5422781158178868512">Λυπούμαστε, δεν ήταν δυνατή η αναγνώριση της εξωτερικής συσκευής αποθήκευσης.</translation>
 <translation id="5438282218546237410">Δεν υπάρχουν αποτελέσματα για <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">Ο αποθηκευτικός χώρος δεν επαρκεί.</translation>
 <translation id="5449551289610225147">Μη έγκυρος κωδικός πρόσβασης</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727">Επιλέχθηκαν <ph name="SELECTED_FILES_COUNT" /> στοιχεία</translation>
 <translation id="5763377084591234761">Γερμανικά (Ελβετία)</translation>
 <translation id="5769519078756170258">Κεντρικός υπολογιστής ή τομέας προς εξαίρεση</translation>
+<translation id="5774295353725270860">Άνοιγμα εφαρμογής αρχείων</translation>
 <translation id="5775750595919327203">Ούρντου</translation>
 <translation id="5776325638577448643">Διαγραφή και διαμόρφωση</translation>
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5788127256798019331">Αρχεία Play</translation>
+<translation id="5788367137662787332">Λυπούμαστε, δεν ήταν δυνατή η προσάρτηση τουλάχιστον ενός διαμερίσματος της συσκευής <ph name="DEVICE_LABEL" />.</translation>
 <translation id="5804245609861364054">Μεταγραφή Κανάντα</translation>
 <translation id="5814126672212206791">Τύπος σύνδεσης</translation>
 <translation id="5817397429773072584">Παραδοσιακά Κινεζικά</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">Ισλανδικά</translation>
 <translation id="7229570126336867161">Απαιτείται EVDO</translation>
 <translation id="7230898482850090046">Ο διαχειριστής σας ζήτησε να απενεργοποιήσετε τη ρύθμιση Κλείδωμα SIM.</translation>
+<translation id="7232750842195536390">Η μετονομασία απέτυχε</translation>
 <translation id="7238097264433196391">Όνομα δίσκου</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Λεπτομέρειες</translation>
 <translation id="7246947237293279874">Διακομιστής μεσολάβησης FTP</translation>
+<translation id="725109152065019550">Λυπούμαστε, ο διαχειριστής σας έχει απενεργοποιήσει τον εξωτερικό χώρο αποθήκευσης στον λογαριασμό σας.</translation>
 <translation id="7256405249507348194">Μη αναγνωρίσιμο σφάλμα: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Διαθέσιμες υπηρεσίες</translation>
 <translation id="7291818353625820805">Θέλετε να επαναλαμβάνεται το πάτημα των πλήκτρων; Απενεργοποίηση σημαδιών τονισμού στις Ρυθμίσεις πληκτρολογίου</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Χάρτης Google</translation>
 <translation id="7419668828140929293">Επαναφορά <ph name="FILENAME" /></translation>
 <translation id="7435577899926900307">Dvorak ΗΠΑ</translation>
+<translation id="7436921188514130341">Δυστυχώς, παρουσιάστηκε σφάλμα κατά τη μετονομασία.</translation>
 <translation id="7458955835361612701">Δεν υπάρχουν πρόσφατες εικόνες</translation>
 <translation id="7469894403370665791">Αυτόματη σύνδεση σε αυτό το δίκτυο</translation>
 <translation id="7486315294984620427">Για να αποθέσετε αρχεία στο Parallels Desktop, το αρχείο θα πρέπει να αντιγραφεί στα αρχεία των Windows.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Καρφίτσωμα στο ράφι</translation>
 <translation id="7553492409867692754">Παραχωρήστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Είστε εκτός σύνδεσης. Ο συγχρονισμός αρχείων θα συνεχιστεί όταν συνδεθείτε στο διαδίκτυο</translation>
+<translation id="7589461650300748890">Να είστε προσεκτικοί.</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
 <translation id="7600126690270271294">Σερβικά</translation>
 <translation id="7603724359189955920">Πλέγματα</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Σφάλμα κατά τη διαμόρφωση του δικτύου</translation>
+<translation id="7839051173341654115">Μέσα προβολής/αντιγράφων ασφαλείας</translation>
 <translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7857117644404132472">Προσθήκη εξαίρεσης</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Πολωνικά</translation>
 <translation id="7874321682039004450">Φιλιππινέζικα</translation>
 <translation id="78946041517601018">Κοινά Drive</translation>
+<translation id="7897900149154324287">Στο μέλλον, βεβαιωθείτε ότι έχετε αφαιρέσει την αφαιρούμενη συσκευή σας στην εφαρμογή Αρχεία προτού την αποσυνδέσετε. Διαφορετικά, ενδέχεται να χάσετε δεδομένα.</translation>
 <translation id="7901567919203965902">Διεθνές Workman ΗΠΑ</translation>
 <translation id="7903984238293908205">Κατακάνα</translation>
+<translation id="7908378463497120834">Λυπούμαστε, δεν ήταν δυνατή η προσάρτηση τουλάχιστον ενός διαμερίσματος της εξωτερικής συσκευής αποθήκευσης.</translation>
 <translation id="7908793776359722643">Η μορφοποίηση ενός διαμερίσματος θα διαγράψει όλα τα δεδομένα που είναι αποθηκευμένα σε αυτό. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Τα αρχεία στην ενότητα Το Drive μου θα συγχρονίζονται αυτόματα στο Chromebook, για να μπορείτε να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Για να επαναφέρετε αυτά τα στοιχεία, σύρετέ τα σε έναν νέο φάκελο. Οι αρχικοί φάκελοι για ορισμένα από αυτά τα στοιχεία έχουν διαγραφεί.</translation>
 <translation id="8874184842967597500">Καμία σύνδεση</translation>
 <translation id="8876368061475701452">Σε ουρά</translation>
+<translation id="8893928184421379330">Λυπούμαστε, δεν ήταν δυνατή η αναγνώριση της συσκευής <ph name="DEVICE_LABEL" />.</translation>
 <translation id="8902208737522818687">Διεθνές ΗΠΑ (PC)</translation>
 <translation id="8903931173357132290">Απόφοιτος</translation>
 <translation id="8912078710089354287">Σκύλος που κουνάει την ουρά του</translation>

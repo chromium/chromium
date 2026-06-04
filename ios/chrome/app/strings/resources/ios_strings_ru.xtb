@@ -487,6 +487,7 @@
 <translation id="2640733327287333451">Имя пользователя не указано ••••••</translation>
 <translation id="264215785133931186">Выполнена только что</translation>
 <translation id="2647434099613338025">Добавить язык</translation>
+<translation id="2648812801228676606">Вы остались в аккаунте <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="2649592894792404568">Вы собираетесь удалить данные из Google Менеджера паролей</translation>
 <translation id="2652129567809778422">Выбрать пароль</translation>
 <translation id="2658056020748144467">Невозможно открыть файл</translation>
@@ -2247,6 +2248,7 @@
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8637431369725868556">Защитите себя от опасных сайтов.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нет раскрытых паролей}=1{{COUNT} раскрытый пароль}one{{COUNT} раскрытый пароль}few{{COUNT} раскрытых пароля}many{{COUNT} раскрытых паролей}other{{COUNT} раскрытого пароля}}</translation>
+<translation id="8639963783467694461">Настройки автозаполнения</translation>
 <translation id="8642417828095157370">Чтобы давать более подходящие ответы, Gemini получит доступ к вкладкам</translation>
 <translation id="8643403533759285912">Удалить группу</translation>
 <translation id="8647280737650867362">Не удалось перестать отслеживать цену.</translation>

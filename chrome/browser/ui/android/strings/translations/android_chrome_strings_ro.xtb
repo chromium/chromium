@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Poți descărca fișiere PDF aici</translation>
 <translation id="107147699690128016">Dacă modifici extensia de fișier, fișierul poate să se deschidă în altă aplicație și să dăuneze dispozitivului.</translation>
 <translation id="1073328695547557412">Atinge pictograma Google Lens</translation>
+<translation id="1080116354587839789">Încadrează pe lățime</translation>
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
 <translation id="1087799850623149508">Poți să atingi lung pentru a muta bara de adrese în partea de jos</translation>
 <translation id="1089606299949659462">Examinare finalizată!</translation>
@@ -536,6 +537,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> filă}few{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> file}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> de file}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Se salvează o parolă numai pe acest dispozitiv. Pentru a-l folosi pe celelalte dispozitive, salvează-l în Contul Google.}few{Se salvează # parole numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}other{Se salvează # de parole numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google.}}</translation>
 <translation id="3293181007446299124">Istoricul de navigare este păstrat privat pe dispozitivul tău și rapoartele sunt trimise cu întârziere pentru a-ți proteja identitatea</translation>
+<translation id="3301639354590628973">Schimbi contul?</translation>
 <translation id="3301936297336370235">Confirmarea sugestiei de parolă</translation>
 <translation id="3302615849591357577">Restabilește grupul de file <ph name="TITLE_OF_GROUP" /> de culoare <ph name="COLOR_NAME" /> ca pe un nou grup de file din fundal.</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
@@ -678,6 +680,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, filă picture-in-picture fixată</translation>
 <translation id="3950820424414687140">Conectează-te</translation>
 <translation id="395377504920307820">Folosește fără un cont</translation>
+<translation id="3955353672249727801">Paginile au fost adăugate în Lista de lecturi</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome va încărca pagina când este gata}few{Chrome va încărca paginile când este gata}other{Chrome va încărca paginile când este gata}}</translation>
 <translation id="3969142555815019568">Chrome nu îți poate verifica parolele</translation>
 <translation id="3969863827134279083">Mutați în sus</translation>

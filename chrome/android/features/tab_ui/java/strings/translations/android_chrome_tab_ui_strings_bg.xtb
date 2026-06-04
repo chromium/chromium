@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> раздел е групиран</translation>
 <translation id="1844381456014878100">След 7 дни неактивност</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
 <translation id="1909810060368225529">Известие: Промените в тази споделена група раздели са видими за всички. Всеки може да прави промени в споделените от вас групи раздели</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Фиксиране на раздела}other{Фиксиране на разделите}}</translation>
 <translation id="1982637982196732906">Преместване в секцията за неактивни</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138">Понижение на цената на <ph name="PRODUCT_NAME" /> в размер на <ph name="PRICE_DROP" /></translation>
 <translation id="3078350928901129212">Цвят на иконата на групата раздели: <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Списъкът с групите раздели е затворен</translation>
+<translation id="3152596030350326139">Показване на разделите хоризонтално</translation>
+<translation id="31806439105337256">Показване на разделите вертикално</translation>
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Добавяне на <ph name="TABS_COUNT_ONE" /> раздел към група}other{Добавяне на <ph name="TABS_COUNT_MANY" /> раздела към група}}</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>

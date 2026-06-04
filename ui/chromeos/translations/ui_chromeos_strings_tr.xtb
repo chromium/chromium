@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Otomatik ad sunucuları</translation>
 <translation id="1210831758834677569">Laoca</translation>
 <translation id="1221555006497674479"><ph name="TOTAL_SPACE" /> olan ortak Drive depolama alanınızda %<ph name="REMAINING_PERCENTAGE" /> oranından daha az depolama alanı kaldı.</translation>
+<translation id="1239594683407221485">Cihazın içeriğini Files uygulamasında keşfedin.</translation>
 <translation id="1243314992276662751">Yükle</translation>
 <translation id="1249250836236328755">Tür</translation>
 <translation id="1254593899333212300">Doğrudan İnternet bağlantısı</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Silinemiyor. Öğe kullanılıyor.</translation>
 <translation id="1307931752636661898">Linux dosyaları görüntülenemiyor</translation>
 <translation id="1313405956111467313">Otomatik proxy yapılandırması</translation>
+<translation id="1340527397989195812">Dosyalar uygulamasını kullanarak cihazdaki medyayı yedekleyin.</translation>
 <translation id="134645005685694099">Cihazınızda, dosya senkronizasyonunu açık tutmak için yeterli depolama alanı yok. Yeni dosyalar artık otomatik olarak senkronize edilmeyecek.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Dosya veya dizin kullanılamıyor.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Kullanıcı sertifikası yok</translation>
 <translation id="1403008701842173542">Her yer</translation>
 <translation id="1404323374378969387">Norveççe</translation>
+<translation id="1408504635543854729">Cihazın içeriğini Dosyalar uygulamasında keşfedin. İçerik, bir yönetici tarafından kısıtlanmış ve üzerinde değişiklik yapılamaz.</translation>
 <translation id="1412476183660741812">İmzalı Web Paketi</translation>
 <translation id="1433628812591023318">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına taşımak gerekir.</translation>
 <translation id="1435838927755162558">Parallels Desktop ile klasör paylaşın</translation>
 <translation id="1439919885608649279">Çiçek tutan bir kişi</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> dosya sistemini çıkarma</translation>
+<translation id="1464781208867302907">Cihaz tercihleri için Ayarlar'a gidin.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> dosya, şifrelenmiş olduğu için kopyalanamadı.</translation>
 <translation id="1471718551822868769">Slovakça</translation>
 <translation id="1482884275703521657">Fince</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Drive'da Yönet</translation>
 <translation id="2004942826429452291">Dosyalar bulutta ve bu Chromebook'ta depolanır.</translation>
 <translation id="2009067268969781306">Bir sürücünün biçimlendirilmesi, üzerinde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
+<translation id="2018352199541442911">Maalesef, harici depolama cihazınız şu anda desteklenmiyor.</translation>
 <translation id="2025955442973426285">Tigrinya dili</translation>
 <translation id="2029385776150020336">ABD genişletilmiş</translation>
 <translation id="2037845485764049925">Rusça</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagotchi</translation>
 <translation id="2468470447085858632">Dosya senkronizasyonunu kullanarak Google Drive dosyalarınıza internet bağlantısı olmadan erişin</translation>
 <translation id="2470939964922472929">Çok sayıda yanlış PIN girildi. Yeni bir PIN oluşturmak için operatörünüz tarafından sağlanan 8 basamaklı Kişisel Engelleme Kaldırma Anahtarını (PUK) girin.</translation>
+<translation id="249113932447298600">Maalesef, <ph name="DEVICE_LABEL" /> cihazı şu anda desteklenmiyor.</translation>
 <translation id="2500392669976258912">Guceratça Fonetik</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Tara</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukraynaca</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> sıkıştırılıyor...</translation>
 <translation id="3335337277364016868">Kaydedildiği yıl</translation>
+<translation id="3348038390189153836">Kaldırılabilir cihaz algılandı</translation>
 <translation id="3353984535370177728">Yüklemek için bir klasör seçin</translation>
 <translation id="3356580349448036450">Tamamlandı</translation>
 <translation id="3358452157379365236">Gitar</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Mobil profili indir, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ağı</translation>
 <translation id="3973925058222872294">İngilizce (BK)</translation>
 <translation id="3975895378829046965">Bengalce Fonetik</translation>
+<translation id="3983764759749072418">Play Store uygulamalarının bu cihaza erişim izni var.</translation>
 <translation id="3999574733850440202">Son açılan Microsoft dosyaları OneDrive'a taşındı</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4017788180641807848">Workman klavye ile İngilizce (ABD)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Bu dosyaya erişebilmek için çevrimiçi olmalısınız.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" adlı klasör zaten var. Lütfen farklı bir ad seçin.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> için istisnayı kaldır</translation>
+<translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4261901459838235729">Google sunusu</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtresi açık.</translation>
 <translation id="4290535918735525311">Linux ile 1 klasör paylaşılıyor</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Dosyalar Google Drive'dan geri yüklendi</translation>
 <translation id="5278111733643988471">Bu öğeyi geri yüklemek için çöp kutusu dışındaki yeni bir klasöre sürükleyin. Bu öğenin bulunduğu orijinal klasör ("<ph name="PARENT_FOLDER_NAME" />") silindi.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Bu cihazı biçimlendir</translation>
 <translation id="5293615890992542006">Bu dosyanın taşınması yönetici politikası tarafından engellendi</translation>
 <translation id="5305688511332277257">Hiç sertifika yüklenmedi</translation>
 <translation id="5317780077021120954">Kaydet</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">Aşağıdaki ana makine ve alanlar için proxy ayarlarını kullanmayın:</translation>
 <translation id="541890217011173530">İngilizce tabanlı klavye ile Sorani Kürtçesi</translation>
 <translation id="5422221874247253874">Erişim Noktası</translation>
+<translation id="5422781158178868512">Maalesef, harici depolama cihazınız tanınamadı.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> için sonuç yok.</translation>
 <translation id="5447680084201416734">Yeterli depolama alanı yok.</translation>
 <translation id="5449551289610225147">Geçersiz şifre</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> öğe seçildi</translation>
 <translation id="5763377084591234761">Almanca (İsviçre)</translation>
 <translation id="5769519078756170258">Hariç tutulacak ana makine veya alan adı</translation>
+<translation id="5774295353725270860">Dosyalar uygulamasını aç</translation>
 <translation id="5775750595919327203">Urduca</translation>
 <translation id="5776325638577448643">Sil ve Biçimlendir</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5788127256798019331">Play dosyaları</translation>
+<translation id="5788367137662787332">Maalesef, <ph name="DEVICE_LABEL" /> cihazındaki en az bir bölüm eklenemedi.</translation>
 <translation id="5804245609861364054">Kannada Harf Çevirisi</translation>
 <translation id="5814126672212206791">Bağlantı türü</translation>
 <translation id="5817397429773072584">Geleneksel Çince</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">İzlandaca</translation>
 <translation id="7229570126336867161">EVDO gerekli</translation>
 <translation id="7230898482850090046">Yöneticiniz "SIM kilidi" ayarını devre dışı bırakmanızı istedi</translation>
+<translation id="7232750842195536390">Yeniden adlandırma başarısız oldu</translation>
 <translation id="7238097264433196391">Sürücü adı</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Ayrıntılar</translation>
 <translation id="7246947237293279874">FTP Proxy'si</translation>
+<translation id="725109152065019550">Maalesef, yöneticiniz hesabınızda harici depolama özelliğini devre dışı bıraktı.</translation>
 <translation id="7256405249507348194">Tanınmayan hata: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Kullanılabilir hizmetler</translation>
 <translation id="7291818353625820805">Tuşların tekrarlanmasını ister misiniz? Klavye ayarlarından aksan işaretlerini kapatın</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google harita</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" geri yükleniyor</translation>
 <translation id="7435577899926900307">ABD Dvorak</translation>
+<translation id="7436921188514130341">Hay aksi! Yeniden adlandırma sırasında bir hata oluştu.</translation>
 <translation id="7458955835361612701">Yakın tarihli resim yok</translation>
 <translation id="7469894403370665791">Bu ağa otomatik olarak bağlan</translation>
 <translation id="7486315294984620427">Dosyaları Parallels Desktop'a bırakabilmek için Windows dosyalarına kopyalamak gerekir.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">Rafa sabitle</translation>
 <translation id="7553492409867692754">Linux uygulamalarına <ph name="FOLDER_NAME" /> klasöründeki dosyalara erişim izni verin</translation>
 <translation id="7555339735447658365">Şu anda çevrimdışısınız. Senkronizasyon, internete bağlandığınızda devam edecek.</translation>
+<translation id="7589461650300748890">Aman, dikkatli olun.</translation>
 <translation id="7589661784326793847">Bir saniye bekleyin</translation>
 <translation id="7600126690270271294">Sırpça</translation>
 <translation id="7603724359189955920">Izgaralar</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Ağ yapılandırılırken hata oluştu</translation>
+<translation id="7839051173341654115">Medyayı görüntüle/yedekle</translation>
 <translation id="7839804798877833423">Bu dosyaları getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7857117644404132472">İstisna ekle</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">Lehçe</translation>
 <translation id="7874321682039004450">Filipince</translation>
 <translation id="78946041517601018">Ortak drive'lar</translation>
+<translation id="7897900149154324287">Gelecekte, kaldırılabilir cihazınızı yerinden sökmeden önce cihazı Dosyalar uygulamasından çıkardığınızdan emin olun. Aksi halde veri kaybedebilirsiniz.</translation>
 <translation id="7901567919203965902">ABD Workman uluslararası</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Maalesef, harici depolama cihazınızdaki en az bir bölüm eklenemedi.</translation>
 <translation id="7908793776359722643">Bir bölümün biçimlendirilmesi o bölümde depolanan tüm verileri siler. Bu işlem geri alınamaz.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">Drive'ım bölümündeki dosyalarınız Chromebook'unuzla otomatik olarak senkronize edildiği için bu dosyalara internet bağlantısı olmadan erişebilirsiniz.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">Bu öğeleri geri yüklemek için yeni bir klasöre sürükleyin. Bu öğelerden bazılarının bulunduğu orijinal klasörler silindi.</translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8876368061475701452">Sıraya alındı</translation>
+<translation id="8893928184421379330">Maalesef, <ph name="DEVICE_LABEL" /> cihazı tanınamadı.</translation>
 <translation id="8902208737522818687">ABD uluslararası (PC)</translation>
 <translation id="8903931173357132290">Mezun</translation>
 <translation id="8912078710089354287">Kuyruğunu sallayan bir köpek</translation>

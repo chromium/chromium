@@ -149,6 +149,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1227224963052638717">Nezināma politika.</translation>
 <translation id="1227677022489889280">Norādiet pārvietošanas iemeslu (obligāti)</translation>
 <translation id="1228893227497259893">Nepareizs vienības identifikators</translation>
+<translation id="122989279399348496">Kamēr esat pierakstījies, <ph name="DOMAIN" /> var apstiprināt <ph name="EMAIL" /> atbalstītās vietnēs, lai jums nebūtu jāpārbauda iesūtne.</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (noteikta automātiski)</translation>
 <translation id="1232569758102978740">Bez nosaukuma</translation>
 <translation id="1234539281285007945">Lauks <ph name="FIELD_1" /> ir jāaizpilda obligāti.</translation>
@@ -510,6 +511,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ir pieejamas vairākas darbības. Lai pēc kārtas pārietu starp šīm darbībām, nospiediet tabulēšanas taustiņu.</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtuālās kartes informācija</translation>
+<translation id="1802420021606590788">Chrome apstrādā lapu nosaukumus un vietrāžus URL privātā telpā mākonī.</translation>
 <translation id="1803254472779303354">Peles bloķēšana ir atļauta</translation>
 <translation id="1803351196216024260">Var pieprasīt atļauju izmantot jūsu mikrofonu</translation>
 <translation id="1804258830776932716">Ātri iespējojiet Pix, saistot savu kontu</translation>
@@ -873,6 +875,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2354001756790975382">Citas grāmatzīmes</translation>
 <translation id="2355395290879513365">Uzbrucēji var skatīt attēlus, kurus skatāt šajā vietnē, un apmānīt jūs, pārveidojot šos attēlus.</translation>
 <translation id="2356941001189392209">Ierobežots to jūsu apmeklēto lapu vietrāžu URL saraksts, kuros rodas mantotās tehnoloģijas notikumi</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Tiks kopīgota viena cilne}zero{Tiks kopīgotas {NUM_TABS} cilnes}one{Tiks kopīgota {NUM_TABS} cilne}other{Tiks kopīgotas {NUM_TABS} cilnes}}</translation>
 <translation id="2357481397660644965">Jūsu ierīci pārvalda <ph name="DEVICE_MANAGER" />, un jūsu kontu pārvalda <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Vairākas</translation>
 <translation id="2359808026110333948">Turpināt</translation>
@@ -3025,6 +3028,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5742806904559466333">Bāri, klubi un nakts dzīve</translation>
 <translation id="5743684619253032786">Nagu kopšanas produkti</translation>
 <translation id="574392208103952083">Vidējs</translation>
+<translation id="5745586894920491759">Chrome apstrādā lapu nosaukumus un vietrāžus URL mākonī.</translation>
 <translation id="5745733273847572235">Var pieprasīt informāciju par jūsu atrašanās vietu</translation>
 <translation id="5750869797196646528">Roku kustību izsekošana</translation>
 <translation id="5752327398324808817">Ievadiet vienu vai divus vārdus</translation>
@@ -3419,6 +3423,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Skatīt žurnālus</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri, ugunsmūri un droša DNS servera konfigurāciju<ph name="END_LINK" />.</translation>
+<translation id="6365513578140103119">Automātiski apstipriniet savus e-pasta ziņojumus.</translation>
 <translation id="6366710531182496394">Divkāršs skavojums kreisajā pusē</translation>
 <translation id="6367196786591004737">Dzēst ierakstu</translation>
 <translation id="6370022303958842211">Ierīces piekļuves darbības, piemēram, pieteikšanās (tostarp nesekmīgas pieteikšanās iemesli), atteikšanās, bloķēšana un atbloķēšana</translation>
@@ -5060,6 +5065,7 @@ Papildu informācija:
 <translation id="8963117664422609631">Pāriet uz vietnes iestatījumiem</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Ieteikumi.<ph name="MARKUP_2" />Pārbaudiet, vai ir pieejams datu savienojums.<ph name="MARKUP_3" />Ielādējiet šo tīmekļa lapu vēlāk.<ph name="MARKUP_4" />Pārbaudiet, vai ir ievadīta pareiza adrese.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Jūsu lokālie faili tiks dzēsti pēc <ph name="HOURS" /> stundām</translation>
+<translation id="8964904785315870349">Verificēta e-pasta adrese</translation>
 <translation id="8968766641738584599">Saglabāt karti</translation>
 <translation id="8970887620466824814">Radās kļūda.</translation>
 <translation id="8971063699422889582">Servera sertifikātam ir beidzies derīguma termiņš.</translation>

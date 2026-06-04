@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Puedes descargar los archivos PDF aquí</translation>
 <translation id="107147699690128016">Si cambias la extensión de archivo, es posible que el archivo se abra en una app diferente y dañe el dispositivo.</translation>
 <translation id="1073328695547557412">Presiona el ícono de Google Lens.</translation>
+<translation id="1080116354587839789">Ajustar al ancho</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1087799850623149508">Puedes mantener presionada la barra de direcciones para moverla a la parte inferior</translation>
 <translation id="1089606299949659462">¡Se completó la revisión!</translation>
@@ -536,6 +537,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> pestañas}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 contraseña se guarda solo en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu Cuenta de Google.}other{# contraseñas se guardan solo en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu Cuenta de Google.}}</translation>
 <translation id="3293181007446299124">Se mantendrá la privacidad del historial de navegación en tu dispositivo y los informes se enviarán con demora para proteger tu identidad.</translation>
+<translation id="3301639354590628973">¿Quieres cambiar de cuenta?</translation>
 <translation id="3301936297336370235">Confirmación de la sugerencia de contraseña</translation>
 <translation id="3302615849591357577">Restablece el grupo de pestañas <ph name="TITLE_OF_GROUP" />, color <ph name="COLOR_NAME" />, como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
@@ -678,6 +680,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pestaña de pantalla en pantalla fijada</translation>
 <translation id="3950820424414687140">Acceder</translation>
 <translation id="395377504920307820">Usar sin una cuenta</translation>
+<translation id="3955353672249727801">Se agregaron las páginas a la lista de lectura</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará la página cuando esté lista}other{Chrome cargará las páginas cuando estén listas}}</translation>
 <translation id="3969142555815019568">Chrome no puede verificar tus contraseñas</translation>
 <translation id="3969863827134279083">Subir</translation>

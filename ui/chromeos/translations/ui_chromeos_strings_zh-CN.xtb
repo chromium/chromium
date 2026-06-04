@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">自动域名服务器</translation>
 <translation id="1210831758834677569">老挝语</translation>
 <translation id="1221555006497674479">存储空间不足，您的 <ph name="TOTAL_SPACE" /> 共享云端硬盘存储空间还剩 <ph name="REMAINING_PERCENTAGE" />%。</translation>
+<translation id="1239594683407221485">在“文件”应用中浏览此设备上的内容。</translation>
 <translation id="1243314992276662751">上传</translation>
 <translation id="1249250836236328755">流派</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">无法删除这项内容。它正被使用。</translation>
 <translation id="1307931752636661898">无法查看 Linux 文件</translation>
 <translation id="1313405956111467313">自动配置代理</translation>
+<translation id="1340527397989195812">使用“文件”应用备份设备上的媒体。</translation>
 <translation id="134645005685694099">您设备的存储空间不足，无法继续进行文件同步。新文件将不再自动同步。</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />：<ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">该文件或目录无法使用。</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">不使用任何用户证书</translation>
 <translation id="1403008701842173542">所有位置</translation>
 <translation id="1404323374378969387">挪威语</translation>
+<translation id="1408504635543854729">在“文件”应用中浏览此设备上的内容。相关内容受到管理员的限制，无法修改。</translation>
 <translation id="1412476183660741812">经过签名的 Web 软件包</translation>
 <translation id="1433628812591023318">若要将某个文件拖放到 Parallels Desktop，必须先将此文件移至“Windows 文件”文件夹。</translation>
 <translation id="1435838927755162558">与 Parallels Desktop 共享文件夹</translation>
 <translation id="1439919885608649279">一个人捧着鲜花</translation>
 <translation id="1458457385801829801">卸载 <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">若想指定设备偏好设置，请转到“设置”页面。</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> 个文件经过加密，因此无法复制。</translation>
 <translation id="1471718551822868769">斯洛伐克语</translation>
 <translation id="1482884275703521657">芬兰语</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">在云端硬盘中管理</translation>
 <translation id="2004942826429452291">文件将同时存储在云端和此 Chromebook 上。</translation>
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
+<translation id="2018352199541442911">抱歉，系统目前不支持您的外部存储设备。</translation>
 <translation id="2025955442973426285">提格里尼亚语</translation>
 <translation id="2029385776150020336">美式（扩展）</translation>
 <translation id="2037845485764049925">俄语</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">拓麻歌子</translation>
 <translation id="2468470447085858632">使用文件同步功能离线访问 Google 云端硬盘文件</translation>
 <translation id="2470939964922472929">您输错 PIN 码的次数过多。若要设置一个新 PIN 码，请输入您的运营商提供的 8 位数个人解锁密钥 (PUK)。</translation>
+<translation id="249113932447298600">抱歉，系统目前不支持设备“<ph name="DEVICE_LABEL" />”。</translation>
 <translation id="2500392669976258912">古吉拉特语注音</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">扫描</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">乌克兰语</translation>
 <translation id="3326821416087822643">正在压缩<ph name="FILE_NAME" />…</translation>
 <translation id="3335337277364016868">录制年份</translation>
+<translation id="3348038390189153836">检测到可移除的设备</translation>
 <translation id="3353984535370177728">选择要上传的文件夹</translation>
 <translation id="3356580349448036450">已完成</translation>
 <translation id="3358452157379365236">吉他</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”，网络服务提供商为“<ph name="NETWORK_PROVIDER_NAME" />”</translation>
 <translation id="3973925058222872294">英语（英国）</translation>
 <translation id="3975895378829046965">孟加拉语注音</translation>
+<translation id="3983764759749072418">Play 商店中的应用有权访问此设备。</translation>
 <translation id="3999574733850440202">最近打开的 Microsoft 文件已移至 OneDrive</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4017788180641807848">英语（美国）Workman 键盘</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">您必须在线访问此文件。</translation>
 <translation id="4212740939091998969">已有名为“<ph name="FOLDER_NAME" />”的文件夹。请另选一个名称。</translation>
 <translation id="4218274196133425560">为 <ph name="HOST_NAME" /> 移除例外情况</translation>
+<translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4261901459838235729">Google 演示文稿</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />过滤器已开启。</translation>
 <translation id="4290535918735525311">与 Linux 共享了 1 个文件夹</translation>
@@ -550,6 +559,7 @@
 <translation id="5275973617553375938">从 Google 云端硬盘恢复的文件</translation>
 <translation id="5278111733643988471">若要恢复这项内容，请将其拖至回收站以外的新文件夹。这项内容的原始文件夹“<ph name="PARENT_FOLDER_NAME" />”已被删除。</translation>
 <translation id="5288441970121584418">汉堡包</translation>
+<translation id="529175790091471945">将此设备格式化</translation>
 <translation id="5293615890992542006">管理员政策禁止移动此文件</translation>
 <translation id="5305688511332277257">未安装任何证书</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -565,6 +575,7 @@
 <translation id="5411472733320185105">不要对以下主机和域使用代理设置：</translation>
 <translation id="541890217011173530">索拉尼库尔德语（英文字母）键盘</translation>
 <translation id="5422221874247253874">接入点</translation>
+<translation id="5422781158178868512">抱歉，系统无法识别您的外部存储设备。</translation>
 <translation id="5438282218546237410">没有与“<ph name="SEARCH_TERM" />”相符的结果。</translation>
 <translation id="5447680084201416734">存储空间不足。</translation>
 <translation id="5449551289610225147">密码无效</translation>
@@ -612,10 +623,12 @@
 <translation id="5760252553414789727">已选择 <ph name="SELECTED_FILES_COUNT" /> 项</translation>
 <translation id="5763377084591234761">德语（瑞士）</translation>
 <translation id="5769519078756170258">要排除的主机或域名</translation>
+<translation id="5774295353725270860">打开文件应用</translation>
 <translation id="5775750595919327203">乌尔都语</translation>
 <translation id="5776325638577448643">清空并格式化</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5788127256798019331">Play 文件</translation>
+<translation id="5788367137662787332">抱歉，“<ph name="DEVICE_LABEL" />”设备上至少有一个分区无法加载。</translation>
 <translation id="5804245609861364054">卡纳达语音译</translation>
 <translation id="5814126672212206791">连接类型</translation>
 <translation id="5817397429773072584">繁体中文</translation>
@@ -808,9 +821,11 @@
 <translation id="7224162581405244205">冰岛语</translation>
 <translation id="7229570126336867161">需要 EVDO</translation>
 <translation id="7230898482850090046">您的管理员要求您关闭“锁定 SIM 卡”设置</translation>
+<translation id="7232750842195536390">重命名失败</translation>
 <translation id="7238097264433196391">驱动器名称</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />，详细信息</translation>
 <translation id="7246947237293279874">FTP 代理</translation>
+<translation id="725109152065019550">抱歉，您的管理员已停用了您账号上的外部存储功能。</translation>
 <translation id="7256405249507348194">无法识别的错误：<ph name="DESC" /></translation>
 <translation id="7268659760406822741">可用服务</translation>
 <translation id="7291818353625820805">想重复按键操作？请在“键盘设置”中关闭重音符号</translation>
@@ -833,6 +848,7 @@
 <translation id="7417705661718309329">Google 地图</translation>
 <translation id="7419668828140929293">正在恢复“<ph name="FILENAME" />”</translation>
 <translation id="7435577899926900307">美式 Dvorak</translation>
+<translation id="7436921188514130341">糟糕！重命名过程中出错了。</translation>
 <translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
 <translation id="7486315294984620427">若要将某个文件拖放到 Parallels Desktop，必须先将此文件复制到“Windows 文件”文件夹。</translation>
@@ -848,6 +864,7 @@
 <translation id="7551643184018910560">固定到任务栏</translation>
 <translation id="7553492409867692754">授权 Linux 应用访问“<ph name="FOLDER_NAME" />”文件夹中的文件</translation>
 <translation id="7555339735447658365">您目前处于离线状态。连接到互联网后，文件同步将继续进行</translation>
+<translation id="7589461650300748890">注意！</translation>
 <translation id="7589661784326793847">请稍候</translation>
 <translation id="7600126690270271294">塞尔维亚语</translation>
 <translation id="7603724359189955920">网格</translation>
@@ -893,6 +910,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">配置网络时出错</translation>
+<translation id="7839051173341654115">查看/备份媒体</translation>
 <translation id="7839804798877833423">抓取这些文件将使用约 <ph name="FILE_SIZE" /> 移动数据。</translation>
 <translation id="7846076177841592234">取消选择</translation>
 <translation id="7857117644404132472">添加例外情况</translation>
@@ -900,8 +918,10 @@
 <translation id="7868774406711971383">波兰语</translation>
 <translation id="7874321682039004450">菲律宾语</translation>
 <translation id="78946041517601018">共享云端硬盘</translation>
+<translation id="7897900149154324287">日后在拔下您的可移动设备之前，请务必先使用“文件”菜单将其弹出。否则，您的数据可能会丢失。</translation>
 <translation id="7901567919203965902">美式 Workman 国际</translation>
 <translation id="7903984238293908205">片假名</translation>
+<translation id="7908378463497120834">抱歉，您的外部存储设备上至少有一个分区无法加载。</translation>
 <translation id="7908793776359722643">将分区格式化会清空其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">您在“我的云端硬盘”中保存的文件会自动同步到 Chromebook，以供您在未联网的情况下访问。</translation>
@@ -1035,6 +1055,7 @@
 <translation id="8873014196523807561">若要恢复这些内容，请将其拖至新文件夹。其中部分内容的原始文件夹已被删除。</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8876368061475701452">已加入队列</translation>
+<translation id="8893928184421379330">抱歉，系统无法识别设备“<ph name="DEVICE_LABEL" />”。</translation>
 <translation id="8902208737522818687">美式国际 (PC)</translation>
 <translation id="8903931173357132290">毕业</translation>
 <translation id="8912078710089354287">一只狗在摇尾巴</translation>

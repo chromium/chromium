@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> fitxa taldekatu da</translation>
 <translation id="1844381456014878100">7 egunez inaktibo egon ostean</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Gehitu fitxa irakurketa-zerrendan}other{Gehitu fitxak irakurketa-zerrendan}}</translation>
 <translation id="1909810060368225529">Oharra: partekatutako fitxa talde honetan egindako aldaketak denek ikus ditzakete. Guztiek egin ditzakete aldaketak zure fitxa talde partekatuetan.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Ainguratu fitxa}other{Ainguratu fitxak}}</translation>
 <translation id="1982637982196732906">Eraman inaktiboen atalera</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> merkeagoa da <ph name="PRODUCT_NAME" /> produktua</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> fitxa taldearen ikonoaren kolorea</translation>
 <translation id="311432875115153175">Itxi da fitxa taldeen zerrenda</translation>
+<translation id="3152596030350326139">Erakutsi fitxak horizontalki</translation>
+<translation id="31806439105337256">Erakutsi fitxak bertikalki</translation>
 <translation id="3194464645767632461">balorazioa</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Gehitu fitxa <ph name="TABS_COUNT_ONE" /> taldean}other{Gehitu <ph name="TABS_COUNT_MANY" /> fitxa taldean}}</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>

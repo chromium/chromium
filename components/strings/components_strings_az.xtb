@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Naməlum siyasət.</translation>
 <translation id="1227677022489889280">Köçürmə səbəbini bildirin (tələb edilir)</translation>
 <translation id="1228893227497259893">Yanlış şəxs identifikatoru</translation>
+<translation id="122989279399348496">Hesaba daxil olduğunuz zaman <ph name="DOMAIN" /> dəstəklənən saytlarda <ph name="EMAIL" /> ünvanını təsdiqləyə bilər, beləliklə gələnlər qutusunu yoxlamaq məcburiyyətində qalmayacaqsınız</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (avtomatik aşkarlanıb)</translation>
 <translation id="1232569758102978740">Başlıqsız</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> tələb olunur</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bir neçə əməliyyat əlçatandır, onları nəzərdən keçirmək üçün Tab düyməsinə basın</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Virtual kart detalları</translation>
+<translation id="1802420021606590788">Chrome səhifə başlıqlarını və URL-ləri buludda şəxsi sahədə emal edir</translation>
 <translation id="1803254472779303354">Mausun kilidlənməsinə icazə verilib</translation>
 <translation id="1803351196216024260">Saytlar mikrofonunuzdan istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="1804258830776932716">Hesabı tez əlaqələndirməklə Pix-i aktiv edin</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
 <translation id="2355395290879513365">Hücumçular bu saytda baxdığınız şəkilləri görə bilər və onları deyişdirərək Sizi aldada bilər.</translation>
 <translation id="2356941001189392209">Köhnə texnologiya hadisələri olan səhifələrin məhdud URL siyahısı</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 tab paylaşılacaq}other{{NUM_TABS} tab paylaşılacaq}}</translation>
 <translation id="2357481397660644965">Cihazı <ph name="DEVICE_MANAGER" />, hesabı isə<ph name="ACCOUNT_MANAGER" /> idarə edir.</translation>
 <translation id="2359629602545592467">Çoxsaylı</translation>
 <translation id="2359808026110333948">Davam edin</translation>
@@ -3023,6 +3026,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5742806904559466333">Barlar, klublar və gecə həyatı</translation>
 <translation id="5743684619253032786">Dırnaq Baxım Məhsulları</translation>
 <translation id="574392208103952083">Orta</translation>
+<translation id="5745586894920491759">Chrome səhifə başlıqlarını və URL-ləri buludda emal edir</translation>
 <translation id="5745733273847572235">Saytlar məkanınıza daxil olmaq üçün icazə istəyə bilər</translation>
 <translation id="5750869797196646528">Əlin izlənilməsi</translation>
 <translation id="5752327398324808817">Bir və ya iki söz daxil edin</translation>
@@ -3417,6 +3421,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Baxış jurnalı</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proksi, qoruyucu divar və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">E-poçtlarınızı avtomatik təsdiqləyin</translation>
 <translation id="6366710531182496394">Soldan qoşa ştapel vurun</translation>
 <translation id="6367196786591004737">Daxiletməni silin</translation>
 <translation id="6370022303958842211">Hesaba giriş (uğursuz giriş səbəbləri daxil olmaqla), çıxışlar, kilidlər və kilidi açmaq kimi cihaza giriş əməliyyatları</translation>
@@ -5056,6 +5061,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Təkliflər:<ph name="MARKUP_2" />Data bağlantınızın olduğuna əmin olun<ph name="MARKUP_3" />Bu veb səhifəni daha sonra yenidən yükləyin<ph name="MARKUP_4" />Daxil etdiyiniz ünvanları yoxlayın<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Lokal fayllarınız <ph name="HOURS" /> saat sonra silinəcək</translation>
+<translation id="8964904785315870349">Doğrulanmış e-poçt</translation>
 <translation id="8968766641738584599">Kartı yadda saxlayın</translation>
 <translation id="8970887620466824814">Xəta baş verdi.</translation>
 <translation id="8971063699422889582">Server sertifikatının vaxtı bitdi.</translation>

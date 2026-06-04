@@ -67,6 +67,7 @@
 <translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1651617469580841801">Google 렌즈를 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 Google로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex 정보</translation>
+<translation id="1665867022636014702">Google 권장 브라우저 설정 사용</translation>
 <translation id="1674870198290878346">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
@@ -242,6 +243,7 @@
 <translation id="345171907106878721">Chrome에 본인 추가</translation>
 <translation id="3453763134178591239">ChromeOS 약관</translation>
 <translation id="3503306920980160878">이 사이트와 위치를 공유하려면 Chrome에 내 위치 액세스 권한이 있어야 합니다</translation>
+<translation id="3539955434060988644">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3576528680708590453">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 다른 브라우저를 실행하도록 Chrome을 구성했습니다.</translation>
 <translation id="3582972582564653026">모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="3583751698304738917">이미 다른 Chrome 프로필에 <ph name="USER_EMAIL_ADDRESS" /> 계정으로 로그인되어 있습니다</translation>

@@ -149,6 +149,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1227224963052638717">Nepoznato pravilo.</translation>
 <translation id="1227677022489889280">Navedite razlog za premještanje (obavezno)</translation>
 <translation id="1228893227497259893">Pogrešan identifikator entiteta</translation>
+<translation id="122989279399348496">Dok ste prijavljeni, <ph name="DOMAIN" /> može potvrditi e-adresu <ph name="EMAIL" /> na podržanim web-lokacijama kako ne biste morali provjeravati pristiglu poštu</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatski otkriveno)</translation>
 <translation id="1232569758102978740">Neimenovano</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> je obavezno polje</translation>
@@ -510,6 +511,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, dostupno je više radnji, pritišćite Tab da biste prelazili s jedne na drugu</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Pojedinosti virtualne kartice</translation>
+<translation id="1802420021606590788">Chrome obrađuje naslove stranica i URL-ove u privatnom prostoru u oblaku</translation>
 <translation id="1803254472779303354">Dopušteno je zaključavanje miša</translation>
 <translation id="1803351196216024260">Može tražiti dopuštenje za upotrebu mikrofona</translation>
 <translation id="1804258830776932716">Omogućite Pix brzim povezivanjem računa</translation>
@@ -873,6 +875,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2354001756790975382">Druge oznake</translation>
 <translation id="2355395290879513365">Napadači možda mogu vidjeti slike koje gledate na ovoj web-lokaciji i izmijeniti ih kako bi vas prevarili.</translation>
 <translation id="2356941001189392209">Ograničeni popis URL-ova stranica koje posjećujete na kojima se odvijaju događaji naslijeđene tehnologije</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Dijelit će se jedna kartica}one{Dijelit će se {NUM_TABS} kartica}few{Dijelit će se {NUM_TABS} kartice}other{Dijelit će se {NUM_TABS} kartica}}</translation>
 <translation id="2357481397660644965">Vašim uređajem upravlja <ph name="DEVICE_MANAGER" />, a vašim računom upravlja <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Veći broj</translation>
 <translation id="2359808026110333948">Nastavi</translation>
@@ -3026,6 +3029,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5742806904559466333">Barovi, klubovi i noćni život</translation>
 <translation id="5743684619253032786">Proizvodi za njegu noktiju</translation>
 <translation id="574392208103952083">Srednje</translation>
+<translation id="5745586894920491759">Chrome obrađuje naslove stranica i URL-ove u oblaku</translation>
 <translation id="5745733273847572235">Može tražiti dopuštenje za pristup vašoj lokaciji</translation>
 <translation id="5750869797196646528">Praćenje pokreta ruku</translation>
 <translation id="5752327398324808817">Unesite riječ-dvije</translation>
@@ -3420,6 +3424,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Prikaz zapisnika</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />provjeriti proxy, vatrozid i konfiguraciju sigurnog DNS-a<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Automatski potvrdite e-adrese</translation>
 <translation id="6366710531182496394">Dvostruko spajanje s lijeve strane</translation>
 <translation id="6367196786591004737">Izbrišite unos</translation>
 <translation id="6370022303958842211">Radnje pristupa uređaju kao što su prijave (uključujući razloge neuspjelih prijava), odjave, zaključavanja i otključavanja</translation>
@@ -5061,6 +5066,7 @@ Dodatne pojedinosti:
 <translation id="8963117664422609631">Otvorite postavke web-lokacije</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Prijedlozi:<ph name="MARKUP_2" />Provjerite imate li podatkovnu vezu.<ph name="MARKUP_3" />Ponovo učitajte web-stranicu kasnije.<ph name="MARKUP_4" />Provjerite adresu koju ste unijeli.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Vaše lokalne datoteke izbrisat će se za <ph name="HOURS" /> h</translation>
+<translation id="8964904785315870349">Potvrđena e-adresa</translation>
 <translation id="8968766641738584599">Spremanje kartice</translation>
 <translation id="8970887620466824814">Nešto nije u redu.</translation>
 <translation id="8971063699422889582">Istekao je certifikat poslužitelja.</translation>

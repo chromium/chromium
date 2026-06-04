@@ -487,6 +487,7 @@
 <translation id="2640733327287333451">Tiada Nama Pengguna ••••••</translation>
 <translation id="264215785133931186">Disemak sebentar tadi</translation>
 <translation id="2647434099613338025">Tambah bahasa</translation>
+<translation id="2648812801228676606">Anda kekal log masuk sebagai <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Anda akan memadamkan data Google Password Manager anda</translation>
 <translation id="2652129567809778422">Pilih kata laluan</translation>
 <translation id="2658056020748144467">Tidak dapat membuka fail</translation>
@@ -2247,6 +2248,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8636825310635137004">Hidupkan penyegerakan untuk mendapatkan tab daripada peranti anda yang lain.</translation>
 <translation id="8637431369725868556">Dapatkan perlindungan daripada laman berbahaya.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Tiada kata laluan yang terjejas}=1{{COUNT} kata laluan yang terjejas}other{{COUNT} kata laluan yang terjejas}}</translation>
+<translation id="8639963783467694461">Tetapan auto isi</translation>
 <translation id="8642417828095157370">Tab dikongsi untuk mendapatkan jawapan yang lebih berkaitan</translation>
 <translation id="8643403533759285912">Padam Kumpulan</translation>
 <translation id="8647280737650867362">Tidak dapat menyahjejaki harga.</translation>

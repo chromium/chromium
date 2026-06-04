@@ -149,6 +149,7 @@
 <translation id="1227224963052638717">Белгисиз саясат.</translation>
 <translation id="1227677022489889280">Жылдыруунун себебин көрсөтүңүз (милдеттүү)</translation>
 <translation id="1228893227497259893">Туура эмес объект аныктагыч</translation>
+<translation id="122989279399348496">Аккаунтуңузга кирип турганда <ph name="DOMAIN" /> колдоого алынган сайттарда <ph name="EMAIL" /> дарегин ырастай алат. Андыктан келген каттар кутусун текшерип отурбайсыз</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (автоматтык түрдө аныкталды)</translation>
 <translation id="1232569758102978740">Аты жок</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> талап кылынат</translation>
@@ -510,6 +511,7 @@
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, бир нече аракет жеткиликтүү, Tab баскычын басып, аларды карап чыгыңыз</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Виртуалдык картанын чоо-жайы</translation>
+<translation id="1802420021606590788">Chrome беттердин аталыштарын жана URL даректерин булуттагы купуя мейкиндикте иштетет</translation>
 <translation id="1803254472779303354">Чычкан кулпусуна уруксат берилди</translation>
 <translation id="1803351196216024260">Микрофонуңузду колдонууга уруксат сурай алат</translation>
 <translation id="1804258830776932716">Аккаунтуңузду байланыштырып, Pix'ти тез иштетиңиз</translation>
@@ -873,6 +875,7 @@
 <translation id="2354001756790975382">Башка кыстармалар</translation>
 <translation id="2355395290879513365">Сиз бул сайтта көрүп жаткан сүрөттөрдү чабуулчулар да көрүп алып, сүрөттөрдү өзгөртүп, сизди алдашы да мүмкүн.</translation>
 <translation id="2356941001189392209">Эски технологиялар менен байланышкан иш-чаралар орун алган барактардын (сиз баш баккан) чектелген тизмеси</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 өтмөк бөлүшүлөт}other{{NUM_TABS} өтмөк бөлүшүлөт}}</translation>
 <translation id="2357481397660644965">Түзмөгүңүздү <ph name="DEVICE_MANAGER" /> жана аккаунтуңузду <ph name="ACCOUNT_MANAGER" /> башкарууда.</translation>
 <translation id="2359629602545592467">Бир нече</translation>
 <translation id="2359808026110333948">Улантуу</translation>
@@ -3026,6 +3029,7 @@
 <translation id="5742806904559466333">Барлар, клубдар жана түнкү жашоо</translation>
 <translation id="5743684619253032786">Тырмакка кам көрүү каражаттары</translation>
 <translation id="574392208103952083">Орточо</translation>
+<translation id="5745586894920491759">Chrome беттердин аталыштарын жана URL даректерин булутта иштетет</translation>
 <translation id="5745733273847572235">Кайда жүргөнүңүздү сурай алат</translation>
 <translation id="5750869797196646528">Колдорго көз салуу</translation>
 <translation id="5752327398324808817">Бир же эки сөздү киргизиңиз</translation>
@@ -3420,6 +3424,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Таржымалдарды көрүү</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси, брандауэр жана DNS конфигурациясын текшерип көрүңүз<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">Электрондук почталарыңызды автоматтык түрдө ырастаңыз</translation>
 <translation id="6366710531182496394">Сол жагын эки жолу илмек менен бекитүү</translation>
 <translation id="6367196786591004737">Киргизилген нерселерди өчүрүү</translation>
 <translation id="6370022303958842211">Түзмөктү колдонуу аракеттери, мисалы, ага кирүү (анын ичинде кире албай калуунун себептери), чыгуу, кулпулоо жана кулпусун ачуу</translation>
@@ -5059,6 +5064,7 @@
 <translation id="8963117664422609631">Сайттын параметрлерине өтүү</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Сунуштар:<ph name="MARKUP_2" />Мобилдик Интернет туташууңуз бар экенин текшериңиз<ph name="MARKUP_3" />Бул веб-баракчаны кийинчерээк кайра жүктөңүз<ph name="MARKUP_4" />Киргизген дарегиңизди текшериңиз<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Жергиликтүү файлдарыңыз <ph name="HOURS" /> сааттан кийин өчүрүлөт</translation>
+<translation id="8964904785315870349">Ырасталган электрондук почта</translation>
 <translation id="8968766641738584599">Картаны сактоо</translation>
 <translation id="8970887620466824814">Бир жерден ката кетти.</translation>
 <translation id="8971063699422889582">Сервер тастыктамасынын мөөнөтү өтүп кеткен.</translation>

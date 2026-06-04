@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">እዚህ PDFዎችን ማውረድ አይችሉም</translation>
 <translation id="107147699690128016">የፋይል ቅጥያውን ከቀየሩት ፋይሉ በተለየ መተግበሪያ ሊከፈት ይችላል፣ እና መሣሪያዎን ሊጎዳ ይችላል።</translation>
 <translation id="1073328695547557412">የGoogle ሌንስ አዶን መታ ያድርጉ</translation>
+<translation id="1080116354587839789">ከስፋቱ ጋር አመጣጥን</translation>
 <translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="1087799850623149508">የአድራሻ አሞሌውን ወደ ታች ለማንቀሳቀስ ይንኩ እና ይያዙ</translation>
 <translation id="1089606299949659462">ግምገማ ተጠናቋል!</translation>
@@ -536,6 +537,7 @@
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />፣ <ph name="TAB_COUNT_ONE" /> ትር}one{<ph name="TAB_GROUPS_PART" />፣ <ph name="TAB_COUNT_MANY" /> ትር}other{<ph name="TAB_GROUPS_PART" />፣ <ph name="TAB_COUNT_MANY" /> ትሮች}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 የይለፍ ቃል በዚሀ መሣሪያ ላይ ብቻ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}one{# የይለፍ ቃል በዚሀ መሣሪያ ላይ ብቻ ተቀምጧል። በሌሎች መሣሪያዎችዎ ላይ እሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጡት።}other{# የይለፍ ቃላት በዚሀ መሣሪያ ላይ ብቻ ተቀምጠዋል። በሌሎች መሣሪያዎችዎ ላይ እነሱን ለመጠቀም በGoogle መለያዎ ውስጥ ያስቀምጧቸው።}}</translation>
 <translation id="3293181007446299124">የእርስዎ የአሰሳ ታሪክ በመሣሪያዎ ላይ የግል ሆኖ ይቆያል እና ማንነትዎን ለመጠበቅ ሪፖርቶች ዘግይተው ይላካሉ</translation>
+<translation id="3301639354590628973">መለያዎችን ያቀይራሉ?</translation>
 <translation id="3301936297336370235">የይለፍ ቃል ጥቆማ ማረጋገጫ</translation>
 <translation id="3302615849591357577">የትር ቡድን <ph name="TITLE_OF_GROUP" />፣ ቀለም <ph name="COLOR_NAME" /> እንደ አዲስ የዳራ ትር ቡድን ወደነበረበት ይመልሱ።</translation>
 <translation id="3303855915957856445">ምንም የፍለጋ ውጤቶች አልተገኙም</translation>
@@ -678,6 +680,7 @@
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />፣ የተሰካ የሥዕል-ላይ-ሥዕል ትር</translation>
 <translation id="3950820424414687140">በመለያ ይግቡ</translation>
 <translation id="395377504920307820">ያለመለያ ተጠቀም</translation>
+<translation id="3955353672249727801">ገፅ ወደ የንባብ ዝርዝር ታክሏል</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome ዝግጁ ሲሆን ገጽዎን ይጭነዋል}one{Chrome ዝግጁ ሲሆን ገጾችዎን ይጭነዋል}other{Chrome ዝግጁ ሲሆን ገጾችዎን ይጭነዋል}}</translation>
 <translation id="3969142555815019568">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="3969863827134279083">ወደላይ አውጣ</translation>

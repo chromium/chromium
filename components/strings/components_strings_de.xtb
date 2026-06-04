@@ -149,6 +149,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1227224963052638717">Unbekannte Richtlinie</translation>
 <translation id="1227677022489889280">Gib den Grund für das Verschieben an (erforderlich)</translation>
 <translation id="1228893227497259893">Falsche Entitätskennung</translation>
+<translation id="122989279399348496">Wenn du angemeldet bist, kann <ph name="DOMAIN" /> <ph name="EMAIL" /> auf unterstützten Websites bestätigen, sodass du deinen Posteingang nicht prüfen musst</translation>
 <translation id="1230244617745022071"><ph name="SOURCE" /> (automatisch erkannt)</translation>
 <translation id="1232569758102978740">Unbenannt</translation>
 <translation id="1234539281285007945"><ph name="FIELD_1" /> ist erforderlich</translation>
@@ -305,6 +306,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1458140305240870199">Unterwäsche</translation>
 <translation id="1458770162980644530">Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“. Tastatur ausgeblendet.</translation>
 <translation id="1459693405370120464">Wetter</translation>
+<translation id="1460317464907341501">Diese E‑Mail-Adresse automatisch bestätigen?</translation>
 <translation id="1461041542809785877">Leistung</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Die Schriftarten auf deinem Computer verwenden, damit du High Fidelity-Inhalte erstellen kannst</translation>
@@ -510,6 +512,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, es sind mehrere Aktionen verfügbar, drücke die Tabulatortaste, um sie durchzugehen</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">Details der virtuellen Karte</translation>
+<translation id="1802420021606590788">Chrome verarbeitet Seitentitel und URLs in einem vertraulichen Profil in der Cloud</translation>
 <translation id="1803254472779303354">Maussperre zulässig</translation>
 <translation id="1803351196216024260">Darf nachfragen, wenn sie mein Mikrofon verwenden möchte</translation>
 <translation id="1804258830776932716">Verknüpfe schnell dein Konto, um Pix zu aktivieren</translation>
@@ -873,6 +876,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2354001756790975382">Weitere Lesezeichen</translation>
 <translation id="2355395290879513365">Angreifer können unter Umständen die Bilder sehen, die du dir auf dieser Website ansiehst, und könnten dann versuchen, dich durch Ändern der Bilder zu täuschen.</translation>
 <translation id="2356941001189392209">Eine begrenzte Liste mit URLs der von dir besuchten Seiten, auf denen Probleme aufgrund von veralteter Technologie auftreten</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{1 Tab wird geteilt}other{{NUM_TABS} Tabs werden geteilt}}</translation>
 <translation id="2357481397660644965">Dein Gerät wird von <ph name="DEVICE_MANAGER" /> und dein Konto von <ph name="ACCOUNT_MANAGER" /> verwaltet.</translation>
 <translation id="2359629602545592467">Mehrere</translation>
 <translation id="2359808026110333948">Weiter</translation>
@@ -2000,6 +2004,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="412601465078863288">Zeitüberschreitung beim Hochladen</translation>
 <translation id="4127317221386336246">Accessoires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
+<translation id="4129810348470013900">Ein Fehler ist aufgetreten. Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="4129992181550680635">Bildungsressourcen</translation>
 <translation id="4130226655945681476">Netzwerkkabel, Modem und Router prüfen</translation>
 <translation id="4132448310531350254">Doppelte Handler für die Dateierweiterung „<ph name="FILE_EXTENSION" />“, referenziert durch die Apps „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3025,6 +3030,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5742806904559466333">Bars, Clubs und Nachtleben</translation>
 <translation id="5743684619253032786">Nagelpflegeprodukte</translation>
 <translation id="574392208103952083">Mittel</translation>
+<translation id="5745586894920491759">Chrome verarbeitet Seitentitel und URLs in der Cloud</translation>
 <translation id="5745733273847572235">Darf nach meinem Standort fragen</translation>
 <translation id="5750869797196646528">Handtracking</translation>
 <translation id="5752327398324808817">Ein oder zwei Wörter eingeben</translation>
@@ -3419,6 +3425,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Protokolle ansehen</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxy- und Firewallkonfiguration sowie Konfiguration sicherer DNS-Abfragen überprüfen<ph name="END_LINK" /></translation>
+<translation id="6365513578140103119">E-Mail-Adressen automatisch bestätigen</translation>
 <translation id="6366710531182496394">Zwei Heftklammern links</translation>
 <translation id="6367196786591004737">Eintrag löschen</translation>
 <translation id="6370022303958842211">Aktionen für den Gerätezugriff wie Anmeldungen (einschließlich fehlgeschlagener Anmeldeversuche), Abmeldungen, Sperrungen und Entsperrungen</translation>
@@ -5060,6 +5067,7 @@ Weitere Details:
 <translation id="8963117664422609631">Website-Einstellungen aufrufen</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Vorschläge:<ph name="MARKUP_2" />Vergewissere dich, dass du über eine Datenverbindung verfügst.<ph name="MARKUP_3" />Lade diese Webseite später neu.<ph name="MARKUP_4" />Überprüfe die von dir eingegebene Adresse.<ph name="MARKUP_5" /></translation>
 <translation id="8963969435440878110">Deine lokalen Dateien werden in <ph name="HOURS" /> Stunden gelöscht</translation>
+<translation id="8964904785315870349">Bestätigte E-Mail-Adresse</translation>
 <translation id="8968766641738584599">Karte speichern</translation>
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="8971063699422889582">Das Serverzertifikat ist abgelaufen.</translation>

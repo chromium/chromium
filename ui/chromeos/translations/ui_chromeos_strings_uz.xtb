@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">Avtomatik nom serverlari</translation>
 <translation id="1210831758834677569">Lao</translation>
 <translation id="1221555006497674479">Xotirada joy kam, umumiy diskda <ph name="REMAINING_PERCENTAGE" />% / <ph name="TOTAL_SPACE" /> qoldi.</translation>
+<translation id="1239594683407221485">Qurilmadagi kontekt bilan Fayllar ilovasida tanishing.</translation>
 <translation id="1243314992276662751">Yuklash</translation>
 <translation id="1249250836236328755">Janri</translation>
 <translation id="1254593899333212300">Internetga to‘g‘ridan-to‘g‘ri ulanish</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">Oʻchirilmadi. Element band.</translation>
 <translation id="1307931752636661898">Linux fayllari ochilmadi</translation>
 <translation id="1313405956111467313">Proksi-server avtomatik sozlanishi</translation>
+<translation id="1340527397989195812">Fayllar ilovasi yordamida qurilmadagi mediani zaxiralang.</translation>
 <translation id="134645005685694099">Fayllarni sinxronlash uchun qurilmada joy yetarli emas. Yangi fayllar avtomatik sinxronlanmaydi.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Fayl yoki katalog foydalanish uchun yaroqsiz.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">Foydalanuvchi sertifikati yo‘q</translation>
 <translation id="1403008701842173542">Hamma yerda</translation>
 <translation id="1404323374378969387">Norveg</translation>
+<translation id="1408504635543854729">Qurilmadagi kontentni ko‘rish uchun Fayllar ilovasidan foydalaning. Administrator bu kontentni o‘zgartirishga ruxsat bermagan.</translation>
 <translation id="1412476183660741812">Imzolangan Web Bundle</translation>
 <translation id="1433628812591023318">Windows tizmiga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>
 <translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
 <translation id="1439919885608649279">Gullari bor odam</translation>
 <translation id="1458457385801829801">Chiqarib olish: <ph name="TARGET_NAME" /></translation>
+<translation id="1464781208867302907">Qurilma parametrlari Sozlamalar orqali boshqariladi.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fa fayl shifrlangani uchun nusxalanmadi.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Fin</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">Google Drive orqali ochish</translation>
 <translation id="2004942826429452291">Fayllar bulut omborida va shu Chromebook xotirasida saqlanadi.</translation>
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
+<translation id="2018352199541442911">Tashqi xotira qurilmalari ayni vaqtda qo‘llab-quvvatlanmaydi.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2029385776150020336">Kengaytirilgan AQSH</translation>
 <translation id="2037845485764049925">Rus</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">Tamagochi</translation>
 <translation id="2468470447085858632">Sinxronizatsiya sizga Google Drive fayllari bilan oflayn rejimda ishlash imkonini beradi</translation>
 <translation id="2470939964922472929">PIN kod juda koʻp marta xato kiritildi. Yangi PIN kod sozlash uchun operator bergan 8 xonali Shaxsiy qulfdan yechish kalitini (PUK) kiriting.</translation>
+<translation id="249113932447298600">Kechirasiz, <ph name="DEVICE_LABEL" /> qurilmasi ayni vaqtda qo‘llab-quvvatlanmaydi.</translation>
 <translation id="2500392669976258912">Gujarot, fonetik</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Qidiruv</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">Ukrain</translation>
 <translation id="3326821416087822643">“<ph name="FILE_NAME" />” fayli arxivlanmoqda...</translation>
 <translation id="3335337277364016868">Yozilgan yili</translation>
+<translation id="3348038390189153836">Xotira qurilmasi aniqlandi</translation>
 <translation id="3353984535370177728">Yuklash uchun jildni tanlang</translation>
 <translation id="3356580349448036450">Tayyor</translation>
 <translation id="3358452157379365236">Gitara</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">Mobil profil, tarmoq <ph name="NETWORK_INDEX" /><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> kabilarni yuklab olish</translation>
 <translation id="3973925058222872294">Ingliz (Buyuk Britaniya)</translation>
 <translation id="3975895378829046965">Bangla (Fonetik)</translation>
+<translation id="3983764759749072418">Play Market ilovalari bu qurilma bilan ishlay oladi.</translation>
 <translation id="3999574733850440202">Yaqinda ochilgan OneDrive omboriga olingan Microsoft fayllari</translation>
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4017788180641807848">Ingliz (AQSH) va Workman klaviaturasi</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">Bu faylni ochish uchun internetga ulangan bo‘lish kerak.</translation>
 <translation id="4212740939091998969">“<ph name="FOLDER_NAME" />” nomli jild allaqachon mavjud. Boshqa nom tanlang.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> hostini istisnolardan olib tashlash</translation>
+<translation id="4242533952199664413">Sozlamalarni ochish</translation>
 <translation id="4261901459838235729">Google taqdimoti</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtri yoniq.</translation>
 <translation id="4290535918735525311">1 ta jild Linuxga ulashilgan</translation>
@@ -555,6 +564,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5275973617553375938">Google Disk‘dan tiklangan fayllar</translation>
 <translation id="5278111733643988471">Bu elementni tiklash uchun uni chiqitdon tashqarisidagi yangi jildga sudrang. Bu elementning asl jildi (<ph name="PARENT_FOLDER_NAME" />) oʻchib ketgan.</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="529175790091471945">Bu qurilmani formatlash</translation>
 <translation id="5293615890992542006">Bu faylni koʻchirish administrator taqiqlagan</translation>
 <translation id="5305688511332277257">O‘rnatilmagan</translation>
 <translation id="5317780077021120954">Saqlash</translation>
@@ -570,6 +580,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5411472733320185105">Proksi-server yordamida quyidagi hostlar va domenlarga ulanilmasin:</translation>
 <translation id="541890217011173530">Suroni klaviaturasi (Lotin)</translation>
 <translation id="5422221874247253874">Internetga ulanish nuqtasi</translation>
+<translation id="5422781158178868512">Kechirasiz, tashqi xotira qurilmangizni aniqlab bo‘lmadi.</translation>
 <translation id="5438282218546237410">Bu soʻrov bilan hech narsa topilmadi: <ph name="SEARCH_TERM" /></translation>
 <translation id="5447680084201416734">Xotiradagi joy yetarli emas.</translation>
 <translation id="5449551289610225147">Parol noto‘g‘ri</translation>
@@ -617,10 +628,12 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ta element tanlandi</translation>
 <translation id="5763377084591234761">Nemis (Shveytsariya)</translation>
 <translation id="5769519078756170258">Istisno host yoki domen</translation>
+<translation id="5774295353725270860">“Fayllar” ilovasini ochish</translation>
 <translation id="5775750595919327203">Urdu</translation>
 <translation id="5776325638577448643">Tozalash va formatlash</translation>
 <translation id="57838592816432529">Ovozni o‘chirib qo‘yish</translation>
 <translation id="5788127256798019331">Play fayllari</translation>
+<translation id="5788367137662787332"><ph name="DEVICE_LABEL" /> qurilmasida bir yoki undan ortiq bo‘lim qo‘shib bo‘lmadi.</translation>
 <translation id="5804245609861364054">Kannada tili transliteratsiyasi</translation>
 <translation id="5814126672212206791">Ulanish turi</translation>
 <translation id="5817397429773072584">An’anaviy Xitoy</translation>
@@ -813,9 +826,11 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7224162581405244205">Island</translation>
 <translation id="7229570126336867161">EVDO bo‘lishi lozim</translation>
 <translation id="7230898482850090046">Administrator SIM kartani qulflash sozlamasini faolsizlantirishni talab qilmoqda</translation>
+<translation id="7232750842195536390">Nom o‘zgarmadi</translation>
 <translation id="7238097264433196391">Xotira ombori nomi</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Batafsil</translation>
 <translation id="7246947237293279874">FTP proksi-server</translation>
+<translation id="725109152065019550">Administrator hisobingiz uchun tashqi xotira qurilmalardan foydalanishni taqiqlab qo‘ygan.</translation>
 <translation id="7256405249507348194">Noma’lum xatolik: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Mavjud xizmatlar</translation>
 <translation id="7291818353625820805">Tugmalar takrorlanishini istaysizmi? Klaviatura sozlamalarida urgʻu belgilarini faolsizlantiring</translation>
@@ -838,6 +853,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7417705661718309329">Google xaritasi</translation>
 <translation id="7419668828140929293"><ph name="FILENAME" /> tiklanmoqda…</translation>
 <translation id="7435577899926900307">AQSH (Dvorak)</translation>
+<translation id="7436921188514130341">Ana xolos! Nomni o‘zgartirishda xatolik yuz berdi.</translation>
 <translation id="7458955835361612701">Oxirgi rasmlar yoʻq</translation>
 <translation id="7469894403370665791">Bu tarmoqqa avtomatik ravishda ulanish</translation>
 <translation id="7486315294984620427">Windowsga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>
@@ -853,6 +869,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7551643184018910560">Javonga qadab qo‘yish</translation>
 <translation id="7553492409867692754">Linux ilovalarga <ph name="FOLDER_NAME" /> jildidagi fayllarini ochishga ruxsat berish</translation>
 <translation id="7555339735447658365">Ayni vaqtda siz internetsiz rejimda ishlayapsiz. Internetga ulansangiz, fayl sinxronizatsiyasi davom etadi.</translation>
+<translation id="7589461650300748890">Ehtiyot bo‘ling.</translation>
 <translation id="7589661784326793847">Kutib turing...</translation>
 <translation id="7600126690270271294">Serb</translation>
 <translation id="7603724359189955920">To‘r</translation>
@@ -898,6 +915,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Tarmoqni sozlashda xatolik yuz berdi</translation>
+<translation id="7839051173341654115">Mediani fayllarni ko‘rish/zaxiralash</translation>
 <translation id="7839804798877833423">Bu fayllarni yuklashga taxminan <ph name="FILE_SIZE" /> mobil trafik sarf bo‘ladi.</translation>
 <translation id="7846076177841592234">Belgilashni bekor qilish</translation>
 <translation id="7857117644404132472">Istisno qo‘shish</translation>
@@ -905,8 +923,10 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="7868774406711971383">Polyak</translation>
 <translation id="7874321682039004450">Filippin</translation>
 <translation id="78946041517601018">Umumiy disklar</translation>
+<translation id="7897900149154324287">Kelgusida, olinadigan qurilmani chiqarib olishdan oldin uni Fayllar ilovasida chiqarishni unutmang. Aks holda, ma’lumotlar o‘chib ketishi mumkin.</translation>
 <translation id="7901567919203965902">AQSH (Workman, xalqaro)</translation>
 <translation id="7903984238293908205">Katakana</translation>
+<translation id="7908378463497120834">Tashqi xotira qurilmasining bir yoki bir nechta bo‘limini ulab bo‘lmadi.</translation>
 <translation id="7908793776359722643">Disk boʻlimi formatlansa, undagi barcha axborotlar tozlanaladi. Bu amal bekor qilinmaydi.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin.</translation>
@@ -1040,6 +1060,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8873014196523807561">Bu elementlarni tiklash uchun ularni yangi jildga sudrang. Bu elementlarning asl jildi oʻchib ketgan.</translation>
 <translation id="8874184842967597500">Ulanmagan</translation>
 <translation id="8876368061475701452">Navbatda</translation>
+<translation id="8893928184421379330"><ph name="DEVICE_LABEL" /> qurilmasini tanib bo‘lmadi</translation>
 <translation id="8902208737522818687">AQSH halqaro (PC)</translation>
 <translation id="8903931173357132290">Bitiruvchi</translation>
 <translation id="8912078710089354287">Dumini likkillatayotgan it</translation>

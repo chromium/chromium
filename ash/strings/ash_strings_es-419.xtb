@@ -38,9 +38,11 @@
 <translation id="109647177154844434">Si desinstalas Parallels Desktop, se borrará la imagen de Windows. Esto incluye sus aplicaciones, opciones de configuración y datos. ¿Confirmas que deseas continuar?</translation>
 <translation id="1104084341931202936">Mostrar la configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan incluso mejor juntos</translation>
+<translation id="1107300737351978027">No puede contener dígitos repetidos</translation>
 <translation id="1111021433905331574">Puedes cambiar el color de la retroiluminación del teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">Activa o desactiva los datos móviles. <ph name="STATE" />.</translation>
 <translation id="1118738876271697201">El sistema no pudo determinar el modelo del dispositivo ni el número de serie.</translation>
+<translation id="1119447706177454957">Error interno</translation>
 <translation id="1122849163460178706">Ejemplos que puedes probar</translation>
 <translation id="112308213915226829">Ocultar la barra automáticamente</translation>
 <translation id="1129383337808748948">Actualizar <ph name="CONTENT_TITLE" /></translation>
@@ -96,6 +98,7 @@
 <translation id="1247519845643687288">Apps recientes</translation>
 <translation id="1252999807265626933">Cargando desde <ph name="POWER_SOURCE" /></translation>
 <translation id="126156426083987769">Hubo un problema con las licencias del dispositivo en el modo de demostración.</translation>
+<translation id="1264337193001759725">Para ver los registros de IU de la red, consulta: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1269405891096105529">El dispositivo periférico no es compatible en el Modo de invitado.</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
@@ -105,6 +108,7 @@
 <translation id="1276975447697633661">Selecciona el archivo y, luego, presiona <ph name="KEY" /></translation>
 <translation id="1276994519141842946">No se pudo desinstalar <ph name="APP_NAME" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1283126956823499975">Se produjo un error cuando se configuraba el dispositivo</translation>
 <translation id="1285992161347843613">Ubicar teléfono</translation>
 <translation id="1287002645302686982">Ya existe un escritorio guardado con el nombre <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1288276784862223576">Configurar la visualización de las fotos y el contenido multimedia recientes de tu teléfono</translation>
@@ -228,6 +232,7 @@
 <translation id="1604857178818051494">Pausar contenido multimedia</translation>
 <translation id="1607312127821884567">Descartar la configuración de la visualización de las apps de tu teléfono</translation>
 <translation id="1610778689852195798">"Deshacer"</translation>
+<translation id="1611432201750675208">Tu dispositivo está bloqueado</translation>
 <translation id="1611993646327628135">Sí</translation>
 <translation id="1612679292338846734">Cuando activas estas funciones, el texto de entrada, el contenido del documento y la URL de la página web pueden enviarse a los servidores de IA de Google. Esta información se usa para generar sugerencias de escritura, hacer resúmenes, responder preguntas y mejorar el producto, sujeto a las <ph name="LINK_TO_SERVICE_TERMS" />. No incluyas información personal, sensible ni confidencial.</translation>
 <translation id="1619879934359211038">No se pudo establecer conexión con Google Play. Verifica tu conexión de red y vuelve a intentarlo. Código de error: <ph name="ERROR_CODE" />.</translation>
@@ -241,6 +246,7 @@
 <translation id="1647986356840967552">Página anterior</translation>
 <translation id="1651914502370159744">Abrir la página del Historial</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1668979692599483141">Más información sobre las sugerencias</translation>
 <translation id="1673232940951031776">Finalizar el Modo sin distracciones. Tiempo restante: <ph name="REMAINING_TIME" />.</translation>
 <translation id="1675570947608765064">Los demás podrán ver los cambios que hagas en esta tarea</translation>
 <translation id="1677472565718498478">Tiempo restante <ph name="TIME" /></translation>
@@ -354,6 +360,7 @@
 <translation id="2011174342667534258">Versión del SDK:</translation>
 <translation id="2017998995161831444">Abre "Ayuda" en la app Explorar</translation>
 <translation id="2021864487439853900">Haz clic para desbloquear.</translation>
+<translation id="2023167225947895179">Es posible que el PIN sea fácil de adivinar</translation>
 <translation id="2034971124472263449">Guardar de todos modos</translation>
 <translation id="2041220428661959602">Nivel de batería: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">En este momento, la combinación de teclas <ph name="SIX_PACK_KEY_NAME" /> está desactivada</translation>
@@ -433,6 +440,7 @@
 <translation id="2326112202058075478">Mostrar más emojis</translation>
 <translation id="2328561734797404498">Para usar <ph name="APP_NAME" />, reinicia el dispositivo.</translation>
 <translation id="2335091074961603075">Tu Chromebook o dispositivo Bluetooth usan una versión anterior de Bluetooth. Usa el micrófono interno para mejorar la calidad del audio.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización hoy. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}other{<ph name="MANAGER" /> requiere que te conectes a una red Wi-Fi y descargues una actualización antes de la fecha límite. También puedes descargarla con una conexión de uso medido (es posible que se apliquen cargos).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Presiona el botón de la pluma stylus en la biblioteca para tomar notas y capturas de pantalla, y usar el puntero láser o la lupa.</translation>
 <translation id="2341729377289034582">Se bloqueó en posición vertical</translation>
@@ -561,6 +569,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2687510499067466116">Se modificó la combinación de teclas</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
 <translation id="2692092709110488417">Presiona Tab para enfocar y mover el área seleccionada</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Último día para actualizar el dispositivo <ph name="DEVICE_TYPE" />}other{Actualiza el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostrar la configuración del teclado. Se seleccionó <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Usa la app de Transferencia de contenido para mover los datos de tu cuenta educativa a tu cuenta personal</translation>
@@ -787,6 +796,7 @@ De lo contrario, el panel táctil integrado se volverá a habilitar dentro de <p
 <translation id="334927402682780278">Seleccionar texto desde el cursor hasta el final del renglón</translation>
 <translation id="3349345708646875009">Abrir el Administrador de tareas</translation>
 <translation id="3353786022389205125">Activa "Mostrar la pantalla bloqueada al salir del modo de suspensión" y vuelve a intentarlo.</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Actualiza el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de 1 semana}other{Actualiza el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_WEEKS} semanas}}</translation>
 <translation id="3364721542077212959">Herramientas de la pluma stylus</translation>
 <translation id="3365281428003534650">Establece un temp. y una tarea</translation>
 <translation id="3365977133351922112">Tu teléfono está demasiado lejos. Acércalo.</translation>
@@ -946,6 +956,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3741482431277446954">Botón derecho del mouse</translation>
 <translation id="3742055079367172538">Captura de pantalla tomada</translation>
 <translation id="3743775386021959186">El Modo sin distracciones está activado. Tiempo restante: <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> hoy mismo.}other{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> antes de la fecha límite.}}</translation>
 <translation id="3750403286520637847">Ocultar sugerencia del clima</translation>
 <translation id="3752253558646317685">Haz que tu hijo siga levantando el dedo para guardar la huella dactilar.</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Los datos de las apps abarcan cualquier información guardada por una app (según la configuración del desarrollador), incluidos contactos, mensajes y fotos.<ph name="END_PARAGRAPH1" />
@@ -1060,6 +1071,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="4099874310852108874">Se produjo un error de red.</translation>
 <translation id="4101772068965291327">Abrir página principal</translation>
 <translation id="4102906002417106771">Reiniciar con Powerwash</translation>
+<translation id="411052834366185695">Debe tener al menos 1 dígito</translation>
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
 <translation id="4115378294792113321">Magenta</translation>
@@ -1070,6 +1082,9 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="412298498316631026">ventana</translation>
 <translation id="4123259114412175274">Para desbloquear tu Chromebook, asegúrate de que la conexión Bluetooth del teléfono esté activada</translation>
 <translation id="4123868835475902435">Esos fueron los conceptos básicos. Continúa en Explorar, nuestra app integrada para obtener sugerencias y ayuda. Encontrarás sugerencias para comenzar, ofertas especiales y las funciones más recientes de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente dentro de # segundo.
+        <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}other{Tu <ph name="DEVICE_TYPE" /> se bloqueará automáticamente dentro de # segundos.
+        <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}}</translation>
 <translation id="4125970834901680537">No se puede transmitir apps en el modo tablet. Inténtalo en el modo laptop.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C - Velocidad actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Activada hasta el amanecer</translation>
@@ -1275,6 +1290,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4659419629803378708">Se habilitó ChromeVox</translation>
 <translation id="4666911709726371538">Más apps</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
+<translation id="4668936527507421457">El PIN debe contener solo números</translation>
 <translation id="4672539464599646374">Se activó el Ahorro de batería.</translation>
 <translation id="4673427585974421255">Mantener activado</translation>
 <translation id="4677040906536311086">Hoja de cálculo de Google</translation>
@@ -1305,6 +1321,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
 <translation id="4762718786438001384">Hay muy poco espacio en el disco del dispositivo</translation>
 <translation id="4763885921995354846">Permite el acceso a la cámara para todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
+<translation id="4769359569327438364">Debe tener al menos 4 dígitos</translation>
 <translation id="4774338217796918551">Regresa mañana a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="4776584068981882959">Aún no se pudo verificar tu contraseña. Vuelve a intentarlo.</translation>
 <translation id="4776917500594043016">Contraseña para <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1359,6 +1376,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4925542575807923399">El administrador de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="493076006037866439">Alejar la pantalla</translation>
 <translation id="4932733599132424254">Fecha</translation>
+<translation id="4934763315031217818">No puede contener secuencias ordenadas</translation>
 <translation id="4936329710968938986">Todos, desactivado</translation>
 <translation id="4937170330762390348">Con el dictado, puedes escribir con tu voz. Presiona la tecla de dictado o selecciona el ícono de micrófono en la parte inferior de la pantalla cuando estés en un campo de texto. El idioma de dictado está configurado en <ph name="LANGUAGE" />. Se descargarán los archivos de voz para que puedas usar el dictado sin conexión. Puedes cambiar el idioma de dictado en cualquier momento en Configuración &gt; Accesibilidad.</translation>
 <translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
@@ -1375,6 +1393,7 @@ Se conectó un dispositivo.</translation>
 <translation id="4964188651935955085">Cuando desactives el Bluetooth, este dispositivo externo se desconectará de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Subir el volumen</translation>
 <translation id="496999337731226334">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> del recorrido. Los controles que usas con frecuencia, como Wi-Fi, Bluetooth y volumen, se encuentran en la Configuración rápida. También puedes ir aquí para tomar capturas de pantalla. Presiona Alt + Mayúsculas + S para abrir la Configuración rápida.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que descargues una actualización hoy. Cuando te conectes a Internet, se descargará automáticamente.}other{<ph name="MANAGER" /> requiere que descargues una actualización antes de la fecha límite. Cuando te conectes a Internet, se descargará automáticamente.}}</translation>
 <translation id="4975771730019223894">Insignias de apps</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1438,6 +1457,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5147567197700016471">Desactivado</translation>
 <translation id="5150070631291639005">Configuración de privacidad</translation>
 <translation id="5155897006997040331">Velocidad de lectura</translation>
+<translation id="5158206172605340248">Se descartó el menú de tildes.</translation>
 <translation id="5161445389876829235"><ph name="BEGIN_PARAGRAPH1" />Se trata de información general sobre tu dispositivo y cómo lo usas (por ejemplo, el nivel de batería, los errores y la actividad en apps y del sistema). Los datos se usarán para mejorar Android, y la información agregada también permitirá que las apps y los socios de Google, como los desarrolladores de Android, mejoren sus apps y productos.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Desactivar esta función no afectará la capacidad de tu dispositivo de enviar la información necesaria para servicios esenciales, como seguridad y actualizaciones del sistema.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />El propietario puede controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar automáticamente datos de uso y diagnóstico a Google.<ph name="END_PARAGRAPH3" />
@@ -1450,6 +1470,7 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5176318573511391780">Grabar parte de la pantalla</translation>
 <translation id="5187627942836026988">Mostrar detalles del hotspot. El administrador bloqueó el hotspot.</translation>
 <translation id="5188648870018555788">Usar la ubicación. Permite que las apps, los sitios web y los servicios de ChromeOS y Android que tengan permiso de ubicación usen la ubicación de tu dispositivo. La Precisión de la ubicación proporciona una ubicación más precisa para las apps y los servicios de Android. Para ello, Google procesa de forma periódica información sobre los sensores del dispositivo y sus señales inalámbricas para obtener ubicaciones de las señales inalámbricas con participación colectiva. Esta información se utiliza sin identificarte para mejorar la precisión de la ubicación y los servicios basados en ella, además de mejorar, proporcionar y mantener los servicios de Google en función de sus intereses legítimos (y los de terceros) de satisfacer las necesidades de los usuarios. <ph name="BEGIN_LINK1" />Más información sobre el uso de la ubicación<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Devuelve el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_WEEKS} semana}other{Devuelve el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_WEEKS} semanas}}</translation>
 <translation id="5198039720391525849">GIF destacados</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718">Se combinó <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una nueva carpeta.</translation>
@@ -1470,9 +1491,11 @@ También puedes usar la combinación de teclas. Primero, destaca el texto y, lue
 <translation id="5238719049014159442">Abrir o cerrar el Selector</translation>
 <translation id="5240725217819182328">Acceso rápido a páginas o acciones específicas dentro de las apps instaladas</translation>
 <translation id="5243355658487390559">Buscar fecha</translation>
+<translation id="5243477050423867768">Debe tener al menos 8 dígitos y no puede contener secuencias repetidas o en orden</translation>
 <translation id="5243522832766285132">Vuelve a intentarlo en unos minutos</translation>
 <translation id="5245201184978705914">No se puede generar una transcripción</translation>
 <translation id="5251174953851719648">Actualizar contenido</translation>
+<translation id="5252653240322147470">El PIN debe tener <ph name="MAXIMUM" /> dígitos como máximo</translation>
 <translation id="5253783950165989294">Se estableció la conexión con un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de batería</translation>
 <translation id="52550593576409946">No se pudo iniciar la aplicación del kiosco.</translation>
 <translation id="5256939106029293271">Prueba tu micrófono</translation>
@@ -1511,6 +1534,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5329548388331921293">Conectando…</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (puerto lateral izquierdo trasero)</translation>
 <translation id="533282197239610265">Mostrar dispositivos de transmisión</translation>
+<translation id="5342091991439452114">El PIN debe tener al menos <ph name="MINIMUM" /> dígitos</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (derecho)</translation>
 <translation id="5352250171825660495">El Tema oscuro está activado</translation>
 <translation id="5354804064646502504">Es posible que se generen costos por el uso de datos.
@@ -1739,6 +1763,7 @@ No hay dispositivos conectados.</translation>
 <translation id="602001110135236999">Desplazar hacia la izquierda</translation>
 <translation id="6020147141355393792">Configurar la visualización de las notificaciones y las apps de tu teléfono</translation>
 <translation id="6022924867608035986">Borrar el texto en el cuadro de búsqueda</translation>
+<translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="602472752137106327">Está seleccionado el botón que muestra las ventanas de todos los escritorios</translation>
 <translation id="6024768346262692989">No se pudieron descargar los archivos de control facial</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
@@ -1746,6 +1771,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6030495522958826102">El menú se movió a la esquina inferior izquierda de la pantalla.</translation>
 <translation id="6030608926359652298">Personaliza tu panel táctil</translation>
 <translation id="6032620807120418574">Haz clic en cualquier parte para grabar la pantalla completa</translation>
+<translation id="603539183851330738">Botón para deshacer la autocorrección. Revertir a <ph name="TYPED_WORD" />.  Presiona Intro para Deshacer o Esc para descartar.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
 <translation id="6043212731627905357">Este monitor no es compatible con tu dispositivo <ph name="DEVICE_TYPE" />.</translation>
@@ -1762,6 +1788,9 @@ No hay dispositivos conectados.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Saldrás de la sesión automáticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Controles de videollamada</translation>
+<translation id="6070081109266557120">{0,plural, =1{Saldrás automáticamente dentro de # segundo.
+        <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}other{Saldrás automáticamente dentro de # segundos.
+        <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.}}</translation>
 <translation id="6071576563962215370">El sistema no pudo establecer el bloqueo de atributos del tiempo de instalación del dispositivo.</translation>
 <translation id="6072442788591997866">No se permite usar <ph name="APP_NAME" /> en este dispositivo. Comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Detener grabación</translation>
@@ -1881,6 +1910,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6418511932144861495">Instalar una actualización crítica</translation>
 <translation id="641867537956679916">El administrador accedió para examinar un problema. Puedes seguir usando el dispositivo después de que el administrador te devuelva el control.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
+<translation id="642469772702851743">El propietario bloqueó este dispositivo (NS: <ph name="SERIAL_NUMBER" />).</translation>
 <translation id="642644398083277086">Borra todas las notificaciones</translation>
 <translation id="6426905245930183644">Creando…</translation>
 <translation id="6430225033895752525">Mostrar la configuración del Modo sin distracciones</translation>
@@ -1906,6 +1936,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6485086611007560630">Clima (no disponible)</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491376743066338510">Se produjo un error en la autorización</translation>
+<translation id="6494483173119160146">El dispositivo detectó un error irrecuperable. Restablece el dispositivo (se borrarán todos los datos del usuario) y vuelve a intentarlo.</translation>
 <translation id="649452524636452238">PIN de la tarjeta inteligente</translation>
 <translation id="6495322433318104734">Se muestra el protector de pantalla; presiona cualquier tecla para salir</translation>
 <translation id="6495400115277918834">Se inició el modo pantalla en pantalla; presiona Alt+Mayúsculas+V para enfocar</translation>
@@ -1929,6 +1960,7 @@ No hay dispositivos conectados.</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
 <translation id="6559158502366839560">Explorar más apps y juegos</translation>
+<translation id="6560151649238390891">Se insertó la sugerencia</translation>
 <translation id="6562447480759345110">Finalizar el Modo sin distracciones</translation>
 <translation id="6565007273808762236">No se puede establecer conexión con la tarjeta eSIM</translation>
 <translation id="6570831796530454248">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 hora}other{Actualiza el dispositivo en el transcurso de # horas}}</translation>
@@ -1950,6 +1982,7 @@ Nueva instalación</translation>
 <translation id="6612889377159412215">subtarea</translation>
 <translation id="6613765291890844037">Almacenamiento en uso: <ph name="STORAGE_IN_USE_SIZE" /> | Total: <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
+<translation id="6622212269189717101">Debe tener al menos 6 dígitos y no puede contener secuencias repetidas o en orden</translation>
 <translation id="6622679827379792051">Configurar la visualización de las apps de tu teléfono</translation>
 <translation id="662279009180869175">Usa las flechas hacia la izquierda y la derecha para cambiar el tamaño de la pantalla dividida</translation>
 <translation id="6624493541160101248">Escritorio actual: <ph name="DESK_NAME" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
@@ -2107,6 +2140,8 @@ Nueva instalación</translation>
 <translation id="7076878155205969899">Silenciar sonido</translation>
 <translation id="7083848064787091821">Concentración</translation>
 <translation id="7084678090004350185">Activar o desactivar el hotspot. El hotspot está activado y hay <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
+<translation id="7086438436964931440">Saldrás automáticamente.
+        <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
 <translation id="7086931198345821656">Esta actualización requiere que se aplique la función Powerwash en tu <ph name="DEVICE_TYPE" />. Se borrarán todos los datos. Obtén más información sobre la actualización más reciente de <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Accesibilidad con interruptores</translation>
 <translation id="709015856939120012">Acercar la página</translation>
@@ -2143,6 +2178,7 @@ Nueva instalación</translation>
 <translation id="7228968829656641943">Selecciona para buscar en la pantalla. Presiona Tab y, luego, la barra espaciadora para navegar con el teclado.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> de memoria | <ph name="TOTAL_MEMORY" /> en total</translation>
 <translation id="7234010996000898150">Cancelando el restablecimiento de Linux</translation>
+<translation id="7238609589076576185">Se insertó la tilde.</translation>
 <translation id="7239814253344511868">Ambos botones del mouse</translation>
 <translation id="7240636904654154599">Se creó la hoja de cálculo de Google</translation>
 <translation id="7244725679040769470">Queda <ph name="PERCENTAGE" />% de batería. Conecta tu dispositivo a la corriente.</translation>
@@ -2224,6 +2260,7 @@ Nueva instalación</translation>
 <translation id="7489261257412536105">Ingresar al modo de pantalla completa o salir de él</translation>
 <translation id="7490157877815329797">Prueba YouTube Music Premium para escuchar música sin anuncios y disfrutar de música personalizada para concentrarte</translation>
 <translation id="7490360161041035804">Puedes fijar archivos importantes, incluidos los de Google Drive. Para fijar un elemento, coloca el cursor sobre él o abre Archivos y haz clic con el botón derecho en él.</translation>
+<translation id="7491962110804786152">tab</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
 <translation id="7507162824403726948">Terminar de verificar tu identidad</translation>
 <translation id="7508690557411636492">Se abrió el mes pasado</translation>
@@ -2460,6 +2497,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8091153018031979607">Comienza a las <ph name="START_TIME" /> el día <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Controles de desplazamiento</translation>
+<translation id="80974698889265265">Los PIN no coinciden</translation>
 <translation id="810637681351706236">Dejar de fijar una app en la barra</translation>
 <translation id="8107015733319732394">Se está instalando Google Play Store en tu <ph name="DEVICE_TYPE" />. Esta acción puede tardar unos minutos.</translation>
 <translation id="8113515504791187892">Botón Seleccionar para pronunciar</translation>
@@ -2487,10 +2525,12 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8168435359814927499">Contenido</translation>
 <translation id="8169177848833352618">Lamentablemente, esta máquina no cumple con los requisitos para instalar Bruschetta. El código de error es <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Se seleccionó el controlador superior izquierdo, usa las teclas de flecha para moverlo</translation>
+<translation id="8179976553408161302">Intro</translation>
 <translation id="81817143961839203">No se pudo insertar la imagen</translation>
 <translation id="8182105986296479640">La app no responde.</translation>
 <translation id="8182412589359523143">Para borrar todos los datos de este dispositivo <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />haz clic aquí<ph name="END_LINK" />.</translation>
 <translation id="8185090165691050712">Activar o desactivar el menú para cambiar el tamaño del modo bloqueado</translation>
+<translation id="8186047833733689201">Se abrió el menú de tildes. Presiona las teclas de número, flecha hacia la izquierda o flecha hacia la derecha para navegar; presiona Intro para insertarlas.</translation>
 <translation id="8192727139462702395">Cuando desactives el Bluetooth, estos dispositivos externos se desconectarán de tu <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8200772114523450471">Reanudar</translation>
@@ -2504,17 +2544,20 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8220076512072059941">Agregar <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Ocultar esta sugerencia</translation>
 <translation id="8230305195727960608">Modo de inversión de colores</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Debes devolver el dispositivo de inmediato}other{Devuelve el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días}}</translation>
 <translation id="8236042855478648955">Es hora de descansar</translation>
 <translation id="8237964652943995219">Siguiente escritorio: <ph name="DESK_NAME" />; escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" /></translation>
 <translation id="8238817965863339552">Realiza un recorrido rápido para obtener más información sobre tu <ph name="PRODUCT_NAME" />. Comienza en 5 pasos.</translation>
 <translation id="8239034820133090126">Activar el escritorio de la derecha</translation>
 <translation id="8241650983304689286">Agregar pestaña a la nueva vista dividida</translation>
+<translation id="8244201515061746038">Botón para obtener más información sobre la autocorrección. Ve a la página de configuración de la autocorrección. Presiona Intro para activarla o Esc para descartarla.</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
 <translation id="825129991941217170">Mostrar todo el contenido de Google Drive</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8261625296061301062">Se instaló el software del escáner</translation>
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>
+<translation id="8266751606569906450">Debe tener al menos <ph name="MINIMUM" /> caracteres</translation>
 <translation id="8268302343625273732">Ver todas las tareas en Google Classroom</translation>
 <translation id="8277261673056602147">Destacar texto en la pantalla</translation>
 <translation id="8281886186245836920">Omitir</translation>
@@ -2550,6 +2593,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8388750414311082622">No se puede quitar el último escritorio.</translation>
 <translation id="8390392581097975659">Instalando el software del escáner</translation>
 <translation id="8394567579869570560">Tus padres bloquearon este dispositivo</translation>
+<translation id="839949601275221554">El dispositivo detectó un error. Reinicia el dispositivo y vuelve a intentarlo.</translation>
 <translation id="8401850874595457088">Ingresar al menú de idiomas</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412677897383510995">Mostrar la configuración de la pantalla</translation>
@@ -2676,6 +2720,8 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8756799553341497810">Podrás comenzar a personalizar el diseño de la app una vez que salgas de esta vista.</translation>
 <translation id="8759408218731716181">No se puede configurar el acceso múltiple.</translation>
 <translation id="8759753423332885148">Más información</translation>
+<translation id="8760172428247796445">Se bloqueará tu <ph name="DEVICE_TYPE" /> ahora.
+        <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
 <translation id="8763883995157866248">Poner el dispositivo en modo de suspensión</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8782565991310229362">Se canceló el inicio de la aplicación del kiosco.</translation>
@@ -2709,6 +2755,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8858369206579825206">Controles de privacidad</translation>
 <translation id="8859402192569844210">No se pudieron cargar las Condiciones del Servicio</translation>
 <translation id="8860366331836346216">Agregar eSIM</translation>
+<translation id="8864458770072227512">Se quitó <ph name="EMAIL" /> de este dispositivo</translation>
 <translation id="8869149849311827122">¿Confirmas que quieres desactivar el control del cursor del mouse?</translation>
 <translation id="8870509716567206129">La app no es compatible con la función de pantalla dividida.</translation>
 <translation id="8871551568777368300">Fijado por el administrador</translation>
@@ -2845,6 +2892,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="956452277966142925">Configuración del Panel de juego</translation>
 <translation id="961856697154696964">Borrar datos de navegación</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
+<translation id="976499800099896273">Se muestra el diálogo para deshacer la autocorrección de la palabra <ph name="TYPED_WORD" /> corregida a <ph name="CORRECTED_WORD" />.  Presiona la flecha hacia arriba para acceder al botón Deshacer o Esc para ignorar el diálogo.</translation>
 <translation id="97905529126098460">Cuando se complete la cancelación, se cerrará esta ventana.</translation>
 <translation id="981011780479609956">Sin fecha límite</translation>
 <translation id="981121421437150478">Sin conexión</translation>

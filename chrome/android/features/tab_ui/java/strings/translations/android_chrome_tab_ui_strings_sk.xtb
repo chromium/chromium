@@ -31,6 +31,7 @@
 <translation id="1828808367831369073">Bola zoskupená <ph name="TABS_COUNT_ONE" /> karta</translation>
 <translation id="1844381456014878100">Po 7 dňoch nečinnosti</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Pridať kartu do čitateľského zoznamu}few{Pridať karty do čitateľského zoznamu}many{Add tabs to reading list}other{Pridať karty do čitateľského zoznamu}}</translation>
 <translation id="1909810060368225529">Upozornenie: Zmeny tejto zdieľanej skupiny kariet vidia všetci. Zdieľané skupiny kariet môžu meniť všetci.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Pripnúť kartu}few{Pripnúť karty}many{Pin tabs}other{Pripnúť karty}}</translation>
 <translation id="1982637982196732906">Presun do sekcie neaktívnych</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pokles ceny produktu <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Farebná ikona skupiny kariet: <ph name="COLOR_NAME" /></translation>
 <translation id="311432875115153175">Zoznam skupín kariet je zavretý</translation>
+<translation id="3152596030350326139">Zobrazovať karty vodorovne</translation>
+<translation id="31806439105337256">Zobrazovať karty zvisle</translation>
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Pridať <ph name="TABS_COUNT_ONE" /> kartu do skupiny}few{Pridať <ph name="TABS_COUNT_MANY" /> karty do skupiny}many{Add <ph name="TABS_COUNT_MANY" /> tabs to group}other{Pridať <ph name="TABS_COUNT_MANY" /> kariet do skupiny}}</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>

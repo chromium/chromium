@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzugefügt</translation>
 <translation id="1844381456014878100">Nach 7 Tagen Inaktivität</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
 <translation id="1909810060368225529">Hinweis: Änderungen an dieser geteilten Tabgruppe sind für alle sichtbar. Jeder kann Änderungen an deinen geteilten Tabgruppen vornehmen.</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{Tab anpinnen}other{Tabs anpinnen}}</translation>
 <translation id="1982637982196732906">In Bereich „Inaktiv“ verschieben</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3078350928901129212">Farbe des Symbols für Tabgruppe (<ph name="COLOR_NAME" />)</translation>
 <translation id="311432875115153175">Liste der Tabgruppen geschlossen</translation>
+<translation id="3152596030350326139">Tabs horizontal anzeigen</translation>
+<translation id="31806439105337256">Tabs vertikal anzeigen</translation>
 <translation id="3194464645767632461">Bewertung</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab zu Gruppe hinzufügen}other{<ph name="TABS_COUNT_MANY" /> Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>

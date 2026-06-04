@@ -875,6 +875,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2354001756790975382">Dấu trang khác</translation>
 <translation id="2355395290879513365">Kẻ tấn công có thể thấy những hình ảnh mà bạn đang xem trên trang web này và lừa bạn bằng cách sửa đổi những hình ảnh đó.</translation>
 <translation id="2356941001189392209">Một danh sách hạn chế chứa URL của những trang bạn truy cập có diễn ra sự kiện công nghệ cũ</translation>
+<translation id="2357312461142072202">{NUM_TABS,plural, =1{Sẽ chia sẻ 1 thẻ}other{Sẽ chia sẻ {NUM_TABS} thẻ}}</translation>
 <translation id="2357481397660644965">Thiết bị của bạn do <ph name="DEVICE_MANAGER" /> quản lý, còn tài khoản của bạn do <ph name="ACCOUNT_MANAGER" /> quản lý.</translation>
 <translation id="2359629602545592467">Nhiều</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
@@ -4070,7 +4071,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7388380253839603603">Giá xăng và nhiên liệu xe</translation>
 <translation id="7388594495505979117">{0,plural, =1{Thiết bị của bạn sẽ khởi động lại sau 1 phút}other{Thiết bị của bạn sẽ khởi động lại sau # phút}}</translation>
 <translation id="7393161616326137353">Trò chơi mạo hiểm</translation>
-<translation id="7393243238767102021">Cho phép <ph name="DOMAIN" /> tự động xác minh email này?</translation>
 <translation id="7393475648162498734">Cho biết những phần thưởng và lợi ích nào áp dụng cho thẻ của bạn tại thời điểm thanh toán</translation>
 <translation id="7393971683644170444">Đang kết nối với nhà cung cấp thẻ của bạn...</translation>
 <translation id="739728382607845710">Biểu tượng trình xử lý khoản thanh toán</translation>

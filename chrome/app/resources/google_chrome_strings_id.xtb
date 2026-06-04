@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">Mengunduh...</translation>
 <translation id="1651617469580841801">Saat Anda menggunakan Google Lens, judul halaman, URL, dan konten halaman, termasuk PDF, akan dikirim ke Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">Tentang ChromeOS Flex</translation>
+<translation id="1665867022636014702">Gunakan setelan browser yang direkomendasikan Google</translation>
 <translation id="1674870198290878346">Buka Link di Jendela Sa&amp;maran Chrome</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca dan menulis ke direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke alat penelusuran, AI, dan agen milik organisasi Anda untuk mendapatkan saran.</translation>
@@ -238,6 +239,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
 <translation id="3453763134178591239">Persyaratan ChromeOS</translation>
 <translation id="3503306920980160878">Chrome memerlukan akses ke lokasi Anda untuk berbagi lokasi dengan situs ini</translation>
+<translation id="3539955434060988644">Buka link di jendela Sam&amp;aran Chrome</translation>
 <translation id="3576528680708590453">Administrator sistem Anda telah mengonfigurasi Google Chrome untuk membuka browser alternatif guna mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">Menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="3583751698304738917">Anda sudah login sebagai <ph name="USER_EMAIL_ADDRESS" /> di profil Chrome lain</translation>

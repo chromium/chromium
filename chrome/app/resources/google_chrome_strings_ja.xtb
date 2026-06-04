@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">ダウンロードしています...</translation>
 <translation id="1651617469580841801">Google レンズを使用すると、ページのタイトル、URL、コンテンツ（PDF を含む）が Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">ChromeOS Flex について</translation>
+<translation id="1665867022636014702">Google の推奨ブラウザ設定を使用する</translation>
 <translation id="1674870198290878346">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="1682634494516646069">Google Chrome はこのデータ ディレクトリへの読み書きを実行できません: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容が組織の検索ツール、AI ツール、エージェント ツールに送信され、検索候補が表示されます。</translation>
@@ -236,6 +237,7 @@
 <translation id="345171907106878721">Chrome に自分を追加</translation>
 <translation id="3453763134178591239">ChromeOS 利用規約</translation>
 <translation id="3503306920980160878">このサイトで現在地を共有するには、Chrome で位置情報の使用を許可する必要があります</translation>
+<translation id="3539955434060988644">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="3576528680708590453">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに代替ブラウザを開くよう Google Chrome を設定しています。</translation>
 <translation id="3582972582564653026">同期してカスタマイズした Chrome をどのデバイスでも使用できます</translation>
 <translation id="3583751698304738917">別の Chrome プロファイルで <ph name="USER_EMAIL_ADDRESS" /> としてすでにログインしています</translation>

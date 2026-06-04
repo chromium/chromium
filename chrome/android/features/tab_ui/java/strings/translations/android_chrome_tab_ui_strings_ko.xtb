@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" />개의 탭 그룹화됨</translation>
 <translation id="1844381456014878100">7일 동안 비활성 상태인 경우</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
 <translation id="1909810060368225529">알림: 이 공유 탭 그룹의 변경사항은 모든 사용자에게 표시됩니다. 모든 사용자가 공유 탭 그룹을 변경할 수 있습니다</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{탭 고정}other{탭 고정}}</translation>
 <translation id="1982637982196732906">비활성 섹션으로 이동</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
 <translation id="3078350928901129212"><ph name="COLOR_NAME" /> 탭 그룹 색상 아이콘</translation>
 <translation id="311432875115153175">탭 그룹 목록 닫힘</translation>
+<translation id="3152596030350326139">가로로 탭 표시</translation>
+<translation id="31806439105337256">세로로 탭 표시</translation>
 <translation id="3194464645767632461">평점</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{그룹에 탭 <ph name="TABS_COUNT_ONE" />개 추가}other{그룹에 탭 <ph name="TABS_COUNT_MANY" />개 추가}}</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>

@@ -30,6 +30,7 @@
 <translation id="1209796539517632982">യാന്ത്രിക നാമ സെർവറുകൾ</translation>
 <translation id="1210831758834677569">ലാവോ</translation>
 <translation id="1221555006497674479">സ്റ്റോറേജ് കുറവാണ്, നിങ്ങളുടെ <ph name="TOTAL_SPACE" /> പങ്കിട്ട സ്റ്റോറേജിൽ <ph name="REMAINING_PERCENTAGE" />% ശേഷിക്കുന്നു.</translation>
+<translation id="1239594683407221485">Files ആപ്പിൽ ഉപകരണത്തിന്റെ ഉള്ളടക്കം അടുത്തറിയൂ.</translation>
 <translation id="1243314992276662751">അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="1249250836236328755">വിഭാഗം</translation>
 <translation id="1254593899333212300">നേരിട്ടുള്ള ഇന്‍റര്‍നെറ്റ് കണക്ഷന്‍</translation>
@@ -41,6 +42,7 @@
 <translation id="1306130176943817227">ഇല്ലാതാക്കാനാകുന്നില്ല. ഇനം ഉപയോഗത്തിലാണ്.</translation>
 <translation id="1307931752636661898">Linux ഫയലുകൾ കാണാനാവുന്നില്ല</translation>
 <translation id="1313405956111467313">സ്വയമേവയുള്ള പ്രോക്സി ക്രമീകരണം</translation>
+<translation id="1340527397989195812">Files ആപ്പ് ഉപയോഗിച്ച് ഉപകരണത്തിൽ നിന്നും മീഡിയ ബാക്കപ്പ് ചെയ്യുക.</translation>
 <translation id="134645005685694099">ഫയൽ സമന്വയം ഓണാക്കി നിലനിർത്താൻ ആവശ്യമായ സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് നിങ്ങളുടെ ഉപകരണത്തിലില്ല. പുതിയ ഫയലുകൾ ഇനി സ്വയമേവ സമന്വയിപ്പിക്കില്ല.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">ഫയലോ ഡയറക്‌റ്ററിയോ ഉപയോഗക്ഷമമല്ല.</translation>
@@ -53,11 +55,13 @@
 <translation id="1399511500114202393">ഉപയോക്തൃ സർട്ടിഫിക്കറ്റ് പാടില്ല</translation>
 <translation id="1403008701842173542">എല്ലായിടത്തും</translation>
 <translation id="1404323374378969387">നോർവീജിയൻ</translation>
+<translation id="1408504635543854729">Files ആപ്പിലെ ഉപകരണ ഉള്ളടക്കം അടുത്തറിയുക. ഒരു അഡ്‌മിൻ, ഉള്ളടക്കം നിയന്ത്രിതമാക്കിയതിനാൽ അതിൽ മാറ്റം വരുത്താനാകില്ല.</translation>
 <translation id="1412476183660741812">സൈൻ ചെയ്ത വെബ് ബണ്ടിൽ</translation>
 <translation id="1433628812591023318">Parallels Desktop-ലേക്ക് ഫയലുകൾ ചേർക്കാൻ അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് നീക്കണം.</translation>
 <translation id="1435838927755162558">Parallels Desktop ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
 <translation id="1439919885608649279">പൂക്കൾ പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ഒഴിവാക്കുക</translation>
+<translation id="1464781208867302907">ഉപകരണ മുൻഗണനകൾക്ക്, ക്രമീകരണത്തിലേക്ക് പോവുക.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ഫയലുകൾ എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നതിനാൽ അവ പകർത്താനായില്ല.</translation>
 <translation id="1471718551822868769">സ്ലോവാക്</translation>
 <translation id="1482884275703521657">ഫിന്നിഷ്</translation>
@@ -128,6 +132,7 @@
 <translation id="2001796770603320721">ഡ്രൈവിൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="2004942826429452291">ഫയലുകൾ ക്ലൗഡിലും ഈ Chromebook-ലും സംഭരിക്കും.</translation>
 <translation id="2009067268969781306">ഒരു ഡ്രൈവ് ഫോർമാറ്റ് ചെയ്‌താൽ അതിൽ സൂക്ഷിച്ചിരിക്കുന്ന മുഴുവൻ ഡാറ്റയും ഇല്ലാതാക്കപ്പെടും. ഈ പ്രവൃത്തി പഴയപടിയാക്കാനാകില്ല.</translation>
+<translation id="2018352199541442911">ക്ഷമിക്കണം, നിങ്ങളുടെ എക്‌സ്‌റ്റേണൽ സ്‌റ്റോറേജ് ഉപകരണത്തെ ഇപ്പോൾ പിന്തുണയ്ക്കുന്നില്ല.</translation>
 <translation id="2025955442973426285">ടിഗ്രിന്യ</translation>
 <translation id="2029385776150020336">യുഎസ് എക്‌സ്റ്റെൻഡഡ്</translation>
 <translation id="2037845485764049925">റഷ്യൻ</translation>
@@ -196,6 +201,7 @@
 <translation id="2468402215065996499">താമഗോച്ചി</translation>
 <translation id="2468470447085858632">ഫയൽ സമന്വയിപ്പിക്കൽ ഉപയോഗിച്ച് നിങ്ങളുടെ Google Drive ഫയലുകൾ ഓഫ്‌ലൈനിൽ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="2470939964922472929">തെറ്റായ പിൻ നിരവധി തവണ നൽകി. പുതിയ പിൻ സജ്ജീകരിക്കാൻ, നിങ്ങളുടെ സേവനദാതാവ് നൽകിയ 8 അക്ക പേഴ്‌സണൽ അൺബ്ലോക്കിംഗ് കീ (PUK) നല്‍കുക.</translation>
+<translation id="249113932447298600">ക്ഷമിക്കണം, <ph name="DEVICE_LABEL" /> എന്ന ഉപകരണത്തെ ഇപ്പോൾ പിന്തുണയ്ക്കുന്നില്ല.</translation>
 <translation id="2500392669976258912">ഗുജറാത്തി ഉച്ചാരണശബ്‌ദം</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">സ്‌കാൻ ചെയ്യുക</translation>
@@ -297,6 +303,7 @@
 <translation id="3307875152560779385">ഉക്രേനിയൻ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> zip ചെയ്യുന്നു...</translation>
 <translation id="3335337277364016868">റെക്കോർഡ് ചെയ്‌ത വർഷം</translation>
+<translation id="3348038390189153836">നീക്കം ചെയ്യാവുന്ന ഉപകരണം കണ്ടെത്തി</translation>
 <translation id="3353984535370177728">അപ്‌ലോഡുചെയ്യുന്നതിന് ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3356580349448036450">പൂര്‍ത്തിയാക്കൂ</translation>
 <translation id="3358452157379365236">ഗിറ്റാർ</translation>
@@ -376,6 +383,7 @@
 <translation id="3971140002794351170">മൊബൈൽ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യുക, <ph name="NETWORK_COUNT" /> എണ്ണത്തിൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">ഇംഗ്ലീഷ് (യുകെ)</translation>
 <translation id="3975895378829046965">ബംഗ്ലാ ഉച്ചാരണ ശബ്‌ദം</translation>
+<translation id="3983764759749072418">ഈ ഉപകരണത്തിലേക്ക് Play Store ആപ്പുകൾക്ക് ആക്‌സസുണ്ട്.</translation>
 <translation id="3999574733850440202">അടുത്തിടെ തുറന്ന Microsoft ഫയലുകൾ OneDrive-ലേക്ക് നീക്കി</translation>
 <translation id="4002066346123236978">ശീർഷകം</translation>
 <translation id="4017788180641807848">Workman കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
@@ -401,6 +409,7 @@
 <translation id="421017592316736757">ഈ ഫയൽ ആക്‌സസ് ചെയ്യുന്നതിന് നിങ്ങൾ ഓൺലൈനിലായിരിക്കണം.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" എന്ന് പേരുള്ള ഫോൾഡർ മുമ്പേ നിലവിലുണ്ട്. മറ്റൊരു പേര് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-ലെ ഒഴിവാക്കൽ നീക്കം ചെയ്യുക</translation>
+<translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="4261901459838235729">Google അവതരണം</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ഫിൽട്ടർ ഓണാണ്.</translation>
 <translation id="4290535918735525311">Linux ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
@@ -555,6 +564,7 @@
 <translation id="5275973617553375938">Google ഡ്രൈവിൽ നിന്നും ഫയലുകൾ വീണ്ടെടുത്തു</translation>
 <translation id="5278111733643988471">ഈ ഇനം പുനഃസ്ഥാപിക്കാൻ, ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് ഇത് വലിച്ചിടുക. ഈ ഇനത്തിന്റെ ഒറിജിനൽ ഫോൾഡറായ "<ph name="PARENT_FOLDER_NAME" />" ഇല്ലാതാക്കി.</translation>
 <translation id="5288441970121584418">ബർഗർ</translation>
+<translation id="529175790091471945">ഈ ഉപകരണം ഫോർമാറ്റ് ചെയ്യുക</translation>
 <translation id="5293615890992542006">ഈ ഫയൽ നീക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="5305688511332277257">ഒന്നും ഇന്‍സ്റ്റാള്‍ ചെയ്തിട്ടില്ല</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
@@ -570,6 +580,7 @@
 <translation id="5411472733320185105">ഈ ഹോസ്റ്റുകള്‍ക്കും ഡൊമെയ്നുകള്‍ക്കുമായി പ്രോക്സി ക്രമീകരണങ്ങള്‍ ഉപയോഗിക്കരുത്:</translation>
 <translation id="541890217011173530">ഇംഗ്ലീഷ് അധിഷ്‌ഠിത കീബോർഡ് ഉള്ള സൊറാനി കുർദ്ദിഷ്</translation>
 <translation id="5422221874247253874">ആക്‌സസ് പോയിന്‍റ്</translation>
+<translation id="5422781158178868512">ക്ഷമിക്കണം, നിങ്ങളുടെ എക്‌സ്‌റ്റേണൽ സ്‌റ്റോറേജ് ഉപകരണം അംഗീകരിക്കാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> എന്നതിന് ഫലങ്ങളൊന്നുമില്ല.</translation>
 <translation id="5447680084201416734">ആവശ്യത്തിന് സ്റ്റോറേജ് ഇല്ല.</translation>
 <translation id="5449551289610225147">പാസ്‌വേഡ് അസാധുവാണ്</translation>
@@ -617,10 +628,12 @@
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> ഇനങ്ങൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="5763377084591234761">ജർമ്മനി (സ്വിറ്റ്സർലൻഡ്)</translation>
 <translation id="5769519078756170258">ഒഴിവാക്കേണ്ട ഹോസ്റ്റോ ഡൊമെയ്നോ</translation>
+<translation id="5774295353725270860">ഓപ്പൺ ഫയലുകൾ ആപ്പ്</translation>
 <translation id="5775750595919327203">ഉറുദു</translation>
 <translation id="5776325638577448643">മായ്‌ച്ചശേഷം ഫോർമാറ്റ് ചെയ്യുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5788127256798019331">Play ഫയലുകൾ</translation>
+<translation id="5788367137662787332">ക്ഷമിക്കണം, <ph name="DEVICE_LABEL" /> എന്ന ഉപകരണത്തിലെ ഏറ്റവും കുറഞ്ഞത് ഒരു ഭാഗം പോലും മൗണ്ട് ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="5804245609861364054">കന്നഡ ലിപ്യന്തരണം</translation>
 <translation id="5814126672212206791">കണക്ഷൻ തരം</translation>
 <translation id="5817397429773072584">ചൈനീസ് പരമ്പരാഗതം</translation>
@@ -813,9 +826,11 @@
 <translation id="7224162581405244205">ഐസ്‌ലാന്‍ഡിക്</translation>
 <translation id="7229570126336867161">EVDO ആവശ്യമുണ്ട്</translation>
 <translation id="7230898482850090046">"സിം ലോക്ക് ചെയ്യുക" ക്രമീകരണം ഓഫാക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ അഭ്യർത്ഥിച്ചു</translation>
+<translation id="7232750842195536390">പേരുമാറ്റൽ പരാജയപ്പെട്ടു</translation>
 <translation id="7238097264433196391">ഡ്രൈവിൻ്റെ പേര്</translation>
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, വിശദാംശങ്ങൾ</translation>
 <translation id="7246947237293279874">FTP പ്രോക്‌സി</translation>
+<translation id="725109152065019550">ക്ഷമിക്കണം, അഡ്‌മിനിസ്‌ട്രേറ്റർ നിങ്ങളുടെ അക്കൗണ്ടിന്റെ എക്‌സ്‌റ്റേണൽ സ്‌റ്റോറേജ് പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="7256405249507348194">തിരിച്ചറിയാനാകാത്ത പിശക്: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">ലഭ്യമായ സേവനങ്ങൾ</translation>
 <translation id="7291818353625820805">കീകൾ ആവർത്തിക്കണോ? കീബോർഡ് ക്രമീകരണത്തിൽ പോയി ആക്‌സന്റ് അടയാളങ്ങൾ ഓഫാക്കുക</translation>
@@ -838,6 +853,7 @@
 <translation id="7417705661718309329">Google മാപ്പ്</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" പുനഃസ്ഥാപിക്കുന്നു</translation>
 <translation id="7435577899926900307">യുകെ ദ്വൊജാക്</translation>
+<translation id="7436921188514130341">ക്ഷമിക്കണം! പേരുമാറ്റുന്നതിനിടെ ഒരു പിശകുണ്ടായി.</translation>
 <translation id="7458955835361612701">അടുത്തിടെയുള്ള ചിത്രങ്ങളൊന്നുമില്ല</translation>
 <translation id="7469894403370665791">ഈ നെറ്റ്‍വര്‍ക്കിലേക്ക് സ്വയമേവ ബന്ധിപ്പിക്കുന്നു</translation>
 <translation id="7486315294984620427">Parallels Desktop-ലേക്ക് ഫയലുകൾ ചേർക്കാൻ അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തണം.</translation>
@@ -853,6 +869,7 @@
 <translation id="7551643184018910560">ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ഫോൾഡറിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക</translation>
 <translation id="7555339735447658365">നിങ്ങൾ നിലവിൽ ഓഫ്‌ലൈനാണ്. നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്യുമ്പോൾ ഫയൽ സമന്വയിപ്പിക്കൽ പുനരാരംഭിക്കും</translation>
+<translation id="7589461650300748890">ശ്രദ്ധിക്കൂ.</translation>
 <translation id="7589661784326793847">ഒരു നിമിഷം കാത്തിരിക്കുക</translation>
 <translation id="7600126690270271294">സെർബിയൻ</translation>
 <translation id="7603724359189955920">ഗ്രിഡുകൾ</translation>
@@ -898,6 +915,7 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">നെറ്റ്‍വര്‍ക്ക് കോണ്‍ഫിഗര്‍ ചെയ്യുന്നതിൽ പിശക്</translation>
+<translation id="7839051173341654115">മീഡിയ കാണുക/ബാക്കപ്പ് ചെയ്യുക</translation>
 <translation id="7839804798877833423">ഈ ഫയലുകൾ ലഭ്യമാക്കുന്നതിന് ഏകദേശം <ph name="FILE_SIZE" /> മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കും.</translation>
 <translation id="7846076177841592234">തിരഞ്ഞെടുത്തത് റദ്ദാക്കുക</translation>
 <translation id="7857117644404132472">ഒഴിവാക്കൽ ചേർക്കുക</translation>
@@ -905,8 +923,10 @@
 <translation id="7868774406711971383">പോളിഷ്</translation>
 <translation id="7874321682039004450">ഫിലിപ്പിനോ</translation>
 <translation id="78946041517601018">പങ്കിട്ട ഡ്രൈവുകൾ</translation>
+<translation id="7897900149154324287">ഭാവിയിൽ, Files ആപ്പിലെ നിങ്ങളുടെ നീക്കം ചെയ്യാനാവുന്ന ഉപകരണം അൺപ്ലഗ് ചെയ്യുന്നതിനുമുമ്പ് അത് ഒഴിവാക്കിയെന്ന് ഉറപ്പാക്കുക. അല്ലെങ്കിൽ, നിങ്ങൾക്ക് ഡാറ്റ നഷ്‌ടമാകാനിടയുണ്ട്.</translation>
 <translation id="7901567919203965902">യുഎസ് വർക്ക്‌മാൻ ഇന്റർനാഷണൽ</translation>
 <translation id="7903984238293908205">കറ്റക്കാന</translation>
+<translation id="7908378463497120834">ക്ഷമിക്കണം, നിങ്ങളുടെ എക്‌സ്‌റ്റേണൽ സ്‌റ്റോറേജ് ഉപകരണത്തിലെ ഏറ്റവും കുറഞ്ഞത് ഒരു ഭാഗം പോലും മൗണ്ട് ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="7908793776359722643">ഒരു ഭാഗം ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7920501309908018401">ഇന്റർനെറ്റ് കണക്ഷനില്ലാതെ ആക്സസ് ചെയ്യാനാകുന്നതിനായി 'എന്റെ ഡ്രൈവ്' എന്നതിലെ നിങ്ങളുടെ ഫയലുകൾ Chromebook-ലേക്ക് സ്വയമേവ സമന്വയിപ്പിക്കും.</translation>
@@ -1040,6 +1060,7 @@
 <translation id="8873014196523807561">ഈ ഇനങ്ങൾ പുനഃസ്ഥാപിക്കാൻ, ഒരു പുതിയ ഫോൾഡറിലേക്ക് അവ വലിച്ചിടുക. ഈ ഇനങ്ങളിൽ ചിലതിന്റെ ഒറിജിനൽ ഫോൾഡറുകൾ ഇല്ലാതാക്കി.</translation>
 <translation id="8874184842967597500">കണക്റ്റല്ല</translation>
 <translation id="8876368061475701452">ക്യൂ ചെയ്തു</translation>
+<translation id="8893928184421379330">ക്ഷമിക്കണം, <ph name="DEVICE_LABEL" /> എന്ന ഉപകരണം അംഗീകരിക്കാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="8902208737522818687">യുഎസ് ഇന്റർനാഷനൽ (PC)</translation>
 <translation id="8903931173357132290">ഗ്രാജ്വേറ്റ്</translation>
 <translation id="8912078710089354287">വാലാട്ടുന്ന നായ</translation>

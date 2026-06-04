@@ -65,6 +65,7 @@
 <translation id="1640672724030957280">מוריד...</translation>
 <translation id="1651617469580841801">‏כשמשתמשים ב-Google Lens, כותרת הדף, כתובת ה-URL והתוכן, כולל קובצי PDF, נשלחים אל Google. <ph name="LEARN_MORE" /></translation>
 <translation id="1662146548738125461">‏מידע על ChromeOS Flex</translation>
+<translation id="1665867022636014702">‏שימוש בהגדרות הדפדפן המומלצות של Google</translation>
 <translation id="1674870198290878346">‏פתיחת הקישור בחלון &amp;אנונימי של Chrome</translation>
 <translation id="1682634494516646069">‏Google Chrome אינו יכול לקרוא ולכתוב בספריית הנתונים שלו: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1688214853608504530">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה לכלי החיפוש, הבינה המלאכותית והסוכנים של הארגון כדי לקבל הצעות.</translation>
@@ -238,6 +239,7 @@
 <translation id="345171907106878721">‏הוספת עצמך ל-Chrome</translation>
 <translation id="3453763134178591239">‏התנאים של ChromeOS</translation>
 <translation id="3503306920980160878">‏Chrome זקוק לגישה למיקום שלך כדי לשתף אותו עם האתר הזה</translation>
+<translation id="3539955434060988644">‏פתיחת הקישור בחלון לגלישה &amp;פרטית של Chrome</translation>
 <translation id="3576528680708590453">‏לפי הגדרת מנהל המערכת, Google Chrome יפתח דפדפן חלופי כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="3582972582564653026">‏סינכרון והתאמה אישית של Chrome בכל המכשירים שלך</translation>
 <translation id="3583751698304738917">‏כבר נכנסת לחשבון בתור <ph name="USER_EMAIL_ADDRESS" /> בפרופיל Chrome אחר</translation>

@@ -20,6 +20,7 @@
 <translation id="1070689840697074178">Podes descargar ficheiros PDF desde aquí</translation>
 <translation id="107147699690128016">Se cambias a extensión do ficheiro, é posible que este se abra nunha aplicación diferente e supoña un perigo para o teu dispositivo.</translation>
 <translation id="1073328695547557412">Toca a icona de Google Lens</translation>
+<translation id="1080116354587839789">Axustar ao ancho</translation>
 <translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1087799850623149508">Podes manter premida a barra de enderezos para movela á parte inferior</translation>
 <translation id="1089606299949659462">Completaches a revisión</translation>
@@ -536,6 +537,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> pestana}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> pestanas}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{Hai 1 contrasinal gardado só neste dispositivo. Para usalo noutros dispositivos, gárdao na túa Conta de Google.}other{Hai # contrasinais gardados só neste dispositivo. Para usalos noutros dispositivos, gárdaos na túa Conta de Google.}}</translation>
 <translation id="3293181007446299124">O teu historial de navegación mantense privado no dispositivo e os informes envíanse con atraso para protexer a túa identidade</translation>
+<translation id="3301639354590628973">Queres cambiar de conta?</translation>
 <translation id="3301936297336370235">Confirmación de suxestión de contrasinal</translation>
 <translation id="3302615849591357577">Restablecer grupo de pestanas <ph name="TITLE_OF_GROUP" />, coa cor <ph name="COLOR_NAME" />, como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
@@ -678,6 +680,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3943322906274039960"><ph name="TAB_TITLE" />, pestana do modo de pantalla superposta fixada</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
 <translation id="395377504920307820">Usar sen conta</translation>
+<translation id="3955353672249727801">Engadíronse as páxinas á lista de lectura</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Chrome cargará a páxina cando o dispositivo estea listo}other{Chrome cargará as páxinas cando o dispositivo estea listo}}</translation>
 <translation id="3969142555815019568">Chrome non puido comprobar os teus contrasinais</translation>
 <translation id="3969863827134279083">Mover cara arriba</translation>

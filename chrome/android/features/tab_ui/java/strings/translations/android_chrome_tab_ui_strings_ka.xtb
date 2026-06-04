@@ -31,6 +31,7 @@
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ჩანართი დაჯგუფდა</translation>
 <translation id="1844381456014878100">7-დღიანი უმოქმედობის შემდეგ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{ჩანართის დამატება საკითხავ სიაში}other{ჩანართების დამატება საკითხავ სიაში}}</translation>
 <translation id="1909810060368225529">შეტყობინება: ამ საზიარო ჩანართების ჯგუფში შეტანილი ცვლილებები ხილულია ყველასთვის. ყველას შეუძლია ცვლილებების შეტანა თქვენს საზიარო ჩანართების ჯგუფში</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{ჩანართის ჩამაგრება}other{ჩანართების ჩამაგრება}}</translation>
 <translation id="1982637982196732906">არააქტიურთა სექციაში გადატანა</translation>
@@ -76,6 +77,8 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
 <translation id="3078350928901129212">ჩანართების ჯგუფის <ph name="COLOR_NAME" /> ფერის ხატულა</translation>
 <translation id="311432875115153175">ჩანართების ჯგუფების სია დახურულია</translation>
+<translation id="3152596030350326139">ჩანართების ჰორიზონტალურად ჩვენება</translation>
+<translation id="31806439105337256">ჩანართების ვერტიკალურად ჩვენება</translation>
 <translation id="3194464645767632461">შეფასება</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის დამატება ჯგუფში}other{<ph name="TABS_COUNT_MANY" /> ჩანართის დამატება ჯგუფში}}</translation>
 <translation id="3328308545011660196">შემოთავაზება: როგორც ჩანს, <ph name="NUMBER_OF_TABS" /> ჩანართი დაკავშირებულია. გსურთ მათი დაჯგუფება?</translation>

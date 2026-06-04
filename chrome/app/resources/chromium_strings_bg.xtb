@@ -34,6 +34,7 @@
 <translation id="1324107359134968521">Chromium се нуждае от достъп до Bluetooth, за да преглежда
 устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Разпознаване на езика</translation>
+<translation id="1330742950061766891">Използване на препоръчаните от Chromium настройки на браузъра</translation>
 <translation id="1342274909142618978">Изтриване на данните и от Chromium (<ph name="URL" />)</translation>
 <translation id="1345251407431278948">Успешно фиксиране. Можете да осъществявате достъп до търсенето на изображения чрез новия бутон в лентата с инструменти</translation>
 <translation id="1356661055722410047">Ново! Можете да превеждате текст и изображения на екрана си</translation>
@@ -67,6 +68,7 @@
 <translation id="1749104137266986751">Когато HTTPS не е налице, Chromium ще използва незащитени връзки, без да ви предупреждава</translation>
 <translation id="1774152462503052664">Нека Chromium да се изпълнява на заден план</translation>
 <translation id="1779356040007214683">За да направим Chromium по-безопасен, деактивирахме някои разширения, които не са посочени в <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> и може да са били добавени без ваше знание.</translation>
+<translation id="1793486931176048546">Кликнете върху <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> в известието от Windows, за да фиксирате Chromium в лентата на задачите за бърз достъп.</translation>
 <translation id="1808667845054772817">Повторно инсталиране на Chromium</translation>
 <translation id="1820835682567584003">Chromium се опитва да <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Следващия път, когато отворите Chromium на устройството си <ph name="DEVICE_TYPE" />, ще видите подкана да използвате Google Мениджър на пароли.</translation>
@@ -369,6 +371,7 @@
 <translation id="5187123684706427865">Изисква се повторно удостоверяване за профила в Chromium</translation>
 <translation id="5231355151045086930">Изход от Chromium</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5249261924633168472">Отваряне на връзката в прозорец в режим „инко&amp;гнито“ на Chromium</translation>
 <translation id="5254739261293693943">Попитайте за този видеоклип</translation>
 <translation id="5276305953263010518">Изтеглете приложението Chromium, за да запазвате пароли в движение</translation>
 <translation id="5277894862589591112">За да приложите промените си, рестартирайте Chromium</translation>
@@ -379,6 +382,7 @@
 <translation id="5346389065299425353">Разширете търсенето си, като добавите няколко раздела, файла и инструмента</translation>
 <translation id="5352264705793813212">Chromium откри някои препоръки за безопасност, които да прегледате</translation>
 <translation id="5352361688875342522">Други потребителски профили в Chromium</translation>
+<translation id="535243042947607642">ChromiumOS не успя да запази данните от Chromium в профила ви в Google, защото данните ви за вход в профила не са актуални</translation>
 <translation id="5358375970380395591">Влизате с управляван профил и давате на администратора му контрол над потребителския си профил в Chromium. Данните ви там, като например приложения, отметки, история, пароли и други настройки, ще се свържат за постоянно с/ъс <ph name="USER_NAME" />. Ще можете да ги изтриете чрез таблото за управление на Google Профили, но не и да ги свържете с друг профил. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Допълнителен код: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">За да се възползвате от персонализиране, включете Chromium в „Активност в мрежата и приложенията“</translation>
@@ -709,6 +713,7 @@
 <translation id="8852026904190808918">Този език се използва за показване на менюта, настройки, сигнали и друг текст в Chromium</translation>
 <translation id="8862326446509486874">Нямате подходящи права за инсталация на ниво система. Опитайте да стартирате отново инсталационната програма като администратор.</translation>
 <translation id="8876044221123442390">Добавяне на потребителски профил в Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS не успя да запази данните от Chromium в профила ви в Google поради грешка при влизане в профила</translation>
 <translation id="8891709362986793894">Организацията ви изисква да влезете в профила си в Chromium</translation>
 <translation id="8907580949721785412">Chromium опитва да покаже паролите. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="8932992523185907506">Chromium вече не е основният ви браузър. Да се зададе ли Chromium като основен браузър?</translation>

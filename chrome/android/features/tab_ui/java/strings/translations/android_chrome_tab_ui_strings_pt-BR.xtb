@@ -77,6 +77,8 @@
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3078350928901129212">Ícone <ph name="COLOR_NAME" /> do grupo de guias</translation>
 <translation id="311432875115153175">Lista de grupos de guias fechada</translation>
+<translation id="3152596030350326139">Mostrar guias horizontalmente</translation>
+<translation id="31806439105337256">Mostrar guias verticalmente</translation>
 <translation id="3194464645767632461">nota</translation>
 <translation id="3269930881809501915">{TABS_COUNT,plural, =1{Adicionar <ph name="TABS_COUNT_ONE" /> guia ao grupo}one{Adicionar <ph name="TABS_COUNT_MANY" /> guia ao grupo}other{Adicionar <ph name="TABS_COUNT_MANY" /> guias ao grupo}}</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
