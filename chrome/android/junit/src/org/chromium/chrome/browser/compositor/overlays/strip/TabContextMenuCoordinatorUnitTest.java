@@ -436,14 +436,12 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
-    @DisableFeatures(ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS)
     public void testAnchorWidth() {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchorWidth(
                 mWeakReferenceActivity, mTabContextMenuCoordinator::getMenuWidth);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS)
     public void testAnchor_offset() {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset(
                 (rectProvider) ->
@@ -454,7 +452,6 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS)
     public void testAnchor_offset_incognito() {
         setupWithIncognito(/* incognito= */ true);
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset_incognito(

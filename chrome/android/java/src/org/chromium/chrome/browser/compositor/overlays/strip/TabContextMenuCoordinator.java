@@ -1227,13 +1227,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
-        if (!ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
-            return MathUtils.clamp(
-                    anchorViewWidthPx,
-                    getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
-                    getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
-        }
-        return getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width);
+        return MathUtils.clamp(
+                anchorViewWidthPx,
+                getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
+                getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
     }
 
     @Override
