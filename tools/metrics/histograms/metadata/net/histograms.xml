@@ -2533,6 +2533,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.DNS.AddressSorterPosix.ConnectCalls" units="calls"
+    expires_after="2026-11-01">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the number of socket connect calls made during a single call to
+    net::AddressSorterPosix::Sort(). Recorded once for every call to Sort().
+    Only recorded on platforms that use the Posix implementation.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.AddressSorterPosix.SortDuration" units="microseconds"
+    expires_after="2026-11-01">
+  <owner>ricea@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the time it takes to execute a single call to
+    net::AddressSorterPosix::Sort(). Measured for every call to Sort(). Only
+    recorded on platforms that use the Posix implementation.
+
+    The histogram is not reported on systems without high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Net.DNS.DnsConfig.AdditionalDnsQueryTypesEnabled"
     enum="BooleanEnabled" expires_after="2025-02-10">
   <owner>horo@chromium.org</owner>

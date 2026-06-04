@@ -13302,21 +13302,25 @@ class MockAddressSorter : public AddressSorter {
  public:
   MOCK_METHOD(void,
               Sort,
-              (const std::vector<IPEndPoint>& endpoints, CallbackType callback),
+              (const std::vector<IPEndPoint>& endpoints,
+               const NetworkAnonymizationKey& anonymization_key,
+               CallbackType callback),
               (const, override));
 
   void ExpectCall(const std::vector<IPEndPoint>& expected,
                   std::vector<IPEndPoint> sorted) {
-    EXPECT_CALL(*this, Sort(expected, _))
+    EXPECT_CALL(*this, Sort(expected, _, _))
         .WillOnce([sorted](const std::vector<IPEndPoint>& endpoints,
+                           const NetworkAnonymizationKey& anonymization_key,
                            AddressSorter::CallbackType callback) {
           std::move(callback).Run(true, std::move(sorted));
         });
   }
 
   void ExpectCallAndFailSort(const std::vector<IPEndPoint>& expected) {
-    EXPECT_CALL(*this, Sort(expected, _))
+    EXPECT_CALL(*this, Sort(expected, _, _))
         .WillOnce([](const std::vector<IPEndPoint>& endpoints,
+                     const NetworkAnonymizationKey& anonymization_key,
                      AddressSorter::CallbackType callback) {
           std::move(callback).Run(false, {});
         });

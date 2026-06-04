@@ -679,6 +679,25 @@
             ]
         }
     ],
+    "AddressSorterConnectCache": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AddressSorterConnectCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "AdjustGpuProcessPriority": [
         {
             "platforms": [

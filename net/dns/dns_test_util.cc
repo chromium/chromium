@@ -47,6 +47,9 @@
 #include "url/scheme_host_port.h"
 
 namespace net {
+
+class NetworkAnonymizationKey;
+
 namespace {
 
 constexpr auto kMalformedResponseHeader = std::to_array<uint8_t>({
@@ -86,6 +89,7 @@ class MockAddressSorter : public AddressSorter {
  public:
   ~MockAddressSorter() override = default;
   void Sort(const std::vector<IPEndPoint>& endpoints,
+            const NetworkAnonymizationKey& anonymization_key,
             CallbackType callback) const override {
     // Do nothing.
     std::move(callback).Run(true, endpoints);

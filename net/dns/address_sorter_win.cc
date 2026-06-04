@@ -25,6 +25,8 @@
 
 namespace net {
 
+class NetworkAnonymizationKey;
+
 namespace {
 
 class AddressSorterWin : public AddressSorter {
@@ -40,6 +42,7 @@ class AddressSorterWin : public AddressSorter {
 
   // AddressSorter:
   void Sort(const std::vector<IPEndPoint>& endpoints,
+            const NetworkAnonymizationKey& anonymization_key,
             CallbackType callback) const override {
     DCHECK(!endpoints.empty());
     Job::Start(endpoints, std::move(callback));
