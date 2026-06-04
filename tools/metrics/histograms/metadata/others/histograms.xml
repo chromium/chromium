@@ -5137,6 +5137,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-11-29">
   <owner>pasko@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time it takes to spawn the first child subprocess (including sandbox
     init).
@@ -5147,6 +5148,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-11-01">
   <owner>pasko@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time it takes to spawn child sub processes not counting the first one.
   </summary>
