@@ -1139,54 +1139,7 @@ TEST_F(PreFreezeSelfCompactionTest, NotCanceled) {
   }
 }
 
-// Test that we still record metrics even when the feature is disabled.
-TEST_P(PreFreezeSelfCompactionTestWithParam, Disabled) {
-  // Although we are not actually compacting anything, the self compaction
-  // code will exit out before metrics are recorded in the case where compaction
-  // is not supported.
-  if (!CompactionIsSupported()) {
-    GTEST_SKIP() << "No kernel support";
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitWithFeatures({}, {kShouldFreezeSelf, kUseRunningCompact});
-
-  auto triggered_at = base::TimeTicks::Now();
-  auto state = GetState(triggered_at);
-  SelfCompactionManager::CompactSelf(std::move(state));
-
-  // Run metrics
-  task_environment_.FastForwardBy(base::Seconds(60));
-
-  // We check here for the names of each metric we expect to be recorded. We
-  // can't easily check for the exact values of these metrics unfortunately,
-  // since they depend on reading /proc/self/smaps_rollup.
-  for (const auto& name : {"Rss", "Pss", "PssAnon", "PssFile", "SwapPss"}) {
-    for (const auto& timing :
-         {"Before", "After", "After1s", "After10s", "After60s"}) {
-      histograms_.ExpectTotalCount(StrCat({GetMetricName(name), ".", timing}),
-                                   1);
-    }
-    for (const auto& timing :
-         {"BeforeAfter", "After1s", "After10s", "After60s"}) {
-      const auto metric = StrCat({GetMetricName(name), ".Diff.", timing});
-      base::HistogramTester::CountsMap diff_metrics;
-      diff_metrics[StrCat({metric, ".Increase"})] = 1;
-      diff_metrics[StrCat({metric, ".Decrease"})] = 1;
-      EXPECT_THAT(histograms_.GetTotalCountsForPrefix(metric),
-                  testing::IsSubsetOf(diff_metrics));
-    }
-  }
-
-  // We also check that no other histograms (other than the ones expected above)
-  // were recorded.
-  EXPECT_EQ(histograms_.GetTotalCountsForPrefix(GetMetricName("")).size(), 48);
-}
-
 TEST_F(PreFreezeSelfCompactionTest, OnSelfFreezeCancel) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(kShouldFreezeSelf);
-
   auto state = SelfCompactionManager::GetSelfCompactionStateForTesting(
       task_environment_.GetMainThreadTaskRunner(), TimeTicks::Now());
   {
