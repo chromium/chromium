@@ -170,8 +170,8 @@ class AISummarizerTest : public AITestUtils::AITestBase {
           GetDefaultOptions()) {
     TestCreateSummarizerClient create_summarizer_client;
     GetAIManagerRemote()->CreateSummarizer(
-        create_summarizer_client.BindNewPipeAndPassRemote(),
-        std::move(options));
+        create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+        /*monitor=*/mojo::NullRemote());
 
     CreateSummarizerResult result = create_summarizer_client.result().Take();
     EXPECT_OK(result);
@@ -209,7 +209,8 @@ class AISummarizerTest : public AITestUtils::AITestBase {
   void EnsureModelIsReady() {
     TestCreateSummarizerClient summarizer_client;
     GetAIManagerRemote()->CreateSummarizer(
-        summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+        summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+        /*monitor=*/mojo::NullRemote());
 
     auto result = summarizer_client.result().Take();
     EXPECT_OK(result);
@@ -295,7 +296,8 @@ TEST_F(AISummarizerTest, CreateSummarizerNoService) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -336,7 +338,8 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -352,7 +355,8 @@ TEST_F(AISummarizerTest, CreateSummarizerWaitsForBaseModel) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   TestFuture<CreateSummarizerResult>& future =
       create_summarizer_client.result();
@@ -371,7 +375,8 @@ TEST_F(AISummarizerTest, CreateSummarizerWaitsForModelAdaptation) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   TestFuture<CreateSummarizerResult>& future =
       create_summarizer_client.result();
@@ -394,7 +399,8 @@ TEST_F(AISummarizerTest, CreateSummarizerWithTextSafetyCheck) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -409,7 +415,8 @@ TEST_F(AISummarizerTest, CreateSummarizerWaitsForTextSafetyModel) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   TestFuture<CreateSummarizerResult>& future =
       create_summarizer_client.result();
@@ -437,7 +444,8 @@ TEST_F(AISummarizerTest, CreateSummarizerSafetyConfigNotAvailable) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -460,7 +468,8 @@ TEST_F(AISummarizerTest, CreateSummarizerUnableToCalculateTokenSize) {
   auto options = GetDefaultOptions();
   options->shared_context = kSharedContextString;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -476,7 +485,8 @@ TEST_F(AISummarizerTest, CreateSummarizerContextLimitExceededError) {
   auto options = GetDefaultOptions();
   options->shared_context = kSharedContextString;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -757,7 +767,8 @@ TEST_F(AISummarizerTest, CreatePermissionsPolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
 }
 
@@ -772,7 +783,8 @@ TEST_F(AISummarizerTest, CreateBuiltInAIAPIsEnterprisePolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetBuiltInAIAPIsEnterprisePolicy(true);
 }
@@ -788,7 +800,8 @@ TEST_F(AISummarizerTest, CreateGenAILocalEnterprisePolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetGenAILocalEnterprisePolicy(true);
 }
@@ -804,7 +817,8 @@ TEST_F(AISummarizerTest, CreateOnDeviceAiUserSettingDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetOnDeviceAiUserSetting(true);
 }
@@ -997,7 +1011,8 @@ TEST_F(AISummarizerManifestTest,
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   auto result = summarizer_client.result().Take();
   EXPECT_TRUE(result.has_value());
@@ -1045,7 +1060,8 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   auto result = summarizer_client.result().Take();
   EXPECT_TRUE(result.has_value());
@@ -1067,7 +1083,8 @@ TEST_F(AISummarizerManifestTest,
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   auto result = summarizer_client.result().Take();
   EXPECT_TRUE(result.has_value());
@@ -1209,7 +1226,8 @@ TEST_F(AISummarizerManifestTest, CreateIncompatibleOptionsForSpeedPreference) {
 
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   CreateSummarizerResult result = create_summarizer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -1228,7 +1246,8 @@ TEST_F(AISummarizerManifestTest, SummarizeWithSpeedPreferenceAndContextFails) {
 
   TestCreateSummarizerClient summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+      summarizer_client.BindNewPipeAndPassRemote(), std::move(options),
+      /*monitor=*/mojo::NullRemote());
 
   auto result = summarizer_client.result().Take();
   ASSERT_TRUE(result.has_value());
@@ -1271,7 +1290,8 @@ TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestGemma4) {
   // Verify CreateSummarizer can retrieve the model successfully.
   TestCreateSummarizerClient create_summarizer_client;
   GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   auto result = create_summarizer_client.result().Take();
   EXPECT_TRUE(result.has_value());

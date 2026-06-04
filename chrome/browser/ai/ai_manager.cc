@@ -358,6 +358,7 @@ std::optional<std::string> GetUseCaseFromFeatureConfig(
 // provided `UseCaseResolver` and the feature configuration.
 void CreateSessionWithConfigAndResolver(
     optimization_guide::ModelBrokerClient* broker_client,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor,
     base::OnceCallback<
         void(std::unique_ptr<optimization_guide::OnDeviceSession>)> callback,
     AIManager::UseCaseResolver resolver,
@@ -367,6 +368,11 @@ void CreateSessionWithConfigAndResolver(
   if (!use_case.has_value() || use_case->empty()) {
     std::move(callback).Run(nullptr);
     return;
+  }
+
+  if (monitor) {
+    broker_client->AddModelDownloadProgressObserver(*use_case,
+                                                    std::move(monitor));
   }
 
   broker_client->CreateSession(*use_case,
@@ -379,11 +385,12 @@ void CreateSessionWithConfigAndResolver(
 template <typename FeatureConfigProto>
 void CreateSessionWithConfig(
     optimization_guide::ModelBrokerClient* broker_client,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor,
     base::OnceCallback<
         void(std::unique_ptr<optimization_guide::OnDeviceSession>)> callback,
     std::optional<mojo_base::ProtoWrapper> wrapper) {
   CreateSessionWithConfigAndResolver(
-      broker_client, std::move(callback),
+      broker_client, std::move(monitor), std::move(callback),
       base::BindOnce(&GetUseCaseFromFeatureConfig<FeatureConfigProto>),
       std::move(wrapper));
 }
@@ -394,6 +401,7 @@ void CreateSessionWithConfig(
 template <typename FeatureConfigProto>
 void RequestAssetsAndWaitForClientWithConfig(
     optimization_guide::ModelBrokerClient* broker_client,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor,
     base::OnceCallback<void(base::WeakPtr<optimization_guide::ModelClient>)>
         callback,
     std::optional<mojo_base::ProtoWrapper> wrapper) {
@@ -404,6 +412,12 @@ void RequestAssetsAndWaitForClientWithConfig(
     std::move(callback).Run(nullptr);
     return;
   }
+
+  if (monitor) {
+    broker_client->AddModelDownloadProgressObserver(*use_case,
+                                                    std::move(monitor));
+  }
+
   broker_client->RequestAssetsFor(*use_case);
   broker_client->GetSubscriber(*use_case).WaitForClient(std::move(callback));
 }
@@ -741,7 +755,8 @@ void AIManager::CanCreateLanguageModel(
 void AIManager::CreateLanguageModel(
     mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
         client,
-    blink::mojom::AILanguageModelCreateOptionsPtr options) {
+    blink::mojom::AILanguageModelCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   CHECK(options);
   if (IsBlocked(network::mojom::PermissionsPolicyFeature::kLanguageModel)) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
@@ -777,11 +792,17 @@ void AIManager::CreateLanguageModel(
         optimization_guide::mojom::OnDeviceFeature::kPromptApi,
         base::BindOnce(&RequestAssetsAndWaitForClientWithConfig<
                            optimization_guide::proto::PromptApiFeatureConfig>,
-                       model_broker_client_.get(),
+                       model_broker_client_.get(), std::move(monitor),
                        base::BindOnce(&AIManager::CreateLanguageModelInternal,
                                       weak_factory_.GetWeakPtr(),
                                       std::move(client), std::move(options))));
   } else {
+    if (monitor) {
+      model_broker_client_->AddModelDownloadProgressObserver(
+          optimization_guide::ToUseCaseName(
+              optimization_guide::mojom::OnDeviceFeature::kPromptApi),
+          std::move(monitor));
+    }
     model_broker_client_->RequestAssetsFor(
         optimization_guide::mojom::OnDeviceFeature::kPromptApi);
     model_broker_client_
@@ -966,7 +987,8 @@ void AIManager::CanCreateSummarizer(
 
 void AIManager::CreateSummarizer(
     mojo::PendingRemote<blink::mojom::AIManagerCreateSummarizerClient> client,
-    blink::mojom::AISummarizerCreateOptionsPtr options) {
+    blink::mojom::AISummarizerCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   if (IsBlocked(network::mojom::PermissionsPolicyFeature::kSummarizer)) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
@@ -1039,10 +1061,17 @@ void AIManager::CreateSummarizer(
     model_broker_client_->GetConfig(
         optimization_guide::mojom::OnDeviceFeature::kSummarize,
         base::BindOnce(&CreateSessionWithConfigAndResolver,
-                       model_broker_client_.get(), std::move(callback),
+                       model_broker_client_.get(), std::move(monitor),
+                       std::move(callback),
                        base::BindOnce(&ResolveSummarizerUseCaseName,
                                       std::move(options_clone))));
   } else {
+    if (monitor) {
+      model_broker_client_->AddModelDownloadProgressObserver(
+          optimization_guide::ToUseCaseName(
+              optimization_guide::mojom::OnDeviceFeature::kSummarize),
+          std::move(monitor));
+    }
     model_broker_client_->CreateSession(
         optimization_guide::mojom::OnDeviceFeature::kSummarize,
         ::optimization_guide::SessionConfigParams{}, std::move(callback));
@@ -1095,7 +1124,8 @@ void AIManager::CanCreateProofreader(
 
 void AIManager::CreateProofreader(
     mojo::PendingRemote<blink::mojom::AIManagerCreateProofreaderClient> client,
-    blink::mojom::AIProofreaderCreateOptionsPtr options) {
+    blink::mojom::AIProofreaderCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   // TODO(crbug.com/466425250): Enforce permissions policy.
   if (IsBlocked()) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
@@ -1123,6 +1153,13 @@ void AIManager::CreateProofreader(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
     return;
+  }
+
+  if (monitor) {
+    model_broker_client_->AddModelDownloadProgressObserver(
+        optimization_guide::ToUseCaseName(
+            optimization_guide::mojom::OnDeviceFeature::kProofreaderApi),
+        std::move(monitor));
   }
 
   auto callback =
@@ -1229,7 +1266,8 @@ void AIManager::CanCreateWriter(blink::mojom::AIWriterCreateOptionsPtr options,
 
 void AIManager::CreateWriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
-    blink::mojom::AIWriterCreateOptionsPtr options) {
+    blink::mojom::AIWriterCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   if (IsBlocked(network::mojom::PermissionsPolicyFeature::kWriter)) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
@@ -1280,8 +1318,16 @@ void AIManager::CreateWriter(
         base::BindOnce(
             &CreateSessionWithConfig<
                 optimization_guide::proto::WritingAssistanceApiFeatureConfig>,
-            model_broker_client_.get(), std::move(callback)));
+            model_broker_client_.get(), std::move(monitor),
+            std::move(callback)));
   } else {
+    if (monitor) {
+      model_broker_client_->AddModelDownloadProgressObserver(
+          optimization_guide::ToUseCaseName(
+              optimization_guide::mojom::OnDeviceFeature::
+                  kWritingAssistanceApi),
+          std::move(monitor));
+    }
     model_broker_client_->CreateSession(
         optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
         ::optimization_guide::SessionConfigParams{}, std::move(callback));
@@ -1322,7 +1368,8 @@ void AIManager::CanCreateRewriter(
 
 void AIManager::CreateRewriter(
     mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
-    blink::mojom::AIRewriterCreateOptionsPtr options) {
+    blink::mojom::AIRewriterCreateOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   if (IsBlocked(network::mojom::PermissionsPolicyFeature::kRewriter)) {
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
@@ -1373,8 +1420,16 @@ void AIManager::CreateRewriter(
         base::BindOnce(
             &CreateSessionWithConfig<
                 optimization_guide::proto::WritingAssistanceApiFeatureConfig>,
-            model_broker_client_.get(), std::move(callback)));
+            model_broker_client_.get(), std::move(monitor),
+            std::move(callback)));
   } else {
+    if (monitor) {
+      model_broker_client_->AddModelDownloadProgressObserver(
+          optimization_guide::ToUseCaseName(
+              optimization_guide::mojom::OnDeviceFeature::
+                  kWritingAssistanceApi),
+          std::move(monitor));
+    }
     model_broker_client_->CreateSession(
         optimization_guide::mojom::OnDeviceFeature::kWritingAssistanceApi,
         ::optimization_guide::SessionConfigParams{}, std::move(callback));
@@ -1400,7 +1455,9 @@ void AIManager::CanCreateClassifier(
 
 void AIManager::CreateClassifier(
     mojo::PendingRemote<blink::mojom::AIManagerCreateClassifierClient> client,
-    blink::mojom::AIClassifierCreateOptionsPtr options) {
+    blink::mojom::AIClassifierCreateOptionsPtr options,
+    // TODO(crbug.com/481796902): Implement download monitor for classifier.
+    mojo::PendingRemote<on_device_model::mojom::DownloadObserver> monitor) {
   if (!base::FeatureList::IsEnabled(blink::features::kAIClassifierAPI)) {
     receivers_.ReportBadMessage("Feature not enabled");
     return;
@@ -1719,17 +1776,6 @@ void AIManager::StartModelPathValidationIfOverrideSet() {
         base::BindOnce(base::PathExists, model_path.value()),
         base::BindOnce(&AIManager::OnModelPathValidationComplete,
                        weak_factory_.GetWeakPtr(), model_path.value()));
-  }
-}
-
-void AIManager::AddModelDownloadProgressObserver(
-    mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
-        observer_remote) {
-  if (model_broker_client_) {
-    model_broker_client_->AddModelDownloadProgressObserver(
-        optimization_guide::ToUseCaseName(
-            optimization_guide::mojom::OnDeviceFeature::kPromptApi),
-        std::move(observer_remote));
   }
 }
 

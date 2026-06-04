@@ -29,8 +29,9 @@ void AIWritingAssistanceCreateClient<mojom::blink::AIWriter,
                      client_remote) {
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
-  ai_manager_remote->CreateWriter(std::move(client_remote),
-                                  ToMojoWriterCreateOptions(options_));
+  ai_manager_remote->CreateWriter(
+      std::move(client_remote), ToMojoWriterCreateOptions(options_),
+      monitor_ ? monitor_->BindRemote() : mojo::NullRemote());
 }
 
 template <>

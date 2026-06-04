@@ -244,7 +244,6 @@ LanguageModelCreateClient::LanguageModelCreateClient(
     if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
       return;
     }
-    ai_manager_remote->AddModelDownloadProgressObserver(monitor_->BindRemote());
   }
 
   LanguageModel::ExecuteAvailability(
@@ -545,7 +544,8 @@ void LanguageModelCreateClient::OnInitialPromptsResolved(
       mojom::blink::AILanguageModelCreateOptions::New(
           resolved_sampling_params_.Clone(), std::move(initial_prompts),
           std::move(expected_inputs), std::move(expected_outputs),
-          std::move(converted_tools_), sampling_mode_));
+          std::move(converted_tools_), sampling_mode_),
+      monitor_ ? monitor_->BindRemote() : mojo::NullRemote());
 }
 
 void LanguageModelCreateClient::OnInitialPromptsRejected(
