@@ -201,6 +201,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &AnchoredMessageBubbleView::Delegate::CloseAnchoredMessage,
           base::Unretained(delegate_))));
+  close_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
@@ -217,6 +218,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   menu_button_ = top_row_->AddChildView(std::make_unique<views::MenuButton>(
       base::BindRepeating(&AnchoredMessageBubbleView::MenuButtonPressed,
                           base::Unretained(this))));
+  menu_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   ConfigureInkDrop(menu_button_);
   menu_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ANCHORED_MESSAGE_MENU_TOOLTIP));
