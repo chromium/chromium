@@ -16,5 +16,8 @@ per-file *vector_icon*=vollick@chromium.org
 per-file *tab_indicator*=dfried@chromium.org
 per-file *iph*=dfried@chromium.org
 
+# Selection widget
+per-file glic_selection_widget*=gklassen@chromium.org,vollick@chromium.org
+
 # Actor
 per-file glic_actor*=file://chrome/browser/actor/ui/OWNERS
