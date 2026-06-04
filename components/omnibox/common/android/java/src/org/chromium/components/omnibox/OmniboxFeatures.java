@@ -131,9 +131,6 @@ public class OmniboxFeatures {
     private static final CachedFlag sOmniboxMultimodalInput =
             newFlag(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT, FeatureState.ENABLED_IN_TEST);
 
-    public static final BooleanCachedFeatureParam sCompactFusebox =
-            newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", false);
-
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
 

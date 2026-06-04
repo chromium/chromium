@@ -470,7 +470,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void startInAiMode_isExpanded() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
@@ -478,7 +477,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_desktopPlatform_conventional_emptyModelList_isCompact() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
@@ -488,7 +486,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_desktopPlatform_nonConventional_emptyModelList_isExpanded() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
@@ -499,7 +496,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_desktopPlatform_nonEmptyModelList_isExpanded() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         recreateMediator();
 
@@ -510,7 +506,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testClickRequestTypeChip_transitionsToCompactWhenHasAttachments() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         recreateMediator();
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
@@ -523,7 +518,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_notDesktop_textWrapping_isExpanded() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
@@ -535,7 +529,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_notDesktop_notSearchRequest_isExpanded() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
@@ -545,7 +538,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_standbyNoFocus_isDisabled() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         mInput.setAutocompleteState(AutocompleteState.STANDBY_NO_FOCUS);
         recreateMediator();
 
@@ -1584,7 +1576,6 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testCompactMode() {
-        OmniboxFeatures.sCompactFusebox.setForTesting(true);
         recreateMediator();
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
@@ -1595,13 +1586,6 @@ public class FuseboxMediatorUnitTest {
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
 
         mMediator.setIsTextWrapping(true);
-        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
-    }
-
-    @Test
-    public void testExpandedMode() {
-        mInput.setRequestType(AutocompleteRequestType.SEARCH);
-        mMediator.setIsTextWrapping(false);
         assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
     }
 

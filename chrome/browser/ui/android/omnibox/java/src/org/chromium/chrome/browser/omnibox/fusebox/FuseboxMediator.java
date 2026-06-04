@@ -475,8 +475,6 @@ import java.util.function.Supplier;
             targetState = FuseboxState.DISABLED;
         } else if (!mHasContextualTasksFocus && isContextualTasks) {
             targetState = FuseboxState.COMPACT;
-        } else if (!OmniboxFeatures.sCompactFusebox.getValue()) {
-            targetState = FuseboxState.EXPANDED;
         } else {
             boolean isPopover =
                     mModel.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
