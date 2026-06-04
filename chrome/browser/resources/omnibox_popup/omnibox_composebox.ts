@@ -229,8 +229,6 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
           errorType as ContextUploadErrorType);
       if (processFilesError !== ProcessFilesError.NONE) {
         this.handleProcessFilesError(processFilesError);
-        // TODO(crbug.com/508287630): Do additional manual testing with
-        // `Omnibox_UseComposeboxFork` enabled.
         if (!super.deleteFile(fileAttachment.uuid)) {
           this.getSearchboxHandler().deleteContext(
               fileAttachment.uuid, /*fromAutomaticChip=*/ false);
