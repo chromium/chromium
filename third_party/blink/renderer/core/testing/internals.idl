@@ -29,7 +29,6 @@ interface Internals {
 
     [RaisesException] DOMString elementLayoutTreeAsText(Element element);
     boolean isPreloaded(DOMString url);
-    boolean isPreloadedBy(DOMString url, Document document);
     boolean isLoading(DOMString url);
     boolean isLoadingFromMemoryCache(DOMString url);
 
@@ -57,7 +56,6 @@ interface Internals {
 
     Node effectiveRootScroller(Document document);
 
-    [RaisesException] DOMString ShadowRootMode(Node root);
     [RaisesException] unsigned long countElementShadow(Node Root);
     DOMString shadowPseudoId(Element element);
     Node treeScopeRootNode(Node node);
@@ -121,11 +119,6 @@ interface Internals {
     [RaisesException] void addSuggestionMarker(Range range, sequence<DOMString> suggestions, DOMString suggestionHighlightColorValue, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     void setTextMatchMarkersActive(Node node, unsigned long startOffset, unsigned long endOffset, boolean active);
 
-    [RaisesException] DOMString viewportAsText(Document document,
-                                               float devicePixelRatio,
-                                               long availableWidth,
-                                               long availableHeight);
-
     [RaisesException] boolean elementShouldAutoComplete(Element inputElement);
     [RaisesException] DOMString suggestedValue(Element inputElement);
     [RaisesException] void setSuggestedValue(Element inputElement, DOMString value);
@@ -168,8 +161,6 @@ interface Internals {
 
     [RaisesException] boolean executeCommand(Document document, DOMString name, DOMString value);
 
-    void triggerTestInspectorIssue(Document document);
-
     DOMString htmlNamespace();
     sequence<DOMString> htmlTags();
     DOMString svgNamespace();
@@ -181,7 +172,6 @@ interface Internals {
         boolean allowChildFrameContent);
 
     [RaisesException] boolean hasSpellingMarker(Document document, long from, long length);
-    [RaisesException] boolean hasGrammarMarker(Document document, long from, long length);
     [RaisesException] void replaceMisspelled(Document document, DOMString replacement);
 
     boolean canHyphenate(DOMString locale);
@@ -251,8 +241,6 @@ interface Internals {
     // If |node| is an HTMLIFrameElement, it assumes node.contentDocument is
     // specified without security checks. Unspecified means this document.
     [RaisesException] void updateLayoutAndRunPostLayoutTasks(optional Node? node = null);
-
-    [RaisesException] void forceFullRepaint(Document document);
 
     // Returns a list of draggable/non-draggable regions in the document.
     [RaisesException] DOMRectList draggableRegions(Document document);
@@ -384,8 +372,6 @@ interface Internals {
     long long zeroBasedDocumentTimeToMonotonicTime(double domHighResTimeStamp);
 
     long long currentTimeTicks();
-
-    DOMString getScrollAnimationState(Node node);
 
     DOMString getProgrammaticScrollAnimationState(Node node);
 

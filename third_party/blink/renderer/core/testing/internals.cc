@@ -40,7 +40,6 @@
 #include "cc/trees/layer_tree_host.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -117,9 +116,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
-#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue.h"
-#include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -138,7 +134,6 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
-#include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -907,13 +902,10 @@ Element* Internals::innerEditorElement(Element* container,
 }
 
 bool Internals::isPreloaded(const String& url) {
-  return isPreloadedBy(url, document_.Get());
-}
-
-bool Internals::isPreloadedBy(const String& url, Document* document) {
-  if (!document)
+  if (!document_) {
     return false;
-  return document->Fetcher()->IsPreloadedForTest(document->CompleteURL(url));
+  }
+  return document_->Fetcher()->IsPreloadedForTest(document_->CompleteURL(url));
 }
 
 bool Internals::isLoading(const String& url) {
@@ -1196,28 +1188,7 @@ ShadowRoot* Internals::shadowRoot(Element* host) {
   return host->GetShadowRoot();
 }
 
-String Internals::ShadowRootMode(const Node* root,
-                                 ExceptionState& exception_state) const {
-  DCHECK(root);
-  auto* shadow_root = DynamicTo<ShadowRoot>(root);
-  if (!shadow_root) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "The node provided is not a shadow root.");
-    return String();
-  }
 
-  switch (shadow_root->GetMode()) {
-    case ShadowRootMode::kUserAgent:
-      return String("UserAgentShadowRoot");
-    case ShadowRootMode::kOpen:
-      return String("OpenShadowRoot");
-    case ShadowRootMode::kClosed:
-      return String("ClosedShadowRoot");
-    default:
-      NOTREACHED();
-  }
-}
 
 const AtomicString& Internals::shadowPseudoId(Element* element) {
   DCHECK(element);
@@ -1752,54 +1723,7 @@ void Internals::setTextMatchMarkersActive(Node* node,
       To<Text>(*node), start_offset, end_offset, active);
 }
 
-String Internals::viewportAsText(Document* document,
-                                 float,
-                                 int available_width,
-                                 int available_height,
-                                 ExceptionState& exception_state) {
-  DCHECK(document);
-  if (!document->GetPage()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "The document provided is invalid.");
-    return String();
-  }
 
-  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-
-  Page* page = document->GetPage();
-
-  // Update initial viewport size.
-  gfx::Size initial_viewport_size(available_width, available_height);
-  document->GetPage()->DeprecatedLocalMainFrame()->View()->SetFrameRect(
-      gfx::Rect(gfx::Point(), initial_viewport_size));
-
-  ViewportDescription description = page->GetViewportDescription();
-  PageScaleConstraints constraints =
-      description.Resolve(gfx::SizeF(initial_viewport_size), ViewportLength());
-
-  constraints.FitToContentsWidth(constraints.layout_size.width(),
-                                 available_width);
-  constraints.ResolveAutoInitialScale();
-
-  StringBuilder builder;
-
-  builder.Append("viewport size ");
-  builder.Append(String::Number(constraints.layout_size.width()));
-  builder.Append('x');
-  builder.Append(String::Number(constraints.layout_size.height()));
-
-  builder.Append(" scale ");
-  builder.Append(String::Number(constraints.initial_scale));
-  builder.Append(" with limits [");
-  builder.Append(String::Number(constraints.minimum_scale));
-  builder.Append(", ");
-  builder.Append(String::Number(constraints.maximum_scale));
-
-  builder.Append("] and userScalable ");
-  builder.Append(String::Boolean(description.user_zoom));
-
-  return builder.ToString();
-}
 
 bool Internals::elementShouldAutoComplete(Element* element,
                                           ExceptionState& exception_state) {
@@ -2408,16 +2332,6 @@ bool Internals::executeCommand(Document* document,
   return frame->GetEditor().ExecuteCommand(name, value);
 }
 
-void Internals::triggerTestInspectorIssue(Document* document) {
-  DCHECK(document);
-  auto info = mojom::blink::InspectorIssueInfo::New(
-      mojom::InspectorIssueCode::kCookieIssue,
-      mojom::blink::InspectorIssueDetails::New());
-  document->GetFrame()->AddInspectorIssue(
-      AuditsIssue(ConvertInspectorIssueToProtocolFormat(
-          InspectorIssue::Create(std::move(info)))));
-}
-
 AtomicString Internals::htmlNamespace() {
   return html_names::xhtmlNamespaceURI;
 }
@@ -2540,21 +2454,7 @@ unsigned Internals::numberOfLiveDocuments() const {
   return InstanceCounters::CounterValue(InstanceCounters::kDocumentCounter);
 }
 
-bool Internals::hasGrammarMarker(Document* document,
-                                 int from,
-                                 int length,
-                                 ExceptionState& exception_state) {
-  if (!document || !document->GetFrame()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        "No frame can be obtained from the provided document.");
-    return false;
-  }
 
-  document->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
-  return document->GetFrame()->GetSpellChecker().SelectionStartHasMarkerFor(
-      DocumentMarker::kGrammar, from, length);
-}
 
 unsigned Internals::numberOfScrollableAreas(Document* document) {
   DCHECK(document);
@@ -2959,18 +2859,7 @@ void Internals::updateLayoutAndRunPostLayoutTasks(
     view->FlushAnyPendingPostLayoutTasks();
 }
 
-void Internals::forceFullRepaint(Document* document,
-                                 ExceptionState& exception_state) {
-  DCHECK(document);
-  if (!document->View()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "The document provided is invalid.");
-    return;
-  }
 
-  if (auto* layout_view = document->GetLayoutView())
-    layout_view->InvalidatePaintForViewAndDescendants();
-}
 
 DOMRectList* Internals::draggableRegions(Document* document,
                                          ExceptionState& exception_state) {
@@ -3724,12 +3613,6 @@ int64_t Internals::zeroBasedDocumentTimeToMonotonicTime(double dom_event_time) {
 
 int64_t Internals::currentTimeTicks() {
   return base::TimeTicks::Now().since_origin().InMicroseconds();
-}
-
-String Internals::getScrollAnimationState(Node* node) const {
-  if (ScrollableArea* scrollable_area = ScrollableAreaForNode(node))
-    return scrollable_area->GetScrollAnimator().RunStateAsText();
-  return String();
 }
 
 String Internals::getProgrammaticScrollAnimationState(Node* node) const {

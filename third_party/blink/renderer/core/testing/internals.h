@@ -106,7 +106,6 @@ class Internals final : public ScriptWrappable {
   GCObservation* observeGC(ScriptValue, ExceptionState&);
 
   bool isPreloaded(const String& url);
-  bool isPreloadedBy(const String& url, Document*);
   bool isLoading(const String& url);
   bool isLoadingFromMemoryCache(const String& url);
 
@@ -133,7 +132,6 @@ class Internals final : public ScriptWrappable {
   ShadowRoot* createUserAgentShadowRoot(Element* host);
 
   ShadowRoot* shadowRoot(Element* host);
-  String ShadowRootMode(const Node*, ExceptionState&) const;
   uint32_t countElementShadow(const Node*, ExceptionState&) const;
   const AtomicString& shadowPseudoId(Element*);
 
@@ -241,11 +239,6 @@ class Internals final : public ScriptWrappable {
                                  unsigned start_offset,
                                  unsigned end_offset,
                                  bool);
-  String viewportAsText(Document*,
-                        float device_pixel_ratio,
-                        int available_width,
-                        int available_height,
-                        ExceptionState&);
 
   bool elementShouldAutoComplete(Element* input_element, ExceptionState&);
   String suggestedValue(Element*, ExceptionState&);
@@ -323,8 +316,6 @@ class Internals final : public ScriptWrappable {
                       const String& value,
                       ExceptionState&);
 
-  void triggerTestInspectorIssue(Document*);
-
   AtomicString htmlNamespace();
   Vector<AtomicString> htmlTags();
   AtomicString svgNamespace();
@@ -343,7 +334,6 @@ class Internals final : public ScriptWrappable {
                                 ExceptionState&) const;
 
   bool hasSpellingMarker(Document*, int from, int length, ExceptionState&);
-  bool hasGrammarMarker(Document*, int from, int length, ExceptionState&);
   void replaceMisspelled(Document*, const String&, ExceptionState&);
 
   bool canHyphenate(const AtomicString& locale);
@@ -421,7 +411,6 @@ class Internals final : public ScriptWrappable {
   void startTrackingRepaints(Document*, ExceptionState&);
   void stopTrackingRepaints(Document*, ExceptionState&);
   void updateLayoutAndRunPostLayoutTasks(Node*, ExceptionState&);
-  void forceFullRepaint(Document*, ExceptionState&);
 
   DOMRectList* draggableRegions(Document*, ExceptionState&);
   DOMRectList* nonDraggableRegions(Document*, ExceptionState&);
@@ -556,11 +545,6 @@ class Internals final : public ScriptWrappable {
 
   // Returns the current time ticks (in microseconds).
   int64_t currentTimeTicks();
-
-  // Returns the run state of the node's scroll animator (see
-  // ScrollAnimatorCompositorCoordinater::RunState), or -1 if the node does not
-  // have a scrollable area.
-  String getScrollAnimationState(Node*) const;
 
   // Returns the run state of the node's programmatic scroll animator (see
   // ScrollAnimatorCompositorCoordinater::RunState), or -1 if the node does not
