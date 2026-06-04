@@ -11,6 +11,11 @@
 
 #include "base/metrics/histogram.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/buildflags/buildflags.h"
+
+// Enabled on all platforms (including desktop Android) because it is used by
+// internal webui (chrome:// pages).
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

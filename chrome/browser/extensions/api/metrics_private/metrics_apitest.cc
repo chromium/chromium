@@ -17,8 +17,11 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -30,7 +33,7 @@ namespace {
 constexpr struct RecordedUserAction {
   const char* name;
   int count;  // number of times the metric was recorded.
-} g_user_actions[] = {
+} kUserActions[] = {
     {"test.ua.1", 1},
     {"test.ua.2", 2},
 };
@@ -39,7 +42,7 @@ constexpr struct RecordedUserAction {
 // UKM user actions related to extension usage (cast to int), in the given
 // order. If the tests in test.js are modified, this array may need to be
 // updated.
-const int64_t g_extension_usage_ukms[] = {1, 2, 3, 4, 5, 6};
+constexpr int64_t kExtensionUsageUkms[] = {1, 2, 3, 4, 5, 6};
 
 // The tests that are run by this extension are expected to record the following
 // histograms.  If the tests in test.js are modified, this array may need to be
@@ -51,7 +54,7 @@ constexpr struct RecordedHistogram {
   int max;
   size_t buckets;
   int count;
-} g_histograms[] = {
+} kHistograms[] = {
     {"test.h.1", base::HISTOGRAM, 1, 100, 50, 1},          // custom
     {"test.h.2", base::LINEAR_HISTOGRAM, 1, 200, 50, 1},   // custom
     {"test.h.3", base::LINEAR_HISTOGRAM, 1, 101, 102, 2},  // percentage
@@ -148,8 +151,6 @@ void ValidateHistograms(base::span<const RecordedHistogram> recorded) {
   }
 }
 
-}  // namespace
-
 class ExtensionMetricsApiTest : public ExtensionApiTest {
  public:
   ExtensionMetricsApiTest() = default;
@@ -171,9 +172,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionMetricsApiTest, Metrics) {
   ASSERT_TRUE(RunExtensionTest("metrics", {}, {.load_as_component = true}))
       << message_;
 
-  ValidateUserActions(user_action_tester, g_user_actions);
-  ValidateExtensionUsageUkm(ukm_recorder, g_extension_usage_ukms);
-  ValidateHistograms(g_histograms);
+  ValidateUserActions(user_action_tester, kUserActions);
+  ValidateExtensionUsageUkm(ukm_recorder, kExtensionUsageUkms);
+  ValidateHistograms(kHistograms);
 }
 
+}  // namespace
 }  // namespace extensions
