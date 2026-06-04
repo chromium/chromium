@@ -155,6 +155,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NSArray<NSLayoutConstraint*>* _assistantHighlightConstraints;
   // The background view.
   AppBarBackgroundView* _backgroundView;
+  // Whether the app bar is in incognito mode.
+  BOOL _incognito;
   // Whether the buttons are enabled.
   BOOL _buttonsEnabled;
   // Whether the assistant button is enabled.
@@ -317,6 +319,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   _angle = CGFLOAT_MAX;
   _backgroundView = [[AppBarBackgroundView alloc] init];
   _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundView.incognito = _incognito;
   [self.view insertSubview:_backgroundView atIndex:0];
 
   _buttonsTitleAlpha = 1;
@@ -417,9 +420,10 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 }
 
 - (void)setIncognito:(BOOL)incognito {
-  if (_backgroundView.incognito == incognito) {
+  if (_incognito == incognito) {
     return;
   }
+  _incognito = incognito;
   _backgroundView.incognito = incognito;
   [self updateNewTabButtonAccessibilityLabel];
   [self updateAssistantButton];
@@ -709,7 +713,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   }
 
   _assistantButton.enabled =
-      _buttonsEnabled && _assistantButtonEnabled && !_backgroundView.incognito;
+      _buttonsEnabled && _assistantButtonEnabled && !_incognito;
 }
 
 // Returns a new "Assistant" button.
@@ -1008,7 +1012,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     if (_isTabGroupsPageVisible) {
       _openNewTabButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB_GROUP);
-    } else if (_backgroundView.incognito) {
+    } else if (_incognito) {
       _openNewTabButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_INCOGNITO_TAB);
     } else {
@@ -1017,7 +1021,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     }
   } else {
     _openNewTabButton.accessibilityLabel =
-        _backgroundView.incognito
+        _incognito
             ? l10n_util::GetNSString(IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO)
             : l10n_util::GetNSString(IDS_IOS_TOOLBAR_OPEN_NEW_TAB);
   }
@@ -1173,8 +1177,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   if ([view isKindOfClass:[UIButton class]]) {
     UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
     parameters.backgroundColor =
-        _backgroundView.incognito ? [UIColor colorNamed:kAppBarIncognitoColor]
-                                  : [UIColor colorNamed:kAppBarColor];
+        _incognito ? [UIColor colorNamed:kAppBarIncognitoColor]
+                   : [UIColor colorNamed:kAppBarColor];
 
     return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
   }

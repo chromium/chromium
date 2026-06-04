@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -387,6 +388,25 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonStateAccountWithAvatar) {
   ASSERT_NE(config.image, nil);
   EXPECT_EQ(config.image.size.width, 10);
   EXPECT_EQ(config.image.size.height, 10);
+}
+
+using AppBarViewControllerTestManual = PlatformTest;
+
+// Tests that setting incognito before the view is loaded correctly applies
+// when the view is loaded.
+TEST_F(AppBarViewControllerTestManual, TestIncognitoInitially) {
+  AppBarViewController* vc = [[AppBarViewController alloc] init];
+  [vc setIncognito:YES];
+
+  // Trigger view load.
+  UIView* view = vc.view;
+  ASSERT_NE(view, nil);
+
+  AppBarBackgroundView* backgroundView = [vc valueForKey:@"backgroundView"];
+  EXPECT_TRUE(backgroundView.incognito);
+
+  UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
+  EXPECT_FALSE(assistantButton.enabled);
 }
 
 }  // namespace
