@@ -6,7 +6,9 @@ package org.chromium.android_webview.test;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,24 +34,38 @@ import org.chromium.url.GURL;
 public class WebAuthnTest {
     @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
+    private TestAwContentsClient mContentsClient;
+    private AwTestContainerView mTestContainerView;
+    private AwContents mAwContents;
+    private AwSettings mAwSettings;
+    private TestWebServer mWebServer;
+
+    @Before
+    public void setUp() throws Exception {
+        mContentsClient = new TestAwContentsClient();
+        mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        mAwContents = mTestContainerView.getAwContents();
+        mAwSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
+        mWebServer = TestWebServer.start();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (mWebServer != null) {
+            mWebServer.shutdown();
+        }
+    }
+
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     public void testSetWebAuthnSupportFromNonUIThread() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
-        final AwContents awContents = testContainerView.getAwContents();
-        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-
         // Call setWebauthnSupport from the instrumentation thread (non-UI thread).
         // This should not crash.
-        settings.setWebauthnSupport(WebauthnMode.APP);
+        mAwSettings.setWebauthnSupport(WebauthnMode.APP);
 
         // Verify the setting was applied.
-        Assert.assertEquals(
-                WebauthnMode.APP,
-                mActivityTestRule.getAwSettingsOnUiThread(awContents).getWebauthnSupport());
+        Assert.assertEquals(WebauthnMode.APP, mAwSettings.getWebauthnSupport());
     }
 
     @Test
@@ -57,30 +73,20 @@ public class WebAuthnTest {
     @Feature({"AndroidWebView", "Preferences"})
     @DisableFeatures(AwFeatures.WEBVIEW_FORCE_WEB_AUTHN)
     public void testWebAuthnDefaultDisabled() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
-        final AwContents awContents = testContainerView.getAwContents();
-        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-        settings.setJavaScriptEnabled(true);
+        mAwSettings.setJavaScriptEnabled(true);
 
         Assert.assertEquals(
                 "WebAuthn default should be NONE by default.",
                 WebauthnMode.NONE,
-                settings.getWebauthnSupport());
+                mAwSettings.getWebauthnSupport());
 
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            final String pageUrl =
-                    webServer.setResponse("/test.html", "<html><body></body></html>", null);
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertFalse(
-                    "WebAuthn JavaScript interface should NOT be exposed",
-                    hasWebAuthnJavaScriptInterfaces(awContents, contentClient));
-        } finally {
-            webServer.shutdown();
-        }
+        final String pageUrl =
+                mWebServer.setResponse("/test.html", "<html><body></body></html>", null);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertFalse(
+                "WebAuthn JavaScript interface should NOT be exposed",
+                hasWebAuthnJavaScriptInterfaces());
     }
 
     @Test
@@ -88,30 +94,20 @@ public class WebAuthnTest {
     @Feature({"AndroidWebView", "Preferences"})
     @EnableFeatures(AwFeatures.WEBVIEW_FORCE_WEB_AUTHN)
     public void testWebAuthnEnabledByFlag() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
-        final AwContents awContents = testContainerView.getAwContents();
-        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-        settings.setJavaScriptEnabled(true);
+        mAwSettings.setJavaScriptEnabled(true);
 
         Assert.assertEquals(
                 "WebAuthn default should be APP mode when the flag is enabled.",
                 WebauthnMode.APP,
-                settings.getWebauthnSupport());
+                mAwSettings.getWebauthnSupport());
 
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            final String pageUrl =
-                    webServer.setResponse("/test.html", "<html><body></body></html>", null);
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertTrue(
-                    "WebAuthn JavaScript interface should be exposed",
-                    hasWebAuthnJavaScriptInterfaces(awContents, contentClient));
-        } finally {
-            webServer.shutdown();
-        }
+        final String pageUrl =
+                mWebServer.setResponse("/test.html", "<html><body></body></html>", null);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertTrue(
+                "WebAuthn JavaScript interface should be exposed",
+                hasWebAuthnJavaScriptInterfaces());
     }
 
     @Test
@@ -119,60 +115,45 @@ public class WebAuthnTest {
     @Feature({"AndroidWebView", "Preferences"})
     @EnableFeatures(AwFeatures.WEBVIEW_FORCE_WEB_AUTHN)
     public void testWebAuthnFlagAndAppSetting() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
-        final AwContents awContents = testContainerView.getAwContents();
-        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-        settings.setJavaScriptEnabled(true);
+        mAwSettings.setJavaScriptEnabled(true);
 
         Assert.assertEquals(
                 "WebAuthn default should be APP mode when the flag is enabled.",
                 WebauthnMode.APP,
-                settings.getWebauthnSupport());
+                mAwSettings.getWebauthnSupport());
 
-        TestWebServer webServer = TestWebServer.start();
-        try {
-            final String pageUrl =
-                    webServer.setResponse("/test.html", "<html><body></body></html>", null);
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertTrue(
-                    "WebAuthn JavaScript interface should be exposed",
-                    hasWebAuthnJavaScriptInterfaces(awContents, contentClient));
+        final String pageUrl =
+                mWebServer.setResponse("/test.html", "<html><body></body></html>", null);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertTrue(
+                "WebAuthn JavaScript interface should be exposed",
+                hasWebAuthnJavaScriptInterfaces());
 
-            // Change the mode and reload the apge. Verify that the interfaces disappear again.
-            settings.setWebauthnSupport(WebauthnMode.NONE);
-            Assert.assertEquals(
-                    "setWebauthnSupport() API should still take effect.",
-                    WebauthnMode.NONE,
-                    settings.getWebauthnSupport());
-            mActivityTestRule.loadUrlSync(
-                    awContents, contentClient.getOnPageFinishedHelper(), pageUrl);
-            Assert.assertFalse(
-                    "WebAuthn JavaScript interface should NOT be exposed",
-                    hasWebAuthnJavaScriptInterfaces(awContents, contentClient));
-        } finally {
-            webServer.shutdown();
-        }
+        // Change the mode and reload the apge. Verify that the interfaces disappear again.
+        mAwSettings.setWebauthnSupport(WebauthnMode.NONE);
+        Assert.assertEquals(
+                "setWebauthnSupport() API should still take effect.",
+                WebauthnMode.NONE,
+                mAwSettings.getWebauthnSupport());
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
+        Assert.assertFalse(
+                "WebAuthn JavaScript interface should NOT be exposed",
+                hasWebAuthnJavaScriptInterfaces());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testSetWebAuthnSupportLogsPermissionStatus() throws Throwable {
-        final AwTestContainerView testContainerView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(new TestAwContentsClient());
-        final AwContents awContents = testContainerView.getAwContents();
-        final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.WebView.Webauthn.BrowserModePermissionGranted", false);
 
         // Since the test app does not have CREDENTIAL_MANAGER_SET_ORIGIN permission,
         // this call should log `false` to the histogram and succeed without throwing.
-        settings.setWebauthnSupport(WebauthnMode.BROWSER);
+        mAwSettings.setWebauthnSupport(WebauthnMode.BROWSER);
 
         histogramWatcher.assertExpected();
     }
@@ -190,12 +171,11 @@ public class WebAuthnTest {
         return false;
     }
 
-    private boolean hasWebAuthnJavaScriptInterfaces(
-            AwContents awContents, TestAwContentsClient contentClient) throws Throwable {
-        if (!isSecureDomain(awContents.getUrl())) {
+    private boolean hasWebAuthnJavaScriptInterfaces() throws Throwable {
+        if (!isSecureDomain(mAwContents.getUrl())) {
             throw new Exception(
                     "This web URL ("
-                            + awContents.getUrl()
+                            + mAwContents.getUrl()
                             + ") is insecure, however WebAuthn interfaces are only ever exposed for"
                             + " secure web schemes. Please rewrite this test case so that it uses"
                             + " a localhost HTTP server (locahost is treated as 'trusted' for"
@@ -203,8 +183,8 @@ public class WebAuthnTest {
         }
         String jsResult =
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        awContents,
-                        contentClient,
+                        mAwContents,
+                        mContentsClient,
                         "typeof window.PublicKeyCredential !== 'undefined'");
         return "true".equals(jsResult);
     }
