@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/multi_icon_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -309,6 +310,10 @@ void AnchoredMessageBubbleView::UpdateContent(
       }
     }
     expand_button_->Update(icons);
+    expand_button_tooltip_override_ = expandable_content->expand_button_tooltip;
+    collapse_button_tooltip_override_ =
+        expandable_content->collapse_button_tooltip;
+    UpdateExpandButtonTooltip();
     expand_button_->SetVisible(true);
 
     bottom_container_->RemoveAllChildViews();
@@ -424,6 +429,7 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 void AnchoredMessageBubbleView::OnExpandButtonPressed() {
   expanded_ = !expanded_;
   bottom_container_->SetVisible(expanded_);
+  UpdateExpandButtonTooltip();
   SizeToContents();
   if (expanded_) {
     delegate_->AnchoredMessageExpanded();
@@ -463,6 +469,26 @@ void AnchoredMessageBubbleView::OnWidgetDestroying(views::Widget* widget) {
   }
   menu_runner_ = nullptr;
   BubbleDialogDelegate::OnWidgetDestroying(widget);
+}
+
+void AnchoredMessageBubbleView::UpdateExpandButtonTooltip() {
+  if (!expand_button_) {
+    return;
+  }
+  std::u16string tooltip_text;
+  if (expanded_) {
+    tooltip_text = collapse_button_tooltip_override_
+                       ? *collapse_button_tooltip_override_
+                       : l10n_util::GetStringUTF16(
+                             IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP);
+  } else {
+    tooltip_text = expand_button_tooltip_override_
+                       ? *expand_button_tooltip_override_
+                       : l10n_util::GetStringUTF16(
+                             IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP);
+  }
+  expand_button_->SetTooltipText(tooltip_text);
+  expand_button_->SetAccessibleName(tooltip_text);
 }
 
 BEGIN_METADATA(AnchoredMessageBubbleView)

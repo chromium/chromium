@@ -89,6 +89,8 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   void OnMenuClosed();
   void OnExpandButtonPressed();
 
+  void UpdateExpandButtonTooltip();
+
   raw_ptr<views::View> top_row_ = nullptr;
   raw_ptr<views::View> bottom_container_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
@@ -104,6 +106,8 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
   bool expanded_ = false;
+  std::optional<std::u16string> expand_button_tooltip_override_;
+  std::optional<std::u16string> collapse_button_tooltip_override_;
   const raw_ref<Delegate> delegate_;
 };
 

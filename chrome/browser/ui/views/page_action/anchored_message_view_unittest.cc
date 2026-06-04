@@ -289,4 +289,83 @@ TEST_F(AnchoredMessageBubbleViewTest, ExpandButtonFocusRing) {
   widget->CloseNow();
 }
 
+TEST_F(AnchoredMessageBubbleViewTest, ExpandButtonTooltip) {
+  std::optional<AnchoredMessageExpandableContent> expandable_content =
+      std::make_optional<AnchoredMessageExpandableContent>();
+  expandable_content->items.push_back({test_image_, test_text_});
+
+  ON_CALL(model_, GetAnchoredMessageExpandableContent())
+      .WillByDefault(ReturnRef(expandable_content));
+
+  std::unique_ptr<views::Widget> widget = CreateAnchoredMessageWidget();
+
+  const std::u16string custom_expand_tooltip = u"Custom expand tooltip";
+  const std::u16string custom_collapse_tooltip = u"Custom collapse tooltip";
+
+  RunTestSequence(
+      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId,
+                [](views::Button* button) {
+                  return button->GetTooltipText() ==
+                             l10n_util::GetStringUTF16(
+                                 IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP) &&
+                         button->GetViewAccessibility().GetCachedName() ==
+                             l10n_util::GetStringUTF16(
+                                 IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP);
+                }),
+      PressButton(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId),
+      CheckView(
+          AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId,
+          [](views::Button* button) {
+            return button->GetTooltipText() ==
+                       l10n_util::GetStringUTF16(
+                           IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP) &&
+                   button->GetViewAccessibility().GetCachedName() ==
+                       l10n_util::GetStringUTF16(
+                           IDS_ANCHORED_MESSAGE_COLLAPSE_BUTTON_TOOLTIP);
+          }),
+      PressButton(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId,
+                [](views::Button* button) {
+                  return button->GetTooltipText() ==
+                             l10n_util::GetStringUTF16(
+                                 IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP) &&
+                         button->GetViewAccessibility().GetCachedName() ==
+                             l10n_util::GetStringUTF16(
+                                 IDS_ANCHORED_MESSAGE_EXPAND_BUTTON_TOOLTIP);
+                }),
+      WithView(AnchoredMessageBubbleView::kAnchoredMessageBubbleId,
+               [this, &expandable_content, &custom_expand_tooltip,
+                &custom_collapse_tooltip](views::View* view) {
+                 auto* bubble_view =
+                     static_cast<AnchoredMessageBubbleView*>(view);
+                 expandable_content->expand_button_tooltip =
+                     custom_expand_tooltip;
+                 expandable_content->collapse_button_tooltip =
+                     custom_collapse_tooltip;
+                 bubble_view->UpdateContent(model_);
+               }),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId,
+                [&custom_expand_tooltip](views::Button* button) {
+                  return button->GetTooltipText() == custom_expand_tooltip &&
+                         button->GetViewAccessibility().GetCachedName() ==
+                             custom_expand_tooltip;
+                }),
+      PressButton(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId,
+                [&custom_collapse_tooltip](views::Button* button) {
+                  return button->GetTooltipText() == custom_collapse_tooltip &&
+                         button->GetViewAccessibility().GetCachedName() ==
+                             custom_collapse_tooltip;
+                }),
+      PressButton(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId,
+                [&custom_expand_tooltip](views::Button* button) {
+                  return button->GetTooltipText() == custom_expand_tooltip &&
+                         button->GetViewAccessibility().GetCachedName() ==
+                             custom_expand_tooltip;
+                }));
+
+  widget->CloseNow();
+}
 }  // namespace page_actions
