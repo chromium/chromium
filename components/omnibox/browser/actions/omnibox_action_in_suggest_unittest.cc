@@ -310,11 +310,6 @@ TEST_F(OmniboxActionInSuggestTest, ShowAsActionButton) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(OmniboxActionInSuggestTest, ShowAsActionButtonForTabSwitch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxImprovementForLFF, {
-                                              {"switch_to_tab_chip", "true"},
-                                          });
   TemplateAction template_action;
   template_action.set_action_type(
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH);

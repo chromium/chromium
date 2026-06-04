@@ -174,9 +174,6 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sWrapAutocompleteText =
             newBooleanParam(sOmniboxMultimodalInput, "wrap_autocomplete_text", false);
 
-    public static final CachedFlag sOmniboxImprovementForLFF =
-            newFlag(OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF, FeatureState.ENABLED_IN_PROD);
-
     public static final CachedFlag sAIMSuppressVerbatimMatch =
             newFlag(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH, FeatureState.ENABLED_IN_PROD);
 
@@ -240,20 +237,6 @@ public class OmniboxFeatures {
     // suggestions on SearchActivity.
     public static final BooleanCachedFeatureParam sJumpStartOmniboxCoverRecentlyVisitedPage =
             newBooleanParam(sJumpStartOmnibox, "jump_start_cover_recently_visited_page", false);
-
-    // This parameter enables showing the switch-to-tab chip on large form factors.
-    public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFSwitchToTabChip =
-            newBooleanParam(sOmniboxImprovementForLFF, "switch_to_tab_chip", true);
-
-    // This parameter enables removing suggestion via "x" button.
-    public static final BooleanCachedFeatureParam
-            sOmniboxImprovementForLFFRemoveSuggestionViaButton =
-                    newBooleanParam(
-                            sOmniboxImprovementForLFF, "remove_suggestion_via_button", true);
-
-    // This parameter enables persisting editing state.
-    public static final BooleanCachedFeatureParam sOmniboxImprovementForLFFPersistEditingState =
-            newBooleanParam(sOmniboxImprovementForLFF, "persist_editing_state", false);
 
     // Omnibox Diagnostics
     private static final CachedFlag sDiagnostics =

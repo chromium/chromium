@@ -57,7 +57,6 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
@@ -353,10 +352,8 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     @Config(qualifiers = "w400dp")
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
     public void setRemoveOrRefineAction_noRmoveActionOnPhone() {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
-        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
 
         var action = setUpDeleteScenarioForRemoveActionTesting();
 
@@ -369,11 +366,9 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
     public void setRemoveOrRefineAction_noRemoveActionOnTabletWithoutPeripherals() {
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
-        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
 
         var action = setUpDeleteScenarioForRemoveActionTesting();
 
@@ -386,10 +381,8 @@ public class BaseSuggestionProcessorUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
     public void setRemoveOrRefineAction_removeActionOnTabletWithPrecisionPointer() {
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
-        OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton.setForTesting(true);
 
         var action = setUpDeleteScenarioForRemoveActionTesting();
 

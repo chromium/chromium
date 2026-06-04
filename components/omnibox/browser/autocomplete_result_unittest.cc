@@ -2239,11 +2239,6 @@ TEST_F(AutocompleteResultTest, ConvertsOpenTabsCorrectly) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(AutocompleteResultTest, ConvertOpenTabMatches_AttachTabSwitchAction) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxImprovementForLFF,
-      {{OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name,
-        "true"}});
 
   AutocompleteResult result;
   ACMatches matches;
@@ -2272,11 +2267,6 @@ TEST_F(AutocompleteResultTest, ConvertOpenTabMatches_AttachTabSwitchAction) {
 
 TEST_F(AutocompleteResultTest,
        ConvertOpenTabMatches_DoNotAttachTabSwitchActionInKeywordMode) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxImprovementForLFF,
-      {{OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name,
-        "true"}});
 
   AutocompleteResult result;
   ACMatches matches;

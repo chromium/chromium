@@ -127,7 +127,6 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -2189,10 +2188,7 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
     public void testRestoringTextAndEditingStateOnTablet() {
-        OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.setForTesting(true);
-
         // Recreate mediator to respect the overridden feature flag and params.
         mTabletMediator = createTabletMediator();
         mTabletMediator.onFinishNativeInitialization();

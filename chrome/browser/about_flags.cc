@@ -2010,37 +2010,6 @@ const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {
 const FeatureEntry::FeatureVariation kOmniboxMultilineEditFieldVariants[] = {
     {"For Autocomplete", kOmniboxMultilineEditFieldForAutocomplete, nullptr}};
 
-const FeatureEntry::FeatureParam kOmniboxImprovementForLFFVariationsAll[] = {
-    {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name, "true"},
-    {OmniboxFieldTrial::kOmniboxImprovementForLFFRemoveSuggestionViaButton.name,
-     "true"},
-    {OmniboxFieldTrial::kOmniboxImprovementForLFFPersistEditingState.name,
-     "true"}};
-
-const FeatureEntry::FeatureParam
-    kOmniboxImprovementForLFFVariationsSwitchToTabChip[] = {
-        {OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.name,
-         "true"}};
-
-const FeatureEntry::FeatureParam
-    kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton[] = {
-        {OmniboxFieldTrial::kOmniboxImprovementForLFFRemoveSuggestionViaButton
-             .name,
-         "true"}};
-
-const FeatureEntry::FeatureParam
-    kOmniboxImprovementForLFFVariationsPersistEditingState[] = {
-        {OmniboxFieldTrial::kOmniboxImprovementForLFFPersistEditingState.name,
-         "true"}};
-
-const FeatureEntry::FeatureVariation kOmniboxImprovementForLFFVariations[] = {
-    {"All", kOmniboxImprovementForLFFVariationsAll, nullptr},
-    {"Switch to Tab Chip", kOmniboxImprovementForLFFVariationsSwitchToTabChip,
-     nullptr},
-    {"Remove Suggestion",
-     kOmniboxImprovementForLFFVariationsRemoveSuggestionViaButton, nullptr},
-    {"Persist Editing State",
-     kOmniboxImprovementForLFFVariationsPersistEditingState, nullptr}};
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -6634,12 +6603,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxDiagnosticsAndroidVaiants,
                                     "Diagnostics")},
 
-    {"omnibox-improvement-for-lff",
-     flag_descriptions::kOmniboxImprovementForLFFName,
-     flag_descriptions::kOmniboxImprovementForLFFDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kOmniboxImprovementForLFF,
-                                    kOmniboxImprovementForLFFVariations,
-                                    "OmniboxImprovementForLFF")},
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
     {"omnibox-on-device-head-suggestions",

@@ -690,22 +690,6 @@ inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
 // <-- Mobile Parity update
 
 #if BUILDFLAG(IS_ANDROID)
-// Omnibox Improvement for Large Form Factors -->
-
-inline constexpr base::FeatureParam<bool>
-    kOmniboxImprovementForLFFSwitchToTabChip{
-        &omnibox::kOmniboxImprovementForLFF, "switch_to_tab_chip", true};
-
-inline constexpr base::FeatureParam<bool>
-    kOmniboxImprovementForLFFRemoveSuggestionViaButton{
-        &omnibox::kOmniboxImprovementForLFF, "remove_suggestion_via_button",
-        true};
-
-inline constexpr base::FeatureParam<bool>
-    kOmniboxImprovementForLFFPersistEditingState{
-        &omnibox::kOmniboxImprovementForLFF, "persist_editing_state", false};
-
-// <-- Omnibox Improvement for Large Form Factors
 // Fusebox -->
 inline constexpr base::FeatureParam<bool> kOmniboxShowModelPicker{
     &omnibox::kOmniboxMultimodalInput, "show_model_picker", false};

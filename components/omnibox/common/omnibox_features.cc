@@ -453,9 +453,6 @@ BASE_FEATURE(kDiagnostics, "OmniboxDiagnostics", DISABLED);
 // Force the realbox on Android regardless of platform/configuration checks.
 BASE_FEATURE(kForceAndroidRealbox, DISABLED);
 
-// When enabled, offer a desktop-like omnibox UI enhancement on large form
-// factors.
-BASE_FEATURE(kOmniboxImprovementForLFF, ENABLED);
 
 // If enabled, disables ligatures in the URL bar on Android.
 BASE_FEATURE(kUrlBarWithoutLigatures, ENABLED);
@@ -488,7 +485,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxMultimodalInput,
       &kAndroidDesktopAimGate,
       &kMultilineEditField,
-      &kOmniboxImprovementForLFF,
       &kServeJavaCachedZeroSuggest,
       &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,

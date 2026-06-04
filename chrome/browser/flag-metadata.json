@@ -7177,11 +7177,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-improvement-for-lff",
-    "owners": [ "jianli@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "omnibox-item-decoration",
     "owners": [
       "charlesyc@google.com",

@@ -190,13 +190,10 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(
       omnibox::
           SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH) {
     auto form_factor = ui::GetDeviceFormFactor();
-    bool show_as_button =
-        !(base::FeatureList::IsEnabled(omnibox::kOmniboxImprovementForLFF) &&
-          OmniboxFieldTrial::kOmniboxImprovementForLFFSwitchToTabChip.Get() &&
-          (form_factor != ui::DEVICE_FORM_FACTOR_PHONE &&
-           form_factor != ui::DEVICE_FORM_FACTOR_FOLDABLE));
-    presentation_mode_ = show_as_button ? ActionPresentationMode::BUTTON
-                                        : ActionPresentationMode::CHIP;
+    bool is_large_form_factor = form_factor != ui::DEVICE_FORM_FACTOR_PHONE &&
+                                form_factor != ui::DEVICE_FORM_FACTOR_FOLDABLE;
+    presentation_mode_ = is_large_form_factor ? ActionPresentationMode::CHIP
+                                              : ActionPresentationMode::BUTTON;
   }
 #endif
 }

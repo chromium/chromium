@@ -208,7 +208,6 @@ BASE_DECLARE_FEATURE(kJumpStartOmnibox);
 BASE_DECLARE_FEATURE(kSuppressIntermediateACUpdatesOnLowEndDevices);
 // Delay focusTab to prioritize navigation (https://crbug.com/374852568).
 BASE_DECLARE_FEATURE(kPostDelayedTaskFocusTab);
-BASE_DECLARE_FEATURE(kOmniboxImprovementForLFF);
 BASE_DECLARE_FEATURE(kResetSuggestionsScroll);
 #endif  // BUILDFLAG(IS_ANDROID)
 

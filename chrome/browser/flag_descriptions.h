@@ -3478,11 +3478,6 @@ inline constexpr char kOmniboxSiteSearchName[] = "Omnibox Site Search";
 inline constexpr char kOmniboxSiteSearchDescription[] =
     "Enables keyword-based site search functionality on Android devices";
 
-inline constexpr char kOmniboxImprovementForLFFName[] =
-    "Omnibox Improvement for LFF";
-inline constexpr char kOmniboxImprovementForLFFDescription[] =
-    "Enables desktop-like omnibox UI enhancement for large form factors";
-
 inline constexpr char kContextualSearchBoxUsesContextualSearchProviderName[] =
     "Contextual search box uses contextual search provider";
 inline constexpr char

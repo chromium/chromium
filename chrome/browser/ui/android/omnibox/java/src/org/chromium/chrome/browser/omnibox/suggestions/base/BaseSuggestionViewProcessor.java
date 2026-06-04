@@ -74,10 +74,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mActionChipsProcessor = new ActionChipsProcessor(uiContext.host, uiContext.actionDelegate);
 
         mShouldShowRemoveButton =
-                OmniboxFeatures.sOmniboxImprovementForLFF.isEnabled()
-                        && OmniboxFeatures.sOmniboxImprovementForLFFRemoveSuggestionViaButton
-                                .getValue()
-                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
                         && DeviceInput.supportsPrecisionPointer();
     }
 
