@@ -6677,4 +6677,40 @@ public class TabListMediatorUnitTest {
         assertEquals(1, mModelList.size());
         assertEquals(TAB2_ID, mModelList.get(0).model.get(TabProperties.TAB_ID));
     }
+
+    @Test
+    public void testMoveTabOutOfGroup_NestedLayout() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB_GROUP_ID, mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
+
+        // Move tab3 out of the group
+        when(tab3.getTabGroupId()).thenReturn(null);
+        mockTabIndexes(mTab1, tab3);
+        when(mTabModel.getRepresentativeTabAt(POSITION1)).thenReturn(mTab1);
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1));
+
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, POSITION1);
+
+        // size remains 3 (1 header, 1 child, 1 standalone)
+        assertEquals(3, mModelList.size());
+
+        // tab3 should be a top-level tab (no tab_group_id property)
+        assertNull(mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+    }
 }

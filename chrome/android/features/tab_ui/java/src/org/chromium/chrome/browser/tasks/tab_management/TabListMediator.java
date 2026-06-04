@@ -841,64 +841,14 @@ public class TabListMediator implements TabListNotificationHandler {
                     TabModel tabModel = getCurrentTabModelChecked();
                     Tab previousGroupTab = tabModel.getRepresentativeTabAt(prevFilterIndex);
                     assumeNonNull(previousGroupTab);
-                    if (mActionsOnAllRelatedTabs) {
-                        Token movedTabGroupId = movedTab.getTabGroupId();
-                        if (tabModel.getTabCountForGroup(movedTabGroupId) <= 1
-                                && movedTab != previousGroupTab) {
-                            // Add a tab to the model if it represents a new card. This happens if
-                            // the tab is either not in a group or in a group by itself. We do this
-                            // first so that the indices for the filter and the model match when
-                            // doing the update afterwards. When moving a tab between groups, the
-                            // new tab being added to an existing group is handled in
-                            // didMergeTabToGroup().
-                            int filterIndex = tabModel.representativeIndexOf(movedTab);
-                            addTabCardToModel(movedTab, mModelList.indexOfNthTabCard(filterIndex));
-                        } else if (movedTabGroupId != null
-                                && movedTabGroupId.equals(previousGroupTab.getTabGroupId())) {
-                            // Despite being ungrouped we are still in a tab group this could mean
-                            // the previous tab card this tab was associated with no longer contains
-                            // tabs. If we have the same tab group id as the previous group tab then
-                            // this was possibly the last tab in its group. Remove the tab card if
-                            // it exists.
-                            int previousIndex = mModelList.indexFromTabId(movedTab.getId());
-                            if (previousIndex != TabModel.INVALID_TAB_INDEX) {
-                                mModelList.removeAt(previousIndex);
-                                return;
-                            }
-                        }
-                        // Always update the previous group to clean up old state e.g. thumbnail,
-                        // title, etc.
-                        updateTab(
-                                mModelList.indexOfNthTabCard(prevFilterIndex),
-                                previousGroupTab,
-                                true,
-                                false);
+
+                    if (mSupportsNestedTabGroups) {
+                        moveTabOutOfGroupInNestedLayout(movedTab);
+                    } else if (mActionsOnAllRelatedTabs) {
+                        moveTabOutOfGroupInGroupedLayout(
+                                movedTab, previousGroupTab, prevFilterIndex);
                     } else {
-                        int previousGroupTabId = previousGroupTab.getId();
-                        int movedTabId = movedTab.getId();
-                        int previousTabListModelIndex =
-                                mModelList.indexFromTabId(previousGroupTabId);
-                        // Invalid means the previous group tab isn't visible. Either:
-                        // 1. The moved tab isn't in this model list.
-                        // 2. The moved tab is meant to stay in the model list as this is the
-                        //    destination group.
-                        // In either case no-op.
-                        if (previousTabListModelIndex == TabList.INVALID_TAB_INDEX) {
-                            return;
-                        }
-
-                        // The moved tab isn't here, or it is out-of-bounds no-op.
-                        int curTabListModelIndex = mModelList.indexFromTabId(movedTabId);
-                        if (!isValidMovePosition(curTabListModelIndex)) return;
-
-                        mModelList.removeAt(curTabListModelIndex);
-                        if (mTabGridDialogHandler != null) {
-                            boolean isUngroupingLastTabInGroup = previousGroupTabId == movedTabId;
-                            mTabGridDialogHandler.updateDialogContent(
-                                    isUngroupingLastTabInGroup
-                                            ? Tab.INVALID_TAB_ID
-                                            : previousGroupTabId);
-                        }
+                        moveTabOutOfGroupInFlatLayout(movedTab, previousGroupTab);
                     }
                 }
 
@@ -1853,6 +1803,80 @@ public class TabListMediator implements TabListNotificationHandler {
         return targetInsertionUiIndex != TabModel.INVALID_TAB_INDEX
                 ? targetInsertionUiIndex
                 : adjustIndexForTabMovement(mModelList.size(), targetTabCurrentIndex);
+    }
+
+    private void moveTabOutOfGroupInNestedLayout(Tab movedTab) {
+        int index = mModelList.indexFromTabId(movedTab.getId());
+        if (index == TabModel.INVALID_TAB_INDEX) return;
+
+        PropertyModel model = mModelList.get(index).model;
+        clearTabGroupProperties(model);
+        model.set(
+                TabProperties.TAB_CLICK_LISTENER,
+                getTabActionListener(movedTab, /* isInTabGroup= */ false));
+
+        int newIndex = getInsertionIndexOfTabForNestedGroups(movedTab);
+        if (newIndex != TabModel.INVALID_TAB_INDEX && index != newIndex) {
+            mModelList.move(index, newIndex);
+        }
+
+        // TODO(crbug.com/509226293): Update the tab group title
+    }
+
+    private void moveTabOutOfGroupInGroupedLayout(
+            Tab movedTab, Tab previousGroupTab, int prevFilterIndex) {
+        TabModel tabModel = getCurrentTabModelChecked();
+        Token movedTabGroupId = movedTab.getTabGroupId();
+        if (tabModel.getTabCountForGroup(movedTabGroupId) <= 1 && movedTab != previousGroupTab) {
+            // Add a tab to the model if it represents a new card. This happens if
+            // the tab is either not in a group or in a group by itself. We do this
+            // first so that the indices for the filter and the model match when
+            // doing the update afterwards. When moving a tab between groups, the
+            // new tab being added to an existing group is handled in
+            // didMergeTabToGroup().
+            int filterIndex = tabModel.representativeIndexOf(movedTab);
+            addTabCardToModel(movedTab, mModelList.indexOfNthTabCard(filterIndex));
+        } else if (movedTabGroupId != null
+                && movedTabGroupId.equals(previousGroupTab.getTabGroupId())) {
+            // Despite being ungrouped we are still in a tab group this could mean
+            // the previous tab card this tab was associated with no longer contains
+            // tabs. If we have the same tab group id as the previous group tab then
+            // this was possibly the last tab in its group. Remove the tab card if
+            // it exists.
+            int previousIndex = mModelList.indexFromTabId(movedTab.getId());
+            if (previousIndex != TabModel.INVALID_TAB_INDEX) {
+                mModelList.removeAt(previousIndex);
+                return;
+            }
+        }
+        // Always update the previous group to clean up old state e.g. thumbnail,
+        // title, etc.
+        updateTab(mModelList.indexOfNthTabCard(prevFilterIndex), previousGroupTab, true, false);
+    }
+
+    private void moveTabOutOfGroupInFlatLayout(Tab movedTab, Tab previousGroupTab) {
+        int previousGroupTabId = previousGroupTab.getId();
+        int movedTabId = movedTab.getId();
+        int previousTabListModelIndex = mModelList.indexFromTabId(previousGroupTabId);
+        // Invalid means the previous group tab isn't visible. Either:
+        // 1. The moved tab isn't in this model list.
+        // 2. The moved tab is meant to stay in the model list as this is the
+        //    destination group.
+        // In either case no-op.
+        if (previousTabListModelIndex == TabList.INVALID_TAB_INDEX) {
+            return;
+        }
+
+        // The moved tab isn't here, or it is out-of-bounds no-op.
+        int curTabListModelIndex = mModelList.indexFromTabId(movedTabId);
+        if (!isValidMovePosition(curTabListModelIndex)) return;
+
+        mModelList.removeAt(curTabListModelIndex);
+        if (mTabGridDialogHandler != null) {
+            boolean isUngroupingLastTabInGroup = previousGroupTabId == movedTabId;
+            mTabGridDialogHandler.updateDialogContent(
+                    isUngroupingLastTabInGroup ? Tab.INVALID_TAB_ID : previousGroupTabId);
+        }
     }
 
     private int onTabAdded(Tab tab, boolean onlyShowRelatedTabs) {
@@ -3823,18 +3847,20 @@ public class TabListMediator implements TabListNotificationHandler {
         model.set(THUMBNAIL_FETCHER, newFetcher);
     }
 
+    private void clearTabGroupProperties(PropertyModel model) {
+        @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
+        model.set(TabProperties.TAB_GROUP_ID, null);
+        model.set(TabProperties.TAB_GROUP_CARD_COLOR, null);
+        model.set(TabProperties.TAB_GROUP_HEADER_ID, null);
+        model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, null);
+        if (provider != null) provider.destroy();
+    }
+
     private void updateTabGroupProperties(
             Tab tab, PropertyModel model, @TabGroupColorId int colorId) {
-        @Nullable TabGroupColorViewProvider provider = model.get(TAB_GROUP_COLOR_VIEW_PROVIDER);
-
         @Nullable Token tabGroupId = tab.getTabGroupId();
         if (!mActionsOnAllRelatedTabs || tabGroupId == null || !isTabInTabGroup(tab)) {
-            // Not a group or not in group display mode.
-            model.set(TabProperties.TAB_GROUP_CARD_COLOR, null);
-            model.set(TabProperties.TAB_GROUP_HEADER_ID, null);
-            model.set(TAB_GROUP_COLOR_VIEW_PROVIDER, null);
-            if (provider != null) provider.destroy();
-
+            clearTabGroupProperties(model);
             return;
         }
 
