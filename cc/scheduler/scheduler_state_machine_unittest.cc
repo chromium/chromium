@@ -3661,5 +3661,49 @@ TEST(SchedulerStateMachineTest,
   EXPECT_ACTION_UPDATE_STATE(SchedulerStateMachine::Action::NONE);
 }
 
+TEST(SchedulerStateMachineTest, ThrottleDueToConsecutiveNoDamageFrames) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThrottleRepeatedNoDamageFrames);
+
+  SchedulerSettings default_scheduler_settings;
+  StateMachine state(default_scheduler_settings);
+  SET_UP_STATE(state);
+
+  // Initially, there's no throttling.
+  EXPECT_EQ(base::TimeDelta(), state.MainFrameThrottledInterval());
+  EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
+
+  // Simulating 60 consecutive no-update frames.
+  // The threshold for 32ms throttling is 60 consecutive no-update frames.
+  for (int i = 0; i < 60; i++) {
+    state.IssueNextBeginImplFrame();
+    state.SetNeedsBeginMainFrame(false);
+    EXPECT_ACTION_UPDATE_STATE(
+        SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+    state.BeginMainFrameAborted(CommitEarlyOutReason::kFinishedNoUpdates);
+  }
+
+  // Issue next frame immediately (0ms advanced). It should throttle.
+  state.IssueNextBeginImplFrame();
+  state.SetNeedsBeginMainFrame(false);
+  EXPECT_TRUE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Advance time by 16ms (less than 32ms). It should still throttle.
+  state.AdvanceTimeBy(base::Milliseconds(16));
+  state.IssueNextBeginImplFrame();
+  EXPECT_TRUE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION(SchedulerStateMachine::Action::NONE);
+
+  // Advance time by another 16ms (total 32ms since last sent BMF).
+  // It should no longer throttle.
+  state.AdvanceTimeBy(base::Milliseconds(16));
+  state.IssueNextBeginImplFrame();
+  EXPECT_FALSE(state.ShouldThrottleSendBeginMainFrame());
+  EXPECT_ACTION_UPDATE_STATE(
+      SchedulerStateMachine::Action::SEND_BEGIN_MAIN_FRAME);
+}
+
 }  // namespace
 }  // namespace cc

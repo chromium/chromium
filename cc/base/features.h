@@ -162,6 +162,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResolveLargeImageDecodes);
 // initialized to 0 instead of now.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
 
+// When enabled, throttles the framerate after a certain number of no-damage
+// frames in a row.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleRepeatedNoDamageFrames);
+
 // On devices with a high refresh rate, whether to throttle main (not impl)
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
