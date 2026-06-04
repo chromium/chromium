@@ -168,12 +168,20 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     assertTrue(
         menuItems[1]!.textContent.includes(
             loadTimeData.getString('menuOpenNewWindow')));
+
+    let incognito_menu_item_index = 2;
+    let new_tab_group_menu_item_index = 3;
+    if (loadTimeData.getBoolean('menuSimplification')) {
+      incognito_menu_item_index = 3;
+      new_tab_group_menu_item_index = 2;
+    }
     assertTrue(
-        menuItems[2]!.textContent.includes(
+        menuItems[incognito_menu_item_index]!.textContent.includes(
             loadTimeData.getString('menuOpenIncognito')));
     assertTrue(
-        menuItems[3]!.textContent.includes(
+        menuItems[new_tab_group_menu_item_index]!.textContent.includes(
             loadTimeData.getString('menuOpenNewTabGroup')));
+
     assertTrue(
         menuItems[4]!.textContent.includes(
             loadTimeData.getString('menuMoveToBookmarksBar')));

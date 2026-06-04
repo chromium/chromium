@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -28,11 +30,6 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksTest, MAYBE_ShoppingList) {
 }
 
 using SidePanelPowerBookmarksTest = SidePanelBookmarksTest;
-IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, ContextMenu) {
-  RunTest("side_panel/bookmarks/power_bookmarks_context_menu_test.js",
-          "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, EditDialog) {
   RunTest("side_panel/bookmarks/power_bookmarks_edit_dialog_test.js",
           "mocha.run()");
@@ -86,5 +83,30 @@ IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, BookmarksMigrateUiChanges) {
 #endif
 IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, MAYBE_TreeView) {
   RunTest("side_panel/bookmarks/power_bookmarks_app_tree_view_test.js",
+          "mocha.run()");
+}
+
+class SidePanelPowerBookmarksContextMenuTest
+    : public SidePanelBookmarksTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  SidePanelPowerBookmarksContextMenuTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kMenuSimplification);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kMenuSimplification);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SidePanelPowerBookmarksContextMenuTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SidePanelPowerBookmarksContextMenuTest, ContextMenu) {
+  RunTest("side_panel/bookmarks/power_bookmarks_context_menu_test.js",
           "mocha.run()");
 }
