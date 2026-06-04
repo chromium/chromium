@@ -569,7 +569,13 @@ TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
             kActionIndigo,
             page_actions::AnchoredMessageConfig{
                 .priority =
-                    page_actions::PageActionPriorityCategory::kContextualCue}));
+                    page_actions::PageActionPriorityCategory::kContextualCue}))
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
+          page_actions::PageActionState state;
+          state.action_id = kActionIndigo;
+          state.anchored_message_showing = true;
+          controller_->OnPageActionAnchoredMessageShown(state);
+        }));
     EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(_, _)).Times(0);
 
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -798,7 +804,13 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicForSuggestionChip) {
   {
     GURL url1("https://example.com/1");
     ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
-    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _))
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
+          page_actions::PageActionState state;
+          state.action_id = kActionIndigo;
+          state.anchored_message_showing = true;
+          controller_->OnPageActionAnchoredMessageShown(state);
+        }));
     auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
         url1, tab_interface_->GetContents());
     navigation1->Commit();
@@ -962,6 +974,48 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithSkill) {
   navigation->Commit();
 
   controller_->InvokeAction();
+}
+
+TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {
+  CreateController();
+
+  auto* service = IndigoServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(service->CanShowAnchoredMessage());
+
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.ShowAnchoredMessage"),
+            0);
+
+  // Navigate to trigger UpdateEntryPointsState and attempt to show the anchored
+  // message.
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  // Simply attempting to show the anchored message (via UpdateEntryPointsState
+  // during navigation) should NOT be enough to record the user action or
+  // update the service's state.
+  EXPECT_TRUE(service->CanShowAnchoredMessage());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.ShowAnchoredMessage"),
+            0);
+
+  // Trigger the observer event, simulating the anchored message actually
+  // showing.
+  page_actions::PageActionState state;
+  state.action_id = kActionIndigo;
+  state.anchored_message_showing = true;
+  controller_->OnPageActionAnchoredMessageShown(state);
+
+  // Verify that the service was notified and the action was recorded.
+  EXPECT_FALSE(service->CanShowAnchoredMessage());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.ShowAnchoredMessage"),
+            1);
 }
 
 }  // namespace

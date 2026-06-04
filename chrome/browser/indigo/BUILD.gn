@@ -26,6 +26,7 @@ source_set("indigo") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/page_action",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/indigo",
     "//chrome/common:mojo_bindings",

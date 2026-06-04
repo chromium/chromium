@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_service.h"
+#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
@@ -80,7 +81,8 @@ enum class OnboardingDisposition {
 // are correctly displayed.
 class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
                                    public content::TrackedElementObserver,
-                                   public IndigoToolbar::Delegate {
+                                   public IndigoToolbar::Delegate,
+                                   public page_actions::PageActionObserver {
  public:
   DECLARE_USER_DATA(IndigoPageActionController);
 
@@ -125,6 +127,10 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void OnRegenerate(IndigoToolbar* toolbar) override;
   void OnReplaceOriginalPhoto(IndigoToolbar* toolbar) override;
   void OnDeleteOriginalPhoto(IndigoToolbar* toolbar) override;
+
+  // page_actions::PageActionObserver:
+  void OnPageActionAnchoredMessageShown(
+      const page_actions::PageActionState& page_action) override;
 
   class TestApi {
    public:

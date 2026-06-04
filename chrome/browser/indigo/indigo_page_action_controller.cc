@@ -114,6 +114,7 @@ IndigoPageActionController::IndigoPageActionController(
     tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
     : tabs::ContentsObservingTabFeature(tab_interface),
+      page_actions::PageActionObserver(kActionIndigo),
       page_action_controller_(page_action_controller),
       optimization_guide_(OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(
@@ -123,6 +124,8 @@ IndigoPageActionController::IndigoPageActionController(
               tab_interface.GetContents()->GetBrowserContext()))),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
+
+  RegisterAsPageActionObserver(page_action_controller);
 
   if (optimization_guide_) {
     optimization_guide_->RegisterOptimizationTypes(
@@ -490,12 +493,6 @@ void IndigoPageActionController::UpdateEntryPointsState() {
           kActionIndigo,
           {.priority =
                page_actions::PageActionPriorityCategory::kContextualCue});
-      // TODO(b/483103108): ShowAnchoredMessage is not guaranteed to show the
-      // anchored message. Migrate the following logic to use
-      // PageActionObserver.
-      indigo_service_->AnchoredMessageShown();
-      base::RecordAction(
-          base::UserMetricsAction("Indigo.PageAction.ShowAnchoredMessage"));
     } else {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
@@ -547,6 +544,15 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
 void IndigoPageActionController::OnLocalEligibilityChanged(
     LocalEligibility state) {
   UpdateEntryPointsState();
+}
+
+void IndigoPageActionController::OnPageActionAnchoredMessageShown(
+    const page_actions::PageActionState& page_action) {
+  if (indigo_service_) {
+    indigo_service_->AnchoredMessageShown();
+  }
+  base::RecordAction(
+      base::UserMetricsAction("Indigo.PageAction.ShowAnchoredMessage"));
 }
 
 void IndigoPageActionController::OnOptimizationGuideDecision(
