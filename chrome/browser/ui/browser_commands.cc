@@ -2424,7 +2424,7 @@ void BrowserCommands::AddNewTabToGroup() {
 }
 
 void BrowserCommands::CreateNewTabGroup() {
-  NewTab();
+  NewTab(NewTabTypes::kNewTabCommand);
   browser_->GetTabStripModel()->ExecuteContextMenuCommand(
       browser_->GetTabStripModel()->active_index(),
       TabStripModel::ContextMenuCommand::CommandAddToNewGroupFromMenuItem);

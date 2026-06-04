@@ -680,7 +680,7 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       CloseWindow(browser_);
       break;
     case IDC_NEW_TAB: {
-      NewTab(browser_);
+      NewTab(browser_, NewTabTypes::kNewTabCommand);
       break;
     }
     case IDC_NEW_TAB_TO_RIGHT: {

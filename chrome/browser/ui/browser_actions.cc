@@ -916,7 +916,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           base::BindRepeating(
               [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::NewTab(bwi);
+                chrome::NewTab(bwi, NewTabTypes::kNewTabCommand);
               },
               bwi))
           .SetActionId(kActionNewTab)
