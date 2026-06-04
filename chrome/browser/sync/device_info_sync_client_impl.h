@@ -58,6 +58,7 @@ class DeviceInfoSyncClientImpl : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetGlicExperimentalTriggeringState() const override;
+  std::optional<int> GetGlicExperimentalTriggeringVersion() const override;
 
  private:
   const raw_ptr<Profile> profile_;

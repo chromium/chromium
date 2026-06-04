@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -168,7 +169,14 @@ MATCHER_P(ModelEqualsSpecifics, expected_specifics, "") {
          expected_specifics.feature_fields()
                  .glic_experimental_triggering_state() ==
              ToGlicExperimentalTriggeringStateProto(
-                 arg.glic_experimental_triggering_state());
+                 arg.glic_experimental_triggering_state()) &&
+         expected_specifics.feature_fields()
+                 .has_glic_experimental_triggering_version() ==
+             arg.glic_experimental_triggering_version().has_value() &&
+         (!arg.glic_experimental_triggering_version().has_value() ||
+          expected_specifics.feature_fields()
+                  .glic_experimental_triggering_version() ==
+              *arg.glic_experimental_triggering_version());
 }
 
 Matcher<std::unique_ptr<EntityData>> HasSpecifics(
@@ -419,6 +427,7 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
     DeviceInfo::GlicExperimentalTriggeringState
         glic_experimental_triggering_state =
             DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+    std::optional<int> glic_experimental_triggering_version = std::nullopt;
     if (device_info_restored_from_store) {
       last_fcm_registration_token =
           device_info_restored_from_store->fcm_registration_token();
@@ -426,6 +435,9 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
           device_info_restored_from_store->interested_data_types();
       glic_experimental_triggering_state =
           device_info_restored_from_store->glic_experimental_triggering_state();
+      glic_experimental_triggering_version =
+          device_info_restored_from_store
+              ->glic_experimental_triggering_version();
     }
 
     std::set<DeviceInfo::SharingFeature> sharing_enabled_features{
@@ -455,6 +467,8 @@ class TestLocalDeviceInfoProvider : public MutableLocalDeviceInfoProvider {
         MobilePromoOnDesktopPromoTypeSet{},
         /*glic_experimental_triggering_state=*/
         glic_experimental_triggering_state,
+        /*glic_experimental_triggering_version=*/
+        glic_experimental_triggering_version,
         android_os_build_fingerprint_prefix);
   }
 

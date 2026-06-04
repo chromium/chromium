@@ -78,6 +78,8 @@ class TestDeviceInfoBuilder {
   TestDeviceInfoBuilder& WithGlicExperimentalTriggeringState(
       DeviceInfo::GlicExperimentalTriggeringState
           glic_experimental_triggering_state);
+  TestDeviceInfoBuilder& WithGlicExperimentalTriggeringVersion(
+      std::optional<int> glic_experimental_triggering_version);
 
  private:
   std::string guid_ = "guid";
@@ -107,6 +109,7 @@ class TestDeviceInfoBuilder {
   DeviceInfo::GlicExperimentalTriggeringState
       glic_experimental_triggering_state_ =
           DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  std::optional<int> glic_experimental_triggering_version_;
 };
 
 }  // namespace syncer

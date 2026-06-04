@@ -138,6 +138,10 @@ message FeatureSpecificFields {
   // Tracks the experimental triggering state for Glic on the device.
   optional SyncEnums.GlicExperimentalTriggeringState
       glic_experimental_triggering_state = 7;
+
+  // Tracks the experimental triggering version of Glic on the device.
+  // Optional. If not set, the state is unavailable or unsupported.
+  optional int32 glic_experimental_triggering_version = 8;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end

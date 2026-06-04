@@ -670,6 +670,7 @@ VISIT_PROTO_FIELDS(const sync_pb::FeatureSpecificFields& proto) {
   VISIT(desktop_to_ios_promo_receiving_enabled);
   VISIT_REP(desktop_to_ios_promo_receiving_types);
   VISIT_ENUM(glic_experimental_triggering_state);
+  VISIT(glic_experimental_triggering_version);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SharingSpecificFields& proto) {

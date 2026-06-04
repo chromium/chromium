@@ -131,4 +131,7 @@ message GlicExperimentalTriggering {
 
   // An identifier to support actuation requests for the same glic instance.
   optional string context_id = 4;
+
+  // Monotonically increasing version number of the triggering protocol.
+  optional int32 glic_experimental_triggering_version = 6;
 }
