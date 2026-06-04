@@ -347,7 +347,7 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
         return
     }
 
-    if probability(0.001) {
+    if probability(0.008) {
         b.loadString("EXPERIMENTAL_lock_manager_crash")
     }
 
