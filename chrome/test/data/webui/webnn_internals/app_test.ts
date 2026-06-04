@@ -54,6 +54,12 @@ suite('WebnnInternalsUITest', function() {
       enabled: false,
     }));
     // </if>
+    // <if expr="is_win">
+    handler.setResultFor(
+        'forceOrtEnvironmentCreationForIntrospection', Promise.resolve({
+          availableExecutionProviders: testExecutionProviders,
+        }));
+    // </if>
     handler.setResultFor(
         'requestAvailableExecutionProvidersDetails', Promise.resolve({
           availableExecutionProviders: testExecutionProviders,
@@ -155,7 +161,7 @@ suite('WebnnInternalsUITest', function() {
     assertTrue(!!noContextText);
   });
 
-  function assertGridItemContent(gridItem: Element, expectedValues: string[]) {
+  function assertEpItemContent(gridItem: Element, expectedValues: string[]) {
     const elements = gridItem.querySelectorAll('div');
     assertEquals(expectedValues.length, elements.length);
 
@@ -170,9 +176,9 @@ suite('WebnnInternalsUITest', function() {
     const gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
         '.grid-container-available-eps');
     assertTrue(!!gridContainer);
-    const epItems = gridContainer.querySelectorAll('.grid-item');
+    const epItems = gridContainer.querySelectorAll('.item');
     assertEquals(2, epItems.length);
-    assertGridItemContent(epItems[0]!, [
+    assertEpItemContent(epItems[0]!, [
       'Name:',
       'Test EP 1',
       'EP Vendor:',
@@ -187,7 +193,7 @@ suite('WebnnInternalsUITest', function() {
       '1.0',
     ]);
     // Test EP 2 has no version so it should not be rendered.
-    assertGridItemContent(epItems[1]!, [
+    assertEpItemContent(epItems[1]!, [
       'Name:',
       'Test EP 2',
       'EP Vendor:',
@@ -220,9 +226,9 @@ suite('WebnnInternalsUITest', function() {
     const gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
         '.grid-container-available-eps');
     assertTrue(!!gridContainer);
-    const epItems = gridContainer.querySelectorAll('.grid-item');
+    const epItems = gridContainer.querySelectorAll('.item');
     assertEquals(1, epItems.length);
-    assertGridItemContent(epItems[0]!, [
+    assertEpItemContent(epItems[0]!, [
       'Name:',
       'Test EP 3',
       'EP Vendor:',
@@ -247,9 +253,28 @@ suite('WebnnInternalsUITest', function() {
     const gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
         '.grid-container-available-eps');
     assertFalse(!!gridContainer);
-    const noEp = infoTab.shadowRoot.querySelectorAll('.grid-item');
-    assertEquals(1, noEp.length);
+    const noep = infoTab.shadowRoot.querySelectorAll('.noep');
+    assertEquals(1, noep.length);
   });
+
+  // <if expr="is_win">
+  test('ForceOrtEnvironmentCreationForIntrospection', async function() {
+    page.onUpdateAvailableExecutionProvidersDetails([]);
+    await microtasksFinished();
+    const infoTab = app.shadowRoot.querySelector('webnn-internals-info-page');
+    assertTrue(!!infoTab);
+    let gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
+        '.grid-container-available-eps');
+    assertFalse(!!gridContainer);
+    const forceButton = infoTab.shadowRoot.querySelector('cr-button');
+    assertTrue(!!forceButton);
+    forceButton.click();
+    await microtasksFinished();
+    gridContainer = infoTab.shadowRoot.querySelector<HTMLElement>(
+        '.grid-container-available-eps');
+    assertTrue(!!gridContainer);
+  });
+  // </if>
 
   // <if expr="not webnn_enable_graph_dump">
   test('GraphRecordingNotSupported', function() {

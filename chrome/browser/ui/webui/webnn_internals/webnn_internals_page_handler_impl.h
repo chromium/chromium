@@ -49,6 +49,10 @@ class WebNNInternalsPageHandlerImpl
       RequestExistingContextsDetailsCallback callback) override;
   void RequestAvailableExecutionProvidersDetails(
       RequestAvailableExecutionProvidersDetailsCallback callback) override;
+#if BUILDFLAG(IS_WIN)
+  void ForceOrtEnvironmentCreationForIntrospection(
+      ForceOrtEnvironmentCreationForIntrospectionCallback callback) override;
+#endif
 
  private:
   mojo::Receiver<webnn_internals::mojom::PageHandler> receiver_;

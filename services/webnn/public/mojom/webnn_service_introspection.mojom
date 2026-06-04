@@ -56,4 +56,12 @@ interface WebNNServiceIntrospection {
   // not provide this information.
   GetAvailableExecutionProvidersDetails()
       => (array<WebNNExecutionProviderDetails> execution_providers);
+
+  // Force the creation of the ONNX Runtime environment for introspection.
+  // This will create the ORT environment if it hasn't been created yet,
+  // force installation of execution providers if applicable so WebNN Internals
+  // can show them. Only available on Windows since ORT is only used on Windows.
+  [EnableIf=is_win]
+  ForceOrtEnvironmentCreationForIntrospection()
+      => (array<WebNNExecutionProviderDetails> execution_providers);
 };

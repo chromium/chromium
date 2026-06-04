@@ -11,11 +11,25 @@ export function getHtml(this: WebnnInternalsInfoPageElement) {
   return html`<!--_html_template_start_-->
 <div class="cr-centered-card-container">
   <div class="card">
-    <div class="available-ep-title">Available Execution Providers</div>
+<if expr="is_win">
+    <div class="category-title">ONNX Environment Status</div>
+    <div class="item onnx-runtime-section">
+      ${this.availableExecutionProviders_.length > 0 ? html`
+        <div class="environment-created">Environment created</div>
+      ` : html`
+        <div class="environment-not-created">Environment not created</div>
+      `}
+      <cr-button @click="${this.onForceOrtEnvCreationClick_}"
+          ?disabled="${this.availableExecutionProviders_.length > 0}">
+        Force Creation
+      </cr-button>
+    </div>
+</if>
+    <div class="category-title">Available Execution Providers</div>
     ${this.availableExecutionProviders_.length > 0 ? html`
       <div class="grid-container-available-eps">
         ${this.availableExecutionProviders_.map(ep => html`
-          <div class="grid-item">
+          <div class="item">
             <div class="description">Name:</div>
             <div>${ep.name}</div>
             <div class="description">EP Vendor:</div>
@@ -34,7 +48,7 @@ export function getHtml(this: WebnnInternalsInfoPageElement) {
         `)}
       </div>
     ` : html`
-      <div class="grid-item">
+      <div class="noep item">
         No execution providers available or this platform doesn't support
         execution providers.
       </div>

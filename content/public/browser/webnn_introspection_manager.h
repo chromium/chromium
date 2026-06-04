@@ -57,6 +57,17 @@ class CONTENT_EXPORT WebNNIntrospectionManager {
           void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
           callback) = 0;
 
+#if BUILDFLAG(IS_WIN)
+  // Force the creation of the ONNX Runtime environment for introspection. This
+  // will create the ORT environment if it hasn't been created yet, force
+  // installation of execution providers if applicable so WebNN Internals can
+  // show them.
+  virtual void ForceOrtEnvironmentCreationForIntrospection(
+      base::OnceCallback<
+          void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
+          callback) = 0;
+#endif
+
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   // Enable recording of the ML graphs.
   virtual void SetMLGraphRecordEnabled(bool enabled) = 0;

@@ -70,3 +70,14 @@ void WebNNInternalsPageHandlerImpl::RequestAvailableExecutionProvidersDetails(
               std::move(callback),
               std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>()));
 }
+
+#if BUILDFLAG(IS_WIN)
+void WebNNInternalsPageHandlerImpl::ForceOrtEnvironmentCreationForIntrospection(
+    ForceOrtEnvironmentCreationForIntrospectionCallback callback) {
+  content::WebNNIntrospectionManager::GetInstance()
+      ->ForceOrtEnvironmentCreationForIntrospection(
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              std::move(callback),
+              std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>()));
+}
+#endif

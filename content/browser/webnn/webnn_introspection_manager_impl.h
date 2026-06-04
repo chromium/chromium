@@ -53,6 +53,13 @@ class WebNNIntrospectionManagerImpl
           void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
           callback) override;
 
+#if BUILDFLAG(IS_WIN)
+  void ForceOrtEnvironmentCreationForIntrospection(
+      base::OnceCallback<
+          void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
+          callback) override;
+#endif
+
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   void SetMLGraphRecordEnabled(bool enabled) override;
   bool IsMLGraphRecordEnabled() const override;

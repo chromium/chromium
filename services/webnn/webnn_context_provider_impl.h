@@ -249,6 +249,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       bool is_incognito,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
       base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info);
+
+  void DidEnsureWebNNExecutionProvidersReadyForIntrospection(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      ForceOrtEnvironmentCreationForIntrospectionCallback callback,
+      base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info);
+
+  void OnOrtEnvCreatedForIntrospection(
+      ForceOrtEnvironmentCreationForIntrospectionCallback callback,
+      base::expected<scoped_refptr<ort::Environment>, std::string>
+          env_creation_results);
+
+  void ForceOrtEnvironmentCreationForIntrospection(
+      ForceOrtEnvironmentCreationForIntrospectionCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
 
   const gpu::GpuFeatureInfo gpu_feature_info_;

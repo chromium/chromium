@@ -199,4 +199,19 @@ void WebNNIntrospectionManagerImpl::
       std::move(callback));
 }
 
+#if BUILDFLAG(IS_WIN)
+void WebNNIntrospectionManagerImpl::ForceOrtEnvironmentCreationForIntrospection(
+    base::OnceCallback<
+        void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
+        callback) {
+  EnsureIntrospectionServiceConnection();
+  if (!introspection_service_remote_.is_bound()) {
+    std::move(callback).Run({});
+    return;
+  }
+  introspection_service_remote_->ForceOrtEnvironmentCreationForIntrospection(
+      std::move(callback));
+}
+#endif
+
 }  // namespace content

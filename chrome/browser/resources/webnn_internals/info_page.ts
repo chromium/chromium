@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="is_win">
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
+// </if>
+
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './info_page.css.js';
@@ -54,6 +59,15 @@ export class WebnnInternalsInfoPageElement extends CrLitElement {
         id => this.proxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
   }
+
+  // <if expr="is_win">
+  protected async onForceOrtEnvCreationClick_() {
+    this.onUpdateAvailableExecutionProvidersDetails_(
+        (await this.proxy_.handler
+             .forceOrtEnvironmentCreationForIntrospection())
+            .availableExecutionProviders);
+  }
+  // </if>
 
   private onUpdateAvailableExecutionProvidersDetails_(
       availableExecutionProviders: WebNNExecutionProviderDetails[]) {

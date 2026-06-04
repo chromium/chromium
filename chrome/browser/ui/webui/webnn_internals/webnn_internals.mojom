@@ -25,6 +25,15 @@ interface PageHandler {
   RequestAvailableExecutionProvidersDetails()
       => (array<webnn.mojom.WebNNExecutionProviderDetails>
             available_execution_providers);
+
+  // Force the creation of the ONNX Runtime environment for introspection.
+  // This will create the ORT environment if it hasn't been created yet, force
+  // installation of execution providers if applicable so WebNN Internals
+  // can show them.
+  [EnableIf=is_win]
+  ForceOrtEnvironmentCreationForIntrospection()
+    => (array<webnn.mojom.WebNNExecutionProviderDetails>
+            available_execution_providers);
 };
 
 // Interface for the browser to communicate with the WebUI page.

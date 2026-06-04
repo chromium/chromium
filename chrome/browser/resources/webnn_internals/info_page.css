@@ -19,15 +19,34 @@
   width: 100%;
 }
 
-.grid-item {
-  background-color: var(--cr-card-background-color);
+.item {
+  background-color: var(--cr-secondary-background-color);
   border-radius: var(--cr-card-border-radius);
   box-shadow: var(--cr-card-shadow);
-  padding: 15px;
   color: var(--cr-primary-text-color);
+  padding: 15px;
 }
 
-.available-ep-title {
+<if expr="is_win">
+.onnx-runtime-section {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.environment-created {
+  color: var(--google-green-600);
+}
+
+.environment-not-created {
+  color: var(--google-red-600);
+}
+</if>
+
+.category-title {
   color: var(--cr-primary-text-color);
   font-size: 108%;
   margin-bottom: 10px;
@@ -35,4 +54,8 @@
 
 .description {
   font-weight: bold;
+}
+
+.noep {
+  margin-bottom: 10px;
 }

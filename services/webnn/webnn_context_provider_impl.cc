@@ -780,6 +780,58 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
           std::move(remote), std::move(callback), is_incognito,
           std::move(memory_tracker)));
 }
+
+void WebNNContextProviderImpl::ForceOrtEnvironmentCreationForIntrospection(
+    ForceOrtEnvironmentCreationForIntrospectionCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  std::optional<scoped_refptr<ort::Environment>> environment =
+      ort::Environment::GetInstance();
+  // If the ORT environment is already created, there is no need to force its
+  // creation.
+  if (environment.has_value()) {
+    std::move(callback).Run(environment.value()->GetAvailableEpDetails());
+    return;
+  }
+
+  if (base::win::GetVersion() < kWinAppRuntimeSupportedMinVersion) {
+    DidEnsureWebNNExecutionProvidersReadyForIntrospection(
+        main_thread_task_runner_, std::move(callback),
+        /*ep_package_info=*/{});
+  } else {
+    gpu_host_->EnsureWebNNExecutionProvidersReady(base::BindOnce(
+        &WebNNContextProviderImpl::
+            DidEnsureWebNNExecutionProvidersReadyForIntrospection,
+        AsWeakPtr(), main_thread_task_runner_, std::move(callback)));
+  }
+}
+
+void WebNNContextProviderImpl::
+    DidEnsureWebNNExecutionProvidersReadyForIntrospection(
+        scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+        ForceOrtEnvironmentCreationForIntrospectionCallback callback,
+        base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info) {
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&ort::Environment::GetOrCreateInstance,
+                     std::move(ep_package_info)),
+      base::BindOnce(&WebNNContextProviderImpl::OnOrtEnvCreatedForIntrospection,
+                     AsWeakPtr(), std::move(callback)));
+}
+
+void WebNNContextProviderImpl::OnOrtEnvCreatedForIntrospection(
+    ForceOrtEnvironmentCreationForIntrospectionCallback callback,
+    base::expected<scoped_refptr<ort::Environment>, std::string>
+        env_creation_results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  std::optional<scoped_refptr<ort::Environment>> environment =
+      ort::Environment::GetInstance();
+  if (!environment.has_value()) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::move(callback).Run(environment.value()->GetAvailableEpDetails());
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace webnn
