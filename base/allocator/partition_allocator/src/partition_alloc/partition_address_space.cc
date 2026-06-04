@@ -275,33 +275,20 @@ void PartitionAddressSpace::InitZeroSegment() {
   const WellKnownReadOnlyRegions well_known = GetWellKnownReadOnlyRegions();
   PA_CHECK(well_known.count <= WellKnownReadOnlyRegions::kMaxRegions);
 
-  // Track allocated regions to free them in case of any reservation failure.
-  std::array<AddressRange, WellKnownReadOnlyRegions::kMaxRegions + 1>
-      allocated_regions = {};
-  size_t num_allocated_regions = 0;
-
-  // Reserves a region given by `address` and `size`. Cleans up all previously
-  // reserved regions in case this fails. This allows for returning early.
-  const auto reserve_region_or_cleanup =
-      [&allocated_regions, &num_allocated_regions](uintptr_t address,
-                                                   size_t size) -> bool {
+  // Reserves a region given by `address` and `size`. Returns false in case of
+  // failure. Previously reserved regions are intentionally leaked allowing for
+  // partial user space segment.
+  const auto reserve_region = [](uintptr_t address, size_t size) -> bool {
     const uintptr_t allocated_base =
         AllocPages(address, size, PageAllocationGranularity(),
                    PageAccessibilityConfiguration(
                        PageAccessibilityConfiguration::kInaccessible),
                    PageTag::kPartitionAlloc);
     if (allocated_base == address) {
-      PA_CHECK(num_allocated_regions < allocated_regions.size());
-      allocated_regions[num_allocated_regions] = {allocated_base, size};
-      num_allocated_regions++;
       return true;
     }
     if (allocated_base) {
       FreePages(allocated_base, size);
-    }
-    // Cleanup previously allocated regions in case we failed.
-    for (size_t i = 0; i < num_allocated_regions; ++i) {
-      FreePages(allocated_regions[i].address, allocated_regions[i].size);
     }
     return false;
   };
@@ -319,7 +306,9 @@ void PartitionAddressSpace::InitZeroSegment() {
           base::bits::AlignDown(region.address, PageAllocationGranularity());
       if (gap_end > gap_start) {
         const size_t gap_size = gap_end - gap_start;
-        if (!reserve_region_or_cleanup(gap_start, gap_size)) {
+        if (!reserve_region(gap_start, gap_size)) {
+          zero_segment_size_ =
+              current_addr;  // Keep the contiguous region we have so far.
           return;
         }
       }
@@ -336,7 +325,9 @@ void PartitionAddressSpace::InitZeroSegment() {
         min_zero_segment_size, PageAllocationGranularity());
     if (gap_end > gap_start) {
       const size_t gap_size = gap_end - gap_start;
-      if (!reserve_region_or_cleanup(gap_start, gap_size)) {
+      if (!reserve_region(gap_start, gap_size)) {
+        zero_segment_size_ =
+            current_addr;  // Keep the contiguous region we have so far.
         return;
       }
     }
