@@ -110,10 +110,6 @@ void UpdatePlaceholderDispatcher(
     base::WeakPtr<CanvasResourceDispatcher> dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     DOMNodeId placeholder_canvas_id) {
-  if (placeholder_canvas_id == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
-      placeholder_canvas_id == kInvalidDOMNodeId) {
-    return;
-  }
   OffscreenCanvasPlaceholder* placeholder_canvas =
       OffscreenCanvasPlaceholder::GetPlaceholderCanvasById(
           placeholder_canvas_id);
@@ -444,6 +440,11 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
   // was created from a SharedWorker.
   if (!agent_group_scheduler_compositor_task_runner_)
     return;
+
+  if (placeholder_canvas_id == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
+      placeholder_canvas_id == kInvalidDOMNodeId) {
+    return;
+  }
 
   // If the offscreencanvas is in the same thread as the canvas, we will update
   // the canvas resource dispatcher directly. So Offscreen Canvas can behave in
