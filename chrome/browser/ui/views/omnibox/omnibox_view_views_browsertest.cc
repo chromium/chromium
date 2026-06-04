@@ -73,7 +73,6 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -1008,8 +1007,6 @@ class OmniboxViewViewsUIATest : public OmniboxViewViewsTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
-
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
 };
 
@@ -1211,7 +1208,6 @@ class OmniboxViewViewsIMETest : public OmniboxViewViewsTest {
   OmniboxMockInputMethod* GetInputMethod() const { return input_method_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
   raw_ptr<OmniboxMockInputMethod, AcrossTasksDanglingUntriaged> input_method_ =
       nullptr;
 };

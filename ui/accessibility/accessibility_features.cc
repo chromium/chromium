@@ -211,8 +211,6 @@ bool IsIChromeAccessibleEnabled() {
 
 BASE_FEATURE(kUiaDisconnectRootProviders, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUiaProvider, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUiaEventOptimization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUiaMathMlSupport, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -5,10 +5,8 @@
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
@@ -72,8 +70,6 @@ void BrowserAccessibilityManagerWinTest::SetUp() {
 }
 
 TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
-  base::test::ScopedFeatureList scoped_feature_list(::features::kUiaProvider);
-
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
@@ -121,8 +117,6 @@ TEST_F(BrowserAccessibilityManagerWinTest, DynamicallyAddedIFrame) {
 }
 
 TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
-  base::test::ScopedFeatureList scoped_feature_list(::features::kUiaProvider);
-
   AXNodeData child_tree_root;
   child_tree_root.id = 1;
   child_tree_root.role = ax::mojom::Role::kRootWebArea;
@@ -183,10 +177,6 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
 // incorrectly suppress events. See crbug.com/40672441.
 TEST_F(BrowserAccessibilityManagerWinTest,
        AriaNotificationSkipsListenerCheckForNonWebContent) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {::features::kUiaProvider, ::features::kUiaEventOptimization}, {});
-
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;

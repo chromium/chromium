@@ -61,7 +61,6 @@
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
@@ -1166,8 +1165,6 @@ TEST_F(OmniboxViewViewsTest, SchemeStrikethrough) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 TEST_F(OmniboxViewViewsTest,
        AccessibleTextOffsetsUpdatesAfterElideBehaviorChange) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   EnableDeferredLoadingAccessibility();
   CHECK(omnibox_view()->GetViewAccessibility().is_initialized());
 

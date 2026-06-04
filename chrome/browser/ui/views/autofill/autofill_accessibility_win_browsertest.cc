@@ -4,7 +4,6 @@
 
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_variant.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,7 +27,6 @@
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
@@ -110,7 +108,6 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   std::optional<content::ScopedAccessibilityModeOverride>

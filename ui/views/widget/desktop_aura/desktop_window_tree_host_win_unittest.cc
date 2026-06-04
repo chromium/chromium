@@ -10,9 +10,7 @@
 
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
@@ -231,8 +229,6 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, CaretDoesNotLeak) {
 // This test validates that we do not leak the root accessibility object when
 // handing it out (UIA mode).
 TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, UiaRootDoesNotLeak) {
-  base::test::ScopedFeatureList scoped_feature_list(::features::kUiaProvider);
-
   {
     Widget widget;
     Widget::InitParams params =

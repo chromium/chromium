@@ -18,10 +18,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
@@ -1387,8 +1385,6 @@ TEST_F(LabelTest, WordOffsets) {
   const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
   MockAXModeAdded();
   ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   const std::u16string text = u"This is a string";
   label()->SetText(text);
   label()->SizeToPreferredSize();
@@ -1408,8 +1404,6 @@ TEST_F(LabelTest, WordOffsets) {
 TEST_F(LabelTest, WordOffsetsAXNotOn) {
   const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
   ASSERT_FALSE(label()->GetViewAccessibility().is_initialized());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   const std::u16string text = u"This is a string";
   label()->SetText(text);
   label()->SizeToPreferredSize();
@@ -1459,9 +1453,6 @@ TEST_F(LabelTest, AccessibleGraphemeOffsets) {
       {u"ab\U0001D11Ecd", {4, 10, 17, 23, 29, 37}},
   });
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
-
   for (size_t i = 0; i < std::size(cases); i++) {
     ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
@@ -1481,8 +1472,6 @@ TEST_F(LabelTest, AccessibleGraphemeOffsetsObscured) {
   const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
   MockAXModeAdded();
   ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   const std::u16string text = u"password";
   label()->SetText(text);
   label()->SizeToPreferredSize();
@@ -1502,8 +1491,6 @@ TEST_F(LabelTest, AccessibleGraphemeOffsetsElided) {
   const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
   MockAXModeAdded();
   ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   const std::u16string text = u"This is a string";
 

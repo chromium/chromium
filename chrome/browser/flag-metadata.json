@@ -9257,14 +9257,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ui-automation-provider",
-    "owners": [
-      "benjamin.beaudry@microsoft.com",
-      "//ui/accessibility/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "ui-debug-tools",
     "owners": [ "//ui/views/OWNERS" ],
     "expiry_milestone": -1

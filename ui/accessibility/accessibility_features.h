@@ -177,10 +177,6 @@ AX_BASE_EXPORT bool IsIChromeAccessibleEnabled();
 // HWND.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaDisconnectRootProviders);
 
-// Use the browser's UIA provider when requested by
-// an accessibility client.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);
-
 // Optimizes event firing by only emitting events when at least one listener is
 // subscribed. Killswitch to turn it off in case this work has negative
 // side-effects on assistive technologies.

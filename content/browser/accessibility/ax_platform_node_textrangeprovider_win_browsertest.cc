@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -20,7 +19,6 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -427,8 +425,6 @@ class AXPlatformNodeTextRangeProviderWinBrowserTest
     EXPECT_EQ(0u, index);
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
 };
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,

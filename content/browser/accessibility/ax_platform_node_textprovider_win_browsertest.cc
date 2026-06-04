@@ -9,7 +9,6 @@
 
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -23,7 +22,6 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_com_win.h"
@@ -139,7 +137,6 @@ class AXPlatformNodeTextProviderWinBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
   std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 

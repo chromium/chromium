@@ -11260,12 +11260,6 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kDiscountAutofillDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(commerce::kDiscountAutofill)},
 
-#if BUILDFLAG(IS_WIN)
-    {"ui-automation-provider", flag_descriptions::kUiaProviderName,
-     flag_descriptions::kUiaProviderDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kUiaProvider)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"touch-to-search-callout", flag_descriptions::kTouchToSearchCalloutName,
      flag_descriptions::kTouchToSearchCalloutDescription, kOsAndroid,

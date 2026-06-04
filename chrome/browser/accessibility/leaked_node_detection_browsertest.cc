@@ -38,8 +38,8 @@ class LeakedNodeDetectionBrowsertest
 };
 
 LeakedNodeDetectionBrowsertest::LeakedNodeDetectionBrowsertest() {
-  scoped_feature_list_.InitWithFeatures(
-      {features::kUiaProvider, features::kUiaDisconnectRootProviders}, {});
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kUiaDisconnectRootProviders);
 }
 
 }  // namespace

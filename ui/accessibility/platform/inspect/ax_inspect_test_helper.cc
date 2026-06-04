@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
@@ -106,11 +105,7 @@ constexpr TypeInfo kTypeInfos[] = {
         {
             "@UIA-WIN-",
             FILE_PATH_LITERAL("-uia-win"),
-            [](base::test::ScopedFeatureList& scoped_feature_list) {
-#if BUILDFLAG(IS_WIN)
-              scoped_feature_list.InitAndEnableFeature(features::kUiaProvider);
-#endif
-            },
+            [](base::test::ScopedFeatureList&) {},
         },
     },
     {

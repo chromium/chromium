@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -14,7 +13,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -22,22 +20,13 @@
 
 namespace content {
 
-struct AccessibilityLinkageTestParams {
-  bool is_uia_enabled;
-  bool is_legacy_window_disabled;
-} const kTestParameters[] = {{false, false},
-                             {false, true},
-                             {true, false},
-                             {true, true}};
+constexpr bool kTestParameters[] = {false, true};
 
 class AccessibilityTreeLinkageWinBrowserTest
     : public ContentBrowserTest,
-      public ::testing::WithParamInterface<AccessibilityLinkageTestParams> {
+      public ::testing::WithParamInterface<bool> {
  public:
   AccessibilityTreeLinkageWinBrowserTest() {
-    if (GetParam().is_uia_enabled) {
-      scoped_feature_list_.InitAndEnableFeature(::features::kUiaProvider);
-    }
     dummy_ax_platform_node_ = ui::AXPlatformNode::Create(dummy_ax_node_);
   }
 
@@ -47,8 +36,9 @@ class AccessibilityTreeLinkageWinBrowserTest
       const AccessibilityTreeLinkageWinBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (GetParam().is_legacy_window_disabled)
+    if (GetParam()) {
       command_line->AppendSwitch(::switches::kDisableLegacyIntermediateWindow);
+    }
   }
 
   RenderWidgetHostViewAura* GetView() {
@@ -61,9 +51,6 @@ class AccessibilityTreeLinkageWinBrowserTest
   LegacyRenderWidgetHostHWND* GetLegacyRenderWidgetHostHWND() {
     return GetView()->legacy_render_widget_host_HWND_;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
   ui::AXPlatformNodeDelegate dummy_ax_node_;
@@ -79,9 +66,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {
       aura::client::kParentNativeViewAccessibleKey,
       dummy_ax_platform_node_->GetNativeViewAccessible());
 
-  if (GetParam().is_legacy_window_disabled)
+  if (GetParam()) {
     ASSERT_EQ(GetLegacyRenderWidgetHostHWND(), nullptr);
-  else
+  } else
     ASSERT_NE(GetLegacyRenderWidgetHostHWND(), nullptr);
 
   // Used by WebView to splice in the web content root accessible as a child of
@@ -105,7 +92,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {
   // root accessible
   gfx::NativeViewAccessible accessibility_native_view_accessible =
       GetView()->AccessibilityGetNativeViewAccessible();
-  if (GetParam().is_legacy_window_disabled) {
+  if (GetParam()) {
     EXPECT_EQ(accessibility_native_view_accessible,
               dummy_ax_platform_node_->GetNativeViewAccessible());
   } else {

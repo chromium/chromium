@@ -5,7 +5,6 @@
 #include "ui/accessibility/platform/ax_platform.h"
 
 #include "base/check_op.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -124,8 +123,7 @@ void AXPlatform::DisableActiveUiaProvider() {
 
 bool AXPlatform::IsUiaProviderEnabled() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return uia_provider_enabled_ &&
-         base::FeatureList::IsEnabled(features::kUiaProvider);
+  return uia_provider_enabled_;
 }
 
 void AXPlatform::SetUiaClientServiced(bool uia_client_serviced) {

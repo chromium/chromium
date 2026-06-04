@@ -212,10 +212,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   ASSERT_EQ(iframe_screen_bounds.y(), bounds.y());
 }
 
-class AXPlatformNodeWinUIABrowserTest : public AXPlatformNodeWinBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
-};
+class AXPlatformNodeWinUIABrowserTest : public AXPlatformNodeWinBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
                        UIAGetPropertyValueFlowsFromNone) {
@@ -868,8 +865,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest, IFrameTraversal) {
 class AXPlatformNodeWinMathMLBrowserTest : public AXPlatformNodeWinBrowserTest {
  public:
   AXPlatformNodeWinMathMLBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {::features::kUiaProvider, ::features::kUiaMathMlSupport}, {});
+    scoped_feature_list_.InitAndEnableFeature(::features::kUiaMathMlSupport);
   }
 
  private:

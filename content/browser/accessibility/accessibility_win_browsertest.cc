@@ -27,7 +27,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
@@ -60,7 +59,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "third_party/isimpledom/ISimpleDOMNode.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
@@ -5683,10 +5681,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   win_event_waiter.Wait();
 }
 
-class AccessibilityWinUIABrowserTest : public AccessibilityWinBrowserTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};
-};
+class AccessibilityWinUIABrowserTest : public AccessibilityWinBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
                        UIAClientDisconnectedHistogram) {
@@ -6341,10 +6336,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
 }
 
 class AccessibilityWinUIASelectivelyEnabledBrowserTest
-    : public AccessibilityWinUIABrowserTest {
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+    : public AccessibilityWinUIABrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
                        RequestingTopLevelElementEnablesWebAccessibility) {
@@ -6841,36 +6833,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   LONG role_button_2 = 0;
   ASSERT_HRESULT_SUCCEEDED(ia2_button_2->role(&role_button_2));
   EXPECT_EQ(role_button_2, ROLE_SYSTEM_PUSHBUTTON);
-}
-
-class AccessibilityWinAriaNotifyBrowserTest
-    : public AccessibilityWinBrowserTest {
- private:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AccessibilityWinBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "AriaNotify");
-    scoped_feature_list_.InitAndDisableFeature(features::kUiaProvider);
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// IA2 Fallback for Aria-Notify.
-IN_PROC_BROWSER_TEST_F(AccessibilityWinAriaNotifyBrowserTest,
-                       AriaNotification) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <p>Hello world.</p>
-      <p>Another paragraph.</p>
-      <p id="goodbye">Goodbye world.</p>)HTML");
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  ui::BrowserAccessibilityManager* manager =
-      web_contents->GetRootBrowserAccessibilityManager();
-  NativeWinEventWaiter win_event_waiter(
-      manager, "EVENT_OBJECT_LIVEREGIONCHANGED on role=ROLE_SYSTEM_TEXT*");
-  ExecuteScript(
-      u"document.getElementById('goodbye').ariaNotify('hello again');");
-  win_event_waiter.Wait();
 }
 
 }  // namespace content

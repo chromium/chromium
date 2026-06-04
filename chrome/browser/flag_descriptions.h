@@ -4563,10 +4563,6 @@ inline constexpr char kForceHighPerformanceGPUDescription[] =
     "Forces use of high performance GPU if available. Warning: this flag may "
     "increase power consumption leading to shorter battery time.";
 
-inline constexpr char kUiaProviderName[] = "UI Automation";
-inline constexpr char kUiaProviderDescription[] =
-    "Enables native support of the UI Automation provider.";
-
 inline constexpr char kUiPartialSwapName[] = "Partial swap";
 inline constexpr char kUiPartialSwapDescription[] =
     "Sets partial swap behavior.";
