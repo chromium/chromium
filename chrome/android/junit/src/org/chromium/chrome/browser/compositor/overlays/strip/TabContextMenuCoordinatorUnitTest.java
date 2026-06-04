@@ -484,7 +484,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 14, modelList.size());
 
         // List item 1
         assertEquals(
@@ -544,29 +544,35 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(
-                R.id.add_tab_to_reading_list_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(7).type);
 
         // List item 9
         assertEquals(
-                R.id.send_to_your_devices_menu_id,
+                R.id.add_tab_to_reading_list_menu_id,
                 modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 10
-        assertEquals(R.string.close, modelList.get(9).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.send_to_your_devices_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
-        assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(10).type);
 
         // List item 12
+        assertEquals(R.string.close, modelList.get(11).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 13
+        assertEquals(
+                R.id.close_other_tabs_menu_id,
+                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 14
         assertEquals(
                 R.id.close_tabs_to_the_right_menu_id,
-                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(13).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -593,7 +599,7 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, List.of(TAB_ID, NON_URL_TAB_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
 
         // List item 1
         assertEquals(
@@ -653,24 +659,27 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(
-                R.id.add_tab_to_reading_list_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(7).type);
 
         // List item 9
-        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.add_tab_to_reading_list_menu_id,
+                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 10
+        assertEquals(R.string.close, modelList.get(9).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 12
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -696,7 +705,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 14, modelList.size());
 
         // List item 1
         assertEquals(
@@ -736,29 +745,35 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(
-                R.id.add_tab_to_reading_list_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(7).type);
 
         // List item 9
         assertEquals(
-                R.id.send_to_your_devices_menu_id,
+                R.id.add_tab_to_reading_list_menu_id,
                 modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 10
-        assertEquals(R.string.close, modelList.get(9).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.send_to_your_devices_menu_id,
+                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
-        assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(10).type);
 
         // List item 12
+        assertEquals(R.string.close, modelList.get(11).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(
+                R.id.close_tab, modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 13
+        assertEquals(
+                R.id.close_other_tabs_menu_id,
+                modelList.get(12).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 14
         assertEquals(
                 R.id.close_tabs_to_the_right_menu_id,
-                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(13).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -789,7 +804,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 12, modelList.size());
 
         // List item 1
         assertEquals(
@@ -829,24 +844,27 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(
-                R.id.add_tab_to_reading_list_menu_id,
-                modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(DIVIDER, modelList.get(7).type);
 
         // List item 9
-        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.add_tab_to_reading_list_menu_id,
+                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 10
+        assertEquals(R.string.close, modelList.get(9).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 11
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 12
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(11).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -872,7 +890,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
 
         // List item 1
         assertEquals(
@@ -940,25 +958,28 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(DIVIDER, modelList.get(7).type);
+
+        // List item 9
+        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
                     + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
                     + " incognito",
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                modelList.get(7).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-
-        // List item 9
-        assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(8).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 10
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 11
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     @Test
@@ -989,7 +1010,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         TAB_OUTSIDE_OF_GROUP_ID,
                         List.of(TAB_OUTSIDE_OF_GROUP_ID, TAB_OUTSIDE_OF_GROUP_ID)));
 
-        assertEquals("Number of items in the list menu is incorrect", 10, modelList.size());
+        assertEquals("Number of items in the list menu is incorrect", 11, modelList.size());
 
         // List item 1
         assertEquals(
@@ -1051,25 +1072,28 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(6).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
         // List item 8
-        assertEquals(R.string.close, modelList.get(7).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(DIVIDER, modelList.get(7).type);
+
+        // List item 9
+        assertEquals(R.string.close, modelList.get(8).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
-                R.id.close_tab, modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                R.id.close_tab, modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(
                 "Expected text appearance ID to be set to"
                     + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light in"
                     + " incognito",
                 R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
-                modelList.get(7).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-
-        // List item 9
-        assertEquals(
-                R.id.close_other_tabs_menu_id,
-                modelList.get(8).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                modelList.get(8).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 10
         assertEquals(
-                R.id.close_tabs_to_the_right_menu_id,
+                R.id.close_other_tabs_menu_id,
                 modelList.get(9).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // List item 11
+        assertEquals(
+                R.id.close_tabs_to_the_right_menu_id,
+                modelList.get(10).model.get(ListMenuItemProperties.MENU_ITEM_ID));
     }
 
     // --------------------------------------------------------------//
@@ -2723,14 +2747,13 @@ public class TabContextMenuCoordinatorUnitTest {
         mTabContextMenuCoordinator.configureMenuItemsForTesting(
                 modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
 
-        assertEquals(ListItemType.DIVIDER, modelList.get(9).type);
-        ListItem verticalTabsItem = modelList.get(10);
+        ListItem verticalTabsItem = modelList.get(11);
         assertEquals(ListItemType.MENU_ITEM, verticalTabsItem.type);
         assertEquals(
                 R.id.show_tabs_vertically_menu_id,
                 verticalTabsItem.model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(R.string.show_tabs_vertically, verticalTabsItem.model.get(TITLE_ID));
-        assertEquals(ListItemType.DIVIDER, modelList.get(11).type);
+        assertEquals(ListItemType.DIVIDER, modelList.get(12).type);
     }
 
     // --------------------------------------------------------------//

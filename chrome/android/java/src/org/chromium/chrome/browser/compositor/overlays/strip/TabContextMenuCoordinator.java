@@ -94,6 +94,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -708,12 +709,16 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(buildMenuDivider(isIncognito));
+        }
         if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
             if (shouldShowSendToYourDevicesItem(tabs.get(0))) {
                 itemList.add(createSendToYourDevicesItem());
+                itemList.add(buildMenuDivider(isIncognito));
             }
         }
         addVerticalTabsItems(itemList, isIncognito);
@@ -751,7 +756,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
-
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
+            itemList.add(buildMenuDivider(isIncognito));
+        }
         if (ChromeFeatureList.sAndroidContextMenuDisabledMenuItems.isEnabled() && !isIncognito) {
             itemList.add(createAddTabToReadingListItem(anchorInfo));
         }
@@ -1011,7 +1018,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     private void addVerticalTabsItems(ModelList itemList, boolean isIncognito) {
         if (VerticalTabUtils.shouldShowVerticalTabsEntryPoint(mActivity)) {
-            itemList.add(buildMenuDivider(isIncognito));
+            if (itemList.isEmpty()
+                    || itemList.get(itemList.size() - 1).type != ListItemType.DIVIDER) {
+                itemList.add(buildMenuDivider(isIncognito));
+            }
             itemList.add(
                     buildListItem(
                             R.string.show_tabs_vertically,
