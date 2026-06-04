@@ -25,8 +25,9 @@
 #include "components/crx_file/crx_file.h"
 #include "components/crx_file/id_util.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/secure_util.h"
-#include "crypto/signature_verifier.h"
+#include "crypto/sign.h"
 
 namespace crx_file {
 
@@ -49,8 +50,7 @@ constexpr KeyHash kPublisherTestKeyHash = {
 constexpr auto kEocd = std::to_array<uint8_t>({'P', 'K', 0x05, 0x06});
 constexpr auto kEocd64 = std::to_array<uint8_t>({'P', 'K', 0x06, 0x07});
 
-using VerifierCollection =
-    std::vector<std::unique_ptr<crypto::SignatureVerifier>>;
+using VerifierCollection = std::vector<std::unique_ptr<crypto::sign::Verifier>>;
 using RepeatedProof = ::google::protobuf::RepeatedPtrField<AsymmetricKeyProof>;
 
 std::optional<size_t> ReadAndHashBuffer(base::span<uint8_t> buffer,
@@ -83,11 +83,11 @@ bool ReadHashAndVerifyArchive(base::File* file,
   while ((len = ReadAndHashBuffer(buffer, file, hash)).value_or(0) > 0) {
     auto to_verify = base::span<const uint8_t>(buffer).first(*len);
     for (auto& verifier : verifiers) {
-      verifier->VerifyUpdate(to_verify);
+      verifier->Update(to_verify);
     }
   }
   for (auto& verifier : verifiers) {
-    if (!verifier->VerifyFinal()) {
+    if (!verifier->Finish()) {
       return false;
     }
   }
@@ -171,11 +171,10 @@ VerifierResult VerifyCrx3(
   VerifierCollection verifiers;
   verifiers.reserve(header.sha256_with_rsa_size() +
                     header.sha256_with_ecdsa_size());
-  const std::vector<
-      std::pair<ProofFetcher, crypto::SignatureVerifier::SignatureAlgorithm>>
+  const std::vector<std::pair<ProofFetcher, crypto::sign::SignatureKind>>
       proof_types = {
-          std::make_pair(rsa, crypto::SignatureVerifier::RSA_PKCS1_SHA256),
-          std::make_pair(ecdsa, crypto::SignatureVerifier::ECDSA_SHA256)};
+          std::make_pair(rsa, crypto::sign::SignatureKind::RSA_PKCS1_SHA256),
+          std::make_pair(ecdsa, crypto::sign::SignatureKind::ECDSA_SHA256)};
 
   bool found_publisher_key = false;
 
@@ -195,14 +194,29 @@ VerifierResult VerifyCrx3(
       found_publisher_key =
           found_publisher_key || key_hash == kPublisherKeyHash ||
           (accept_publisher_test_key && key_hash == kPublisherTestKeyHash);
-      auto v = std::make_unique<crypto::SignatureVerifier>();
-      if (!v->VerifyInit(proof_type.second, base::as_byte_span(sig),
-                         base::as_byte_span(key))) {
+      std::optional<crypto::keypair::PublicKey> pub_key =
+          crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(
+              base::as_byte_span(key));
+      if (!pub_key) {
         return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
       }
-      v->VerifyUpdate(base::as_byte_span(kSignatureContext));
-      v->VerifyUpdate(header_size_octets);
-      v->VerifyUpdate(base::as_byte_span(signed_header_data_str));
+      if (proof_type.second == crypto::sign::SignatureKind::RSA_PKCS1_SHA256) {
+        if (!pub_key->IsRsa()) {
+          return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
+        }
+      } else if (proof_type.second ==
+                 crypto::sign::SignatureKind::ECDSA_SHA256) {
+        if (!pub_key->IsEc()) {
+          return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
+        }
+      } else {
+        return VerifierResult::ERROR_SIGNATURE_INITIALIZATION_FAILED;
+      }
+      auto v = std::make_unique<crypto::sign::Verifier>(
+          proof_type.second, std::move(*pub_key), base::as_byte_span(sig));
+      v->Update(base::as_byte_span(kSignatureContext));
+      v->Update(header_size_octets);
+      v->Update(base::as_byte_span(signed_header_data_str));
       verifiers.push_back(std::move(v));
     }
   }
