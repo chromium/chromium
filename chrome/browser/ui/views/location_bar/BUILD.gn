@@ -149,6 +149,7 @@ source_set("impl") {
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/cr_components/composebox",
+      "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications:features",
       "//components/autofill/core/common:features",

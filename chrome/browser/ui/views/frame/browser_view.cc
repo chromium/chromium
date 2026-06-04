@@ -233,6 +233,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -3876,7 +3877,8 @@ ui::ImageModel BrowserView::GetWindowIcon() {
 #endif
 
   if (!browser_->is_type_normal()) {
-    return ui::ImageModel::FromImage(browser_->GetCurrentPageIcon());
+    return ui::ImageModel::FromImage(
+        WindowMetadataController::From(browser_.get())->GetCurrentPageIcon());
   }
 
   return ui::ImageModel();

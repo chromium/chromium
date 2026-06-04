@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -916,7 +917,9 @@ void AppBrowserController::OnTabRemoved(content::WebContents* contents) {
 
 ui::ImageModel AppBrowserController::GetFallbackAppIcon() const {
   TRACE_EVENT0("ui", "TaskManagerView::GetFallbackAppIcon");
-  gfx::ImageSkia page_icon = browser()->GetCurrentPageIcon().AsImageSkia();
+  gfx::ImageSkia page_icon = WindowMetadataController::From(browser_)
+                                 ->GetCurrentPageIcon()
+                                 .AsImageSkia();
   if (!page_icon.isNull()) {
 #if BUILDFLAG(IS_CHROMEOS)
     return ui::ImageModel::FromImageSkia(

@@ -251,6 +251,7 @@ if (!is_android) {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/tabs/saved_tab_groups",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/window_metadata",
       "//components/saved_tab_groups/public",
       "//components/tab_groups",
       "//components/tabs",

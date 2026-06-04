@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -328,8 +329,9 @@ TEST_F(PermissionChipUnitTest, AccessibleName) {
 
   AddTab(browser(), GURL("http://a.com"));
 
-  std::u16string tab_title = browser()->GetTitleForTab(
-      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle());
+  std::u16string tab_title =
+      WindowMetadataController::From(browser())->GetTitleForTab(
+          browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle());
   std::u16string permission_title = l10n_util::GetStringFUTF16(
       IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, tab_title);
 

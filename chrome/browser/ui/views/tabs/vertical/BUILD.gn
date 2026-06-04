@@ -94,6 +94,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/tabs/shared",
     "//chrome/browser/ui/views/toolbar",
+    "//chrome/browser/ui/window_metadata",
     "//components/contextual_tasks/public:feature_list",
     "//components/performance_manager",
   ]

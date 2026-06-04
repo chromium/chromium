@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/split_tab_data.h"
@@ -92,9 +93,11 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
   const TabData& tab_data =
       browser_view->tab_strip_view()->GetTabData(tab->GetHandle());
 
-  std::u16string title = is_for_tab
-                             ? browser->GetTitleForTab(tab->GetHandle())
-                             : browser->GetWindowTitleForTab(tab->GetHandle());
+  auto* controller = WindowMetadataController::From(bwi);
+
+  std::u16string title =
+      is_for_tab ? controller->GetTitleForTab(tab->GetHandle())
+                 : controller->GetWindowTitleForTab(tab->GetHandle());
 
   if (const std::optional<split_tabs::SplitTabId> split = tab->GetSplit()) {
     if (!tab_strip_model->ContainsSplit(split.value())) {

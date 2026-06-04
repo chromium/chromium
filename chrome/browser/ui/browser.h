@@ -92,10 +92,6 @@ class NavigationHandle;
 class SessionStorageNamespace;
 }  // namespace content
 
-namespace gfx {
-class Image;
-}
-
 namespace web_app {
 class AppBrowserController;
 }
@@ -467,45 +463,10 @@ class Browser : public TabStripModelObserver,
 
   // TODO(crbug.com/496674143): Remove once callsites migrated to
   // WindowMetadataController::From().
-  // Gets the Favicon of the page in the selected tab.
-  gfx::Image GetCurrentPageIcon() const;
-
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::From().
   // Gets the title of the window based on the selected tab's title.
   // Disables additional formatting when |include_app_name| is false or if the
   // window is an app window.
   std::u16string GetWindowTitleForCurrentTab(bool include_app_name) const;
-
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::From().
-  // Gets the window title of the tab at |index|.
-  std::u16string GetWindowTitleForTab(const tabs::TabHandle& tab) const;
-
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::From().
-  std::u16string GetTitleForTab(const tabs::TabHandle& tab) const;
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::From().
-  // Gets the window title for the current tab, to display in a menu. If the
-  // title is too long to fit in the required space, the tab title will be
-  // elided. The result title might still be a larger width than specified, as
-  // at least a few characters of the title are always shown.
-  std::u16string GetWindowTitleForMaxWidth(int max_width) const;
-
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::From().
-  // Gets the window title from the provided WebContents.
-  // Disables additional formatting when |include_app_name| is false or if the
-  // window is an app window.
-  std::u16string GetWindowTitleFromWebContents(
-      bool include_app_name,
-      content::WebContents* contents) const;
-
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::FormatTitleForDisplay().
-  // Prepares a title string for display (removes embedded newlines, etc).
-  static std::u16string FormatTitleForDisplay(std::u16string title);
 
   // OnBeforeUnload handling //////////////////////////////////////////////////
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -365,7 +366,8 @@ void CustomTabBarView::UpdateContents() {
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   std::u16string title, location;
-  title = Browser::FormatTitleForDisplay(entry->GetTitleForDisplay());
+  title = WindowMetadataController::FormatTitleForDisplay(
+      entry->GetTitleForDisplay());
   if (ShouldDisplayUrl(contents)) {
     location = web_app::AppBrowserController::FormatUrlOrigin(
         contents->GetVisibleURL(), url_formatter::kFormatUrlOmitDefaults);

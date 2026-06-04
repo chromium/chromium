@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -991,8 +992,9 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
 
   // AccessibleName should update when tab group is changed
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
-  std::u16string tab_title = browser()->GetTitleForTab(
-      browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle());
+  std::u16string tab_title =
+      WindowMetadataController::From(browser())->GetTitleForTab(
+          browser()->tab_strip_model()->GetTabAtIndex(1)->GetHandle());
   std::u16string group_title = tab_strip()->GetGroupTitle(group);
   std::u16string title =
       group_title.empty()

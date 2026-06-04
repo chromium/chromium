@@ -710,39 +710,10 @@ const std::string& Browser::user_title() const {
   return controller->user_title();
 }
 
-gfx::Image Browser::GetCurrentPageIcon() const {
-  return WindowMetadataController::From(this)->GetCurrentPageIcon();
-}
-
 std::u16string Browser::GetWindowTitleForCurrentTab(
     bool include_app_name) const {
   return WindowMetadataController::From(this)->GetWindowTitleForCurrentTab(
       include_app_name);
-}
-
-std::u16string Browser::GetWindowTitleForTab(const tabs::TabHandle& tab) const {
-  return WindowMetadataController::From(this)->GetWindowTitleForTab(tab);
-}
-
-std::u16string Browser::GetTitleForTab(const tabs::TabHandle& tab) const {
-  return WindowMetadataController::From(this)->GetTitleForTab(tab);
-}
-
-std::u16string Browser::GetWindowTitleForMaxWidth(int max_width) const {
-  return WindowMetadataController::From(this)->GetWindowTitleForMaxWidth(
-      max_width);
-}
-
-std::u16string Browser::GetWindowTitleFromWebContents(
-    bool include_app_name,
-    content::WebContents* contents) const {
-  return WindowMetadataController::From(this)->GetWindowTitleFromWebContents(
-      include_app_name, contents);
-}
-
-// static
-std::u16string Browser::FormatTitleForDisplay(std::u16string title) {
-  return WindowMetadataController::FormatTitleForDisplay(std::move(title));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

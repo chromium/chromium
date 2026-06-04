@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_accessibility.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -1030,6 +1031,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ScrimForTabModalInSplitView) {
 
 // Tests that GetAccessibleTabLabel correctly labels each tab in a split.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
+  auto* controller = WindowMetadataController::From(browser());
+
   // Create a pinned split.
   chrome::AddTabAt(browser(), GURL(), -1, true);
   browser()->tab_strip_model()->SetTabPinned(0, true);
@@ -1042,20 +1045,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                 IDS_TAB_AX_LABEL_PINNED_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(browser()
-                                                  ->tab_strip_model()
-                                                  ->GetTabAtIndex(0)
-                                                  ->GetHandle()))),
+                    controller->GetTitleForTab(browser()
+                                                   ->tab_strip_model()
+                                                   ->GetTabAtIndex(0)
+                                                   ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(0), false));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_LABEL_PINNED_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(browser()
-                                                  ->tab_strip_model()
-                                                  ->GetTabAtIndex(1)
-                                                  ->GetHandle()))),
+                    controller->GetTitleForTab(browser()
+                                                   ->tab_strip_model()
+                                                   ->GetTabAtIndex(1)
+                                                   ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(1), false));
 
@@ -1069,14 +1072,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
-          browser()->GetTitleForTab(
+          controller->GetTitleForTab(
               browser()->tab_strip_model()->GetTabAtIndex(2)->GetHandle())),
       tabs::GetAccessibleTabLabel(
           browser()->tab_strip_model()->GetTabAtIndex(2), false));
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
-          browser()->GetTitleForTab(
+          controller->GetTitleForTab(
               browser()->tab_strip_model()->GetTabAtIndex(3)->GetHandle())),
       tabs::GetAccessibleTabLabel(
           browser()->tab_strip_model()->GetTabAtIndex(3), false));
@@ -1093,20 +1096,20 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
                 IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_LEFT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(browser()
-                                                  ->tab_strip_model()
-                                                  ->GetTabAtIndex(4)
-                                                  ->GetHandle()))),
+                    controller->GetTitleForTab(browser()
+                                                   ->tab_strip_model()
+                                                   ->GetTabAtIndex(4)
+                                                   ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(4), false));
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
                 l10n_util::GetStringFUTF16(
                     IDS_TAB_AX_LABEL_SPLIT_TAB_RIGHT_VIEW_FORMAT,
-                    browser()->GetTitleForTab(browser()
-                                                  ->tab_strip_model()
-                                                  ->GetTabAtIndex(5)
-                                                  ->GetHandle()))),
+                    controller->GetTitleForTab(browser()
+                                                   ->tab_strip_model()
+                                                   ->GetTabAtIndex(5)
+                                                   ->GetHandle()))),
             tabs::GetAccessibleTabLabel(
                 browser()->tab_strip_model()->GetTabAtIndex(5), false));
 
@@ -1120,14 +1123,14 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, AccessibleTabLabel) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_TAB_AX_LABEL_SPLIT_TAB_TOP_VIEW_FORMAT,
-          browser()->GetTitleForTab(
+          controller->GetTitleForTab(
               browser()->tab_strip_model()->GetTabAtIndex(6)->GetHandle())),
       tabs::GetAccessibleTabLabel(
           browser()->tab_strip_model()->GetTabAtIndex(6), false));
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_TAB_AX_LABEL_SPLIT_TAB_BOTTOM_VIEW_FORMAT,
-          browser()->GetTitleForTab(
+          controller->GetTitleForTab(
               browser()->tab_strip_model()->GetTabAtIndex(7)->GetHandle())),
       tabs::GetAccessibleTabLabel(
           browser()->tab_strip_model()->GetTabAtIndex(7), false));

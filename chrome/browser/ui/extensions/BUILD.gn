@@ -249,6 +249,7 @@ source_set("impl") {
       "//chrome/browser/ui/profiles",
       "//chrome/browser/ui/startup",
       "//chrome/browser/ui/web_applications:launch_utils",
+      "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications",
       "//components/prefs",
       "//components/security_state/content",
