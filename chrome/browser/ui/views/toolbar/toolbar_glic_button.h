@@ -32,6 +32,7 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
 
   void SetCloseButtonFocusBehavior(
       views::View::FocusBehavior focus_behavior) override;

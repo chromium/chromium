@@ -1577,7 +1577,7 @@ void ToolbarView::InitLayout() {
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
-   if (avatar_ &&
+  if (avatar_ &&
       base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
     // Flex order for the profile avatar button is determined by the
     // `toolbar_controller`.
@@ -1585,6 +1585,15 @@ void ToolbarView::InitLayout() {
         views::kFlexBehaviorKey,
         views::FlexSpecification(
             views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+            views::MaximumFlexSizeRule::kPreferred));
+  }
+
+  if (glic_button_ &&
+      base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
+    glic_button_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
             views::MaximumFlexSizeRule::kPreferred));
   }
 

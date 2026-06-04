@@ -68,6 +68,11 @@ gfx::Size ToolbarGlicButton::CalculatePreferredSize(
   return size;
 }
 
+gfx::Size ToolbarGlicButton::GetMinimumSize() const {
+  return gfx::Size(kCollapsedWidth,
+                   GetLayoutConstant(LayoutConstant::kToolbarButtonHeight));
+}
+
 void ToolbarGlicButton::AddedToWidget() {
   split_rounded_edge_radius_ = GetRoundedCornerRadius();
   SetLeftRightCornerRadii(GetRoundedCornerRadius(), GetRoundedCornerRadius());

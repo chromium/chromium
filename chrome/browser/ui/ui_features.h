@@ -364,6 +364,8 @@ BASE_DECLARE_FEATURE(kToolbarProfileChipResizing);
 
 BASE_DECLARE_FEATURE(kToolbarAppMenuLabelResizing);
 
+BASE_DECLARE_FEATURE(kToolbarGlicButtonResizing);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_
