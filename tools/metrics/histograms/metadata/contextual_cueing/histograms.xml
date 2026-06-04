@@ -254,6 +254,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualCueing.V2.MissingFaviconCount" units="count"
+    expires_after="2026-11-15">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Records the number of tabs for which no favicon could be found and the
+    default favicon was used in the tab sharing UI. Recorded when the cue is
+    shown with the tab sharing UI.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
