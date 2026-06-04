@@ -164,4 +164,53 @@ TEST_F(FocusRingTest, FocusRingShouldPaintWithNativeFocus) {
   EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
 }
 
+TEST_F(FocusRingTest, EvaluatePredicateBeforeAddingToWidget) {
+  auto contents = std::make_unique<View>();
+  FocusRing::Install(contents.get());
+  auto* const focus_ring = FocusRing::Get(contents.get());
+
+  bool predicate_called = false;
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](bool* called, const View* view) {
+        *called = true;
+        return true;
+      },
+      &predicate_called));
+
+  // Since `contents` is not attached to a Widget, ShouldPaint() should
+  // return false and not evaluate the predicate.
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+  EXPECT_FALSE(predicate_called);
+}
+
+// Verifies that during the destruction of the parent view, the focus ring
+// does not attempt to evaluate its focus predicate. Evaluating the predicate
+// during teardown can cause a use-after-free if the predicate relies on
+// the parent view's state that is already partially destroyed.
+TEST_F(FocusRingTest, DonotEvaluatePredicateDuringDestruction) {
+  auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  FocusRing::Install(contents);
+  auto* const focus_ring = FocusRing::Get(contents);
+
+  bool predicate_called = false;
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](bool* called, const View* view) {
+        *called = true;
+        return true;
+      },
+      &predicate_called));
+
+  EXPECT_TRUE(focus_ring->ShouldPaintForTesting());
+  EXPECT_TRUE(predicate_called);
+
+  predicate_called = false;
+
+  // Trigger destruction of the view hierarchy.
+  widget->SetContentsView(std::make_unique<View>());
+
+  // The predicate should not have been called during the teardown.
+  EXPECT_FALSE(predicate_called);
+}
+
 }  // namespace views

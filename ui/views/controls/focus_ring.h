@@ -113,6 +113,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   void OnViewFocused(View* view) override;
   void OnViewBlurred(View* view) override;
   void OnViewLayoutInvalidated(View* view) override;
+  void OnViewAddedToWidget(View* observed_view) override;
+  void OnViewHierarchyWillBeDeleted(View* view) override;
 
  private:
   FocusRing();
@@ -131,10 +133,6 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   bool ShouldSetOutsetFocusRing() const;
 
   bool ShouldPaint();
-
-  // TODO(crbug.com/507553991): Remove this function once all clients are
-  // migrated to use Refresh().
-  bool ShouldPaintDeprecated();
 
   // Translates the provided SkRect or SkRRect, which is in the parent's
   // coordinate system, into this view's coordinate system, then insets it

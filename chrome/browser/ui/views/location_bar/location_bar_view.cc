@@ -252,6 +252,15 @@ LocationBarView::LocationBarView(Browser* browser,
         base::BindRepeating([](const View* view) {
           const auto* v = views::AsViewClass<LocationBarView>(view);
           CHECK(v);
+
+          // The predicate might be called before LocationBarView is fully
+          // initialized (e.g. during view hierarchy construction or focus ring
+          // installation). GetOmniboxController() or its edit_model() might be
+          // null at this stage.
+          if (!v->is_initialized_) {
+            return false;
+          }
+
           // Show focus ring when the Omnibox is visibly focused and the popup
           // is closed.
           return v->GetOmniboxController()->edit_model()->is_caret_visible() &&
