@@ -2620,9 +2620,31 @@ group("base_rust") {
   public_deps = [
     ":callback",
     ":feature",
+    ":file_path",
     ":run_loop",
     ":sequenced_task_runner",
   ]
+}
+
+source_set("file_path_shim") {
+  sources = [
+    "files/file_path_rust_shim.cc",
+    "files/file_path_rust_shim.h",
+  ]
+  deps = [ "//base" ]
+}
+
+rust_static_library("file_path") {
+  crate_name = "base_file_path"
+  crate_root = "files/file_path.rs"
+  sources = [ "files/file_path.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":file_path_shim",
+    "//base",
+    "//third_party/rust/cxx/v1:lib",
+  ]
+  cxx_bindings = [ "files/file_path.rs" ]
 }
 
 # A separate source_set for this header to avoid circular dependencies.
@@ -2760,13 +2782,18 @@ source_set("sequenced_task_runner_shim") {
   ]
 }
 
-rust_static_library("rust_sequences_unittests") {
+rust_static_library("base_rust_unittests") {
   testonly = true
   is_gtest_unittests = true
   allow_unsafe = true
-  sources = [ "task/sequenced_task_runner_unittest.rs" ]
-  crate_root = "task/sequenced_task_runner_unittest.rs"
+  sources = [
+    "base_rust_unittests.rs",
+    "files/file_path_unittest.rs",
+    "task/sequenced_task_runner_unittest.rs",
+  ]
+  crate_root = "base_rust_unittests.rs"
   deps = [
+    ":file_path",
     ":scoped_refptr",
     ":sequenced_task_runner",
     ":sequenced_task_runner_test_bridge",
@@ -4006,6 +4033,7 @@ test("base_unittests") {
 
   deps = [
     ":base",
+    ":base_rust_unittests",
     ":base_stack_sampling_profiler_test_util",
     ":build_time",
     ":check_version_internal",
@@ -4014,7 +4042,6 @@ test("base_unittests") {
     ":i18n",
     ":path_service_unittest",
     ":rust_feature_unittests",
-    ":rust_sequences_unittests",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
     "//base/i18n:unittests",
