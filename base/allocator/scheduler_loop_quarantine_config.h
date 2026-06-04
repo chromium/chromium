@@ -26,6 +26,8 @@ enum class SchedulerLoopQuarantineBranchType {
   kIO,
   // One for `ADVANCED_MEMORY_SAFETY_CHECKS()` objects.
   kAdvancedMemorySafetyChecks,
+  // Specialized configuration for the VizCompositorThread.
+  kVizCompositor,
 };
 
 // Returns quarantine configuration for `process_type_identifier` and

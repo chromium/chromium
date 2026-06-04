@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -57,6 +58,8 @@ class VizCompositorThread : public base::Thread {
  private:
   void Init() override {
     ParentType::Init();
+    base::allocator::ReconfigureSchedulerLoopQuarantineBranch(
+        base::allocator::SchedulerLoopQuarantineBranchType::kVizCompositor);
     if (base::HangWatcher::IsCompositorThreadHangWatchingEnabled()) {
       unregister_thread_closure_ = base::HangWatcher::RegisterThread(
           base::HangWatcher::ThreadType::kCompositorThread);

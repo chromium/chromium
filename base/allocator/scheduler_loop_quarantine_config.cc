@@ -26,6 +26,7 @@ constexpr char kBranchTypeThreadLocalDefaultStr[] = "*";
 constexpr char kBranchTypeMainStr[] = "main";
 constexpr char kBranchTypeIOStr[] = "io";
 constexpr char kBranchTypeAdvancedMemorySafetyChecksStr[] = "amsc";
+constexpr char kBranchTypeVizCompositorStr[] = "viz-compositor";
 
 constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
     SchedulerLoopQuarantineBranchType type) {
@@ -40,6 +41,8 @@ constexpr std::string_view GetSchedulerLoopQuarantineBranchTypeStr(
       return kBranchTypeIOStr;
     case SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks:
       return kBranchTypeAdvancedMemorySafetyChecksStr;
+    case SchedulerLoopQuarantineBranchType::kVizCompositor:
+      return kBranchTypeVizCompositorStr;
   }
   NOTREACHED();
 }
