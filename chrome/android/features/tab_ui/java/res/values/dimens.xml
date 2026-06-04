@@ -225,4 +225,12 @@ found in the LICENSE file.
     <dimen name="vertical_tabs_new_tab_button_margin_top">8dp</dimen>
     <dimen name="vertical_tabs_new_tab_button_margin_bottom">12dp</dimen>
     <dimen name="vertical_tabs_new_tab_button_corner_radius">8dp</dimen>
+
+    <!-- Vertical Tabs Header dimens. -->
+    <dimen name="vertical_tabs_button_corner_radius_small">2dp</dimen>
+    <dimen name="vertical_tabs_header_margin_vertical">4dp</dimen>
+    <dimen name="vertical_tabs_header_padding_vertical">8dp</dimen>
+    <dimen name="vertical_tabs_header_button_size">32dp</dimen>
+    <dimen name="vertical_tabs_header_button_padding">4dp</dimen>
+    <dimen name="vertical_tabs_header_button_gap">2dp</dimen>
 </resources>

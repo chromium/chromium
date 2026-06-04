@@ -16,11 +16,34 @@ found in the LICENSE file.
     android:paddingEnd="@dimen/vertical_tabs_rail_horizontal_margin">
 
     <!-- Header Container: Socket for future search/toolbar buttons -->
-    <FrameLayout
+    <LinearLayout
         android:id="@+id/vertical_tab_header_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:orientation="horizontal"
+        android:layout_gravity="start"
+        android:layout_marginVertical="@dimen/vertical_tabs_header_margin_vertical"
+        android:paddingVertical="@dimen/vertical_tabs_header_padding_vertical">
+        <ImageButton
+            android:id="@+id/grid_button"
+            android:layout_width="@dimen/vertical_tabs_header_button_size"
+            android:layout_height="@dimen/vertical_tabs_header_button_size"
+            android:src="@drawable/ic_grid_view_24dp"
+            android:background="@drawable/vertical_tabs_left_rounded_button_background"
+            android:contentDescription="@string/accessibility_tab_groups"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/vertical_tabs_header_button_padding"
+            android:layout_marginEnd="@dimen/vertical_tabs_header_button_gap"/>
+        <ImageButton
+            android:id="@+id/tab_search_button"
+            android:layout_width="@dimen/vertical_tabs_header_button_size"
+            android:layout_height="@dimen/vertical_tabs_header_button_size"
+            android:src="@drawable/ic_manage_search_24dp"
+            android:background="@drawable/vertical_tabs_right_rounded_button_background"
+            android:contentDescription="@string/accessibility_search_loupe_tooltip_text"
+            android:scaleType="fitCenter"
+            android:padding="@dimen/vertical_tabs_header_button_padding"/>
+    </LinearLayout>
 
     <!-- Tab List Recycler View -->
     <org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView
