@@ -335,6 +335,31 @@ suite('OmniboxComposeboxTest', () => {
     assertEquals(mockToken, omniboxComposebox.addedTabsIds.get(42));
   });
 
+  test('addSearchContext sets input and queries autocomplete', async () => {
+    omniboxComposebox.searchboxNextEnabled = true;
+    await microtasksFinished();
+
+    const initialCallCount =
+        testProxy.handler.getCallCount('queryAutocomplete');
+
+    const context = {
+      input: 'hello world',
+      files: [],
+      attachments: [],
+      toolMode: 0,
+    };
+    omniboxComposebox.addSearchContext(context);
+    await microtasksFinished();
+
+    // Check that input and lastQueriedInput are set.
+    assertEquals(omniboxComposebox.input, 'hello world');
+    assertEquals(omniboxComposebox.lastQueriedInput, 'hello world');
+    // Autocomplete should be queried.
+    assertEquals(
+        initialCallCount + 1,
+        testProxy.handler.getCallCount('queryAutocomplete'));
+  });
+
   test(
       'Carousel renders when files are present, hides when empty', async () => {
         assertFalse(omniboxComposebox.showFileCarousel);
@@ -463,6 +488,40 @@ suite('OmniboxComposeboxTest', () => {
     // overridden but we verify the property is set to a string).
     assertTrue(omniboxComposebox.errorMessage.length > 0);
   });
+
+  test(
+      'Add Attachment with unsupported file type validation error fails',
+      async () => {
+        const mockToken = 'mock-unsupported-error-token';
+        const context = {
+          input: '',
+          attachments: [{
+            fileAttachment: {
+              uuid: mockToken,
+              name: 'test.txt',
+              mimeType: 'text/plain',
+              imageDataUrl: null,
+              errorType: ContextUploadErrorType
+                             .kBrowserProcessingUnsupportedFileTypeError,
+            },
+          }],
+          toolMode: 0,
+        };
+
+        omniboxComposebox.i18n = (key: string) => {
+          if (key === 'composeFileTypesAllowedError') {
+            return 'Unsupported file type error';
+          }
+          return key;
+        };
+
+        omniboxComposebox.addSearchContext(context);
+        await microtasksFinished();
+
+        assertFalse(omniboxComposebox.files.has(mockToken));
+        assertEquals(
+            'Unsupported file type error', omniboxComposebox.errorMessage);
+      });
 
   test('Carousel delete-file event triggers deletion', async () => {
     const mockToken = 'mock-delete-event-token';

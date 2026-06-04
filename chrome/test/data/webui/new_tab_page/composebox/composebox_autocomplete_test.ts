@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
+import {VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
 import {InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -1010,35 +1010,6 @@ suite('NewTabPageComposeboxAutocompleteQueryingTest', () => {
 
 suite('NewTabPageComposeboxAutocompleteContextTest', () => {
   const testProxy = setupComposeboxTest();
-
-  test('setSearchContext sets input and queries autocomplete', async () => {
-    loadTimeData.overrideValues({composeboxShowZps: true});
-    testProxy.element = new ComposeboxElement();
-    testProxy.element.searchboxNextEnabled = true;
-    document.body.appendChild(testProxy.element);
-
-    await microtasksFinished();
-
-    // Autocomplete waits
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 0);
-
-    const context = {
-      input: 'hello world',
-      files: [],
-      attachments: [],
-      toolMode: 0,
-    };
-    testProxy.element.addSearchContext(context);
-    await microtasksFinished();
-
-    // Check that input and lastQueriedInput are set.
-    assertEquals(testProxy.element.input, 'hello world');
-    assertEquals(testProxy.element.lastQueriedInput, 'hello world');
-    // Autocomplete should be queried again.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
-  });
 
   test('autocomplete queried when autochip removed', async () => {
     createComposeboxElement(testProxy);
