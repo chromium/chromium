@@ -1084,6 +1084,9 @@ bool IsFullscreenNextIAEnabled() {
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+  if (IsFullscreenRefactoringEnabled()) {
+    [self.view.superview layoutIfNeeded];
+  }
   [super viewWillAppear:animated];
 
   self.visibilityState = BrowserViewVisibilityState::kAppearing;
