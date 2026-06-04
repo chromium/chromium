@@ -859,10 +859,16 @@ bool IsFullscreenNextIAEnabled() {
   DCHECK(!_isShutdown);
   _isShutdown = YES;
 
+  _fullscreenUIUpdater = nullptr;
+  _fullscreenController = nullptr;
+  _fullscreenBrowserAgentObserverBridge = nullptr;
+  _fullscreenBrowserAgent = nullptr;
+
   [self.contentArea removeGestureRecognizer:self.contentAreaGestureRecognizer];
 
   [self.toolbarCoordinator stop];
   self.toolbarCoordinator = nil;
+  [self cleanUpToolbarConstraints];
   _sideSwipeCoordinator = nil;
   [_voiceSearchController disconnect];
   [_layoutState removeObserver:self];
@@ -874,10 +880,6 @@ bool IsFullscreenNextIAEnabled() {
   _urlLoadingBrowserAgent = nullptr;
   _tabUsageRecorderBrowserAgent = nullptr;
   _snapshotBrowserAgent = nullptr;
-  _fullscreenUIUpdater = nullptr;
-  _fullscreenController = nullptr;
-  _fullscreenBrowserAgentObserverBridge = nullptr;
-  _fullscreenBrowserAgent = nullptr;
 }
 
 #pragma mark - UIAccessibilityAction
@@ -1131,6 +1133,7 @@ bool IsFullscreenNextIAEnabled() {
     self.typingShield = nil;
     [self.toolbarCoordinator stop];
     self.toolbarCoordinator = nil;
+    [self cleanUpToolbarConstraints];
     _toolbarsSize = nil;
     [_sideSwipeCoordinator stop];
     _sideSwipeCoordinator = nil;
@@ -1409,6 +1412,16 @@ bool IsFullscreenNextIAEnabled() {
       _toolbarTrailingConstraint.constant = 0;
       break;
   }
+}
+
+// Cleans up the toolbar constraints.
+- (void)cleanUpToolbarConstraints {
+  self.primaryToolbarOffsetConstraint.active = NO;
+  self.primaryToolbarOffsetConstraint = nil;
+  self.primaryToolbarHeightConstraint.active = NO;
+  self.primaryToolbarHeightConstraint = nil;
+  self.secondaryToolbarHeightConstraint.active = NO;
+  self.secondaryToolbarHeightConstraint = nil;
 }
 
 - (void)addConstraintsToSecondaryToolbar {
