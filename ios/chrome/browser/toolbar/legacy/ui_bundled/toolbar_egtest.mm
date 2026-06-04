@@ -356,7 +356,8 @@ void WaitForEmpyOmnibox() {
 }
 
 // Tests typing in the omnibox.
-- (void)testToolbarOmniboxTyping {
+// TODO(crbug.com/519981855): Flaky
+- (void)FLAKY_testToolbarOmniboxTyping {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 
