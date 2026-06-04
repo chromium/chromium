@@ -306,6 +306,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
+  if (!self.objectsAboveFeed) {
+    return;
+  }
   [self.headerView didAppear];
 
   [self updateHeightAboveFeed];
