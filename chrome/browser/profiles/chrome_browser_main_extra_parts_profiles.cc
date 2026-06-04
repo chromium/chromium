@@ -196,6 +196,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
+#include "chrome/browser/private_insights/private_insights_service_factory.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
 #include "chrome/browser/profiles/renderer_updater_factory.h"
@@ -1151,6 +1152,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   metrics::DesktopProfileSessionDurationsServiceFactory::GetInstance();
 #endif
+  private_insights::PrivateInsightsServiceFactory::GetInstance();
   ProfileMetricsServiceFactory::GetInstance();
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   MicrosoftAuthServiceFactory::GetInstance();

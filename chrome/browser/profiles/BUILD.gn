@@ -700,6 +700,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/privacy_sandbox/notice:factory",
     "//chrome/browser/private_ai",
+    "//chrome/browser/private_insights",
     "//chrome/browser/push_messaging",
     "//chrome/browser/reading_list",
     "//chrome/browser/reduce_accept_language",
