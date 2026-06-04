@@ -294,6 +294,23 @@ public class NtpCustomizationConfigManager {
     }
 
     /**
+     * Called when users selected a new NTP background theme.
+     *
+     * @param context The application context.
+     * @param backgroundData The selected NTP background theme data.
+     */
+    public void onBackgroundDataChanged(Context context, NtpBackgroundDataBase backgroundData) {
+        // TODO(https://crbug.com/488439751): handles the rest background data types.
+        if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
+            onBackgroundColorChanged(context, ntpBackgroundDataColor.getNtpThemeColorInfo());
+        } else if (backgroundData
+                instanceof NtpBackgroundDataCustomizedColor ntpBackgroundDataCustomizedColor) {
+            onBackgroundColorChanged(
+                    context, ntpBackgroundDataCustomizedColor.getNtpThemeColorFromHexInfo());
+        }
+    }
+
+    /**
      * Called when a user uploaded image is selected.
      *
      * @param bitmap The new background image bitmap before transformations.

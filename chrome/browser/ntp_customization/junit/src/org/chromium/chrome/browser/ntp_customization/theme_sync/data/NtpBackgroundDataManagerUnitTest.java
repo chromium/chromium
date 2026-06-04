@@ -220,6 +220,39 @@ public class NtpBackgroundDataManagerUnitTest {
     }
 
     @Test
+    public void testSaveUserSelectedBackgroundTypeToSharedPreference_Duplicate() {
+        @PlatformType int localPlatform = PlatformType.ANDROID_LOCAL;
+        NtpBackgroundDataColor localData1 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        localPlatform,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ true);
+        NtpBackgroundDataColor localData2 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        localPlatform,
+                        NtpThemeColorId.NTP_COLORS_AQUA,
+                        /* isChromeColorDailyRefreshEnabled= */ true);
+
+        // Save local selections.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(localData1);
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(localData2);
+        NtpBackgroundDataGroup group =
+                mManager.getBackgroundDataGroupFromSharedPreference(localPlatform);
+        assertEquals(2, group.size());
+        assertEquals(localData2, group.get(0));
+        assertEquals(localData1, group.get(1));
+
+        // Save localData1 again. It should move to the front and size remains 2.
+        mManager.saveUserSelectedBackgroundTypeToSharedPreference(localData1);
+        group = mManager.getBackgroundDataGroupFromSharedPreference(localPlatform);
+        assertEquals(2, group.size());
+        assertEquals(localData1, group.get(0));
+        assertEquals(localData2, group.get(1));
+    }
+
+    @Test
     public void testGetJsonArrayFromSharedPreferenceImpl_Empty() {
         assertNull(mManager.getJsonArrayFromSharedPreferenceImpl(PlatformType.ANDROID_LOCAL));
     }
