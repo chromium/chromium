@@ -34,7 +34,6 @@ public final class BrowserSafeModeActionList {
         new AwSafeBrowsingSafeModeAction(),
         new DisableOriginTrialsSafeModeAction(),
         new AwSupervisedUserSafeModeAction(),
-        new DisableStartupTasksSafeModeAction(),
         new DisableCrashyClassSafeModeAction(),
     };
 }

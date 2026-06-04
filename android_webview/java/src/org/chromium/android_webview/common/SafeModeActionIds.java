@@ -22,7 +22,6 @@ public class SafeModeActionIds {
     public static final String DISABLE_ORIGIN_TRIALS = "disable_origin_trials";
     public static final String DISABLE_AW_SAFE_BROWSING = "disable_safe_browsing";
     public static final String DISABLE_SUPERVISION_CHECKS = "disable_supervision_checks";
-    public static final String DISABLE_STARTUP_TASKS_LOGIC = "disable_startup_tasks_logic";
     public static final String DISABLE_CRASHY_CLASS = "disable_crashy_class";
     // LINT.ThenChange(SafeModeController.java:SafeModeActionIds)
 }

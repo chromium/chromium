@@ -585,7 +585,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/android_webview/safe_browsing/AwSafeBrowsingSafeModeAction.java",
       "java/src/org/chromium/android_webview/safe_mode/BrowserSafeModeActionList.java",
       "java/src/org/chromium/android_webview/safe_mode/DisableCrashyClassSafeModeAction.java",
-      "java/src/org/chromium/android_webview/safe_mode/DisableStartupTasksSafeModeAction.java",
       "java/src/org/chromium/android_webview/safe_mode/NoopSafeModeAction.java",
       "java/src/org/chromium/android_webview/selection/AwSelectionActionMenuDelegate.java",
       "java/src/org/chromium/android_webview/selection/PlatformSelectionActionMenuDelegate.java",

@@ -366,11 +366,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC)) {
             return true;
         }
-        // TODO: Remove this once WebViewCachedFlags has landed (and seems safe).
-        if (SafeModeController.getInstance()
-                .isActionEnabled(SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC)) {
-            return false;
-        }
         return WebViewCachedFlags.get()
                 .isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC);
     }
