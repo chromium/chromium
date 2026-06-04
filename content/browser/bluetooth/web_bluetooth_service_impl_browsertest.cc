@@ -268,6 +268,11 @@ class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
     SetFakeBlueboothAdapter();
   }
 
+  void TearDownOnMainThread() override {
+    BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterOverride(nullptr);
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Sets up the blink runtime feature for accessing to navigator.bluetooth.
     command_line->AppendSwitch(
@@ -573,8 +578,6 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   GURL url = embedded_test_server()->GetURL("/page_with_blank_iframe.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  EXPECT_CALL(*adapter(), AddObserver(_));
-
   RenderFrameHost* sub_frame = ChildFrameAt(GetWebContents(), 0);
   ASSERT_TRUE(sub_frame);
 
@@ -598,7 +601,6 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
       console_observer.messages();
   EXPECT_EQ(messages.size(), 1u);
   EXPECT_EQ(messages.back().source_frame, sub_frame);
-  EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 
 class WebBluetoothServiceImplFencedFramesBrowserTest

@@ -212,6 +212,7 @@ class ControlledFrameDisabledPermissionWebBluetoothTest
   }
 
   void TearDownOnMainThread() override {
+    content::SetBluetoothAdapter(nullptr);
     content::SetBrowserClientForTesting(old_browser_client_);
     ControlledFrameDisabledPermissionTest::TearDownOnMainThread();
   }

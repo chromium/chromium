@@ -144,6 +144,8 @@ DOMException* BluetoothError::CreateDOMException(
                 "GATT operation already in progress.");
       MAP_ERROR(CONNECT_CONN_FAILED, DOMExceptionCode::kNetworkError,
                 "Connection Error: Connection attempt failed.");
+      MAP_ERROR(BLUETOOTH_NOT_ALLOWED, DOMExceptionCode::kNetworkError,
+                "Bluetooth permission has been blocked.");
 
       // NotFoundErrors:
       MAP_ERROR(WEB_BLUETOOTH_NOT_SUPPORTED, DOMExceptionCode::kNotFoundError,

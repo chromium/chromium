@@ -60,10 +60,11 @@ enum class UMAConnectGATTOutcome {
   kWakelock = 20,
   kUnexpectedState = 21,
   kSocketError = 22,
+  kNotAllowed = 23,
   // Note: Add new ConnectGATT outcomes immediately above this line. Make sure
   // to update the enum list in
   // tools/metrics/histograms/metadata/bluetooth/enums.xml accordingly.
-  kMaxValue = kSocketError,
+  kMaxValue = kNotAllowed,
 };
 
 // There should be a call to this function before every
@@ -157,10 +158,11 @@ enum class UMAGATTOperationOutcome {
   kNotPaired = 11,
   kNotSupported = 12,
   kBlocklisted = 13,
+  kNotAllowed = 14,
   // Note: Add new GATT Outcomes immediately above this line.
   // Make sure to update the enum list in
   // tools/metrics/histograms/histograms.xml accordingly.
-  kMaxValue = kBlocklisted
+  kMaxValue = kNotAllowed
 };
 
 // Values below do NOT map to UMA metric values.

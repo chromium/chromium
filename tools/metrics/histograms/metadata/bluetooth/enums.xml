@@ -1466,6 +1466,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Wakelock error"/>
   <int value="21" label="Unexpected state"/>
   <int value="22" label="Socket error"/>
+  <int value="23" label="Not Allowed"/>
 </enum>
 
 <enum name="WebBluetoothGATTOperationOutcome">
@@ -1483,6 +1484,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Not Paired"/>
   <int value="12" label="Not Supported"/>
   <int value="13" label="Blocklisted"/>
+  <int value="14" label="Not Allowed"/>
 </enum>
 
 <enum name="WebBluetoothRSSISignalStrengthLevel">
