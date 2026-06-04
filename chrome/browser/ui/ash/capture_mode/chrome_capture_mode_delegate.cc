@@ -29,6 +29,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -36,6 +37,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -278,15 +280,13 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
 // successfully parsed (even if the text was empty), and false otherwise. See
 // `google3/google/internal/lens/frontend/api/v1/service.proto` for more details
 // about the expected response.
-bool ParseQueryFormulationMetadataResponse(
-    const data_decoder::DataDecoder::ValueOrError& response,
-    std::string& extracted_text) {
-  if (!response.has_value() || !response->is_list() ||
-      response->GetList().empty()) {
+bool ParseQueryFormulationMetadataResponse(const base::ListValue& response,
+                                           std::string& extracted_text) {
+  if (response.empty()) {
     return false;
   }
 
-  const base::ListValue* metadata_response = response->GetList()[0].GetIfList();
+  const base::ListValue* metadata_response = response[0].GetIfList();
   if (!metadata_response ||
       metadata_response->size() < kQFMetadataResponseMinSize) {
     return false;
@@ -1259,17 +1259,14 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText(
   json_data =
       json_data.substr(std::min(json_data.find('\n'), json_data.size()));
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json_data, base::BindOnce(&ChromeCaptureModeDelegate::OnJsonParsed,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
+  std::optional<base::ListValue> result =
+      base::JSONReader::ReadList(json_data, base::JSON_PARSE_RFC);
 
-void ChromeCaptureModeDelegate::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
   std::string extracted_text;
   // Attempty to parse the JSON further to get the extracted text. If
   // unsuccessful, return early and let the user know an error has occurred.
-  if (!ParseQueryFormulationMetadataResponse(result, extracted_text)) {
+  if (!result ||
+      !ParseQueryFormulationMetadataResponse(*result, extracted_text)) {
     VLOG(1) << "Text detection failure: Issues parsing QFMetadata.";
     if (on_error_callback_) {
       std::move(on_error_callback_)

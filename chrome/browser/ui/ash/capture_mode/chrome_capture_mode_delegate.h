@@ -26,7 +26,6 @@
 #include "components/drive/file_errors.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -214,10 +213,6 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       const std::string& access_token,
       const int request_id,
       std::optional<std::string> response_body);
-
-  // Called after the response to a /qfmetadata GET request (for text detection)
-  // is received and the response body has been decoded.
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   const raw_ref<PrefService> local_state_;
   const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
