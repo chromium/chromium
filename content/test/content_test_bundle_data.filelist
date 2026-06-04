@@ -7801,7 +7801,6 @@ data/gpu/meet_effects/meet-gpu-tests/release/assets/preprocess__gxp_lib_90d3b317
 data/gpu/meet_effects/meet-gpu-tests/release/assets/rainbow_wig_and_eyelashes_4320e727bc3e93838b16ee409b041d35.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/rainbow_wig_and_eyelashes_5c8a35f8e9aeb15a737d16307ab8a3aa.zip
 data/gpu/meet_effects/meet-gpu-tests/release/assets/rainbow_wig_and_eyelashes_d427110d3ae5eca7f33221205b23575c.metadata.jspb
-data/gpu/meet_effects/meet-gpu-tests/release/assets/rio_selfiesegmentation_darwinn_exec_d46eb6ae52e7b125129300761d693b5e.metadata.jspb
 data/gpu/meet_effects/meet-gpu-tests/release/assets/segm_full_sparse_v1008_0bda82336d236e21e52f2b74129b9883.dat
 data/gpu/meet_effects/meet-gpu-tests/release/assets/segm_gpu_hd_v1093_bd6bd17c2cf0b7f4f6753685523caa08.dat
 data/gpu/meet_effects/meet-gpu-tests/release/assets/segm_quantized_v3346_c5b35537731c3939ac5514f4edbea539.dat
@@ -7831,7 +7830,6 @@ data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_tpu_512_3
 data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_tpu_512_3138_4ad1bc3b5d81b441d9ad4dff7ffb0e40.f16.abrolhos.metadata.jspb
 data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_tpu_512_3138_56a05a46169c1922089a8eb47b21e218.f16.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_tpu_512_3138_7a160e14443e5f65ef532adc94c1bbdc.f16.janeiro.metadata.jspb
-data/gpu/meet_effects/meet-gpu-tests/release/assets/selfiesegmentation_tpu_512_3138_7fb384efb53da537e32f6b4a7f807dd6.stablehlo.husky.metadata.jspb
 data/gpu/meet_effects/meet-gpu-tests/release/assets/triggers_xref_35037371ae2008ccd89389d157d7798c.xnxr.wasm.data
 data/gpu/meet_effects/meet-gpu-tests/release/assets/triggers_xref_d5c1210c15445cc5aed66de2c15261bd.xnxr.zip
 data/gpu/meet_effects/meet-gpu-tests/release/assets/triggers_xref_f55a5953c7cabbbc5bfcfbfe3035c5a1.xnxr.metadata.jspb

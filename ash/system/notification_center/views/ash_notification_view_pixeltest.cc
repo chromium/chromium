@@ -335,7 +335,7 @@ TEST_P(AshNotificationViewPixelTest, NotificationPopupFocusRing) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("notification_popup_focus_ring"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       notification_view));
 }
 

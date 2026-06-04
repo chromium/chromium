@@ -52,7 +52,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("overflow"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 0,
       GetPrimaryShelf()->GetWindow()));
 
   ASSERT_TRUE(scrollable_shelf_view_->right_arrow());
@@ -64,7 +64,7 @@ TEST_P(ScrollableShelfViewPixelRTLTest, Basics) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("overflow_end"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 0,
       GetPrimaryShelf()->GetWindow()));
 }
 
@@ -127,7 +127,7 @@ TEST_P(ScrollableShelfViewWithGuestModePixelTest, VerifyShelfContextMenu) {
   // Verify the shelf context menu and the shelf.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("shelf_context_menu"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 25 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 26 : 0,
       GetPrimaryShelf()
           ->shelf_widget()
           ->shelf_view_for_testing()

@@ -88,7 +88,7 @@ TEST_P(ChannelIndicatorPixelTest, ChannelIndicatorArea) {
       GenerateScreenshotName(l10n_util::GetStringUTF8(
           channel_indicator_utils::GetChannelNameStringResourceID(GetChannel(),
                                                                   false))),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
       GetPrimaryShelf()->GetStatusAreaWidget()));
 }
 

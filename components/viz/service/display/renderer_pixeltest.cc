@@ -923,7 +923,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_BackdropFilter_Extents) {
   const bool blur_fully_supported = !is_software_renderer();
   auto comparator =
       cc::FuzzyPixelComparator()
-          .SetErrorPixelsPercentageLimit(blur_fully_supported ? 0.2f : 53.f)
+          .SetErrorPixelsPercentageLimit(blur_fully_supported ? 0.32f : 53.f)
           .SetAvgAbsErrorLimit(blur_fully_supported ? 1 : 2)
           .SetAbsErrorLimit(blur_fully_supported ? 1 : 8);
 

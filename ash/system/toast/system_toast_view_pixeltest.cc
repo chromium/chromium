@@ -82,8 +82,8 @@ TEST_P(SystemToastViewPixelTest, TextOnly) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(kTestText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot",
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
+      GenerateScreenshotName("screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 1,
       GetContentsView()));
 }
 
