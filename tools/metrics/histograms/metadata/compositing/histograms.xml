@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.BufferQueue.TimeUntilBuffersRecreatedMs"
     units="ms" expires_after="2026-07-12">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -232,7 +232,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.DirectRenderer.DrawnRectAssignmentType"
     enum="RenderPassDrawRectAssign" expires_after="2025-09-07">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records update type to the drawn rect for every draw to each non root
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.PartialSwap.ExtraDamage" units="%"
     expires_after="2026-08-30">
   <owner>vasilyt@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The area of the display damage that was added to current frame damage after
@@ -274,7 +274,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.PartialSwap.FrameBufferDamage"
     units="%" expires_after="2024-03-16">
   <owner>vasilyt@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The area of the display that was damaged since previous draw to this frame
@@ -291,7 +291,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.PartialSwap.RootDamage" units="%"
     expires_after="2026-11-15">
   <owner>vasilyt@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The area of the display that was damaged in current frame.
@@ -304,7 +304,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.DirectRenderer.PartialSwap.TotalDamage" units="%"
     expires_after="2026-11-01">
   <owner>vasilyt@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     The total area of the display that will be redrawn this frame.
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.DirectRenderer.RenderPassDrawnRectMatch"
     enum="Boolean" expires_after="2026-11-01">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Whether a render pass drawn rect matches the expected output rect. Record
@@ -328,7 +328,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.DirectRenderer.{FocusType}" units="pixels"
     expires_after="2026-11-29">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record every frame the sum of all rendered pixels from all render passes.
@@ -427,7 +427,7 @@ chromium-metrics-reviews@google.com.
     units="units" expires_after="2026-11-29">
   <owner>harthuang@google.com</owner>
   <owner>fangzhoug@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chromeos-gfx-compositor@chromium.org</owner>
   <summary>
     This is logged every time a valid HardwareCapabilites is received DRM thread
@@ -467,7 +467,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Compositing.Display.VizCodePath.{VizCodePathName}"
     enum="Boolean" expires_after="2026-06-09">
   <owner>fangzhoug@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Track usage of different code paths in Viz display compositor. We want to
@@ -649,7 +649,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.SurfaceAggregator.ExcessPixelsClipped"
     units="pixels" expires_after="2025-06-08">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record the number of excess pixels for the output rect that would not be
@@ -659,7 +659,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.SurfaceAggregator.RenderPassDamageType"
     enum="RenderPassDamage" expires_after="2025-09-07">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Record the damage type for an aggregate render pass based on clipping by the
@@ -719,7 +719,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Compositing.TileManager.TileInvalidationArea" units="%"
     expires_after="2026-07-26">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     When resource is assigned to tile for rasterization, records the percentage

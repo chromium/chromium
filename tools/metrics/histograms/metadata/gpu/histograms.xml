@@ -1098,7 +1098,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Gpu.FenceHandle.CloneCountsPerSubmit" units="clones"
     expires_after="2025-12-28">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Counts the number of GpuFenceHandle clone calls between (post) submits.
@@ -2268,7 +2268,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="GPU.{GraphiteDawnOrWebGPU}.{ShaderTiming}"
     units="microseconds" expires_after="2026-10-11">
-  <owner>petermcneeley@google.com</owner>
+  <owner>hitawala@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
     Tracks the amount of time in microseconds it takes for a call to
@@ -2499,7 +2499,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Viz.DelegatedCompositing.Status" enum="DelegatedStatus"
     expires_after="2025-07-13">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     An enum status result for attempted delegated compositing (success or
@@ -2509,7 +2509,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Viz.DisplayCompositor.OverlayNumProposedCandidates"
     units="units" expires_after="2025-08-24">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     A count of the number of proposed overlay candidates available for overlay
@@ -2646,7 +2646,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
     expires_after="2026-08-09">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Time spent computing the number of active File Descriptors. This is logged
@@ -2660,7 +2660,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
     expires_after="2026-10-11">
-  <owner>petermcneeley@chromium.org</owner>
+  <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     {FdStat} File Descriptors for the GPU process. This is logged once every 5
