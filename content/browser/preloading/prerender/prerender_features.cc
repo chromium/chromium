@@ -88,6 +88,8 @@ BASE_FEATURE(kPrerender2WarmUpCompositorForNonImmediate,
 
 BASE_FEATURE(kPrerenderUntilScriptUpgrade, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrerenderActivationBeacon, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool UsePrefetchPrerenderIntegration() {
   return base::FeatureList::IsEnabled(
              features::kPrerender2FallbackPrefetchSpecRules) ||

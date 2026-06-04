@@ -641,6 +641,9 @@ class CONTENT_EXPORT PrerenderHost {
   // True if headers were received.
   bool were_headers_received_ = false;
 
+  // The beacon URL to report when the prerendered page is activated.
+  GURL activation_beacon_url_;
+
   const bool host_reused_ = false;
 
   std::unique_ptr<PreloadServingMetrics>

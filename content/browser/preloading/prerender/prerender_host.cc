@@ -24,6 +24,7 @@
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/preload_activation_report_manager.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_trigger_type_impl.h"
 #include "content/browser/preloading/prerender/devtools_prerender_attempt.h"
@@ -166,6 +167,25 @@ std::string SerializeHttpRequestHeaders(
 PrerenderHostId NextPrerenderHostId() {
   static PrerenderHostId::Generator generator;
   return generator.GenerateNextId();
+}
+
+GURL FindActivationBeaconURL(NavigationRequest& navigation_request) {
+  std::optional<GURL> endpoint;
+  if (navigation_request.response() &&
+      navigation_request.response()->parsed_headers &&
+      navigation_request.response()
+          ->parsed_headers->prefetch_activation_beacon_endpoint) {
+    endpoint = *navigation_request.response()
+                    ->parsed_headers->prefetch_activation_beacon_endpoint;
+  }
+
+  if (endpoint && endpoint->is_valid() &&
+      url::Origin::Create(*endpoint).IsSameOriginWith(
+          url::Origin::Create(navigation_request.GetURL()))) {
+    return *endpoint;
+  }
+
+  return GURL();
 }
 
 }  // namespace
@@ -688,6 +708,10 @@ void PrerenderHost::ReadyToCommitNavigation(
           navigation_request->GetRenderFrameHost(),
           blink::mojom::WebFeature::kPrerender2CrossOriginIframes);
     }
+
+    if (base::FeatureList::IsEnabled(features::kPrerenderActivationBeacon)) {
+      activation_beacon_url_ = FindActivationBeaconURL(*navigation_request);
+    }
   }
   if (!has_no_vary_search_with_parse_error_header) {
     CHECK(!no_vary_search_.has_value());
@@ -774,6 +798,14 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
 
   CHECK(is_ready_for_activation_);
   is_ready_for_activation_ = false;
+
+  if (base::FeatureList::IsEnabled(features::kPrerenderActivationBeacon) &&
+      !activation_beacon_url_.is_empty()) {
+    auto* manager =
+        PreloadActivationReportManager::GetOrCreateForBrowserContext(
+            web_contents_->GetBrowserContext());
+    manager->ReportActivation(activation_beacon_url_, &*web_contents_);
+  }
 
   FrameTree& target_frame_tree = web_contents_->GetPrimaryFrameTree();
 

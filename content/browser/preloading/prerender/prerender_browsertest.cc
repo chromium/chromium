@@ -117,6 +117,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -18307,6 +18308,552 @@ IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptUpgradeDisabledBrowserTest,
   EXPECT_TRUE(same_host->should_pause_javascript_execution());
   EXPECT_EQ(same_host->speculation_action(),
             blink::mojom::SpeculationAction::kPrerenderUntilScript);
+}
+
+class PrerenderActivationBeaconBrowserTest : public PrerenderBrowserTest {
+ public:
+  PrerenderActivationBeaconBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPrerenderActivationBeacon);
+  }
+
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &PrerenderActivationBeaconBrowserTest::HandleRequest,
+        base::Unretained(this)));
+    PrerenderBrowserTest::SetUp();
+  }
+
+  void SetBeaconCallback(const GURL& url, base::OnceClosure callback) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (seen_beacons_.contains(url)) {
+      std::move(callback).Run();
+      return;
+    }
+    beacon_callbacks_[url] = std::move(callback);
+  }
+
+  bool WasBeaconSeen(const GURL& url) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    return seen_beacons_.contains(url);
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    GURL request_url = request.GetURL();
+    // EmbeddedTestServer::HttpRequest::GetURL() returns a URL with the server's
+    // listening address (usually 127.0.0.1) as the host. However, the browser
+    // requests the page using the test domains (e.g., a.test, b.a.test) which
+    // resolve to 127.0.0.1 via HostResolver. To preserve the requested domain
+    // (which is crucial for origin-matching in these tests), we reconstruct the
+    // GURL using the "Host" header if present.
+    auto it = request.headers.find("Host");
+    if (it != request.headers.end()) {
+      request_url = GURL("https://" + it->second + request.relative_url);
+    }
+    std::string_view path = request_url.path();
+
+    if (path == "/prerender" || path == "/prerender_next" ||
+        path == "/prefetch_and_prerender") {
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+      http_response->set_code(net::HTTP_OK);
+      http_response->set_content_type("text/html");
+      http_response->set_content("<html><body>content</body></html>");
+
+      for (net::QueryIterator query_it(request_url); !query_it.IsAtEnd();
+           query_it.Advance()) {
+        std::string key = base::UnescapeBinaryURLComponent(query_it.GetKey());
+        std::string val = base::UnescapeBinaryURLComponent(query_it.GetValue());
+        if (key == "beacon") {
+          http_response->AddCustomHeader("on-prefetch-activation", val);
+        } else if (key == "supports_credentialed" && val == "1") {
+          http_response->AddCustomHeader("Supports-Loading-Mode",
+                                         "credentialed-prerender");
+        }
+      }
+      return http_response;
+    }
+
+    if (base::StartsWith(path, "/beacon", base::CompareCase::SENSITIVE)) {
+      EXPECT_EQ(request.method, net::test_server::METHOD_HEAD);
+
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &PrerenderActivationBeaconBrowserTest::SetBeaconSeenOnUIThread,
+              base::Unretained(this), request_url));
+
+      auto http_response =
+          std::make_unique<net::test_server::BasicHttpResponse>();
+
+      for (net::QueryIterator query_it(request_url); !query_it.IsAtEnd();
+           query_it.Advance()) {
+        std::string key = base::UnescapeBinaryURLComponent(query_it.GetKey());
+        std::string val = base::UnescapeBinaryURLComponent(query_it.GetValue());
+        if (key == "redirect") {
+          http_response->set_code(net::HTTP_FOUND);
+          http_response->AddCustomHeader("Location", val);
+          return http_response;
+        }
+      }
+
+      http_response->set_code(net::HTTP_OK);
+      return http_response;
+    }
+
+    return nullptr;
+  }
+
+  void SetBeaconSeenOnUIThread(const GURL& url) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    seen_beacons_.insert(url);
+    auto it = beacon_callbacks_.find(url);
+    if (it != beacon_callbacks_.end()) {
+      auto cb = std::move(it->second);
+      beacon_callbacks_.erase(it);
+      std::move(cb).Run();
+    }
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // These must only be accessed on the UI thread.
+  std::map<GURL, base::OnceClosure> beacon_callbacks_;
+  std::set<GURL> seen_beacons_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconBrowserTest,
+                       PrerenderOnlyActivationBeaconSent) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL prerender_url = GetUrl("/prerender?beacon=/beacon");
+  GURL beacon_url = GetUrl("/beacon");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_url, beacon_run_loop.QuitClosure());
+
+  // Start prerender.
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  // Navigate to the prerendered page to activate it.
+  NavigatePrimaryPage(prerender_url);
+
+  // Wait for the beacon request.
+  beacon_run_loop.Run();
+
+  EXPECT_TRUE(WasBeaconSeen(beacon_url));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconBrowserTest,
+                       PrerenderOnlyActivationBeaconCrossOriginNotSent) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL cross_origin_beacon_url = GetCrossSiteUrl("/beacon");
+  GURL prerender_url =
+      GetUrl("/prerender?beacon=" +
+             base::EscapeQueryParamValue(cross_origin_beacon_url.spec(), true));
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  // Start prerender.
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  // Navigate to the prerendered page to activate it.
+  NavigatePrimaryPage(prerender_url);
+
+  // Give time for any potential beacon to be sent (it shouldn't).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+  run_loop.Run();
+
+  EXPECT_FALSE(WasBeaconSeen(cross_origin_beacon_url));
+}
+
+class PrerenderActivationBeaconRedirectBrowserTest
+    : public PrerenderActivationBeaconBrowserTest {
+ public:
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/server-redirect-beacon",
+        base::BindRepeating(HandleBeaconRedirectRequest)));
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/redirected.html",
+        base::BindRepeating(HandleRedirectedPageRequest)));
+    PrerenderActivationBeaconBrowserTest::SetUp();
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleBeaconRedirectRequest(const net::test_server::HttpRequest& request) {
+    GURL request_url = request.GetURL();
+    std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_FOUND);
+    http_response->AddCustomHeader("Location", dest);
+    http_response->AddCustomHeader("on-prefetch-activation", "/beacon1");
+    http_response->set_content_type("text/html");
+    http_response->set_content(base::StringPrintf(
+        "<!doctype html><p>Redirecting to %s", dest.c_str()));
+    return http_response;
+  }
+
+  static std::unique_ptr<net::test_server::HttpResponse>
+  HandleRedirectedPageRequest(const net::test_server::HttpRequest& request) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader("on-prefetch-activation", "/beacon2");
+    http_response->set_content_type("text/html");
+    http_response->set_content("<html><body>content</body></html>");
+    return http_response;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconRedirectBrowserTest,
+                       ActivationBeaconRedirected) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL redirected_url = GetUrl("/redirected.html");
+  GURL prerender_url =
+      GetUrl("/server-redirect-beacon?" + redirected_url.spec());
+  GURL beacon_url2 = GetUrl("/beacon2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_url2, beacon_run_loop.QuitClosure());
+
+  // Start prerender.
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  EXPECT_TRUE(HasHostForUrl(prerender_url));
+
+  // Navigate to the prerendered page to activate it.
+  NavigatePrimaryPage(prerender_url);
+
+  // Wait for the beacon request.
+  beacon_run_loop.Run();
+
+  EXPECT_TRUE(WasBeaconSeen(beacon_url2));
+  EXPECT_FALSE(HasHostForUrl(prerender_url));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconBrowserTest,
+                       ActivationBeaconNavigatedAway) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL prerender_url = GetUrl("/prerender?beacon=/beacon1");
+  GURL prerender_next_url = GetUrl("/prerender_next?beacon=/beacon2");
+  GURL beacon_url1 = GetUrl("/beacon1");
+  GURL beacon_url2 = GetUrl("/beacon2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_url1, beacon_run_loop.QuitClosure());
+
+  // Start prerender.
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  // Navigate the prerendered page to `prerender_next_url`.
+  NavigatePrerenderedPage(host_id, prerender_next_url);
+  WaitForPrerenderLoadCompletion(host_id);
+
+  // Navigate to the prerendered page to activate it.
+  NavigatePrimaryPage(prerender_url);
+
+  // Wait for the beacon request.
+  beacon_run_loop.Run();
+
+  EXPECT_TRUE(WasBeaconSeen(beacon_url1));
+  EXPECT_FALSE(WasBeaconSeen(beacon_url2));
+}
+
+class PrefetchToPrerenderActivationBeaconBrowserTest
+    : public PrerenderActivationBeaconBrowserTest {
+ public:
+  PrefetchToPrerenderActivationBeaconBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPrefetchTesting, features::kPrefetchActivationBeacon}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrefetchToPrerenderActivationBeaconBrowserTest,
+                       PrefetchToPrerenderUpgradeActivationBeaconSent) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL url = GetUrl("/prefetch_and_prerender?beacon=/beacon");
+  GURL beacon_url = GetUrl("/beacon");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_url, beacon_run_loop.QuitClosure());
+
+  // 1. Start prefetch and wait for completion.
+  base::RunLoop prefetch_run_loop;
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
+      base::BindRepeating(
+          [](base::RunLoop* run_loop, const GURL& url,
+             base::WeakPtr<PrefetchContainer> prefetch_container) {
+            CHECK(prefetch_container);
+            CHECK_EQ(prefetch_container->GetURL(), url);
+            run_loop->Quit();
+          },
+          &prefetch_run_loop, url));
+
+  AddPrefetchAsync(url);
+  prefetch_run_loop.Run();
+  EXPECT_EQ(GetRequestCount(url), 1);
+
+  // 2. Start prerender for the same URL.
+  // It should reuse the prefetch and not make a new network request.
+  PrerenderHostId host_id = AddPrerender(url);
+  ASSERT_TRUE(host_id);
+
+  // If prefetch is reused, it should NOT hit the server again.
+  EXPECT_EQ(GetRequestCount(url), 1);
+
+  EXPECT_FALSE(WasBeaconSeen(beacon_url));
+
+  // 3. Navigate to the prerendered page to activate it.
+  NavigatePrimaryPage(url);
+
+  // 4. Wait for the beacon request.
+  beacon_run_loop.Run();
+
+  EXPECT_TRUE(WasBeaconSeen(beacon_url));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconBrowserTest,
+                       SameSiteCrossOriginPrerenderSendsBeacon) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL prerender_url = GetSameSiteCrossOriginUrl(
+      "/prerender?supports_credentialed=1&beacon=/beacon");
+  GURL beacon_url = GetSameSiteCrossOriginUrl("/beacon");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_url, beacon_run_loop.QuitClosure());
+
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  NavigatePrimaryPage(prerender_url);
+
+  beacon_run_loop.Run();
+
+  EXPECT_TRUE(WasBeaconSeen(beacon_url));
+}
+
+class PrerenderActivationBeaconRedirectSameSiteBrowserTest
+    : public PrerenderActivationBeaconBrowserTest {
+ public:
+  PrerenderActivationBeaconRedirectSameSiteBrowserTest() = default;
+
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/server-redirect-beacon-samesite",
+        base::BindRepeating(
+            &PrerenderActivationBeaconRedirectSameSiteBrowserTest::
+                HandleRedirectRequest,
+            base::Unretained(this))));
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest,
+        "/prerender/prerender_with_beacon.html",
+        base::BindRepeating(
+            &PrerenderActivationBeaconRedirectSameSiteBrowserTest::
+                HandlePrerenderPageRequest,
+            base::Unretained(this))));
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &net::test_server::HandlePrefixedRequest, "/beacon",
+        base::BindRepeating(
+            &PrerenderActivationBeaconRedirectSameSiteBrowserTest::
+                HandleBeaconRequest,
+            base::Unretained(this))));
+    PrerenderActivationBeaconBrowserTest::SetUp();
+  }
+
+  void SetBeaconCallback(base::OnceClosure callback) {
+    beacon_callback_ = std::move(callback);
+  }
+
+  bool beacon_seen() const { return beacon_seen_; }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRedirectRequest(
+      const net::test_server::HttpRequest& request) {
+    GURL request_url = request.GetURL();
+    std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_FOUND);
+    http_response->AddCustomHeader("Location", dest);
+    http_response->AddCustomHeader("on-prefetch-activation", "/beacon");
+    http_response->set_content_type("text/html");
+    http_response->set_content(base::StringPrintf(
+        "<!doctype html><p>Redirecting to %s", dest.c_str()));
+    return http_response;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandlePrerenderPageRequest(
+      const net::test_server::HttpRequest& request) {
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    http_response->AddCustomHeader("Supports-Loading-Mode",
+                                   "credentialed-prerender");
+    http_response->AddCustomHeader("on-prefetch-activation", "/beacon");
+    http_response->set_content_type("text/html");
+    http_response->set_content("<html><body>content</body></html>");
+    return http_response;
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleBeaconRequest(
+      const net::test_server::HttpRequest& request) {
+    EXPECT_EQ(request.method, net::test_server::METHOD_HEAD);
+
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PrerenderActivationBeaconRedirectSameSiteBrowserTest::
+                           SetBeaconSeenOnUIThread,
+                       base::Unretained(this)));
+
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_code(net::HTTP_OK);
+    return http_response;
+  }
+
+  void SetBeaconSeenOnUIThread() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    beacon_seen_ = true;
+    if (beacon_callback_) {
+      std::move(beacon_callback_).Run();
+    }
+  }
+
+  base::OnceClosure beacon_callback_;
+  bool beacon_seen_ = false;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderActivationBeaconRedirectSameSiteBrowserTest,
+    SameOriginRedirectToSameSiteCrossOrigin_BeaconInRedirectIgnored) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL redirected_url =
+      GetSameSiteCrossOriginUrl("/prerender/prerender_with_opt_in_header.html");
+  GURL prerender_url =
+      GetUrl("/server-redirect-beacon-samesite?" + redirected_url.spec());
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  NavigatePrimaryPage(prerender_url);
+
+  // Give time for any potential beacon to be sent (it shouldn't).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+  run_loop.Run();
+
+  EXPECT_FALSE(beacon_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderActivationBeaconRedirectSameSiteBrowserTest,
+    SameOriginRedirectToSameSiteCrossOrigin_BeaconInFinalResponseSent) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL redirected_url =
+      GetSameSiteCrossOriginUrl("/prerender/prerender_with_beacon.html");
+  GURL prerender_url =
+      GetUrl("/server-redirect-beacon-samesite?" + redirected_url.spec());
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_run_loop.QuitClosure());
+
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  NavigatePrimaryPage(prerender_url);
+
+  beacon_run_loop.Run();
+
+  EXPECT_TRUE(beacon_seen());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrerenderActivationBeaconBrowserTest,
+    SameSiteCrossOriginPrerender_CrossOriginBeaconDiscarded) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL cross_origin_beacon_url = GetCrossSiteUrl("/beacon");
+  GURL prerender_url = GetSameSiteCrossOriginUrl(
+      "/prerender?supports_credentialed=1&beacon=" +
+      base::EscapeQueryParamValue(cross_origin_beacon_url.spec(), true));
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  NavigatePrimaryPage(prerender_url);
+
+  // Give time for any potential beacon to be sent (it shouldn't).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+  run_loop.Run();
+
+  EXPECT_FALSE(WasBeaconSeen(cross_origin_beacon_url));
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconBrowserTest,
+                       ActivationBeaconRedirectToCrossOriginDiscarded) {
+  GURL referrer_url = GetUrl("/empty.html");
+  GURL cross_origin_beacon_url = GetCrossSiteUrl("/beacon");
+  std::string escaped_redirect =
+      base::EscapeQueryParamValue(cross_origin_beacon_url.spec(), true);
+  std::string beacon_path = "/beacon?redirect=" + escaped_redirect;
+  GURL prerender_url = GetUrl("/prerender?beacon=" +
+                              base::EscapeQueryParamValue(beacon_path, true));
+  GURL beacon_url = GetUrl(beacon_path);
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop beacon_run_loop;
+  SetBeaconCallback(beacon_url, beacon_run_loop.QuitClosure());
+
+  PrerenderHostId host_id = AddPrerender(prerender_url);
+  ASSERT_TRUE(host_id);
+
+  NavigatePrimaryPage(prerender_url);
+
+  // Wait for the first beacon request (it should be sent).
+  beacon_run_loop.Run();
+
+  // Give time for any potential cross-origin beacon to be sent (it shouldn't).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+  run_loop.Run();
+
+  EXPECT_TRUE(WasBeaconSeen(beacon_url));
+  EXPECT_FALSE(WasBeaconSeen(cross_origin_beacon_url));
 }
 
 }  // namespace content
