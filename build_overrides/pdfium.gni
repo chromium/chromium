@@ -4,6 +4,9 @@
 
 import("//base/allocator/partition_allocator/partition_alloc.gni")
 
+# Enable usage of the /BrotliDecode filter in PDFs.
+pdf_enable_brotli_override = false
+
 # Enable use of Javascript in PDFs.
 pdf_enable_v8_override = true
 
