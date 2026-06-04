@@ -80,12 +80,14 @@ ModelExecutorImpl::ModelExecutionTraceEvent::ModelExecutionTraceEvent(
     const ModelExecutorImpl::ExecutionState& state)
     : state(state) {
   TRACE_EVENT_BEGIN("segmentation_platform", perfetto::StaticString(event_name),
-                    perfetto::Track::FromPointer(&state));
+                    perfetto::NamedTrack::FromPointer(
+                        "segmentation_platform::ModelExecutorImpl", &state));
 }
 
 ModelExecutorImpl::ModelExecutionTraceEvent::~ModelExecutionTraceEvent() {
   TRACE_EVENT_END("segmentation_platform",
-                  perfetto::Track::FromPointer(&*state));
+                  perfetto::NamedTrack::FromPointer(
+                      "segmentation_platform::ModelExecutorImpl", &*state));
 }
 
 ModelExecutorImpl::ModelExecutorImpl(
