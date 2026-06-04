@@ -7,6 +7,7 @@
 #import "base/ios/device_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
@@ -86,19 +87,23 @@ void DragDropCellInPinnedView(NSString* cell_identifier) {
   XCUIElement* src_element =
       GetElementMatchingIdentifier(app, cell_identifier, XCUIElementTypeCell);
   XCUICoordinate* start_point =
-      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.1, 0.1)];
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
 
-  XCUIElement* dst_element = GetElementMatchingLabel(
-      app, l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB),
-      XCUIElementTypeAny);
+  XCUICoordinate* end_point = nil;
+  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
+    XCUIElement* dst_element = GetElementMatchingIdentifier(
+        app, kAppBarNewTabButtonIdentifier, XCUIElementTypeButton);
+    end_point =
+        [dst_element coordinateWithNormalizedOffset:CGVectorMake(0.5, -0.7)];
+  } else {
+    NSString* label = l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
+    XCUIElement* dst_element =
+        GetElementMatchingLabel(app, label, XCUIElementTypeAny);
+    end_point =
+        [dst_element coordinateWithNormalizedOffset:CGVectorMake(-1.5, -0.5)];
+  }
 
-  // Supposed position of the pinned view.
-  // The pinned view is hidden when there is no pinned tabs. We can't determine
-  // its position precisely.
-  XCUICoordinate* end_point =
-      [dst_element coordinateWithNormalizedOffset:CGVectorMake(-1.5, -0.5)];
-
-  [start_point pressForDuration:1.5
+  [start_point pressForDuration:0.5
            thenDragToCoordinate:end_point
                    withVelocity:XCUIGestureVelocityDefault
             thenHoldForDuration:1.0];
@@ -177,7 +182,7 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // TODO(crbug.com/514608938): Fix test for Chrome Next.
   if ([self isRunningTest:@selector(testDragRegularTabInPinnedView)]) {
-    config.features_disabled.push_back(kChromeNextIa);
+    config.features_enabled.push_back(kChromeNextIa);
   }
   return config;
 }

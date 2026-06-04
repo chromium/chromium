@@ -62,8 +62,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
 // Matcher for the "Done" button on the Tab Grid.
 id<GREYMatcher> GetMatcherForDoneButton() {
-  return grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
+  return chrome_test_util::TabGridDoneButton();
 }
 
 // Matcher for the "Edit" button on the Tab Grid.
@@ -100,7 +99,7 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  config.features_disabled.push_back(kChromeNextIa);
+  config.features_enabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -389,11 +388,17 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                    IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB)]
       performAction:grey_tap()];
 
-  // Verify "Done" button is disabled.
-  [self
-      waitForAnimationCompletionWithMacther:grey_allOf(
-                                                GetMatcherForDoneButton(),
-                                                grey_not(grey_enabled()), nil)];
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    // Verify "Done" button is enabled.
+    [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
+        assertWithMatcher:grey_enabled()];
+  } else {
+    // Verify "Done" button is disabled.
+    [self waitForAnimationCompletionWithMacther:grey_allOf(
+                                                    GetMatcherForDoneButton(),
+                                                    grey_not(grey_enabled()),
+                                                    nil)];
+  }
 
   // Verify Overflow Menu button is enabled.
   [[EarlGrey
@@ -475,10 +480,15 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       performAction:grey_tap()];
 
   // Verify "Done" button is disabled.
-  [self
-      waitForAnimationCompletionWithMacther:grey_allOf(
-                                                GetMatcherForDoneButton(),
-                                                grey_not(grey_enabled()), nil)];
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
+        assertWithMatcher:grey_enabled()];
+  } else {
+    [self waitForAnimationCompletionWithMacther:grey_allOf(
+                                                    GetMatcherForDoneButton(),
+                                                    grey_not(grey_enabled()),
+                                                    nil)];
+  }
 
   // Verify Overflow Menu button is enabled.
   [[EarlGrey
