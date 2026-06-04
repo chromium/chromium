@@ -14,6 +14,7 @@
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/passkey_util_swift.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/net_util.h"
 
 namespace {
 // The maximum time elapsed since a password was used to consider it for a
@@ -231,11 +232,8 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
   NSUInteger credentialIndex =
       [credentials indexOfObjectPassingTest:^BOOL(id<Credential> credential,
                                                   NSUInteger idx, BOOL* stop) {
-        NSString* domainSuffix = [NSString
-            stringWithFormat:@".%@", credential.registryControlledDomain];
-        BOOL matchingDomain =
-            [rpID isEqualToString:credential.registryControlledDomain] ||
-            [rpID hasSuffix:domainSuffix];
+        BOOL matchingDomain = credential_provider_extension::SecureHostsMatch(
+            rpID, credential.registryControlledDomain);
 
         base::TimeDelta timeSinceLastUse =
             now - base::Time::FromDeltaSinceWindowsEpoch(

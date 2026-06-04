@@ -11,6 +11,7 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/net_util.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
 
 @interface CredentialListMediator () <CredentialListHandler>
@@ -212,6 +213,17 @@
   return filteredCredentials;
 }
 
+// Returns `YES` if the password credential's registry controlled domain
+// matches the provided `requestedHost`.
+- (BOOL)passwordCredential:(id<Credential>)credential
+    matchesRegistryControlledDomain:(NSString*)requestedHost {
+  if (credential.registryControlledDomain.length == 0) {
+    return NO;
+  }
+  return credential_provider_extension::SecureHostsMatch(
+      requestedHost, credential.registryControlledDomain);
+}
+
 // Returns `YES` if the provided `credential` matches at least one of the
 // `serviceIdentifiers`.
 - (BOOL)passwordCredential:(id<Credential>)credential
@@ -224,13 +236,9 @@
     }
 
     // Try matching with registryControlledDomain if available.
-    if (credential.registryControlledDomain.length > 0) {
-      NSString* domainSuffix = [NSString
-          stringWithFormat:@".%@", credential.registryControlledDomain];
-      if ([requestedHost isEqualToString:credential.registryControlledDomain] ||
-          [requestedHost hasSuffix:domainSuffix]) {
-        return YES;
-      }
+    if ([self passwordCredential:credential
+            matchesRegistryControlledDomain:requestedHost]) {
+      return YES;
     }
 
     // Do not fall through to the NSURL-host fallback for android:// service
@@ -249,12 +257,9 @@
                          : nil;
     NSString* credHost = credURL.host ?: credential.serviceIdentifier;
 
-    if (credHost.length > 0) {
-      NSString* credDomainSuffix = [NSString stringWithFormat:@".%@", credHost];
-      if ([requestedHost isEqualToString:credHost] ||
-          [requestedHost hasSuffix:credDomainSuffix]) {
-        return YES;
-      }
+    if (credential_provider_extension::SecureHostsMatch(requestedHost,
+                                                        credHost)) {
+      return YES;
     }
   }
   return NO;

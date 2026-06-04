@@ -29,8 +29,18 @@ ios_extension_assert_no_deps = [ "//ios/chrome/browser/*" ]
 ios_assert_no_deps = _ios_transient_bad_dependencies
 if (!use_blink) {
   ios_assert_no_deps += _ios_conceptually_bad_dependencies
+
+  # Disallow all "//net" dependencies, except "//net/base".
   ios_extension_assert_no_deps += [
-    "//net/*",
-    "//url/*",
+    "//net",
+    "//net/android/*",
+    "//net/cert/*",
+    "//net/data/*",
+    "//net/dns/*",
+    "//net/http/*",
+    "//net/log/*",
+    "//net/third_party/*",
+    "//net/tools/*",
+    "//net/traffic_annotation/*",
   ]
 }

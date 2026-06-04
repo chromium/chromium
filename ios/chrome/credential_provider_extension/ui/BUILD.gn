@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("net_util") {
+  sources = [
+    "net_util.h",
+    "net_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//net/base:registry_controlled_domains",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("ui") {
   sources = [
     "consent_coordinator.h",
@@ -58,6 +70,7 @@ source_set("ui") {
     ":credential_list_ui_handler",
     ":credential_response_handler",
     ":feature_flags",
+    ":net_util",
     ":utils",
     "//base",
     "//components/password_manager/core/browser/generation:core",
@@ -180,6 +193,7 @@ source_set("unit_tests") {
     "credential_list_mediator+Testing.h",
     "credential_list_mediator_unittest.mm",
     "multi_profile_passkey_creation_view_controller_unittest.mm",
+    "net_util_unittest.mm",
     "new_password_coordinator_unittest.mm",
     "new_password_mediator_unittest.mm",
     "passkey_error_alert_view_controller_unittest.mm",
@@ -190,6 +204,7 @@ source_set("unit_tests") {
     ":mock_credential_list_consumer",
     ":mock_credential_list_ui_handler",
     ":mock_credential_response_handler",
+    ":net_util",
     ":ui",
     "//base",
     "//base/test:test_support",
@@ -206,6 +221,7 @@ source_set("unit_tests") {
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",
     "//ios/chrome/credential_provider_extension:system_strings",
+    "//net/base:registry_controlled_domains",
     "//testing/gtest",
   ]
 }

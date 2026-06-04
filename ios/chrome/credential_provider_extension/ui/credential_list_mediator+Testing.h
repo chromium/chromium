@@ -7,6 +7,9 @@
 
 #import "ios/chrome/credential_provider_extension/ui/credential_list_mediator.h"
 
+@class ASCredentialServiceIdentifier;
+@protocol Credential;
+
 // Unit test interface for CredentialListMediator.
 @interface CredentialListMediator (Testing)
 
@@ -26,6 +29,17 @@
 
 // Tells the consumer to show the passed in suggested and all credentials.
 - (void)presentCredentials;
+
+// Returns `YES` if the password credential's registry controlled domain
+// matches the provided `requestedHost`.
+- (BOOL)passwordCredential:(id<Credential>)credential
+    matchesRegistryControlledDomain:(NSString*)requestedHost;
+
+// Returns `YES` if the provided `credential` matches at least one of the
+// `serviceIdentifiers`.
+- (BOOL)passwordCredential:(id<Credential>)credential
+    matchesServiceIdentifiers:
+        (NSArray<ASCredentialServiceIdentifier*>*)serviceIdentifiers;
 
 @end
 

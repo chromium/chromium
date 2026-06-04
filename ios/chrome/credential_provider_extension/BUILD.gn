@@ -204,6 +204,7 @@ source_set("passkey_request_details") {
     "//components/webauthn/ios:passkey_types",
     "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/credential_provider_extension/ui:feature_flags",
+    "//ios/chrome/credential_provider_extension/ui:net_util",
   ]
   frameworks = [
     "AuthenticationServices.framework",
