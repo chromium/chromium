@@ -4555,7 +4555,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.recent_entry_menu_item,
-                                        item(R.id.recent_entry_group_menu_item))));
+                                        item(R.id.recent_entry_group_menu_item),
+                                        item(R.id.divider_line_id),
+                                        item(R.id.recent_entry_tab_menu_item),
+                                        item(R.id.recent_entry_tab_menu_item))));
 
         List<ListItem> items =
                 findItemById(
@@ -4607,7 +4610,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                                 R.string.menu_window_title_with_tab_count,
                                                 "Custom Group",
                                                 tabsText),
-                                        item(restoreText))));
+                                        item(restoreText),
+                                        item(0),
+                                        item("Tab 1 Title"),
+                                        item("Tab 2 Title"))));
 
         runHistorySubmenuWithRecentlyClosedGroupTest("Custom Group", expectedTitles);
     }
@@ -4627,7 +4633,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.string.menu_recent_tabs),
                                 item(R.string.menu_quick_delete),
                                 item(0),
-                                item(tabsText, item(restoreText))));
+                                item(
+                                        tabsText,
+                                        item(restoreText),
+                                        item(0),
+                                        item("Tab 1 Title"),
+                                        item("Tab 2 Title"))));
 
         runHistorySubmenuWithRecentlyClosedGroupTest("", expectedTitles);
     }

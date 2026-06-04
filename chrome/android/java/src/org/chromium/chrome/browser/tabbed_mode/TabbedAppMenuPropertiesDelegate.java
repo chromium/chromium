@@ -1091,7 +1091,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                         /* isOffTheRecord= */ false,
                                         // No live Tab object is available to get a cached favicon.
                                         /* cachedFavicon= */ null,
-                                        /* fallbackToHost= */ true)));
+                                        /* fallbackToHost= */ false)));
                 count++;
             } else if (entry instanceof RecentlyClosedWindow window) {
                 items.add(buildClosedWindowMenuItem(window));
@@ -1200,6 +1200,31 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 () -> {
                     List<ListItem> submenuItems = new ArrayList<>();
                     submenuItems.add(buildRestoreGroupMenuItem(group));
+
+                    List<RecentlyClosedTab> tabs = group.getTabs();
+                    if (tabs.isEmpty()) {
+                        return submenuItems;
+                    }
+                    submenuItems.add(
+                            new ListItem(
+                                    AppMenuHandler.AppMenuItemType.DIVIDER,
+                                    buildModelForDivider(R.id.divider_line_id)));
+                    for (RecentlyClosedTab tab : tabs) {
+                        LazyOneshotSupplier<Drawable> iconSupplier =
+                                createIconSupplierForTab(
+                                        tab.getUrl(),
+                                        tab.getTabGroupId(),
+                                        // Recently closed tabs are not tracked for incognito.
+                                        /* isOffTheRecord= */ false,
+                                        // No live Tab object is available to get a cached favicon.
+                                        /* cachedFavicon= */ null,
+                                        /* fallbackToHost= */ false);
+                        submenuItems.add(
+                                buildRecentEntryMenuItem(
+                                        tab,
+                                        TitleUtil.getTitleForDisplay(tab.getTitle(), tab.getUrl()),
+                                        iconSupplier));
+                    }
                     return submenuItems;
                 };
 

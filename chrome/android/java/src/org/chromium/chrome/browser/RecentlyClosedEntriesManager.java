@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTabManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
@@ -321,10 +322,19 @@ public class RecentlyClosedEntriesManager {
                 if (entry instanceof RecentlyClosedWindow window && window.getInstanceId() == id) {
                     return window;
                 }
-            } else {
-                if (entry instanceof SessionRecentlyClosedEntry sessionEntry
-                        && sessionEntry.getSessionId() == id) {
+            } else if (entry instanceof SessionRecentlyClosedEntry sessionEntry) {
+                if (sessionEntry.getSessionId() == id) {
                     return sessionEntry;
+                }
+                // TODO(crbug.com/509065810): We might be able to make searching for tabs inside
+                // groups faster by using a different path for tab groups. We have access to
+                // both the parent group entry as well as the exact tab entry.
+                if (sessionEntry instanceof RecentlyClosedGroup group) {
+                    for (RecentlyClosedTab tab : group.getTabs()) {
+                        if (tab.getSessionId() == id) {
+                            return tab;
+                        }
+                    }
                 }
             }
         }
