@@ -2441,23 +2441,33 @@ INSTANTIATE_TEST_SUITE_P(
     LinkCaptureTestParamToString);
 
 // kEnabledViaClientMode should capture when the client modes are specified
-// (including `auto`).
+// (including `auto`). Mimics the `All_LeftClick` tests to ensure all default
+// navigation capturing use-cases are covered.
 INSTANTIATE_TEST_SUITE_P(
     ClientModeEnabledCaptured,
     NavCaptureParameterizedBrowserTest,
     testing::Combine(
-        testing::Values(ClientModeCombination::kBothNavigateNew,
-                        ClientModeCombination::kAuto),
+        testing::Values(
+            ClientModeCombination::kAuto,
+            ClientModeCombination::kBothNavigateNew,
+            ClientModeCombination::kBothNavigateExisting,
+            ClientModeCombination::kBothFocusExisting,
+            ClientModeCombination::kAppANavigateExistingAppBFocusExisting),
         testing::Values(AppUserDisplayMode::kBothStandalone),
-        testing::Values(LinkCapturing::kEnabledViaClientMode,
-                        LinkCapturing::kEnabledWithSelfLinkCapture),
-        testing::Values(StartingPoint::kTab),
-        testing::Values(Destination::kScopeA2B),
+        testing::Values(LinkCapturing::kEnabledViaClientMode),
+        testing::Values(StartingPoint::kAppWindow, StartingPoint::kTab),
+        testing::Values(Destination::kScopeA2A,
+                        Destination::kScopeA2B,
+                        Destination::kScopeA2X),
         testing::Values(RedirectType::kNone),
-        testing::Values(NavigationElement::kElementLink),
+        testing::Values(NavigationElement::kElementLink,
+                        NavigationElement::kElementButton),
         testing::Values(test::ClickMethod::kLeftClick),
-        testing::Values(OpenerMode::kNoOpener),
-        testing::Values(NavigationTarget::kSelf, NavigationTarget::kBlank)),
+        testing::Values(OpenerMode::kOpener, OpenerMode::kNoOpener),
+        testing::Values(NavigationTarget::kSelf,
+                        NavigationTarget::kFrame,
+                        NavigationTarget::kBlank,
+                        NavigationTarget::kNoFrame)),
     LinkCaptureTestParamToString);
 
 INSTANTIATE_TEST_SUITE_P(
