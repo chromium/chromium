@@ -148,6 +148,7 @@ GlicKeyedService::GlicKeyedService(
               ? std::make_unique<GlicActorPolicyChecker>(*profile_)
               : nullptr),
       enabling_(std::make_unique<GlicEnabling>(
+          base::PassKey<GlicKeyedService>(),
           profile,
           &profile_manager->GetProfileAttributesStorage())),
       metrics_(std::make_unique<GlicMetrics>(profile, enabling_.get())),

@@ -106,7 +106,7 @@ class GlicShareImageHandlerTest : public testing::Test {
     mock_service_ = static_cast<MockGlicKeyedService*>(
         GlicKeyedServiceFactory::GetGlicKeyedService(profile_, true));
 
-    enabling_ = std::make_unique<GlicEnabling>(
+    enabling_ = GlicEnabling::CreateForTesting(
         profile_, profile_manager_.profile_attributes_storage());
     handler_ =
         std::make_unique<NiceMock<TestGlicShareImageHandler>>(*mock_service_);

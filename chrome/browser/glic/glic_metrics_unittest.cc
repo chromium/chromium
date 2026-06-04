@@ -222,7 +222,7 @@ class GlicMetricsTest : public GlicMetricsTestBase {
         /*disabled_features=*/{features::kGlicFixTimeToFirstQueryKillSwitch});
     GlicMetricsTestBase::SetUp();
 
-    enabling_ = std::make_unique<GlicEnabling>(
+    enabling_ = GlicEnabling::CreateForTesting(
         profile(), &profile_manager()->GetProfileAttributesStorage());
     metrics_ = std::make_unique<GlicMetrics>(profile(), enabling_.get());
     auto delegate = std::make_unique<MockDelegate>();
@@ -735,7 +735,7 @@ TEST_F(GlicMetricsFeaturesEnabledTest, TimeToEnabledFromStartupDelayed) {
   // Create new GlicMetrics that starts with glic disabled.
   // We use a manual instance here to avoid interference with the one in
   // GlicKeyedService which might already have recorded something.
-  auto enabling = std::make_unique<GlicEnabling>(
+  auto enabling = GlicEnabling::CreateForTesting(
       profile(), &profile_manager()->GetProfileAttributesStorage());
   base::HistogramTester delayed_histogram_tester;
   auto manual_metrics =
@@ -995,7 +995,7 @@ class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
         {}, {features::kGlicFixTimeToFirstQueryKillSwitch});
     GlicMetricsTestBase::SetUp();
 
-    enabling_ = std::make_unique<GlicEnabling>(
+    enabling_ = GlicEnabling::CreateForTesting(
         profile(), &profile_manager()->GetProfileAttributesStorage());
     metrics_ = std::make_unique<GlicMetrics>(profile(), enabling_.get());
     auto delegate = std::make_unique<MockDelegate>();

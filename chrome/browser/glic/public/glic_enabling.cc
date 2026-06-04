@@ -13,6 +13,7 @@
 #include "base/functional/function_ref.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -1006,8 +1007,18 @@ GlicEnabling::GetGeminiEnterpriseSettings(Profile* profile) {
   return ParseGeminiEnterpriseSettings(pref_dict);
 }
 
-GlicEnabling::GlicEnabling(Profile* profile,
-                           ProfileAttributesStorage* profile_attributes_storage)
+// static
+std::unique_ptr<GlicEnabling> GlicEnabling::CreateForTesting(  // IN-TEST
+    Profile* profile,
+    ProfileAttributesStorage* profile_attributes_storage) {
+  return std::make_unique<GlicEnabling>(base::PassKey<GlicEnabling>(), profile,
+                                        profile_attributes_storage);
+}
+
+GlicEnabling::GlicEnabling(
+    base::PassKey<GlicKeyedService, GlicEnabling> pass_key,
+    Profile* profile,
+    ProfileAttributesStorage* profile_attributes_storage)
     : profile_(profile),
       profile_attributes_storage_(profile_attributes_storage) {
   pref_registrar_.Init(profile_->GetPrefs());

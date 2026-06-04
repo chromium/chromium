@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "base/values.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
@@ -126,6 +127,8 @@ enum class RequiredExperimentalOptIn {
 // Finally, an eligible profile may be Glic-Enabled. In this state, Glic UI is
 // visible and usable by the user. This state can change at runtime so Glic
 // entry points should depend on this state.
+class GlicKeyedService;
+
 class GlicEnabling final : public signin::IdentityManager::Observer,
                            public subscription_eligibility::
                                SubscriptionEligibilityService::Observer {
@@ -347,8 +350,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   };
   static ProfileEnablement EnablementForProfile(Profile* profile);
 
-  explicit GlicEnabling(Profile* profile,
-                        ProfileAttributesStorage* profile_attributes_storage);
+  static std::unique_ptr<GlicEnabling> CreateForTesting(
+      Profile* profile,
+      ProfileAttributesStorage* profile_attributes_storage);
+
+  GlicEnabling(base::PassKey<GlicKeyedService, GlicEnabling> pass_key,
+               Profile* profile,
+               ProfileAttributesStorage* profile_attributes_storage);
   ~GlicEnabling() override;
 
   // Returns true if the given profile is allowed to use Glic. This is the
