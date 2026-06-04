@@ -609,6 +609,10 @@ class GlicButton : public GlicBaseShim<T>,
   // class.
   void UpdateColors() override { GlicBaseShim<T>::UpdateColors(); }
 
+  WidthState width_state() { return width_state_; }
+
+  int normal_width() { return normal_width_; }
+
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   // The model adapter for the context menu.
@@ -834,8 +838,6 @@ class GlicButton : public GlicBaseShim<T>,
   gfx::Size PreferredSize() const {
     return this->GetLayoutManager()->GetPreferredSize(this);
   }
-
-  WidthState width_state() { return width_state_; }
 
   virtual void OnLabelVisibilityChanged() {}
 

@@ -208,6 +208,7 @@ constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 constexpr int kLargeSpaceBetweenButtons = 6;
 constexpr int kInsideBorderAroundGlicButtons = 2;
 constexpr int kOutsideBorderAroundGlicButtons = 11;
+constexpr int kGlicButtonMargin = 5;
 
 // Returns whether `point` should be treated as part of the caption area in
 // `view`. Recursively traverses into icon containers to correctly handle
@@ -572,6 +573,8 @@ void ToolbarView::Init() {
     InitGlicContainer();
 
     glic_button_ = AddChildView(CreateGlicButton());
+    glic_button_->SetProperty(views::kMarginsKey,
+                              gfx::Insets::VH(0, kGlicButtonMargin));
     UpdateGlicButtonVisibility();
   }
 

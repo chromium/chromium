@@ -217,6 +217,35 @@ void ToolbarGlicButton::Expand() {
   GlicButton<ToolbarButton>::Expand();
 }
 
+void ToolbarGlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  GlicButton<ToolbarButton>::OnBoundsChanged(previous_bounds);
+
+  // Button layout is kPreferredSnapToMinimum, so if the width is smaller than
+  // the normal width or if the button is collapsed, the label will be hidden.
+  bool should_hide_label =
+      width() < normal_width() || width_state() == WidthState::kCollapsed;
+
+  auto* image_view = static_cast<views::ImageView*>(image_container_view());
+  auto* box_layout = static_cast<views::BoxLayout*>(GetLayoutManager());
+
+  if (should_hide_label) {
+    if (label()->GetVisible()) {
+      label()->SetVisible(false);
+      image_view->SetProperty(views::kMarginsKey, gfx::Insets());
+      box_layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kCenter);
+    }
+  } else {
+    if (!label()->GetVisible()) {
+      label()->SetVisible(true);
+      image_view->SetProperty(views::kMarginsKey,
+                              gfx::Insets().set_left(kIconLeftMargin));
+      box_layout->set_main_axis_alignment(
+          views::BoxLayout::MainAxisAlignment::kStart);
+    }
+  }
+}
+
 bool ToolbarGlicButton::GetIsShowingNudge() const {
   return width_state_ == WidthState::kNudge;
 }
