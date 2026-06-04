@@ -129,8 +129,8 @@ const net::PartialNetworkTrafficAnnotationTag& GetUpdateDeviceAnnotation() {
           "Only sent when Nearby Share is enabled and the user is signed in "
           "with their Google account."
         chrome_policy {
-          SigninAllowed {
-            SigninAllowed: false
+          BrowserSignin {
+            BrowserSignin: 0
           }
         }
       })");
@@ -165,8 +165,8 @@ const net::PartialNetworkTrafficAnnotationTag& GetContactsAnnotation() {
           "Only sent when Nearby Share is enabled and the user is signed in "
           "with their Google account."
         chrome_policy {
-          SigninAllowed {
-            SigninAllowed: false
+          BrowserSignin {
+            BrowserSignin: 0
           }
         }
           })");
@@ -205,8 +205,8 @@ GetListPublicCertificatesAnnotation() {
           "Only sent when Nearby Share is enabled and the user is signed in "
           "with their Google account."
         chrome_policy {
-          SigninAllowed {
-            SigninAllowed: false
+          BrowserSignin {
+            BrowserSignin: 0
           }
         }
           })");

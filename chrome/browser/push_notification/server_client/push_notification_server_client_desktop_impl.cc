@@ -71,8 +71,8 @@ GetRegisterPushNotificationServiceAnnotation() {
           "Only sent when Chrome Desktop Push Notification Service"
           "is enabled and the user is signed in with their Google account."
         chrome_policy {
-          SigninAllowed {
-            SigninAllowed: false
+          BrowserSignin {
+            BrowserSignin: 0
           }
         }
       })");

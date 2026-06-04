@@ -87,9 +87,8 @@ void UserInfoFetcher::Start(const std::string& access_token) {
             "This feature cannot be controlled by Chrome settings, but users "
             "can sign out of Chrome to disable it."
           chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
+            BrowserSignin {
+              BrowserSignin: 0
             }
           }
         })");

@@ -195,9 +195,8 @@ void GaiaOAuthClient::Core::GetTokensFromAuthCode(
             "This feature cannot be disabled in settings, but if the user "
             "signs out of Chrome, this request would not be made."
           chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
+            BrowserSignin {
+              BrowserSignin: 0
             }
           }
         })"));
@@ -249,9 +248,8 @@ void GaiaOAuthClient::Core::RefreshToken(
             "This feature cannot be disabled in settings, but if the user "
             "signs out of Chrome, this request would not be made."
           chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
+            BrowserSignin {
+              BrowserSignin: 0
             }
           }
         })"));
@@ -306,9 +304,8 @@ void GaiaOAuthClient::Core::GetUserInfoImpl(
             "This feature cannot be disabled in settings, but if the user "
             "signs out of Chrome, this request would not be made."
           chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
+            BrowserSignin {
+              BrowserSignin: 0
             }
           }
         })"));
@@ -352,9 +349,8 @@ void GaiaOAuthClient::Core::GetTokenInfo(const std::string& qualifier,
             "This feature cannot be disabled in settings, but if the user "
             "signs out of Chrome, this request would not be made."
           chrome_policy {
-            SigninAllowed {
-              policy_options {mode: MANDATORY}
-              SigninAllowed: false
+            BrowserSignin {
+              BrowserSignin: 0
             }
           }
         })"));
@@ -397,8 +393,8 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
             "This feature cannot be disabled in settings, but if the user "
             "signs out of Chrome, this request would not be made."
           chrome_policy {
-            SigninAllowed {
-              SigninAllowed: false
+            BrowserSignin {
+              BrowserSignin: 0
             }
           }
         })"));

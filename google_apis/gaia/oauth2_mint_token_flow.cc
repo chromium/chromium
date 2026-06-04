@@ -699,8 +699,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
 
 net::PartialNetworkTrafficAnnotationTag
 OAuth2MintTokenFlow::GetNetworkTrafficAnnotationTag() {
-  return net::DefinePartialNetworkTrafficAnnotation(
-      "oauth2_mint_token_flow", "oauth2_api_call_flow", R"(
+  return net::DefinePartialNetworkTrafficAnnotation("oauth2_mint_token_flow",
+                                                    "oauth2_api_call_flow", R"(
       semantics {
         sender: "Chrome Identity API"
         description:
@@ -717,9 +717,8 @@ OAuth2MintTokenFlow::GetNetworkTrafficAnnotationTag() {
           "This feature cannot be disabled by settings, however the request is "
           "made only for signed-in users."
         chrome_policy {
-          SigninAllowed {
-            policy_options {mode: MANDATORY}
-            SigninAllowed: false
+          BrowserSignin {
+            BrowserSignin: 0
           }
         }
       })");

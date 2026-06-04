@@ -82,9 +82,8 @@ static constexpr net::NetworkTrafficAnnotationTag kCertXmlTrafficAnnotation =
           "This feature cannot be disabled in settings, but if user signs "
           "out of Chrome, this request would not be made."
         chrome_policy {
-          SigninAllowed {
-            policy_options {mode: MANDATORY}
-            SigninAllowed: false
+          BrowserSignin {
+            BrowserSignin: 0
           }
         }
       })");
