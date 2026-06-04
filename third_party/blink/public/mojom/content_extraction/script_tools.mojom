@@ -59,8 +59,10 @@ interface ModelContextHost {
   // renderer process is killed.
   UnregisterScriptTool(string name);
 
-  // Returns all script tools visible to the caller document.
-  GetScriptTools() => (array<ScriptTool> tools);
+  // Returns all script tools visible to the caller document, optionally filtered
+  // by `from_origins`. If `from_origins` is empty, it defaults to returning
+  // only tools that are same-origin with the caller document.
+  GetScriptTools(array<url.mojom.Origin> from_origins) => (array<ScriptTool> tools);
 
   // Executes a ScriptTool hosted in another Document. The tool can be located
   // based on the unique combination of (`tool_owner_frame_token`, `name`), but

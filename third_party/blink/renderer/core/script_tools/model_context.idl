@@ -27,13 +27,27 @@ dictionary RegisteredTool : RegisteredToolDeprecated {
   ToolAnnotations annotations;
 };
 
+dictionary ModelContextGetToolOptions {
+  // A list of origins, controlling which documents have their tools included
+  // in the list
+  //
+  // In short:
+  //   1. When this array is empty or omitted, only tools exposed to
+  //      documents that are same-origin with the one calling getTools() are
+  //      included in the result.
+  //   2. When it is provided and non-empty, tools in documents whose origins
+  //      match at least one in the list are included. In addition, same-origin
+  //      tools are included as in (1).
+  sequence<USVString> fromOrigins;
+};
+
 [
     Exposed=Window,
     SecureContext,
     RuntimeEnabled=WebMCP
 ] interface ModelContext : EventTarget {
   [CallWith=ScriptState, RaisesException, MeasureAs=ModelContextRegisterTool] undefined registerTool(ModelContextTool tool, optional ModelContextRegisterToolOptions options = {});
-  [CallWith=ScriptState] Promise<sequence<RegisteredTool>> getTools();
+  [CallWith=ScriptState] Promise<sequence<RegisteredTool>> getTools(optional ModelContextGetToolOptions options = {});
   [CallWith=ScriptState] Promise<DOMString?> executeTool(
       RegisteredTool tool,
       DOMString input_arguments,
@@ -41,3 +55,4 @@ dictionary RegisteredTool : RegisteredToolDeprecated {
   );
   attribute EventHandler ontoolchange;
 };
+

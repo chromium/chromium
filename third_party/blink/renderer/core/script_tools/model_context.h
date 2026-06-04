@@ -33,6 +33,7 @@ class Element;
 class ExecuteToolOptions;
 class SourceLocation;
 class ModelContextOptions;
+class ModelContextGetToolOptions;
 class ModelContextRegisterToolOptions;
 class ModelContextTool;
 class RegisteredTool;
@@ -130,7 +131,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
                     ModelContextRegisterToolOptions* options,
                     ExceptionState& exception_state);
   ScriptPromise<IDLSequence<RegisteredTool>> getTools(
-      ScriptState* script_state);
+      ScriptState* script_state,
+      const ModelContextGetToolOptions* options = nullptr);
   ScriptPromise<IDLNullable<IDLString>> executeTool(
       ScriptState* script_state,
       RegisteredTool* tool,

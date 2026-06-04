@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_model_context_get_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_register_tool_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_registered_tool.h"
@@ -770,12 +771,30 @@ const AtomicString& ModelContext::InterfaceName() const {
 }
 
 ScriptPromise<IDLSequence<RegisteredTool>> ModelContext::getTools(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    const ModelContextGetToolOptions* options) {
   if (!document_->IsActive()) {
     return ScriptPromise<IDLSequence<RegisteredTool>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                            "The document is not active."));
+  }
+
+  Vector<scoped_refptr<const SecurityOrigin>> from_origins;
+  if (options && options->hasFromOrigins()) {
+    for (const String& origin_str : options->fromOrigins()) {
+      scoped_refptr<const SecurityOrigin> origin =
+          SecurityOrigin::CreateFromString(origin_str);
+      if (!origin->IsPotentiallyTrustworthy()) {
+        return ScriptPromise<IDLSequence<RegisteredTool>>::
+            RejectWithDOMException(script_state,
+                                   MakeGarbageCollected<DOMException>(
+                                       DOMExceptionCode::kSecurityError,
+                                       "Only secure origins are allowed in the "
+                                       "fromOrigins list."));
+      }
+      from_origins.push_back(origin);
+    }
   }
 
   auto* resolver =
@@ -792,6 +811,7 @@ ScriptPromise<IDLSequence<RegisteredTool>> ModelContext::getTools(
   }
 
   model_context_host_remote_->GetScriptTools(
+      std::move(from_origins),
       blink::BindOnce(&ModelContext::OnGetScriptToolsCompleted,
                       WrapWeakPersistent(this), WrapPersistent(resolver)));
 
