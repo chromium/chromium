@@ -493,6 +493,7 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       {"voiceStop", IDS_FUSEBOX_VOICE_SEARCH_STOP_TITLE},
       {"voiceDetails", IDS_NEW_TAB_VOICE_DETAILS},
       {"voiceListening", IDS_NEW_TAB_VOICE_LISTENING},
+      {"voiceWaiting", IDS_NEW_TAB_VOICE_WAITING},
       {"voicePermissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},
       {"audioError", IDS_NEW_TAB_VOICE_AUDIO_ERROR},
       {"languageError", IDS_NEW_TAB_VOICE_LANGUAGE_ERROR},
