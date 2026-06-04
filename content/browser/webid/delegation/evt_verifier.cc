@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64url.h"
+#include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "crypto/sha2.h"
@@ -98,7 +99,7 @@ base::expected<void, Result> VerifyEVT(const sdjwt::SdJwt& sd_jwt,
     return base::unexpected(Result::kSdJwtInvalidEmailVerified);
   }
 
-  if (payload.email != email) {
+  if (!base::EqualsCaseInsensitiveASCII(payload.email, email)) {
     return base::unexpected(Result::kSdJwtInvalidEmail);
   }
 
