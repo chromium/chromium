@@ -545,7 +545,7 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
       //   To provide a more reasonable default minimum size for grid items,
       //   the used value of its automatic minimum size in a given axis is
       //   the content-based minimum size if all of the following are true:
-      //     - it is not a scroll container
+      //     - it is not a scroll container in that axis
       //     - it spans at least one track in that axis whose min track
       //     sizing function is 'auto'
       //     - if it spans more than one track in that axis, none of those
@@ -554,7 +554,11 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
       //
       // Start by resolving the cases where |min_length| is non-auto or its
       // automatic minimum size should be zero.
-      if (!min_length.HasAuto() || item_style.IsScrollContainer() ||
+      const bool is_track_scroll_container =
+          is_parallel_with_track_direction
+              ? item_style.IsOverflowValueScrollableInline()
+              : item_style.IsOverflowValueScrollableBlock();
+      if (!min_length.HasAuto() || is_track_scroll_container ||
           special_spanning_criteria) {
         // TODO(ikilpatrick): This block needs to respect the aspect-ratio,
         // and apply the transferred min/max sizes when appropriate. We do

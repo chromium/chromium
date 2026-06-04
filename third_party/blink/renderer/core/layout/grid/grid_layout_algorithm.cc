@@ -423,7 +423,7 @@ const GridLayoutSubtree* GridLayoutAlgorithm::ComputeGridGeometry(
   const auto& container_style = Style();
   const bool applies_auto_min_size =
       !container_style.AspectRatio().IsAuto() &&
-      container_style.IsOverflowVisibleOrClip() &&
+      !container_style.IsOverflowValueScrollableBlock() &&
       container_style.LogicalMinHeight().HasAuto();
 
   if (grid_available_size_.block_size == kIndefiniteSize ||

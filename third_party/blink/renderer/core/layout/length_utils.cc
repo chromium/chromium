@@ -428,7 +428,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
   // Check if we should apply the automatic minimum size.
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
   const Length* auto_min_length =
-      (!style.IsScrollContainer() && applied_aspect_ratio)
+      (!style.IsOverflowValueScrollableInline() && applied_aspect_ratio)
           ? &Length::MinIntrinsic()
           : nullptr;
 
@@ -572,7 +572,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   // Check if we should apply the automatic minimum size.
   // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
   bool apply_automatic_min_size = ([&]() {
-    if (style.IsScrollContainer()) {
+    if (style.IsOverflowValueScrollableInline()) {
       return false;
     }
     if (!may_apply_aspect_ratio) {
@@ -848,7 +848,7 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     if (intrinsic_size == kIndefiniteSize) {
       return false;
     }
-    if (style.IsScrollContainer()) {
+    if (style.IsOverflowValueScrollableBlock()) {
       return false;
     }
     if (!may_apply_aspect_ratio) {

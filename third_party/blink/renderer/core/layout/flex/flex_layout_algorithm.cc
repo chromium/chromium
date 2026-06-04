@@ -431,7 +431,8 @@ bool FlexLayoutAlgorithm::ShouldApplyAutoMinSize(const BlockNode& child) const {
   // at the computed value of overflow not being scrollable, see:
   // https://github.com/w3c/csswg-drafts/issues/7714#issuecomment-1879319762
   const auto& child_style = child.Style();
-  if (child_style.IsScrollContainer()) {
+  if (is_horizontal_flow_ ? child_style.IsOverflowValueScrollableX()
+                          : child_style.IsOverflowValueScrollableY()) {
     return false;
   }
   const Length& min =
@@ -1429,7 +1430,8 @@ void FlexLayoutAlgorithm::PlaceFlexItems(
           // Treat the block-size as indefinite if we need to apply the
           // automatic-minimum size for aspect-ratio.
           // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
-          if (!style.AspectRatio().IsAuto() && !style.IsScrollContainer() &&
+          if (!style.AspectRatio().IsAuto() &&
+              !style.IsOverflowValueScrollableBlock() &&
               style.LogicalMinHeight().HasAuto()) {
             return std::nullopt;
           }

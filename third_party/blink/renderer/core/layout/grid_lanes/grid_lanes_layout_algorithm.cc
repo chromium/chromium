@@ -1497,7 +1497,7 @@ GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesSizingTree(
 
   const bool applies_auto_min_size =
       !container_style.AspectRatio().IsAuto() &&
-      container_style.IsOverflowVisibleOrClip() &&
+      !container_style.IsOverflowValueScrollableBlock() &&
       container_style.LogicalMinHeight().HasAuto();
 
   if (grid_axis_direction == kForRows) {
