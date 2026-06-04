@@ -327,6 +327,7 @@ MLContext::MLContext(
       power_preference_(power_preference),
       lost_property_(MakeGarbageCollected<LostProperty>(execution_context)),
       context_remote_(execution_context),
+      compiler_context_remote_(execution_context),
       properties_(std::move(create_context_success->context_properties)),
       write_tensor_producer_(
           std::move(create_context_success->write_tensor_producer)),
@@ -340,6 +341,14 @@ MLContext::MLContext(
       execution_context->GetTaskRunner(TaskType::kMachineLearning));
   context_remote_.set_disconnect_with_reason_handler(
       BindOnce(&MLContext::OnLost, WrapWeakPersistent(this)));
+
+  if (create_context_success->compiler_context_remote) {
+    compiler_context_remote_.Bind(
+        std::move(create_context_success->compiler_context_remote),
+        execution_context->GetTaskRunner(TaskType::kMachineLearning));
+    compiler_context_remote_.set_disconnect_handler(BindOnce(
+        &MLContext::OnCompilerContextDisconnected, WrapWeakPersistent(this)));
+  }
 }
 
 MLContext::~MLContext() = default;
@@ -355,6 +364,7 @@ V8MLPowerPreference MLContext::GetPowerPreference() const {
 void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(lost_property_);
   visitor->Trace(context_remote_);
+  visitor->Trace(compiler_context_remote_);
   visitor->Trace(pending_resolvers_);
   visitor->Trace(graphs_);
   visitor->Trace(graph_builders_);
@@ -401,9 +411,18 @@ MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
     return nullptr;
   }
 
+  // TODO(crbug.com/519254890): A compromised renderer could bypass the
+  // Compiler process by sending CreateGraphBuilder directly to context_remote_.
+  // Add GPU-side enforcement to reject this when the Compiler process is
+  // enabled.
   mojo::PendingRemote<webnn::mojom::blink::WebNNGraphBuilder> pending_remote;
-  context_remote_->CreateGraphBuilder(
-      pending_remote.InitWithNewPipeAndPassReceiver());
+  if (compiler_context_remote_.is_bound()) {
+    compiler_context_remote_->CreateGraphBuilder(
+        pending_remote.InitWithNewPipeAndPassReceiver());
+  } else {
+    context_remote_->CreateGraphBuilder(
+        pending_remote.InitWithNewPipeAndPassReceiver());
+  }
 
   auto* graph_builder = MakeGarbageCollected<MLGraphBuilder>(
       ExecutionContext::From(script_state), this, std::move(pending_remote));
@@ -414,6 +433,7 @@ MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
 
 void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
   context_remote_.reset();
+  compiler_context_remote_.reset();
 
   auto* context_lost_info = MLContextLostInfo::Create();
   if (description.empty()) {
@@ -431,6 +451,14 @@ void MLContext::OnLost(uint32_t custom_reason, const std::string& description) {
                                      "Context is lost.");
   }
   pending_resolvers_.clear();
+}
+
+void MLContext::OnCompilerContextDisconnected() {
+  // TODO(crbug.com/518984879): Instead of losing the entire context,
+  // request a new compiler context via
+  // context_remote_->RequestCompilerContext() and buffer graph builder
+  // receivers until the new remote arrives.
+  OnLost(0, "Compiler context disconnected.");
 }
 
 gpu::SyncToken MLContext::GenerateVerifiedReleaseToken() {

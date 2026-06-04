@@ -14,6 +14,7 @@
 #include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/webnn_compiler_context.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -142,8 +143,13 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
  private:
   using LostProperty = ScriptPromiseProperty<MLContextLostInfo, IDLUndefined>;
 
-  // Close the `context_remote_` pipe because the context has been lost.
+  // Close the `context_remote_` and `compiler_context_remote_` pipes
+  // because the entire context has been lost.
   void OnLost(uint32_t custom_reason, const std::string& description);
+
+  // Called when the compiler context remote disconnects. Marks the entire
+  // context as lost.
+  void OnCompilerContextDisconnected();
 
   void DidCreateWebNNTensor(webnn::ScopedTrace scoped_trace,
                             ScriptPromiseResolver<blink::MLTensor>* resolver,
@@ -161,6 +167,12 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.
   HeapMojoRemote<webnn::mojom::blink::WebNNContext> context_remote_;
+
+  // Optional remote to the Compiler process for graph building.
+  // Set when the backend offloads compilation (e.g., ORT).
+  HeapMojoRemote<webnn::mojom::blink::WebNNCompilerContext>
+      compiler_context_remote_;
+
   webnn::ContextProperties properties_;
 
   mojo::ScopedDataPipeProducerHandle write_tensor_producer_;
