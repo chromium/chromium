@@ -13,6 +13,10 @@ if (is_win) {
 if (is_ios && current_toolchain == default_toolchain) {
   import("//build/config/ios/ios_sdk.gni")
 }
+if ((host_os == "mac" || current_os == "mac") && use_system_xcode &&
+    current_toolchain == default_toolchain) {
+  import("//build/config/mac/mac_sdk.gni")
+}
 
 group("modules") {
   deps = [ "//build/modules/modularize:no_modules" ]
@@ -42,13 +46,13 @@ if (use_unified_system_module) {
         outputs = expand_directory(ios_sdk_path + "/usr/include", true)
       }
     }
-    if (is_mac && mac_use_xcode_symlinks) {
+    if ((host_os == "mac" || target_os == "mac") && use_system_xcode) {
       action("mac_sysroot") {
         script = "//build/noop.py"
-        outputs =
-            filter_exclude(expand_directory(sysroot + "/usr/include", true),
-                           # Avoid overlap with //build/config/mac:sdk_inputs
-                           [ "*.defs" ])
+        outputs = filter_exclude(
+                expand_directory(mac_sdk_path + "/usr/include", true),
+                # Avoid overlap with //build/config/mac:sdk_inputs
+                [ "*.defs" ])
       }
     }
   }
@@ -66,7 +70,7 @@ if (use_unified_system_module) {
     }
   } else if (is_ios) {
     extra_headers += [ ":ios_sysroot(${default_toolchain})" ]
-  } else if (is_mac && mac_use_xcode_symlinks) {
+  } else if (is_mac && use_system_xcode) {
     extra_headers += [ ":mac_sysroot(${default_toolchain})" ]
   } else if (is_linux || is_mac || is_android || is_chromeos) {
     root_include_dir = "usr/include"
