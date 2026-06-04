@@ -71,6 +71,7 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
@@ -113,7 +114,9 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ChromeImageButton;
@@ -148,6 +151,10 @@ public final class ToolbarTabletUnitTest {
     @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
+    @Mock private UserEducationHelper mUserEducationHelper;
+    private final SettableMonotonicObservableSupplier<Tracker> mTrackerSupplier =
+            ObservableSuppliers.createMonotonic();
+    @Mock private Tracker mTracker;
     @Mock private NavigationPopup.HistoryDelegate mHistoryDelegate;
     @Mock private ToolbarWidthConsumer mLocationBarBookmarkButtonWidthConsumer;
     @Mock private ToolbarWidthConsumer mLocationBarInstallButtonWidthConsumer;
@@ -303,6 +310,8 @@ public final class ToolbarTabletUnitTest {
         mockToolbarWidthConsumer(mLocationBarZoomButtonWidthConsumer, buttonWidth);
         mockToolbarWidthConsumer(mSigninButtonCoordinator, buttonWidth);
 
+        mTrackerSupplier.set(mTracker);
+
         mForwardButtonCoordinator =
                 new ForwardButtonCoordinator(
                         mActivity,
@@ -363,8 +372,8 @@ public final class ToolbarTabletUnitTest {
                 mMenuButtonCoordinator,
                 mTabSwitcherButtonCoordinator,
                 null,
-                null,
-                null,
+                mUserEducationHelper,
+                mTrackerSupplier,
                 mProgressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
@@ -471,8 +480,8 @@ public final class ToolbarTabletUnitTest {
                 mMenuButtonCoordinator,
                 mTabSwitcherButtonCoordinator,
                 null,
-                null,
-                null,
+                mUserEducationHelper,
+                mTrackerSupplier,
                 mProgressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
@@ -592,8 +601,8 @@ public final class ToolbarTabletUnitTest {
                 mMenuButtonCoordinator,
                 mTabSwitcherButtonCoordinator,
                 null,
-                null,
-                null,
+                mUserEducationHelper,
+                mTrackerSupplier,
                 mProgressBar,
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,

@@ -841,6 +841,29 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHIncognitoIndicatorCloseAllWindows.name == feature->name) {
+    // Allows an IPH to inform users they can close all Incognito windows:
+    // - Only once per week.
+    // - Up to 3 times per year.
+    // - Only as long as the user has not manually clicked the Incognito
+    // indicator in the last year.
+    // - session_rate is set to EQUAL, 0 to ensure we don't show this if another
+    //   IPH was already shown in the same session.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("incognito_indicator_close_all_windows_trigger",
+                    Comparator(EQUAL, 0), 7, 360);
+    config.event_configs.insert(
+        EventConfig("incognito_indicator_close_all_windows_trigger",
+                    Comparator(LESS_THAN, 3), 360, 360));
+    config.used = EventConfig("incognito_indicator_close_all_windows_used",
+                              Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHTabGroupSyncOnStripFeature.name == feature->name) {
     // A config that allows the TabGroupSync IPH to be shown up to 3 times per
     // year.

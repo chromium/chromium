@@ -144,6 +144,10 @@ public final class EventConstants {
     /** User has tapped on Identity Disc. */
     public static final String IDENTITY_DISC_USED = "identity_disc_used";
 
+    /** The user tapped the Incognito indicator. */
+    public static final String INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_USED =
+            "incognito_indicator_close_all_windows_used";
+
     /** 'Manage windows' menu for multi-instance support feature was tapped. */
     public static final String INSTANCE_SWITCHER_IPH_USED = "instance_switcher_iph_used";
 

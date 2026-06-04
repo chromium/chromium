@@ -8,11 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -39,6 +43,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -47,9 +52,16 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.user_education.IphCommand;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link IncognitoIndicatorCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,6 +81,9 @@ public class IncognitoIndicatorCoordinatorUnitTest {
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private ViewStub mIncognitoIndicatorStub;
     @Mock private View mIncognitoIndicatorView;
+    @Mock private UserEducationHelper mUserEducationHelper;
+    @Mock private Supplier<@Nullable Tracker> mTrackerSupplier;
+    @Mock private Tracker mTracker;
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private ViewTreeObserver mViewTreeObserver;
@@ -83,9 +98,19 @@ public class IncognitoIndicatorCoordinatorUnitTest {
         when(mParentToolbar.findViewById(eq(R.id.incognito_indicator_stub)))
                 .thenReturn(mIncognitoIndicatorStub);
         when(mIncognitoIndicatorStub.inflate()).thenReturn(mIncognitoIndicatorView);
+        final int[] visibility = new int[] {View.GONE};
+        doAnswer(
+                        invocation -> {
+                            visibility[0] = invocation.getArgument(0);
+                            return null;
+                        })
+                .when(mIncognitoIndicatorView)
+                .setVisibility(anyInt());
+        when(mIncognitoIndicatorView.getVisibility()).thenAnswer(invocation -> visibility[0]);
         when(mIncognitoIndicatorView.getRootView()).thenReturn(mIncognitoIndicatorView);
         when(mIncognitoIndicatorView.getViewTreeObserver()).thenReturn(mViewTreeObserver);
         when(mIncognitoIndicatorView.getResources()).thenReturn(mResources);
+        when(mIncognitoIndicatorView.getContext()).thenAnswer(invocation -> mActivity);
         when(mIncognitoIndicatorView.getLayoutParams())
                 .thenReturn(
                         new ViewGroup.LayoutParams(
@@ -93,12 +118,15 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                                 ViewGroup.LayoutParams.WRAP_CONTENT));
         when(mParentToolbar.getContext()).thenReturn(mContext);
         when(mContext.getResources()).thenReturn(mResources);
+        when(mTrackerSupplier.get()).thenReturn(mTracker);
         when(mResources.getDisplayMetrics()).thenReturn(new DisplayMetrics());
         when(mResources.getDimensionPixelSize(anyInt())).thenReturn(BUTTON_WIDTH);
 
         mCoordinator =
                 new IncognitoIndicatorCoordinator(
                         mParentToolbar,
+                        mUserEducationHelper,
+                        mTrackerSupplier,
                         mThemeColorProvider,
                         mIncognitoStateProvider,
                         () ->
@@ -234,5 +262,40 @@ public class IncognitoIndicatorCoordinatorUnitTest {
                 "Menu item title is incorrect.",
                 expectedTitle,
                 items.get(0).model.get(ListMenuItemProperties.TITLE));
+    }
+
+    @Test
+    public void testSetVisibility_TriggersIPH() {
+        // Start in incognito.
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+
+        // Show coordinator. This should trigger IPH.
+        mCoordinator.setVisibility(/* visible= */ true);
+
+        ArgumentCaptor<IphCommand> captor = ArgumentCaptor.forClass(IphCommand.class);
+        verify(mUserEducationHelper).requestShowIph(captor.capture());
+        IphCommand command = captor.getValue();
+        assertEquals(
+                FeatureConstants.IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS, command.featureName);
+        assertEquals(mIncognitoIndicatorView, command.anchorView);
+
+        // Hiding and showing again should trigger it again (though BE might block it,
+        // coordinator should still request it).
+        mCoordinator.setVisibility(/* visible= */ false);
+        mCoordinator.setVisibility(/* visible= */ true);
+        verify(mUserEducationHelper, times(2)).requestShowIph(any());
+    }
+
+    @Test
+    public void testOnClick_NotifiesUsedEvent() {
+        // Make it visible so onClick doesn't early return.
+        mCoordinator.onIncognitoStateChanged(/* isIncognito= */ true);
+        mCoordinator.setVisibility(/* visible= */ true);
+
+        // Trigger click.
+        mCoordinator.onClick(mIncognitoIndicatorView);
+
+        // Verify event notified.
+        verify(mTracker).notifyEvent(EventConstants.INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_USED);
     }
 }
