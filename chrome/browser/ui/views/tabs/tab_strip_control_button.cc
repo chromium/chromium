@@ -128,7 +128,7 @@ TabStripControlButton::TabStripControlButton(
   views::FocusRing::Get(this)->SetColorId(kColorNewTabButtonFocusRing);
 
   if (text.size() > 0) {
-    SetEnabledTextColors(foreground_frame_active_color_id_);
+    SetEnabledTextColors(GetForegroundColor());
     SetText(text);
   }
 }
@@ -319,7 +319,7 @@ void TabStripControlButton::UpdateColors() {
     return;
   }
 
-  SetEnabledTextColors(foreground_frame_active_color_id_);
+  SetEnabledTextColors(GetForegroundColor());
   UpdateBackground();
   UpdateInkDrop();
   UpdateIcon();
