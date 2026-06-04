@@ -17,7 +17,7 @@
 namespace content {
 
 // ChildMemoryCoordinator is a singleton that owns both the
-// ChildMemoryConsumerRegistry and the MemoryCoordinatorPolicyManager.
+// MemoryConsumerRegistry and the MemoryCoordinatorPolicyManager.
 class CONTENT_EXPORT ChildMemoryCoordinator {
  public:
   static ChildMemoryCoordinator& Get();
