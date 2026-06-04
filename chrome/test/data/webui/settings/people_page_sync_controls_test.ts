@@ -1011,3 +1011,50 @@ suite('AutofillAndPaymentsToggles', function() {
     assertFalse(paymentsCheckbox.disabled);
   });
 });
+
+suite('SyncControlsSkillsTest', function() {
+  let syncControls: SettingsSyncControlsElement;
+
+  setup(function() {
+    const browserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  async function createPage() {
+    syncControls = document.createElement('settings-sync-controls');
+    syncControls.syncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    document.body.appendChild(syncControls);
+    flush();
+    await waitBeforeNextRender(syncControls);
+  }
+
+  test('SkillsCardHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues({showSkillsSettingPage: false});
+    await createPage();
+
+    const skillsCard =
+        syncControls.shadowRoot!.querySelector('#skillsSyncSeparateCard');
+    assertFalse(!!skillsCard);
+  });
+
+  test('SkillsCardVisibleWhenFeatureEnabled', async function() {
+    loadTimeData.overrideValues({showSkillsSettingPage: true});
+    await createPage();
+
+    const skillsCard =
+        syncControls.shadowRoot!.querySelector('#skillsSyncSeparateCard');
+    assertTrue(!!skillsCard);
+
+    const goToSkillsButton =
+        syncControls.shadowRoot!.querySelector<HTMLElement>(
+            '#goToSkillsButton');
+    assertTrue(!!goToSkillsButton);
+
+    goToSkillsButton.click();
+    assertEquals(routes.SKILLS, Router.getInstance().getCurrentRoute());
+  });
+});

@@ -240,6 +240,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/content_settings:content_settings_factory",
         "//chrome/browser/profiles/batch_upload:test_support",
+        "//components/skills:features",
       ]
     }
   }

@@ -2194,6 +2194,9 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
       {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
       {"syncData", IDS_SETTINGS_SYNC_DATA},
+      {"syncSkillsSeparateInformation",
+       IDS_SETTINGS_SYNC_SKILLS_SEPARATE_INFORMATION},
+      {"syncGoToSkillsButton", IDS_SETTINGS_SYNC_GO_TO_SKILLS_BUTTON},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("paymentsCheckboxLabel",

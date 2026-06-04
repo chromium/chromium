@@ -18,6 +18,13 @@
       #toggles-header .cr-row.first h2 {
         padding-top: 18px;
       }
+
+      #skillsSyncSeparateCard {
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        box-shadow: var(--cr-card-shadow);
+        margin: 16px var(--cr-section-padding);
+      }
     </style>
 
 <if expr="is_chromeos">
@@ -385,3 +392,15 @@
       </div>
 </if>
     </div>
+
+    <template is="dom-if" if="[[showSkillsSettingsCard_]]" restamp>
+      <div id="skillsSyncSeparateCard" class="settings-box two-line first">
+        <cr-icon icon="cr:info-outline"></cr-icon>
+        <div class="middle two-line">
+          <div class="secondary">$i18n{syncSkillsSeparateInformation}</div>
+        </div>
+        <cr-button id="goToSkillsButton" on-click="onGoToSkillsClick_">
+          $i18n{syncGoToSkillsButton}
+        </cr-button>
+      </div>
+    </template>

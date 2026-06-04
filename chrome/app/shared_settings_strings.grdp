@@ -480,4 +480,10 @@
   <message name="IDS_SETTINGS_SKILLS_GALLERY_LABEL" desc="Label for the link row that opens the Skills Gallery.">
     View and manage your skills
   </message>
+  <message name="IDS_SETTINGS_SYNC_SKILLS_SEPARATE_INFORMATION" desc="Info text on the Sync page explaining that skills are managed separately from sync.">
+    AI innovations like skills are saved to your Google Account and managed separately from Chrome sync
+  </message>
+  <message name="IDS_SETTINGS_SYNC_GO_TO_SKILLS_BUTTON" desc="Label for the button on the Sync page that redirects the user to the Skills settings page.">
+    Go to AI Innovations
+  </message>
 </grit-part>
