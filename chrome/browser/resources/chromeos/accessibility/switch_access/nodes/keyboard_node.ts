@@ -154,7 +154,7 @@ export class KeyboardRootNode extends BasicRootNode {
   static startWatchingVisibility(): void {
     const keyboardObject = KeyboardRootNode.getKeyboardObject();
     if (!keyboardObject) {
-      SwitchAccess.findNodeMatching(
+      SwitchAccess.findNodeInDesktopTree(
           {role: RoleType.KEYBOARD}, KeyboardRootNode.startWatchingVisibility);
       return;
     }
