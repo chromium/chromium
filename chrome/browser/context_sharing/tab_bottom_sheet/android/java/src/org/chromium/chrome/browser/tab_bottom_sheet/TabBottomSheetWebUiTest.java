@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +18,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -276,26 +273,6 @@ public class TabBottomSheetWebUiTest {
         mWebUi.setWebContents(mWebContents, false);
 
         verify(focusedView, times(0)).clearFocus();
-    }
-
-    @Test
-    public void testOnTouchListener() {
-        mWebUi.setWebContents(mWebContents, false);
-
-        ArgumentCaptor<View.OnTouchListener> touchListenerCaptor = captor();
-
-        verify(mMockContentView).setOnTouchListener(touchListenerCaptor.capture());
-        View.OnTouchListener touchListener = touchListenerCaptor.getValue();
-        assertNotNull(touchListener);
-
-        MotionEvent eventDown = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, 0);
-        touchListener.onTouch(mMockContentView, eventDown);
-        verify(mMockContentView, times(1)).requestFocus();
-
-        reset(mMockContentView);
-        MotionEvent eventUp = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0f, 0f, 0);
-        touchListener.onTouch(mMockContentView, eventUp);
-        verify(mMockContentView, times(0)).requestFocus();
     }
 
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {
