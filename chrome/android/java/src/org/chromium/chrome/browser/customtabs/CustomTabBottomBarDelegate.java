@@ -625,8 +625,8 @@ public class CustomTabBottomBarDelegate
 
         // Make the bottom controls height smaller by the shadow height so that
         // the shadow is displayed over the bottom of the WebContents.
-        mBrowserControlsSizer.setBottomControlsHeight(
-                minHeight + height - mShadowHeightPx, minHeight);
+        int bottomControlsHeight = Math.max(0, height - mShadowHeightPx);
+        mBrowserControlsSizer.setBottomControlsHeight(minHeight + bottomControlsHeight, minHeight);
     }
 
     // SwipeGestureListener.SwipeHandler methods
