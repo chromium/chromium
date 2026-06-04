@@ -65,12 +65,12 @@
     <cr-radio-button
         id="preferredRadioButton"
         name="preferred"
-        label="[[getPreferredLabel_(app)]]">
+        label="[[getPreferredLabel_(app, app.*)]]">
     </cr-radio-button>
     <cr-radio-button
         id="browserRadioButton"
         name="browser"
-        label="[[i18n('appManagementIntentSharingOpenBrowserLabel')]]">
+        label="[[getBrowserLabel_(app, app.*)]]">
     </cr-radio-button>
     <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
       <div id="overlapWarning">

@@ -27,6 +27,9 @@ suite('<app-management-supported-links-item>', () => {
   setup(() => {
     fakeHandler = setupFakeHandler();
     replaceStore();
+    loadTimeData.overrideValues({
+      updateAppStringsOnSettingsEnabled: false,
+    });
 
     supportedLinksItem =
         document.createElement('app-management-supported-links-item');
@@ -345,9 +348,10 @@ suite('AppManagementSupportedLinksItemElement', function() {
       appManagementIntentOverlapDialogTitle: 'Change as preferred app',
       appManagementIntentOverlapChangeButton: 'Change',
       appManagementIntentSharingOpenBrowserLabel: 'Open in Chrome browser',
-      appManagementIntentSharingOpenAppLabel: 'Open in App',
+      appManagementIntentSharingOpenAppLabel: 'Open in $1 App',
       appManagementIntentSharingTabExplanation:
           'App is set to open in a new browser tab, supported links will also open in the browser.',
+      updateAppStringsOnSettingsEnabled: false,
     });
   });
 
@@ -442,5 +446,63 @@ suite('AppManagementSupportedLinksItemElement', function() {
     supportedLinksDialog =
         supportedLinksItem.shadowRoot!.querySelector('#dialog');
     assertNull(supportedLinksDialog);
+  });
+
+  test(
+      'supports focus-existing / navigate-existing custom labels when feature enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          updateAppStringsOnSettingsEnabled: true,
+          appManagementIntentSharingOpenExistingTabLabel:
+              'Open in an existing $1 tab',
+          appManagementIntentSharingOpenNewTabLabel:
+              'Open in a new browser tab',
+        });
+
+        const appOptions = {
+          type: AppType.kWeb,
+          isPreferredApp: true,
+          windowMode: WindowMode.kBrowser,
+          disableUserChoiceNavigationCapturing: false,
+          supportedLinks: ['google.com'],
+          title: 'Gmail',
+        };
+
+        await setUpSupportedLinksComponent('app1', appOptions);
+
+        const preferredRadio =
+            supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+                '#preferredRadioButton');
+        assertTrue(!!preferredRadio);
+        assertEquals('Open in an existing Gmail tab', preferredRadio.label);
+
+        const browserRadio =
+            supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+                '#browserRadioButton');
+        assertTrue(!!browserRadio);
+        assertEquals('Open in a new browser tab', browserRadio.label);
+      });
+
+  test('fallback to default labels when feature disabled', async () => {
+    loadTimeData.overrideValues({
+      updateAppStringsOnSettingsEnabled: false,
+    });
+
+    const appOptions = {
+      type: AppType.kWeb,
+      isPreferredApp: true,
+      windowMode: WindowMode.kBrowser,
+      disableUserChoiceNavigationCapturing: false,
+      supportedLinks: ['google.com'],
+      title: 'MyApp',
+    };
+
+    await setUpSupportedLinksComponent('app1', appOptions);
+
+    const preferredRadio =
+        supportedLinksItem.shadowRoot!.querySelector<CrRadioButtonElement>(
+            '#preferredRadioButton');
+    assertTrue(!!preferredRadio);
+    assertEquals('Open in MyApp App', preferredRadio.label);
   });
 });

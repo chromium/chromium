@@ -64,6 +64,41 @@ class TestDelegate : public AppManagementPageHandlerBase::Delegate {
     return gfx::NativeWindow();
   }
 };
+
+enum class LaunchHandlerTest {
+  kNavigateNew,
+  kNavigateExisting,
+  kFocusExisting,
+  kUnset
+};
+
+using AppManagementPageHandlerWithUpdateStringsTestParams =
+    std::tuple<apps::test::LinkCapturingFeatureVersion, LaunchHandlerTest>;
+
+std::string LaunchHandlerTestParamsToString(
+    const testing::TestParamInfo<
+        AppManagementPageHandlerWithUpdateStringsTestParams>& info) {
+  std::string version_str = apps::test::LinkCapturingVersionToString(
+      testing::TestParamInfo<apps::test::LinkCapturingFeatureVersion>(
+          std::get<0>(info.param), info.index));
+
+  std::string launch_handler_str;
+  switch (std::get<1>(info.param)) {
+    case LaunchHandlerTest::kNavigateNew:
+      launch_handler_str = "NavigateNew";
+      break;
+    case LaunchHandlerTest::kNavigateExisting:
+      launch_handler_str = "NavigateExisting";
+      break;
+    case LaunchHandlerTest::kFocusExisting:
+      launch_handler_str = "FocusExisting";
+      break;
+    case LaunchHandlerTest::kUnset:
+      launch_handler_str = "Unset";
+      break;
+  }
+  return version_str + "_" + launch_handler_str;
+}
 }  // namespace
 
 class AppManagementPageHandlerTestBase
@@ -990,5 +1025,112 @@ INSTANTIATE_TEST_SUITE_P(
 #endif  // BUILDFLAG(IS_CHROMEOS)
         ,
     apps::test::LinkCapturingVersionToString);
+
+// Tests that when `kUpdateAppStringsOnSettings` is enabled, browser-tab web
+// apps have their user choice navigation capturing disabled or enabled
+// depending on their launch handler settings.
+class AppManagementPageHandlerWithUpdateStringsTest
+    : public WebAppTest,
+      public testing::WithParamInterface<
+          AppManagementPageHandlerWithUpdateStringsTestParams> {
+ public:
+  AppManagementPageHandlerWithUpdateStringsTest() = default;
+
+  void SetUp() override {
+    WebAppTest::SetUp();
+
+    delegate_ = std::make_unique<TestDelegate>();
+
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+    mojo::PendingReceiver<app_management::mojom::Page> page;
+    mojo::Remote<app_management::mojom::PageHandler> handler;
+    std::vector<base::test::FeatureRefAndParams> features_and_params;
+#if !BUILDFLAG(IS_CHROMEOS)
+    features_and_params =
+        apps::test::GetFeaturesToEnableLinkCapturingUX(std::get<0>(GetParam()));
+#endif
+    features_and_params.push_back(base::test::FeatureRefAndParams(
+        apps::features::kUpdateAppStringsOnSettings, {}));
+    scoped_feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
+
+#if BUILDFLAG(IS_CHROMEOS)
+    handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(
+        handler.BindNewPipeAndPassReceiver(),
+        page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
+#else
+    handler_ = std::make_unique<WebAppSettingsPageHandler>(
+        handler.BindNewPipeAndPassReceiver(),
+        page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void TearDown() override {
+    handler_.reset();
+    scoped_feature_list_.Reset();
+    WebAppTest::TearDown();
+  }
+
+ protected:
+  app_management::mojom::PageHandler* handler() { return handler_.get(); }
+
+ private:
+  std::unique_ptr<TestDelegate> delegate_;
+  std::unique_ptr<app_management::mojom::PageHandler> handler_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(AppManagementPageHandlerWithUpdateStringsTest,
+       NavigationCapturingUserChoice) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
+  web_app_info->title = u"app_name";
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+
+  LaunchHandlerTest launch_handler_test = std::get<1>(GetParam());
+  switch (launch_handler_test) {
+    case LaunchHandlerTest::kNavigateNew:
+      web_app_info->launch_handler = web_app::LaunchHandler{
+          web_app::LaunchHandler::ClientMode::kNavigateNew};
+      break;
+    case LaunchHandlerTest::kNavigateExisting:
+      web_app_info->launch_handler = web_app::LaunchHandler{
+          web_app::LaunchHandler::ClientMode::kNavigateExisting};
+      break;
+    case LaunchHandlerTest::kFocusExisting:
+      web_app_info->launch_handler = web_app::LaunchHandler{
+          web_app::LaunchHandler::ClientMode::kFocusExisting};
+      break;
+    case LaunchHandlerTest::kUnset:
+      break;
+  }
+
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  base::test::TestFuture<app_management::mojom::AppPtr> app_future;
+  handler()->GetApp(app_id, app_future.GetCallback());
+  bool should_link_capturing_setting_be_disabled =
+      launch_handler_test == LaunchHandlerTest::kNavigateNew ||
+      launch_handler_test == LaunchHandlerTest::kUnset;
+  EXPECT_EQ(app_future.Get()->disable_user_choice_navigation_capturing,
+            should_link_capturing_setting_be_disabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AppManagementPageHandlerWithUpdateStringsTest,
+    testing::Combine(
+#if BUILDFLAG(IS_CHROMEOS)
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+#else
+        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        testing::Values(LaunchHandlerTest::kNavigateNew,
+                        LaunchHandlerTest::kNavigateExisting,
+                        LaunchHandlerTest::kFocusExisting,
+                        LaunchHandlerTest::kUnset)),
+    LaunchHandlerTestParamsToString);
 
 }  // namespace apps

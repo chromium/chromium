@@ -22,6 +22,7 @@ import type {AppMap} from 'chrome://resources/cr_components/app_management/const
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './supported_links_item.html.js';
@@ -119,6 +120,9 @@ export class AppManagementSupportedLinksItemElement extends
    * in the browser.
    */
   private isDisabled_(app: App): boolean {
+    if (loadTimeData.getBoolean('updateAppStringsOnSettingsEnabled')) {
+      return app.disableUserChoiceNavigationCapturing;
+    }
     return app.type === AppType.kWeb && app.windowMode === WindowMode.kBrowser;
   }
 
@@ -127,8 +131,25 @@ export class AppManagementSupportedLinksItemElement extends
   }
 
   private getPreferredLabel_(app: App): string {
+    if (this.isBrowserTabAppSupportingExistingClient_(app)) {
+      return this.i18n(
+          'appManagementIntentSharingOpenExistingTabLabel', String(app.title));
+    }
     return this.i18n(
         'appManagementIntentSharingOpenAppLabel', String(app.title));
+  }
+
+  private getBrowserLabel_(app: App): string {
+    if (this.isBrowserTabAppSupportingExistingClient_(app)) {
+      return this.i18n('appManagementIntentSharingOpenNewTabLabel');
+    }
+    return this.i18n('appManagementIntentSharingOpenBrowserLabel');
+  }
+
+  private isBrowserTabAppSupportingExistingClient_(app: App): boolean {
+    return loadTimeData.getBoolean('updateAppStringsOnSettingsEnabled') &&
+        app.windowMode === WindowMode.kBrowser &&
+        !app.disableUserChoiceNavigationCapturing;
   }
 
   private getDisabledExplanation_(app: App): TrustedHTML {

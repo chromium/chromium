@@ -27,6 +27,7 @@ source_set("app_management") {
     "//chrome/browser:resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications:features",
     "//components/app_constants",
     "//components/prefs",
     "//content/public/browser",
@@ -56,10 +57,7 @@ source_set("app_management") {
       "web_app_settings_page_handler.cc",
       "web_app_settings_page_handler.h",
     ]
-    deps += [
-      "//chrome/browser/web_applications:features",
-      "//chrome/browser/web_applications/app_service",
-    ]
+    deps += [ "//chrome/browser/web_applications/app_service" ]
   }
 }
 

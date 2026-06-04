@@ -314,9 +314,12 @@ app_management::mojom::AppPtr WebAppSettingsPageHandler::CreateApp(
   }
 #endif
 
-  // On non-ChromeOS platforms, navigation capturing is allowed even if PWAs
-  // open in a new browser tab.
-  app->disable_user_choice_navigation_capturing = false;
+  if (!base::FeatureList::IsEnabled(
+          apps::features::kUpdateAppStringsOnSettings)) {
+    // On non-ChromeOS platforms, navigation capturing is allowed even if PWAs
+    // open in a new browser tab when the feature is disabled.
+    app->disable_user_choice_navigation_capturing = false;
+  }
 
   return app;
 }

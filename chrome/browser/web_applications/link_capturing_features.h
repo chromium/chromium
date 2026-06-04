@@ -12,6 +12,12 @@ namespace apps::features {
 
 BASE_DECLARE_FEATURE(kNavigationCapturingOnExistingFrames);
 
+// When enabled, updates the app settings string labels for browser-tab PWAs
+// that support target-existing client modes (focus-existing or
+// navigate-existing) to reflect that supported links can be opened in an
+// existing app tab.
+BASE_DECLARE_FEATURE(kUpdateAppStringsOnSettings);
+
 // Returns true if the updated UX for link capturing needs to be shown. Only set
 // to true on desktop platforms if kPwaNavigationCapturing is enabled, and
 // always on CrOS.

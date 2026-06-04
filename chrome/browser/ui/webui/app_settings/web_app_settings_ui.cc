@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
@@ -69,6 +70,10 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN},
       {"appManagementIntentSharingOpenAppLabel",
        IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN},
+      {"appManagementIntentSharingOpenExistingTabLabel",
+       IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN_EXISTING_TAB},
+      {"appManagementIntentSharingOpenNewTabLabel",
+       IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN_NEW_TAB},
       {"appManagementIntentOverlapWarningText1App",
        IDS_APP_MANAGEMENT_INTENT_OVERLAP_WARNING_TEXT_1_APP},
       {"appManagementIntentOverlapWarningText2Apps",
@@ -138,6 +143,10 @@ WebAppSettingsUI::WebAppSettingsUI(content::WebUI* web_ui)
           profile, chrome::kChromeUIWebAppSettingsHost);
 
   AddAppManagementStrings(html_source);
+
+  html_source->AddBoolean("updateAppStringsOnSettingsEnabled",
+                          base::FeatureList::IsEnabled(
+                              apps::features::kUpdateAppStringsOnSettings));
 
   // Add required resources.
   webui::SetupWebUIDataSource(html_source, kAppSettingsResources,

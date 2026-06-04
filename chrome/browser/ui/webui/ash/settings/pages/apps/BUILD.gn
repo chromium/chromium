@@ -44,6 +44,7 @@ static_library("apps") {
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:features",
     "//chrome/common",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_app_constants",

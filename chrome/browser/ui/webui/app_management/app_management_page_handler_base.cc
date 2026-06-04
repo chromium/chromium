@@ -25,8 +25,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/app_constants/constants.h"
@@ -335,9 +339,30 @@ AppManagementPageHandlerBase::CreateAppFromAppUpdate(
   app->data_size = MaybeFormatBytes(update.DataSizeInBytes());
 
   app->publisher_id = update.PublisherId();
+
+  bool is_browser_tab_app = (update.AppType() == apps::AppType::kWeb) &&
+                            (update.WindowMode() == apps::WindowMode::kBrowser);
+
+  bool is_browser_tab_app_supporting_existing_clients = false;
+  if (is_browser_tab_app && base::FeatureList::IsEnabled(
+                                apps::features::kUpdateAppStringsOnSettings)) {
+    auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    if (provider) {
+      const web_app::WebApp* web_app =
+          provider->registrar_unsafe().GetAppById(update.AppId());
+      if (web_app && web_app->launch_handler()
+                         .value_or(web_app::LaunchHandler{})
+                         .TargetsExistingClients()) {
+        is_browser_tab_app_supporting_existing_clients = true;
+      }
+    }
+  }
+
+  // Note: After every setting change, the page updates dynamically, so changing
+  // the 'open in window' slider on non-ChromeOS platforms will cause this code
+  // to execute again, making the suggested links options change immediately.
   app->disable_user_choice_navigation_capturing =
-      (update.AppType() == apps::AppType::kWeb) &&
-      (update.WindowMode() == apps::WindowMode::kBrowser);
+      is_browser_tab_app && !is_browser_tab_app_supporting_existing_clients;
 
   return app;
 }

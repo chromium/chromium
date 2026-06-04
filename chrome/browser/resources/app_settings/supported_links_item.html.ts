@@ -37,7 +37,7 @@ ${this.disabled_ ? html`
     <cr-radio-button
         id="browserRadioButton"
         name="browser"
-        label="$i18n{appManagementIntentSharingOpenBrowserLabel}">
+        label="${this.getBrowserLabel_()}">
     </cr-radio-button>
     ${this.showOverlappingAppsWarning_ ? html`
       <div id="overlapWarning">${this.overlappingAppsWarning_}</div>

@@ -11,6 +11,8 @@
 
 namespace apps::features {
 
+BASE_FEATURE(kUpdateAppStringsOnSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNavigationCapturingOnExistingFrames,
              "NavigationCapturingOnCurrentFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);

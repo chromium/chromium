@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
+#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/os_settings_resources.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
@@ -311,6 +312,10 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PERMISSION_ITEM_CLICK_TOGGLE_PERMISSION},
       {"appManagementIntentSharingOpenBrowserLabel",
        IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN},
+      {"appManagementIntentSharingOpenExistingTabLabel",
+       IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN_EXISTING_TAB},
+      {"appManagementIntentSharingOpenNewTabLabel",
+       IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN_NEW_TAB},
       {"appManagementIntentSharingTabExplanation",
        IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION},
       {"appManagementLocationPermissionLabel", IDS_APP_MANAGEMENT_LOCATION},
@@ -639,6 +644,10 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isAppParentalControlsFeatureAvailable",
                           on_device_controls::AppControlsServiceFactory::
                               IsOnDeviceAppControlsAvailable(profile()));
+
+  html_source->AddBoolean("updateAppStringsOnSettingsEnabled",
+                          base::FeatureList::IsEnabled(
+                              apps::features::kUpdateAppStringsOnSettings));
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);

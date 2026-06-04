@@ -48,6 +48,12 @@
   <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN" desc="Label for the intent sharing option to open in the browser.">
     Open in Chrome browser
   </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_APP_OPEN_EXISTING_TAB" desc="This is an option presented to the user which makes user clicks on links that open this website to open in an existing browser tab of that website, instead of opening in a new browser tab.">
+    Open in an existing <ph name="APP_NAME">$1<ex>Gmail</ex></ph> tab
+  </message>
+  <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_BROWSER_OPEN_NEW_TAB" desc="This is an option presented to the user which makes user clicks on links that open this website to open in a browser tab.">
+    Open in a new browser tab
+  </message>
   <message name="IDS_APP_MANAGEMENT_INTENT_SHARING_TAB_EXPLANATION" desc="Label for the intent sharing description for when the app is set to open in tab mode.">
     <ph name="APP_NAME">$1<ex>Gmail</ex></ph> is set to open in a new browser tab, supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE">&lt;a href="https://support.google.com/chromebook?p=app_intent" target="_blank"&gt;</ph>Learn more<ph name="END_LINK_LEARN_MORE">&lt;/a&gt;</ph>
   </message>
