@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -48,6 +49,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/grit/components_scaled_resources.h"
@@ -801,20 +803,34 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
                    u"");
 }
 
-void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
-  AutocompleteMatch current_match =
-      CurrentMatchAndAlternateNavUrl(/*alternate_nav_url=*/nullptr);
-  std::u16string query_text =
-      AutocompleteMatch::IsSearchType(current_match.type)
-          ? current_match.contents
-          : u"";
+void OmniboxEditModel::OpenAiMode(
+    bool via_keyboard,
+    bool via_context_menu,
+    std::optional<std::u16string> query_text_override,
+    WindowOpenDisposition disposition) {
+  std::u16string query_text;
+  AutocompleteMatchType::Type match_type =
+      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+  const bool has_query_text_override = query_text_override.has_value();
+
+  if (has_query_text_override) {
+    query_text = query_text_override.value();
+  } else {
+    AutocompleteMatch current_match =
+        CurrentMatchAndAlternateNavUrl(/*alternate_nav_url=*/nullptr);
+    if (AutocompleteMatch::IsSearchType(current_match.type)) {
+      query_text = current_match.contents;
+    }
+    match_type = current_match.type;
+  }
   RecordAiModeMetrics(query_text, /*activated=*/true, via_keyboard);
 
   if (!via_context_menu) {
     RecordAiModeButtonClick();
   }
 
-  if (ShouldOpenAimPopup(via_context_menu, current_match.type)) {
+  if (ShouldOpenAimPopup(via_context_menu, match_type,
+                         has_query_text_override)) {
     controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
     return;
   }
@@ -832,10 +848,10 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
   InitializeQueryContextualizerIfNeeded();
 
   if (query_contextualizer_) {
-    NavigateToAiModeWithContextualizer(query_text);
+    NavigateToAiModeWithContextualizer(query_text, disposition);
   } else {
     // Fallback if contextualizer is not available (e.g. service is null).
-    NavigateToAiModeWithoutContextualizer(query_text);
+    NavigateToAiModeWithoutContextualizer(query_text, disposition);
   }
 }
 
@@ -913,7 +929,7 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
         input_, match,
         autocomplete_controller()->autocomplete_provider_client());
     OpenMatch(selection, match, disposition, alternate_nav_url,
-              std::u16string(), timestamp);
+              std::u16string(), timestamp, via_keyboard);
   }
 }
 
@@ -2597,7 +2613,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
   if (popup_view_) {
     OpenMatch(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch), match,
               disposition, alternate_nav_url, std::u16string(),
-              match_selection_timestamp);
+              match_selection_timestamp, /*via_keyboard=*/true);
   }
 }
 
@@ -2653,7 +2669,17 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                                  WindowOpenDisposition disposition,
                                  const GURL& alternate_nav_url,
                                  const std::u16string& pasted_text,
-                                 base::TimeTicks match_selection_timestamp) {
+                                 base::TimeTicks match_selection_timestamp,
+                                 bool via_keyboard) {
+  if (base::FeatureList::IsEnabled(
+          contextual_tasks::kFulfillSearchQueriesInAim) &&
+      selection.state == OmniboxPopupSelection::NORMAL &&
+      AutocompleteMatch::IsSearchType(match.type)) {
+    OpenAiMode(via_keyboard, /*via_context_menu=*/false, match.contents,
+               disposition);
+    return;
+  }
+
   // When `ShowConfirmationDialogIfDefaultSearchExtensionControlled` is called
   // for the first time and that the Dialog is shown, it early returns and
   // asynchronously waits until the Dialog is resolved. Once the Dialog is
@@ -3280,7 +3306,14 @@ void OmniboxEditModel::RecordAiModeButtonClick() {
 
 bool OmniboxEditModel::ShouldOpenAimPopup(
     bool via_context_menu,
-    AutocompleteMatchType::Type current_match_type) {
+    AutocompleteMatchType::Type current_match_type,
+    bool has_query_text_override) {
+  if (has_query_text_override) {
+    // Don't open AIM popup when using `query_text_override` because we want to
+    // navigate directly to AI mode with the overridden query text.
+    return false;
+  }
+
   if (!controller_->client()->IsAimPopupEnabled()) {
     return false;
   }
@@ -3387,7 +3420,8 @@ OmniboxEditModel::GetOrCreateContextualSearchSessionHandle(Profile* profile) {
 }
 
 void OmniboxEditModel::NavigateToAiModeWithContextualizer(
-    std::u16string query_text) {
+    std::u16string query_text,
+    WindowOpenDisposition disposition) {
   if (session_handle_) {
     session_handle_.reset();
   }
@@ -3400,8 +3434,7 @@ void OmniboxEditModel::NavigateToAiModeWithContextualizer(
       base::BindOnce(
           &OmniboxEditModel::
               NavigateToAiModeWithContextualizerOnContextualizationComplete,
-          weak_factory_.GetWeakPtr(), query_text,
-          WindowOpenDisposition::CURRENT_TAB),
+          weak_factory_.GetWeakPtr(), query_text, disposition),
       /*enable_smart_tab_selection=*/false);
 }
 
@@ -3499,29 +3532,27 @@ void OmniboxEditModel::
 
     chrome_omnibox_client->OpenUrlWithCallback(
         url, disposition, std::move(navigation_handle_callback));
-
-    // Manually close the popup and revert text synchronously here because
-    // `OpenUrlWithCallback` uses the asynchronous version of `Navigate()`.
-    // In the `else` block, `OpenUrl` uses the synchronous `Navigate()`, which
-    // causes the browser to immediately shift focus and reset state. For the
-    // async branch, doing it manually ensures immediate UI feedback.
-    if (view_) {
-      base::AutoReset<bool> tmp(&in_revert_, true);
-      view_->RevertAll();
-    }
   } else {
     chrome_omnibox_client->OpenUrl(url, disposition);
+  }
+
+  // Manually close the popup and revert text synchronously here because
+  // `OpenUrlWithCallback` uses the asynchronous version of `Navigate()`.
+  if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
+    base::AutoReset<bool> tmp(&in_revert_, true);
+    view_->RevertAll();
   }
 #endif
 }
 
 void OmniboxEditModel::NavigateToAiModeWithoutContextualizer(
-    std::u16string query_text) {
+    std::u16string query_text,
+    WindowOpenDisposition disposition) {
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
                    omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
                    /*query_start_time=*/base::Time::Now(), query_text,
                    lens::LensOverlayInvocationSource::kOmniboxContextualQuery,
                    /*additional_params=*/{});
-  controller_->client()->OpenUrl(ai_mode_url);
+  controller_->client()->OpenUrl(ai_mode_url, disposition);
 }

@@ -10958,6 +10958,7 @@ from previous Chrome versions.
   <int value="-1112092067" label="AndroidHubV2:disabled"/>
   <int value="-1111837928" label="NtpMobilePromo:enabled"/>
   <int value="-1111269978" label="FluentOverlayScrollbar:enabled"/>
+  <int value="-1111177314" label="FulfillSearchQueriesInAim:enabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1111056156" label="AdvancedPeripheralsSupportTabStrip:enabled"/>
   <int value="-1110928012" label="force-companion-pinned-state"/>
@@ -13092,6 +13093,7 @@ from previous Chrome versions.
       label="CCTOpenInBrowserButtonIfAllowedByEmbedder:disabled"/>
   <int value="-408769228" label="ArcGraphicBuffersVisualizationTool:disabled"/>
   <int value="-408180142" label="PassExplicitSyncPassphraseToGmsCore:disabled"/>
+  <int value="-407055450" label="FulfillSearchQueriesInAim:disabled"/>
   <int value="-406850932" label="EnableEmojiContextMenu:enabled"/>
   <int value="-406475702"
       label="webview-disable-apps-package-names-allowlist-component"/>

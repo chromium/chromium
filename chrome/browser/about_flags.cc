@@ -11819,6 +11819,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     kContextualTasksVariations,
                                     "ContextualTasks")},
 
+    {"contextual-tasks-fulfill-search-queries-in-aim",
+     contextual_tasks::flag_descriptions::kFulfillSearchQueriesInAimName,
+     contextual_tasks::flag_descriptions::kFulfillSearchQueriesInAimDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(contextual_tasks::kFulfillSearchQueriesInAim)},
+
     {"contextual-tasks-java-fusebox",
      contextual_tasks::flag_descriptions::kContextualTasksJavaFuseboxName,
      contextual_tasks::flag_descriptions::

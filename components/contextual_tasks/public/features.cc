@@ -27,6 +27,9 @@ namespace contextual_tasks {
 // Enables the contextual tasks side panel while browsing.
 BASE_FEATURE(kContextualTasks, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Redirects all normal search queries to AI mode threads.
+BASE_FEATURE(kFulfillSearchQueriesInAim, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables extra OAuth scopes for contextual tasks.
 BASE_FEATURE(kContextualTasksExtraOauthScopes,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -665,6 +668,12 @@ namespace flag_descriptions {
 const char kContextualTasksName[] = "Contextual Tasks";
 const char kContextualTasksDescription[] =
     "Enable the contextual tasks feature.";
+
+const char kFulfillSearchQueriesInAimName[] =
+    "Fulfill Searchbox Queries in AI Mode";
+const char kFulfillSearchQueriesInAimDescription[] =
+    "Redirects all normal searchbox queries in the omnibox and realbox to AI "
+    "mode threads.";
 
 const char kContextualTasksContextName[] = "Contextual Tasks Context";
 const char kContextualTasksContextDescription[] =
