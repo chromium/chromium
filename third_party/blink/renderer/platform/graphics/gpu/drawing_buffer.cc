@@ -1295,39 +1295,36 @@ void DrawingBuffer::OnMemoryDump(
                                          dump_base_name.c_str(), i++));
   }
 
-  // Only report these if the drawing buffer is retained. Otherwise they are
-  // likely to be resourceless, in particular on tile-based architectures.
-  if (preserve_drawing_buffer_ == kPreserve) {
-    if (staging_texture_needed_ || SampleCount() > 0) {
-      uint64_t multisample_size =
-          (base::ByteSize(color_buffer_format_.EstimatedSizeInBytes(size_)) *
-           (SampleCount() + staging_texture_needed_))
-              .InBytes();
-      auto* dump = pmd->CreateAllocatorDump(dump_base_name +
-                                            "/multisample_and_staging_buffers");
-      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                      multisample_size);
-      dump->AddScalar("width", "pixels", size_.width());
-      dump->AddScalar("height", "pixels", size_.height());
-    }
+  // MSAA, Depth / Stencil and others can be memoryless in theory, but do not
+  // appear to be, even on architectures that support it. Report them always.
+  if (staging_texture_needed_ || SampleCount() > 0) {
+    uint64_t multisample_size =
+        (base::ByteSize(color_buffer_format_.EstimatedSizeInBytes(size_)) *
+         (SampleCount() + staging_texture_needed_))
+            .InBytes();
+    auto* dump = pmd->CreateAllocatorDump(dump_base_name +
+                                          "/multisample_and_staging_buffers");
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    multisample_size);
+    dump->AddScalar("width", "pixels", size_.width());
+    dump->AddScalar("height", "pixels", size_.height());
+  }
 
-    if (HasDepthBuffer() || HasStencilBuffer()) {
-      uint64_t depth_stencil_size =
-          (std::max(SampleCount(), 1) *
-           base::ByteSize(base::checked_cast<uint64_t>(4 * size_.width() *
-                                                       size_.height())))
-              .InBytes();
-      auto* dump =
-          pmd->CreateAllocatorDump(dump_base_name + "/depth_stencil_buffer");
-      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                      depth_stencil_size);
-      dump->AddScalar("width", "pixels", size_.width());
-      dump->AddScalar("height", "pixels", size_.height());
-      if (HasStencilBuffer()) {
-        dump->AddScalar("stencil_bits", "bits", 8);
-      }
+  if (HasDepthBuffer() || HasStencilBuffer()) {
+    uint64_t depth_stencil_size = (std::max(SampleCount(), 1) *
+                                   base::ByteSize(base::checked_cast<uint64_t>(
+                                       4 * size_.width() * size_.height())))
+                                      .InBytes();
+    auto* dump =
+        pmd->CreateAllocatorDump(dump_base_name + "/depth_stencil_buffer");
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    depth_stencil_size);
+    dump->AddScalar("width", "pixels", size_.width());
+    dump->AddScalar("height", "pixels", size_.height());
+    if (HasStencilBuffer()) {
+      dump->AddScalar("stencil_bits", "bits", 8);
     }
   }
 }
