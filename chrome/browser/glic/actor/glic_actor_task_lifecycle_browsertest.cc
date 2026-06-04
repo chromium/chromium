@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/glic/actor/glic_actor_functional_browsertest.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "content/public/test/browser_test.h"
 
@@ -443,6 +445,58 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   // Stop the task and verify callback receives false.
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
   EXPECT_FALSE(actuating_false_future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+                       ActivateTabWithConversationUsesActorState) {
+  GlicInstanceImpl* instance = GetGlicInstanceImpl();
+  ASSERT_TRUE(instance);
+
+  // Register a conversation ID for the instance if not present.
+  std::optional<std::string> conv_id_opt = instance->conversation_id();
+  std::string conv_id = conv_id_opt.value_or("test_conversation_id");
+  if (!conv_id_opt.has_value()) {
+    auto info = mojom::ConversationInfo::New();
+    info->conversation_id = conv_id;
+    instance->RegisterConversation(std::move(info), base::DoNothing());
+  }
+
+  // Create a task.
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  tabs::TabInterface* first_tab = active_tab();
+  ASSERT_TRUE(first_tab);
+
+  // Open a second tab so we can test focusing.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  tabs::TabInterface* second_tab = active_tab();
+  ASSERT_TRUE(second_tab);
+  ASSERT_NE(second_tab, first_tab);
+
+  // Make the task act on the FIRST tab.
+  const GURL target_url =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
+  Actions action =
+      ::actor::MakeNavigate(first_tab->GetHandle(), target_url.spec(), task_id);
+  EXPECT_THAT(PerformActions(action),
+              base::test::ValueIs(
+                  HasResultCode(::actor::mojom::ActionResultCode::kOk)));
+
+  // Now the first tab should be in LastActedTabs.
+
+  // Call ActivateTabWithConversation.
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedService::Get(browser()->profile());
+  auto result =
+      glic_service->instance_coordinator().ActivateTabWithConversation(conv_id);
+
+  EXPECT_EQ(GlicInstanceCoordinator::ActivateTabResult::kSuccess, result);
+
+  // Verify that the FIRST tab is now active (since it was the last acted tab).
+  EXPECT_EQ(active_tab(), first_tab);
 }
 
 }  // namespace

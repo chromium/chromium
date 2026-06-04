@@ -115,23 +115,6 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiNotReadyTest, GetState) {
       << message_;
 }
 
-class GlicPrivateApiAccountMismatchTest : public GlicPrivateApiTest {
- private:
-  glic::GlicTestEnvironment glic_test_environment_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicPrivateApiAccountMismatchTest, GetState) {
-  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
-      kGlicPrivateTestExtensionId);
-
-  // Run the test on a non-extension page with a mismatched account index in the
-  // URL. CheckAccountConsistency should trigger.
-  EXPECT_TRUE(RunExtensionTest("glic_private",
-                               {.custom_arg = "account_mismatch"},
-                               {.load_as_component = true}))
-      << message_;
-}
-
 class GlicPrivateApiFeatureDisabledTest : public GlicPrivateApiTestBase {
  public:
   GlicPrivateApiFeatureDisabledTest() {

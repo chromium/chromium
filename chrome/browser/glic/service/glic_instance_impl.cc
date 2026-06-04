@@ -864,6 +864,17 @@ std::string GlicInstanceImpl::conversation_title() const {
   return conversation_info_->conversation_title;
 }
 
+std::vector<tabs::TabInterface*> GlicInstanceImpl::GetBoundTabs() const {
+  std::vector<tabs::TabInterface*> tabs;
+  for (const auto& [key, entry] : embedders_) {
+    if (tabs::TabInterface* const* tab =
+            std::get_if<tabs::TabInterface*>(&key)) {
+      tabs.push_back(*tab);
+    }
+  }
+  return tabs;
+}
+
 glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
   return conversation_info_->Clone();
 }

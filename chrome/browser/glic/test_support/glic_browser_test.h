@@ -233,12 +233,13 @@ class GlicBrowserTestMixin : public T {
     return WaitForGlicOpen(T::GetTabListInterface()->GetActiveTab());
   }
 
-  void RegisterConversation(GlicInstanceImpl* instance,
+  void RegisterConversation(GlicInstance* instance,
                             const std::string& conversation_id) {
     CHECK(instance);
     auto info = mojom::ConversationInfo::New();
     info->conversation_id = conversation_id;
-    instance->RegisterConversation(std::move(info), base::DoNothing());
+    static_cast<GlicInstanceImpl*>(instance)->RegisterConversation(
+        std::move(info), base::DoNothing());
   }
 
   // Registers a conversation and submits input to prevent the instance from

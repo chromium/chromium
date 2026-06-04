@@ -16,6 +16,8 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_tab_observer.h"
 #include "chrome/browser/glic/common/instance_independent_hotkey_manager.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
@@ -46,6 +49,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/base_window.h"
 
 namespace glic {
 
@@ -69,6 +73,22 @@ GlicTabRestoreData* GetTabRestoreData(const TabCreationEvent& creation_event) {
   return GlicTabRestoreData::FromWebContents(
       creation_event.new_tab->GetContents());
 }
+tabs::TabInterface* GetMostRecentlyActiveTab(
+    const std::vector<tabs::TabInterface*>& tabs) {
+  CHECK(!tabs.empty());
+  tabs::TabInterface* most_recent = tabs[0];
+  base::Time max_active_time = most_recent->GetLastActiveTime();
+
+  for (size_t i = 1; i < tabs.size(); ++i) {
+    base::Time active_time = tabs[i]->GetLastActiveTime();
+    if (active_time > max_active_time) {
+      max_active_time = active_time;
+      most_recent = tabs[i];
+    }
+  }
+  return most_recent;
+}
+
 }  // namespace
 
 BASE_FEATURE(kGlicMaxAwakeInstances, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -261,6 +281,48 @@ bool GlicInstanceCoordinatorImpl::IsAnyPanelShowing() const {
 bool GlicInstanceCoordinatorImpl::IsConversationPresent(
     const std::string& conversation_id) const {
   return !!GetInstanceImplForConversationId(conversation_id);
+}
+
+GlicInstanceCoordinator::ActivateTabResult
+GlicInstanceCoordinatorImpl::ActivateTabWithConversation(
+    const std::string& conversation_id) {
+  GlicInstanceImpl* instance =
+      GetInstanceImplForConversationId(conversation_id);
+  if (!instance) {
+    return GlicInstanceCoordinator::ActivateTabResult::kConversationNotFound;
+  }
+
+  std::vector<tabs::TabInterface*> target_tabs;
+
+  // Try to get tabs from the actor task manager first.
+  GlicActorTaskManager* task_manager = instance->GetActorTaskManager();
+  if (task_manager) {
+    target_tabs = task_manager->GetLastActedTabs();
+  }
+
+  // If no tabs from actor, fallback to bound tabs.
+  if (target_tabs.empty()) {
+    target_tabs = instance->GetBoundTabs();
+  }
+
+  metrics_.RecordActivateTabCandidateTabCount(target_tabs.size());
+  if (target_tabs.empty()) {
+    return GlicInstanceCoordinator::ActivateTabResult::kNoBoundTabs;
+  }
+
+  tabs::TabInterface* target_tab = GetMostRecentlyActiveTab(target_tabs);
+
+  BrowserWindowInterface* target_browser =
+      target_tab->GetBrowserWindowInterface();
+  if (!target_browser) {
+    return GlicInstanceCoordinator::ActivateTabResult::kTabNotInWindow;
+  }
+
+  auto* tab_list = TabListInterface::From(target_browser);
+  tab_list->ActivateTab(target_tab->GetHandle());
+  target_browser->GetWindow()->Activate();
+
+  return GlicInstanceCoordinator::ActivateTabResult::kSuccess;
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(

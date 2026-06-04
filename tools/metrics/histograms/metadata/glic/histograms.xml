@@ -219,6 +219,17 @@ chromium-metrics-reviews@google.com.
   <variant name="Text"/>
 </variants>
 
+<histogram name="Glic.ActivateTabWithConversation.CandidateTabCount"
+    units="tabs" expires_after="2027-06-01">
+  <owner>weiguo@google.com</owner>
+  <owner>chrome-synapse-team@google.com</owner>
+  <summary>
+    Records the number of candidate tabs (bound tabs or actor tabs) when trying
+    to activate a conversation. Recorded when ActivateTabWithConversation is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Actor.JournalEvent.{EventType}" units="ms"
     expires_after="2026-08-29">
   <owner>dtapuska@google.com</owner>

@@ -650,6 +650,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="LocalGlicNotEnabledAndConsented"/>
   <int value="11" label="LocalAccountMismatch"/>
   <int value="12" label="LocalInvalidDocumentId"/>
+  <int value="13" label="LocalConversationNotFound"/>
+  <int value="14" label="LocalNoBoundTabs"/>
+  <int value="15" label="LocalTabNotInWindow"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/extensions/api/glic_private/glic_private_api.cc:GlicPrivateApiStatusCodeHistogramValue) -->
