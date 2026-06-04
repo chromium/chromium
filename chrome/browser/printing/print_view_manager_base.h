@@ -122,11 +122,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
                         DidPrintDocumentCallback callback) override;
   void GetDefaultPrintSettings(
       GetDefaultPrintSettingsCallback callback) override;
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void SetAccessibilityTree(
-      int32_t cookie,
-      const ui::AXTreeUpdate& accessibility_tree) override;
-#endif
   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;
   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
                      ScriptedPrintCallback callback) override;

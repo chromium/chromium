@@ -598,17 +598,6 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
       !render_process_host->IsPdf(), want_pdf_settings);
 }
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-void PrintViewManagerBase::SetAccessibilityTree(
-    int32_t cookie,
-    const ui::AXTreeUpdate& accessibility_tree) {
-  auto* client = PrintCompositeClient::FromWebContents(web_contents());
-  if (client) {
-    client->SetAccessibilityTree(cookie, accessibility_tree);
-  }
-}
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
 void PrintViewManagerBase::IsPrintingEnabled(
     IsPrintingEnabledCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

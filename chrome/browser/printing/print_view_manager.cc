@@ -25,6 +25,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
+#include "components/printing/browser/print_composite_client.h"
 #include "components/printing/browser/print_manager_utils.h"
 #include "components/printing/common/print_params.h"
 #include "content/public/browser/browser_thread.h"
@@ -649,6 +650,15 @@ void PrintViewManager::CheckForCancel(int32_t preview_ui_id,
                                       CheckForCancelCallback callback) {
   std::move(callback).Run(
       PrintPreviewUI::ShouldCancelRequest(preview_ui_id, request_id));
+}
+
+void PrintViewManager::SetAccessibilityTree(
+    int32_t cookie,
+    const ui::AXTreeUpdate& accessibility_tree) {
+  auto* client = PrintCompositeClient::FromWebContents(web_contents());
+  if (client) {
+    client->SetAccessibilityTree(cookie, accessibility_tree);
+  }
 }
 
 void PrintViewManager::MaybeUnblockScriptedPreviewRPH() {

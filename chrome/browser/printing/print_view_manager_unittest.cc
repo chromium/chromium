@@ -359,6 +359,11 @@ class TestPrintViewManagerWin : public PrintViewManagerBase {
                       CheckForCancelCallback callback) override {
     NOTREACHED();
   }
+  void SetAccessibilityTree(
+      int32_t cookie,
+      const ui::AXTreeUpdate& accessibility_tree) override {
+    NOTREACHED();
+  }
 
  private:
   TestPrintJobWin* test_job() {
