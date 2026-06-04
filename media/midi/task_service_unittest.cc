@@ -5,6 +5,7 @@
 #include "media/midi/task_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -61,14 +62,44 @@ class TaskServiceClient {
   TaskServiceClient(const TaskServiceClient&) = delete;
   TaskServiceClient& operator=(const TaskServiceClient&) = delete;
 
-  bool Bind() { return task_service()->BindInstance(); }
+  bool Bind() {
+    std::optional<TaskService::InstanceId> instance_id =
+        task_service()->BindInstance();
+    if (instance_id) {
+      instance_id_ = *instance_id;
+      return true;
+    }
+    instance_id_ = TaskService::kInvalidInstanceId;
+    return false;
+  }
 
-  bool Unbind() { return task_service()->UnbindInstance(); }
+  bool Unbind() {
+    instance_id_ = TaskService::kInvalidInstanceId;
+    return task_service()->UnbindInstance();
+  }
+
+  TaskService::InstanceId instance_id() const { return instance_id_; }
 
   void PostBoundTask(TaskService::RunnerId runner_id) {
     task_service()->PostBoundTask(
         runner_id, base::BindOnce(&TaskServiceClient::IncrementCount,
                                   base::Unretained(this)));
+  }
+
+  void PostBoundTaskWithExplicitId(TaskService::InstanceId instance_id,
+                                   TaskService::RunnerId runner_id) {
+    task_service()->PostBoundTask(
+        instance_id, runner_id,
+        base::BindOnce(&TaskServiceClient::IncrementCount,
+                       base::Unretained(this)));
+  }
+
+  void PostBoundSignalTaskWithExplicitId(TaskService::InstanceId instance_id,
+                                         TaskService::RunnerId runner_id) {
+    task_service()->PostBoundTask(
+        instance_id, runner_id,
+        base::BindOnce(&TaskServiceClient::SignalEvent,
+                       base::Unretained(this)));
   }
 
   void PostBoundSignalTask(TaskService::RunnerId runner_id) {
@@ -89,6 +120,27 @@ class TaskServiceClient {
         runner_id,
         base::BindOnce(&TaskServiceClient::SignalEvent, base::Unretained(this)),
         base::Milliseconds(100));
+  }
+
+  void PostBoundDelayedTaskWithExplicitId(TaskService::InstanceId instance_id,
+                                          TaskService::RunnerId runner_id,
+                                          base::TimeDelta delay) {
+    task_service()->PostBoundDelayedTask(
+        instance_id, runner_id,
+        base::BindOnce(&TaskServiceClient::IncrementCount,
+                       base::Unretained(this)),
+        delay);
+  }
+
+  void PostBoundDelayedSignalTaskWithExplicitId(
+      TaskService::InstanceId instance_id,
+      TaskService::RunnerId runner_id,
+      base::TimeDelta delay) {
+    task_service()->PostBoundDelayedTask(
+        instance_id, runner_id,
+        base::BindOnce(&TaskServiceClient::SignalEvent,
+                       base::Unretained(this)),
+        delay);
   }
 
   void WaitTask() { wait_task_event_->Wait(); }
@@ -121,6 +173,7 @@ class TaskServiceClient {
   raw_ptr<TaskService> task_service_;
   std::unique_ptr<base::WaitableEvent> wait_task_event_;
   size_t count_;
+  TaskService::InstanceId instance_id_ = TaskService::kInvalidInstanceId;
 };
 
 class MidiTaskServiceTest : public ::testing::Test {
@@ -306,6 +359,82 @@ TEST_F(MidiTaskServiceTest, RunBoundTaskOnDefaultRunner) {
   EXPECT_EQ(0u, client->count());
   RunUntilIdle();
   EXPECT_EQ(1u, client->count());
+
+  EXPECT_TRUE(client->Unbind());
+}
+
+// Tests if bound tasks with explicit InstanceId are handled correctly.
+TEST_F(MidiTaskServiceTest, RunBoundTaskWithExplicitInstanceId) {
+  std::unique_ptr<TaskServiceClient> client =
+      std::make_unique<TaskServiceClient>(task_service());
+
+  EXPECT_TRUE(client->Bind());
+  TaskService::InstanceId id1 = client->instance_id();
+  EXPECT_NE(TaskService::kInvalidInstanceId, id1);
+
+  // Task with correct ID should run.
+  EXPECT_EQ(0u, client->count());
+  client->PostBoundTaskWithExplicitId(id1, kFirstRunner);
+  client->PostBoundSignalTaskWithExplicitId(id1, kFirstRunner);
+  WaitEvent();
+  EXPECT_EQ(2u, client->count());
+
+  // Unbind.
+  EXPECT_TRUE(client->Unbind());
+
+  // Bind again to get a new ID.
+  ResetEvent();
+  EXPECT_TRUE(client->Bind());
+  TaskService::InstanceId id2 = client->instance_id();
+  EXPECT_NE(id1, id2);
+
+  // Task with old ID should be ignored.
+  client->PostBoundTaskWithExplicitId(id1, kFirstRunner);
+
+  // Task with new ID should run.
+  client->PostBoundSignalTaskWithExplicitId(id2, kFirstRunner);
+  WaitEvent();
+  // Count should only be incremented by the new task (2 -> 3).
+  EXPECT_EQ(3u, client->count());
+
+  EXPECT_TRUE(client->Unbind());
+}
+
+// Tests if bound delayed tasks with explicit InstanceId are handled correctly.
+TEST_F(MidiTaskServiceTest, RunBoundDelayedTaskWithExplicitInstanceId) {
+  std::unique_ptr<TaskServiceClient> client =
+      std::make_unique<TaskServiceClient>(task_service());
+
+  EXPECT_TRUE(client->Bind());
+  TaskService::InstanceId id1 = client->instance_id();
+  EXPECT_NE(TaskService::kInvalidInstanceId, id1);
+
+  // Task with correct ID should run.
+  EXPECT_EQ(0u, client->count());
+  client->PostBoundDelayedSignalTaskWithExplicitId(id1, kFirstRunner,
+                                                   base::Milliseconds(10));
+  WaitEvent();
+  EXPECT_EQ(1u, client->count());
+
+  // Unbind.
+  EXPECT_TRUE(client->Unbind());
+
+  // Bind again to get a new ID.
+  ResetEvent();
+  EXPECT_TRUE(client->Bind());
+  TaskService::InstanceId id2 = client->instance_id();
+  EXPECT_NE(id1, id2);
+
+  // Task with old ID should be ignored.
+  client->PostBoundDelayedTaskWithExplicitId(id1, kFirstRunner,
+                                             base::Milliseconds(10));
+
+  // Task with new ID should run.
+  client->PostBoundDelayedSignalTaskWithExplicitId(id2, kFirstRunner,
+                                                   base::Milliseconds(10));
+  WaitEvent();
+  // Count should only be incremented by the new task (1 -> 2).
+  EXPECT_EQ(2u, client->count());
 
   EXPECT_TRUE(client->Unbind());
 }
