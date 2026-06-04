@@ -221,7 +221,7 @@ void WebAppMenuModel::Build() {
     move_to_desks_submenu_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
         std::make_unique<chromeos::MoveToDesksMenuDelegate>(
             views::Widget::GetWidgetForNativeWindow(
-                browser()->window()->GetNativeWindow())));
+                browser()->GetWindow()->GetNativeWindow())));
     AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
                            IDS_MOVE_TO_DESKS_MENU,
                            move_to_desks_submenu_.get());

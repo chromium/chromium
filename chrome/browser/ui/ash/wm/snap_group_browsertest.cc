@@ -110,7 +110,7 @@ using FasterSplitScreenBrowserTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
                        AutoSnapWhileInSessionRestore) {
   // Create two browser windows and snap `window1` to start partial overview.
-  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  aura::Window* window1 = browser()->GetWindow()->GetNativeWindow();
   ash::WindowState* window_state = ash::WindowState::Get(window1);
   CreateBrowser(browser()->profile());
 
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
 
   // Open a new browser window. Test it gets auto-snapped.
   Browser* browser3 = CreateBrowser(browser()->profile());
-  aura::Window* window3 = browser3->window()->GetNativeWindow();
+  aura::Window* window3 = browser3->GetWindow()->GetNativeWindow();
   EXPECT_TRUE(ash::WindowState::Get(window3)->IsSnapped());
   EXPECT_FALSE(ash::OverviewController::Get()->InOverviewSession());
 }
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
       ->InstallSystemAppsForTesting();
 
   // Create two browser windows and snap `window` to start partial overview.
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   CreateBrowser(browser()->profile());
   ash::WindowState* window_state = ash::WindowState::Get(window);
   const ash::WindowSnapWMEvent primary_snap_event(
@@ -278,12 +278,12 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, RotatedSnapGroup) {
 // Verify that dragging a tab within a Snap Group window does not break the
 // group.
 IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
-  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  aura::Window* window1 = browser()->GetWindow()->GetNativeWindow();
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUITabSearchURL), -1, true);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   aura::Window* window2 =
-      CreateBrowser(browser()->profile())->window()->GetNativeWindow();
+      CreateBrowser(browser()->profile())->GetWindow()->GetNativeWindow();
 
   aura::Window* root_window = ash::Shell::GetPrimaryRootWindow();
   ui::test::EventGenerator event_generator(root_window);
@@ -311,12 +311,12 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
 // Verify that detaching a tab from a window within a Snap Group doesn't break
 // the group.
 IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
-  aura::Window* window1 = browser()->window()->GetNativeWindow();
+  aura::Window* window1 = browser()->GetWindow()->GetNativeWindow();
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUITabSearchURL), -1, true);
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   aura::Window* window2 =
-      CreateBrowser(browser()->profile())->window()->GetNativeWindow();
+      CreateBrowser(browser()->profile())->GetWindow()->GetNativeWindow();
 
   ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
   ash::SnapTwoTestWindows(window1, window2, /*horizontal=*/true,
@@ -359,16 +359,16 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest,
   aura::Window* root_window = ash::Shell::GetPrimaryRootWindow();
 
   // Explicitly move the default non-incognito browser window to another desk.
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   desks_controller->MoveWindowFromActiveDeskTo(
       window, desks[1].get(), root_window,
       ash::DesksMoveWindowFromActiveDeskSource::kShortcut);
 
   // Create a Snap Group with two incognito browser windows.
   Browser* incognito_browser1 = CreateIncognitoBrowser();
-  aura::Window* window1 = incognito_browser1->window()->GetNativeWindow();
+  aura::Window* window1 = incognito_browser1->GetWindow()->GetNativeWindow();
   Browser* incognito_browser2 = CreateIncognitoBrowser();
-  aura::Window* window2 = incognito_browser2->window()->GetNativeWindow();
+  aura::Window* window2 = incognito_browser2->GetWindow()->GetNativeWindow();
 
   ui::test::EventGenerator event_generator(root_window);
   ash::SnapTwoTestWindows(window1, window2, /*horizontal=*/true,

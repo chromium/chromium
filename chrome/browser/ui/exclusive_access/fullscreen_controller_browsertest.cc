@@ -563,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        NotExitBrowserLockedFullscreenOnPressEsc) {
   // Enter browser locked fullscreen.
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 
   // Short-press Esc key won't exit browser locked fullscreen.
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        NotExitBrowserLockedFullscreenOnPressAndHoldEsc) {
   // Enter browser locked fullscreen.
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 
   // Press-and-hold Esc will not exit browser locked fullscreen.

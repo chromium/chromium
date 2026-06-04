@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      browser()->window()->GetNativeWindow(), test_future.GetCallback());
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
 
   views::NamedWidgetShownWaiter uninstall_dialog_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      app_browser->window()->GetNativeWindow(), test_future.GetCallback());
+      app_browser->GetWindow()->GetNativeWindow(), test_future.GetCallback());
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      browser()->window()->GetNativeWindow(), test_future.GetCallback());
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewBrowserTest,
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      browser()->window()->GetNativeWindow(), test_future.GetCallback());
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
 
   EXPECT_TRUE(test_future.Wait());
   EXPECT_EQ(test_future.Get<webapps::UninstallResultCode>(),
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppMenu,
-      browser()->window()->GetNativeWindow(), test_future.GetCallback());
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
 
   views::NamedWidgetShownWaiter uninstall_dialog_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppUninstallDialogDelegateView");
@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
   base::test::TestFuture<webapps::UninstallResultCode> test_future;
   provider()->ui_manager().PresentUserUninstallDialog(
       sub_app_id, webapps::WebappUninstallSource::kAppMenu,
-      browser()->window()->GetNativeWindow(), test_future.GetCallback());
+      browser()->GetWindow()->GetNativeWindow(), test_future.GetCallback());
 
   // Wait for dialog.
   views::NamedWidgetShownWaiter uninstall_dialog_waiter(

@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, BrowsersRememberFocus) {
   const GURL url = embedded_test_server()->GetURL(kSimplePage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
 
   // The focus should be on the Tab contents.
   ASSERT_TRUE(IsViewFocused(VIEW_ID_TAB_CONTAINER));
@@ -653,9 +653,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NavigateFromOmnibox) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
   content::TestNavigationManager nav_manager(web_contents, url);
-  ASSERT_TRUE(ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(),
-                                        ui::VKEY_RETURN, false, false, false,
-                                        false));
+  ASSERT_TRUE(
+      ui_controls::SendKeyPress(browser()->GetWindow()->GetNativeWindow(),
+                                ui::VKEY_RETURN, false, false, false, false));
   ASSERT_TRUE(nav_manager.WaitForRequestStart());
 
   // Verify that a navigation has started.

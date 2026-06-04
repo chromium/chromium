@@ -118,7 +118,7 @@ class PasswordGenerationPopupViewBrowsertest
         views::Widget::InitParams::Activatable::kDefault,
         controller.GetWeakPtr(),
         views::Widget::GetWidgetForNativeWindow(
-            browser()->window()->GetNativeWindow()));
+            browser()->GetWindow()->GetNativeWindow()));
   }
 
  private:

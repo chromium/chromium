@@ -31,7 +31,7 @@ class AskGoogleForSuggestionsDialogTest : public DialogBrowserTest {
 
     // The toolkit-views version of the dialog does not utilize the anchor_view
     // and origin parameters passed to this function. Pass dummy values.
-    chrome::ShowConfirmBubble(browser()->window()->GetNativeWindow(),
+    chrome::ShowConfirmBubble(browser()->GetWindow()->GetNativeWindow(),
                               gfx::NativeView(), gfx::Point(),
                               std::move(model));
   }

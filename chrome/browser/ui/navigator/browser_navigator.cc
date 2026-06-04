@@ -723,7 +723,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
     // Some unit tests have no client instantiated.
     if (window_manager) {
-      aura::Window* src_window = source_browser->window()->GetNativeWindow();
+      aura::Window* src_window = source_browser->GetWindow()->GetNativeWindow();
       aura::Window* new_window =
           params->browser->GetWindow()->GetNativeWindow();
       const AccountId& src_account_id =

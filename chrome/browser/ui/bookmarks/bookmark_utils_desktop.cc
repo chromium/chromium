@@ -556,7 +556,7 @@ void ShowBookmarkTabGroupDialogHelper(
   details.bookmark_data.children = std::move(children);
   DCHECK(!details.bookmark_data.children.empty());
   BookmarkEditor::Show(
-      browser->window()->GetNativeWindow(), profile, details,
+      browser->GetWindow()->GetNativeWindow(), profile, details,
       BookmarkEditor::SHOW_TREE,
       base::BindOnce(
           [](Browser* browser, base::OnceClosure callback) {
@@ -610,7 +610,7 @@ void OpenAllIfAllowed(
   // before the user can answer "Yes".
 
   chrome::ShowQuestionMessageBoxAsync(
-      browser->window()->GetNativeWindow(),
+      browser->GetWindow()->GetNativeWindow(),
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
       l10n_util::GetStringFUTF16(IDS_BOOKMARK_BAR_SHOULD_OPEN_ALL,
                                  base::NumberToString16(child_count)),

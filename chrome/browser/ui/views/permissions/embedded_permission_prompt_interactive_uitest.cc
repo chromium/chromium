@@ -1628,7 +1628,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.context = browser()->window()->GetNativeWindow();
+  params.context = browser()->GetWindow()->GetNativeWindow();
   auto widget = std::make_unique<views::Widget>();
   widget->Init(std::move(params));
   widget->SetBounds(gfx::Rect(0, 0, 800, 600));

@@ -712,7 +712,7 @@ gfx::NativeWindow LaunchFilesAppAndWait(Profile* profile) {
   ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::FILE_MANAGER,
                                params);
   Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
-  return files_app->window()->GetNativeWindow();
+  return files_app->GetWindow()->GetNativeWindow();
 }
 
 class CloudUploadDialogNoTasksBrowserTest
@@ -1504,7 +1504,7 @@ IN_PROC_BROWSER_TEST_F(
   // Launch a settings page.
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::SETTINGS);
   Browser* files_app = ui_test_utils::WaitForBrowserToOpen();
-  gfx::NativeWindow settings = files_app->window()->GetNativeWindow();
+  gfx::NativeWindow settings = files_app->GetWindow()->GetNativeWindow();
 
   auto* modal_parent_widget =
       views::Widget::GetWidgetForNativeWindow(modal_parent);

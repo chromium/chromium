@@ -144,7 +144,7 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(
   // On Chrome OS, pressing Search-Esc when there are no open browser windows
   // will open the task manager on the root window for new windows.
   gfx::NativeWindow context =
-      browser ? browser->window()->GetNativeWindow() : gfx::NativeWindow();
+      browser ? browser->GetWindow()->GetNativeWindow() : gfx::NativeWindow();
   CreateDialogWidget(g_task_manager_view, context, gfx::NativeView());
   g_task_manager_view->GetDialogClientView()->SetBackgroundColor(
       kColorTaskManagerBackground);

@@ -169,7 +169,7 @@ class BrowserWindowTouchBarControllerTest : public InProcessBrowserTest {
   }
 
   gfx::NativeWindow native_window() const {
-    return browser()->window()->GetNativeWindow();
+    return browser()->GetWindow()->GetNativeWindow();
   }
 
   NSWindow* ns_window() const { return native_window().GetNativeNSWindow(); }

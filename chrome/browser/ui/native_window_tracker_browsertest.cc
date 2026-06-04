@@ -19,7 +19,8 @@ IN_PROC_BROWSER_TEST_F(NativeWindowTrackerTest, Basic) {
   CreateBrowser(browser()->profile());
 
   std::unique_ptr<ui::NativeWindowTracker> tracker =
-      ui::NativeWindowTracker::Create(browser()->window()->GetNativeWindow());
+      ui::NativeWindowTracker::Create(
+          browser()->GetWindow()->GetNativeWindow());
   EXPECT_FALSE(tracker->WasNativeWindowDestroyed());
 
   browser()->window()->Close();

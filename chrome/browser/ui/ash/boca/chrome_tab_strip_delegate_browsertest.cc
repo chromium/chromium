@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest, GetTabListForWindow) {
   // Add tab in a new browser.
   CreateBrowser({GURL(kTabUrl3)}, /*active_url_index=*/1);
 
-  auto* aura_window = browser->window()->GetNativeWindow();
+  auto* aura_window = browser->GetWindow()->GetNativeWindow();
 
   base::test::TestFuture<std::vector<ash::TabInfo>> future;
   auto tab_list = delegate()->GetTabsListForWindow(aura_window);

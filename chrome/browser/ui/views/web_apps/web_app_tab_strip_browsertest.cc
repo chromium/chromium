@@ -1493,7 +1493,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   ASSERT_EQ(tab_strip_model->count(), 1);
   ASSERT_TRUE(tab_strip_model->IsTabPinned(0));
 
-  PinWindow(app_browser->window()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(app_browser->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   // TODO(crbug.com/429215055): This should happen as a part of pin state
   // transition.
   app_browser->command_controller()->LockedFullscreenStateChanged();

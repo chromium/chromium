@@ -538,7 +538,7 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
   // given |target_state|.
   void ScrollAndExpectTopChromeToBe(ScrollDirection direction,
                                     TopChromeShownState target_state) {
-    aura::Window* browser_window = browser()->window()->GetNativeWindow();
+    aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
     ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                              browser_window);
     const gfx::Point start_point =
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestCtrlL) {
   // Hit Ctrl+L which should focus the omnibox. This should unhide the top
   // controls.
   SCOPED_TRACE("Firing Ctrl+L.");
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   TopControlsShownRatioWaiter waiter(top_controls_slide_controller());
@@ -927,7 +927,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, DisplayRotation) {
   NavigateActiveTabToUrl(
       embedded_test_server()->GetURL("/top_controls_scroll.html"));
 
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   gfx::Point start_point = event_generator.current_screen_location();
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
 
   // Hit <enter> on the keyboard, then <down> three times, then <enter> again to
   // select the fourth option.
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow());
   auto send_key_event = [&event_generator](ui::KeyboardCode keycode) {
     event_generator.PressKey(keycode, ui::EF_NONE);
@@ -1209,7 +1209,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   EXPECT_TRUE(
       browser_view()->DoBrowserControlsShrinkRendererSize(active_contents));
 
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   const gfx::Point start_point = event_generator.current_screen_location();
@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
         EXPECT_TRUE(slide_controller->IsTopControlsGestureScrollInProgress());
       };
 
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   const gfx::Point start_point = event_generator.current_screen_location();
@@ -1472,7 +1472,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
       embedded_test_server()->GetURL("/top_controls_scroll.html"));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
 
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   const gfx::Point start_point = event_generator.current_screen_location();
@@ -1536,7 +1536,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
     SynchronizeBrowserWithRenderer(active_contents);
   }
 
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow(),
                                            browser_window);
   const gfx::Point start_point = event_generator.current_screen_location();

@@ -122,7 +122,7 @@ class TabScrubberTest : public InProcessBrowserTest,
   }
 
   TabStrip* GetTabStrip(Browser* browser) {
-    aura::Window* window = browser->window()->GetNativeWindow();
+    aura::Window* window = browser->GetWindow()->GetNativeWindow();
     // This test depends on TabStrip impl.
     TabStrip* tab_strip = BrowserView::GetBrowserViewForNativeWindow(window)
                               ->horizontal_tab_strip_for_testing();
@@ -281,7 +281,7 @@ class TabScrubberTest : public InProcessBrowserTest,
 
   std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
       Browser* browser) {
-    aura::Window* window = browser->window()->GetNativeWindow();
+    aura::Window* window = browser->GetWindow()->GetNativeWindow();
     aura::Window* root = window->GetRootWindow();
     return std::make_unique<ui::test::EventGenerator>(root, window);
   }

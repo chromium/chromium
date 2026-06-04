@@ -80,7 +80,7 @@ class AcceleratorCommandsFullscreenBrowserTest
 IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
                        ToggleFullscreen) {
   // 1) Browser windows.
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(browser()->is_type_normal());
   ASSERT_TRUE(widget->IsActive());
@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   ASSERT_FALSE(app_host_browser->is_type_popup());
   ASSERT_TRUE(app_host_browser->is_type_app());
   AddBlankTabAndShow(app_host_browser);
-  window = app_host_browser->window()->GetNativeWindow();
+  window = app_host_browser->GetWindow()->GetNativeWindow();
   widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget->IsActive());
   SetToInitialShowState(widget);
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   ASSERT_TRUE(popup_browser->is_type_popup());
   ASSERT_FALSE(popup_browser->is_type_app());
   AddBlankTabAndShow(popup_browser);
-  window = popup_browser->window()->GetNativeWindow();
+  window = popup_browser->GetWindow()->GetNativeWindow();
   widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget->IsActive());
   SetToInitialShowState(widget);

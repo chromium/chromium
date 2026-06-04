@@ -106,7 +106,7 @@ class PasswordCrossDomainConfirmationPopupViewBrowsertest
     return new PasswordCrossDomainConfirmationPopupViewViews(
         controller.GetWeakPtr(),
         views::Widget::GetWidgetForNativeWindow(
-            browser()->window()->GetNativeWindow()),
+            browser()->GetWindow()->GetNativeWindow()),
         /*domain=*/GURL("https://a.com"),
         /*password_hostname=*/u"b.com",
         base::BindOnce(

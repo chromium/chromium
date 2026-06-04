@@ -71,7 +71,7 @@ class HungRendererDialogViewBrowserTest : public DialogBrowserTest {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
     return HungRendererDialogView::CreateInstance(
-        web_contents, browser()->window()->GetNativeWindow());
+        web_contents, browser()->GetWindow()->GetNativeWindow());
   }
 
   void EndForWebContents(HungRendererDialogView* dialog,

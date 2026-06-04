@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
       display::Screen::Get()->GetAllDisplays();
   display::Display original_display =
       display::Screen::Get()->GetDisplayNearestWindow(
-          original_browser->window()->GetNativeWindow());
+          original_browser->GetWindow()->GetNativeWindow());
   display::Display other_display;
   for (const auto& d : displays) {
     if (d.id() != original_display.id()) {
@@ -99,11 +99,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
     EXPECT_NE(app_browser, original_browser);
-    EXPECT_EQ(
-        other_display.id(),
-        display::Screen::Get()
-            ->GetDisplayNearestWindow(app_browser->window()->GetNativeWindow())
-            .id());
+    EXPECT_EQ(other_display.id(),
+              display::Screen::Get()
+                  ->GetDisplayNearestWindow(
+                      app_browser->GetWindow()->GetNativeWindow())
+                  .id());
     EXPECT_EQ(2, original_browser->tab_strip_model()->count());
     EXPECT_EQ(1, app_browser->tab_strip_model()->count());
 

@@ -1632,7 +1632,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
     views::Widget::InitParams params(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW);
-    params.context = browser()->window()->GetNativeWindow();
+    params.context = browser()->GetWindow()->GetNativeWindow();
     params.bounds = gfx::Rect(0, 0, 100, 100);
     widget->Init(std::move(params));
     return widget;

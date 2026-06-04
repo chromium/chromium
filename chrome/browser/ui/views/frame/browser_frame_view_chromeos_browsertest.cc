@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        IncognitoMarkedAsAssistantBlocked) {
   Browser* incognito_browser = CreateIncognitoBrowser();
-  EXPECT_TRUE(incognito_browser->window()->GetNativeWindow()->GetProperty(
+  EXPECT_TRUE(incognito_browser->GetWindow()->GetNativeWindow()->GetProperty(
       chromeos::kBlockedForAssistantSnapshotKey));
 }
 
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
        }) {
     EXPECT_TRUE(immersive_mode_controller->IsEnabled());
     ui::test::EventGenerator generator(
-        browser()->window()->GetNativeWindow()->GetRootWindow());
+        browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
     std::string trace_name;
     switch (shortcut) {
@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
         [&]() { return immersive_mode_controller->IsRevealed(); }));
     EXPECT_TRUE(test_api.IsRevealLocked());
 
-    generator.MoveMouseToCenterOf(browser()->window()->GetNativeWindow());
+    generator.MoveMouseToCenterOf(browser()->GetWindow()->GetNativeWindow());
     generator.ClickLeftButton();
 
     // TODO(crbug.com/463559714): Replace the loop with EXPECT_TRUE, when the
@@ -1009,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
       [&]() -> bool { return !immersive_mode_controller->IsRevealed(); }));
 
   ui::test::EventGenerator generator(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
   SCOPED_TRACE("Zoom");
   generator.PressKey(ui::KeyboardCode::VKEY_CONTROL, 0);
@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, TopViewInset) {
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(browser());
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   EXPECT_EQ(0, window->GetProperty(aura::client::kTopViewInset));
 
   // The kTopViewInset should be 0 when in immersive mode.
@@ -1092,7 +1092,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   EXPECT_EQ(top_container, caption_buttons->parent());
 
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow());
 
   gfx::Point point(std::roundl(window->bounds().width() / 3), 0);
@@ -1169,7 +1169,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest, AppFrameColor) {
   Browser* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->profile());
 
-  aura::Window* window = app_browser->window()->GetNativeWindow();
+  aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   SkColor active_frame_color =
       window->GetProperty(chromeos::kFrameActiveColorKey);
 
@@ -1300,7 +1300,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
 
   auto* const immersive_mode_controller =
       ImmersiveModeController::From(app_browser);
-  aura::Window* window = app_browser->window()->GetNativeWindow();
+  aura::Window* window = app_browser->GetWindow()->GetNativeWindow();
   EXPECT_LT(0, window->GetProperty(aura::client::kTopViewInset));
 
   // The kTopViewInset should be 0 when in immersive mode.

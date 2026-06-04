@@ -131,7 +131,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
     extensions::ShowSettingsOverriddenDialog(
         std::make_unique<TestDialogController>(std::move(params),
                                                &dialog_result_),
-        browser->window()->GetNativeWindow());
+        browser->GetWindow()->GetNativeWindow());
     return waiter.WaitIfNeededAndGet();
   }
 

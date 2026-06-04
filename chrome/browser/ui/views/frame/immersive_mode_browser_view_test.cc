@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 
   EnterImmersiveFullscreenMode(browser());
 
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
 
   auto* immersive_fullscreen_controller =
       static_cast<ImmersiveModeControllerChromeos*>(immersive_mode_controller)
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_TRUE(immersive_mode_controller->IsRevealed());
 
   // Clicking the "restore" caption button should exit the immersive mode.
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow());
   gfx::Size button_size = views::GetCaptionButtonLayoutSize(
       views::CaptionButtonLayoutSize::kBrowserCaptionMaximized);
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   AddBlankTabAndShow(app_browser);
 
   // Clicking the "restore" caption button should exit the immersive mode.
-  aura::Window* app_window = app_browser->window()->GetNativeWindow();
+  aura::Window* app_window = app_browser->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(app_window->GetRootWindow(),
                                            app_window);
   gfx::Size button_size = views::GetCaptionButtonLayoutSize(
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EnterImmersiveFullscreenMode(browser());
 
   // Set locked fullscreen state.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
 
   // We're fullscreen, immersive is disabled in locked fullscreen, and while
   // we're at it, also make sure that the shelf is hidden.
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_FALSE(browser_view->GetWidget()->IsFullscreen());
 
   // Set locked fullscreen state.
-  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
 
   // We're fullscreen, immersive is disabled in locked fullscreen, and while
   // we're at it, also make sure that the shelf is hidden.
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   EXPECT_FALSE(immersive_mode_controller->IsEnabled());
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
 
   ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
   event_generator.PressAndReleaseKeyAndModifierKeys(
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewVerticalTabsTest,
     EXPECT_FALSE(immersive_mode_controller->IsEnabled());
     EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
-    aura::Window* window = test_browser->window()->GetNativeWindow();
+    aura::Window* window = test_browser->GetWindow()->GetNativeWindow();
 
     ui::test::EventGenerator event_generator(window->GetRootWindow(), window);
     event_generator.PressAndReleaseKeyAndModifierKeys(

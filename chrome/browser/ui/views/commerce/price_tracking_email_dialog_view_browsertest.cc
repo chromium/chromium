@@ -25,7 +25,7 @@ class PriceTrackingEmailDialogViewBrowserTest : public InProcessBrowserTest {
         views::UniqueWidgetPtr(std::make_unique<ChromeTestWidget>());
     views::Widget::InitParams widget_params(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    widget_params.context = browser()->window()->GetNativeWindow();
+    widget_params.context = browser()->GetWindow()->GetNativeWindow();
     anchor_widget_->Init(std::move(widget_params));
 
     dialog_coordinator_ = std::make_unique<PriceTrackingEmailDialogCoordinator>(

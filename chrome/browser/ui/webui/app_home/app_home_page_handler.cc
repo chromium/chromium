@@ -308,7 +308,7 @@ void AppHomePageHandler::CreateWebAppShortcut(const std::string& app_id,
                                               base::OnceClosure done) {
   Browser* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
-      browser->window()->GetNativeWindow(), browser->profile(), app_id,
+      browser->GetWindow()->GetNativeWindow(), browser->profile(), app_id,
       base::BindOnce(
           [](base::OnceClosure done, bool success) {
             base::UmaHistogramBoolean(
@@ -323,7 +323,7 @@ void AppHomePageHandler::CreateExtensionAppShortcut(
     base::OnceClosure done) {
   Browser* browser = GetCurrentBrowser();
   chrome::ShowCreateChromeAppShortcutsDialog(
-      browser->window()->GetNativeWindow(), browser->profile(), extension,
+      browser->GetWindow()->GetNativeWindow(), browser->profile(), extension,
       base::IgnoreArgs<bool>(std::move(done)));
 }
 
@@ -528,7 +528,7 @@ extensions::ExtensionUninstallDialog*
 AppHomePageHandler::CreateExtensionUninstallDialog() {
   Browser* browser = GetCurrentBrowser();
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
-      profile_, browser->window()->GetNativeWindow(), this);
+      profile_, browser->GetWindow()->GetNativeWindow(), this);
   return extension_uninstall_dialog_.get();
 }
 
@@ -545,7 +545,7 @@ void AppHomePageHandler::UninstallExtensionApp(const Extension* extension) {
 
   Browser* browser = GetCurrentBrowser();
   extension_uninstall_dialog_ = extensions::ExtensionUninstallDialog::Create(
-      profile_, browser->window()->GetNativeWindow(), this);
+      profile_, browser->GetWindow()->GetNativeWindow(), this);
 
   extension_uninstall_dialog_->ConfirmUninstall(
       extension, extensions::UNINSTALL_REASON_USER_INITIATED,

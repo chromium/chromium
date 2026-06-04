@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   EXPECT_EQ(2, screen->GetNumDisplays());
 
   // Primary display should hold browser() and be the default for new windows.
-  gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
   EXPECT_EQ(display1, screen->GetDisplayNearestWindow(window).id());
   EXPECT_EQ(display1, screen->GetDisplayForNewWindows().id());
 
@@ -40,6 +40,6 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
                                apps::LaunchSource::kFromAppListGrid, display2);
   Browser* browser2 =
       CreateApplicationWindow(browser()->profile(), params, GURL());
-  gfx::NativeWindow window2 = browser2->window()->GetNativeWindow();
+  gfx::NativeWindow window2 = browser2->GetWindow()->GetNativeWindow();
   EXPECT_EQ(display2, screen->GetDisplayNearestWindow(window2).id());
 }

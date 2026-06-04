@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 
   SetWindowBounds(gfx::Rect(10, 10, 800, 600));
   gfx::Rect context_rect = views::Widget::GetWidgetForNativeWindow(
-                               browser()->window()->GetNativeWindow())
+                               browser()->GetWindow()->GetNativeWindow())
                                ->GetClientAreaBoundsInScreen();
 
   OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");

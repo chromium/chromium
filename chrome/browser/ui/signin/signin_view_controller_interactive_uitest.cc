@@ -105,7 +105,7 @@ class SignInViewControllerBrowserTest : public InProcessBrowserTest {
     // also why this test must be an interactive_ui_test rather than a browser
     // test.
     ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
-        browser()->window()->GetNativeWindow()));
+        browser()->GetWindow()->GetNativeWindow()));
   }
 
   signin::IdentityManager* GetIdentityManager() {

@@ -22,7 +22,7 @@ class CryptoModulePasswordDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     ShowCryptoModulePasswordDialog(
         "Slot", false, kCryptoModulePasswordListCerts, "hostname",
-        browser()->window()->GetNativeWindow(), base::DoNothing());
+        browser()->GetWindow()->GetNativeWindow(), base::DoNothing());
   }
 };
 

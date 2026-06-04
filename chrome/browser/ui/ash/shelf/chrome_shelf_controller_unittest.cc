@@ -3741,7 +3741,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Transferred browsers of other users should not show up in the list.
   ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
-      browser()->window()->GetNativeWindow(), account_id1());
+      browser()->GetWindow()->GetNativeWindow(), account_id1());
   CheckAppMenu(shelf_controller_.get(), item_browser, 1, one_menu_item1);
 
   chrome::CloseTab(browser1.get());
@@ -3850,7 +3850,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
 
   // Transfer the browser of the first user - it should still not show up.
   ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
-      browser()->window()->GetNativeWindow(), account_id1());
+      browser()->GetWindow()->GetNativeWindow(), account_id1());
 
   CheckAppMenu(shelf_controller_.get(), item_browser, 0, nullptr);
   CheckAppMenu(shelf_controller_.get(), item_gmail, 0, nullptr);
@@ -4409,7 +4409,7 @@ TEST_F(ChromeShelfControllerTest, ExistingBrowserWindowShelfIDSet) {
   EXPECT_TRUE(shelf_controller_->GetItem(ash::ShelfID("1")));
   EXPECT_EQ(ash::ShelfID("1"),
             ash::ShelfID::Deserialize(
-                browser()->window()->GetNativeWindow()->GetProperty(
+                browser()->GetWindow()->GetNativeWindow()->GetProperty(
                     ash::kShelfIDKey)));
 }
 

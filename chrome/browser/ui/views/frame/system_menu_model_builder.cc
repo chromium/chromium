@@ -340,7 +340,7 @@ void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
       std::make_unique<chromeos::MoveToDesksMenuDelegate>(
           views::Widget::GetWidgetForNativeWindow(
-              browser->window()->GetNativeWindow())));
+              browser->GetWindow()->GetNativeWindow())));
   model->AddSubMenuWithStringId(chromeos::MoveToDesksMenuModel::kMenuCommandId,
                                 IDS_MOVE_TO_DESKS_MENU,
                                 move_to_desks_model_.get());
@@ -379,7 +379,7 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
   auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(browser()->profile());
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   if (!account_id.is_valid() || !window ||
       !window_manager->GetWindowOwner(window).is_valid()) {
     return;

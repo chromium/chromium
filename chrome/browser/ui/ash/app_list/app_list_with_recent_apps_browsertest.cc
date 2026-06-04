@@ -50,7 +50,7 @@ class AppListWithRecentAppBrowserTest
         app2->id());
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        browser()->window()->GetNativeWindow()->GetRootWindow());
+        browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
     app_list_test_api_.ShowBubbleAppListAndWait();
   }
 

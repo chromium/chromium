@@ -249,7 +249,7 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
   }
 
   void EnterLockedFullscreen() {
-    ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+    ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
 
     // Update the corresponding command controller state as well as other
     // states so we can verify what commands are enabled.
@@ -264,7 +264,7 @@ class BrowserCommandControllerBrowserTestLockedFullscreen
   }
 
   void ExitLockedFullscreen() {
-    ash::UnpinWindow(browser()->window()->GetNativeWindow());
+    ash::UnpinWindow(browser()->GetWindow()->GetNativeWindow());
     browser()->command_controller()->LockedFullscreenStateChanged();
   }
 

@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
 
   // The controller should be associated with the popup web contents.
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
   OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerPecBrowserTest,
   ASSERT_TRUE(handler->input_state_model());
   handler->input_state_model()->set_state_for_testing(input_state);
 
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
 
@@ -975,7 +975,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
                                      ui::PAGE_TRANSITION_TYPED,
                                      /*check_navigation_success=*/false));
 
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
 
@@ -1142,7 +1142,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   tabs::TabInterface* tab3 = browser()->tab_strip_model()->GetTabAtIndex(3);
   int32_t tab3_id = tab3->GetHandle().raw_value();
 
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
 
@@ -1299,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(handler->input_state_model());
   handler->input_state_model()->set_state_for_testing(input_state);
 
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
 
@@ -1371,7 +1371,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(handler->input_state_model());
   handler->input_state_model()->set_state_for_testing(input_state);
 
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
 
@@ -1469,7 +1469,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerContextManagementBrowserTest,
   tabs::TabInterface* tab2 = browser()->tab_strip_model()->GetTabAtIndex(2);
   int32_t tab2_id = tab2->GetHandle().raw_value();
 
-  auto owning_window = browser()->window()->GetNativeWindow();
+  auto owning_window = browser()->GetWindow()->GetNativeWindow();
   auto omnibox_popup_file_selector =
       std::make_unique<OmniboxPopupFileSelector>(owning_window);
 

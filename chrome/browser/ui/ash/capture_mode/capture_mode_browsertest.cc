@@ -77,7 +77,7 @@ const policy::DlpRulesManager::RuleMetadata kRuleMetadata(kRuleName, kRuleId);
 
 // Returns the native window of the given `browser`.
 aura::Window* GetBrowserWindow(Browser* browser) {
-  return browser->window()->GetNativeWindow();
+  return browser->GetWindow()->GetNativeWindow();
 }
 
 void SetupLoopToWaitForCaptureFileToBeSaved(base::RunLoop* loop) {
@@ -188,7 +188,7 @@ class CaptureModeBrowserTest : public InProcessBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
   // Right click the desktop to open a context menu.
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   const gfx::Point point_on_desktop(1, 1);
   ASSERT_FALSE(browser_window->bounds().Contains(point_on_desktop));
 
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
   ASSERT_TRUE(transient_root);
   EXPECT_EQ(transient_root->GetId(),
             ash::kShellWindowId_CaptureModeFolderSelectionDialogOwner);
-  EXPECT_NE(transient_root, browser()->window()->GetNativeWindow());
+  EXPECT_NE(transient_root, browser()->GetWindow()->GetNativeWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,

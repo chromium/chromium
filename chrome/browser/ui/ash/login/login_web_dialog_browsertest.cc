@@ -21,7 +21,7 @@ using LoginWebDialogTest = ::InProcessBrowserTest;
 // Tests that LoginWebDialog is not minimizable.
 IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CannotMinimize) {
   LoginWebDialog* dialog = new LoginWebDialog(
-      browser()->profile(), browser()->window()->GetNativeWindow(),
+      browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
       std::u16string(), GURL());
   dialog->Show();
   aura::Window* window = dialog->get_dialog_window_for_test();
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CannotMinimize) {
 // Tests that LoginWebDialog can be closed by 'Shift + BrowserBack' accelerator.
 IN_PROC_BROWSER_TEST_F(LoginWebDialogTest, CloseDialogByAccelerator) {
   LoginWebDialog* dialog = new LoginWebDialog(
-      browser()->profile(), browser()->window()->GetNativeWindow(),
+      browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
       std::u16string(), GURL());
   dialog->Show();
   gfx::NativeWindow window = dialog->get_dialog_window_for_test();

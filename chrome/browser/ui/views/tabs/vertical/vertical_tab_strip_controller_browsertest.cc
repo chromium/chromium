@@ -185,10 +185,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerBrowserTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   ui::test::EventGenerator event_generator(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 #else
   ui::test::EventGenerator event_generator(
-      browser()->window()->GetNativeWindow());
+      browser()->GetWindow()->GetNativeWindow());
 #endif
 
   browser()->tab_strip_model()->ActivateTabAt(0);

@@ -2301,7 +2301,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
 
     // Ensure that the opener is on display 1.
     const auto opener_display = display::Screen::Get()->GetDisplayNearestWindow(
-        browser()->window()->GetNativeWindow());
+        browser()->GetWindow()->GetNativeWindow());
     ASSERT_EQ(display1.id(), opener_display.id());
 
     // Open the PiP window.
@@ -2335,7 +2335,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_BrowserNavigatorTestWithMockScreen,
 
     // Ensure that the opener is on display 2.
     const auto opener_display = display::Screen::Get()->GetDisplayNearestWindow(
-        browser()->window()->GetNativeWindow());
+        browser()->GetWindow()->GetNativeWindow());
     ASSERT_EQ(display2.id(), opener_display.id());
 
     // Open the PiP window.

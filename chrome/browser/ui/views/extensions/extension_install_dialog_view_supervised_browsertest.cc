@@ -103,7 +103,8 @@ ExtensionInstallDialogViewTestSupervised::CreateAndShowPrompt(
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog.release(), gfx::NativeWindow(),
-      platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
+      platform_util::GetViewForWindow(
+          browser()->GetWindow()->GetNativeWindow()));
   modal_dialog->Show();
 
   return delegate_view;

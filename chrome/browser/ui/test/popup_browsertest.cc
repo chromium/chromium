@@ -193,9 +193,9 @@ IN_PROC_BROWSER_TEST_F(PopupTest, NoopenerPositioning) {
       OpenPopup(browser(), "open('.', '', `" + std::string(kFeatures) + "`)");
 
   WidgetBoundsEqualWaiter(views::Widget::GetWidgetForNativeWindow(
-                              noopener_popup->window()->GetNativeWindow()),
+                              noopener_popup->GetWindow()->GetNativeWindow()),
                           views::Widget::GetWidgetForNativeWindow(
-                              opener_popup->window()->GetNativeWindow()))
+                              opener_popup->GetWindow()->GetNativeWindow()))
       .Wait();
 
   EXPECT_EQ(noopener_popup->window()->GetBounds().ToString(),

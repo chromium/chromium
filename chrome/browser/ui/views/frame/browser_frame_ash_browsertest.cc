@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
 
   // Get the params using the same profile.
   Browser* browser = CreateBrowser(profile);
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
   const gfx::Rect restored_bounds(600, 600);
   window->SetBounds(restored_bounds);
 
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
   // snapped size (position has been shifted by the ash auto window positioner).
   Browser* new_browser = CreateBrowser(profile);
   new_browser->window()->Show();
-  aura::Window* new_window = new_browser->window()->GetNativeWindow();
+  aura::Window* new_window = new_browser->GetWindow()->GetNativeWindow();
   EXPECT_EQ(snapped_size, new_window->GetBoundsInScreen().size());
 }
 

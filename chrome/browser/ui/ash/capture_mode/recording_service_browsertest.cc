@@ -173,7 +173,7 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
   }
 
   aura::Window* GetBrowserWindow() const {
-    return browser()->window()->GetNativeWindow();
+    return browser()->GetWindow()->GetNativeWindow();
   }
 
   ui::test::EventGenerator* GetEventGenerator() {
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(GifRecordingBrowserTest, SuccessfulEncodeDecode) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-9c11ed80-9e97-482c-9562-450bd891732b");
 
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ash::CaptureModeTestApi test_api;
   test_api.SetRecordingType(ash::RecordingType::kGif);
   test_api.SetUserSelectedRegion(browser_window->GetRootWindow()->bounds());

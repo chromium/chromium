@@ -158,7 +158,7 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
   base::RecordAction(base::UserMetricsAction(
       safe_browsing::kTailoredSecurityEnabledDialogShown));
   constrained_window::ShowBrowserModal(std::move(dialog_model),
-                                       browser->window()->GetNativeWindow());
+                                       browser->GetWindow()->GetNativeWindow());
 }
 
 void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
@@ -204,7 +204,7 @@ void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
   base::RecordAction(base::UserMetricsAction(
       safe_browsing::kTailoredSecurityDisabledDialogShown));
   constrained_window::ShowBrowserModal(std::move(dialog_model),
-                                       browser->window()->GetNativeWindow());
+                                       browser->GetWindow()->GetNativeWindow());
 }
 
 }  // namespace safe_browsing

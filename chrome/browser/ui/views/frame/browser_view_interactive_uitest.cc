@@ -679,7 +679,7 @@ using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        ShowExclusiveAccessBubbleWhenNotLocked) {
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/false);
   browser()
       ->GetFeatures()
       .exclusive_access_manager()
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        HideExclusiveAccessBubbleWhenLocked) {
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   browser()
       ->GetFeatures()
       .exclusive_access_manager()
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenNotTrustedPinned) {
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/false);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/false);
   EXPECT_TRUE(ImmersiveModeController::From(browser())->IsEnabled());
 }
 
@@ -729,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        DisableImmersiveModeWhenNotLockedForOnTask) {
   ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
       false);
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_FALSE(ImmersiveModeController::From(browser())->IsEnabled());
 }
 
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
                        EnableImmersiveModeWhenLockedForOnTask) {
   ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
       true);
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_TRUE(ImmersiveModeController::From(browser())->IsEnabled());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

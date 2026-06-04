@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripDoubleClickMacTest,
   }));
 
   NSWindow* ns_window =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ASSERT_TRUE(ns_window);
 
   // Widget coordinates use top-left origin; NSWindow coordinates use

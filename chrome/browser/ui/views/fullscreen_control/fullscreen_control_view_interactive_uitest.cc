@@ -73,7 +73,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
     // events when views get refreshed, so that they won't interfere with the
     // tests. Note that new mouse move events directly coming from the real
     // device will still pass through.
-    auto* root_window = browser()->window()->GetNativeWindow()->GetRootWindow();
+    auto* root_window =
+        browser()->GetWindow()->GetNativeWindow()->GetRootWindow();
     cursor_client_ =
         std::make_unique<aura::test::TestCursorClient>(root_window);
     cursor_client_->DisableMouseEvents();

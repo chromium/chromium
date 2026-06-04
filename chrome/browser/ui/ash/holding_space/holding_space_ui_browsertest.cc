@@ -2513,7 +2513,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, AddScreenshot) {
   // Move the mouse over to the browser window. The reason for that is the
   // capture mode implementation will not automatically capture the topmost
   // window unless the mouse is hovered above it.
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(browser_window->GetRootWindow());
   event_generator.MoveMouseTo(
       browser_window->GetBoundsInScreen().CenterPoint());

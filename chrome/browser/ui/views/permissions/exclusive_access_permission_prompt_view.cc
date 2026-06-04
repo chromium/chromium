@@ -173,8 +173,8 @@ void ExclusiveAccessPermissionPromptView::ShowWidget() {
 
 void ExclusiveAccessPermissionPromptView::UpdateAnchor(views::Widget* widget) {
   SetAnchorView(widget->GetContentsView());
-  set_parent_window(
-      platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+  set_parent_window(platform_util::GetViewForWindow(
+      browser_->GetWindow()->GetNativeWindow()));
   SetArrow(views::BubbleBorder::Arrow::FLOAT);
 }
 

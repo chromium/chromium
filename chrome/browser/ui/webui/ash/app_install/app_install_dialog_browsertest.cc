@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, InstallApp) {
 
   dialog_handle->ShowApp(
       browser()->profile(),
-      /*parent=*/browser()->window()->GetNativeWindow(),
+      /*parent=*/browser()->GetWindow()->GetNativeWindow(),
       apps::PackageId(apps::PackageType::kWeb, app_url.spec()),
       /*app_name=*/"Test app",
       /*app_url=*/app_url,
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(AppInstallDialogBrowserTest, FailedInstall) {
   constexpr char kAppUrl[] = "https://example.org/";
   dialog_handle->ShowApp(
       browser()->profile(),
-      /*parent=*/browser()->window()->GetNativeWindow(),
+      /*parent=*/browser()->GetWindow()->GetNativeWindow(),
       apps::PackageId(apps::PackageType::kWeb, kAppUrl),
       /*app_name=*/"Test app",
       /*app_url=*/GURL(kAppUrl),

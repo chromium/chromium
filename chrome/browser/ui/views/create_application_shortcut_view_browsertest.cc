@@ -27,7 +27,7 @@ class CreateAppShortcutDialogTest : public DialogBrowserTest,
         new CreateChromeApplicationShortcutView(browser()->profile(),
                                                 /*is_extension=*/GetParam(),
                                                 base::DoNothing()),
-        browser()->window()->GetNativeWindow())
+        browser()->GetWindow()->GetNativeWindow())
         ->Show();
   }
 };

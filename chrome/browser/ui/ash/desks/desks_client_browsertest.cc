@@ -562,7 +562,7 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     // Note that the `onbeforeunload` handler will not run for a page that
     // hasn't been interacted with. To meet that requirement, we'll click on the
     // page.
-    aura::Window* window = browser->window()->GetNativeWindow();
+    aura::Window* window = browser->GetWindow()->GetNativeWindow();
     ui::test::EventGenerator event_generator(window->GetRootWindow());
     event_generator.MoveMouseToInHost(
         window->GetBoundsInScreen().CenterPoint());
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = ash::test::CreateAndShowBrowser(
       profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
 
   // Create a new browser and add a few tabs to it.
   Browser* browser = CreateBrowserWithTabGroups(tabs, expected_tab_groups);
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   // Create a new browser and add a few tabs to it.
   Browser* browser =
       CreateBrowserWithPinnedTabs(tabs, expected_number_of_pinned_tabs);
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
@@ -721,12 +721,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureIncognitoBrowserTest) {
   chrome::AddTabAt(incognito_browser, GURL(kExampleUrl2), /*index=*/-1,
                    /*foreground=*/true);
   incognito_browser->window()->Show();
-  aura::Window* window = incognito_browser->window()->GetNativeWindow();
+  aura::Window* window = incognito_browser->GetWindow()->GetNativeWindow();
 
   const int32_t incognito_browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
   const int32_t browser_window_id =
-      browser()->window()->GetNativeWindow()->GetProperty(
+      browser()->GetWindow()->GetNativeWindow()->GetProperty(
           app_restore::kWindowIdKey);
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 
   // Change |browser|'s bounds.
   const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   window->SetBounds(browser_bounds);
   // Make window visible on all desks.
   window->SetProperty(aura::client::kWindowWorkspaceKey,
@@ -929,7 +929,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   const gfx::Rect settings_bounds(100, 100, 600, 400);
   settings_window->SetBounds(settings_bounds);
   // Focus the browser so that the settings window is stacked at the bottom.
-  browser()->window()->GetNativeWindow()->Focus();
+  browser()->GetWindow()->GetNativeWindow()->Focus();
   ASSERT_THAT(settings_window->parent()->children(),
               ElementsAre(settings_window, _));
 
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
 
   // Float browser window and move out from default location.
   const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   ui::test::EventGenerator event_generator(window->GetRootWindow());
   event_generator.PressAndReleaseKeyAndModifierKeys(
       ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -1245,7 +1245,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
   Browser* browser_1 =
       ash::test::CreateAndShowBrowser(profile(), browser_urls_1);
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
-  aura::Window* window_1 = browser_1->window()->GetNativeWindow();
+  aura::Window* window_1 = browser_1->GetWindow()->GetNativeWindow();
   window_1->SetBounds(browser_bounds_1);
 
   // Create a new minimized browser.
@@ -1253,7 +1253,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, BrowserWindowRestorationTest) {
   Browser* browser_2 =
       ash::test::CreateAndShowBrowser(profile(), browser_urls_2);
   const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
-  aura::Window* window_2 = browser_2->window()->GetNativeWindow();
+  aura::Window* window_2 = browser_2->GetWindow()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
   browser_2->window()->Minimize();
@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
   Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const gfx::Rect pwa_bounds(50, 50, 500, 500);
   pwa_window->SetBounds(pwa_bounds);
   const int32_t pwa_window_id =
@@ -1355,7 +1355,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithMissingPWA) {
   Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const gfx::Rect pwa_bounds(50, 50, 500, 500);
   pwa_window->SetBounds(pwa_bounds);
   const int32_t pwa_window_id =
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithOutOfScopeURL) {
   Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const std::string* app_name =
       pwa_window->GetProperty(app_restore::kBrowserAppNameKey);
   ASSERT_TRUE(app_name);
@@ -1439,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
 
   Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/true);
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const int32_t pwa_window_id =
       pwa_window->GetProperty(app_restore::kWindowIdKey);
 
@@ -1463,7 +1463,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskTemplateJson) {
 
   // Change |browser|'s bounds.
   const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   window->SetBounds(browser_bounds);
   // Make window visible on all desks.
   window->SetProperty(aura::client::kWindowWorkspaceKey,
@@ -1581,7 +1581,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = ash::test::CreateAndShowBrowser(
       profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
@@ -1613,7 +1613,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   display_manager_test_api.UpdateDisplay(
       "2000x" + base::NumberToString(1000 + shelf_height));
 
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
 
   // Snap the window to the left.
   const ash::WindowSnapWMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
@@ -1735,12 +1735,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
   chrome::AddTabAt(incognito_browser, GURL(kExampleUrl2), /*index=*/-1,
                    /*foreground=*/true);
   incognito_browser->window()->Show();
-  aura::Window* window = incognito_browser->window()->GetNativeWindow();
+  aura::Window* window = incognito_browser->GetWindow()->GetNativeWindow();
 
   const int32_t incognito_browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
   const int32_t browser_window_id =
-      browser()->window()->GetNativeWindow()->GetProperty(
+      browser()->GetWindow()->GetNativeWindow()->GetProperty(
           app_restore::kWindowIdKey);
 
   ash::ToggleOverview();
@@ -1862,7 +1862,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
 
   aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
   aura::Window* help_window = FindBrowserWindow(kHelpWindowId);
-  aura::Window* browser_window = browser()->window()->GetNativeWindow();
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   aura::Window* parent = settings_window->parent();
   ASSERT_TRUE(settings_window);
   ASSERT_TRUE(help_window);
@@ -1963,7 +1963,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   Browser* browser_1 =
       ash::test::CreateAndShowBrowser(profile(), browser_urls_1);
   const gfx::Rect browser_bounds_1 = gfx::Rect(100, 100, 600, 200);
-  aura::Window* window_1 = browser_1->window()->GetNativeWindow();
+  aura::Window* window_1 = browser_1->GetWindow()->GetNativeWindow();
   window_1->SetBounds(browser_bounds_1);
 
   // Create a new minimized browser.
@@ -1971,7 +1971,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
   Browser* browser_2 =
       ash::test::CreateAndShowBrowser(profile(), browser_urls_2);
   const gfx::Rect browser_bounds_2 = gfx::Rect(150, 150, 500, 300);
-  aura::Window* window_2 = browser_2->window()->GetNativeWindow();
+  aura::Window* window_2 = browser_2->GetWindow()->GetNativeWindow();
   window_2->SetBounds(browser_bounds_2);
   EXPECT_EQ(browser_bounds_2, window_2->bounds());
   browser_2->window()->Minimize();
@@ -2025,7 +2025,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kExampleUrl1), /*launch_in_browser=*/false);
   ASSERT_TRUE(pwa_browser->is_type_app());
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const gfx::Rect pwa_bounds(50, 50, 500, 500);
   pwa_window->SetBounds(pwa_bounds);
   const int32_t pwa_window_id =
@@ -2077,7 +2077,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUILaunchTemplateWithPWAInBrowser) {
   Browser* pwa_browser = ash::test::InstallAndLaunchPWA(
       profile(), GURL(kYoutubeUrl), /*launch_in_browser=*/true);
-  aura::Window* pwa_window = pwa_browser->window()->GetNativeWindow();
+  aura::Window* pwa_window = pwa_browser->GetWindow()->GetNativeWindow();
   const int32_t pwa_window_id =
       pwa_window->GetProperty(app_restore::kWindowIdKey);
 
@@ -2106,7 +2106,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
                        SystemUICaptureActiveDeskAsTemplateTest) {
   // Change `browser`'s bounds.
   const gfx::Rect browser_bounds(800, 200);
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   window->SetBounds(browser_bounds);
   // Make the window visible on all desks.
   window->SetProperty(aura::client::kWindowWorkspaceKey,
@@ -2728,7 +2728,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = ash::test::CreateAndShowBrowser(
       profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
@@ -2757,7 +2757,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveActiveDesk) {
   // Create a new browser and add a few tabs to it.
   Browser* browser = ash::test::CreateAndShowBrowser(
       profile(), {GURL(kExampleUrl1), GURL(kExampleUrl2)});
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
 
   const int32_t browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
@@ -3043,7 +3043,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
   // Browser destruction).
   {
     aura::test::WindowDestroyedWaiter waiter(
-        browser()->window()->GetNativeWindow());
+        browser()->GetWindow()->GetNativeWindow());
     ui_test_utils::BrowserDestroyedObserver observer(browser());
     SendKey(ui::VKEY_RETURN);
     observer.Wait();
@@ -3093,8 +3093,8 @@ IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   // Create 1 other window to create a snap group.
   Browser* browser2 =
       ash::test::CreateAndShowBrowser(profile(), {GURL(kExampleUrl2)});
-  aura::Window* w1 = browser()->window()->GetNativeWindow();
-  aura::Window* w2 = browser2->window()->GetNativeWindow();
+  aura::Window* w1 = browser()->GetWindow()->GetNativeWindow();
+  aura::Window* w2 = browser2->GetWindow()->GetNativeWindow();
 
   auto* snap_group_controller = ash::SnapGroupController::Get();
   ASSERT_TRUE(snap_group_controller);
@@ -3556,7 +3556,7 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   ASSERT_TRUE(new_browser_two);
 
   aura::Window* const old_browser_window =
-      browser()->window()->GetNativeWindow();
+      browser()->GetWindow()->GetNativeWindow();
   aura::Window* const new_browser_window_one =
       new_browser_one->GetWindow()->GetNativeWindow();
   aura::Window* const new_browser_window_two =

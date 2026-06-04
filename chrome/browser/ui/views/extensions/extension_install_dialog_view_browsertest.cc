@@ -296,7 +296,7 @@ class ExtensionInstallDialogViewTest
     views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
         dialog.release(), gfx::NativeWindow(),
         platform_util::GetViewForWindow(
-            browser()->window()->GetNativeWindow()));
+            browser()->GetWindow()->GetNativeWindow()));
     modal_dialog->Show();
 
     return delegate_view;
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
         // originating web contents are activated.
         EXPECT_TRUE(show_params_weak->GetParentWindow());
         EXPECT_EQ(show_params_weak->GetParentWindow(),
-                  browser()->window()->GetNativeWindow());
+                  browser()->GetWindow()->GetNativeWindow());
         EXPECT_EQ(tab_strip_model->GetActiveWebContents(),
                   originating_web_contents);
         run_loop.Quit();
@@ -683,7 +683,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog, gfx::NativeWindow(),
-      platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
+      platform_util::GetViewForWindow(
+          browser()->GetWindow()->GetNativeWindow()));
   ASSERT_TRUE(modal_dialog);
   views::test::WidgetDestroyedWaiter dialog_observer(modal_dialog);
   modal_dialog->Show();
@@ -710,7 +711,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewOnUninstallationTest,
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog, gfx::NativeWindow(),
-      platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
+      platform_util::GetViewForWindow(
+          browser()->GetWindow()->GetNativeWindow()));
   ASSERT_TRUE(modal_dialog);
   views::test::WidgetDestroyedWaiter dialog_observer(modal_dialog);
   modal_dialog->Show();
@@ -754,7 +756,8 @@ void ExtensionInstallDialogRatingsSectionTest::TestRatingsSectionA11y(
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog, gfx::NativeWindow(),
-      platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
+      platform_util::GetViewForWindow(
+          browser()->GetWindow()->GetNativeWindow()));
   modal_dialog->Show();
 
   views::View* rating_view = modal_dialog->non_client_view()->GetViewByID(
@@ -835,7 +838,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogWithWithholdPermissionsUI,
 
   views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
       dialog.release(), gfx::NativeWindow(),
-      platform_util::GetViewForWindow(browser()->window()->GetNativeWindow()));
+      platform_util::GetViewForWindow(
+          browser()->GetWindow()->GetNativeWindow()));
   modal_dialog->Show();
 
   const views::View* const extra_view = delegate_view->GetExtraView();
@@ -871,7 +875,7 @@ class ExtensionInstallDialogViewRequestTest
     views::Widget* modal_dialog = views::DialogDelegate::CreateDialogWidget(
         dialog.release(), gfx::NativeWindow(),
         platform_util::GetViewForWindow(
-            browser()->window()->GetNativeWindow()));
+            browser()->GetWindow()->GetNativeWindow()));
     modal_dialog->Show();
 
     return delegate_view;

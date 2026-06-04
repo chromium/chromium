@@ -114,7 +114,7 @@ class BookmarkEditorViewBrowserTestMoveDialog
   // BookmarkEditorView dialog with a tree view.
   void ShowUi(const std::string& name) override {
     BookmarkEditor::Show(
-        browser()->window()->GetNativeWindow(), browser()->profile(),
+        browser()->GetWindow()->GetNativeWindow(), browser()->profile(),
         BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes_),
         BookmarkEditor::SHOW_TREE);
   }
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkEditorViewBrowserTestMoveDialog,
       BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes),
       BookmarkEditor::SHOW_TREE, base::DoNothing());
   editor_raw = editor.get();
-  editor->Show(browser()->window()->GetNativeWindow());
+  editor->Show(browser()->GetWindow()->GetNativeWindow());
 
   // `BookmarkEditorView` is self-deleting.
   editor.release();

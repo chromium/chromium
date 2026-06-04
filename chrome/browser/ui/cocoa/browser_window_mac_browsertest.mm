@@ -40,7 +40,8 @@ class BrowserWindowMacTest : public InProcessBrowserTest {
 // that is destroyed.
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, MenuCommandsAfterDestroy) {
   // Simulate AppKit (e.g. NSMenu) retaining an NSWindow.
-  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  NSWindow* window =
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   NSMenuItem* bookmark_menu_item =
       [[[[NSApp mainMenu] itemWithTag:IDC_BOOKMARKS_MENU] submenu]
           itemWithTag:IDC_BOOKMARK_THIS_TAB];
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest,
                        DISABLED_MenuCommandsFromChildWindow) {
   NativeWidgetMacNSWindow* window =
       base::apple::ObjCCastStrict<NativeWidgetMacNSWindow>(
-          browser()->window()->GetNativeWindow().GetNativeNSWindow());
+          browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow());
 
   // Create a child window.
   NativeWidgetMacNSWindow* child_window = [[NativeWidgetMacNSWindow alloc]
@@ -116,7 +117,8 @@ class BrowserWindowMacA11yTest : public BrowserWindowMacTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest, A11yTreeIsWellFormed) {
-  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  NSWindow* window =
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   size_t nodes_visited = 0;
   std::optional<ui::NSAXTreeProblemDetails> details =
       ui::ValidateNSAXTree(window, &nodes_visited);
@@ -137,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest,
   GURL url_before(R"HTML(data:text/html,before)HTML");
   EXPECT_TRUE(AddTabAtIndex(0, url_before, ui::PAGE_TRANSITION_TYPED));
 
-  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  NSWindow* window =
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ASSERT_NE(nullptr, window);
   EXPECT_NSEQ([NSString stringWithUTF8String:url_before.spec().c_str()],
               [window accessibilityDocument]);
@@ -149,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacA11yTest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
-  NSWindow* window = browser()->window()->GetNativeWindow().GetNativeNSWindow();
+  NSWindow* window =
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ASSERT_FALSE([AppController.sharedController keyWindowIsModal]);
 
   // Retrieve and initialize the menu items for
@@ -182,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowMacTest, DisableCommandsWhenSheetAttached) {
           {bookmark_model->AddURL(bookmark_model->other_node(), 0, u"bookmark",
                                   GURL("http://www.google.com"))}),
       BookmarkEditor::SHOW_TREE, base::DoNothing());
-  editor->Show(browser()->window()->GetNativeWindow());
+  editor->Show(browser()->GetWindow()->GetNativeWindow());
   auto* editor_raw = editor.release();
   ASSERT_TRUE([AppController.sharedController keyWindowIsModal]);
 

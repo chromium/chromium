@@ -61,7 +61,8 @@ void ValidateBrowserWindowProperties(
   // Let shortcut creation finish before we validate the results.
   content::RunAllTasksUntilIdle();
 
-  HWND hwnd = views::HWNDForNativeWindow(browser->window()->GetNativeWindow());
+  HWND hwnd =
+      views::HWNDForNativeWindow(browser->GetWindow()->GetNativeWindow());
 
   Microsoft::WRL::ComPtr<IPropertyStore> pps;
   HRESULT result = SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps));
@@ -243,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
   content::RunAllTasksUntilIdle();
 
   HWND hwnd =
-      views::HWNDForNativeWindow(pip_browser->window()->GetNativeWindow());
+      views::HWNDForNativeWindow(pip_browser->GetWindow()->GetNativeWindow());
 
   Microsoft::WRL::ComPtr<IPropertyStore> pps;
   HRESULT result = SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps));
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
   content::RunAllTasksUntilIdle();
 
   HWND hwnd =
-      views::HWNDForNativeWindow(pip_browser->window()->GetNativeWindow());
+      views::HWNDForNativeWindow(pip_browser->GetWindow()->GetNativeWindow());
 
   Microsoft::WRL::ComPtr<IPropertyStore> pps;
   HRESULT result = SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps));

@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, MAYBE_ClickOmnibox) {
 
   CreatePopupForTestQuery();
 
-  gfx::NativeWindow event_window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow event_window = browser()->GetWindow()->GetNativeWindow();
 #if defined(USE_AURA)
   event_window = event_window->GetRootWindow();
 #endif
@@ -1291,7 +1291,7 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
 
   void SetBrowserBounds(views::Widget* popup_widget, const gfx::Rect& bounds) {
     views::Widget* browser_widget = views::Widget::GetWidgetForNativeWindow(
-        browser()->window()->GetNativeWindow());
+        browser()->GetWindow()->GetNativeWindow());
     WidgetBoundsWaiter browser_waiter(browser_widget);
     WidgetBoundsWaiter popup_waiter(popup_widget);
     browser()->window()->SetBounds(bounds);

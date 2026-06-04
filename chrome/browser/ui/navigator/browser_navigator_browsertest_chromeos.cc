@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, RestrictSigninProfile) {
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
                        NavigationBlockedInLockedFullscreen) {
   // Set locked fullscreen state.
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
   ash::PinWindow(window, /*trusted=*/true);
 
   // Navigate to a page.
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS,
                        NavigationAllowedInLockedFullscreenWhenLockedForOnTask) {
   // Set locked fullscreen state.
-  aura::Window* const window = browser()->window()->GetNativeWindow();
+  aura::Window* const window = browser()->GetWindow()->GetNativeWindow();
   ash::PinWindow(window, /*trusted=*/true);
   ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
       true);

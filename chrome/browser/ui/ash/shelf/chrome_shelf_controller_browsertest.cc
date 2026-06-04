@@ -1212,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForUnpinnedHostedApp) {
   // If the app is not pinned, and thus does not have an associated shelf item,
   // the shelf ID should be set to the browser ID,
   const gfx::NativeWindow native_window =
-      browser()->window()->GetNativeWindow();
+      browser()->GetWindow()->GetNativeWindow();
   ash::ShelfID shelf_id =
       ash::ShelfID::Deserialize(native_window->GetProperty(ash::kShelfIDKey));
   EXPECT_EQ(browser_id, shelf_id);
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForPinnedHostedApp) {
   // When an app shportcut exists, the window shelf ID should point to the app
   // shortcut.
   const gfx::NativeWindow native_window =
-      browser()->window()->GetNativeWindow();
+      browser()->GetWindow()->GetNativeWindow();
   ash::ShelfID shelf_id =
       ash::ShelfID::Deserialize(native_window->GetProperty(ash::kShelfIDKey));
   EXPECT_EQ(extension->id(), shelf_id.app_id);
@@ -1262,7 +1262,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForUnpinnedWebApp) {
   // If the app is not pinned, and thus does not have an associated shelf item,
   // the shelf ID should be set to the browser ID,
   const gfx::NativeWindow native_window =
-      browser()->window()->GetNativeWindow();
+      browser()->GetWindow()->GetNativeWindow();
   ash::ShelfID shelf_id =
       ash::ShelfID::Deserialize(native_window->GetProperty(ash::kShelfIDKey));
   EXPECT_EQ(browser_id, shelf_id);
@@ -1287,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, AppIDForPinnedWebApp) {
   // When an app shportcut exists, the window shelf ID should point to the app
   // shortcut.
   const gfx::NativeWindow native_window =
-      browser()->window()->GetNativeWindow();
+      browser()->GetWindow()->GetNativeWindow();
   ash::ShelfID shelf_id =
       ash::ShelfID::Deserialize(native_window->GetProperty(ash::kShelfIDKey));
   EXPECT_EQ(web_app_id, shelf_id.app_id);
@@ -2210,7 +2210,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
 
   // Verify that the setting app does not exist in the shelf model by default.
   ash::RootWindowController* controller = ash::RootWindowController::ForWindow(
-      browser()->window()->GetNativeWindow());
+      browser()->GetWindow()->GetNativeWindow());
   ash::ShelfView* shelf_view = controller->shelf()->GetShelfViewForTesting();
   ash::ShelfModel* model = shelf_view->model();
   EXPECT_EQ(-1, model->ItemIndexByAppID(ash::kOsSettingsAppId));
@@ -2292,7 +2292,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, MatchingShelfIDAndActiveTab) {
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   EXPECT_EQ(1, shelf_model()->item_count());
 
-  aura::Window* window = browser()->window()->GetNativeWindow();
+  aura::Window* window = browser()->GetWindow()->GetNativeWindow();
 
   int browser_index = GetIndexOfShelfItemType(ash::TYPE_BROWSER_SHORTCUT);
   ash::ShelfID browser_id = shelf_model()->items()[browser_index].id;

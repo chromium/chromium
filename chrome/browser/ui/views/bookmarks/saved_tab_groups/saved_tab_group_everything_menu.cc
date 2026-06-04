@@ -112,7 +112,7 @@ STGEverythingMenu::STGEverythingMenu(views::MenuButtonController* controller,
     : menu_button_controller_(controller),
       browser_(browser),
       widget_(views::Widget::GetWidgetForNativeWindow(
-          browser->window()->GetNativeWindow())),
+          browser->GetWindow()->GetNativeWindow())),
       menu_context_(menu_context) {}
 
 int STGEverythingMenu::GenerateTabGroupCommandID(int idx_in_sorted_tab_groups) {

@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   MockOmniboxEditModel mock_edit_model(omnibox_controller);
 
   OmniboxPopupFileSelector file_selector(
-      browser()->window()->GetNativeWindow());
+      browser()->GetWindow()->GetNativeWindow());
 
   file_selector.OpenFileUploadDialog(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   MockOmniboxEditModel mock_edit_model(omnibox_controller);
 
   OmniboxPopupFileSelector file_selector(
-      browser()->window()->GetNativeWindow());
+      browser()->GetWindow()->GetNativeWindow());
 
   file_selector.OpenFileUploadDialog(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   MockOmniboxEditModel mock_edit_model(omnibox_controller);
 
   OmniboxPopupFileSelector file_selector(
-      browser()->window()->GetNativeWindow());
+      browser()->GetWindow()->GetNativeWindow());
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   file_selector.OpenFileUploadDialog(web_contents,
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   MockOmniboxEditModel mock_edit_model(omnibox_controller);
 
   OmniboxPopupFileSelector file_selector(
-      browser()->window()->GetNativeWindow());
+      browser()->GetWindow()->GetNativeWindow());
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   file_selector.OpenFileUploadDialog(web_contents,

@@ -71,7 +71,7 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
 
   // Convenience function to get the NSWindow from the browser window.
   NSWindow* browser_window() {
-    return browser()->window()->GetNativeWindow().GetNativeNSWindow();
+    return browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   }
 
   // Creates a new widget as a child of the first browser window and brings it

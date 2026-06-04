@@ -82,7 +82,7 @@ class ProfileBubbleInteractiveUiTest : public InProcessBrowserTest {
     bool command = false;
 #endif
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        browser()->window()->GetNativeWindow(), key, /*control=*/false,
+        browser()->GetWindow()->GetNativeWindow(), key, /*control=*/false,
         /*shift=*/false, alt, command));
     ui_test_utils::WaitForViewFocus(browser(), view, /*focused=*/true);
     EXPECT_TRUE(view->HasFocus());

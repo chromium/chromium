@@ -195,7 +195,7 @@ class SSLClientCertificateSelectorMultiProfileTest
 
     browser_1_ = CreateIncognitoBrowser();
 
-    gfx::NativeWindow window = browser_1_->window()->GetNativeWindow();
+    gfx::NativeWindow window = browser_1_->GetWindow()->GetNativeWindow();
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     ASSERT_NE(nullptr, widget);
     views::test::WaitForWidgetActive(widget, true);

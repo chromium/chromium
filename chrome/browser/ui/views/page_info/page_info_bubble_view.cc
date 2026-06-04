@@ -409,7 +409,7 @@ void ShowPageInfoDialogImpl(Browser* browser,
   gfx::Rect anchor_rect = configuration.anchor.IsNull()
                               ? GetPageInfoAnchorRect(browser)
                               : gfx::Rect();
-  gfx::NativeWindow parent_window = browser->window()->GetNativeWindow();
+  gfx::NativeWindow parent_window = browser->GetWindow()->GetNativeWindow();
 
   PageInfoBubbleSpecification::Builder page_info_bubble_builder(
       configuration.anchor, parent_window, web_contents, virtual_url);

@@ -176,7 +176,7 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   void Click(ui_controls::MouseButton button,
              const gfx::Point& press_location,
              const gfx::Point& release_location) {
-    auto browser_window = browser()->window()->GetNativeWindow();
+    auto browser_window = browser()->GetWindow()->GetNativeWindow();
     ASSERT_TRUE(
         ui_test_utils::SendMouseMoveSync(press_location, browser_window));
     ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(button, ui_controls::DOWN));
@@ -222,7 +222,7 @@ class OmniboxViewViewsTest : public InProcessBrowserTest {
   }
 
   gfx::NativeWindow GetRootWindow() const {
-    gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+    gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
 #if defined(USE_AURA)
     native_window = native_window->GetRootWindow();
 #endif
@@ -1036,8 +1036,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, AccessibleOmnibox) {
                    ->GetOmniboxController()
                    ->IsPopupOpen());
 
-  HWND window_handle =
-      browser()->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  HWND window_handle = browser()
+                           ->GetWindow()
+                           ->GetNativeWindow()
+                           ->GetHost()
+                           ->GetAcceleratedWidget();
   UiaAccessibilityWaiterInfo info = {window_handle, L"textbox",
                                      L"Address and search bar",
                                      ax::mojom::Event::kControlsChanged};
@@ -1943,7 +1946,7 @@ class OmniboxViewViewsDumpAccessibilityEventsTest
   }
 
   gfx::NativeWindow GetTargetNativeWindow() const override {
-    return browser()->window()->GetNativeWindow();
+    return browser()->GetWindow()->GetNativeWindow();
   }
 
   views::View* GetTargetRootView() const override {

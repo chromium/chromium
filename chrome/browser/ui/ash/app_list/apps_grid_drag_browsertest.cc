@@ -32,7 +32,7 @@ class AppsGridDragBrowserTest : public InProcessBrowserTest {
     // Ensure that there are enough app items for reordering.
     test::PopulateDummyAppListItems(5);
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
-        browser()->window()->GetNativeWindow()->GetRootWindow());
+        browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
     // Show the bubble launcher.
     ash::AcceleratorController::Get()->PerformActionIfEnabled(

@@ -189,7 +189,7 @@ void HostedAppBrowserController::Uninstall(
   DCHECK(!uninstall_dialog_);
   uninstall_dialog_ = ExtensionUninstallDialog::Create(
       browser()->profile(),
-      browser()->window() ? browser()->window()->GetNativeWindow()
+      browser()->window() ? browser()->GetWindow()->GetNativeWindow()
                           : gfx::NativeWindow(),
       this);
 

@@ -69,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(FloatControllerBrowserTest,
           ->GetWindow()
           ->GetNativeWindow();
 
-  ASSERT_NE(browser()->window()->GetNativeWindow(), browser_window1);
-  ASSERT_NE(browser()->window()->GetNativeWindow(), browser_window2);
+  ASSERT_NE(browser()->GetWindow()->GetNativeWindow(), browser_window1);
+  ASSERT_NE(browser()->GetWindow()->GetNativeWindow(), browser_window2);
   ASSERT_NE(browser_window1, browser_window2);
 
   auto* float_controller = ash::Shell::Get()->float_controller();

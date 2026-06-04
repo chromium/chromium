@@ -162,8 +162,10 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, SharingDelegate) {
                // methods is nonnull and circular references could get hairy.
                MockSharingService* mockService = MakeMockSharingService();
 
-               NSWindow* browser_window =
-                   browser()->window()->GetNativeWindow().GetNativeNSWindow();
+               NSWindow* browser_window = browser()
+                                              ->GetWindow()
+                                              ->GetNativeWindow()
+                                              .GetNativeNSWindow();
                EXPECT_NSNE([controller_ sharingService:mockService
                                sourceFrameOnScreenForShareItem:url],
                            NSZeroRect);

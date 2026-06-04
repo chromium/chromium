@@ -384,7 +384,7 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
   }
 
   views::Widget* widget = constrained_window::ShowBrowserModal(
-      dialog_model_builder.Build(), browser->window()->GetNativeWindow());
+      dialog_model_builder.Build(), browser->GetWindow()->GetNativeWindow());
   delegate_weak_ptr->OnWidgetShownStartTracking(widget);
 
   base::UmaHistogramTimes("WebApp.UpdateReviewDialog.TriggerToShowTime",

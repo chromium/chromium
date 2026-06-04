@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
       extensions::ExtensionUninstallDialog::Create(
-          browser()->profile(), browser()->window()->GetNativeWindow(),
+          browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
           &delegate));
   browser()->window()->Close();
   content::RunAllPendingInMessageLoop();
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
       extensions::ExtensionUninstallDialog::Create(
-          browser()->profile(), browser()->window()->GetNativeWindow(),
+          browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
           &delegate));
   content::RunAllPendingInMessageLoop();
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
       extensions::ExtensionUninstallDialog::Create(
-          browser()->profile(), browser()->window()->GetNativeWindow(),
+          browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
           &delegate));
 
   dialog->ConfirmUninstall(extension.get(),
@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   {
     base::RunLoop run_loop;
     dialog = extensions::ExtensionUninstallDialog::Create(
-        app_browser->profile(), app_browser->window()->GetNativeWindow(),
+        app_browser->profile(), app_browser->GetWindow()->GetNativeWindow(),
         &delegate);
     run_loop.RunUntilIdle();
   }
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(ParameterizedExtensionUninstallDialogImplBrowserTest,
   TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
       extensions::ExtensionUninstallDialog::Create(
-          browser()->profile(), browser()->window()->GetNativeWindow(),
+          browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
           &delegate));
   content::RunAllPendingInMessageLoop();
 
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
   std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
       extensions::ExtensionUninstallDialog::Create(
-          browser()->profile(), browser()->window()->GetNativeWindow(),
+          browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
           &delegate));
   content::RunAllPendingInMessageLoop();
 
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
     TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
     std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
         extensions::ExtensionUninstallDialog::Create(
-            browser()->profile(), browser()->window()->GetNativeWindow(),
+            browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
             &delegate));
 
     dialog->ConfirmUninstall(extensionA.get(),
@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
     TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
     std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
         extensions::ExtensionUninstallDialog::Create(
-            browser()->profile(), browser()->window()->GetNativeWindow(),
+            browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
             &delegate));
 
     dialog->ConfirmUninstall(extensionA.get(),
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
     TestExtensionUninstallDialogDelegate delegate(run_loop.QuitClosure());
     std::unique_ptr<extensions::ExtensionUninstallDialog> dialog(
         extensions::ExtensionUninstallDialog::Create(
-            browser()->profile(), browser()->window()->GetNativeWindow(),
+            browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
             &delegate));
 
     dialog->ConfirmUninstall(extensionA.get(),
@@ -495,7 +495,7 @@ class ExtensionUninstallDialogImplInteractiveBrowserTest
         ->AddExtension(extension_.get());
 
     dialog_ = extensions::ExtensionUninstallDialog::Create(
-        browser()->profile(), browser()->window()->GetNativeWindow(),
+        browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
         &delegate_);
     if (uninstall_method_ == UNINSTALL_BY_EXTENSION) {
       triggering_extension_ =

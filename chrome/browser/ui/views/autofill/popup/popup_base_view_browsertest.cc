@@ -89,7 +89,7 @@ class PopupBaseViewBrowsertest : public InProcessBrowserTest {
 
     view_ = new PopupBaseView(mock_delegate_.GetWeakPtr(),
                               views::Widget::GetWidgetForNativeWindow(
-                                  browser()->window()->GetNativeWindow()));
+                                  browser()->GetWindow()->GetNativeWindow()));
   }
 
   void TearDownOnMainThread() override { view_ = nullptr; }

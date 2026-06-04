@@ -41,7 +41,7 @@ namespace {
 // An async version of SendKeyPressSync since we don't get notified when a
 // menu is showing.
 void SendKeyPress(Browser* browser, ui::KeyboardCode key) {
-  ASSERT_TRUE(ui_controls::SendKeyPress(browser->window()->GetNativeWindow(),
+  ASSERT_TRUE(ui_controls::SendKeyPress(browser->GetWindow()->GetNativeWindow(),
                                         key, false, false, false, false));
 }
 
@@ -160,7 +160,7 @@ class KeyboardAccessTest : public InProcessBrowserTest {
                               bool focus_omnibox);
 
   int GetFocusedViewID() {
-    gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+    gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     const views::FocusManager* focus_manager = widget->GetFocusManager();
     const views::View* focused_view = focus_manager->GetFocusedView();
@@ -171,7 +171,7 @@ class KeyboardAccessTest : public InProcessBrowserTest {
     if (GetFocusedViewID() != original_view_id) {
       return;
     }
-    gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+    gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     views::FocusManager* focus_manager = widget->GetFocusManager();
     ViewFocusChangeWaiter waiter(focus_manager, original_view_id);

@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationDialogTest, ShowDialog_Dismiss) {
   // Open a new tab, which stacks up over the dialog.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
-  gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   ASSERT_TRUE(widget->IsStackedAbove(dialog->GetDialogWindowForTesting()));
 

@@ -145,8 +145,8 @@ void PermissionPromptBaseView::AnchorToPageInfoOrChip() {
                  configuration.anchor.GetIfElement()) {
     set_parent_window(element->GetNativeView());
   } else {
-    set_parent_window(
-        platform_util::GetViewForWindow(browser_->window()->GetNativeWindow()));
+    set_parent_window(platform_util::GetViewForWindow(
+        browser_->GetWindow()->GetNativeWindow()));
   }
   if (configuration.highlighted_element) {
     SetHighlightedElement(*configuration.highlighted_element);

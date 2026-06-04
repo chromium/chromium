@@ -38,7 +38,7 @@ class ConfirmBubbleTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     constrained_window::CreateBrowserModalDialogViews(
         new ConfirmBubbleViews(std::make_unique<ConfirmBubbleTestModel>()),
-        browser()->window()->GetNativeWindow())
+        browser()->GetWindow()->GetNativeWindow())
         ->Show();
   }
 };
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmBubbleTest, RootViewAccessibleProperties) {
   auto* confirm_bubble_views =
       new ConfirmBubbleViews(std::make_unique<ConfirmBubbleTestModel>());
   constrained_window::CreateBrowserModalDialogViews(
-      confirm_bubble_views, browser()->window()->GetNativeWindow())
+      confirm_bubble_views, browser()->GetWindow()->GetNativeWindow())
       ->Show();
 
   auto* widget = confirm_bubble_views->GetWidget();

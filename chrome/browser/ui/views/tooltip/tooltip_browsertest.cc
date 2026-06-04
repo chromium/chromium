@@ -108,7 +108,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     gfx::NativeWindow root_window =
-        browser()->window()->GetNativeWindow()->GetRootWindow();
+        browser()->GetWindow()->GetNativeWindow()->GetRootWindow();
     event_generator_ = std::make_unique<ui::test::EventGenerator>(root_window);
     helper_ = std::make_unique<TooltipControllerTestHelper>(root_window);
     tooltip_monitor_ = std::make_unique<TooltipMonitor>();
@@ -285,8 +285,8 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
 
   // Second, send a key press event to test whether the tooltip gets hidden.
   EXPECT_TRUE(tooltip_monitor()->IsWidgetActive());
-  ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(), ui::VKEY_A,
-                            false, false, false, false);
+  ui_controls::SendKeyPress(browser()->GetWindow()->GetNativeWindow(),
+                            ui::VKEY_A, false, false, false, false);
   tooltip_monitor()->WaitUntilTooltipClosed();
   EXPECT_FALSE(helper()->IsTooltipVisible());
 }

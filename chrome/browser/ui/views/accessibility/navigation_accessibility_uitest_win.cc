@@ -202,7 +202,7 @@ class NavigationAccessibilityTest : public InProcessBrowserTest {
   }
 
   void SendKeyPress(ui::KeyboardCode key) {
-    gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+    gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         native_window, key, false, false, false, false)));
   }
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(NarratorContainmentEnabledBrowserTest,
       CLSID_CUIAutomation, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&uia)));
 
   HWND top_hwnd =
-      views::HWNDForNativeWindow(browser()->window()->GetNativeWindow());
+      views::HWNDForNativeWindow(browser()->GetWindow()->GetNativeWindow());
   ASSERT_NE(nullptr, top_hwnd);
 
   Microsoft::WRL::ComPtr<IUIAutomationElement> hwnd_elem;

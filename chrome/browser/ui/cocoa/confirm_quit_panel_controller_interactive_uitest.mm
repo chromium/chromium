@@ -49,7 +49,7 @@ class ConfirmQuitControllerPanelInteractiveUITest
 IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
                        SingleTapDoesNotTriggerQuit) {
   NSWindow* browserWindow =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ConfirmQuitPanelController* controller =
       [[ConfirmQuitPanelController alloc] init];
   NSWindow* hudWindow = controller.window;
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
                        SustainedHoldTriggersQuit) {
   NSWindow* browserWindow =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ConfirmQuitPanelController* controller =
       [[ConfirmQuitPanelController alloc] init];
   NSWindow* hudWindow = controller.window;
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
                        DoubleTapTriggersQuit) {
   NSWindow* browserWindow =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ConfirmQuitPanelController* controller =
       [[ConfirmQuitPanelController alloc] init];
   NSWindow* hudWindow = controller.window;
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
                        SingleTapThenHoldTriggersQuit) {
   NSWindow* browserWindow =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   ConfirmQuitPanelController* controller =
       [[ConfirmQuitPanelController alloc] init];
   NSWindow* hudWindow = controller.window;
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
                        SustainedHoldFadesAllWindows) {
   NSWindow* browserWindow =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   CGRect childContentRect = {browserWindow.frame.origin, {100, 100}};
   NSWindow* childWindow =
       [[NSWindow alloc] initWithContentRect:childContentRect
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
 IN_PROC_BROWSER_TEST_F(ConfirmQuitControllerPanelInteractiveUITest,
                        BeforeUnloadCancellationRestoresWindowsAndCleansUp) {
   NSWindow* browserWindow =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   AppController* appController = AppController.sharedController;
 
   // Lazy-initialize the panel controller on AppController.

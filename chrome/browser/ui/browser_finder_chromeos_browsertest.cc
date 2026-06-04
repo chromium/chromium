@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
   ash::ActivateDesk(desk_2);
   EXPECT_TRUE(desk_2->is_active());
   Browser* browser_2 = CreateTestBrowser();
-  auto* window_2 = browser_2->window()->GetNativeWindow();
+  auto* window_2 = browser_2->GetWindow()->GetNativeWindow();
   EXPECT_EQ(
       2u,
       ProfileBrowserCollection::GetForProfile(browser()->profile())->GetSize());
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderChromeOSBrowserTest,
 
   // Move the browser window to another user's desktop.
   window_manager->ShowWindowForUser(
-      primary_browser->window()->GetNativeWindow()->GetToplevelWindow(),
+      primary_browser->GetWindow()->GetNativeWindow()->GetToplevelWindow(),
       kSecondaryAccountId);
 
   // ShowWindowForUser() notifies chrome async.

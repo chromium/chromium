@@ -82,7 +82,7 @@ void SearchEngineChoiceDialog::Show(
   delegate->SetContentsView(std::move(dialogView));
 
   constrained_window::CreateBrowserModalDialogViews(
-      std::move(delegate), browser.window()->GetNativeWindow());
+      std::move(delegate), browser.GetWindow()->GetNativeWindow());
 }
 
 bool CanWindowHeightFitSearchEngineChoiceDialog(Browser& browser) {

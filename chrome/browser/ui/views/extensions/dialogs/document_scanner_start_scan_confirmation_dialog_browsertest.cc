@@ -23,7 +23,7 @@ class DocumentScanStartScanConfirmationDialogTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     extensions::ShowDocumentScannerStartScanConfirmationDialog(
-        browser()->window()->GetNativeWindow(),
+        browser()->GetWindow()->GetNativeWindow(),
         "DocumentScanStartScanConfirmationDialogTest", u"Extension Name",
         u"Scanner Name", {}, base::DoNothing());
   }

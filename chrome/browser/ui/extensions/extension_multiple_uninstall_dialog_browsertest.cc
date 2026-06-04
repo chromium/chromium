@@ -17,7 +17,7 @@ class ExtensionMultipleUninstallDialogBrowserTest
     auto extension_0 = InstallExtension("Extension0");
     auto extension_1 = InstallExtension("Extension1");
     extensions::ShowExtensionMultipleUninstallDialog(
-        browser()->profile(), browser()->window()->GetNativeWindow(),
+        browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
         {extension_0->id(), extension_1->id()}, base::DoNothing(),
         base::DoNothing());
   }

@@ -129,7 +129,7 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
                 do {
                   auto display =
                       display::Screen::Get()->GetDisplayNearestWindow(
-                          browser->window()->GetNativeWindow());
+                          browser->GetWindow()->GetNativeWindow());
                   auto display_size = display.bounds().size();
                   auto workarea_size = display.work_area().size();
                   auto window_size = browser->window()->GetBounds().size();

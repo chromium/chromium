@@ -135,7 +135,7 @@ std::unique_ptr<Browser> CreateTestBrowser(std::unique_ptr<aura::Window> window,
       chrome::CreateBrowserWithAuraTestWindowForParams(std::move(window),
                                                        params);
   if (browser->is_type_normal()) {
-    browser->window()->GetNativeWindow()->SetProperty(
+    browser->GetWindow()->GetNativeWindow()->SetProperty(
         ash::kWindowPositionManagedTypeKey, true);
   }
   return browser;

@@ -195,8 +195,8 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
 
   // Choose a non-default display to which to move the receiver window.
   ASSERT_LE(2ul, displays.size());
-  const auto default_display =
-      screen->GetDisplayNearestWindow(browser()->window()->GetNativeWindow());
+  const auto default_display = screen->GetDisplayNearestWindow(
+      browser()->GetWindow()->GetNativeWindow());
   display::Display target_display;
   ASSERT_FALSE(target_display.is_valid());
   for (const auto& display : displays) {
