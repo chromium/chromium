@@ -73,9 +73,10 @@ BUG_REPORT_URL = ('https://crbug.com in the Tools>LLVM component,'
 LIBXML2_VERSION = 'libxml2-v2.9.12'
 ZSTD_VERSION = 'zstd-1.5.5'
 
-# This should be in sync with `mac_deployment_target` in
-# //build/config/mac/mac_sdk.gni.
-DEFAULT_MACOSX_DEPLOYMENT_TARGET = '12.0'
+# This must be less than or equal to the lowest target used in Chromium. See
+# e.g. mac_deployment_target in //build/config/mac/mac_sdk.gni and min_version
+# in //chrome/installer/gcapi_mac/BUILD.gn.
+DEFAULT_MACOSX_DEPLOYMENT_TARGET = '10.12'
 
 win_sdk_dir = None
 def GetWinSDKDir():
