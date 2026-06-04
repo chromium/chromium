@@ -50,10 +50,6 @@ class SiteFamiliarityProcessSelectionDeferringCondition
   // Sets the verdict on the NavigationHandle.
   void SetVerdictOnHandle();
 
-  // Returns true if the navigation is to the default search engine's search
-  // results page.
-  bool IsDefaultSearchEngineNavigation();
-
   // Returns true if the navigation is in a cross-site subframe.
   bool IsCrossSiteSubframe() const;
 
