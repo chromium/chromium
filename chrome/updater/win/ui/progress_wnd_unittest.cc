@@ -379,4 +379,28 @@ TEST_F(ProgressWndTest, LaunchCmdLine) {
       [] { return test::FindProcesses(kTestProcessExecutableName).empty(); }));
 }
 
+TEST_F(ProgressWndTest, FlatButtonSubclass) {
+  MessageLoop ui_message_loop;
+  std::unique_ptr<ProgressWnd> progress_wnd =
+      MakeProgressWindow(&ui_message_loop);
+
+  EXPECT_EQ(progress_wnd->btn1_.hwnd(),
+            ::GetDlgItem(progress_wnd->hwnd(), IDC_BUTTON1));
+  EXPECT_TRUE(progress_wnd->btn1_.IsWindow());
+
+  EXPECT_EQ(progress_wnd->btn2_.hwnd(),
+            ::GetDlgItem(progress_wnd->hwnd(), IDC_BUTTON2));
+  EXPECT_TRUE(progress_wnd->btn2_.IsWindow());
+
+  EXPECT_EQ(progress_wnd->close_btn_.hwnd(),
+            ::GetDlgItem(progress_wnd->hwnd(), IDC_CLOSE));
+  EXPECT_TRUE(progress_wnd->close_btn_.IsWindow());
+
+  EXPECT_EQ(progress_wnd->get_help_btn_.hwnd(),
+            ::GetDlgItem(progress_wnd->hwnd(), IDC_GET_HELP));
+  EXPECT_TRUE(progress_wnd->get_help_btn_.IsWindow());
+
+  progress_wnd->DestroyWindow();
+}
+
 }  // namespace updater::ui

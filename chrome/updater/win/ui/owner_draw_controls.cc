@@ -963,4 +963,207 @@ LRESULT CustomProgressBarCtrl::OnSetBkColor(UINT,
   return old_empty_fill_color;
 }
 
+FlatButton::FlatButton() = default;
+FlatButton::~FlatButton() = default;
+
+void FlatButton::SetIsPrimary(bool is_primary) {
+  is_primary_ = is_primary;
+  if (IsWindow()) {
+    ::InvalidateRect(hwnd(), nullptr, FALSE);
+  }
+}
+
+LRESULT FlatButton::OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam) {
+  SetMsgHandled(FALSE);
+  return 1;
+}
+
+LRESULT FlatButton::OnMouseMove(UINT, WPARAM, LPARAM) {
+  if (!is_tracking_mouse_events_) {
+    TRACKMOUSEEVENT tme = {};
+    tme.cbSize = sizeof(TRACKMOUSEEVENT);
+    tme.dwFlags = TME_HOVER | TME_LEAVE;
+    tme.hwndTrack = hwnd();
+    tme.dwHoverTime = 1;
+    is_tracking_mouse_events_ = _TrackMouseEvent(&tme);
+  }
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
+LRESULT FlatButton::OnMouseHover(UINT, WPARAM, LPARAM) {
+  if (!is_mouse_hovering_) {
+    is_mouse_hovering_ = true;
+    ::InvalidateRect(hwnd(), nullptr, FALSE);
+    ::UpdateWindow(hwnd());
+  }
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
+LRESULT FlatButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
+  TRACKMOUSEEVENT tme = {};
+  tme.cbSize = sizeof(TRACKMOUSEEVENT);
+  tme.dwFlags = TME_CANCEL | TME_HOVER | TME_LEAVE;
+  tme.hwndTrack = hwnd();
+  _TrackMouseEvent(&tme);
+
+  is_tracking_mouse_events_ = false;
+  is_mouse_hovering_ = false;
+
+  ::InvalidateRect(hwnd(), nullptr, FALSE);
+  ::UpdateWindow(hwnd());
+
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
+LRESULT FlatButton::OnEraseBkgnd(UINT, WPARAM, LPARAM) {
+  return 1;
+}
+
+LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
+  PAINTSTRUCT ps = {};
+  HDC dc_paint = ::BeginPaint(hwnd(), &ps);
+  RECT rect = {};
+  ::GetClientRect(hwnd(), &rect);
+
+  if (IsRectEmpty(rect)) {
+    ::EndPaint(hwnd(), &ps);
+    return 0;
+  }
+
+  HDC dc = ::CreateCompatibleDC(dc_paint);
+  base::win::ScopedGDIObject<HBITMAP> bmp(
+      ::CreateCompatibleBitmap(dc_paint, Width(rect), Height(rect)));
+  if (!dc || !bmp.is_valid()) {
+    if (dc) {
+      ::DeleteDC(dc);
+    }
+    ::EndPaint(hwnd(), &ps);
+    return 0;
+  }
+  HGDIOBJ old_bmp = ::SelectObject(dc, bmp.get());
+
+  DrawParentBackground(hwnd(), dc, rect);
+
+  const bool is_disabled = !::IsWindowEnabled(hwnd());
+  const bool is_default =
+      (::GetWindowLong(hwnd(), GWL_STYLE) & BS_DEFPUSHBUTTON) != 0;
+  const bool is_pressed =
+      ((::SendMessageW(hwnd(), BM_GETSTATE, 0, 0) & BST_PUSHED) != 0);
+
+  COLORREF bg = CLR_INVALID;
+  COLORREF text = CLR_INVALID;
+  COLORREF border = CLR_INVALID;
+
+  if (IsHighContrastOn()) {
+    bg = (is_pressed || is_default) ? ::GetSysColor(COLOR_HIGHLIGHT)
+                                    : ::GetSysColor(COLOR_BTNFACE);
+    text = (is_pressed || is_default) ? ::GetSysColor(COLOR_HIGHLIGHTTEXT)
+                                      : ::GetSysColor(COLOR_BTNTEXT);
+    border = ::GetSysColor(COLOR_WINDOWFRAME);
+  } else if (IsDarkModeOn()) {
+    if (is_disabled) {
+      bg = kButtonBgDisabledDark;
+      text = kButtonFgDisabledDark;
+      border = bg;
+    } else if (is_primary_) {
+      bg = is_pressed ? kPrimaryButtonBgDarkPressed
+                      : (is_mouse_hovering_ ? kPrimaryButtonBgDarkHover
+                                            : kPrimaryButtonBgDark);
+      text = kPrimaryButtonFgDark;
+      border = bg;
+    } else {
+      bg = is_pressed ? kSecondaryButtonBgDarkPressed
+                      : (is_mouse_hovering_ ? kSecondaryButtonBgDarkHover
+                                            : kSecondaryButtonBgDark);
+      text = kSecondaryButtonFgDark;
+      border = kSecondaryButtonBorderDark;
+    }
+  } else {
+    if (is_disabled) {
+      bg = kButtonBgDisabled;
+      text = kButtonFgDisabled;
+      border = bg;
+    } else if (is_primary_) {
+      bg = is_pressed ? kPrimaryButtonBgPressed
+                      : (is_mouse_hovering_ ? kPrimaryButtonBgHover
+                                            : kPrimaryButtonBg);
+      text = kPrimaryButtonFg;
+      border = bg;
+    } else {
+      bg = is_pressed ? kSecondaryButtonBgPressed
+                      : (is_mouse_hovering_ ? kSecondaryButtonBgHover
+                                            : kSecondaryButtonBg);
+      text = kSecondaryButtonFg;
+      border = is_mouse_hovering_ ? kSecondaryButtonFg : kSecondaryButtonBorder;
+    }
+  }
+
+  const int dpi = ::GetDpiForWindow(hwnd());
+  const int radius_x = ::MulDiv(4, dpi, USER_DEFAULT_SCREEN_DPI);
+  const int radius_y = ::MulDiv(4, dpi, USER_DEFAULT_SCREEN_DPI);
+
+  base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(bg));
+  HGDIOBJ old_brush = ::SelectObject(dc, bg_brush.get());
+
+  HGDIOBJ old_pen = nullptr;
+  base::win::ScopedGDIObject<HPEN> border_pen;
+  if (border != CLR_INVALID) {
+    const int thickness =
+        std::max(1, ::MulDiv(1, dpi, USER_DEFAULT_SCREEN_DPI));
+    border_pen.reset(::CreatePen(PS_SOLID, thickness, border));
+    old_pen = ::SelectObject(dc, border_pen.get());
+  } else {
+    old_pen = ::SelectObject(dc, ::GetStockObject(NULL_PEN));
+  }
+
+  ::RoundRect(dc, rect.left, rect.top, rect.right, rect.bottom, 2 * radius_x,
+              2 * radius_y);
+
+  if (::GetFocus() == hwnd() && !is_disabled) {
+    RECT focus_rect = rect;
+    ::InflateRect(&focus_rect, -2, -2);
+    ::DrawFocusRect(dc, &focus_rect);
+  }
+
+  wchar_t button_text[256] = {};
+  ::GetWindowTextW(hwnd(), button_text, std::size(button_text));
+
+  if (wcslen(button_text) > 0) {
+    const COLORREF old_text_color = ::SetTextColor(dc, text);
+    const int old_bk_mode = ::SetBkMode(dc, TRANSPARENT);
+
+    HFONT font =
+        reinterpret_cast<HFONT>(::SendMessageW(hwnd(), WM_GETFONT, 0, 0));
+    HFONT old_font = nullptr;
+    if (font) {
+      old_font = static_cast<HFONT>(::SelectObject(dc, font));
+    }
+
+    ::DrawTextW(dc, button_text, -1, &rect,
+                DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    if (old_font) {
+      ::SelectObject(dc, old_font);
+    }
+    ::SetBkMode(dc, old_bk_mode);
+    ::SetTextColor(dc, old_text_color);
+  }
+
+  ::BitBlt(dc_paint, rect.left, rect.top, Width(rect), Height(rect), dc, 0, 0,
+           SRCCOPY);
+
+  ::SelectObject(dc, old_brush);
+  if (old_pen) {
+    ::SelectObject(dc, old_pen);
+  }
+  ::SelectObject(dc, old_bmp);
+  ::DeleteDC(dc);
+
+  ::EndPaint(hwnd(), &ps);
+  return 0;
+}
+
 }  // namespace updater::ui

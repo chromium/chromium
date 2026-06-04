@@ -193,6 +193,18 @@ LRESULT ProgressWnd::OnInitDialog(UINT, WPARAM, LPARAM) {
   InstallBitmapStaticSubclass(hwnd(), IDC_APP_BITMAP);
   InstallBitmapStaticSubclass(hwnd(), IDC_ERROR_ILLUSTRATION);
 
+  btn1_.SetIsPrimary(true);
+  btn1_.SubclassWindow(::GetDlgItem(hwnd(), IDC_BUTTON1));
+
+  btn2_.SetIsPrimary(false);
+  btn2_.SubclassWindow(::GetDlgItem(hwnd(), IDC_BUTTON2));
+
+  close_btn_.SetIsPrimary(true);
+  close_btn_.SubclassWindow(::GetDlgItem(hwnd(), IDC_CLOSE));
+
+  get_help_btn_.SetIsPrimary(false);
+  get_help_btn_.SubclassWindow(::GetDlgItem(hwnd(), IDC_GET_HELP));
+
   ChangeControlState();
 
   // Apply rounded corners on initialization.

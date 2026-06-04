@@ -271,6 +271,42 @@ class CustomProgressBarCtrl : public SubclassedWindow {
   CR_MSG_MAP_CLASS_DECLARATIONS(CustomProgressBarCtrl)
 };
 
+// A flat implementation of button subclassed from standard Win32 push buttons,
+// styling them as Chrome/Google Design System (GDS) primary/secondary style
+// flat buttons.
+class FlatButton : public SubclassedWindow {
+ public:
+  FlatButton();
+  FlatButton(const FlatButton&) = delete;
+  FlatButton& operator=(const FlatButton&) = delete;
+  ~FlatButton() override;
+
+  CR_BEGIN_MSG_MAP_EX(FlatButton)
+    CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseMessage)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSEMOVE, OnMouseMove)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSEHOVER, OnMouseHover)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSELEAVE, OnMouseLeave)
+    CR_MESSAGE_HANDLER_EX(WM_PAINT, OnPaint)
+    CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
+  CR_END_MSG_MAP()
+
+  void SetIsPrimary(bool is_primary);
+
+ private:
+  LRESULT OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseMove(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseHover(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseLeave(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnPaint(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
+
+  bool is_tracking_mouse_events_ = false;
+  bool is_mouse_hovering_ = false;
+  bool is_primary_ = true;
+
+  CR_MSG_MAP_CLASS_DECLARATIONS(FlatButton)
+};
+
 }  // namespace updater::ui
 
 #endif  // CHROME_UPDATER_WIN_UI_OWNER_DRAW_CONTROLS_H_

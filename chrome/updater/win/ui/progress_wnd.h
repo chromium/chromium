@@ -85,6 +85,7 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnPause);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, OnComplete);
   FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, LaunchCmdLine);
+  FRIEND_TEST_ALL_PREFIXES(ProgressWndTest, FlatButtonSubclass);
 
   enum class States {
     STATE_INIT = 0,
@@ -185,6 +186,16 @@ class ProgressWnd : public CompleteWnd, public AppInstallProgress {
 
   // The speed by which the progress bar moves in marquee mode.
   static constexpr int kMarqueeModeUpdatesMs = 15;
+
+  // Subclassed buttons representing the standard dialog actions.
+  // btn1_ (Primary): Used for "Restart Now" actions on reboot/restart screens.
+  // btn2_ (Secondary): Used for "Restart Later" actions on reboot/restart
+  // screens. close_btn_ (Primary): Used for "Close" or "Cancel" actions.
+  // get_help_btn_ (Secondary): Used for the "Get Help" link action.
+  FlatButton btn1_;
+  FlatButton btn2_;
+  FlatButton close_btn_;
+  FlatButton get_help_btn_;
 
   CR_MSG_MAP_CLASS_DECLARATIONS(ProgressWnd)
 };
