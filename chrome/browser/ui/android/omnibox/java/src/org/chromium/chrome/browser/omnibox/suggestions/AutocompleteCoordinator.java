@@ -204,6 +204,25 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         updateSuggestionListLayoutDirection();
     }
 
+    @VisibleForTesting
+    AutocompleteCoordinator(
+            ViewGroup parent,
+            AutocompleteMediator mediator,
+            MonotonicObservableSupplier<Profile> profileObservableSupplier,
+            LocationBarEmbedder locationBarEmbedder,
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
+        mParent = parent;
+        mMediator = mediator;
+        mProfileSupplier = profileObservableSupplier;
+        mProfileChangeCallback = this::setAutocompleteProfile;
+        mProfileSupplier.addSyncObserverAndPostIfNonNull(mProfileChangeCallback);
+        mLocationBarEmbedder = locationBarEmbedder;
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mViewProvider = new SuggestionListViewHolderProvider(new ModelList());
+        mViewHolderFactory = null;
+        mRecycledViewPool = null;
+    }
+
     /** Clean up resources used by this class. */
     public void destroy() {
         mProfileSupplier.removeObserver(mProfileChangeCallback);
