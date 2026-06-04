@@ -17,9 +17,11 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Returns true if the context for `web_state` can be extracted. PageContexts
-// are available for HTML and image pages that use http/https schemes. Namely,
-// this filters out PDFs, NTPs and chrome:// pages.
+// Returns true if the context for `web_state` can be extracted. Note that
+// unrealized WebStates will return false, as they have an empty mime type until
+// they are realized. PageContexts are available for HTML and image pages that
+// use http/https schemes. Namely, this filters out PDFs, NTPs and chrome://
+// pages.
 bool CanExtractPageContextForWebState(web::WebState* web_state);
 
 // Deserializes a string frame ID into a LocalFrameToken.

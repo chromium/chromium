@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/paths/paths_internal.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -37,6 +39,7 @@
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -160,6 +163,8 @@ class PersistTabContextBrowserAgentTest
                                   PageContextWrapperCallbackResponse response) {
     agent_->OnPageContextExtracted(weak_web_state, std::move(response));
   }
+
+  void RunCacheCleanup() { agent_->RunCacheCleanup(); }
 
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -448,6 +453,59 @@ TEST_P(PersistTabContextBrowserAgentTest,
     task_environment_.FastForwardBy(base::Milliseconds(100));
     EXPECT_FALSE(base::PathExists(GetPathForWebStateIdForTest(web_state_id)));
   }
+}
+
+// Verifies cleanup removes cache entries whose WebState no longer exists,
+// while preserving contexts for both realized and unrealized WebStates.
+TEST_P(PersistTabContextBrowserAgentTest, TestRunCacheCleanup) {
+  if (GetParam() != PersistTabStorageType::kSQLite) {
+    return;
+  }
+
+  web::WebStateID realized_id = web::WebStateID::FromSerializedValue(101);
+  auto realized = std::make_unique<web::FakeWebState>(realized_id);
+  realized->SetCurrentURL(GURL("https://example.com/realized"));
+  realized->SetIsRealized(true);
+  realized->SetContentsMimeType("text/html");
+  web_state_list_->InsertWebState(std::move(realized));
+  CreateDummyContextFile(realized_id);
+
+  web::WebStateID unrealized_id = web::WebStateID::FromSerializedValue(102);
+  auto unrealized = std::make_unique<web::FakeWebState>(unrealized_id);
+  unrealized->SetCurrentURL(GURL("https://example.com/unrealized"));
+  unrealized->SetIsRealized(false);
+  web_state_list_->InsertWebState(std::move(unrealized));
+  CreateDummyContextFile(unrealized_id);
+
+  // Cache entry with no matching WebState in the list.
+  web::WebStateID stale_id = web::WebStateID::FromSerializedValue(103);
+  CreateDummyContextFile(stale_id);
+
+  PageContentCacheService* service =
+      PageContentCacheServiceFactory::GetForProfile(profile_.get());
+  BrowserListFactory::GetForProfile(profile_.get())->AddBrowser(browser_.get());
+
+  {
+    base::test::TestFuture<std::vector<int64_t>> future;
+    service->GetAllTabIds(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+    EXPECT_THAT(future.Get(),
+                testing::UnorderedElementsAre(realized_id.identifier(),
+                                              unrealized_id.identifier(),
+                                              stale_id.identifier()));
+  }
+
+  RunCacheCleanup();
+  task_environment_.FastForwardBy(kPurgeTaskDelay + kCleanupTaskDelay +
+                                  base::Seconds(1));
+  WaitForServiceSequence(service);
+
+  base::test::TestFuture<std::vector<int64_t>> future;
+  service->GetAllTabIds(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_THAT(future.Get(),
+              testing::UnorderedElementsAre(realized_id.identifier(),
+                                            unrealized_id.identifier()));
 }
 
 class PersistTabContextBrowserAgentDisabledTest : public PlatformTest {

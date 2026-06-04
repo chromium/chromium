@@ -300,15 +300,16 @@ void DeletePersistedContextsDirectory(base::FilePath contexts_dir) {
 }
 
 // Returns a set of unique identifiers for all WebStates across all regular
-// browsers in the given `profile` that are eligible for persistence.
-std::set<int64_t> GetAllEligibleWebStateIDs(ProfileIOS* profile) {
+// browsers in the given `profile`. When `eligible_only` is true, only
+// WebStates satisfying CanExtractPageContextForWebState() are included.
+std::set<int64_t> GetWebStateIDs(ProfileIOS* profile, bool eligible_only) {
   CHECK(profile);
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   CHECK(browser_list);
 
   const std::set<Browser*>& browsers =
       browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
-  std::set<int64_t> eligible_ids;
+  std::set<int64_t> web_state_ids;
 
   for (Browser* browser : browsers) {
     if (!browser || !browser->GetWebStateList()) {
@@ -317,20 +318,20 @@ std::set<int64_t> GetAllEligibleWebStateIDs(ProfileIOS* profile) {
 
     for (int i = 0; i < browser->GetWebStateList()->count(); i++) {
       web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(i);
-      if (CanExtractPageContextForWebState(web_state)) {
-        eligible_ids.insert(static_cast<int64_t>(
+      if (!eligible_only || CanExtractPageContextForWebState(web_state)) {
+        web_state_ids.insert(static_cast<int64_t>(
             web_state->GetUniqueIdentifier().identifier()));
       }
     }
   }
-  return eligible_ids;
+  return web_state_ids;
 }
 
 // Calculates the total number of WebStates across all Browser instances
 // associated with the given `profile` which are eligibile to have their
 // contexts persisted.
 int GetPersistedWebStateCountForProfile(ProfileIOS* profile) {
-  return GetAllEligibleWebStateIDs(profile).size();
+  return GetWebStateIDs(profile, /*eligible_only=*/true).size();
 }
 
 // Helper function to adapt the GetPageContentCache callback to the one used in
@@ -792,7 +793,11 @@ void PersistTabContextBrowserAgent::RunCacheCleanup() {
     return;
   }
 
-  std::set<int64_t> active_ids = GetAllEligibleWebStateIDs(profile);
+  // Unrealized WebStates have an empty MIME type and would be wrongly
+  // filtered out here; cache writes are already gated by
+  // CanExtractPageContextForWebState().
+  std::set<int64_t> active_ids =
+      GetWebStateIDs(profile, /*eligible_only=*/false);
 
   page_content_cache_service_->RunCleanUpTasksWithActiveTabs(active_ids);
 }
