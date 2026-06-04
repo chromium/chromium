@@ -472,6 +472,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.CookieSynchronization.Result" enum="GlicCookieSyncResult"
+    expires_after="2027-04-23">
+  <owner>acondor@google.com</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records the result of Glic cookie synchronization operation. Recorded when
+    the operation completes with success or failure, or upon destruction when a
+    sync is in progress.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CountryFilteringResult" enum="GlicFilteringResult"
     expires_after="2026-11-29">
   <owner>harringtond@chromium.org</owner>

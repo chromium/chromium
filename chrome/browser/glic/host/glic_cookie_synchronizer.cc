@@ -214,7 +214,7 @@ GlicCookieSynchronizer::GlicCookieSynchronizer(
 
 GlicCookieSynchronizer::~GlicCookieSynchronizer() {
   if (!callbacks_.empty()) {
-    CompleteAuth(/*is_success=*/false);
+    CompleteAuth(GlicCookieSyncResult::kDestroyedWithPendingCallbacks);
   }
 }
 
@@ -267,7 +267,7 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
   auto* glic_storage_partition = GetStoragePartition();
   if (!glic_storage_partition) {
     DLOG(ERROR) << "glic webview storage partition does not exist";
-    CompleteAuth(false);
+    CompleteAuth(GlicCookieSyncResult::kNoStoragePartition);
     return;
   }
 
@@ -306,7 +306,7 @@ void GlicCookieSynchronizer::ClearCookiesComplete() {
 void GlicCookieSynchronizer::SyncCookiesForDevelopmentComplete(bool success) {
   sync_cookies_for_development_task_.reset();
   if (!success) {
-    CompleteAuth(/*is_success=*/false);
+    CompleteAuth(GlicCookieSyncResult::kDevSyncFailure);
   } else {
     BeginCookieSync();
   }
@@ -318,7 +318,7 @@ void GlicCookieSynchronizer::BeginCookieSync() {
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (primary_account_id.empty()) {
     DLOG(ERROR) << "can't sync cookies, user not signed in";
-    CompleteAuth(false);
+    CompleteAuth(GlicCookieSyncResult::kUserNotSignedIn);
     return;
   }
   signin::MultiloginParameters parameters = {
@@ -340,13 +340,13 @@ void GlicCookieSynchronizer::OnAuthFinished(
     signin::SetAccountsInCookieResult cookie_result) {
   switch (cookie_result) {
     case signin::SetAccountsInCookieResult::kSuccess:
-      CompleteAuth(/*is_success=*/true);
+      CompleteAuth(GlicCookieSyncResult::kSuccess);
       break;
     case signin::SetAccountsInCookieResult::kTransientError:
-      CompleteAuth(/*is_success=*/false);
+      CompleteAuth(GlicCookieSyncResult::kAuthTransientError);
       break;
     case signin::SetAccountsInCookieResult::kPersistentError:
-      CompleteAuth(/*is_success=*/false);
+      CompleteAuth(GlicCookieSyncResult::kAuthPersistentError);
       break;
   }
 }
@@ -354,11 +354,12 @@ void GlicCookieSynchronizer::OnAuthFinished(
 void GlicCookieSynchronizer::OnTimeout() {
   base::RecordAction(
       base::UserMetricsAction("Glic.CookieSynchronizer.Timeout"));
-  CompleteAuth(/*is_success=*/false);
+  CompleteAuth(GlicCookieSyncResult::kTimeout);
 }
 
-void GlicCookieSynchronizer::CompleteAuth(bool is_success) {
-  metrics_.EndSync(is_success);
+void GlicCookieSynchronizer::CompleteAuth(GlicCookieSyncResult result) {
+  bool is_success = result == GlicCookieSyncResult::kSuccess;
+  metrics_.EndSync(result);
   timeout_.Stop();
   cookie_loader_.reset();
 
@@ -381,15 +382,18 @@ void GlicCookieSynchronizer::Metrics::BeginSync() {
   sync_start_time_ = base::TimeTicks::Now();
 }
 
-void GlicCookieSynchronizer::Metrics::EndSync(bool success) {
+void GlicCookieSynchronizer::Metrics::EndSync(GlicCookieSyncResult result) {
   if (sync_start_time_.is_null()) {
     return;
   }
+  bool success = result == GlicCookieSyncResult::kSuccess;
   base::UmaHistogramMediumTimes(
       success ? "Glic.CookieSynchronization.Latency.Success"
               : "Glic.CookieSynchronization.Latency.Error",
       base::TimeTicks::Now() - sync_start_time_);
   sync_start_time_ = base::TimeTicks();
+
+  base::UmaHistogramEnumeration("Glic.CookieSynchronization.Result", result);
 }
 
 }  // namespace glic
