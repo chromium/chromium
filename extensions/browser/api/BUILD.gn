@@ -149,6 +149,28 @@ function_registration("api_registration") {
   bundle_name = ""
   root_namespace = extensions_api_root_namespace
 
+  custom_impl_schemas = [
+    "app_view_guest_internal",
+    "bluetooth_private",
+    "clipboard",
+    "events",
+    "guest_view_internal",
+    "printer_provider_internal",
+    "web_request_internal",
+    "web_view_internal",
+  ]
+
+  inputs = [
+    "bluetooth/bluetooth_private_api.h",
+    "clipboard/clipboard_api.h",
+    "declarative/declarative_api.h",
+    "guest_view/app_view/app_view_guest_internal_api.h",
+    "guest_view/guest_view_internal_api.h",
+    "guest_view/web_view/web_view_internal_api.h",
+    "printer_provider/printer_provider_internal_api.h",
+    "web_request/web_request_api.h",
+  ]
+
   deps = [
     "//extensions/browser/api:api_implementations",
     "//extensions/common/api",

@@ -221,6 +221,13 @@ template("generated_json_strings") {
 # target_prefix [optional]
 #   subdir below root_gen_dir that is the base directory for the generated
 #   output files, defaults to empty string (no subdir)
+#
+# custom_impl_schemas [optional]
+#   A list of schemas to exclude from the automatic default header path
+#   calculation. This is used for schemas that specify a custom C++
+#   implementation path (e.g., via the "implemented_in" compiler option).
+#   The actual C++ headers for these excluded schemas must be explicitly
+#   listed in the "inputs" variable.
 template("function_registration") {
   assert(defined(invoker.sources),
          "\"sources\" must be defined for the $target_name template.")
@@ -276,6 +283,27 @@ template("function_registration") {
     if (defined(invoker.inputs)) {
       inputs += invoker.inputs
     }
+
+    # Automatically calculate and append default header paths to inputs,
+    # skipping those that specify a custom implemented_in path.
+    custom_impl_schemas = []
+    if (defined(invoker.custom_impl_schemas)) {
+      custom_impl_schemas = invoker.custom_impl_schemas
+    }
+
+    calculated_header_inputs = []
+
+    # Extract raw API names from source paths (e.g., "foo.idl" -> "foo") and
+    # filter out schemas that have custom C++ implementation paths.
+    non_custom_api_names =
+        filter_exclude(get_path_info(invoker.sources, "name"),
+                       custom_impl_schemas)
+    foreach(api_name, non_custom_api_names) {
+      calculated_header_inputs +=
+          [ "${invoker.impl_dir}/${api_name}/${api_name}_api.h" ]
+    }
+    inputs += calculated_header_inputs
+
     outputs = [
       "$gen_child_dir/generated_api_registration.cc",
       "$gen_child_dir/generated_api_registration.h",

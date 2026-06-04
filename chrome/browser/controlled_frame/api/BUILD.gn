@@ -17,6 +17,9 @@ function_registration("api_registration") {
   root_namespace = controlled_frame_api_root_namespace
   schema_include_rules = controlled_frame_api_schema_include_rules
 
+  custom_impl_schemas = [ "controlled_frame_internal" ]
+  inputs = [ "controlled_frame_internal_api.h" ]
+
   deps = [
     "//chrome/browser/extensions/api",
     "//chrome/common",
