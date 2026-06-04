@@ -51,6 +51,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.BackPressHelper.OnKeyDownHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -233,6 +234,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // recreate a fragment, and a fragment might depend on the native library.
         ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
         mProfile = ProfileManager.getLastUsedRegularProfile();
+
+        // Initialize the singleton for the Settings UI context to prevent NullPointerException
+        // when checking isEnabledAndDeviceCompatible() during search index generation.
+        // This is needed because SettingsActivity can be launched independently (from Android
+        // notifications or launcher shortcuts) without a preceding ChromeTabbedActivity to
+        // initialize the tablet state in AuxiliarySearchControllerFactory.
+        AuxiliarySearchControllerFactory.getInstance()
+                .setIsTablet(DeviceFormFactor.isNonMultiDisplayContextOnTablet(this));
 
         if (savedInstanceState == null && isMultiColumnSettingEnabled()) {
             String fragmentName = getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT);
