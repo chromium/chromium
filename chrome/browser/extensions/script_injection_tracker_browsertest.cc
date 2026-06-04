@@ -2855,4 +2855,68 @@ IN_PROC_BROWSER_TEST_F(
       *child_frame->GetProcess(), extension->id()));
 }
 
+// Tests that error pages, such as those shown when a frame is blocked via CSP,
+// do not get counted as having scripts injected into them during programmatic
+// script execution with allFrames: true.
+// Regression test for crbug.com/517153117.
+IN_PROC_BROWSER_TEST_F(
+    ScriptInjectionTrackerBrowserTest,
+    CSPBlockedFrameDoesNotGrantPrivilege_ProgrammaticScript) {
+  // Set up ControllableHttpResponse to control the attacker page response.
+  std::string attacker_path = "/page.html";
+  net::test_server::ControllableHttpResponse attacker_response(
+      embedded_test_server(), attacker_path);
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install a test extension that has scripting permission and host
+  // permissions.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ScriptInjectionTrackerBrowserTest - CSP Blocked Programmatic",
+        "version": "1.0",
+        "manifest_version": 3,
+        "permissions": [ "scripting" ],
+        "host_permissions": ["*://victim.com/*"],
+        "background": { "service_worker": "worker.js" }
+      } )";
+
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), "");
+
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to attacker.com with an error subframe to victim.com.
+  GURL attacker_url =
+      embedded_test_server()->GetURL("attacker.com", "/page.html");
+  GURL victim_url = embedded_test_server()->GetURL("victim.com", "/page.html");
+  content::RenderFrameHost* child_frame =
+      OpenPageWithErrorSubFrame(attacker_response, attacker_url, victim_url);
+  ASSERT_TRUE(child_frame);
+
+  int tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
+
+  // Execute a programmatic script injection with allFrames: true.
+  const char kScript[] = R"(
+      chrome.scripting.executeScript({
+        target: {tabId: $1, allFrames: true},
+        func: () => {}
+      }, () => {
+        chrome.test.sendScriptResult('executed');
+      });
+  )";
+  std::string script = content::JsReplace(kScript, tab_id);
+
+  base::Value result = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), script,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_EQ("executed", result.GetString());
+
+  // The tracker should still not think that the attacker process has run
+  // content scripts, because the frame is an error document.
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *child_frame->GetProcess(), extension->id()));
+}
+
 }  // namespace extensions
