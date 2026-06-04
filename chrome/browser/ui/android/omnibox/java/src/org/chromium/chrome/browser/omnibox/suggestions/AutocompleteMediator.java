@@ -635,7 +635,13 @@ class AutocompleteMediator
         // it and it runs on its own cadence.
         if (mAnimationDriver.isAnimationEnabled()) {
             mAnimationDriver.onOmniboxSessionStateChange(true);
-            mDelegate.setKeyboardVisibility(true, false);
+            // Don't eagerly request the keyboard for STANDBY_NO_FOCUS, it's a fakebox entrypoint
+            // where the user isn't typing text.
+            if (mAutocompleteInput == null
+                    || mAutocompleteInput.getAutocompleteState()
+                            != AutocompleteState.STANDBY_NO_FOCUS) {
+                mDelegate.setKeyboardVisibility(true, false);
+            }
         }
 
         return null;

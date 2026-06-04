@@ -2101,6 +2101,36 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @SmallTest
+    public void testUnsyncedAnimation_doesNotShowKeyboardInStandbyNoFocus() {
+        doReturn(false).when(mEmbedder).isTablet();
+        var session = createSession(AutocompleteRequestType.SEARCH);
+        session.getAutocompleteInput()
+                .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS);
+        mMediator.beginInput(session);
+
+        reset(mAutocompleteDelegate);
+        mMediator.setupSuggestionsListShowAnimation();
+
+        verify(mAutocompleteDelegate, never()).setKeyboardVisibility(eq(true), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testUnsyncedAnimation_showsKeyboardInEnabledState() {
+        doReturn(false).when(mEmbedder).isTablet();
+        var session = createSession(AutocompleteRequestType.SEARCH);
+        session.getAutocompleteInput()
+                .setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);
+        mMediator.beginInput(session);
+
+        reset(mAutocompleteDelegate);
+        mMediator.setupSuggestionsListShowAnimation();
+
+        verify(mAutocompleteDelegate, times(1)).setKeyboardVisibility(eq(true), anyBoolean());
+    }
+
+    @Test
     public void onTopResumedActivityChanged_managesObservers() {
         var session = createEmptySession();
         mMediator.beginInput(session);
