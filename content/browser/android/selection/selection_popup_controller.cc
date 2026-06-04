@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
+#include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/common/features.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "ui/base/ime/text_input_flags.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
@@ -300,8 +302,20 @@ bool SelectionPopupController::ShowSelectionMenu(
       !!(params.edit_flags & blink::ContextMenuDataEditFlags::kCanSelectAll);
   const bool can_edit_richly =
       !!(params.edit_flags & blink::ContextMenuDataEditFlags::kCanEditRichly);
-  const bool is_password_type =
+  bool is_password_type =
       params.form_control_type == blink::mojom::FormControlType::kInputPassword;
+  if (rwhva_) {
+    TextInputManager* text_input_manager = rwhva_->GetTextInputManager();
+    if (text_input_manager) {
+      const ui::mojom::TextInputState* state =
+          text_input_manager->GetTextInputState();
+      if (state &&
+          (state->flags & (ui::TEXT_INPUT_FLAG_HAS_BEEN_PASSWORD |
+                           ui::TEXT_INPUT_FLAG_HAS_BEEN_CUSTOM_PASSWORD))) {
+        is_password_type = true;
+      }
+    }
+  }
   const ScopedJavaLocalRef<jstring> jselected_text =
       ConvertUTF16ToJavaString(env, params.selection_text);
   const bool should_suggest =

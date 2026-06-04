@@ -64,6 +64,7 @@ import org.chromium.blink.mojom.HandwritingGestureResult;
 import org.chromium.blink.mojom.InputCursorAnchorInfo;
 import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.blink_public.web.WebInputEventModifier;
+import org.chromium.blink_public.web.WebTextInputFlags;
 import org.chromium.blink_public.web.WebTextInputMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -796,7 +797,10 @@ public class ImeAdapterImpl
             }
 
             boolean editable = focusedNodeEditable();
-            boolean password = textInputType == TextInputType.PASSWORD;
+            boolean password =
+                    textInputType == TextInputType.PASSWORD
+                            || (textInputFlags & WebTextInputFlags.HAS_BEEN_PASSWORD_FIELD) != 0
+                            || (textInputFlags & WebTextInputFlags.HAS_BEEN_CUSTOM_PASSWORD) != 0;
             updateNodeAttributes(editable, password);
             if (mCursorAnchorInfoController != null
                     && (!TextUtils.equals(mLastText, text)
