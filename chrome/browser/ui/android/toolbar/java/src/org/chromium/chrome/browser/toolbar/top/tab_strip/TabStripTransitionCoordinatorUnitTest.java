@@ -1029,10 +1029,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     private void assertTabStripHeightForMargins(int tabStripHeight) {
-        assertEquals(
-                "ControlContainer height for margins received a different value.",
-                tabStripHeight,
-                mTestHandler.controlContainerHeight);
+        assertEquals(tabStripHeight, mDelegate.heightChanged);
     }
 
     private void assertObservedHeight(int tabStripHeight) {
@@ -1136,18 +1133,21 @@ public class TabStripTransitionCoordinatorUnitTest {
         public int heightRequested = NOTHING_OBSERVED;
         public int controlContainerHeight = NOTHING_OBSERVED;
         public boolean applyScrimOverlay;
+        public int topPadding;
 
         @Override
         public void onTransitionRequested(
-                int newHeight, boolean applyScrimOverlay, Runnable transitionStartedCallback) {
+                int newHeight,
+                int topPadding,
+                boolean applyScrimOverlay,
+                Runnable transitionStartedCallback) {
             this.heightRequested = newHeight;
-            this.controlContainerHeight = newHeight;
             this.applyScrimOverlay = applyScrimOverlay;
             if (transitionStartedCallback != null) {
                 transitionStartedCallback.run();
             }
             if (mDelegate != null) {
-                mDelegate.onHeightChanged(newHeight, applyScrimOverlay);
+                mDelegate.onHeightChanged(newHeight, topPadding, applyScrimOverlay);
                 mDelegate.onHeightTransitionFinished(true);
             }
         }
@@ -1174,7 +1174,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         }
 
         @Override
-        public void onHeightChanged(int newHeight, boolean applyScrimOverlay) {
+        public void onHeightChanged(int newHeight, int topPadding, boolean applyScrimOverlay) {
             heightChanged = newHeight;
             this.applyScrimOverlay = applyScrimOverlay;
         }

@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarVi
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.SigninFeatures;
@@ -142,6 +143,7 @@ public class ToolbarControlContainerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ViewTreeObserver mViewTreeObserver;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mToolbarLayoutParamsCaptor;
     @Captor private ArgumentCaptor<CoordinatorLayout.LayoutParams> mHairlineLayoutParamsCaptor;
     @Captor private ArgumentCaptor<ViewTreeObserver.OnPreDrawListener> mOnPreDrawCaptor;
@@ -227,7 +229,8 @@ public class ToolbarControlContainerTest {
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
                 mToolbarDataProvider,
-                mBrowserControlsStateProvider);
+                mBrowserControlsStateProvider,
+                mDesktopWindowStateManager);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 mControlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
@@ -632,21 +635,21 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testTempDrawableWithAppHeaderState() {
-        ToolbarControlContainer controlContainer = new ToolbarControlContainer(mActivity, null);
         // This is needed for the control container to read the height of the toolbar.
-        controlContainer.setToolbarForTesting(mToolbar);
+        initControlContainer(R.layout.toolbar_tablet);
 
         // Set app header with 10px padding on left, 20px on right, and 100px height. Set tab strip
         // height to 80px. Top inset should be 100 - 80 = 20.
         doReturn(80).when(mToolbar).getTabStripHeight();
         var appHeaderState =
                 new AppHeaderState(new Rect(0, 0, 100, 100), new Rect(10, 0, 80, 100), true);
-        controlContainer.onAppHeaderStateChanged(appHeaderState);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onHeightChanged(80, 20, false);
         assertNotNull(
                 "Control container background is null after app header state change.",
-                controlContainer.getBackground());
+                mControlContainer.getBackground());
 
-        LayerDrawable background = (LayerDrawable) controlContainer.getBackground();
+        LayerDrawable background = (LayerDrawable) mControlContainer.getBackground();
         final int tabDrawableIndex = 1;
         assertEquals(
                 "Left padding for tab drawable is wrong.",
@@ -664,15 +667,17 @@ public class ToolbarControlContainerTest {
         // Set app header with 40px height, and tab strip with 50px height.
         // Top inset should be max(0, 40 - 50) = 0.
         appHeaderState = new AppHeaderState(new Rect(0, 0, 100, 40), new Rect(10, 0, 80, 40), true);
-        controlContainer.onAppHeaderStateChanged(appHeaderState);
-        background = (LayerDrawable) controlContainer.getBackground();
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onHeightChanged(50, 0, false);
+        background = (LayerDrawable) mControlContainer.getBackground();
         assertEquals(
                 "Top inset for tab drawable should be 0.",
                 0,
                 background.getLayerInsetTop(tabDrawableIndex));
 
-        controlContainer.onAppHeaderStateChanged(new AppHeaderState());
-        background = (LayerDrawable) controlContainer.getBackground();
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(new AppHeaderState());
+        mControlContainer.onHeightChanged(50, 0, false);
+        background = (LayerDrawable) mControlContainer.getBackground();
         assertEquals(
                 "Left padding for tab drawable is wrong.",
                 0,
@@ -689,40 +694,38 @@ public class ToolbarControlContainerTest {
 
     @Test
     public void testTempDrawableAfterCompositorInitialized() {
-        ToolbarControlContainer controlContainer = new ToolbarControlContainer(mActivity, null);
-        // This is needed for the control container to read the height of the toolbar.
-        controlContainer.setToolbarForTesting(mToolbar);
-        controlContainer.setCompositorBackgroundInitialized();
+        initControlContainer(R.layout.toolbar_tablet);
+        mControlContainer.setCompositorBackgroundInitialized();
         assertNull(
                 "Control container background should be null after app header state change.",
-                controlContainer.getBackground());
+                mControlContainer.getBackground());
 
         // Set app header with 10px padding on left, 20px on right, and 50px height.
         doReturn(50).when(mToolbar).getTabStripHeight();
         var appHeaderState =
                 new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
-        controlContainer.onAppHeaderStateChanged(appHeaderState);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onHeightChanged(50, 0, false);
         assertNull(
                 "Control container background should not respond to app header state anymore.",
-                controlContainer.getBackground());
+                mControlContainer.getBackground());
     }
 
     @Test
     public void testTempDrawableInUnfocusedDesktopWindow() {
-        ToolbarControlContainer controlContainer = new ToolbarControlContainer(mActivity, null);
-        // This is needed for the control container to read the height of the toolbar.
-        controlContainer.setToolbarForTesting(mToolbar);
+        initControlContainer(R.layout.toolbar_tablet);
 
         // Assume that the app started in an unfocused desktop window.
-        controlContainer.setAppInUnfocusedDesktopWindow(true);
+        mControlContainer.setAppInUnfocusedDesktopWindow(true);
 
         // Simulate invocation of app header state change at startup that sets the temp drawable.
         doReturn(50).when(mToolbar).getTabStripHeight();
         var appHeaderState =
                 new AppHeaderState(new Rect(0, 0, 100, 50), new Rect(10, 0, 80, 50), true);
-        controlContainer.onAppHeaderStateChanged(appHeaderState);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        mControlContainer.onHeightChanged(50, 0, false);
 
-        var backgroundLayerDrawable = (LayerDrawable) controlContainer.getBackground();
+        var backgroundLayerDrawable = (LayerDrawable) mControlContainer.getBackground();
         var stripBackgroundColorDrawable = (ColorDrawable) backgroundLayerDrawable.getDrawable(0);
         assertEquals(
                 "Tab strip background color drawable color is incorrect.",
@@ -753,7 +756,8 @@ public class ToolbarControlContainerTest {
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
                 mToolbarDataProvider,
-                mBrowserControlsStateProvider);
+                mBrowserControlsStateProvider,
+                null);
 
         ToolbarPhone toolbarPhone = controlContainer.findViewById(R.id.toolbar);
         doReturn(mLocationBarCoordinatorPhone).when(mLocationBarCoordinator).getPhoneCoordinator();
@@ -823,7 +827,8 @@ public class ToolbarControlContainerTest {
                 mLayoutStateProviderSupplier,
                 mFullscreenManager,
                 mToolbarDataProvider,
-                mBrowserControlsStateProvider);
+                mBrowserControlsStateProvider,
+                null);
         ToolbarControlContainer.ToolbarViewResourceCoordinatorLayout toolbarContainer =
                 controlContainer.findViewById(R.id.toolbar_container);
         toolbarContainer.setVisibility(View.GONE);
@@ -947,7 +952,7 @@ public class ToolbarControlContainerTest {
         doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
 
         // Start transition
-        mControlContainer.onHeightChanged(tabStripHeight, true);
+        mControlContainer.onHeightChanged(tabStripHeight, 0, true);
 
         verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
         verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
@@ -983,7 +988,7 @@ public class ToolbarControlContainerTest {
         doReturn(toolbarHeight).when(mToolbar).getHeight();
         doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
 
-        mControlContainer.onHeightChanged(0, true);
+        mControlContainer.onHeightChanged(0, 0, true);
 
         verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
         verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());
@@ -1017,7 +1022,7 @@ public class ToolbarControlContainerTest {
         doReturn(toolbarHeight).when(mToolbar).getHeight();
         doReturn(hairlineHeight).when(mToolbarHairline).getHeight();
 
-        mControlContainer.onHeightChanged(0, true);
+        mControlContainer.onHeightChanged(0, 0, true);
 
         verify(mToolbarView).setLayoutParams(mToolbarLayoutParamsCaptor.capture());
         verify(mToolbarHairline).setLayoutParams(mHairlineLayoutParamsCaptor.capture());

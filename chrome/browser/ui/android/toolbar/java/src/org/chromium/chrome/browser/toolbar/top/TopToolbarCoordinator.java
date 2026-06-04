@@ -318,7 +318,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 layoutStateProviderSupplier,
                 fullscreenManager,
                 toolbarDataProvider,
-                browserControlsVisibilityManager);
+                browserControlsVisibilityManager,
+                mDesktopWindowStateManager);
         mToolbarLayout.initialize(
                 toolbarDataProvider,
                 tabController,

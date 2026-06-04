@@ -53,6 +53,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
     static class TransitionState {
         public final int startHeight;
         public final int targetHeight;
+        public final int topPadding;
         public final boolean applyScrimOverlay;
         public final Runnable transitionStartedCallback;
         public final boolean hasAnimation;
@@ -63,10 +64,12 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         private TransitionState(
                 int startHeight,
                 int targetHeight,
+                int topPadding,
                 boolean applyScrimOverlay,
                 Runnable transitionStartedCallback) {
             this.startHeight = startHeight;
             this.targetHeight = targetHeight;
+            this.topPadding = topPadding;
             this.applyScrimOverlay = applyScrimOverlay;
             this.transitionStartedCallback = transitionStartedCallback;
 
@@ -234,9 +237,12 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
     @Override
     public void onTransitionRequested(
-            int newHeight, boolean applyScrimOverlay, Runnable transitionStartedCallback) {
-        prepForTransitionRequested(newHeight, applyScrimOverlay, transitionStartedCallback);
-
+            int newHeight,
+            int topPadding,
+            boolean applyScrimOverlay,
+            Runnable transitionStartedCallback) {
+        prepForTransitionRequested(
+                newHeight, topPadding, applyScrimOverlay, transitionStartedCallback);
         // TODO(crbug.com/41481630): Supplier can have an inconsistent value with
         //  mToolbar.getTabStripHeight().
         mSupplier.set(newHeight);
@@ -247,7 +253,10 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
     }
 
     private void prepForTransitionRequested(
-            int newHeight, boolean applyScrimOverlay, Runnable onHeightTransitionStartCallback) {
+            int newHeight,
+            int topPadding,
+            boolean applyScrimOverlay,
+            Runnable onHeightTransitionStartCallback) {
         if (mTabStrip == null && !canTransitionWithoutTabStrip()) return;
 
         if (mTransitionState != null) {
@@ -266,6 +275,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
                 new TransitionState(
                         getTopControlHeight(),
                         newHeight,
+                        topPadding,
                         applyScrimOverlay,
                         onHeightTransitionStartCallback);
     }
@@ -328,10 +338,14 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         assertNonNull(mTransitionState);
         mTransitionState.transitionStartedCallback.run();
         mControlContainer.onHeightChanged(
-                mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
+                mTransitionState.targetHeight,
+                mTransitionState.topPadding,
+                mTransitionState.applyScrimOverlay);
         if (mTabStrip != null) {
             mTabStrip.onHeightChanged(
-                    mTransitionState.targetHeight, mTransitionState.applyScrimOverlay);
+                    mTransitionState.targetHeight,
+                    mTransitionState.topPadding,
+                    mTransitionState.applyScrimOverlay);
         } else {
             assert canTransitionWithoutTabStrip() : "Transition started when mTabStrip == null.";
         }

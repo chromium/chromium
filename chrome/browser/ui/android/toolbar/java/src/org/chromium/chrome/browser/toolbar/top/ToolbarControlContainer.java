@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
-import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.ViewResourceCoordinatorLayout;
@@ -84,14 +84,13 @@ import java.util.function.Supplier;
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 @NullMarked
 public class ToolbarControlContainer extends OptimizedFrameLayout
-        implements ControlContainer, AppHeaderObserver, Observer {
+        implements ControlContainer, Observer {
     private static final double SAMPLE_STALE_CAPTURE_PROBABILITY = 0.01;
     private static boolean sForceStaleCaptureHistogram;
 
     private boolean mIncognito;
     private boolean mMidVisibilityToggle;
     private boolean mIsCompositorInitialized;
-    private @Nullable AppHeaderState mAppHeaderState;
 
     private Toolbar mToolbar;
     private ToolbarViewResourceCoordinatorLayout mToolbarContainer;
@@ -100,6 +99,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
     private boolean mIsAppInUnfocusedDesktopWindow;
     private int mToolbarLayoutHeight;
+    private int mTabStripTopPadding;
     private final Rect mToolbarCaptureSize = new Rect();
 
     private View mToolbarHairline;
@@ -112,6 +112,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private @Nullable NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private @Nullable SettableNonNullObservableSupplier<Integer> mHeightChangedSupplier;
     private ToolbarDataProvider mToolbarDataProvider;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * Constructs a new control container.
@@ -192,7 +193,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         if (mIncognito != incognito) {
-            maybeUpdateTempTabStripDrawableBackground(incognito, mAppHeaderState);
+            maybeUpdateTempTabStripDrawableBackground(incognito, getAppHeaderState());
             mIncognito = incognito;
         }
     }
@@ -310,15 +311,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         mMidVisibilityToggle = false;
     }
 
-    @Override
-    public void onAppHeaderStateChanged(AppHeaderState newState) {
-        maybeUpdateTempTabStripDrawableBackground(mIncognito, newState);
-        mAppHeaderState = newState;
-    }
-
     // implements TabStripTransitionDelegate
     @Override
-    public void onHeightChanged(int tabStripHeight, boolean applyScrimOverlay) {
+    public void onHeightChanged(int tabStripHeight, int topPadding, boolean applyScrimOverlay) {
+        mTabStripTopPadding = topPadding;
         mutateToolbarLayoutParams().topMargin = tabStripHeight;
 
         int toolbarAndTabStripHeight = tabStripHeight + getToolbarHeight();
@@ -340,6 +336,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             layoutParams.topMargin = toolbarAndTabStripHeight;
             findToolbar.setLayoutParams(layoutParams);
         }
+        maybeUpdateTempTabStripDrawableBackground(mIncognito, getAppHeaderState());
     }
 
     @Override
@@ -393,6 +390,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                         });
     }
 
+    private @Nullable AppHeaderState getAppHeaderState() {
+        return mDesktopWindowStateManager == null
+                ? null
+                : mDesktopWindowStateManager.getAppHeaderState();
+    }
+
     private void maybeUpdateTempTabStripDrawableBackground(
             boolean incognito, @Nullable AppHeaderState appHeaderState) {
         // If compositor is initialized, we don't want to set the background drawable again since
@@ -425,23 +428,21 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         final int backgroundTabImageIndex = 1;
         // Set image size to match tab size.
         backgroundDrawable.setPadding(0, 0, 0, 0);
+        // Tab drawable starts below the tab strip's top padding.
+        int tabDrawableHeight = mToolbar.getTabStripHeight() - mTabStripTopPadding;
         backgroundDrawable.setLayerSize(
                 backgroundTabImageIndex,
                 ViewUtils.dpToPx(getContext(), TabUiThemeUtil.getMaxTabStripTabWidthDp()),
-                // TODO(crbug.com/335660381): We should use the tab strip height from resource
-                // and add a top insets.
-                mToolbar.getTabStripHeight());
+                tabDrawableHeight);
         // Tab should show up at start of layer based on layout.
         backgroundDrawable.setLayerGravity(backgroundTabImageIndex, Gravity.START);
 
         // When app header state available, set the state accordingly.
         if (appHeaderState != null && appHeaderState.isInDesktopWindow()) {
-            int topInset =
-                    Math.max(0, appHeaderState.getAppHeaderHeight() - mToolbar.getTabStripHeight());
             backgroundDrawable.setLayerInset(
                     backgroundTabImageIndex,
                     appHeaderState.getLeftPadding(),
-                    topInset,
+                    mTabStripTopPadding,
                     appHeaderState.getRightPadding(),
                     0);
         }
@@ -474,11 +475,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             FullscreenManager fullscreenManager,
             ToolbarDataProvider toolbarDataProvider,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         mToolbar = toolbar;
         mIncognito = isIncognito;
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarDataProvider.addToolbarDataProviderObserver(this);
+        mDesktopWindowStateManager = desktopWindowStateManager;
 
         BooleanSupplier isVisible = () -> this.getVisibility() == View.VISIBLE;
         mToolbarContainer.setPostInitializationDependencies(
@@ -501,7 +504,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             // On tablet, draw a fake tab strip and toolbar until the compositor is
             // ready to draw the real tab strip. (On phone, the toolbar is made entirely
             // of Android views, which are already initialized.)
-            maybeUpdateTempTabStripDrawableBackground(isIncognito, mAppHeaderState);
+            maybeUpdateTempTabStripDrawableBackground(isIncognito, getAppHeaderState());
 
             // Manually setting the top margin of the toolbar hairline. On high density tablets,
             // the rounding for dp -> px conversion can cause off-by-one error for the toolbar

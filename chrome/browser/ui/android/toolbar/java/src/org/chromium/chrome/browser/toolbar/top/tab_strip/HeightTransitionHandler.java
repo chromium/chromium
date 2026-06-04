@@ -338,6 +338,7 @@ class HeightTransitionHandler {
 
         mTabStripTransitionHandler.onTransitionRequested(
                 newHeight,
+                mTopPadding,
                 mUpdateStripVisibility,
                 () -> {
                     // Acknowledge and record the new height when transition start signal.

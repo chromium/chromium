@@ -49,12 +49,16 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * Called when the tab strip requests an update when control container changes its width.
          *
          * @param newHeight The expected height tab strip will be changed into.
+         * @param topPadding The top padding to be added to the tab strip.
          * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
          * @param transitionStartedCallback The callback to trigger when transition has started.
          *     This is not guaranteed to be called.
          */
         default void onTransitionRequested(
-                int newHeight, boolean applyScrimOverlay, Runnable transitionStartedCallback) {}
+                int newHeight,
+                int topPadding,
+                boolean applyScrimOverlay,
+                Runnable transitionStartedCallback) {}
     }
 
     /** Delegate to enforce tab strip updates when strip transition is requested. */
@@ -63,12 +67,14 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * Called when the tab strip height changed. This height will match the space on top of the
          * toolbar reserved for the tab strip.
          *
-         * @param newHeight The height same as {@link #getTabStripHeight()}.
+         * @param newHeight The height of tab strip including top padding, same as {@link
+         *     #getTabStripHeight()}.
+         * @param topPadding The top padding added to the scrollable tab strip.
          * @param applyScrimOverlay Whether the strip scrim should be updated during the transition.
          *     {@code true} when the transition expects to update the strip visibility, {@code
          *     false} otherwise.
          */
-        default void onHeightChanged(int newHeight, boolean applyScrimOverlay) {}
+        default void onHeightChanged(int newHeight, int topPadding, boolean applyScrimOverlay) {}
 
         /**
          * Notify when the tab strip height transition is completed by the browser controls.

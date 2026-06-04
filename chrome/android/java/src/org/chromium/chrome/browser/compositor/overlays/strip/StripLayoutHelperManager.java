@@ -1023,7 +1023,7 @@ public class StripLayoutHelperManager
     // Implements TabStripTransitionDelegate.
 
     @Override
-    public void onHeightChanged(int newHeightPx, boolean applyScrimOverlay) {
+    public void onHeightChanged(int newHeightPx, int topPaddingPx, boolean applyScrimOverlay) {
         if (applyScrimOverlay && !isFadeTransitionRunning()) {
             mIsHeightTransitioning = true;
             boolean hideStrip = newHeightPx == 0;
@@ -1044,11 +1044,8 @@ public class StripLayoutHelperManager
         }
 
         if (mIsHeaderCustomizationSupported) {
-            // Convert the input HeightPx to Dp.
             mHeight = newHeightPx / mDensity;
-
-            // TODO(crbug/331490430): Revisit how we position the scrollable strip.
-            mTopPadding = Math.max(0, mHeight - mScrollableStripHeight);
+            mTopPadding = topPaddingPx / mDensity;
             onSizeChanged(mWidth, mHeight, mLastVisibleViewportOffsetY, mOrientation);
         }
     }

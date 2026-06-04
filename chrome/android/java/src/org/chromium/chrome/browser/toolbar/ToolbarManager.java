@@ -1769,10 +1769,6 @@ public class ToolbarManager
                     }
                 });
 
-        if (mDesktopWindowStateManager != null) {
-            mDesktopWindowStateManager.addObserver(mControlContainer);
-        }
-
         mProgressBarConfigProvider =
                 new WindowAndroid.ProgressBarConfig.Provider() {
                     @Override
@@ -2930,10 +2926,6 @@ public class ToolbarManager
             mReadAloudControllerSupplier
                     .get()
                     .removeReadabilityUpdateListener(mReadAloudReadabilityCallback);
-        }
-
-        if (mDesktopWindowStateManager != null) {
-            mDesktopWindowStateManager.removeObserver(mControlContainer);
         }
 
         if (mToolbarPositionController != null) {
