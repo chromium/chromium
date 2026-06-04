@@ -4994,6 +4994,28 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
         static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
   }
 
+  // Verify that the GetRootView() returns the expected view.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc_impl->GetRenderWidgetHostView());
+    EXPECT_EQ(outer_view, outer_view->GetRootView());
+    EXPECT_NE(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())
+                  ->GetRootView());
+  }
+
   // Attach the inner WebContents
   outer_wc->AttachUnownedInnerWebContents(
       UnownedInnerWebContentsClient::GetPassKeyForTesting(), inner_wc.get(),
@@ -5035,6 +5057,23 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
     EXPECT_EQ(0U, inner_event_router->RegisteredViewCountForTesting());
     EXPECT_EQ(0U,
               inner_text_input_manager->GetRegisteredViewsCountForTesting());
+  }
+
+  // Verify that the GetRootView() returns the expected view.
+  {
+    EXPECT_EQ(outer_view, outer_view->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())
+                  ->GetRootView());
   }
 
   // Get the RenderWidgetHostView for a subframe RFH by going through the
@@ -5099,6 +5138,28 @@ IN_PROC_BROWSER_TEST_F(UnownedInnerWebContentsBrowserTest,
         static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
     EXPECT_TRUE(inner_text_input_manager->IsRegistered(
         static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+  }
+
+  // Verify that the GetRootView() returns the expected view.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc_impl->GetRenderWidgetHostView());
+    EXPECT_EQ(outer_view, outer_view->GetRootView());
+    EXPECT_NE(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())
+                  ->GetRootView());
   }
 
   // Verify that only RVHs in the main frame's SiteInstance have a RWHV.
@@ -6017,6 +6078,28 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
         static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
   }
 
+  // Verify that the GetRootView() returns the expected view.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc_impl->GetRenderWidgetHostView());
+    EXPECT_EQ(outer_view, outer_view->GetRootView());
+    EXPECT_NE(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())
+                  ->GetRootView());
+  }
+
   // Set the SurfaceEmbedConnector
   auto connector = CreateConnector(inner_wc_impl, outer_wc);
   auto* connector_ptr = connector.get();
@@ -6061,6 +6144,23 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
               inner_text_input_manager->GetRegisteredViewsCountForTesting());
   }
 
+  // Verify that the GetRootView() returns the expected view.
+  {
+    EXPECT_EQ(outer_view, outer_view->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())
+                  ->GetRootView());
+  }
+
   // Clear the SurfaceEmbedConnector
   inner_wc_impl->ClearSurfaceEmbedConnector();
   ASSERT_EQ(nullptr, inner_wc->GetSurfaceEmbedConnector());
@@ -6100,6 +6200,28 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorWebContentsBrowserTest,
         static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())));
     EXPECT_TRUE(inner_text_input_manager->IsRegistered(
         static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())));
+  }
+
+  // Verify that the GetRootView() returns the expected view.
+  {
+    auto* inner_view = static_cast<RenderWidgetHostViewBase*>(
+        inner_wc_impl->GetRenderWidgetHostView());
+    EXPECT_EQ(outer_view, outer_view->GetRootView());
+    EXPECT_NE(outer_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b1->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_a_nested->GetView())
+                  ->GetRootView());
+    EXPECT_EQ(inner_view,
+              static_cast<RenderWidgetHostViewBase*>(rfh_b2->GetView())
+                  ->GetRootView());
   }
 
   // Verify that the inner WebContents's RenderViewHosts are still alive.

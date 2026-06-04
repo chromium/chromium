@@ -462,7 +462,17 @@ CrossProcessFrameConnector::GetRootRenderWidgetHostView() {
   RenderFrameHostImpl* root =
       current_child_frame_host()
           ->GetOutermostMainFrameOrEmbedderExcludingProspectiveOwners();
-  return static_cast<RenderWidgetHostViewBase*>(root->GetView());
+
+  auto* view = static_cast<RenderWidgetHostViewBase*>(root->GetView());
+  // GetOutermostMainFrameOrEmbedderExcludingProspectiveOwners doesn't go
+  // outside to embedder if the WebContents is embedded via SurfaceEmbed. In
+  // that case, the root view that we got is a RenderWidgetHostViewChildFrame
+  // for the main frame of the inner WebContents and we need to get root view
+  // from it again for the real root view.
+  if (view && view->IsRenderWidgetHostViewChildFrame()) {
+    view = view->GetRootView();
+  }
+  return view;
 }
 
 RenderWidgetHostViewBase*
