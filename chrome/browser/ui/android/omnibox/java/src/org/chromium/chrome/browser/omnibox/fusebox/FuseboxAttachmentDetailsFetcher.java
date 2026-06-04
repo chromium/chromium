@@ -129,9 +129,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         }
 
         // Bail: don't add the item if we miss metadata.
-        assert !TextUtils.isEmpty(title);
-        assert !TextUtils.isEmpty(mimeType);
-        if (title == null || mimeType == null) return false;
+        if (TextUtils.isEmpty(title) || TextUtils.isEmpty(mimeType)) return false;
 
         boolean isMetered = DeviceConditions.isCurrentActiveNetworkMetered(mContext);
         long maxSize =
