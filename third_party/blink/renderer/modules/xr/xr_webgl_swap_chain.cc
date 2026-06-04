@@ -220,7 +220,7 @@ void XRWebGLSharedImageSwapChain::OnFrameEnd() {
   WebGLUnownedTexture* texture = ResetCurrentTexture();
   if (texture) {
     DCHECK(shared_image_texture_);
-    gpu::SharedImageTexture::ScopedAccess::EndAccess(
+    sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
         std::move(shared_image_scoped_access_));
     shared_image_texture_.reset();
 
