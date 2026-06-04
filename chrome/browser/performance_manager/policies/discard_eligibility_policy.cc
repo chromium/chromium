@@ -18,7 +18,10 @@
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#else
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -170,10 +173,37 @@ bool DiscardEligibilityPolicy::IsDiscardAllowed(
   return true;
 }
 
+CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
+    const PageNode* page_node,
+    DiscardReason discard_reason,
+    bool ignore_recent_visibility,
+    std::vector<CannotDiscardReason>* cannot_discard_reasons) const {
+  if (ignore_recent_visibility) {
+    return CanDiscardWithCustomRecentVisibilityWindow(
+        page_node, discard_reason, base::TimeDelta(), cannot_discard_reasons);
+  }
+
+  base::TimeDelta minimum_time_in_background =
+      internal::kNonVisiblePagesUrgentProtectionTime;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_desktop() ||
+      base::FeatureList::IsEnabled(
+          chrome::android::kProtectRecentlyVisibleTab)) {
+    minimum_time_in_background = base::Seconds(
+        chrome::android::kProtectRecentlyVisibleTabDuration.Get());
+  }
+#endif
+
+  return CanDiscardWithCustomRecentVisibilityWindow(page_node, discard_reason,
+                                                    minimum_time_in_background,
+                                                    cannot_discard_reasons);
+}
+
 // NOTE: This is used by ProcessRankPolicyAndroid. If you add a new condition to
 // this, you need to add an observer callback to ProcessRankPolicyAndroid as
 // well.
-CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
+CanDiscardResult
+DiscardEligibilityPolicy::CanDiscardWithCustomRecentVisibilityWindow(
     const PageNode* page_node,
     DiscardReason discard_reason,
     base::TimeDelta minimum_time_in_background,
@@ -459,7 +489,8 @@ void DiscardEligibilityPolicy::OnMainFrameDocumentChanged(
 base::DictValue DiscardEligibilityPolicy::DescribePageNodeData(
     const PageNode* node) const {
   auto can_discard = [this, node](DiscardReason discard_reason) {
-    switch (this->CanDiscard(node, discard_reason, base::TimeDelta())) {
+    switch (this->CanDiscard(node, discard_reason,
+                             /*ignore_recent_visibility=*/true)) {
       case CanDiscardResult::kEligible:
         return "eligible";
       case CanDiscardResult::kProtected:

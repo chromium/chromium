@@ -83,7 +83,7 @@ void AttemptFastKillForDiscard(
 
 content::WebContents* DiscardLeastImportantTab(
     ::mojom::LifecycleUnitDiscardReason discard_reason,
-    base::TimeDelta urgent_protection_time) {
+    bool ignore_recent_visibility) {
   performance_manager::Graph* graph =
       performance_manager::PerformanceManager::GetGraph();
   CHECK(graph);
@@ -94,7 +94,8 @@ content::WebContents* DiscardLeastImportantTab(
     return nullptr;
   }
 
-  return discarding_helper->DiscardAPage(discard_reason, urgent_protection_time)
+  return discarding_helper
+      ->DiscardAPage(discard_reason, ignore_recent_visibility)
       .first_content_after_discard;
 }
 

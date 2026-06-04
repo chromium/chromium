@@ -401,14 +401,9 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     DiscardEligibilityPolicy* eligibility_policy =
         DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
     CHECK(eligibility_policy);
-    base::TimeDelta minimum_time_in_background;
-    if (IsProtectRecentlyVisibleTabEnabled()) {
-      minimum_time_in_background = base::Seconds(
-          chrome::android::kProtectRecentlyVisibleTabDuration.Get());
-    }
     if (eligibility_policy->CanDiscard(
-            page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE,
-            minimum_time_in_background) != CanDiscardResult::kEligible) {
+            page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE) !=
+        CanDiscardResult::kEligible) {
       if (is_perceptible_importance_supported_) {
         return content::ChildProcessImportance::NOT_PERCEPTIBLE;
       } else if (chrome::android::kFallbackToModerateParam.Get()) {

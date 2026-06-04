@@ -77,8 +77,8 @@ CanDiscardResult CanDiscardHelper(
       page_node->GetBrowserContextID(), {});
 
   CanDiscardResult result = eligiblity_policy->CanDiscard(
-      page_node.get(), discard_reason,
-      /*minimum_time_in_background*/ base::TimeDelta(), cannot_discard_reasons);
+      page_node.get(), discard_reason, /*ignore_recent_visibility=*/true,
+      cannot_discard_reasons);
   return result;
 }
 

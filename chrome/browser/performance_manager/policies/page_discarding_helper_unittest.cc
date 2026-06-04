@@ -47,13 +47,12 @@ class PageDiscardingHelperTest
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
-  // Convenience wrappers for DiscardEligibilityPolicy::CanDiscard().
   CanDiscardResult CanDiscard(
       const PageNode* page_node,
       DiscardReason discard_reason,
       std::vector<CannotDiscardReason>* cannot_discard_reasons = nullptr) {
     return DiscardEligibilityPolicy::GetFromGraph(graph())->CanDiscard(
-        page_node, discard_reason, kNonVisiblePagesUrgentProtectionTime,
+        page_node, discard_reason, /*ignore_recent_visibility=*/false,
         cannot_discard_reasons);
   }
 

@@ -130,15 +130,12 @@ void ExpectCanDiscardEligible(
     const PageNode* page_node,
     std::vector<policies::DiscardEligibilityPolicy::DiscardReason>
         discard_reasons,
-    base::TimeDelta minimum_time_in_background =
-        policies::kNonVisiblePagesUrgentProtectionTime);
+    bool ignore_recent_visibility = false);
 
 // Checks DiscardEligibilityPolicy::CanDiscard() returns kEligible for all
 // discard reasons.
-void ExpectCanDiscardEligibleAllReasons(
-    const PageNode* page_node,
-    base::TimeDelta minimum_time_in_background =
-        policies::kNonVisiblePagesUrgentProtectionTime);
+void ExpectCanDiscardEligibleAllReasons(const PageNode* page_node,
+                                        bool ignore_recent_visibility = false);
 
 // Checks DiscardEligibilityPolicy::CanDiscard() returns kProtected for each
 // discard reason in |discard_reasons|. Checks the returned

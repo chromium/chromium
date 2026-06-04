@@ -117,19 +117,19 @@ PageDiscardingHelper::~PageDiscardingHelper() = default;
 
 PageDiscardingHelper::DiscardResult PageDiscardingHelper::DiscardAPage(
     DiscardEligibilityPolicy::DiscardReason discard_reason,
-    base::TimeDelta minimum_time_in_background) {
+    bool ignore_recent_visibility) {
   return DiscardMultiplePagesImpl(std::nullopt, false, discard_reason,
-                                  minimum_time_in_background);
+                                  ignore_recent_visibility);
 }
 
 std::optional<base::TimeTicks> PageDiscardingHelper::DiscardMultiplePages(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     DiscardEligibilityPolicy::DiscardReason discard_reason,
-    base::TimeDelta minimum_time_in_background) {
+    bool ignore_recent_visibility) {
   auto result =
       DiscardMultiplePagesImpl(reclaim_target, discard_protected_tabs,
-                               discard_reason, minimum_time_in_background);
+                               discard_reason, ignore_recent_visibility);
   return result.first_discard_time;
 }
 
@@ -138,7 +138,7 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
     std::optional<memory_pressure::ReclaimTarget> reclaim_target,
     bool discard_protected_tabs,
     DiscardEligibilityPolicy::DiscardReason discard_reason,
-    base::TimeDelta minimum_time_in_background) {
+    bool ignore_recent_visibility) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (reclaim_target) {
@@ -161,7 +161,7 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
   std::vector<PageNodeSortProxy> candidates;
   for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     CanDiscardResult can_discard_result = eligiblity_policy->CanDiscard(
-        page_node, discard_reason, minimum_time_in_background);
+        page_node, discard_reason, ignore_recent_visibility);
     if (can_discard_result == CanDiscardResult::kDisallowed) {
       continue;
     }
@@ -287,14 +287,14 @@ PageDiscardingHelper::DiscardMultiplePagesImpl(
 bool PageDiscardingHelper::ImmediatelyDiscardMultiplePages(
     const std::vector<const PageNode*>& page_nodes,
     DiscardEligibilityPolicy::DiscardReason discard_reason,
-    base::TimeDelta minimum_time_in_background) {
+    bool ignore_recent_visibility) {
   DiscardEligibilityPolicy* eligibility_policy =
       DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
   DCHECK(eligibility_policy);
   std::vector<base::WeakPtr<const PageNode>> eligible_nodes;
   for (const PageNode* node : page_nodes) {
     if (eligibility_policy->CanDiscard(node, discard_reason,
-                                       minimum_time_in_background) ==
+                                       ignore_recent_visibility) ==
         CanDiscardResult::kEligible) {
       eligible_nodes.emplace_back(node->GetWeakPtr());
     }

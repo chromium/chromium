@@ -82,11 +82,9 @@ class TabManager : public LifecycleUnitObserver,
   static bool IsInternalPage(const GURL& url);
 
   // Discards the less important LifecycleUnit that supports discarding under
-  // |reason|. Exposes |minimum_time_in_background_to_discard| so tests can set
-  // this to 0.
-  content::WebContents* DiscardTabImpl(
-      LifecycleUnitDiscardReason reason,
-      base::TimeDelta minimum_time_in_background_to_discard);
+  // |reason|. Exposes |ignore_recent_visibility| so tests can set this.
+  content::WebContents* DiscardTabImpl(LifecycleUnitDiscardReason reason,
+                                       bool ignore_recent_visibility = false);
 
   void OnSessionRestoreStartedLoadingTabs();
   void OnSessionRestoreFinishedLoadingTabs();

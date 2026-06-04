@@ -238,9 +238,8 @@ class TabManagerTest : public InProcessBrowserTest,
   bool IsRetainedWebContents() const { return GetParam(); }
 
   content::WebContents* UrgentDiscardTabImmediately() {
-    return tab_manager()->DiscardTabImpl(
-        LifecycleUnitDiscardReason::URGENT,
-        /*minimum_time_in_background_to_discard*/ base::TimeDelta());
+    return tab_manager()->DiscardTabImpl(LifecycleUnitDiscardReason::URGENT,
+                                         /*ignore_recent_visibility=*/true);
   }
 
   base::SimpleTestClock test_clock_;

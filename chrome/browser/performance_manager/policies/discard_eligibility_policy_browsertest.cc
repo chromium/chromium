@@ -90,8 +90,10 @@ IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyBrowserTest,
   // When another tab is activated, both tabs in the split view can be
   // discarded.
   tab_strip_model->ActivateTabAt(index3);
-  ExpectCanDiscardEligibleAllReasons(page_node1, base::TimeDelta());
-  ExpectCanDiscardEligibleAllReasons(page_node2, base::TimeDelta());
+  ExpectCanDiscardEligibleAllReasons(page_node1,
+                                     /*ignore_recent_visibility=*/true);
+  ExpectCanDiscardEligibleAllReasons(page_node2,
+                                     /*ignore_recent_visibility=*/true);
 
   // When a tab in the split view is activated, both tabs in the split view can
   // not be discarded.
@@ -113,8 +115,10 @@ IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyBrowserTest,
   // When another tab is activated, both tabs in the split view can be
   // discarded.
   tab_strip_model->ActivateTabAt(index3);
-  ExpectCanDiscardEligibleAllReasons(page_node1, base::TimeDelta());
-  ExpectCanDiscardEligibleAllReasons(page_node2, base::TimeDelta());
+  ExpectCanDiscardEligibleAllReasons(page_node1,
+                                     /*ignore_recent_visibility=*/true);
+  ExpectCanDiscardEligibleAllReasons(page_node2,
+                                     /*ignore_recent_visibility=*/true);
 }
 
 // Test DiscardEligibilityPolicy behavior with web application.
@@ -133,7 +137,7 @@ class DiscardEligibilityPolicyWebAppBrowserTest
       std::vector<CannotDiscardReason>* cannot_discard_reasons = nullptr) {
     return DiscardEligibilityPolicy::GetFromGraph(page_node->GetGraph())
         ->CanDiscard(page_node, discard_reason,
-                     kNonVisiblePagesUrgentProtectionTime,
+                     /*ignore_recent_visibility=*/false,
                      cannot_discard_reasons);
   }
 };
@@ -216,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyCrashBrowserTest,
       PerformanceManager::GetPrimaryPageNodeForWebContents(contents1).get();
   ASSERT_TRUE(page_node1);
 
-  ExpectCanDiscardEligibleAllReasons(page_node1, base::TimeDelta());
+  ExpectCanDiscardEligibleAllReasons(page_node1,
+                                     /*ignore_recent_visibility=*/true);
 
   SimulateRendererCrash(contents1);
 
@@ -225,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(DiscardEligibilityPolicyCrashBrowserTest,
 
   contents1->GetController().Reload(content::ReloadType::NORMAL, false);
 
-  ExpectCanDiscardEligibleAllReasons(page_node1, base::TimeDelta());
+  ExpectCanDiscardEligibleAllReasons(page_node1,
+                                     /*ignore_recent_visibility=*/true);
 }
 
 }  // namespace

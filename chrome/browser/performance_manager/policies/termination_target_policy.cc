@@ -129,7 +129,7 @@ void TerminationTargetPolicy::UpdateTerminationTarget(
       if (eligibility_policy->CanDiscard(
               page_node,
               policies::DiscardEligibilityPolicy::DiscardReason::URGENT,
-              /*minimum_time_in_background=*/base::TimeDelta()) !=
+              /*ignore_recent_visibility=*/true) !=
           policies::CanDiscardResult::kEligible) {
         target.can_discard = false;
       }

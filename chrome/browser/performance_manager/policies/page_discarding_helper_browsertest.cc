@@ -502,9 +502,9 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   // Discard a background page.
   ASSERT_TRUE(page_to_discard);
   EXPECT_EQ(CanDiscardResult::kEligible,
-            eligibility_policy->CanDiscard(
-                page_to_discard.get(), DiscardReason::URGENT,
-                /*minimum_time_in_background=*/base::TimeDelta()));
+            eligibility_policy->CanDiscard(page_to_discard.get(),
+                                           DiscardReason::URGENT,
+                                           /*ignore_recent_visibility=*/true));
   ASSERT_TRUE(helper->ImmediatelyDiscardMultiplePages({page_to_discard.get()},
                                                       DiscardReason::URGENT));
   ASSERT_EQ(GetParam(),
@@ -517,9 +517,9 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   base::WeakPtr<PageNode> discarded_page = GetPageNodeAtIndex(1);
   ASSERT_TRUE(discarded_page);
   EXPECT_EQ(CanDiscardResult::kDisallowed,
-            eligibility_policy->CanDiscard(
-                discarded_page.get(), DiscardReason::URGENT,
-                /*minimum_time_in_background=*/base::TimeDelta()));
+            eligibility_policy->CanDiscard(discarded_page.get(),
+                                           DiscardReason::URGENT,
+                                           /*ignore_recent_visibility=*/true));
 }
 
 // Regression test for crbug.com/386801193. Ensure discarded tabs remain
@@ -550,13 +550,14 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
     auto* eligibility_policy = DiscardEligibilityPolicy::GetFromGraph(graph);
     ASSERT_TRUE(eligibility_policy);
     EXPECT_EQ(CanDiscardResult::kEligible,
-              eligibility_policy->CanDiscard(discard_target_page_node.get(),
-                                             DiscardReason::URGENT,
-                                             base::TimeDelta()));
+              eligibility_policy->CanDiscard(
+                  discard_target_page_node.get(), DiscardReason::URGENT,
+                  /*ignore_recent_visibility=*/true));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
     PageDiscardingHelper::DiscardResult result =
-        helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
+        helper->DiscardAPage(DiscardReason::URGENT,
+                             /*ignore_recent_visibility=*/true);
 
     EXPECT_TRUE(result.first_discard_time.has_value());
   };
@@ -619,13 +620,14 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
     auto* eligibility_policy = DiscardEligibilityPolicy::GetFromGraph(graph);
     ASSERT_TRUE(eligibility_policy);
     EXPECT_EQ(CanDiscardResult::kEligible,
-              eligibility_policy->CanDiscard(discard_target_page_node.get(),
-                                             DiscardReason::URGENT,
-                                             base::TimeDelta()));
+              eligibility_policy->CanDiscard(
+                  discard_target_page_node.get(), DiscardReason::URGENT,
+                  /*ignore_recent_visibility=*/true));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
     PageDiscardingHelper::DiscardResult result =
-        helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
+        helper->DiscardAPage(DiscardReason::URGENT,
+                             /*ignore_recent_visibility=*/true);
 
     EXPECT_TRUE(result.first_discard_time.has_value());
   };
@@ -656,7 +658,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   ASSERT_TRUE(helper);
   for (int i = 0; i < 3; ++i) {
     helper->DiscardAPage(DiscardReason::URGENT,
-                         /*minimum_time_in_background=*/base::TimeDelta());
+                         /*ignore_recent_visibility=*/true);
   }
 
   // The active tab is the minimized window isn't discarded.
@@ -682,7 +684,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   ASSERT_TRUE(helper);
   for (int i = 0; i < 3; ++i) {
     helper->DiscardAPage(DiscardReason::URGENT,
-                         /*minimum_time_in_background=*/base::TimeDelta());
+                         /*ignore_recent_visibility=*/true);
   }
 
   // The active tab is the occluded window isn't discarded.

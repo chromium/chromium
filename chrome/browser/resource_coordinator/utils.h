@@ -8,10 +8,6 @@
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 
-namespace base {
-class TimeDelta;
-}  // namespace base
-
 namespace content {
 class WebContents;
 }  // namespace content
@@ -43,14 +39,11 @@ void AttemptFastKillForDiscard(
     ::mojom::LifecycleUnitDiscardReason discard_reason);
 
 // Discards the least important tab that supports discarding under
-// `discard_reason` and returns the discarded WebContents.
-// `urgent_protection_time` is the amount of time that must have passed since
-// the last time the tab was focused for it to be considered for urgent
-// discarding.
+// `discard_reason` and returns the discarded WebContents. Uses default
+// protection windows.
 content::WebContents* DiscardLeastImportantTab(
     ::mojom::LifecycleUnitDiscardReason discard_reason,
-    base::TimeDelta urgent_protection_time =
-        performance_manager::policies::kNonVisiblePagesUrgentProtectionTime);
+    bool ignore_recent_visibility = false);
 
 }  // namespace resource_coordinator
 

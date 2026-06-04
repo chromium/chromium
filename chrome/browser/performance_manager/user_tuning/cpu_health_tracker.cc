@@ -206,7 +206,7 @@ bool CpuHealthTracker::CanDiscardPage(
           base::TimeDelta::Max()) < measurement_window;
 
   return !did_audio_status_change &&
-         eligibility_policy->CanDiscard(
+         eligibility_policy->CanDiscardWithCustomRecentVisibilityWindow(
              page_node, ::mojom::LifecycleUnitDiscardReason::SUGGESTED,
              measurement_window) == policies::CanDiscardResult::kEligible;
 }

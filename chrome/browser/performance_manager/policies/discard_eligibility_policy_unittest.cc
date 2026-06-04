@@ -241,7 +241,8 @@ TEST_F(DiscardEligibilityPolicyTest, TestCanDiscardNeverAudiblePage) {
   constexpr base::TimeDelta kMinTimeInBackground = kTabAudioProtectionTime / 2;
   task_env().FastForwardBy(kMinTimeInBackground);
 
-  ExpectCanDiscardEligibleAllReasons(page_node(), kMinTimeInBackground);
+  ExpectCanDiscardEligibleAllReasons(page_node(),
+                                     /*ignore_recent_visibility=*/true);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -249,7 +250,8 @@ TEST_F(DiscardEligibilityPolicyTest,
        TestCannotDiscardRecentlyVisiblePageUnlessExplicitlyRequested) {
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);
-  AdvanceClock(base::Seconds(1));
+  AdvanceClock(internal::kNonVisiblePagesUrgentProtectionTime -
+               base::Seconds(1));
 
   ExpectCanDiscardProtected(page_node(),
                             {DiscardReason::URGENT, DiscardReason::PROACTIVE,
@@ -259,7 +261,9 @@ TEST_F(DiscardEligibilityPolicyTest,
       page_node(),
       {DiscardReason::EXTERNAL, DiscardReason::FROZEN_WITH_GROWING_MEMORY});
 
-  ExpectCanDiscardEligibleAllReasons(page_node(), base::Seconds(1));
+  AdvanceClock(base::Seconds(1));
+
+  ExpectCanDiscardEligibleAllReasons(page_node());
 }
 #endif
 
@@ -600,8 +604,8 @@ TEST_F(DiscardEligibilityPolicyTest, RecordsDiscardDecisionMetrics) {
   const auto* policy = DiscardEligibilityPolicy::GetFromGraph(graph());
 
   // Pass the address of 'reasons' instead of nullptr
-  policy->CanDiscard(page_node(), DiscardReason::URGENT, base::TimeDelta(),
-                     &reasons);
+  policy->CanDiscard(page_node(), DiscardReason::URGENT,
+                     /*ignore_recent_visibility=*/true, &reasons);
 
   histogram_tester.ExpectBucketCount(
       "PerformanceManager.Discarding.DecisionResult",
