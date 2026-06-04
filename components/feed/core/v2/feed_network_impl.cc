@@ -51,6 +51,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/protobuf/src/google/protobuf/io/coded_stream.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -616,7 +617,8 @@ void FeedNetworkImpl::Send(const GURL& url,
                            bool is_feed_query,
                            base::OnceCallback<void(RawResponse)> callback) {
   TRACE_EVENT_BEGIN("android.ui.jank", "FeedNetwork",
-                    perfetto::Track::FromPointer(this), "url", url);
+                    perfetto::NamedTrack::FromPointer("FeedNetwork", this),
+                    "url", url);
   auto fetch = std::make_unique<NetworkFetch>(
       url, request_method, std::move(request_body), delegate_,
       identity_manager_, loader_factory_.get(), api_key_, account_info,
@@ -672,7 +674,8 @@ void FeedNetworkImpl::SendComplete(
     base::OnceCallback<void(RawResponse)> callback,
     RawResponse raw_response) {
   DCHECK_EQ(1UL, pending_requests_.count(fetch));
-  TRACE_EVENT_END("android.ui.jank", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_END("android.ui.jank",
+                  perfetto::NamedTrack::FromPointer("FeedNetwork", this),
                   "bytes", raw_response.response_info.response_body_bytes);
   pending_requests_.erase(fetch);
 
