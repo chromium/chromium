@@ -731,7 +731,7 @@ class FuseboxViewBinder {
         cs.connect(
                 R.id.url_bar,
                 ConstraintSet.END,
-                singleLine ? R.id.action_buttons_segment : R.id.delete_button,
+                singleLine ? R.id.action_buttons_segment : R.id.action_buttons_segment_multimodal,
                 ConstraintSet.START);
 
         cs.applyTo(view.parentView);

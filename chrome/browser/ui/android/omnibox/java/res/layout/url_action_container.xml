@@ -100,7 +100,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:barrierDirection="start"
-        app:constraint_referenced_ids="composeplate_button,install_button,delete_button,mic_button,margin_spacer"/>
+        app:constraint_referenced_ids="fusebox_activation_chip,composeplate_button,install_button,delete_button,mic_button,margin_spacer"/>
 
     <!-- URL Bar barrier for multimodal location bar -->
     <androidx.constraintlayout.widget.Barrier
@@ -108,6 +108,6 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:barrierDirection="start"
-        app:constraint_referenced_ids="composeplate_button,install_button,delete_button,margin_spacer"/>
+        app:constraint_referenced_ids="fusebox_activation_chip,composeplate_button,install_button,delete_button,margin_spacer"/>
 
 </merge>
