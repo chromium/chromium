@@ -1142,6 +1142,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   }
 
   protected isComposeboxHeaderWrapperHidden_(): boolean {
+    if (this.isComposeboxHidden_()) {
+      return true;
+    }
     return (this.enableBasicMode_ && this.isInBasicMode_ &&
             !this.enableBasicModeZOrder_) ||
         this.inNlm_;

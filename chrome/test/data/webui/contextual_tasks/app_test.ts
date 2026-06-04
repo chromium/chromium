@@ -48,6 +48,8 @@ suite('ContextualTasksAppTest', function() {
       nlmUrlParam: 'ajid',
       enableCustomNlmUi: true,
       composeboxSmartTabSharingVisible: false,
+      isAimEligible: true,
+      isZeroState: false,
     });
     metrics = fakeMetricsPrivate();
     const proxy = new TestContextualTasksBrowserProxy('http://example.com');
@@ -1108,5 +1110,49 @@ suite('ContextualTasksAppTest', function() {
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
 
     assertTrue(appElement.$.composebox.hidden);
+  });
+
+  test('composebox header wrapper hidden when isAimEligible is false', async () => {
+    loadTimeData.overrideValues({
+      isAimEligible: false,
+      isZeroState: true,
+    });
+
+    const {appElement} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    const wrapper = appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+    assertTrue(wrapper.hasAttribute('hidden'));
+  });
+
+  test('composebox header wrapper hidden when isZeroState is undefined', async () => {
+    const {appElement} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    appElement.setIsZeroStateForTesting(undefined);
+    await microtasksFinished();
+    await appElement.updateComplete;
+
+    const wrapper = appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+    assertTrue(wrapper.hasAttribute('hidden'));
+  });
+
+  test('composebox header wrapper hidden when isInputHidden is true', async () => {
+    const {appElement, proxy} =
+        await createContextualTasksAppElement(/*url=*/ fixtureUrl);
+
+    // Initial state
+    appElement.setIsZeroStateForTesting(false);
+    await microtasksFinished();
+    await appElement.updateComplete;
+    const wrapper = appElement.shadowRoot.querySelector('#composeboxHeaderWrapper')!;
+    assertFalse(wrapper.hasAttribute('hidden'));
+
+    proxy.callbackRouterRemote.hideInput();
+    await proxy.callbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await appElement.updateComplete;
+
+    assertTrue(wrapper.hasAttribute('hidden'));
   });
 });
