@@ -437,7 +437,9 @@ void PageActionView::CreateAndShowAnchoredMessage(
     anchored_message_widget_->MakeCloseSynchronous(
         base::BindOnce(&PageActionView::OnAnchoredMessageWidgetClose,
                        weak_factory_.GetWeakPtr()));
-    anchored_message_widget_->Show();
+
+    // Don't steal focus when shown
+    anchored_message_widget_->ShowInactive();
   } else {
     anchored_message_ = nullptr;
   }
@@ -449,7 +451,7 @@ void PageActionView::OnAnchoredMessageWidgetClose(
   CHECK(anchored_message_);
   CHECK(anchored_message_widget_);
   anchored_message_ = nullptr;
-  anchored_message_widget_ = nullptr;
+  anchored_message_widget_.reset();
   anchored_message_visibility_changed_callbacks_.Notify(this);
 }
 
