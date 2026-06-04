@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
@@ -31,10 +32,32 @@ FontGlobalContext* FontGlobalContext::TryGet() {
   return GetThreadSpecificFontGlobalContextPool()->Get();
 }
 
+namespace {
+
+constexpr base::MemoryConsumerTraits kFontGlobalContextTraits(
+    // Platform font metadata cache; footprint under 10MB.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    // Invalidation requires traversing maps and notifying clients.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Data structures can be reconstructed from descriptions.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Synchronously clears maps inline.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // No limit scaling implementation.
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+    // Low CPU overhead to recreate from system font handles.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
+    // Caches hold references to GC-managed objects.
+    base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
+    // Performs a one-shot invalidation under pressure.
+    base::MemoryConsumerTraits::IsStateful::kNo);
+
+}  // namespace
+
 FontGlobalContext::FontGlobalContext(PassKey)
     : memory_consumer_registration_(
           "FontGlobalContext",
-          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          kFontGlobalContextTraits,
           this,
           MemoryConsumerRegistration::CheckUnregister::kDisabled,
           MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {}
