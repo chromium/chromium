@@ -12,6 +12,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
@@ -632,4 +634,28 @@ void ToastService::RegisterToasts(
           IDS_DEFAULT_BROWSER_SUCCESS_TOAST_BODY)
           .Build());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  if (base::FeatureList::IsEnabled(features::kIndigo)) {
+    toast_registry_->RegisterToast(
+        ToastId::kIndigoInvokeError,
+        ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOutlineOldIcon,
+                                    IDS_INDIGO_INVOKE_ERROR_TOAST_BODY)
+            .AddActionButton(
+                IDS_INDIGO_INVOKE_ERROR_TOAST_TRY_AGAIN_BUTTON,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window) {
+                      if (tabs::TabInterface* tab =
+                              window->GetActiveTabInterface()) {
+                        if (auto* controller =
+                                indigo::IndigoPageActionController::From(tab)) {
+                          controller->InvokeAction();
+                        }
+                      }
+                    },
+                    base::Unretained(browser_window_interface)))
+            .AddCloseButton()
+            .Build());
+  }
 }  // RegisterToasts() end.

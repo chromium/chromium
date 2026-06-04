@@ -121,7 +121,6 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   if (!image_replacement_subframe) {
     // TODO(b/489445294): We should wait for this subframe to be attached,
     // rather than returning early.
-    LOG(ERROR) << "Subframe not found! " << replacement_frame_token.ToString();
     return;
   }
 
@@ -185,14 +184,25 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
   }
   CHECK(receivers_.GetContext(receiver_id)->is_primary());
 
+  IndigoPageActionController* controller = nullptr;
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    controller = indigo::IndigoPageActionController::From(tab);
+    CHECK(controller);
+  }
+
   if (!result.has_value()) {
-    LOG(ERROR) << "Generate image failed: " << result.error().message;
+    DVLOG(1) << "Generate image failed: " << result.error().message;
     base::UmaHistogramEnumeration(
         "Indigo.Transformation.Result",
         IndigoTransformationResult::kGenerateImageError);
     base::RecordAction(
         base::UserMetricsAction("Indigo.Transformation.Failure"));
     Reset(ResetType::kResetReplacementsAndContentScript);
+    if (controller) {
+      controller->ShowInvocationErrorToast();
+    }
     return;
   }
 
@@ -207,11 +217,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
     image_replacement->ReplacementImageURLReady();
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
-  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    auto* controller = indigo::IndigoPageActionController::From(tab);
-    CHECK(controller);
+  if (controller) {
     controller->ShowToolbar();
   }
 }
@@ -221,8 +227,8 @@ void IndigoImageReplacementManager::OnReceiverDisconnected() {
   // If the primary replacement is disconnected prior to receiving the generated
   // image, we reset all replacements.
   if (replacement.is_primary() && generated_image_url_.is_empty()) {
-    LOG(ERROR) << "Primary image replacement disconnected before receiving "
-                  "generated image";
+    DVLOG(1) << "Primary image replacement disconnected before receiving "
+                "generated image";
     Reset(ResetType::kResetReplacementsAndContentScript);
   }
 }

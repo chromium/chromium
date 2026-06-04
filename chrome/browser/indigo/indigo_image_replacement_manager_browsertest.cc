@@ -15,6 +15,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -476,8 +479,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  content::WebContents* web_contents = tab->GetContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
 
   // Set up IndigoAgent host.
@@ -503,6 +506,12 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // IndigoAgentHost::Reset should have been called.
   fake_agent->WaitForReset();
+
+  // An error toast should be displayed.
+  ToastController* const toast_controller =
+      ToastController::MaybeGetForTabInterface(tab);
+  ASSERT_TRUE(toast_controller && toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kIndigoInvokeError);
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,

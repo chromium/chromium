@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -354,6 +356,14 @@ void IndigoPageActionController::ShowToolbar() {
   toolbar_->Show(parent_view);
   if (tracked_bounds_) {
     toolbar_->UpdateTrackedPosition(*tracked_bounds_);
+  }
+}
+
+void IndigoPageActionController::ShowInvocationErrorToast() {
+  ToastController* toast_controller =
+      ToastController::MaybeGetForTabInterface(&tab());
+  if (toast_controller) {
+    toast_controller->MaybeShowToast(ToastParams(ToastId::kIndigoInvokeError));
   }
 }
 

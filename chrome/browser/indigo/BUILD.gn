@@ -74,6 +74,7 @@ source_set("impl") {
     "//chrome/browser/skills",
     "//chrome/browser/ui",
     "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/views/indigo:impl",
     "//chrome/browser/ui/views/page_action",
     "//chrome/common:chrome_features",

@@ -112,6 +112,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
     tracked_bounds_ = bounds;
   }
 
+  // Shows a toast notification informing the user that an error has occurred.
+  void ShowInvocationErrorToast();
+
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
