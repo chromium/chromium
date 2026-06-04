@@ -9,8 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/prefs/testing_pref_service.h"
-#import "components/supervised_user/core/browser/family_link_settings_service.h"
+#import "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
@@ -42,11 +41,15 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
         /*is_main_frame=*/true);
   }
 
+  void TearDown() override { supervised_user_test_environment_.Shutdown(); }
+
   IOSWebContentHandlerImpl* web_content_handler() {
     return web_content_handler_.get();
   }
 
-  supervised_user::FamilyLinkUrlFilter& url_filter() { return filter_; }
+  supervised_user::FamilyLinkUrlFilter& url_filter() {
+    return *supervised_user_test_environment_.family_link_url_filter();
+  }
 
   base::HistogramTester histogram_tester_;
   id mock_parent_access_commands_handler_;
@@ -54,18 +57,9 @@ class IOSWebContentHandlerImplTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
-  supervised_user::FamilyLinkSettingsService family_link_settings_service_;
-
-  // Filter with no checker client, as it will be only used in offline manner.
-  // Conversely, the settings service is used uninitialized too.
-  supervised_user::FamilyLinkUrlFilter filter_ =
-      supervised_user::FamilyLinkUrlFilter(
-          family_link_settings_service_,
-          pref_service_,
-          std::make_unique<supervised_user::FakeURLFilterDelegate>(),
-          /*url_checker_client=*/nullptr);
+  supervised_user::SupervisedUserTestEnvironment
+      supervised_user_test_environment_;
 
   std::unique_ptr<IOSWebContentHandlerImpl> web_content_handler_;
 };
