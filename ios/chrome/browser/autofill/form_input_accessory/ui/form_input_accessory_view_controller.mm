@@ -222,6 +222,12 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
                     ? FormInputAccessoryViewSubitemGroup::kExpandButton
                     : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
 
+  if ([ManualFillUtil
+          manualFillDataTypeFromFillingProduct:_mainFillingProduct] ==
+      manual_fill::ManualFillDataType::kOther) {
+    self.formInputAccessoryView.manualFillButton.hidden = YES;
+  }
+
   if (suggestions.count > kKeyboardAccessorySuggestionsLimit) {
     suggestions = [suggestions
         subarrayWithRange:NSMakeRange(0, kKeyboardAccessorySuggestionsLimit)];
