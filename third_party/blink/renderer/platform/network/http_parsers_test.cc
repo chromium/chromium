@@ -357,6 +357,7 @@ TEST(HTTPParsersTest, HTTPToken) {
 
 TEST(HTTPParsersTest, ExtractMIMETypeFromMediaType) {
   const AtomicString text_html("text/html");
+  const AtomicString text_plain("text/plain");
 
   EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(AtomicString("text/html")));
   EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(
@@ -378,27 +379,30 @@ TEST(HTTPParsersTest, ExtractMIMETypeFromMediaType) {
   EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(
                            AtomicString("text/html ; charset=iso-8859-1")));
 
-  // Non-standard multiple type/subtype listing using a comma as a separator
-  // is accepted.
-  EXPECT_EQ(text_html,
+  // Multiple type/subtype listing using a comma as a separator. The last valid
+  // entry wins.
+  EXPECT_EQ(text_plain,
             ExtractMIMETypeFromMediaType(AtomicString("text/html,text/plain")));
-  EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(
-                           AtomicString("text/html , text/plain")));
-  EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(
-                           AtomicString("text/html\t,\ttext/plain")));
-  EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(AtomicString(
-                           "text/html,text/plain;charset=iso-8859-1")));
+  EXPECT_EQ(text_plain, ExtractMIMETypeFromMediaType(
+                            AtomicString("text/html , text/plain")));
+  EXPECT_EQ(text_plain, ExtractMIMETypeFromMediaType(
+                            AtomicString("text/html\t,\ttext/plain")));
+  EXPECT_EQ(text_plain, ExtractMIMETypeFromMediaType(AtomicString(
+                            "text/html,text/plain;charset=iso-8859-1")));
 
-  // Preserves case.
-  EXPECT_EQ("tExt/hTMl",
-            ExtractMIMETypeFromMediaType(AtomicString("tExt/hTMl")));
+  // Converts to lowercase for consistency between Blink and ORB.
+  EXPECT_EQ(text_html, ExtractMIMETypeFromMediaType(AtomicString("tExt/hTMl")));
 
-  EXPECT_EQ(g_empty_string,
+  // Unusual valid and invalid MIME type declarations.
+  EXPECT_EQ(text_html,
             ExtractMIMETypeFromMediaType(AtomicString(", text/html")));
   EXPECT_EQ(g_empty_string,
             ExtractMIMETypeFromMediaType(AtomicString("; text/html")));
 
   // If no normalization is required, the same AtomicString should be returned.
+  // Note: Since net::HttpUtil converts to lowercase and returns a new
+  // AtomicString, we do not expect the same implementation pointer if it is
+  // modified. But for already lowercase "text/html", it should still match.
   const AtomicString& passthrough = ExtractMIMETypeFromMediaType(text_html);
   EXPECT_EQ(text_html.Impl(), passthrough.Impl());
 }
@@ -415,8 +419,9 @@ TEST(HTTPParsersTest, MinimizedMIMEType) {
 
 TEST(HTTPParsersTest, ExtractMIMETypeFromMediaTypeInvalidInput) {
   // extractMIMETypeFromMediaType() returns the string before the first
-  // semicolon after trimming OWSes at the head and the tail even if the
-  // string doesn't conform to the media-type ABNF defined in the RFC 7231.
+  // semicolon after trimming OWSes (Optional White Spaces) at the head and the
+  // tail even if the string doesn't conform to the media-type ABNF defined in
+  // the RFC 7231.
 
   // These behaviors could be fixed later when ready.
 
@@ -428,8 +433,9 @@ TEST(HTTPParsersTest, ExtractMIMETypeFromMediaTypeInvalidInput) {
             ExtractMIMETypeFromMediaType(
                 AtomicString::FromUtf8("\xE2\x80\x83text/html")));
 
-  // Invalid type/subtype.
-  EXPECT_EQ(AtomicString("a"), ExtractMIMETypeFromMediaType(AtomicString("a")));
+  // Invalid type/subtype is rejected because it doesn't contain a slash, so
+  // net::HttpUtil::ParseMimeType returns false, leading to g_empty_string.
+  EXPECT_EQ(g_empty_string, ExtractMIMETypeFromMediaType(AtomicString("a")));
 
   // Invalid parameters.
   EXPECT_EQ(AtomicString("text/html"),
@@ -439,13 +445,19 @@ TEST(HTTPParsersTest, ExtractMIMETypeFromMediaTypeInvalidInput) {
   EXPECT_EQ(AtomicString("text/html"),
             ExtractMIMETypeFromMediaType(AtomicString("text/html; = = = ")));
 
-  // Only OWSes at either the beginning or the end of the type/subtype
-  // portion.
-  EXPECT_EQ(AtomicString("text / html"),
+  // net::HttpUtil::ParseMimeType rejects spaces before the slash because the
+  // type/subtype portion is parsed up to the first space/tab character.
+  // Therefore "text" is treated as the MIME type and lacks a slash, so it is
+  // rejected.
+  EXPECT_EQ(g_empty_string,
             ExtractMIMETypeFromMediaType(AtomicString("text / html")));
-  EXPECT_EQ(AtomicString("t e x t / h t m l"),
+  EXPECT_EQ(g_empty_string,
             ExtractMIMETypeFromMediaType(AtomicString("t e x t / h t m l")));
 
+  // net::HttpUtil::ParseMimeType does not perform strict token validation
+  // on other invalid characters like newlines or non-standard whitespaces if
+  // they appear in the middle without hitting space, tab, semicolon or open
+  // parenthesis. Thus, these are returned as-is.
   EXPECT_EQ(AtomicString("text\r\n/\nhtml"),
             ExtractMIMETypeFromMediaType(AtomicString("text\r\n/\nhtml")));
   EXPECT_EQ(AtomicString("text\n/\nhtml"),

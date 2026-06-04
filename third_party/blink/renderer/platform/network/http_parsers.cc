@@ -610,48 +610,32 @@ std::optional<base::Time> ParseDate(const String& value) {
   return parsed_time;
 }
 
+// Extracts the MIME type from a Content-Type/media-type header value.
+//
+// This function delegates parsing to net::HttpUtil::ParseContentType (which
+// internally calls net::ParseMimeType) for parity with the network process.
+// See net::ParseMimeType for how invalid inputs are handled.
 AtomicString ExtractMIMETypeFromMediaType(const AtomicString& media_type) {
-  unsigned length = media_type.length();
-
-  unsigned pos = 0;
-
-  while (pos < length) {
-    UChar c = media_type[pos];
-    if (c != '\t' && c != ' ')
-      break;
-    ++pos;
-  }
-
-  if (pos == length)
+  if (media_type.empty()) {
     return media_type;
-
-  unsigned type_start = pos;
-
-  unsigned type_end = pos;
-  while (pos < length) {
-    UChar c = media_type[pos];
-
-    // While RFC 2616 does not allow it, other browsers allow multiple values in
-    // the HTTP media type header field, Content-Type. In such cases, the media
-    // type string passed here may contain the multiple values separated by
-    // commas. For now, this code ignores text after the first comma, which
-    // prevents it from simply failing to parse such types altogether.  Later
-    // for better compatibility we could consider using the first or last valid
-    // MIME type instead.
-    // See https://bugs.webkit.org/show_bug.cgi?id=25352 for more discussion.
-    if (c == ',' || c == ';')
-      break;
-
-    if (c != '\t' && c != ' ')
-      type_end = pos + 1;
-
-    ++pos;
   }
 
-  // Use a StringView to create an AtomicString here so we do not allocate an
-  // intermediate string.
-  return AtomicString(
-      StringView(media_type, type_start, type_end - type_start));
+  std::string media_type_std = media_type.Utf8();
+  std::string mime_type;
+  std::string charset;
+  bool had_charset = false;
+
+  net::HttpUtil::ValuesIterator it(media_type_std, ',',
+                                   /*ignore_empty_values=*/true);
+  while (it.GetNext()) {
+    net::HttpUtil::ParseContentType(it.value(), &mime_type, &charset,
+                                    &had_charset, /*boundary=*/nullptr);
+  }
+
+  if (mime_type.empty()) {
+    return g_empty_atom;
+  }
+  return AtomicString::FromUtf8(mime_type);
 }
 
 bool IsHTTPTabOrSpace(UChar c) {
