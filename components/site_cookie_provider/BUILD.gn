@@ -4,6 +4,8 @@
 
 source_set("site_cookie_provider") {
   sources = [
+    "features.cc",
+    "features.h",
     "site_cookie_provider.cc",
     "site_cookie_provider.h",
     "site_cookie_provider_service.cc",
@@ -12,6 +14,7 @@ source_set("site_cookie_provider") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -26,8 +29,10 @@ source_set("unit_tests") {
     ":site_cookie_provider",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

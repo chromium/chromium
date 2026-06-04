@@ -16,12 +16,17 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace site_cookie_provider {
 
 // Interface for the core logic of managing site-specific cookies.
 class SiteCookieProvider {
  public:
   static std::unique_ptr<SiteCookieProvider> Create(
+      signin::IdentityManager* identity_manager,
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 

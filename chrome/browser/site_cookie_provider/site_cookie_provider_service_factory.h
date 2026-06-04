@@ -39,6 +39,8 @@ class SiteCookieProviderServiceFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 }  // namespace site_cookie_provider

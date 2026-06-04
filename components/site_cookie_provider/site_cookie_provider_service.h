@@ -8,36 +8,40 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/cookie_manager.mojom-forward.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace site_cookie_provider {
 
 class SiteCookieProvider;
 
 // A KeyedService that manages the lifecycle of the SiteCookieProvider.
-class SiteCookieProviderService : public KeyedService {
+class SiteCookieProviderService : public KeyedService,
+                                  public signin::IdentityManager::Observer {
  public:
-  SiteCookieProviderService(
-      mojo::PendingRemote<network::mojom::CookieManager> cookie_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  SiteCookieProviderService(signin::IdentityManager* identity_manager,
+                            std::unique_ptr<SiteCookieProvider> provider);
   ~SiteCookieProviderService() override;
 
   SiteCookieProviderService(const SiteCookieProviderService&) = delete;
   SiteCookieProviderService& operator=(const SiteCookieProviderService&) =
       delete;
 
+  // KeyedService:
+  void Shutdown() override;
+
   // Triggers local state synchronization updates.
   void UpdateState();
 
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+
  private:
   std::unique_ptr<SiteCookieProvider> provider_;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 };
 
 }  // namespace site_cookie_provider

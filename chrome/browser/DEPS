@@ -344,6 +344,7 @@ include_rules = [
   "+components/signin/core/browser",
   "+components/signin/public",
   "+components/skills:features",
+  "+components/site_cookie_provider",
   "+components/site_engagement",
   "+components/site_isolation",
   "+components/skills",

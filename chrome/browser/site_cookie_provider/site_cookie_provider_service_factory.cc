@@ -5,6 +5,9 @@
 #include "chrome/browser/site_cookie_provider/site_cookie_provider_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/site_cookie_provider/features.h"
+#include "components/site_cookie_provider/site_cookie_provider.h"
 #include "components/site_cookie_provider/site_cookie_provider_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,13 +39,19 @@ SiteCookieProviderServiceFactory::SiteCookieProviderServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // Disabled in guest profiles.
               .WithGuest(ProfileSelection::kNone)
-              .Build()) {}
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 SiteCookieProviderServiceFactory::~SiteCookieProviderServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SiteCookieProviderServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!base::FeatureList::IsEnabled(features::kSiteCookieProviderEnabled)) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   content::StoragePartition* storage_partition =
       profile->GetDefaultStoragePartition();
@@ -51,9 +60,17 @@ SiteCookieProviderServiceFactory::BuildServiceInstanceForBrowserContext(
   storage_partition->GetNetworkContext()->GetCookieManager(
       cookie_manager.InitWithNewPipeAndPassReceiver());
 
-  return std::make_unique<SiteCookieProviderService>(
-      std::move(cookie_manager),
+  auto provider = SiteCookieProvider::Create(
+      IdentityManagerFactory::GetForProfile(profile), std::move(cookie_manager),
       storage_partition->GetURLLoaderFactoryForBrowserProcess());
+
+  return std::make_unique<SiteCookieProviderService>(
+      IdentityManagerFactory::GetForProfile(profile), std::move(provider));
+}
+
+bool SiteCookieProviderServiceFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }
 
 }  // namespace site_cookie_provider
