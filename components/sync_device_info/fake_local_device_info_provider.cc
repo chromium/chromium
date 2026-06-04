@@ -25,6 +25,7 @@ FakeLocalDeviceInfoProvider::FakeLocalDeviceInfoProvider()
                    "device_id",
                    "fake_manufacturer",
                    "fake_model",
+                   /*server_determined_model_name=*/std::nullopt,
                    "fake_full_hardware_class",
                    /*last_updated_timestamp=*/base::Time::Now(),
                    DeviceInfoUtil::GetPulseInterval(),

@@ -380,7 +380,8 @@ TEST_F(LocalDeviceInfoProviderImplTest, ShouldKeepStoredInvalidationFields) {
       kLocalDeviceGuid, "name", "chrome_version", "user_agent",
       DeviceInfo::DeviceType::kLinux, DeviceInfo::OsType::kLinux,
       DeviceInfo::FormFactor::kDesktop, "device_id", "manufacturer", "model",
-      "full_hardware_class", base::Time(), base::Days(1),
+      /*server_determined_model_name=*/std::nullopt, "full_hardware_class",
+      base::Time(), base::Days(1),
       /*send_tab_to_self_receiving_enabled=*/
       true,
       /*send_tab_to_self_receiving_type=*/

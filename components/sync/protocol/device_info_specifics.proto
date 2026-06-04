@@ -101,6 +101,9 @@ message DeviceInfoSpecifics {
 
   // Prefix of the android.os.Build.FINGERPRINT (until the first colon).
   optional string android_os_build_fingerprint_prefix = 21;
+
+  // A name determined by the server that can be used to personalize the device.
+  optional string server_determined_model_name = 22;
 }
 
 // Feature specific information about the device that is running a sync-enabled

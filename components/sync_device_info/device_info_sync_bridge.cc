@@ -218,6 +218,9 @@ DeviceInfo SpecificsToModel(const DeviceInfoSpecifics& specifics) {
       ToDeviceInfoDeviceType(specifics.device_type()), os_type,
       device_form_factor, specifics.signin_scoped_device_id(),
       specifics.manufacturer(), specifics.model(),
+      specifics.has_server_determined_model_name()
+          ? std::make_optional(specifics.server_determined_model_name())
+          : std::nullopt,
       specifics.full_hardware_class(),
       ProtoTimeToTime(specifics.last_updated_timestamp()),
       GetPulseIntervalFromSpecifics(specifics),
@@ -392,8 +395,8 @@ bool ArePaaskInfosEqual(
 
 // Returns true if |stored| is similar enough to |current| that |current|
 // needn't be uploaded.
-bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
-                                   const DeviceInfo* current) {
+bool IsStoredLocalDeviceInfoStillAccurate(const DeviceInfo* stored,
+                                          const DeviceInfo* current) {
   return current->guid() == stored->guid() &&
          current->client_name() == stored->client_name() &&
          current->chrome_version() == stored->chrome_version() &&
@@ -1047,7 +1050,8 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
 
   // Convert |iter->second| to a DeviceInfo for comparison.
   const DeviceInfo& previous_device_info = iter->second.device_info();
-  if (StoredDeviceInfoStillAccurate(&previous_device_info, current_info) &&
+  if (IsStoredLocalDeviceInfoStillAccurate(&previous_device_info,
+                                           current_info) &&
       !force_reupload_for_test_) {
     if (pulse_timer_.IsRunning() || wall_clock_pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.

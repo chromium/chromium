@@ -650,6 +650,7 @@ VISIT_PROTO_FIELDS(const sync_pb::DeviceInfoSpecifics& proto) {
   VISIT_ENUM(os_type);
   VISIT_ENUM(device_form_factor);
   VISIT(android_os_build_fingerprint_prefix);
+  VISIT(server_determined_model_name);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DesktopToMobilePromoMessage& proto) {

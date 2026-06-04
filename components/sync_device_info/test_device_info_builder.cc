@@ -91,7 +91,8 @@ TestDeviceInfoBuilder::TestDeviceInfoBuilder(const DeviceInfo& other)
       glic_experimental_triggering_state_(
           other.glic_experimental_triggering_state()),
       glic_experimental_triggering_version_(
-          other.glic_experimental_triggering_version()) {}
+          other.glic_experimental_triggering_version()),
+      server_determined_model_name_(other.server_determined_model_name()) {}
 
 TestDeviceInfoBuilder::~TestDeviceInfoBuilder() = default;
 
@@ -103,11 +104,11 @@ std::unique_ptr<DeviceInfo> TestDeviceInfoBuilder::Build() const {
   return std::make_unique<DeviceInfo>(
       guid_, client_name_, chrome_version_, sync_user_agent_, device_type_,
       os_type_, form_factor_, signin_scoped_device_id_, manufacturer_name_,
-      model_name_, full_hardware_class_, last_updated_timestamp_,
-      pulse_interval_, send_tab_to_self_receiving_enabled_,
-      send_tab_to_self_receiving_type_, sharing_info_, paask_info_,
-      fcm_registration_token_, interested_data_types_,
-      auto_sign_out_last_signin_timestamp_,
+      model_name_, server_determined_model_name_, full_hardware_class_,
+      last_updated_timestamp_, pulse_interval_,
+      send_tab_to_self_receiving_enabled_, send_tab_to_self_receiving_type_,
+      sharing_info_, paask_info_, fcm_registration_token_,
+      interested_data_types_, auto_sign_out_last_signin_timestamp_,
       desktop_to_ios_promo_receiving_enabled_,
       desktop_to_ios_promo_receiving_types_,
       glic_experimental_triggering_state_,
@@ -276,6 +277,12 @@ TestDeviceInfoBuilder&
 TestDeviceInfoBuilder::WithGlicExperimentalTriggeringVersion(
     std::optional<int> glic_experimental_triggering_version) {
   glic_experimental_triggering_version_ = glic_experimental_triggering_version;
+  return *this;
+}
+
+TestDeviceInfoBuilder& TestDeviceInfoBuilder::WithServerDeterminedModelName(
+    const std::optional<std::string>& server_determined_model_name) {
+  server_determined_model_name_ = server_determined_model_name;
   return *this;
 }
 

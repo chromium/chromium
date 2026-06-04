@@ -194,6 +194,7 @@ class DeviceInfo {
              const std::string& signin_scoped_device_id,
              const std::string& manufacturer_name,
              const std::string& model_name,
+             std::optional<std::string> server_determined_model_name,
              const std::string& full_hardware_class,
              base::Time last_updated_timestamp,
              base::TimeDelta pulse_interval,
@@ -308,6 +309,8 @@ class DeviceInfo {
   // Glic, or std::nullopt if unavailable.
   std::optional<int> glic_experimental_triggering_version() const;
 
+  const std::optional<std::string>& server_determined_model_name() const;
+
   // Apps can set ids for a device that is meaningful to them but
   // not unique enough so the user can be tracked. Exposing |guid|
   // would lead to a stable unique id for a device which can potentially
@@ -374,6 +377,8 @@ class DeviceInfo {
 
   const std::string model_name_;
 
+  const std::optional<std::string> server_determined_model_name_;
+
   std::string full_hardware_class_;
 
   const std::optional<std::string> android_os_build_fingerprint_prefix_;
@@ -418,8 +423,9 @@ class DeviceInfo {
   std::optional<int> glic_experimental_triggering_version_;
 
   // NOTE: when adding a member, don't forget to update
-  // |StoredDeviceInfoStillAccurate| in device_info_sync_bridge.cc or else
-  // changes in that member might not trigger uploads of updated DeviceInfos.
+  // |IsStoredLocalDeviceInfoStillAccurate| in device_info_sync_bridge.cc or
+  // else changes in that member might not trigger uploads of updated
+  // DeviceInfos.
 };
 
 }  // namespace syncer

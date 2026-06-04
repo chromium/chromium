@@ -148,7 +148,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
       cache_guid, client_name, version_, MakeUserAgentForSync(channel_),
       GetLocalDeviceType(), GetLocalDeviceOSType(), GetLocalDeviceFormFactor(),
       sync_client_->GetSigninScopedDeviceId(), manufacturer_name, model_name,
-      full_hardware_class,
+      /*server_determined_model_name=*/std::nullopt, full_hardware_class,
       /*last_updated_timestamp=*/base::Time(),
       DeviceInfoUtil::GetPulseInterval(),
       sync_client_->GetSendTabToSelfReceivingEnabled(),
