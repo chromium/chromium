@@ -895,6 +895,8 @@ Microsoft::WRL::ComPtr<IMFSample> CreateSampleFromTexture(
   if (need_perform_copy) {
     D3D11_TEXTURE2D_DESC desc;
     input_texture->GetDesc(&desc);
+    desc.Width = static_cast<UINT>(frame->visible_rect().width());
+    desc.Height = static_cast<UINT>(frame->visible_rect().height());
     desc.Usage = D3D11_USAGE_DEFAULT;
     desc.BindFlags = D3D11_BIND_VIDEO_ENCODER;
     desc.ArraySize = 1;
@@ -1164,6 +1166,8 @@ void GenerateResourceOnSyncTokenReleased(
     texture_desc.CPUAccessFlags = 0;
     texture_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
                              D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+    texture_desc.Width = static_cast<UINT>(frame->visible_rect().width());
+    texture_desc.Height = static_cast<UINT>(frame->visible_rect().height());
     Microsoft::WRL::ComPtr<ID3D11Texture2D> shared_texture;
     hr = shared_d3d11_device->CreateTexture2D(&texture_desc, nullptr,
                                               &shared_texture);

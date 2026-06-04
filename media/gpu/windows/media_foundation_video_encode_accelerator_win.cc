@@ -2895,23 +2895,21 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PerformD3DScaling(
 HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DCopying(
     ID3D11Texture2D* input_texture) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  D3D11_TEXTURE2D_DESC input_desc = {};
-  input_texture->GetDesc(&input_desc);
   // Return early if `copied_d3d11_texture_` is already the correct size,
   // avoiding the overhead of creating a new destination texture.
   if (copied_d3d11_texture_) {
     D3D11_TEXTURE2D_DESC copy_desc = {};
     copied_d3d11_texture_->GetDesc(&copy_desc);
-    if (input_desc.Width == copy_desc.Width &&
-        input_desc.Height == copy_desc.Height) {
+    if (static_cast<UINT>(input_visible_size_.width()) == copy_desc.Width &&
+        static_cast<UINT>(input_visible_size_.height()) == copy_desc.Height) {
       return S_OK;
     }
   }
   ComD3D11Device texture_device;
   input_texture->GetDevice(&texture_device);
   D3D11_TEXTURE2D_DESC copy_desc = {
-      .Width = input_desc.Width,
-      .Height = input_desc.Height,
+      .Width = static_cast<UINT>(input_visible_size_.width()),
+      .Height = static_cast<UINT>(input_visible_size_.height()),
       .MipLevels = 1,
       .ArraySize = 1,
       .Format = DXGI_FORMAT_NV12,
