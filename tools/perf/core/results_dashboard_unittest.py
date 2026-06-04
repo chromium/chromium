@@ -3,9 +3,16 @@
 # found in the LICENSE file.
 import json
 import logging
+import sys
 import unittest
 from unittest import mock
 from unittest.mock import call
+
+from pathlib import Path
+
+# Add tools/perf to sys.path.
+FILE_PATH = Path(__file__).resolve()
+sys.path.append(str(FILE_PATH.parents[1]))
 
 from core import results_dashboard
 
@@ -225,3 +232,28 @@ class ResultsDashboardTest(unittest.TestCase):
               break
           self.assertTrue(
               found_token, msg='Upload completion token not found in logs.')
+
+  def testMakeBuildStatusUrlEscapesPathParts(self):
+    # pylint: disable=protected-access
+    url = results_dashboard._MakeBuildStatusUrl('chrome project', 'try bucket',
+                                                'builder name', '123 456')
+    self.assertEqual(
+        'https://ci.chromium.org/ui/p/chrome%20project/builders/'
+        'try%20bucket/builder%20name/123%20456', url)
+
+  @mock.patch('urllib.request.urlopen')
+  def testSendResultsJson(self, urlopen_mock):
+    # pylint: disable=protected-access
+    results_dashboard._SendResultsJson(self.dashboard_url, '{"foo": "bar baz"}',
+                                       self.dummy_token_generator)
+
+    urlopen_mock.assert_called_once_with(mock.ANY, timeout=60 * 5)
+    req = urlopen_mock.call_args[0][0]
+    self.assertEqual(self.dashboard_url + results_dashboard.SEND_RESULTS_PATH,
+                     req.full_url)
+    self.assertEqual('Bearer Arthur-Merlin', req.headers['Authorization'])
+    self.assertEqual(b'data=%7B%22foo%22%3A+%22bar+baz%22%7D', req.data)
+
+
+if __name__ == '__main__':
+  unittest.main()

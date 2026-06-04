@@ -7,7 +7,6 @@ from __future__ import print_function
 import shlex
 import subprocess
 import sys
-from six.moves import input  # pylint: disable=redefined-builtin
 
 
 COLOR_ANSI_CODE_MAP = {

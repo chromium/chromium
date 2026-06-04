@@ -17,7 +17,7 @@ import sys
 import tempfile
 import time
 import logging
-import six.moves.urllib.parse  # pylint: disable=import-error
+import urllib.parse
 
 from core import results_dashboard
 
@@ -212,9 +212,8 @@ def GetDashboardUrl(name, configuration_name, results_url,
   """
   name = name.replace('.reference', '')
   dashboard_url = results_url + RESULTS_LINK_PATH % (
-      six.moves.urllib.parse.quote(perf_dashboard_machine_group),
-      six.moves.urllib.parse.quote(configuration_name),
-      six.moves.urllib.parse.quote(name),
+      urllib.parse.quote(perf_dashboard_machine_group),
+      urllib.parse.quote(configuration_name), urllib.parse.quote(name),
       _CommitPositionNumber(got_revision_cp))
 
   return dashboard_url

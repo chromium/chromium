@@ -2,7 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import json
+import sys
 import unittest
+
+from pathlib import Path
+
+# Add tools/perf to sys.path.
+FILE_PATH = Path(__file__).resolve()
+sys.path.append(str(FILE_PATH.parents[1]))
 
 from core import results_merger
 
@@ -460,3 +467,7 @@ class ResultMergerTest(unittest.TestCase):
         2, len(merged_results['tests']['Benchmark-1']['Story-1']['times']))
     self.assertEqual(20.0,
                      merged_results['tests']['Benchmark-1']['Story-1']['time'])
+
+
+if __name__ == '__main__':
+  unittest.main()

@@ -3,15 +3,23 @@
 # found in the LICENSE file.
 
 import subprocess
+import sys
 import unittest
 from unittest import mock
+from pathlib import Path
 
-import six
+# Add tools/perf to sys.path.
+FILE_PATH = Path(__file__).resolve()
+sys.path.append(str(FILE_PATH.parents[1]))
+
+from core import path_util
+
+path_util.AddTelemetryToPath()
 
 from core import cli_helpers
 from telemetry import decorators
 
-BUILTIN_MODULE = '__builtin__' if six.PY2 else 'builtins'
+BUILTIN_MODULE = 'builtins'
 
 
 class CLIHelpersTest(unittest.TestCase):
@@ -52,7 +60,7 @@ class CLIHelpersTest(unittest.TestCase):
     ])
 
   @mock.patch(BUILTIN_MODULE + '.print')
-  @mock.patch('core.cli_helpers.input')
+  @mock.patch(BUILTIN_MODULE + '.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
   def testAskAgainOnInvalidAnswer(self, input_mock, print_mock):
@@ -65,7 +73,7 @@ class CLIHelpersTest(unittest.TestCase):
     ])
 
   @mock.patch(BUILTIN_MODULE + '.print')
-  @mock.patch('core.cli_helpers.input')
+  @mock.patch(BUILTIN_MODULE + '.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
   def testAskWithCustomAnswersAndDefault(self, input_mock, print_mock):
@@ -75,17 +83,20 @@ class CLIHelpersTest(unittest.TestCase):
     print_mock.assert_called_once_with(
         '\033[96mReady? [BAR/foo] \033[0m', end=' ')
 
-  @mock.patch('core.cli_helpers.input')
+  @mock.patch(BUILTIN_MODULE + '.print')
+  @mock.patch(BUILTIN_MODULE + '.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
-  def testAskWithCustomAnswersAndCaps(self, input_mock):
+  def testAskWithCustomAnswersAndCaps(self, input_mock, print_mock):
     input_mock.side_effect = ['Foo/Bar/Baz']
     self.assertEqual(
         cli_helpers.Ask('Ready?', ["Foo/Bar/Baz", "other"]),
         'Foo/Bar/Baz')
+    print_mock.assert_called_once_with(
+        '\033[96mReady? [Foo/Bar/Baz/other] \033[0m', end=' ')
 
   @mock.patch(BUILTIN_MODULE + '.print')
-  @mock.patch('core.cli_helpers.input')
+  @mock.patch(BUILTIN_MODULE + '.input')
   # https://crbug.com/938575.
   @decorators.Disabled('chromeos')
   def testAskNoDefaultCustomAnswersAsList(self, input_mock, print_mock):
@@ -169,7 +180,7 @@ class CLIHelpersTest(unittest.TestCase):
       cli_helpers.Run('cmd with args')
 
   @mock.patch(BUILTIN_MODULE + '.print')
-  @mock.patch('core.cli_helpers.input')
+  @mock.patch(BUILTIN_MODULE + '.input')
   def testPrompt(self, input_mock, print_mock):
     input_mock.side_effect = ['', '42']
     self.assertEqual(cli_helpers.Prompt(

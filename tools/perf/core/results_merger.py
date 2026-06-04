@@ -14,8 +14,6 @@ import copy
 import json
 import sys
 
-import six
-
 # These fields must appear in the test result output
 REQUIRED = {
     'interrupted',
@@ -334,12 +332,6 @@ def merge_value(source, dest, key, merge_func):
   try:
     dest[key] = merge_func(source[key], dest[key])
   except MergeException as e:
-    # The message attribute does not exist in Python 3, but Python 3's exception
-    # chaining should get us equivalent functionality.
-    if six.PY2:
-      e.message = "MergeFailure for %s\n%s" % (key, e.message)  # pylint: disable=attribute-defined-outside-init
-      e.args = tuple([e.message] + list(e.args[1:]))
-      raise
     raise MergeException('MergeFailure for %s\n%s' % (key, e))
   del source[key]
 

@@ -11,11 +11,11 @@ import os
 import pathlib
 import io
 import shlex
+import urllib.parse
 
 
 from typing import Callable, Final, Iterable, Optional, Union
 
-import six.moves.urllib.parse  # pylint: disable=import-error
 
 from core import benchmark_finders
 from core import benchmark_utils
@@ -131,7 +131,7 @@ class _PerfPlatform(object):
     if self.pinpoint_only:
       return None
     return ('https://ci.chromium.org/p/chrome/builders/ci/%s' %
-            six.moves.urllib.parse.quote(self._name))
+            urllib.parse.quote(self._name))
 
 
 class BenchmarkConfig(object):

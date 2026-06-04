@@ -3,8 +3,15 @@
 # found in the LICENSE file.
 
 import subprocess
+import sys
 import unittest
 from unittest import mock
+
+from pathlib import Path
+
+# Add tools/perf to sys.path.
+FILE_PATH = Path(__file__).resolve()
+sys.path.append(str(FILE_PATH.parents[2]))
 
 from core.services import luci_auth
 
@@ -56,3 +63,7 @@ class TestLuciAuth(unittest.TestCase):
         '  Scopes:\n'
         '    https://www.example.com/auth/userinfo.email\n')
     self.assertEqual(luci_auth.GetUserEmail(), 'someone@example.com')
+
+
+if __name__ == '__main__':
+  unittest.main()

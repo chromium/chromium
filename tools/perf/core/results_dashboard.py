@@ -20,16 +20,10 @@ import time
 import traceback
 import zlib
 import logging
-
-import six
-import six.moves.urllib.error  # pylint: disable=import-error
-import six.moves.urllib.parse  # pylint: disable=import-error
-import six.moves.urllib.request  # pylint: disable=import-error
-
-if six.PY2:
-  import httplib  # pylint: disable=wrong-import-order,import-error
-else:
-  import http.client as httplib  # pylint: disable=import-error
+import http.client as httplib
+import urllib.error
+import urllib.parse
+import urllib.request
 
 # TODO(crbug.com/40641687): Figure out how to get httplib2 hermetically.
 import httplib2  # pylint: disable=import-error
@@ -314,10 +308,8 @@ def _MakeBuildStatusUrl(project, buildbucket, buildername, buildnumber):
   if not buildbucket:
     buildbucket = 'ci'
   return 'https://ci.chromium.org/ui/p/%s/builders/%s/%s/%s' % (
-      six.moves.urllib.parse.quote(project),
-      six.moves.urllib.parse.quote(buildbucket),
-      six.moves.urllib.parse.quote(buildername),
-      six.moves.urllib.parse.quote(str(buildnumber)))
+      urllib.parse.quote(project), urllib.parse.quote(buildbucket),
+      urllib.parse.quote(buildername), urllib.parse.quote(str(buildnumber)))
 
 
 def _GetBuildStatusUriColumn(project, buildbucket, buildername, buildnumber):
@@ -433,17 +425,14 @@ def _SendResultsJson(url, results_json, token_generator_callback):
   """
   # When data is provided to urllib2.Request, a POST is sent instead of GET.
   # The data must be in the application/x-www-form-urlencoded format.
-  data = six.moves.urllib.parse.urlencode({
-      'data': results_json
-  }).encode('utf-8')
-  req = six.moves.urllib.request.Request(url + SEND_RESULTS_PATH, data)
+  data = urllib.parse.urlencode({'data': results_json}).encode('utf-8')
+  req = urllib.request.Request(url + SEND_RESULTS_PATH, data)
   try:
     oauth_token = token_generator_callback()
     req.headers['Authorization'] = 'Bearer %s' % oauth_token
 
-    six.moves.urllib.request.urlopen(req, timeout=60 * 5)
-  except (six.moves.urllib.error.HTTPError, six.moves.urllib.error.URLError,
-          httplib.HTTPException):
+    urllib.request.urlopen(req, timeout=60 * 5)
+  except (urllib.error.HTTPError, urllib.error.URLError, httplib.HTTPException):
     error = traceback.format_exc()
 
     if 'HTTPError: 400' in error:

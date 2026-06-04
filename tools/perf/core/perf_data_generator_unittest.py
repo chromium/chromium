@@ -2,21 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import copy
+import io
 import json
 import os
+import sys
 import tempfile
 import unittest
 from unittest import mock
 
-import six
+from pathlib import Path
 
-# This is necessary because io.StringIO in Python 2 does not accept str, only
-# unicode. BytesIO works in Python 2, but then complains when given a str
-# instead of bytes in Python 3.
-if six.PY2:
-  from cStringIO import StringIO  # pylint: disable=wrong-import-order,import-error
-else:
-  from io import StringIO  # pylint: disable=wrong-import-order
+# Add tools/perf to sys.path.
+FILE_PATH = Path(__file__).resolve()
+sys.path.append(str(FILE_PATH.parents[1]))
+
+from core import path_util
+
+path_util.AddTelemetryToPath()
 
 from core import perf_data_generator
 from core.perf_data_generator import BenchmarkMetadata
@@ -70,7 +72,7 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
         perf_data_generator.GTEST_BENCHMARKS)
     self.original_OTHER_BENCHMARKS = copy.deepcopy(
         perf_data_generator.OTHER_BENCHMARKS)
-    self.test_stream = StringIO()
+    self.test_stream = io.StringIO()
     self.mock_get_non_telemetry_benchmarks = mock.patch(
         'core.perf_data_generator.get_scheduled_non_telemetry_benchmarks')
     self.get_non_telemetry_benchmarks = (
@@ -125,3 +127,7 @@ class TestIsPerfBenchmarksSchedulingValid(unittest.TestCase):
     self.assertIn(
         'Benchmark tesla is scheduled on perf waterfall but not tracked',
         self.test_stream.getvalue())
+
+
+if __name__ == '__main__':
+  unittest.main()
