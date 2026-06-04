@@ -188,3 +188,50 @@ suite('Chrome OS with account manager disabled', function() {
     assertEquals(oldRoute, Router.getInstance().getCurrentRoute());
   });
 });
+
+suite('Chrome OS with replaceSyncPromosWithSignInPromos enabled', function() {
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isAccountManagerEnabled: true,
+      replaceSyncPromosWithSignInPromos: true,
+    });
+  });
+
+  setup(async function() {
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
+    profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
+    ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
+
+    accountManagerBrowserProxy = new TestAccountManagerBrowserProxy();
+    AccountManagerBrowserProxyImpl.setInstance(accountManagerBrowserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    peoplePage = document.createElement('settings-people-page');
+    peoplePage.prefs = DEFAULT_PREFS;
+    document.body.appendChild(peoplePage);
+
+    await accountManagerBrowserProxy.whenCalled('getAccounts');
+    await syncBrowserProxy.whenCalled('getSyncStatus');
+    flush();
+  });
+
+  teardown(function() {
+    peoplePage.remove();
+  });
+
+  test('SyncSetupRowSublabel_PassphraseError', () => {
+    simulateSyncStatus({
+      signedInState: SignedInState.SYNCING,
+      hasError: true,
+      statusAction: StatusAction.ENTER_PASSPHRASE,
+      statusText:
+          'To use and save Chromium data in your Google Account, enter your passphrase',
+    });
+
+    const syncSetupRow =
+        peoplePage.shadowRoot!.querySelector<CrLinkRowElement>('#sync-setup')!;
+    assertEquals(peoplePage.syncStatus!.statusText, syncSetupRow.subLabel);
+  });
+});
