@@ -1182,7 +1182,7 @@ TEST_F(ContextualTasksUiTest, CanExpandToFullTab_BecomesEligibleMidSession) {
 }
 
 TEST_F(ContextualTasksUiTest,
-       DidFinishNavigation_PushTaskDetails_InitialNavigation) {
+       DidFinishNavigation_PushTaskDetails_ZeroStateNavigation) {
   MockTaskInfoDelegate delegate;
   SetupMockDelegate(&delegate, std::nullopt, std::nullopt, std::nullopt);
 
@@ -1206,6 +1206,27 @@ TEST_F(ContextualTasksUiTest,
   auto handle = CreateMockNavigationHandle(zero_state_url);
   handle->set_has_committed(true);
   observer->DidFinishNavigation(handle.get());
+
+  GURL zero_state_url_with_history_ui(
+      "https://www.google.com/search?udm=50&atvm=1");
+
+  base::Uuid task_id2 =
+      base::Uuid::ParseCaseInsensitive("20000000-0000-0000-0000-000000000000");
+  ContextualTask task2(task_id2);
+
+  // The URL may change while still in zero state (i.e. open/close history UI)
+  // We expect PushTaskDetailsToPage to be called with replace_navigation_entry
+  // = true.
+  EXPECT_CALL(*contextual_tasks_service_, CreateTask()).WillOnce(Return(task2));
+  EXPECT_CALL(delegate,
+              PushTaskDetailsToPage(std::make_optional(task_id2),
+                                    zero_state_url_with_history_ui,
+                                    /*replace_navigation_entry=*/true))
+      .Times(1);
+
+  auto handle2 = CreateMockNavigationHandle(zero_state_url_with_history_ui);
+  handle2->set_has_committed(true);
+  observer->DidFinishNavigation(handle2.get());
 }
 
 TEST_F(ContextualTasksUiTest,
