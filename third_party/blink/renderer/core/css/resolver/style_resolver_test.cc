@@ -673,8 +673,13 @@ TEST_F(StyleResolverTest, BackgroundImageFetch) {
       << "Fetch for display:contents";
   EXPECT_FALSE(GetBackgroundImageValue(inside_contents).IsCachePending())
       << "Fetch for image inherited from display:contents";
-  EXPECT_TRUE(GetBackgroundImageValue(non_slotted).IsCachePending())
-      << "No fetch for element outside the flat tree";
+
+  if (RuntimeEnabledFeatures::GetComputedStyleOutsideFlatTreeEnabled()) {
+    EXPECT_TRUE(GetBackgroundImageValue(non_slotted).IsCachePending())
+        << "No fetch for element outside the flat tree";
+  } else {
+    ASSERT_EQ(non_slotted->GetComputedStyle(), nullptr);
+  }
 
   // Added two frameset elements to hit the MatchedPropertiesCache for the
   // second one. Frameset adjusts style to display:block in StyleAdjuster, but
@@ -1175,6 +1180,8 @@ TEST_F(StyleResolverTestCQ, CascadedValuesForPseudoElementInContainer) {
 }
 
 TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
+  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="host"><span></span></div>
   )HTML");
@@ -1207,6 +1214,8 @@ TEST_F(StyleResolverTest, EnsureComputedStyleSlotFallback) {
 }
 
 TEST_F(StyleResolverTest, EnsureComputedStyleOutsideFlatTree) {
+  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
+
   GetDocument().documentElement()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
     <div id=host>
       <template shadowrootmode=open>

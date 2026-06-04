@@ -4063,7 +4063,6 @@ crbug.com/367426146 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpEncodingParam
 crbug.com/366307017 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-exit.html [ Failure Pass ]
 [ Mac15 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Timeout ]
 [ Win11-arm64 ] external/wpt/html/browsers/history/the-location-interface/location_hash_set_empty_string.html [ Failure Pass Timeout ]
-crbug.com/40571175 external/wpt/html/dom/elements/global-attributes/dir-shadow-39.html [ Failure ]
 crbug.com/364665776 [ Win ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/SourceBuffer-short-frame-endOfStream.html [ Timeout ]
 [ Win11-arm64 ] external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]
 [ Win11-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html [ Failure ]

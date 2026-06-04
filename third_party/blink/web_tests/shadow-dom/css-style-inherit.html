@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <script src='../resources/testharness.js'></script>
 <script src='../resources/testharnessreport.js'></script>
 <script src='resources/shadow-dom.js'></script>
@@ -29,8 +28,8 @@
 test(() => {
   convertTemplatesToShadowRootsWithin(host);
 
-  assert_equals(getComputedStyle(span0).color, 'rgb(0, 0, 0)',
-                'An element which is not assigned to any slot should not inherit a style from the parent.');
+  assert_equals(getComputedStyle(span0).color, '',
+                'An element which is not assigned to any slot should have empty styles.');
   assert_equals(getComputedStyle(host.shadowRoot.querySelector('slot')).color, 'rgb(0, 128, 0)',
                 'A slot should inherit style from the parent.');
 

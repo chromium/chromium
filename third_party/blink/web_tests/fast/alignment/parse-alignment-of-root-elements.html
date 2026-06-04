@@ -155,26 +155,26 @@ test(function() {
     shadowHost.style.alignItems = "center";
     shadowNode.style.alignItems = "start";
     slotted.style.alignItems = "end";
-    checkValues(slotted, "alignItems", "align-items", "end", "end");
+    checkValues(slotted, "alignItems", "align-items", "end", "");
     slotted.style.alignItems = "";
-    checkValues(slotted, "alignItems", "align-items", "", "normal");
+    checkValues(slotted, "alignItems", "align-items", "", "");
     slotted.style.alignSelf = "start";
-    checkValues(slotted, "alignSelf", "align-self", "start", "start");
+    checkValues(slotted, "alignSelf", "align-self", "start", "");
     slotted.style.alignSelf = "auto";
-    checkValues(slotted, "alignSelf", "align-self", "auto", "auto");
+    checkValues(slotted, "alignSelf", "align-self", "auto", "");
 }, "Check out how align-self uses the 'shadowHost' as 'slotted' element's parent while 'slot' is not assigned.");
 
 test(function() {
     shadowHost.style.justifyItems = "center";
     shadowNode.style.justifyItems = "right";
     slotted.style.justifyItems = "left";
-    checkValues(slotted, "justifyItems", "justify-items", "left", "left");
+    checkValues(slotted, "justifyItems", "justify-items", "left", "");
     slotted.style.justifyItems = "";
-    checkValues(slotted, "justifyItems", "justify-items", "", "normal");
+    checkValues(slotted, "justifyItems", "justify-items", "", "");
     slotted.style.justifySelf = "start";
-    checkValues(slotted, "justifySelf", "justify-self", "start", "start");
+    checkValues(slotted, "justifySelf", "justify-self", "start", "");
     slotted.style.justifySelf = "auto";
-    checkValues(slotted, "justifySelf", "justify-self", "auto", "auto");
+    checkValues(slotted, "justifySelf", "justify-self", "auto", "");
 }, "Check out how justify-self uses the 'shadowHost' as 'slotted' element's parent while 'slot' is not assigned.");
 
 test(function() {
@@ -186,13 +186,13 @@ test(function() {
     checkValues(document.documentElement, "justifyItems", "justify-items",  "legacy center", "legacy center");
     checkValues(shadowHost, "justifyItems", "justify-items",  "legacy", "legacy center");
     slotted.style.justifyItems = "legacy";
-    checkValues(slotted, "justifyItems", "justify-items",  "legacy", "normal");
+    checkValues(slotted, "justifyItems", "justify-items",  "legacy", "");
     slotted.style.justifySelf = "auto";
-    checkValues(slotted, "justifySelf", "justify-self",  "auto", "auto");
+    checkValues(slotted, "justifySelf", "justify-self",  "auto", "");
     shadowNode.style.justifyItems = "legacy";
     checkValues(shadowNode, "justifyItems", "justify-items", "legacy", "legacy center");
-    checkValues(slotted, "justifyItems", "justify-items", "legacy", "normal");
-    checkValues(slotted, "justifySelf", "justify-self", "auto", "auto");
+    checkValues(slotted, "justifyItems", "justify-items", "legacy", "");
+    checkValues(slotted, "justifySelf", "justify-self", "auto", "");
     document.documentElement.style.justifyItems = "legacy";
 }, "Check out how the 'legacy' keyword in justify-items affects the 'slotted' elements while 'slot' is not assigned.");
 

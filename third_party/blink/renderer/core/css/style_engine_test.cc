@@ -3111,6 +3111,8 @@ TEST_F(StyleEngineTest, RecalcPropagatedWritingMode) {
 }
 
 TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
+  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       R"HTML(<div id="host"><div id="outer"><div id="inner"><div id="innermost"></div></div></div></div>)HTML");
 
@@ -3284,6 +3286,8 @@ TEST_F(StyleEngineTest, RemoveStyleRecalcRootFromFlatTree) {
 }
 
 TEST_F(StyleEngineTest, SlottedWithEnsuredStyleOutsideFlatTree) {
+  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="host"><span></span></div>
   )HTML");
@@ -5948,6 +5952,8 @@ TEST_F(StyleEngineTest, CascadeLayersSheetsRemoved) {
 }
 
 TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
+  ScopedGetComputedStyleOutsideFlatTreeForTest scoped_feature(true);
+
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<div id=host></div>");
   auto* host = GetDocument().getElementById(AtomicString("host"));
   ASSERT_TRUE(host);
