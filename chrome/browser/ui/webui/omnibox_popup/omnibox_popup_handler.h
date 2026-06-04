@@ -41,6 +41,7 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler {
 
   // omnibox_popup::mojom::PageHandler:
   void ShowContextMenu(const gfx::Point& point) override;
+  void CloseUI() override;
 
   // omnibox_popup::mojom::Page:
   void OnShow();

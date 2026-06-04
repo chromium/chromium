@@ -76,6 +76,10 @@ gfx::RoundedCornersF OmniboxPopupWebUIBaseContent::GetRoundedCornerRadii()
                               corner_radius, corner_radius);
 }
 
+bool OmniboxPopupWebUIBaseContent::EscClosesUI() const {
+  return true;
+}
+
 void OmniboxPopupWebUIBaseContent::OnLocationBarBoundsChanged() {
   // Track if the location bar width actually changed. This indicates a browser
   // window resize. In that case, bypass the height debouncer to prevent
@@ -247,7 +251,8 @@ void OmniboxPopupWebUIBaseContent::SetContentURL(std::string_view url) {
 void OmniboxPopupWebUIBaseContent::LoadContent() {
   DCHECK(!content_url_.is_empty());
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
-      content_url_, location_bar_->GetProfile(), IDS_TASK_MANAGER_OMNIBOX);
+      content_url_, location_bar_->GetProfile(), IDS_TASK_MANAGER_OMNIBOX,
+      EscClosesUI());
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
   // LocationBarView can be instantiated in windows that do not have a

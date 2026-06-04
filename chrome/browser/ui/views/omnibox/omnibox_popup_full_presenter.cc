@@ -131,7 +131,9 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
     }
 
     controller()->client()->FocusWebContents();
-    controller()->edit_model()->SetCaretVisibility(false);
+    controller()->edit_model()->OnKillFocus();
+    // TODO(b/519724566): Look into using popup_closer here.
+    controller()->StopAutocomplete(/*clear_result=*/true);
 
     controller()->popup_state_manager()->SetPopupState(
         OmniboxPopupState::kNone);

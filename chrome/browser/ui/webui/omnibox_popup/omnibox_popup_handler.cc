@@ -21,6 +21,12 @@ void OmniboxPopupHandler::ShowContextMenu(const gfx::Point& point) {
   }
 }
 
+void OmniboxPopupHandler::CloseUI() {
+  if (embedder_) {
+    embedder_->CloseUI();
+  }
+}
+
 void OmniboxPopupHandler::OnShow() {
   page_->OnShow();
 }

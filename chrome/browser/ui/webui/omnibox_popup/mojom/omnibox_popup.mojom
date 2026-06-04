@@ -17,6 +17,9 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Opens context menu.
   ShowContextMenu(gfx.mojom.Point point);
+
+  // Closes the Omnibox Popup.
+  CloseUI();
 };
 
 // The WebUI page for the Omnibox Popup.
