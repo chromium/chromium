@@ -345,7 +345,7 @@ constexpr std::array kIgnoredFields = {
 // These headers are completely ignored for the purposes of matching when they
 // appear in the `headers` field.
 constexpr auto kIgnoredHeaders = base::MakeFixedFlatSet<std::string_view>({
-    "purpose",
+    // Corresponds to `blink::kSecPurposeHeaderName` but in lower case.
     "sec-purpose",
 });
 using IgnoredHeadersType = decltype(kIgnoredHeaders);
