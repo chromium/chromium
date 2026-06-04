@@ -38,6 +38,7 @@
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -47,6 +48,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -58,9 +60,7 @@ class GlicExperimentalOptInTest
  public:
   using BaseClass = GlicBrowserTestMixin<MixinBasedInProcessBrowserTest>;
   using MixinBasedInProcessBrowserTest::browser;
-  GlicExperimentalOptInTest() : GlicExperimentalOptInTest(GURL()) {}
-  explicit GlicExperimentalOptInTest(GURL opt_in_url)
-      : opt_in_url_(std::move(opt_in_url)) {}
+  GlicExperimentalOptInTest() = default;
   ~GlicExperimentalOptInTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -78,12 +78,8 @@ class GlicExperimentalOptInTest
     opt_in_test_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/webui/glic/");
     ASSERT_TRUE(opt_in_test_server_.InitializeAndListen());
-    GURL test_url;
-    if (!opt_in_url_.is_empty()) {
-      test_url = opt_in_url_;
-    } else {
-      test_url = opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
-    }
+    GURL test_url =
+        opt_in_test_server_.GetURL("a.test", "/test_data/page.html");
 
     base::FieldTrialParams params;
     params["glic-experimental-triggering-opt-in-url"] = test_url.spec();
@@ -136,7 +132,7 @@ class GlicExperimentalOptInTest
     return widget;
   }
 
-  content::WebContents* WaitForGuestContents(bool expect_success = true) {
+  content::WebContents* WaitForGuestContents() {
     auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
     if (!guest_view) {
       return nullptr;
@@ -145,49 +141,8 @@ class GlicExperimentalOptInTest
     if (!guest_contents) {
       return nullptr;
     }
-    bool load_success = content::WaitForLoadStop(guest_contents);
-    if (expect_success) {
-      EXPECT_TRUE(load_success);
-    }
+    EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
     return guest_contents;
-  }
-
-  views::WebView* GetDialogWebView() {
-    GlicExperimentalOptInDialogView* dialog_view =
-        service()->opt_in_controller().GetDialogViewForTesting();
-    return dialog_view ? dialog_view->GetWebViewForTesting() : nullptr;
-  }
-
-  content::WebContents* GetDialogWebContents() {
-    views::WebView* web_view = GetDialogWebView();
-    return web_view ? web_view->GetWebContents() : nullptr;
-  }
-
-  static constexpr char kCommonJs[] = R"js(
-function getElement(name) { return document.getElementById(name); }
-function getRequiredElement(name) {
-  const e = getElement(name);
-  if (!e) { throw new Error(`Could not find element: ${name}`); }
-  return e;
-}
-function getErrorPanel() { return getRequiredElement('errorPanel'); }
-function getTryAgainButton() { return getRequiredElement('tryAgainButton'); }
-function getCloseButtonError() { return getRequiredElement('closeButtonError'); }
-function getWebview() { return getElement('webview'); }
-function isVisible(e) { return !!(e && !e.hidden && window.getComputedStyle(e).display !== 'none'); }
-function isHidden(e) { return !!(e && e.hidden); }
-)js";
-
-  content::EvalJsResult EvalJs(
-      const content::ToRenderFrameHost& execution_target,
-      const std::string& js_code) {
-    return content::EvalJs(execution_target, std::string(kCommonJs) + js_code);
-  }
-
-  [[nodiscard]] testing::AssertionResult ExecJs(
-      const content::ToRenderFrameHost& execution_target,
-      const std::string& js_code) {
-    return content::ExecJs(execution_target, std::string(kCommonJs) + js_code);
   }
 
   void VerifyWebviewURLForState(const std::string& expected_state_value) {
@@ -225,7 +180,6 @@ function isHidden(e) { return !!(e && e.hidden); }
     extensions::TabHelper::CreateForWebContents(web_contents);
   }
 
-  GURL opt_in_url_;
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription creation_subscription_;
   net::EmbeddedTestServer opt_in_test_server_;
@@ -237,7 +191,12 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
   views::Widget* widget = ShowDialogAndWait();
   ASSERT_TRUE(widget);
 
-  content::WebContents* dialog_contents = GetDialogWebContents();
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  content::WebContents* dialog_contents = web_view->GetWebContents();
   ASSERT_TRUE(dialog_contents);
 
   EXPECT_TRUE(content::WaitForLoadStop(dialog_contents));
@@ -408,7 +367,10 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, ResizesToContent) {
   views::Widget* widget = ShowDialogAndWait();
   ASSERT_TRUE(widget);
 
-  views::WebView* web_view = GetDialogWebView();
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
   ASSERT_TRUE(web_view);
 
   // Verify that the WebView's preferred size resizes to match the loaded
@@ -429,7 +391,10 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   views::Widget* widget = ShowDialogAndWait();
   ASSERT_TRUE(widget);
 
-  views::WebView* web_view = GetDialogWebView();
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
   ASSERT_TRUE(web_view);
 
   // Track the view and widget lifetime.
@@ -456,7 +421,10 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabDraggedToAnotherWindow) {
   views::Widget* widget = ShowDialogAndWait(tab1);
   ASSERT_TRUE(widget);
 
-  views::WebView* web_view = GetDialogWebView();
+  GlicExperimentalOptInDialogView* dialog_view =
+      service()->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
   ASSERT_TRUE(web_view);
 
   // Track the view and widget lifetime.
@@ -507,7 +475,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
                                       OptInFlow::kExperimentalTriggering, 1);
 
   // Change location hash to #continue to simulate user accepting the opt-in.
-  ASSERT_TRUE(ExecJs(guest_contents, "window.location.hash = '#continue';"));
+  ASSERT_TRUE(
+      content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
 
   // Wait for the widget to close.
   views::test::WidgetDestroyedWaiter(widget).Wait();
@@ -559,7 +528,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
                                       OptInFlow::kExperimentalTriggering, 1);
 
   // Change location hash to #noThanks.
-  ASSERT_TRUE(ExecJs(guest_contents, "window.location.hash = '#noThanks';"));
+  ASSERT_TRUE(
+      content::ExecJs(guest_contents, "window.location.hash = '#noThanks';"));
 
   // Wait for the widget to close.
   views::test::WidgetDestroyedWaiter(widget).Wait();
@@ -637,7 +607,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInActuation) {
       RequiredExperimentalOptIn::kActuation, 1);
 
   // Accept opt-in.
-  ASSERT_TRUE(ExecJs(guest_contents, "window.location.hash = '#continue';"));
+  ASSERT_TRUE(
+      content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
 
   views::test::WidgetDestroyedWaiter(widget).Wait();
 
@@ -685,7 +656,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
       RequiredExperimentalOptIn::kExperimental, 1);
 
   // Accept opt-in.
-  ASSERT_TRUE(ExecJs(guest_contents, "window.location.hash = '#continue';"));
+  ASSERT_TRUE(
+      content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
 
   views::test::WidgetDestroyedWaiter(widget).Wait();
 
@@ -736,7 +708,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, MultipleOptInRequests) {
   EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
 
   // Accept opt-in.
-  ASSERT_TRUE(ExecJs(guest_contents, "window.location.hash = '#continue';"));
+  ASSERT_TRUE(
+      content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
 
   views::test::WidgetDestroyedWaiter(widget1).Wait();
 
@@ -780,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, SyncsCookiesToWebview) {
   // accessible. Note that FakeGaia hardcodes ".google.fr" for multilogin
   // cookies.
   std::string webview_cookies =
-      EvalJs(guest_contents, "document.cookie").ExtractString();
+      content::EvalJs(guest_contents, "document.cookie").ExtractString();
   EXPECT_NE(
       webview_cookies.find(std::string("SID=") + FakeGaiaMixin::kFakeSIDCookie),
       std::string::npos)
@@ -795,11 +768,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
   base::UserActionTester tester;
   Profile* profile = browser()->profile();
 
-  signin::SetAutomaticIssueOfAccessTokens(
-      IdentityManagerFactory::GetForProfile(profile), false);
-
   // Invalidate primary account credentials so that prod GlicCookieSynchronizer
-  // definitively fails to fetch a token.
+  // fails.
   InvalidateAccount(profile);
 
   auto* service_ptr = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
@@ -809,14 +779,15 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Capture the dialog result to verify it gets rejected upon closing.
-  base::test::TestFuture<bool> opt_in_result;
-  views::Widget* widget =
-      ShowDialogAndWait(web_contents, opt_in_result.GetCallback());
+  views::Widget* widget = ShowDialogAndWait(web_contents);
   ASSERT_TRUE(widget);
 
-  content::WebContents* dialog_contents = GetDialogWebContents();
+  GlicExperimentalOptInDialogView* dialog_view =
+      service_ptr->opt_in_controller().GetDialogViewForTesting();
+  ASSERT_TRUE(dialog_view);
+  views::WebView* web_view = dialog_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+  content::WebContents* dialog_contents = web_view->GetWebContents();
   ASSERT_TRUE(dialog_contents);
   EXPECT_TRUE(content::WaitForLoadStop(dialog_contents));
 
@@ -826,29 +797,17 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
                 "Glic.ExperimentalTriggering.OptIn.Experimental.Shown"),
             1);
 
-  // Wait for the async cookie sync to fail and the error panel to become
-  // visible.
-  bool error_panel_visible = base::test::RunUntil([this, dialog_contents]() {
-    return EvalJs(dialog_contents, "isVisible(getErrorPanel())").ExtractBool();
-  });
-  ASSERT_TRUE(error_panel_visible);
-
-  // Because cookie sync fails, the webview src is never set.
+  // Because cookie sync fails, the webview src is never set. EvalJs
+  // synchronously verifies JS execution completed without setting src.
+  // Therefore, no guest webview loads, ensuring 0 impressions non-racily.
   EXPECT_EQ(false,
-            EvalJs(dialog_contents, "!!getWebview()?.hasAttribute('src')"));
+            content::EvalJs(
+                dialog_contents,
+                "!!document.querySelector('webview')?.hasAttribute('src')"));
   EXPECT_EQ(0u, GetGuestViewManager()->num_guests_created());
   EXPECT_EQ(tester.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
 
-  // Verify the Try Again button is present in the DOM.
-  EXPECT_EQ(true, EvalJs(dialog_contents, "!!getTryAgainButton()"));
-
-  // Click the close button inside the error panel to dismiss the dialog.
-  views::test::WidgetDestroyedWaiter waiter(widget);
-  ASSERT_TRUE(ExecJs(dialog_contents,
-                     "setTimeout(() => getCloseButtonError().click(), 0);"));
-  waiter.Wait();
-
-  EXPECT_FALSE(opt_in_result.Get());
+  service_ptr->opt_in_controller().CloseDialog(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpenGoogleLinkInNewTab) {
@@ -862,8 +821,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpenGoogleLinkInNewTab) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
 
   // Open a google link.
-  ASSERT_TRUE(ExecJs(guest_contents,
-                     "window.open('https://policies.google.com/', '_blank');"));
+  ASSERT_TRUE(content::ExecJs(
+      guest_contents,
+      "window.open('https://policies.google.com/', '_blank');"));
 
   // Wait for the new tab to be created.
   bool tab_created = base::test::RunUntil(
@@ -876,11 +836,6 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpenGoogleLinkInNewTab) {
 
   service()->opt_in_controller().CloseDialog(false);
 }
-class GlicExperimentalOptInOfflineTest : public GlicExperimentalOptInTest {
- public:
-  GlicExperimentalOptInOfflineTest()
-      : GlicExperimentalOptInTest(GURL("https://invalid.test/")) {}
-};
 
 // Regression test for b/516601993: Prevent webview from navigating to different
 // origin.
@@ -898,8 +853,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   GURL disallowed_url =
       embedded_https_test_server().GetURL("b.test", "/title1.html");
   content::TestNavigationObserver nav_observer(guest_contents);
-  ASSERT_TRUE(ExecJs(guest_contents, "window.location.href = '" +
-                                         disallowed_url.spec() + "';"));
+  ASSERT_TRUE(content::ExecJs(
+      guest_contents,
+      "window.location.href = '" + disallowed_url.spec() + "';"));
 
   nav_observer.Wait();
 
@@ -909,103 +865,4 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
   service()->opt_in_controller().CloseDialog(false);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInOfflineTest,
-                       OfflinePageLoadFailureAndDismissal) {
-  base::test::TestFuture<bool> opt_in_result;
-  views::Widget* widget =
-      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
-  ASSERT_TRUE(widget);
-
-  content::WebContents* dialog_contents = GetDialogWebContents();
-  ASSERT_TRUE(dialog_contents);
-
-  // Wait for the WebUI host page to load and trigger the offline state.
-  // The error panel should be visible (displaying the offline failure layout),
-  // and the webview guest should be hidden.
-  bool offline_panel_visible = base::test::RunUntil([this, dialog_contents]() {
-    return EvalJs(dialog_contents, "isVisible(getErrorPanel())").ExtractBool();
-  });
-
-  ASSERT_TRUE(offline_panel_visible);
-
-  // Verify that the close button is visible and has positive dimensions.
-  bool close_button_visible =
-      EvalJs(dialog_contents,
-             "(() => {"
-             "  const btn = getCloseButtonError();"
-             "  const rect = btn.getBoundingClientRect();"
-             "  return isVisible(btn) && rect.width > 0 && rect.height > 0;"
-             "})()")
-          .ExtractBool();
-  EXPECT_TRUE(close_button_visible);
-
-  // Click the close button inside the WebUI.
-  ASSERT_TRUE(ExecJs(dialog_contents,
-                     "setTimeout(() => "
-                     "getCloseButtonError().click(), 0);"));
-
-  // The dialog should close and the result should be false (rejected).
-  views::test::WidgetDestroyedWaiter(widget).Wait();
-  EXPECT_FALSE(opt_in_result.Get());
-}
-
-IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInOfflineTest,
-                       OfflinePageLoadFailureAndRetry) {
-  base::test::TestFuture<bool> opt_in_result;
-  views::Widget* widget =
-      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
-  ASSERT_TRUE(widget);
-
-  content::WebContents* dialog_contents = GetDialogWebContents();
-  ASSERT_TRUE(dialog_contents);
-
-  // 1. Wait for the WebUI host page to load and trigger the offline state.
-  bool offline_panel_visible = base::test::RunUntil([this, dialog_contents]() {
-    return EvalJs(dialog_contents, "isVisible(getErrorPanel())").ExtractBool();
-  });
-  ASSERT_TRUE(offline_panel_visible);
-
-  // Wait for the guest view to be created for the initial failed attempt.
-  content::WebContents* guest_contents = WaitForGuestContents(false);
-  ASSERT_TRUE(guest_contents);
-
-  // 2. Intercept the retry request to "invalid.test" and make it succeed.
-  // Because we instantiate this AFTER the first failure, we don't need a
-  // counter. We just unconditionally return a mock success response.
-  content::URLLoaderInterceptor interceptor(base::BindRepeating(
-      [](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() == "invalid.test") {
-          std::string html = "<html><body>Success!</body></html>";
-          content::URLLoaderInterceptor::WriteResponse(
-              "HTTP/1.1 200 OK\nContent-type: text/html\n\n", html,
-              params->client.get());
-          return true;
-        }
-        return false;
-      }));
-
-  // Set up a navigation observer to wait for the retry navigation to complete.
-  content::TestNavigationObserver navigation_observer(guest_contents);
-
-  // 3. Click the "Try Again" button inside the WebUI error panel.
-  bool try_again_button_clicked =
-      ExecJs(dialog_contents, "getTryAgainButton().click();");
-  ASSERT_TRUE(try_again_button_clicked);
-
-  // 4. Wait for the navigation to complete and verify success.
-  navigation_observer.Wait();
-  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
-
-  // Verify the error panel hides and the webview becomes visible.
-  bool error_panel_hidden = base::test::RunUntil([this, dialog_contents]() {
-    return EvalJs(dialog_contents, "isHidden(getErrorPanel())").ExtractBool();
-  });
-  EXPECT_TRUE(error_panel_hidden);
-  EXPECT_EQ(false, EvalJs(dialog_contents, "!!getWebview().hidden"));
-
-  // Clean up by closing the dialog.
-  views::test::WidgetDestroyedWaiter waiter(widget);
-  service()->opt_in_controller().CloseDialog(false);
-  waiter.Wait();
-}
 }  // namespace glic
