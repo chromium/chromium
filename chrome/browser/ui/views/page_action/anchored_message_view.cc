@@ -321,6 +321,11 @@ void AnchoredMessageBubbleView::UpdateContent(
       title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label->SetTextStyle(views::style::STYLE_BODY_4_MEDIUM);
       title_label->SetEnabledColor(ui::kColorSysOnSurface);
+      title_label->SetElideBehavior(gfx::ELIDE_TAIL);
+      // Set width to 0 so the text will fill available space, but not stretch
+      // the bubble.
+      title_label->SetPreferredSize(
+          gfx::Size(0, title_label->GetPreferredSize().height()));
     }
 
     for (const auto& item : expandable_content->items) {
@@ -346,8 +351,12 @@ void AnchoredMessageBubbleView::UpdateContent(
       item_label->SetTextStyle(views::style::STYLE_BODY_4);
       item_label->SetEnabledColor(ui::kColorSysOnSurface);
       item_label->SetMultiLine(false);
-      item_label->SetMaximumWidthSingleLine(450);
       item_label->SetElideBehavior(gfx::ELIDE_TAIL);
+      // Set width to 0 so the text will fill available space, but not stretch
+      // the bubble.
+      item_label->SetPreferredSize(
+          gfx::Size(0, item_label->GetPreferredSize().height()));
+      item_layout->SetFlexForView(item_label, 1);
     }
   } else {
     expand_button_->SetVisible(false);
