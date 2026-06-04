@@ -825,6 +825,7 @@
   E_CPONLY(kColorSharingRecentActivityDialogFaviconContainer) \
   E_CPONLY(kColorSharingRecentActivityDialogActivityContainer) \
   /* Side panel colors. */ \
+  E_CPONLY(kColorSidePanelSearchFieldBackground) \
   E_CPONLY(kColorSidePanelBackground) \
   E_CPONLY(kColorSidePanelBadgeBackground) \
   E_CPONLY(kColorSidePanelBadgeBackgroundUpdated) \

@@ -45,6 +45,10 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
   mixer[kColorSidePanelDialogSecondaryForeground] = {
       ui::kColorSysOnSurfaceSubtle};
 
+  /* Toolbar search within the side panel */
+  mixer[kColorSidePanelSearchFieldBackground] = {
+      ui::kColorSysBaseContainerElevated};
+
   mixer[kColorSidePanelBadgeBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorSidePanelBadgeBackgroundUpdated] = {
       ui::kColorSysTertiaryContainer};
