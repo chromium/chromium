@@ -906,6 +906,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Install command failed"/>
   <int value="7" label="No custom id field in manifest"/>
   <int value="8" label="Manifest id mismatch"/>
+  <int value="9" label="Install in progress"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_install_service_impl.h:WebInstallServiceResult) -->
