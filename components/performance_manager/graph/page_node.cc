@@ -15,6 +15,8 @@ const char* PageNode::ToString(PageType type) {
       return "kTab";
     case PageType::kExtension:
       return "kExtension";
+    case PageType::kNonTabWebUI:
+      return "kNonTabWebUI";
     case PageType::kUnknown:
       return "kUnknown";
   }

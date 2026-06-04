@@ -40,6 +40,8 @@ enum class PageType {
   kTab,
   // An extension background page.
   kExtension,
+  // A non-tab WebUI surface (e.g., Top Chrome WebUI, Side Panel).
+  kNonTabWebUI,
   // Anything else.
   kUnknown,
 };

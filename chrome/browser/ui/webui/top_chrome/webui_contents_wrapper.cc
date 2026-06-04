@@ -13,6 +13,8 @@
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/performance_manager/public/graph/page_node.h"
 #include "components/site_engagement/content/site_engagement_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -109,6 +111,15 @@ WebUIContentsWrapper::WebUIContentsWrapper(const GURL& webui_url,
   web_contents_->SetIgnoreZoomGestures(true);
   web_contents_->SetDelegate(this);
   WebContentsObserver::Observe(web_contents_.get());
+
+  if (auto* pm_registry =
+          performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    // Flagging this web contents as a Non Tab WebUI allows the
+    // PerformanceManager to opt it out of aggressive resource management
+    // strategies (such as freezing).
+    pm_registry->SetPageType(web_contents_.get(),
+                             performance_manager::PageType::kNonTabWebUI);
+  }
 
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
       web_contents_.get());

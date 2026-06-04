@@ -64,6 +64,7 @@ source_set("impl") {
     "//chrome/browser/ui/prefs",
     "//chrome/browser/ui/webui:log_web_ui_url",
     "//chrome/common",
+    "//components/performance_manager",
     "//components/site_engagement/content",
     "//components/zoom",
     "//content/public/browser",
