@@ -56,7 +56,7 @@ class HlsDataSourceProviderImplUnittest : public testing::Test {
 TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // The entire read is satisfied, so there is more to read.
   factory_->AddReadExpectation(0, 16384, 16384);
-  impl_->ReadFromUrl(
+  impl_->ReadFromUrlForTesting(
       {GURL("example.com"), std::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
@@ -71,7 +71,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // Only got 400 bytes of requested, so the stream is _probably_ ended, but
   // we'd have to read again (and get a 0) to be sure.
   factory_->AddReadExpectation(0, 16384, 400);
-  impl_->ReadFromUrl(
+  impl_->ReadFromUrlForTesting(
       {GURL("example.com"), std::nullopt},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
@@ -86,7 +86,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlOnce) {
   // The data source should only be limited to 4242 total bytes and should start
   // at an offset of 99. The read should be from 99, size of 4242.
   factory_->AddReadExpectation(99, 4242, 4242);
-  impl_->ReadFromUrl(
+  impl_->ReadFromUrlForTesting(
       {GURL("example.com"), hls::types::ByteRange::Validate(4242, 99)},
       base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
         ASSERT_TRUE(result.has_value());
@@ -104,7 +104,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestReadFromUrlThenReadAgain) {
   factory_->AddReadExpectation(16384, 16384, 16384);
   factory_->AddReadExpectation(32768, 16384, 3);
   factory_->AddReadExpectation(32771, 16384, 0);
-  impl_->ReadFromUrl(
+  impl_->ReadFromUrlForTesting(
       {GURL("example.com"), std::nullopt},
       base::BindOnce(
           [](HlsDataSourceProviderImpl* impl_ptr,
@@ -175,7 +175,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, TestAbortMidDownload) {
 
   // The Read CB is captured, and so will not execute right away.
   bool has_been_read = false;
-  impl_->ReadFromUrl(
+  impl_->ReadFromUrlForTesting(
       {GURL("example.com"), std::nullopt},
       base::BindOnce(
           [](bool* read_canary, HlsDataSourceProvider::ReadResult result) {
@@ -208,7 +208,7 @@ TEST_F(HlsDataSourceProviderImplUnittest, AbortMidInit) {
   EXPECT_CALL(*mock_data_source, Stop());
 
   bool has_been_read = false;
-  impl_->ReadFromUrl(
+  impl_->ReadFromUrlForTesting(
       {GURL("example.com"), std::nullopt},
       base::BindOnce(
           [](bool* read_canary, HlsDataSourceProvider::ReadResult result) {

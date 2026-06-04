@@ -74,7 +74,7 @@ class MEDIA_EXPORT HlsDataSourceProvider {
 
   // Helper function for reading from a single segment by creating a queue of
   // size 1 for use with `ReadFromCombinedUrlQueue`
-  void ReadFromUrl(UrlDataSegment segment, ReadCb callback);
+  void ReadFromUrlForTesting(UrlDataSegment segment, ReadCb callback);
 };
 
 // A buffer-owning wrapper for an HlsDataSource which can be instructed to

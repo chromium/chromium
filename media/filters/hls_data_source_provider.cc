@@ -12,8 +12,8 @@ namespace media {
 
 HlsDataSourceProvider::~HlsDataSourceProvider() = default;
 
-void HlsDataSourceProvider::ReadFromUrl(UrlDataSegment segment,
-                                        ReadCb callback) {
+void HlsDataSourceProvider::ReadFromUrlForTesting(UrlDataSegment segment,
+                                                  ReadCb callback) {
   base::queue<UrlDataSegment> segments({segment});
   ReadFromCombinedUrlQueue(std::move(segments), std::move(callback));
 }
