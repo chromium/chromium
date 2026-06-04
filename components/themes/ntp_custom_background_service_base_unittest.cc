@@ -7,13 +7,25 @@
 #include <memory>
 
 #include "components/prefs/testing_pref_service.h"
+#include "components/themes/ntp_custom_background_service_observer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class TestNtpCustomBackgroundServiceBase : public NtpCustomBackgroundServiceBase {
+class MockNtpCustomBackgroundServiceObserver
+    : public NtpCustomBackgroundServiceObserver {
+ public:
+  MOCK_METHOD(void, OnCustomBackgroundImageUpdated, (), (override));
+  MOCK_METHOD(void, OnNtpCustomBackgroundServiceShuttingDown, (), (override));
+};
+
+class TestNtpCustomBackgroundServiceBase
+    : public NtpCustomBackgroundServiceBase {
  public:
   TestNtpCustomBackgroundServiceBase(PrefService* pref_service,
                                      NtpBackgroundService* background_service)
       : NtpCustomBackgroundServiceBase(pref_service, background_service) {}
+
+  using NtpCustomBackgroundServiceBase::NotifyAboutBackgrounds;
 };
 
 class NtpCustomBackgroundServiceBaseTest : public testing::Test {
@@ -38,4 +50,16 @@ class NtpCustomBackgroundServiceBaseTest : public testing::Test {
 
 TEST_F(NtpCustomBackgroundServiceBaseTest, Initialization) {
   EXPECT_NE(service_, nullptr);
+}
+
+TEST_F(NtpCustomBackgroundServiceBaseTest, Observers) {
+  testing::StrictMock<MockNtpCustomBackgroundServiceObserver> observer;
+  service_->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnCustomBackgroundImageUpdated());
+  service_->NotifyAboutBackgrounds();
+
+  service_->RemoveObserver(&observer);
+  // StrictMock will fail if the observer is still notified.
+  service_->NotifyAboutBackgrounds();
 }

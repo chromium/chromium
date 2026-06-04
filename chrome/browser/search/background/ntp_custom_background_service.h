@@ -79,10 +79,6 @@ class NtpCustomBackgroundService : public NtpCustomBackgroundServiceBase {
   // Virtual for testing.
   virtual std::optional<CustomBackground> GetCustomBackground();
 
-  // Adds/Removes NtpCustomBackgroundServiceObserver observers.
-  virtual void AddObserver(NtpCustomBackgroundServiceObserver* observer);
-  void RemoveObserver(NtpCustomBackgroundServiceObserver* observer);
-
   void SetThemeDelegate(ThemeDelegate* delegate);
   void RemoveThemeDelegate();
 
@@ -129,7 +125,6 @@ class NtpCustomBackgroundService : public NtpCustomBackgroundServiceBase {
   // Returns false if the custom background pref cannot be parsed, otherwise
   // returns true.
   bool IsCustomBackgroundPrefValid();
-  void NotifyAboutBackgrounds();
 
   // Updates custom background prefs with color for the given |image_url|.
   void UpdateCustomBackgroundPrefsWithColor(const GURL& image_url,
@@ -154,7 +149,6 @@ class NtpCustomBackgroundService : public NtpCustomBackgroundServiceBase {
       background_service_observation_{this};
   raw_ptr<base::Clock> clock_;
   base::TimeTicks background_updated_timestamp_;
-  base::ObserverList<NtpCustomBackgroundServiceObserver> observers_;
   raw_ptr<ThemeDelegate> theme_delegate_ = nullptr;
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
