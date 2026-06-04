@@ -19,10 +19,6 @@ class Rect;
 
 namespace viz {
 
-#if BUILDFLAG(IS_ANDROID)
-VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
-#endif
-
 class CompositorRenderPassDrawQuad;
 class CopyOutputRequest;
 class AggregatedRenderPassDrawQuad;
