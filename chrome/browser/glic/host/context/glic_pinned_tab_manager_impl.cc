@@ -44,8 +44,9 @@ namespace {
 BASE_FEATURE(kGlicAutoUnpinOnTabChangedOrigin,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// An arbitrary limit.
-const int32_t kDefaultMaxPinnedTabs = 5;
+// Limit matching the default set by the web client. This is expected to
+// be overridden by the web client when it is created.
+const int32_t kDefaultMaxPinnedTabs = 10;
 
 // A limit to use when the number set by the client is "unlimited". This is an
 // arbitrary large number.
