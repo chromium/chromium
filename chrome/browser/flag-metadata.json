@@ -5328,7 +5328,7 @@
   {
     "name": "glic-client-zoom-control",
     "owners": [ "cuianthony@google.com", "//chrome/browser/glic/OWNERS" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "glic-contextual-cue-bubble",
