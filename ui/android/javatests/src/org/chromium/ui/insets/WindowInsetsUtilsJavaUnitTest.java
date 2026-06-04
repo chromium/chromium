@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.ui.insets.WindowInsetsUtils.UnoccludedRegion;
@@ -104,11 +103,13 @@ public class WindowInsetsUtilsJavaUnitTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
-    @DisabledTest(message = "crbug.com/362337139")
     public void testGetBoundingRects_PostV() {
         var boundingRects = List.of(new Rect(0, 0, 100, 100), new Rect(800, 0, 1600, 100));
         var insets =
                 new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.captionBar(),
+                                android.graphics.Insets.of(0, 100, 0, 0))
                         .setBoundingRects(WindowInsetsCompat.Type.captionBar(), boundingRects)
                         .build();
         assertEquals(
@@ -121,11 +122,13 @@ public class WindowInsetsUtilsJavaUnitTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
-    @DisabledTest(message = "crbug.com/362337139")
     public void testGetBoundingRects_PostV_correctRects() {
         var boundingRects = List.of(new Rect(50, 0, 100, 100), new Rect(800, 0, 1600, 100));
         var insets =
                 new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.captionBar(),
+                                android.graphics.Insets.of(0, 100, 0, 0))
                         .setBoundingRects(WindowInsetsCompat.Type.captionBar(), boundingRects)
                         .setFrame(1650, 800)
                         .build();
@@ -138,6 +141,9 @@ public class WindowInsetsUtilsJavaUnitTest {
         boundingRects = List.of(new Rect(400, 0, 100, 100), new Rect(800, 0, 1600, 100));
         insets =
                 new WindowInsets.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.captionBar(),
+                                android.graphics.Insets.of(0, 100, 0, 0))
                         .setBoundingRects(WindowInsetsCompat.Type.captionBar(), boundingRects)
                         .setFrame(2000, 800)
                         .build();
