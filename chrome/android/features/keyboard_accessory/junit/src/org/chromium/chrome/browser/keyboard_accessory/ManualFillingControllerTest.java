@@ -391,6 +391,36 @@ public class ManualFillingControllerTest {
     }
 
     @Test
+    public void testIsAccessoryRequestedSupplierUpdatesCorrectly() {
+        addBrowserTab(mMediator, 1111, null);
+
+        // Initial state: both keyboard and SHOW_WHEN_VISIBLE are false
+        assertFalse(mController.getIsAccessoryRequestedSupplier().get());
+
+        // 1. Set SHOW_WHEN_VISIBLE = true, but keyboard is still closed
+        mModel.set(SHOW_WHEN_VISIBLE, true);
+        assertFalse(mController.getIsAccessoryRequestedSupplier().get());
+
+        // 2. Open the keyboard: supplier must become true!
+        when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(true);
+        when(mMockKeyboardDelegate.isKeyboardShowing(any())).thenReturn(true);
+        simulateLayoutSizeChange(
+                2.f, 180, 128, /* keyboardShown= */ true, VirtualKeyboardMode.RESIZES_VISUAL);
+        assertTrue(mController.getIsAccessoryRequestedSupplier().get());
+
+        // 3. Close the keyboard: supplier must become false!
+        when(mMockSoftKeyboardDelegate.isSoftKeyboardShowing(any())).thenReturn(false);
+        when(mMockKeyboardDelegate.isKeyboardShowing(any())).thenReturn(false);
+        simulateLayoutSizeChange(
+                2.f, 180, 128, /* keyboardShown= */ false, VirtualKeyboardMode.RESIZES_VISUAL);
+        assertFalse(mController.getIsAccessoryRequestedSupplier().get());
+
+        // 4. Set SHOW_WHEN_VISIBLE = false while keyboard is closed: remains false
+        mModel.set(SHOW_WHEN_VISIBLE, false);
+        assertFalse(mController.getIsAccessoryRequestedSupplier().get());
+    }
+
+    @Test
     public void testCreatesValidSubComponents() {
         assertThat(mController, is(notNullValue()));
         assertThat(mMediator, is(notNullValue()));

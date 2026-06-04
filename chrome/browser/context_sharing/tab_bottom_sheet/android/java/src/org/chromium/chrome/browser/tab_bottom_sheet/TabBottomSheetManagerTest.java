@@ -29,8 +29,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -42,6 +45,8 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.keyboard_accessory.EmptyManualFillingComponent;
+import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -599,5 +604,89 @@ public class TabBottomSheetManagerTest {
 
         // Verify it gets restored
         blockUntilSheetFullyRestored();
+    }
+
+    @Test
+    @SmallTest
+    public void testBottomSheetSuppressedOnAccessoryRequested() {
+        SettableNonNullObservableSupplier<Boolean> accessoryRequestedSupplier =
+                ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNonNull(false));
+        ManualFillingComponent mockComponent =
+                new TestManualFillingComponent(accessoryRequestedSupplier);
+
+        SettableMonotonicObservableSupplier<ManualFillingComponent> supplier =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            SettableMonotonicObservableSupplier<ManualFillingComponent> s =
+                                    ObservableSuppliers.createMonotonic();
+                            s.set(mockComponent);
+                            return s;
+                        });
+
+        // Register the mock supplier before showing the bottom sheet
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.setManualFillingComponentSupplierForTesting(supplier));
+
+        showBottomSheetAndBlockUntilReady();
+
+        // Trigger accessory request / suppression
+        ThreadUtils.runOnUiThreadBlocking(() -> accessoryRequestedSupplier.set(true));
+
+        // Verify the sheet gets suppressed
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void testLateComponentRegistrationHooksUpObserver() {
+        SettableNonNullObservableSupplier<Boolean> accessoryRequestedSupplier =
+                ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNonNull(true));
+        ManualFillingComponent mockComponent =
+                new TestManualFillingComponent(accessoryRequestedSupplier);
+
+        SettableMonotonicObservableSupplier<ManualFillingComponent> supplier =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            SettableMonotonicObservableSupplier<ManualFillingComponent> s =
+                                    ObservableSuppliers.createMonotonic();
+                            s.set(mockComponent);
+                            return s;
+                        });
+
+        // Register the mock supplier
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mManager.setManualFillingComponentSupplierForTesting(supplier));
+
+        // Try to show the bottom sheet
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+
+        // Verify the sheet is NOT showing (suppressed by autofill)
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+
+        // Stop accessory requested/suppression
+        ThreadUtils.runOnUiThreadBlocking(() -> accessoryRequestedSupplier.set(false));
+
+        // Verify the sheet is successfully restored
+        blockUntilSheetFullyRestored();
+    }
+
+    private static class TestManualFillingComponent extends EmptyManualFillingComponent {
+        private final NonNullObservableSupplier<Boolean> mAccessoryRequestedSupplier;
+
+        TestManualFillingComponent(NonNullObservableSupplier<Boolean> supplier) {
+            mAccessoryRequestedSupplier = supplier;
+        }
+
+        @Override
+        public NonNullObservableSupplier<Boolean> getIsAccessoryRequestedSupplier() {
+            return mAccessoryRequestedSupplier;
+        }
     }
 }

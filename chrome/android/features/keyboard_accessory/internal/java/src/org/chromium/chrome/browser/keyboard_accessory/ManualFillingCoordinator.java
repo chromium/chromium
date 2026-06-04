@@ -270,6 +270,11 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     }
 
     @Override
+    public NonNullObservableSupplier<Boolean> getIsAccessoryRequestedSupplier() {
+        return mMediator.getIsAccessoryRequestedSupplier();
+    }
+
+    @Override
     public void forceShowForTesting() {
         mMediator.show(
                 /* waitForKeyboard= */ true, /* isCredentialFieldOrHasAutofillSuggestions= */ true);
