@@ -625,10 +625,12 @@ public class InstanceSwitcherCoordinator {
         // Update the UI models to reflect the new selection state.
         for (ListItem li : getCurrentList()) {
             int id = li.model.get(InstanceSwitcherItemProperties.INSTANCE_ID);
-            li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, mSelectedItems.contains(id));
+            boolean selected = mSelectedItems.contains(id);
+            li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, selected);
         }
 
         updateActionButtons();
+        invalidateItemDecorations();
     }
 
     private void selectAllItems() {
@@ -638,6 +640,7 @@ public class InstanceSwitcherCoordinator {
             li.model.set(InstanceSwitcherItemProperties.IS_SELECTED, true);
         }
         updateActionButtons();
+        invalidateItemDecorations();
     }
 
     private void updateActionButtons() {
@@ -699,6 +702,15 @@ public class InstanceSwitcherCoordinator {
         }
         mSelectedItems.clear();
         updateActionButtons();
+        invalidateItemDecorations();
+    }
+
+    private void invalidateItemDecorations() {
+        if (mIsInactiveListShowing) {
+            mInactiveInstancesList.invalidateItemDecorations();
+        } else {
+            mActiveInstancesList.invalidateItemDecorations();
+        }
     }
 
     void dismissDialog(@DialogDismissalCause int cause) {
