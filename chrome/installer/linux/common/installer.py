@@ -334,6 +334,7 @@ class InstallerConfig:
     logo_resources_png: str = ""
     uri_scheme: str = ""
     extra_desktop_entries: str = ""
+    startup_wm_class: str = ""
 
     @classmethod
     def from_args(cls, args: argparse.Namespace,
@@ -420,6 +421,13 @@ class InstallerConfig:
             data["rdn_desktop"] = f"{data['info_vars']['RDN']}.{channel}"
         else:
             data["rdn_desktop"] = data["info_vars"]["RDN"]
+
+        package_name = data["info_vars"]["PACKAGE"] or ""
+        if package_name:
+            data["startup_wm_class"] = (
+                package_name[0].upper() + package_name[1:])
+        else:
+            data["startup_wm_class"] = ""
 
         return data
 

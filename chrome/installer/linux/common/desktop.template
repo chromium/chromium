@@ -107,6 +107,7 @@ Comment[zh_HK]=連線到網際網路
 Comment[zh_TW]=連線到網際網路
 Exec=/usr/bin/@@usr_bin_symlink_name %U
 StartupNotify=true
+StartupWMClass=@@startup_wm_class
 Terminal=false
 Icon=@@PACKAGE
 Type=Application
