@@ -35,6 +35,8 @@ std::optional<base::TimeDelta> GetPlaylistDuration(
 
 }  // namespace
 
+HlsRenditionHost::~HlsRenditionHost() = default;
+
 // Static
 std::unique_ptr<HlsRendition> HlsRendition::CreateRendition(
     ManifestDemuxerEngineHost* engine_host,

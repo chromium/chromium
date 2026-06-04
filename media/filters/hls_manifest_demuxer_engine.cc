@@ -633,13 +633,6 @@ void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
   std::move(cb).Run(std::move(stream));
 }
 
-void HlsManifestDemuxerEngine::ReadKey(
-    const hls::MediaSegment::EncryptionData& data,
-    HlsDataSourceProvider::ReadCb cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  network_access_->ReadKey(std::move(data), BindStatsUpdate(std::move(cb)));
-}
-
 HlsDataSourceProvider::ReadCb HlsManifestDemuxerEngine::BindStatsUpdate(
     HlsDataSourceProvider::ReadCb cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
@@ -661,14 +654,6 @@ void HlsManifestDemuxerEngine::ReadMediaSegment(
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   network_access_->ReadMediaSegment(segment, read_chunked, include_init,
                                     BindStatsUpdate(std::move(cb)));
-}
-
-void HlsManifestDemuxerEngine::ReadStream(
-    std::unique_ptr<HlsDataSourceStream> stream,
-    HlsDataSourceProvider::ReadCb cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  network_access_->ReadStream(std::move(stream),
-                              BindStatsUpdate(std::move(cb)));
 }
 
 void HlsManifestDemuxerEngine::UpdateNetworkSpeed(uint64_t bps) {

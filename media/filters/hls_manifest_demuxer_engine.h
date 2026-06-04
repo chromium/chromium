@@ -73,15 +73,10 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
       std::vector<DemuxerStream*>&&) override;
 
   // HlsRenditionHost implementation.
-  void ReadKey(const hls::MediaSegment::EncryptionData& data,
-               HlsDataSourceProvider::ReadCb) override;
-  void ReadManifest(const GURL& uri, HlsDataSourceProvider::ReadCb cb) override;
   void ReadMediaSegment(const hls::MediaSegment& segment,
                         bool read_chunked,
                         bool include_init,
                         HlsDataSourceProvider::ReadCb cb) override;
-  void ReadStream(std::unique_ptr<HlsDataSourceStream> stream,
-                  HlsDataSourceProvider::ReadCb cb) override;
   void UpdateNetworkSpeed(uint64_t bps) override;
   void UpdateRenditionManifestUri(std::string role,
                                   GURL uri,
@@ -230,6 +225,7 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
   HlsDataSourceProvider::ReadCb BindStatsUpdate(
       HlsDataSourceProvider::ReadCb cb);
 
+  void ReadManifest(const GURL& uri, HlsDataSourceProvider::ReadCb cb);
   void ParsePlaylist(HlsDemuxerStatusCallback parse_complete_cb,
                      PlaylistParseInfo parse_info,
                      HlsDataSourceProvider::ReadResult m_stream);

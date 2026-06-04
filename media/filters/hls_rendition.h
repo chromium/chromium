@@ -21,10 +21,16 @@ namespace media {
 // Forward declare.
 class ManifestDemuxerEngineHost;
 
-// An extension to the HlsNetworkAccess interface, with additional operations
-// that the renditions must be able to apply to their host.
-class MEDIA_EXPORT HlsRenditionHost : public HlsNetworkAccess {
+class MEDIA_EXPORT HlsRenditionHost {
  public:
+  virtual ~HlsRenditionHost() = 0;
+
+  // Fetch a media segment
+  virtual void ReadMediaSegment(const hls::MediaSegment& segment,
+                                bool read_chunked,
+                                bool include_init_segment,
+                                HlsDataSourceProvider::ReadCb cb) = 0;
+
   // Fetch a new playlist for live content at the requested URI.
   virtual void UpdateRenditionManifestUri(std::string role,
                                           GURL uri,
