@@ -2529,6 +2529,7 @@ EVENT_TYPE(QUIC_SESSION_POOL_JOB_RESULT)
 //                                   DNS record>,
 //     "selected_trust_anchor_ids": <trust anchor IDs sent in the TLS
 //                                   ClientHello>,
+//     "server_padding": <optional, amount of server padding requested>
 //   }
 EVENT_TYPE(QUIC_SESSION)
 

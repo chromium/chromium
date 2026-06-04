@@ -15120,6 +15120,105 @@ TEST_P(QuicSessionPoolTest, TrustAnchorIDs) {
             GetStringValueFromParams(entries[0], "selected_trust_anchor_ids"));
 }
 
+// Test that Server Handshake Padding is not requested via GetSSLConfig() when
+// not enabled.
+TEST_P(QuicSessionPoolTest, ServerHandshakePaddingNotRequested) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAddTLSServerHandshakePadding);
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_FALSE(config.server_padding_to_request.has_value());
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_FALSE(
+      GetOptionalIntegerValueFromParams(entries[0], "server_padding_to_request")
+          .has_value());
+}
+
+// Test that Server Handshake Padding is requested via GetSSLConfig() when
+// enabled.
+TEST_P(QuicSessionPoolTest, ServerHandshakePaddingRequested) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAddTLSServerHandshakePadding,
+      {{"AddTLSServerHandshakePaddingBytes", "128"}});
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_EQ(config.server_padding_to_request, 128);
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(128,
+            GetIntegerValueFromParams(entries[0], "server_padding_to_request"));
+}
+
+TEST_P(QuicSessionPoolTest, ServerHandshakePaddingZeroPadding) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAddTLSServerHandshakePadding,
+      {{"AddTLSServerHandshakePaddingBytes", "0"}});
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RecordingNetLogObserver net_log_observer(net_log_.net_log(),
+                                           NetLogCaptureMode::kDefault);
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  ASSERT_THAT(callback_.WaitForResult(), IsOk());
+
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  ASSERT_TRUE(session);
+  quic::QuicSSLConfig config = session->GetSSLConfig();
+  EXPECT_EQ(config.server_padding_to_request, 0);
+  auto entries =
+      net_log_observer.GetEntriesWithType(NetLogEventType::QUIC_SESSION);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(0,
+            GetIntegerValueFromParams(entries[0], "server_padding_to_request"));
+}
+
 // Test that MTC Trust Anchor IDs are provided via GetSSLConfig() when enabled.
 TEST_P(QuicSessionPoolTest, MtcTrustAnchorIDs) {
   base::test::ScopedFeatureList feature_list;

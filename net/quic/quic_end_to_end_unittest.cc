@@ -20,6 +20,7 @@
 #include "crypto/keypair.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/upload_bytes_element_reader.h"
@@ -245,6 +246,7 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     EXPECT_EQ(body, consumer.content());
   }
 
+  quic::test::QuicFlagSaver saver_;
   QuicContext quic_context_;
   MappedHostResolver host_resolver_;
   MockCertVerifier cert_verifier_;
@@ -367,6 +369,101 @@ TEST_F(QuicEndToEndTest, CryptoHandshakeCompleteMetrics) {
       "Net.QuicSession.TLSHandshakeBytes.MTC2.NewConnection", 0);
   histograms.ExpectTotalCount(
       "Net.QuicSession.TLSHandshakeBytes.MTC2.Resumption", 0);
+}
+
+TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetrics) {
+  SetQuicRestartFlag(tls_server_padding_support, true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAddTLSServerHandshakePadding,
+      {{"AddTLSServerHandshakePaddingBytes", "128"}});
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  base::HistogramTester histograms;
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+  // The Net.QuicSession.HandshakeConfirmedTime metric should be logged.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime", 1);
+
+  // The server padding metric should also be logged.
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.ServerPadding", 1);
+}
+
+TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetricsZeroPadding) {
+  SetQuicRestartFlag(tls_server_padding_support, true);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAddTLSServerHandshakePadding,
+      {{"AddTLSServerHandshakePaddingBytes", "0"}});
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  base::HistogramTester histograms;
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+  // The Net.QuicSession.HandshakeConfirmedTime metric should be logged.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime", 1);
+
+  // The server padding metric should also be logged.
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.ServerPadding", 1);
+}
+
+TEST_F(QuicEndToEndTest, ServerHandshakePaddingMetricsNoServerSupport) {
+  SetQuicRestartFlag(tls_server_padding_support, false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAddTLSServerHandshakePadding,
+      {{"AddTLSServerHandshakePaddingBytes", "0"}});
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  base::HistogramTester histograms;
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+  // The Net.QuicSession.HandshakeConfirmedTime metric should be logged.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime", 1);
+
+  // The server padding metric should not be logged.
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.ServerPadding", 0);
+}
+
+TEST_F(QuicEndToEndTest,
+       ServerHandshakePaddingMetricsServerSupportFeatureDisabled) {
+  SetQuicRestartFlag(tls_server_padding_support, false);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAddTLSServerHandshakePadding);
+
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  base::HistogramTester histograms;
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+  // The Net.QuicSession.HandshakeConfirmedTime metric should be logged.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime", 1);
+
+  // The server padding metric should not be logged.
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.ServerPadding", 0);
 }
 
 TEST_F(QuicEndToEndTest, ProofVerifyDetailsMetrics) {

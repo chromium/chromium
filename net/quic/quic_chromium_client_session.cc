@@ -438,6 +438,10 @@ base::DictValue NetLogQuicClientSessionParams(
         x509_util::TrustAnchorIDsToString(x509_util::ParseTlsTrustAnchorIDs(
             base::as_byte_span(*ssl_config.trust_anchor_ids))));
   }
+  if (ssl_config.server_padding_to_request.has_value()) {
+    dict.Set("server_padding_to_request",
+             ssl_config.server_padding_to_request.value());
+  }
   net_log.source().AddToEventParameters(dict);
   return dict;
 }
@@ -1514,6 +1518,11 @@ bool QuicChromiumClientSession::GetSSLInfo(SSLInfo* ssl_info) const {
   ssl_info->encrypted_client_hello = crypto_params.encrypted_client_hello;
   ssl_info->early_data_accepted =
       crypto_stream_->EarlyDataReason() == ssl_early_data_accepted;
+
+  ssl_info->server_padding_requested =
+      GetSSLConfig().server_padding_to_request.has_value();
+  ssl_info->server_padding_received =
+      SSL_server_sent_requested_padding(crypto_stream_->GetSsl());
   return true;
 }
 
@@ -1709,8 +1718,9 @@ quic::QuicSSLConfig QuicChromiumClientSession::GetSSLConfig() const {
     config.trust_anchor_ids = base::as_string_view(
         ssl_context_config.SelectTrustAnchorIDs(trust_anchor_ids_));
   }
-  // TODO(crbug.com/515272365) add server padding flag to QUIC config once its
-  // there.
+
+  config.server_padding_to_request = ssl_context_config.RequestServerPadding();
+
   return config;
 }
 
@@ -4024,6 +4034,11 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
         HistogramNameForResumptionVariant(
             "Net.QuicSession.TLSHandshakeBytes.MTC2", is_resumption),
         handshake_bytes, /*min=*/1, /*exclusive_max=*/8000, /*buckets=*/100);
+  }
+
+  if (SSL_server_sent_requested_padding(crypto_stream_->GetSsl())) {
+    UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.ServerPadding",
+                        handshake_confirmed_time);
   }
 
   // Indicate that the handshake is complete so that we can safely send pings

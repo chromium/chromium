@@ -5929,6 +5929,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.QuicSession.HandshakeConfirmedTime.ServerPadding"
+    units="Milliseconds" expires_after="2026-11-15">
+  <owner>davidben@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The elapsed time between starting the crypto handshake, and receiving
+    confirmation from the server, measured only for servers responding with the
+    Server Padding extension.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs{IsResumption}"
     units="Milliseconds" expires_after="2026-08-02">
