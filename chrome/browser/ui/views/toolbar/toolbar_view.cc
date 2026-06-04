@@ -724,6 +724,14 @@ ToolbarView::CreateGlicActorTaskIcon() {
   glic_actor_task_icon->SetProperty(views::kCrossAxisAlignmentKey,
                                     views::LayoutAlignment::kCenter);
 
+  if (base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
+    glic_actor_task_icon->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            views::MinimumFlexSizeRule::kPreferredSnapToMinimum,
+            views::MaximumFlexSizeRule::kPreferred));
+  }
+
   return glic_actor_task_icon;
 }
 
