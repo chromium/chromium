@@ -8,8 +8,12 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -20,6 +24,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_mediator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -38,6 +43,17 @@ namespace {
 std::unique_ptr<KeyedService> CreateMockSyncService(ProfileIOS* profile) {
   return std::make_unique<
       ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
+}
+
+// Creates a test ShareKitService.
+std::unique_ptr<KeyedService> BuildTestShareKitService(ProfileIOS* profile) {
+  data_sharing::DataSharingService* data_sharing_service =
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  TabGroupService* tab_group_service =
+      TabGroupServiceFactory::GetForProfile(profile);
+
+  return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
+                                               nullptr, tab_group_service);
 }
 
 }  // namespace
@@ -92,6 +108,8 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
     builder.AddTestingFactory(
         tab_groups::TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(ShareKitServiceFactory::GetInstance(),
+                              base::BindOnce(&BuildTestShareKitService));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
@@ -119,6 +137,11 @@ class TabGroupsPanelCoordinatorTest : public PlatformTest {
                         regularBrowser:browser_.get()
                        toolbarsMutator:toolbars_mutator_
         disabledViewControllerDelegate:disabled_grid_view_controller_delegate_];
+  }
+
+  void TearDown() override {
+    [coordinator_ stop];
+    PlatformTest::TearDown();
   }
 
   // Needed for test profile created by TestBrowser().
@@ -197,4 +220,27 @@ TEST_F(TabGroupsPanelCoordinatorTest, IncognitoForced_TabGroupsDisabled) {
   EXPECT_NE(nil, coordinator_.gridContainerViewController);
   EXPECT_EQ(coordinator_.disabledViewController,
             coordinator_.gridContainerViewController.containedViewController);
+}
+
+// Tests that FacePileCoordinator instances are cached and reused for the same
+// group, and that distinct coordinators are returned for different groups.
+TEST_F(TabGroupsPanelCoordinatorTest, FacePileCoordinatorCaching) {
+  [coordinator_ start];
+
+  id<TabGroupsPanelMediatorDelegate> delegate =
+      (id<TabGroupsPanelMediatorDelegate>)coordinator_;
+
+  std::string group_id = "test-group-id";
+  id<FacePileProviding> provider1 =
+      [delegate facePileProviderForGroupID:group_id];
+  id<FacePileProviding> provider2 =
+      [delegate facePileProviderForGroupID:group_id];
+
+  EXPECT_NE(nil, provider1);
+  EXPECT_EQ(provider1, provider2);
+
+  std::string group_id_2 = "test-group-id-2";
+  id<FacePileProviding> provider3 =
+      [delegate facePileProviderForGroupID:group_id_2];
+  EXPECT_NE(provider1, provider3);
 }
