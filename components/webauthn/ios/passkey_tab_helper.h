@@ -127,10 +127,6 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // Returns whether there is a pending remote validation for testing.
   bool HasPendingValidationForTesting() const;
 
-  // Returns whether the interstitial is necessary for the current state.
-  bool ShowCreationInterstitialIfNecessary(
-      base::OnceCallback<void(bool)> callback);
-
  private:
   friend class web::WebStateUserData<PasskeyTabHelper>;
   friend class PasskeyTabHelperTest;
@@ -215,6 +211,13 @@ class PasskeyTabHelper : public web::WebStateObserver,
 
   // Handles passkey registration requests after it passes validation.
   void HandleRegistration(RegistrationRequestParams params);
+
+  // Initiates the passkey registration flow, showing the incognito warning
+  // interstitial first if the browser state is off-the-record.
+  void MaybeShowInterstitialAndRegister(RegistrationRequestParams params);
+
+  // Callback handling the user's decision from the interstitial.
+  void OnInterstitialDecision(RegistrationRequestParams params, bool proceed);
 
   // Adds a passkey to the passkey model while enabling the passkey creation
   // infobar to be displayed if possible.

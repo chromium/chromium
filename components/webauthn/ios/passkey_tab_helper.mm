@@ -329,7 +329,8 @@ void PasskeyTabHelper::OnRemoteRpIdValidationCompleted(
       DeferToRenderer(params.RequestInfo(), params.Type());
       return;
     }
-    HandleRegistration(std::move(params));
+
+    MaybeShowInterstitialAndRegister(std::move(params));
   }
 }
 
@@ -385,7 +386,7 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
     return;
   }
 
-  HandleRegistration(std::move(params));
+  MaybeShowInterstitialAndRegister(std::move(params));
 }
 
 // NOTE: If you change the domain matching logic in this method, please also
@@ -940,14 +941,28 @@ base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-bool PasskeyTabHelper::ShowCreationInterstitialIfNecessary(
-    base::OnceCallback<void(bool)> callback) {
+void PasskeyTabHelper::MaybeShowInterstitialAndRegister(
+    RegistrationRequestParams params) {
   if (web_state_->GetBrowserState()->IsOffTheRecord()) {
     LogEvent(WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
-    client_->ShowInterstitial(std::move(callback));
-    return true;
+    client_->ShowInterstitial(
+        base::BindOnce(&PasskeyTabHelper::OnInterstitialDecision,
+                       weak_factory_.GetWeakPtr(), std::move(params)));
+    return;
   }
-  return false;
+  HandleRegistration(std::move(params));
+}
+
+void PasskeyTabHelper::OnInterstitialDecision(RegistrationRequestParams params,
+                                              bool proceed) {
+  if (!proceed) {
+    web::WebFrame* web_frame = GetWebFrame(params.FrameId());
+    if (web_frame) {
+      RejectPasskeyRequest(web_frame, params.RequestId());
+    }
+    return;
+  }
+  HandleRegistration(std::move(params));
 }
 
 void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(

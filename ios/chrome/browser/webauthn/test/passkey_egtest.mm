@@ -96,6 +96,7 @@ id<GREYMatcher> IncognitoInterstitialView() {
                                          "/navigator_credentials_create.html");
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:"Credential Create Test Page"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"create-passkey-btn"];
 }
 
 - (void)loadPasskeyCancelPage {
@@ -103,6 +104,7 @@ id<GREYMatcher> IncognitoInterstitialView() {
                                          "/navigator_credentials_cancel.html");
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:"Credential Cancel Test Page"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"create-passkey-btn"];
 }
 
 #pragma mark - Tests

@@ -305,15 +305,35 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   }
 
   if (is_handle_create_request_event) {
-    // base::Unretained is safe because this is a singleton.
-    if (passkey_tab_helper->ShowCreationInterstitialIfNecessary(
-            base::BindOnce(&PasskeyJavaScriptFeature::OnInterstitialDecision,
-                           base::Unretained(this), web_state->GetWeakPtr(),
-                           *request_info, dict.Clone()))) {
+    auto registration_request_params =
+        BuildRegistrationRequestParams(*request_info, dict);
+
+    if (!registration_request_params.has_value()) {
+      base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
+                                    registration_request_params.error());
+      passkey_tab_helper->DeferToRenderer(
+          std::move(*request_info),
+          PasskeyRequestParams::RequestType::kUnknown);
       return;
     }
 
-    ProcessCreateRequest(web_state, std::move(*request_info), dict.Clone());
+    if (!ValidateFeatureUsage(*registration_request_params)) {
+      // TODO(crbug.com/460485333): Log the error.
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info),
+                                          registration_request_params->Type());
+      return;
+    }
+
+    // Passkey creation is only allowed if it originates from a user gesture.
+    if (!message.is_user_interacting()) {
+      // TODO(crbug.com/460485333): Log the error.
+      passkey_tab_helper->DeferToRenderer(std::move(*request_info),
+                                          registration_request_params->Type());
+      return;
+    }
+
+    passkey_tab_helper->HandleCreateRequestedEvent(
+        std::move(*registration_request_params));
     return;
   }
 
@@ -330,7 +350,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     }
 
     if (!ValidateFeatureUsage(*assertion_request_params)) {
-      // TODO(460485333): Log the error.
+      // TODO(crbug.com/460485333): Log the error.
       passkey_tab_helper->DeferToRenderer(std::move(*request_info),
                                           assertion_request_params->Type());
       return;
@@ -339,62 +359,6 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
     passkey_tab_helper->HandleGetRequestedEvent(
         std::move(*assertion_request_params));
   }
-}
-
-void PasskeyJavaScriptFeature::OnInterstitialDecision(
-    base::WeakPtr<web::WebState> web_state,
-    IOSPasskeyClient::RequestInfo request_info,
-    base::DictValue dict,
-    bool proceed) {
-  if (!web_state) {
-    return;
-  }
-
-  if (!proceed) {
-    web::WebFramesManager* frames_manager =
-        GetWebFramesManager(web_state.get());
-    web::WebFrame* frame =
-        frames_manager->GetFrameWithId(request_info.frame_id);
-    if (frame) {
-      RejectPasskeyRequest(frame, request_info.request_id);
-    }
-    return;
-  }
-
-  ProcessCreateRequest(web_state.get(), std::move(request_info),
-                       std::move(dict));
-}
-
-void PasskeyJavaScriptFeature::ProcessCreateRequest(
-    web::WebState* web_state,
-    IOSPasskeyClient::RequestInfo request_info,
-    base::DictValue dict) {
-  PasskeyTabHelper* passkey_tab_helper =
-      PasskeyTabHelper::FromWebState(web_state);
-  if (!passkey_tab_helper) {
-    return;
-  }
-
-  auto registration_request_params =
-      BuildRegistrationRequestParams(request_info, dict);
-
-  if (!registration_request_params.has_value()) {
-    base::UmaHistogramEnumeration("WebAuthentication.IOS.PasskeyParsingError",
-                                  registration_request_params.error());
-    passkey_tab_helper->DeferToRenderer(
-        std::move(request_info), PasskeyRequestParams::RequestType::kUnknown);
-    return;
-  }
-
-  if (!ValidateFeatureUsage(*registration_request_params)) {
-    // TODO(460485333): Log the error.
-    passkey_tab_helper->DeferToRenderer(std::move(request_info),
-                                        registration_request_params->Type());
-    return;
-  }
-
-  passkey_tab_helper->HandleCreateRequestedEvent(
-      std::move(*registration_request_params));
 }
 
 }  // namespace webauthn
