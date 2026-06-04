@@ -180,6 +180,9 @@ class TabDragController : public views::WidgetObserver,
     return drag_data_.group_header_id();
   }
 
+  // Used to track if tab group header was collapsed from dragging the header.
+  void SetGroupHeaderWasCollapsedFromDrag(bool was_collapsed_from_drag);
+
   bool IsMovingLastTab() const { return is_moving_last_tab_; }
 
   // Call when a tab was just added to the attached tabstrip. May end the drag.

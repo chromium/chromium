@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -158,6 +159,14 @@ class VerticalTabDragTest
  public:
   VerticalTabDragTest() = default;
   ~VerticalTabDragTest() override = default;
+
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled = VerticalTabsInteractiveTestMixin<
+        InteractiveBrowserTest>::GetEnabledFeatures();
+    enabled.push_back({features::kCollapseTabGroupDuringDrag, {}});
+    return enabled;
+  }
 
  protected:
   auto RunScheduledLayout() {
@@ -823,6 +832,20 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
                          chrome::kChromeUIVersionURL})),
 
       StartDragFromGroupToTab(0, 0),
+      CheckResult(
+          [&]() {
+            TabStripModel* model = browser()->tab_strip_model();
+            std::vector<tab_groups::TabGroupId> groups =
+                model->group_model()->ListTabGroups();
+            if (groups.empty()) {
+              return false;
+            }
+            return model->group_model()
+                ->GetTabGroup(groups[0])
+                ->visual_data()
+                ->is_collapsed();
+          },
+          true),
       WaitForState(kTabOrderPoller,
                    URLs({TabGroupURLs({chrome::kChromeUIBookmarksURL,
                                        chrome::kChromeUISettingsURL}),
@@ -833,7 +856,21 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
                    URLs({url::kAboutBlankURL, chrome::kChromeUIVersionURL,
                          TabGroupURLs({chrome::kChromeUIBookmarksURL,
                                        chrome::kChromeUISettingsURL})})),
-      ReleaseMouse());
+      ReleaseMouse(),
+      CheckResult(
+          [&]() {
+            TabStripModel* model = browser()->tab_strip_model();
+            std::vector<tab_groups::TabGroupId> groups =
+                model->group_model()->ListTabGroups();
+            if (groups.empty()) {
+              return false;
+            }
+            return !model->group_model()
+                        ->GetTabGroup(groups[0])
+                        ->visual_data()
+                        ->is_collapsed();
+          },
+          true));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragCollapsedGroupStaysCollapsed) {

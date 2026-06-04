@@ -32,6 +32,9 @@ struct GroupHeaderDragData final {
   // should fall back on activating the first tab during/after the drag.
   int active_tab_index_within_group;
 
+  // True if the group was programmatically collapsed when starting the drag.
+  bool was_collapsed_from_drag = false;
+
   GroupHeaderDragData(tab_groups::TabGroupId group,
                       int active_tab_index_within_group)
       : group(group),

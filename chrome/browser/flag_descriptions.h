@@ -1803,6 +1803,12 @@ inline constexpr char kDesktopGlowUpName[] = "Desktop Glow Up";
 inline constexpr char kDesktopGlowUpDescription[] =
     "Enables all Desktop Glow Up features.";
 
+inline constexpr char kCollapseTabGroupDuringDragName[] =
+    "Collapse Tab Group During Drag";
+inline constexpr char kCollapseTabGroupDuringDragDescription[] =
+    "Enables programmatically collapsing tab groups while dragging vertical "
+    "tabs.";
+
 inline constexpr char kDesktopPWAsAdditionalWindowingControlsName[] =
     "Desktop PWA Additional Windowing Controls";
 inline constexpr char kDesktopPWAsAdditionalWindowingControlsDescription[] =

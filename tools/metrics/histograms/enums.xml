@@ -17039,6 +17039,7 @@ from previous Chrome versions.
   <int value="875077636" label="OriginAgentClusterDefaultEnable:disabled"/>
   <int value="875647914" label="AimServerEligibilityEnabled:disabled"/>
   <int value="876349279" label="WebViewExtraHeadersSameDomainOnly:enabled"/>
+  <int value="876507291" label="CollapseTabGroupDuringDrag:enabled"/>
   <int value="876879670" label="OfflinePagesInDownloadHomeOpenInCct:enabled"/>
   <int value="877059804" label="AutofillPreventMixedFormsFilling:disabled"/>
   <int value="877235225" label="GlobalMediaControlsForChromeOS:enabled"/>
@@ -17875,6 +17876,7 @@ from previous Chrome versions.
   <int value="1155923106" label="NTPOfflinePages:enabled"/>
   <int value="1156107561" label="StylusWritingToInput:disabled"/>
   <int value="1158333871" label="QueryTilesEnableQueryEditing:enabled"/>
+  <int value="1159222900" label="CollapseTabGroupDuringDrag:disabled"/>
   <int value="1159760152"
       label="ContextMenuSearchAndShopWithGoogleLens:disabled"/>
   <int value="1161105475"

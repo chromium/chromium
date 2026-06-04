@@ -9561,6 +9561,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesktopGlowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kDesktopGlowUp)},
 
+    {"collapse-tab-group-during-drag",
+     flag_descriptions::kCollapseTabGroupDuringDragName,
+     flag_descriptions::kCollapseTabGroupDuringDragDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kCollapseTabGroupDuringDrag)},
+
     {"toolbar-glow-up", flag_descriptions::kToolbarGlowUpName,
      flag_descriptions::kToolbarGlowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kToolbarGlowUp)},

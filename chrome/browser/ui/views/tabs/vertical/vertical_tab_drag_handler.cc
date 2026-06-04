@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/types/to_address.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -697,6 +698,22 @@ void VerticalTabDragHandlerImpl::DestroyDragController() {
 
 void VerticalTabDragHandlerImpl::StartedDragging(
     const std::vector<TabSlotView*>& views) {
+  const auto& drag_data = drag_controller_->GetSessionData();
+  if (base::FeatureList::IsEnabled(features::kCollapseTabGroupDuringDrag) &&
+      drag_data.group_header_drag_data_.has_value()) {
+    tab_groups::TabGroupId group_id = drag_data.group_header_drag_data_->group;
+    const TabGroup* group =
+        tab_strip_model_->group_model()->GetTabGroup(group_id);
+    if (group && !group->visual_data()->is_collapsed()) {
+      drag_controller_->SetGroupHeaderWasCollapsedFromDrag(true);
+      TabCollectionNode* group_node = GetNodeForTabGroup(group_id);
+      if (group_node) {
+        group_node->GetController()->ToggleTabGroupCollapsedState(
+            group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+      }
+    }
+  }
+
   if (gfx::NativeWindow source_window = GetWidget()->GetNativeWindow()) {
     const BrowserView* browser_view =
         BrowserView::GetBrowserViewForNativeWindow(source_window);
@@ -760,6 +777,24 @@ void VerticalTabDragHandlerImpl::StoppedDragging() {
     CHECK(dragged_view);
     dragged_view->DestroyLayer();
     dragged_view->ClearProperty(kOffsetAtTabDragStart);
+  }
+
+  if (drag_controller_) {
+    const DragSessionData& drag_data = drag_controller_->GetSessionData();
+    if (drag_data.group_header_drag_data_.has_value() &&
+        drag_data.group_header_drag_data_->was_collapsed_from_drag) {
+      tab_groups::TabGroupId group_id =
+          drag_data.group_header_drag_data_->group;
+      const TabGroup* group =
+          tab_strip_model_->group_model()->GetTabGroup(group_id);
+      if (group && group->visual_data()->is_collapsed()) {
+        TabCollectionNode* group_node = GetNodeForTabGroup(group_id);
+        if (group_node) {
+          group_node->GetController()->ToggleTabGroupCollapsedState(
+              group, ToggleTabGroupCollapsedStateOrigin::kMouse);
+        }
+      }
+    }
   }
 
   if (!drag_controller_) {

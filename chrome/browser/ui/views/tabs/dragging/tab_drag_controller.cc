@@ -623,6 +623,14 @@ TabDragContext* TabDragController::GetSourceContext() {
                                : nullptr;
 }
 
+void TabDragController::SetGroupHeaderWasCollapsedFromDrag(
+    bool was_collapsed_from_drag) {
+  if (drag_data_.group_header_drag_data_.has_value()) {
+    drag_data_.group_header_drag_data_->was_collapsed_from_drag =
+        was_collapsed_from_drag;
+  }
+}
+
 void TabDragController::TabWasAdded() {
   // Stop dragging when a new tab is added and dragging a window, unless we're
   // doing so ourselves (e.g. while attaching to a new browser). Doing otherwise
@@ -1511,6 +1519,20 @@ TabDragController::Detach(ReleaseCapture release_capture) {
     }
   }
   std::ranges::sort(dragged_indices);
+
+  int next_active_index = TabStripModel::kNoTab;
+  if (drag_data_.group_header_drag_data_.has_value() &&
+      drag_data_.group_header_drag_data_->was_collapsed_from_drag &&
+      !dragged_indices.empty()) {
+    const int last_dragged_index = dragged_indices.back();
+    if (last_dragged_index + 1 < attached_model->count()) {
+      next_active_index =
+          (last_dragged_index + 1) - static_cast<int>(dragged_indices.size());
+    } else if (dragged_indices.front() > 0) {
+      next_active_index = dragged_indices.front() - 1;
+    }
+  }
+
   const std::vector<tab_groups::TabGroupId> groups_to_move =
       attached_model->GetGroupsDestroyedFromRemovingIndices(dragged_indices);
 
@@ -1531,6 +1553,13 @@ TabDragController::Detach(ReleaseCapture release_capture) {
     } else if (attached_context_ == source_context_ &&
                !initial_selection_model_.empty()) {
       RestoreInitialSelection();
+    }
+
+    if (next_active_index != TabStripModel::kNoTab) {
+      attached_model->ActivateTabAt(
+          next_active_index,
+          TabStripUserGestureDetails(
+              TabStripUserGestureDetails::GestureType::kOther));
     }
   }
 
