@@ -38,8 +38,9 @@ class SelectedKeywordViewAccessibilityTest
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
     gfx::FontList font_list;
-    view_ = widget_->SetContentsView(
-        std::make_unique<SelectedKeywordView>(this, profile_.get(), font_list));
+    view_ = widget_->SetContentsView(std::make_unique<SelectedKeywordView>(
+        this, profile_.get(),
+        /*omnibox_controller=*/nullptr, font_list));
     widget_->Show();
   }
 

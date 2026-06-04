@@ -109,6 +109,14 @@ enum class LayoutConstant {
   // `kLocationBarTrailingIconSize`
   kLocationBarIconSize,
 
+  // Amount of space on either side of the separator that appears after the icon
+  // or label in location bar (if the separator is enabled).
+  kLocationBarIconLabelBubbleSpaceBesideSeparator,
+
+  // Amount of space reserved for the separator that appears after the icon or
+  // label in location bar (if the separator is enabled).
+  kLocationBarIconLabelBubbleSeparatorWidth,
+
   // The size of the leading icons used inside the LocationBar.
   kLocationBarLeadingIconSize,
 

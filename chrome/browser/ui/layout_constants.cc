@@ -79,6 +79,10 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LayoutConstant::kLocationBarIconSize:
       return touch_ui ? 20 : 16;
     // LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_edit_model.cc:SuperGIconSize)
+    case LayoutConstant::kLocationBarIconLabelBubbleSpaceBesideSeparator:
+      return 8;
+    case LayoutConstant::kLocationBarIconLabelBubbleSeparatorWidth:
+      return 1;
     case LayoutConstant::kLocationBarLeadingIconSize:
       return GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
     case LayoutConstant::kLocationBarTrailingIconSize:

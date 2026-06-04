@@ -8,12 +8,142 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  align-items: center;
   color: var(--color-omnibox-keyword-selected);
+  display: flex;
   font-family: var(--omnibox-primary-font-family);
   font-size: var(--omnibox-primary-font-size);
   font-weight: var(--omnibox-primary-font-weight);
-  /* TODO(crbug.com/503784002): Fade tail if too long. */
-  /* Normally this doesn't have a margin since the widget draws a separator line
-     with margins built in, but we don't have that implemented yet. */
-  margin-inline-end: 8px;
+  height: calc(var(--location-bar-height) -
+               2*var(--location-bar-page-info-icon-vertical-padding));
+}
+
+icon-from-table {
+  --icon-size: var(--location-bar-leading-icon-size);
+  display: flex;
+  flex-shrink: 0;
+  /* 11px gets things aligned with the popup */
+  margin-inline-end: calc(var(--location-bar-child-internal-spacing) + 11px);
+}
+
+/* The pill shape doesn't include the separator, hence the styling for the
+ * rounding it this level rather than everything
+ */
+#chip-proper {
+  align-items: center;
+  border-radius: calc(var(--location-bar-height)/2 -
+                        var(--location-bar-page-info-icon-vertical-padding));
+  display: flex;
+
+  overflow: hidden;
+  padding-block: var(--location-bar-child-interior-padding);
+  padding-inline-start: var(--location-bar-icon-interior-padding-left);
+
+  padding-inline-end: var(--location-bar-icon-label-bubble-space-beside-separator);
+
+  /* to permit our ::before to position off this */
+  position: relative;
+}
+
+#separator {
+  background-color: var(--color-omnibox-keyword-separator);
+  height: var(--location-bar-leading-icon-size);
+
+  margin-inline-end:
+      var(--location-bar-icon-label-bubble-space-beside-separator);
+  transition: background-color
+              var(--duration-selected-keyword-separator-fade-in) ease-in;
+
+  width: var(--location-bar-icon-label-bubble-separator-width);
+}
+
+/* Hover is detected on entire bounds including the separator. This is done
+ * with a transcluent overlay.
+ *
+ * TODO(crbug.com/503784002): This lacks the ripple, though it's a bit weird
+ * that the Views version has one, consdering it doesn't do anything on click,
+ * beyond ripple animation and changing the color. Which is strange.
+ */
+#chip-proper::before {
+  background-color: var(--color-omnibox-action-icon-hover, transparent);
+  border-radius: inherit;
+  content: '';
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  /* Matches views::kHighlightFadeOutOnHoverChangeDuration (250ms) */
+  transition: opacity 250ms ease-in-out;
+  /* This is placed above our tail fading gradients */
+  z-index: 3;
+}
+
+:host(:hover) #chip-proper::before {
+  opacity: 1;
+}
+
+:host(:hover) #separator {
+  background-color: transparent;
+  transition: background-color
+              var(--duration-selected-keyword-separator-fade-out) ease-in;
+}
+
+#text-wrap {
+  /* This is needed to detect when to do fade text-overflow, since
+   * sadly no stock Chrome text-overflow: fade
+   */
+  container: text-wrap / scroll-state;
+  flex-shrink: 1;
+  position: relative; /* to position off this */
+  overflow: hidden;
+}
+
+/* Fade out text overflow */
+@container text-wrap scroll-state(scrollable:inline) {
+  #text-wrap::after {
+    background: linear-gradient(to right, transparent,
+                                var(--location-bar-background));
+    bottom: 0;
+    content: '';
+    top: 0;
+    inset-inline-end: 0;
+    position: absolute;
+    width: calc(min(3ch, 50%));
+    z-index: 2;
+  }
+
+  #text-wrap:dir(rtl)::after {
+    background: linear-gradient(to left, transparent,
+                                var(--location-bar-background));
+  }
+}
+
+/* Short-wrap helps detect if the short label would fit */
+#short-wrap {
+  container: short-wrap / scroll-state;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+}
+
+#short {
+  position: relative; /* for z-index */
+  text-wrap: nowrap;
+  visibility: hidden;
+}
+
+#long {
+  text-wrap: nowrap;
+}
+
+/* If short overflows, we show it; otherwise we use long.
+*/
+@container short-wrap scroll-state(scrollable:inline) {
+  #short {
+    /* Set solid background so we paint over the long */
+    background-color: var(--location-bar-background);
+    visibility: visible;
+    z-index: 1;
+  }
 }

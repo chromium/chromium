@@ -7,11 +7,14 @@
 #include "base/check.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -38,6 +41,12 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/property_effects.h"
 
+namespace {
+
+constexpr auto kForegroundColorId = kColorOmniboxKeywordSelected;
+
+}  // namespace
+
 // static
 SelectedKeywordView::KeywordLabelNames
 SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
@@ -59,11 +68,87 @@ SelectedKeywordView::GetKeywordLabelNames(const std::u16string& keyword,
   return names;
 }
 
+// static
+ui::ImageModel SelectedKeywordView::GetKeywordIcon(
+    const std::u16string& keyword,
+    const OmniboxController* omnibox_controller,
+    Profile* profile) {
+  const int icon_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
+
+  const TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  const TemplateURL* template_url = service->GetTemplateURLForKeyword(keyword);
+
+  // Check for custom icon image first.
+  gfx::Image image;
+  if (template_url &&
+      (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)) {
+    image = extensions::OmniboxAPI::Get(profile)->GetOmniboxIcon(
+        template_url->GetExtensionId());
+  } else if (template_url &&
+             template_url->policy_origin() ==
+                 TemplateURLData::PolicyOrigin::kSearchAggregator) {
+    const SkBitmap* bitmap = omnibox_controller->edit_model()->GetIconBitmap(
+        template_url->favicon_url());
+    if (bitmap) {
+      image = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
+    }
+  }
+
+  if (!image.IsEmpty()) {
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            image.AsImageSkia(),
+            skia::ImageOperations::ResizeMethod::RESIZE_LANCZOS3,
+            gfx::Size(icon_size, icon_size)));
+  }
+
+  // Use the search icon for most keywords.
+  auto* vector_icon =
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kSearchIcon
+                                          : vector_icons::kSearchOldIcon);
+
+  if (template_url &&
+      template_url->starter_pack_id() ==
+          template_url_starter_pack_data::StarterPackId::kGemini) {
+    vector_icon = &omnibox::kSparkIcon;
+  } else if (template_url &&
+             template_url->starter_pack_id() ==
+                 template_url_starter_pack_data::StarterPackId::kAiMode) {
+    vector_icon =
+        &(features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                            : omnibox::kSearchSparkOldIcon);
+  } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
+                 profile) &&
+             history_embeddings::GetFeatureParameters().omnibox_scoped &&
+             template_url &&
+             template_url->starter_pack_id() ==
+                 template_url_starter_pack_data::StarterPackId::kHistory) {
+    vector_icon =
+        &(features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                            : omnibox::kSearchSparkOldIcon);
+  } else if (template_url &&
+             template_url->policy_origin() ==
+                 TemplateURLData::PolicyOrigin::kSearchAggregator) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    vector_icon = base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+                      ? &vector_icons::kGoogleAgentspaceMonochromeLogo25Icon
+                      : &vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+#endif
+  }
+
+  return ui::ImageModel::FromVectorIcon(*vector_icon, kForegroundColorId,
+                                        icon_size);
+}
+
 SelectedKeywordView::SelectedKeywordView(
     IconLabelBubbleView::Delegate* delegate,
     Profile* profile,
+    const OmniboxController* omnibox_controller,
     const gfx::FontList& font_list)
-    : IconLabelBubbleView(font_list, delegate), profile_(profile) {
+    : IconLabelBubbleView(font_list, delegate),
+      profile_(profile),
+      omnibox_controller_(omnibox_controller) {
   full_label_.SetFontList(font_list);
   full_label_.SetVisible(false);
   partial_label_.SetFontList(font_list);
@@ -89,65 +174,12 @@ SelectedKeywordView::SelectedKeywordView(
 
 SelectedKeywordView::~SelectedKeywordView() = default;
 
-void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
-  const int icon_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
-  using_custom_image_ = !image.IsEmpty();
-  if (using_custom_image_) {
-    IconLabelBubbleView::SetImageModel(ui::ImageModel::FromImageSkia(
-        gfx::ImageSkiaOperations::CreateResizedImage(
-            image.AsImageSkia(),
-            skia::ImageOperations::ResizeMethod::RESIZE_LANCZOS3,
-            gfx::Size(icon_size, icon_size))));
-    return;
-  }
-
-  // Use the search icon for most keywords.
-  auto* vector_icon =
-      &(features::IsRoundedIconsEnabled() ? vector_icons::kSearchIcon
-                                          : vector_icons::kSearchOldIcon);
-
-  const TemplateURL* template_url =
-      TemplateURLServiceFactory::GetForProfile(profile_)
-          ->GetTemplateURLForKeyword(keyword_);
-  if (template_url &&
-      template_url->starter_pack_id() ==
-          template_url_starter_pack_data::StarterPackId::kGemini) {
-    vector_icon = &omnibox::kSparkIcon;
-  } else if (template_url &&
-             template_url->starter_pack_id() ==
-                 template_url_starter_pack_data::StarterPackId::kAiMode) {
-    vector_icon =
-        &(features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
-                                            : omnibox::kSearchSparkOldIcon);
-  } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
-                 profile_) &&
-             history_embeddings::GetFeatureParameters().omnibox_scoped &&
-             template_url &&
-             template_url->starter_pack_id() ==
-                 template_url_starter_pack_data::StarterPackId::kHistory) {
-    vector_icon =
-        &(features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
-                                            : omnibox::kSearchSparkOldIcon);
-  } else if (template_url &&
-             template_url->policy_origin() ==
-                 TemplateURLData::PolicyOrigin::kSearchAggregator) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    vector_icon = base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
-                      ? &vector_icons::kGoogleAgentspaceMonochromeLogo25Icon
-                      : &vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
-#endif
-  }
-
-  IconLabelBubbleView::SetImageModel(ui::ImageModel::FromVectorIcon(
-      *vector_icon, GetForegroundColor(), icon_size));
-}
-
 void SelectedKeywordView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   SetLabelForCurrentWidth();
 }
 
 SkColor SelectedKeywordView::GetForegroundColor() const {
-  return GetColorProvider()->GetColor(kColorOmniboxKeywordSelected);
+  return GetColorProvider()->GetColor(kForegroundColorId);
 }
 
 gfx::Size SelectedKeywordView::CalculatePreferredSize(
@@ -163,9 +195,7 @@ gfx::Size SelectedKeywordView::GetMinimumSize() const {
 
 void SelectedKeywordView::OnThemeChanged() {
   IconLabelBubbleView::OnThemeChanged();
-  if (!using_custom_image_) {
-    SetCustomImage(gfx::Image());
-  }
+  UpdateIcon();
 }
 
 void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
@@ -174,6 +204,7 @@ void SelectedKeywordView::SetKeyword(const std::u16string& keyword) {
   }
   keyword_ = keyword;
   OnPropertyChanged(&keyword_, views::PropertyEffects::kNone);
+  UpdateIcon();
 
   const auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -210,6 +241,11 @@ void SelectedKeywordView::SetLabelForCurrentWidth() {
       width() >
       GetSizeForLabelWidth(partial_label_.GetPreferredSize().width()).width();
   SetLabel(use_full_label ? full_label_.GetText() : partial_label_.GetText());
+}
+
+void SelectedKeywordView::UpdateIcon() {
+  IconLabelBubbleView::SetImageModel(
+      GetKeywordIcon(keyword_, omnibox_controller_, profile_));
 }
 
 BEGIN_METADATA(SelectedKeywordView)

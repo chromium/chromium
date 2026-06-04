@@ -385,7 +385,7 @@ struct SelectedKeywordState {
   mojo_base.mojom.String16 short_name;
   mojo_base.mojom.String16 full_name;
 
-  // TODO(crbug.com/503784002): Icon
+  IconHandle icon;
 };
 
 // Enum of all supported pinned toolbar actions.

@@ -9,9 +9,10 @@
 
 :host {
   --border-radius: calc(var(--location-bar-height)/2);
+  --location-bar-background: var(--color-location-bar-background);
   align-self: center;
   align-items: center;
-  background-color: var(--color-location-bar-background);
+  background-color: var(--location-bar-background);
   border: none;
   border-radius: var(--border-radius);
   box-sizing: border-box;
@@ -38,16 +39,18 @@
 }
 
 :host(:hover:not([chip-hovered])) {
-  background-color: var(--color-location-bar-background-hovered);
+  --location-bar-background: var(--color-location-bar-background-hovered);
 }
 
 @media not (prefers-contrast: more) {
   :host(.input-in-progress) {
-    background-color: var(--color-omnibox-results-background);
+    --location-bar-background: var(--color-omnibox-results-background);
+    background-color: var(--location-bar-background);
     border: 1px solid var(--color-location-bar-border-on-mismatch);
   }
   :host(.input-in-progress:hover:not([chip-hovered])) {
-    background-color: var(--color-omnibox-results-background-hovered);
+    --location-bar-background: var(--color-omnibox-results-background-hovered);
+    background-color: var(--location-bar-background);
   }
 
   /* The border override for input-in-progress is only visible if
@@ -74,7 +77,8 @@
   selector for its specificity.
 */
 :host(#location-bar):has(> readonly-omnibox:focus-within) {
-  background-color: var(--color-omnibox-results-background);
+  --location-bar-background: var(--color-omnibox-results-background);
+  background-color: var(--location-bar-background);
   transition-property: none;
 }
 
@@ -101,4 +105,8 @@ location-icon {
   flex-shrink: 0;
   margin: 4px;
   margin-inline-start: calc(4px - var(--border-radius));
+}
+
+selected-keyword {
+  flex-shrink: 1;
 }

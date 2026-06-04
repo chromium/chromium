@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './readonly_omnibox.js';
-import './location_icon.js';
+import './icon_from_table.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -30,7 +29,11 @@ export class SelectedKeywordElement extends CrLitElement {
     };
   }
 
-  accessor selectedKeywordState: SelectedKeywordState|null = null;
+  accessor selectedKeywordState: SelectedKeywordState = {
+    shortName: '',
+    fullName: '',
+    icon: {handleId: 0n},
+  };
 }
 
 declare global {

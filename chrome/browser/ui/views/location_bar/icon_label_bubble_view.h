@@ -45,6 +45,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
  public:
   static constexpr int kTrailingPaddingPreMd = 2;
 
+  // The length of the separator's fade animation. These values are empirical.
+  static constexpr int kIconLabelBubbleFadeInDurationMs = 250;
+  static constexpr int kIconLabelBubbleFadeOutDurationMs = 175;
+
   // Determines when the icon label background should be visible.
   enum class BackgroundVisibility {
     kNever,

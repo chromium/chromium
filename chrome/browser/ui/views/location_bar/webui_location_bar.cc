@@ -710,17 +710,43 @@ void WebUILocationBar::UpdateLocationBarFlagsState() {
 }
 
 void WebUILocationBar::UpdateSelectedKeywordState() {
+  if (!omnibox_controller_) {  // null in some tests.
+    return;
+  }
+
+  const std::u16string& current_keyword =
+      omnibox_controller_->edit_model()->keyword();
+  bool is_keyword_selected =
+      omnibox_controller_->edit_model()->is_keyword_selected();
+  if (last_search_keyword_ == current_keyword &&
+      last_is_keyword_selected_ == is_keyword_selected) {
+    // Avoid recomputing this state, especially icon.
+    return;
+  }
+  last_search_keyword_ = current_keyword;
+  last_is_keyword_selected_ = is_keyword_selected;
+
+  Profile* profile = browser_->profile();
+
   // Purposefully start with null here.
   toolbar_ui_api::mojom::SelectedKeywordStatePtr keyword_state;
-  if (omnibox_controller_ &&
-      omnibox_controller_->edit_model()->is_keyword_selected()) {
+  if (is_keyword_selected) {
     keyword_state = toolbar_ui_api::mojom::SelectedKeywordState::New();
+
+    auto* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile);
     SelectedKeywordView::KeywordLabelNames keyword_labels =
-        SelectedKeywordView::GetKeywordLabelNames(
-            omnibox_controller_->edit_model()->keyword(),
-            TemplateURLServiceFactory::GetForProfile(browser_->profile()));
+        SelectedKeywordView::GetKeywordLabelNames(current_keyword,
+                                                  template_url_service);
     keyword_state->short_name = keyword_labels.short_name;
     keyword_state->full_name = keyword_labels.full_name;
+
+    keyword_icon_ =
+        toolbar_delegate_->GetIconTable().RegisterImageModelTryReuse(
+            SelectedKeywordView::GetKeywordIcon(
+                current_keyword, omnibox_controller_.get(), profile),
+            keyword_icon_);
+    keyword_state->icon = keyword_icon_;
   }
   toolbar_delegate_->OnSelectedKeywordChanged(std::move(keyword_state));
 }

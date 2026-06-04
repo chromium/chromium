@@ -49,7 +49,7 @@ const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
 const WebContentsInteractionTestUtil::DeepQuery kSearchKeywordText = {
-    "toolbar-app", "location-bar", "selected-keyword", "span"};
+    "toolbar-app", "location-bar", "selected-keyword", "#long"};
 
 const WebContentsInteractionTestUtil::DeepQuery kClassicMatchText0 = {
     "omnibox-popup-app", "cr-searchbox-dropdown",

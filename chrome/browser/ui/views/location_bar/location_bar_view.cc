@@ -27,9 +27,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
-#include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -152,8 +149,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/feature_switch.h"
 #include "services/device/public/cpp/device_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -282,6 +277,12 @@ LocationBarView::LocationBarView(Browser* browser,
 }
 
 LocationBarView::~LocationBarView() {
+  // Remove selected keyword view since it has a raw_ptr to the omnibox
+  // controller.
+  auto selected_keyword_view = RemoveChildViewT(selected_keyword_view_.get());
+  selected_keyword_view_ = nullptr;
+  selected_keyword_view.reset();
+
   // Destroy the popup view first, since it holds a raw_ptr to the omnibox
   // view. Then explicitly delete the omnibox view to ensure it (a child view)
   // is destroyed before the omnibox controller (a member variable), since it
@@ -449,8 +450,8 @@ void LocationBarView::Init() {
       AddChildView(std::move(omnibox_additional_text_view));
   omnibox_additional_text_view_->SetEnabledColor(kColorOmniboxResultsUrl);
 
-  selected_keyword_view_ = AddChildView(
-      std::make_unique<SelectedKeywordView>(this, profile_, font_list));
+  selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
+      this, profile_, omnibox_controller_.get(), font_list));
 
   if (browser_ && apps::features::ShouldShowLinkCapturingUX() &&
       !IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
@@ -943,28 +944,7 @@ void LocationBarView::Layout(PassKey) {
     leading_decorations.AddDecoration(
         vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
         /*intra_item_padding=*/0, icon_left, selected_keyword_view_);
-    if (selected_keyword_view_->GetKeyword() != keyword) {
-      selected_keyword_view_->SetKeyword(keyword);
-      const TemplateURL* template_url =
-          TemplateURLServiceFactory::GetForProfile(profile_)
-              ->GetTemplateURLForKeyword(keyword);
-      gfx::Image image;
-      if (template_url &&
-          (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)) {
-        image = extensions::OmniboxAPI::Get(profile_)->GetOmniboxIcon(
-            template_url->GetExtensionId());
-      } else if (template_url &&
-                 template_url->policy_origin() ==
-                     TemplateURLData::PolicyOrigin::kSearchAggregator) {
-        const SkBitmap* bitmap =
-            GetOmniboxController()->edit_model()->GetIconBitmap(
-                template_url->favicon_url());
-        if (bitmap) {
-          image = gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(*bitmap));
-        }
-      }
-      selected_keyword_view_->SetCustomImage(image);
-    }
+    selected_keyword_view_->SetKeyword(keyword);
   } else if (location_icon_view_->GetShowText() &&
              !ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);

@@ -45,18 +45,6 @@
 
 namespace {
 
-// Amount of space reserved for the separator that appears after the icon or
-// label.
-constexpr int kIconLabelBubbleSeparatorWidth = 1;
-
-// Amount of space on either side of the separator that appears after the icon
-// or label.
-constexpr int kIconLabelBubbleSpaceBesideSeparator = 8;
-
-// The length of the separator's fade animation. These values are empirical.
-constexpr int kIconLabelBubbleFadeInDurationMs = 250;
-constexpr int kIconLabelBubbleFadeOutDurationMs = 175;
-
 // The length of the label fade in and out animations.
 constexpr int kIconLabelFadeAnimationDurationMs = 600;
 }  // namespace
@@ -686,14 +674,22 @@ int IconLabelBubbleView::GetExtraInternalSpacing() const {
 }
 
 int IconLabelBubbleView::GetWidthBetweenIconAndSeparator() const {
-  return ShouldShowSeparator() ? kIconLabelBubbleSpaceBesideSeparator : 0;
+  return ShouldShowSeparator()
+             ? GetLayoutConstant(
+                   LayoutConstant::
+                       kLocationBarIconLabelBubbleSpaceBesideSeparator)
+             : 0;
 }
 
 int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
-  int end_padding = ShouldShowSeparator() ? kIconLabelBubbleSpaceBesideSeparator
-                                          : GetInsets().right();
+  int end_padding =
+      ShouldShowSeparator()
+          ? GetLayoutConstant(
+                LayoutConstant::kLocationBarIconLabelBubbleSpaceBesideSeparator)
+          : GetInsets().right();
   if (ShouldShowSeparator()) {
-    end_padding += kIconLabelBubbleSeparatorWidth;
+    end_padding += GetLayoutConstant(
+        LayoutConstant::kLocationBarIconLabelBubbleSeparatorWidth);
   }
   return end_padding;
 }
