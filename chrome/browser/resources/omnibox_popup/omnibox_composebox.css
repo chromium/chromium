@@ -5,9 +5,10 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_components/composebox/composebox.css.js
  * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
  * #scheme=relative
- * #include=cr-icons-lit composebox-shared-style
+ * #include=cr-icons-lit composebox composebox-shared-style
  * #css_wrapper_metadata_end */
 
 :host {
