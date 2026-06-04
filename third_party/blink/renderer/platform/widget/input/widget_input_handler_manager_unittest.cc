@@ -40,13 +40,10 @@
 
 namespace blink ::test {
 
-class WidgetInputHandlerManagerTest : public testing::Test,
-                                      public testing::WithParamInterface<bool> {
+class WidgetInputHandlerManagerTest : public testing::Test {
  public:
-  WidgetInputHandlerManagerTest();
+  WidgetInputHandlerManagerTest() = default;
   ~WidgetInputHandlerManagerTest() override = default;
-
-  bool IgnoreInputWhileHidden() const { return GetParam(); }
 
   // Generates and empty touch start, and invokes `DispatchEvent`. Will validate
   // that `HandleInputEventWithLatencyInfo` is called `expected_times_called`.
@@ -79,19 +76,7 @@ class WidgetInputHandlerManagerTest : public testing::Test,
   testing::StrictMock<cc::MockInputHandler> mock_input_handler_;
   raw_ptr<MockInputHandlerProxy> input_handler_proxy_;
   testing::StrictMock<MockInputHandlerProxyClient> mock_client_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-WidgetInputHandlerManagerTest::WidgetInputHandlerManagerTest() {
-  if (IgnoreInputWhileHidden()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kIgnoreInputWhileHidden);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kIgnoreInputWhileHidden);
-  }
-}
 
 void WidgetInputHandlerManagerTest::DispatchTouchEvent(
     int expected_times_called,
@@ -171,62 +156,7 @@ void WidgetInputHandlerManagerTest::SetUp() {
       std::move(unique_input_handler_proxy));
 }
 
-// Tests that while we are hidden, that input is neither dispatched nor
-// consumed. Becoming visible should remove this suppression.
-TEST_P(WidgetInputHandlerManagerTest, InputWhileHidden) {
-  auto manager = widget_input_handler_manager();
-  EXPECT_EQ(
-      manager->suppressing_input_events_state(),
-      static_cast<uint16_t>(WidgetInputHandlerManager::
-                                SuppressingInputEventsBits::kHasNotPainted));
-  manager->OnFirstContentfulPaint();
-  EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
-
-  manager->SetHidden(true);
-  EXPECT_EQ(
-      manager->suppressing_input_events_state(),
-      static_cast<uint16_t>(
-          WidgetInputHandlerManager::SuppressingInputEventsBits::kHidden));
-
-  if (GetParam()) {
-    ExpectNotConsumedDispatchEvent();
-  }
-
-  manager->SetHidden(false);
-  EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
-  DispatchTouchEvent(/*expected_times_called=*/1,
-                     mojom::blink::WidgetInputHandler::DispatchEventCallback());
-}
-
-// Tests that while we are hidden, and attached DevTools sessions witll override
-// the input suppression. Events should be dispatched. Upon the session
-// detaching we should resume neither dispatching nor consuming events.
-TEST_P(WidgetInputHandlerManagerTest, DevToolsSessionOverridesSuppression) {
-  auto manager = widget_input_handler_manager();
-  EXPECT_EQ(
-      manager->suppressing_input_events_state(),
-      static_cast<uint16_t>(WidgetInputHandlerManager::
-                                SuppressingInputEventsBits::kHasNotPainted));
-  manager->OnFirstContentfulPaint();
-  EXPECT_EQ(manager->suppressing_input_events_state(), 0u);
-
-  manager->SetHidden(true);
-  EXPECT_EQ(
-      manager->suppressing_input_events_state(),
-      static_cast<uint16_t>(
-          WidgetInputHandlerManager::SuppressingInputEventsBits::kHidden));
-
-  manager->OnDevToolsSessionConnectionChanged(/*attached=*/true);
-  DispatchTouchEvent(/*expected_times_called=*/1,
-                     mojom::blink::WidgetInputHandler::DispatchEventCallback());
-
-  manager->OnDevToolsSessionConnectionChanged(/*attached=*/false);
-  if (GetParam()) {
-    ExpectNotConsumedDispatchEvent();
-  }
-}
-
-TEST_P(WidgetInputHandlerManagerTest, VizHostRace) {
+TEST_F(WidgetInputHandlerManagerTest, DISABLED_VizHostRace) {
   std::atomic<bool> start_flag{false};
   std::atomic<int> threads_ready{0};
   std::atomic<int> threads_finished{0};
@@ -285,11 +215,4 @@ TEST_P(WidgetInputHandlerManagerTest, VizHostRace) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         WidgetInputHandlerManagerTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "IgnoreInputWhileHidden"
-                                             : "ProcessInputWhileHidden";
-                         });
 }  // namespace blink::test

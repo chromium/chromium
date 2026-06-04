@@ -1486,10 +1486,6 @@ void WidgetBase::SetHidden(bool hidden) {
     FlushInputProcessedCallback();
 
   SetCompositorVisible(!is_hidden_);
-
-  if (widget_input_handler_manager_) {
-    widget_input_handler_manager_->SetHidden(is_hidden_);
-  }
 }
 
 ui::TextInputType WidgetBase::GetTextInputType() {

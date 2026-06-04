@@ -743,11 +743,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
                                                kHTMLParserYieldTimeoutInMs);
 
-// When enabled all input arriving will be ignored, and the dispatcher will be
-// notified that the event was not consumed. With the exception of when there
-// is an attached Dev Tools session, during which input will be dispatched even
-// if we are hidden.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIgnoreInputWhileHidden);
 
 // If enabled, a fix for image loading prioritization based on visibility is
 // applied. See https://crbug.com/1369823.

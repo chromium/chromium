@@ -1077,11 +1077,6 @@ BASE_FEATURE_PARAM(size_t,
                    "timeout_ms",
                    20);
 
-BASE_FEATURE(kIgnoreInputWhileHidden,
-             // TODO(crbug.com/407265465) Some Accessibility tools on Windows
-             // appear to mark the Renderer as Hidden. This feature currently
-             // breaks them. Disabling until the root cause can be identified.
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImageLoadingPrioritizationFix, base::FEATURE_ENABLED_BY_DEFAULT);
 

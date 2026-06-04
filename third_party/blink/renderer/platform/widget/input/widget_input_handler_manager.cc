@@ -128,12 +128,6 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
   }
 }
 
-bool IgnoreHiddenInput() {
-  return base::FeatureList::IsEnabled(features::kIgnoreInputWhileHidden) &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             ::switches::kRunAllCompositorStagesBeforeDraw);
-}
-
 std::unique_ptr<base::trace_event::TracedValue> SuppressInputToTracedValue(
     uint16_t suppress_input) {
   auto dict = std::make_unique<base::trace_event::TracedValue>();
@@ -152,11 +146,7 @@ std::unique_ptr<base::trace_event::TracedValue> SuppressInputToTracedValue(
       (suppress_input &
        static_cast<uint16_t>(WidgetInputHandlerManager::
                                  SuppressingInputEventsBits::kHasNotPainted)));
-  dict->SetBoolean(
-      "Hidden",
-      (suppress_input &
-       static_cast<uint16_t>(
-           WidgetInputHandlerManager::SuppressingInputEventsBits::kHidden)));
+
   return dict;
 }
 
@@ -320,8 +310,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
           widget_scheduler_->InputTaskRunner(),
           widget_scheduler_,
           /*allow_raf_aligned_input=*/!never_composited)),
-      allow_scroll_resampling_(allow_scroll_resampling),
-      ignore_hidden_input_(IgnoreHiddenInput()) {
+      allow_scroll_resampling_(allow_scroll_resampling) {
 #if BUILDFLAG(IS_ANDROID)
   if (compositor_thread_default_task_runner_) {
     synchronous_compositor_registry_ =
@@ -373,17 +362,6 @@ void WidgetInputHandlerManager::SetVizHost(
         base::BindOnce(&WidgetInputHandlerManager::OnVizHostDisconnected,
                        AsWeakPtr()),
         base::SequencedTaskRunner::GetCurrentDefault());
-  }
-}
-
-void WidgetInputHandlerManager::SetHidden(bool hidden) {
-  if (hidden) {
-    hidden_received_ = base::TimeTicks::Now();
-    suppressing_input_events_state_ |=
-        static_cast<uint16_t>(SuppressingInputEventsBits::kHidden);
-  } else {
-    suppressing_input_events_state_ &=
-        ~static_cast<uint16_t>(SuppressingInputEventsBits::kHidden);
   }
 }
 
@@ -663,22 +641,6 @@ void WidgetInputHandlerManager::DispatchEvent(
 
   suppress_input &=
       ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
-
-  bool remove_hidden_suppression = false;
-  if (dev_tools_session_attached_) {
-    remove_hidden_suppression = true;
-  } else {
-    remove_hidden_suppression = !ignore_hidden_input_;
-    if (suppress_input &
-        static_cast<uint16_t>(SuppressingInputEventsBits::kHidden)) {
-      base::UmaHistogramTimes("Event.ReceivedAfterHidden",
-                              base::TimeTicks::Now() - hidden_received_);
-    }
-  }
-  if (remove_hidden_suppression) {
-    suppress_input &=
-        ~static_cast<uint16_t>(SuppressingInputEventsBits::kHidden);
-  }
 
   if (suppress_input && !allow_pre_commit_input_ &&
       !event_is_mouse_or_pointer_move) {

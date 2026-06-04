@@ -556,18 +556,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.ReceivedAfterHidden" units="ms"
-    expires_after="2026-07-26">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    Emitted when an input event is received in the Renderer, while the Renderer
-    is hidden. This is not emitted if DevTools are attached, as automation can
-    occur while hidden. This denotes the delta from when the Renderer was hidden
-    until the event was received.
-  </summary>
-</histogram>
-
 <histogram name="Event.Scroll.{ScrollInputType}" units="ms"
     expires_after="2026-10-25">
   <owner>kraskevich@google.com</owner>

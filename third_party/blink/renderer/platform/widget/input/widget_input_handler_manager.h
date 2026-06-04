@@ -71,8 +71,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
     kDeferCommits = 1 << 1,
     // if set, we have not painted a main frame from the current navigation yet
     kHasNotPainted = 1 << 2,
-    // if set, we are not visible, and should not accept any input
-    kHidden = 1 << 3,
   };
 
   // The `widget` and `frame_widget_input_handler` should be invalidated
@@ -120,7 +118,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   bool RequestedMainFramePending() override;
 
   void OnFirstContentfulPaint();
-  void SetHidden(bool hidden);
   void OnDevToolsSessionConnectionChanged(bool attached);
 
   // InputHandlerProxyClient overrides.
@@ -406,10 +403,6 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   const bool allow_scroll_resampling_ = true;
 
   std::atomic<bool> dev_tools_session_attached_ = false;
-  const bool ignore_hidden_input_;
-  // The timestamp when the widget was hidden. Used to track the duration of
-  // hidden state.
-  base::TimeTicks hidden_received_;
 
   base::WeakPtrFactory<WidgetInputHandlerManager> weak_ptr_factory_{this};
 };
