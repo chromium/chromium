@@ -1,4 +1,4 @@
-# [WebApps on Android](webapp_android_architecture.md) - Registration and Permission Delegation
+# [WebApps on Android](android_architecture.md) - Registration and Permission Delegation
 
 This document describes how Chromium on Android registers installed web
 applications (TWAs and WebAPKs) and manages permission delegation between the
@@ -149,7 +149,8 @@ sequenceDiagram
 ## Design of the Fix: UID to Package Name Migration
 
 For a detailed design of the fix for shared UID and origin deduplication issues,
-including the migration plan, see [design.md](design.md).
+including the migration plan, see
+[design.md](projects/al-site-settings/design.md).
 
 ## Uninstallation and Data Clearing Details
 

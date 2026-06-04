@@ -1,8 +1,23 @@
 # Android Web App Architectures (WebAPK and TWA)
 
 This document describes the architecture of Webapp, WebAPK, and Trusted Web
-Activity (TWA) related classes in `chrome/android/java/src`, focusing on their
-interactions and call patterns.
+Activity (TWA) related classes, focusing on their interactions and call
+patterns.
+
+## Code Locations
+
+The code is distributed across several key directories:
+
+- [`chrome/android/java/src/org/chromium/chrome/browser/webapps/`](../../../chrome/android/java/src/org/chromium/chrome/browser/webapps/):
+  Core Java logic for Webapps and WebAPKs in Chrome.
+- [`chrome/android/java/src/org/chromium/chrome/browser/browserservices/`](../../../chrome/android/java/src/org/chromium/chrome/browser/browserservices/):
+  Java logic for Custom Tabs and Trusted Web Activities (TWA).
+- [`chrome/android/webapk/`](../../../chrome/android/webapk/): Code for the
+  WebAPK shell (the installed APK wrapper) and client libraries.
+- [`components/webapps/browser/android/`](../browser/android/): C++ shared
+  component code specific to Android.
+- [`components/webapps/browser/`](../browser/): Cross-platform C++ shared
+  component code (installability, banners).
 
 ## Installation Systems
 
@@ -473,7 +488,13 @@ and permissions are managed.
   location) in Chrome when apps are verified or uninstalled.
 
 For more details on Registration and Permission Delegation, see
-[registration_and_permissions.md](registration_and_permissions.md).
+[Registration and Permission Delegation](android_registration_and_permissions.md).
+
+## Testing
+
+For details on how to test Web Apps on Android, including manual testing
+instructions and a list of automated test suites, see the
+[Android Testing Guide](android_testing_guide.md).
 
 ## TODO / Next Steps
 

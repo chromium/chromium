@@ -30,8 +30,7 @@ the key to store this data in `SharedPreferences`.
    sharing a UID, this returned merged origins for all sharing apps, failing to
    isolate them in the Site Settings UI.
 
-See [web_app_identifiers_android.md](web_app_identifiers_android.md) for details
-on how these IDs relate.
+See [Identifiers](../../identifiers.md) for details on how these IDs relate.
 
 ## Design (Package Name keys)
 
