@@ -33,10 +33,6 @@ class MockGlicInstance : public GlicInstance {
               (override));
   MOCK_METHOD(mojom::PanelState, GetPanelState, (), (override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterStateChange,
-              (StateChangeCallback),
-              (override));
-  MOCK_METHOD(base::CallbackListSubscription,
               RegisterWillBeDestroyed,
               (DestructionCallback),
               (override));

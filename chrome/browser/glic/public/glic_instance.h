@@ -77,11 +77,6 @@ class GlicInstance {
   // Returns the current panel state.
   virtual mojom::PanelState GetPanelState() = 0;
 
-  // Register for this callback to detect UI changes to the instance.
-  using StateChangeCallback = base::RepeatingCallback<void(bool)>;
-  virtual base::CallbackListSubscription RegisterStateChange(
-      StateChangeCallback callback) = 0;
-
   // TODO(b/501233062): Remove from the public interface once the existing
   // user has migrated away from the API.
   using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;

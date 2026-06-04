@@ -195,8 +195,6 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<std::string> conversation_id() const override;
   std::string conversation_title() const override;
   std::vector<tabs::TabInterface*> GetBoundTabs() const;
-  base::CallbackListSubscription RegisterStateChange(
-      StateChangeCallback callback) override;
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void CancelTask() override;
@@ -297,7 +295,7 @@ class GlicInstanceImpl : public GlicInstance,
     bool user_input_submitted_while_bound = false;
   };
 
-  void NotifyStateChange();
+  void NotifyVisibilityChange();
   void NotifyConversationTitleChanged();
 
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
@@ -311,9 +309,9 @@ class GlicInstanceImpl : public GlicInstance,
       const gfx::Rect& initial_bounds,
       tabs::TabInterface::Handle source_tab);
   void ShowInactiveSidePanelEmbedderFor(const SidePanelShowOptions& options);
-  void SetActiveEmbedderAndNotifyStateChange(
+  void SetActiveEmbedderAndNotifyVisibilityChange(
       std::optional<EmbedderKey> new_key);
-  void ClearActiveEmbedderAndNotifyStateChange();
+  void ClearActiveEmbedderAndNotifyVisibilityChange();
   void CloseInternal(EmbedderKey key,
                      EmbedderEntry& entry,
                      const CloseOptions& options = {});
@@ -356,9 +354,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Updates the floating panel can attach state.
   void UpdateFloatingPanelCanAttach();
-
-  using StateChangeCallbackList = base::RepeatingCallbackList<void(bool)>;
-  StateChangeCallbackList state_change_callback_list_;
 
   using ConversationInfoChangedCallbackList =
       base::RepeatingCallbackList<void(const mojom::ConversationInfo&)>;
