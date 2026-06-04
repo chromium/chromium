@@ -76,7 +76,7 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
                                 surface_embedder_.BindNewPipeAndPassReceiver());
   }
 
-  SetPlaceholderCanvasDispatcher(placeholder_canvas_id_);
+  RegisterWithPlaceholder();
 }
 
 CanvasResourceDispatcher::~CanvasResourceDispatcher() = default;
@@ -436,15 +436,14 @@ void CanvasResourceDispatcher::Reshape(const gfx::Size& size) {
   }
 }
 
-void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
-    DOMNodeId placeholder_canvas_id) {
+void CanvasResourceDispatcher::RegisterWithPlaceholder() {
   // `agent_group_scheduler_compositor_task_runner_` may be null if this
   // was created from a SharedWorker.
   if (!agent_group_scheduler_compositor_task_runner_)
     return;
 
-  if (placeholder_canvas_id == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
-      placeholder_canvas_id == kInvalidDOMNodeId) {
+  if (placeholder_canvas_id_ == OffscreenCanvasPlaceholder::kNoPlaceholderId ||
+      placeholder_canvas_id_ == kInvalidDOMNodeId) {
     return;
   }
 
@@ -453,12 +452,12 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
   // a more synchronous way when it's on the main thread.
   if (IsMainThread()) {
     UpdatePlaceholderDispatcher(GetWeakPtr(), task_runner_,
-                                placeholder_canvas_id);
+                                placeholder_canvas_id_);
   } else {
     PostCrossThreadTask(
         *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
         CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
-                            task_runner_, placeholder_canvas_id));
+                            task_runner_, placeholder_canvas_id_));
   }
 }
 

@@ -118,7 +118,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   // Timer callback for synthetic OnBeginFrames.
   void OnFakeFrameTimer(TimerBase* timer);
 
-  void SetPlaceholderCanvasDispatcher(DOMNodeId placeholder_canvas_id);
+  void RegisterWithPlaceholder();
 
   // Surface-related
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
