@@ -170,3 +170,8 @@ before they reach the network.
     the Document's Connection Allowlists also apply, and if there is a
     server redirect, the document's Connection Allowlists' redirect bit
     will be checked.
+  * **clients.openWindow() in Service Workers**: Navigation initiated via
+    clients.openWindow() is subject to the Service Worker's
+    Connection Allowlists before it is initiated. There is no check on
+    redirect since there is no CA to be checked once the navigation has
+    started.

@@ -2281,7 +2281,8 @@ void ServiceWorkerVersion::OpenWindow(
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   service_worker_client_utils::OpenWindow(
       url, script_url_, key_, embedded_worker_->embedded_worker_id(),
-      embedded_worker_->process_id().GetUnsafeValue(), context_, type,
+      embedded_worker_->process_id().GetUnsafeValue(), policy_container_host(),
+      context_, type,
       base::BindOnce(&OnOpenWindowFinished, std::move(callback)));
 
   NotifyWindowOpened(script_url_, url);

@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_key.h"
@@ -24,6 +25,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/service_worker_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
@@ -42,6 +44,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
@@ -2089,6 +2092,253 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(nav_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_NETWORK_ACCESS_REVOKED,
             nav_observer.last_net_error_code());
+}
+
+// Verifies that clients.openWindow() is subject to the Service Worker's
+// Connection-Allowlist.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    ServiceWorkerClientsOpenWindowEnforcesServiceWorkerAllowlist) {
+  RegisterResponse(
+      "/sw.js",
+      ResponseEntry(
+          R"(self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => {
+  e.waitUntil(self.clients.claim());
+});
+self.addEventListener('notificationclick', event => {
+  event.waitUntil(async function() {
+    try {
+      await self.clients.openWindow(event.notification.body);
+      const clients = await self.clients.matchAll({type: 'window'});
+      for (const client of clients) {
+        client.postMessage({result: 'success'});
+      }
+    } catch (e) {
+      const clients = await self.clients.matchAll({type: 'window'});
+      for (const client of clients) {
+        client.postMessage({
+          result: 'failure',
+          error: e.message
+        });
+      }
+    }
+  }());
+});)",
+          {{"Content-Type", "text/javascript"},
+           {"Connection-Allowlist", "()"}}));
+
+  RegisterResponse("/main.html",
+                   ResponseEntry("<html><body>Hello</body></html>", {}));
+  RegisterResponse("/final.html", ResponseEntry("final-content", {}));
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/final.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Register and activate the Service Worker, and set up message listener.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         R"(
+             (async () => {
+               const reg = await navigator.serviceWorker.register('/sw.js');
+               await new Promise(resolve => {
+                 const worker = reg.installing || reg.waiting || reg.active;
+                 if (worker.state === 'activated') {
+                   resolve();
+                 } else {
+                   worker.addEventListener('statechange', () => {
+                     if (worker.state === 'activated') {
+                       resolve();
+                     }
+                   });
+                 }
+               });
+               window.sw_messages = [];
+               navigator.serviceWorker.addEventListener('message', event => {
+                 window.sw_messages.push(event.data);
+                 if (window.on_sw_message) window.on_sw_message(event.data);
+               });
+               return !!navigator.serviceWorker.controller;
+             })();
+           )"));
+
+  // Dispatch notification click.
+  StoragePartition* partition = shell()
+                                    ->web_contents()
+                                    ->GetBrowserContext()
+                                    ->GetDefaultStoragePartition();
+  scoped_refptr<ServiceWorkerContextWrapper> wrapper =
+      static_cast<ServiceWorkerContextWrapper*>(
+          partition->GetServiceWorkerContext());
+
+  GURL scope_url = embedded_https_test_server().GetURL("a.test", "/");
+
+  // Ensure the service worker is started.
+  base::RunLoop run_loop;
+  wrapper->StartActiveServiceWorker(
+      scope_url,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
+      base::BindOnce(
+          [](base::OnceClosure quit, blink::ServiceWorkerStatusCode status) {
+            EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+            std::move(quit).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  blink::PlatformNotificationData notification_data;
+  notification_data.body = base::UTF8ToUTF16(target_url.spec());
+
+  content::DispatchServiceWorkerNotificationClick(wrapper.get(), scope_url,
+                                                  notification_data);
+
+  // Expect failure since the SW CA blocks everything.
+  EXPECT_EQ("failure", EvalJs(shell()->web_contents(), R"(
+      new Promise(resolve => {
+        if (window.sw_messages.length > 0) {
+          resolve(window.sw_messages[0].result);
+        } else {
+          window.on_sw_message = data => {
+            resolve(data.result);
+          };
+        }
+      });
+  )"));
+
+  // Verify that no new window was opened.
+  EXPECT_EQ(1u, Shell::windows().size());
+}
+
+// Verifies that clients.openWindow() succeeds when the destination URL is
+// allowed by the Service Worker's Connection-Allowlist.
+IN_PROC_BROWSER_TEST_F(
+    ConnectionAllowlistTest,
+    ServiceWorkerClientsOpenWindowObeysServiceWorkerAllowlist) {
+  RegisterResponse(
+      "/sw.js",
+      ResponseEntry(
+          R"(self.addEventListener('install', e => self.skipWaiting());
+self.addEventListener('activate', e => {
+  e.waitUntil(self.clients.claim());
+});
+self.addEventListener('notificationclick', event => {
+  event.waitUntil(async function() {
+    try {
+      await self.clients.openWindow(event.notification.body);
+      const clients = await self.clients.matchAll({type: 'window'});
+      for (const client of clients) {
+        client.postMessage({result: 'success'});
+      }
+    } catch (e) {
+      const clients = await self.clients.matchAll({type: 'window'});
+      for (const client of clients) {
+        client.postMessage({
+          result: 'failure',
+          error: e.message
+        });
+      }
+    }
+  }());
+});)",
+          {{"Content-Type", "text/javascript"},
+           {"Connection-Allowlist", R"((response-origin "*://a.test:*/*"))"}}));
+
+  RegisterResponse("/main.html",
+                   ResponseEntry("<html><body>Hello</body></html>", {}));
+  RegisterResponse("/final.html", ResponseEntry("final-content", {}));
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/main.html");
+  GURL target_url =
+      embedded_https_test_server().GetURL("a.test", "/final.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Register and activate the Service Worker, and set up message listener.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         R"(
+             (async () => {
+               const reg = await navigator.serviceWorker.register('/sw.js');
+               await new Promise(resolve => {
+                 const worker = reg.installing || reg.waiting || reg.active;
+                 if (worker.state === 'activated') {
+                   resolve();
+                 } else {
+                   worker.addEventListener('statechange', () => {
+                     if (worker.state === 'activated') {
+                       resolve();
+                     }
+                   });
+                 }
+               });
+               window.sw_messages = [];
+               navigator.serviceWorker.addEventListener('message', event => {
+                 window.sw_messages.push(event.data);
+                 if (window.on_sw_message) window.on_sw_message(event.data);
+               });
+               return !!navigator.serviceWorker.controller;
+             })();
+           )"));
+
+  // Dispatch notification click.
+  StoragePartition* partition = shell()
+                                    ->web_contents()
+                                    ->GetBrowserContext()
+                                    ->GetDefaultStoragePartition();
+  scoped_refptr<ServiceWorkerContextWrapper> wrapper =
+      static_cast<ServiceWorkerContextWrapper*>(
+          partition->GetServiceWorkerContext());
+
+  GURL scope_url = embedded_https_test_server().GetURL("a.test", "/");
+
+  // Ensure the service worker is started.
+  base::RunLoop run_loop;
+  wrapper->StartActiveServiceWorker(
+      scope_url,
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url)),
+      base::BindOnce(
+          [](base::OnceClosure quit, blink::ServiceWorkerStatusCode status) {
+            EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+            std::move(quit).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  blink::PlatformNotificationData notification_data;
+  notification_data.body = base::UTF8ToUTF16(target_url.spec());
+
+  content::WebContentsAddedObserver new_window_observer;
+  TestNavigationObserver nav_observer(target_url);
+  nav_observer.StartWatchingNewWebContents();
+
+  content::DispatchServiceWorkerNotificationClick(wrapper.get(), scope_url,
+                                                  notification_data);
+
+  // Expect success since the SW CA allows a.test.
+  EXPECT_EQ("success", EvalJs(shell()->web_contents(), R"(
+      new Promise(resolve => {
+        if (window.sw_messages.length > 0) {
+          resolve(window.sw_messages[0].result);
+        } else {
+          window.on_sw_message = data => {
+            resolve(data.result);
+          };
+        }
+      });
+  )"));
+
+  nav_observer.Wait();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(target_url, nav_observer.last_navigation_url());
+
+  // Verify that a new window was opened.
+  WebContents* new_window = new_window_observer.GetWebContents();
+  EXPECT_TRUE(new_window);
 }
 
 class ConnectionAllowlistSyntheticResponseTest

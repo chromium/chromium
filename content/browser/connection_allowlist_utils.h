@@ -35,6 +35,14 @@ bool EnforcesConnectionAllowlist(
 bool IsRedirectAllowedByConnectionAllowlist(
     const PolicyContainerPolicies& initiator_policies);
 
+// Returns true if the connection allowlist enforced by `policies` allows `url`.
+// If the URL is blocked, handles reporting (TODO) and returns false.
+// If the feature is disabled or there is no enforced allowlist in policies,
+// this function returns true.
+bool ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+    const PolicyContainerPolicies& policies,
+    const GURL& url);
+
 // Evaluates the response and returns the ConnectionAllowlists that should apply
 // to the worker. Handles local scheme inheritance from creator_policies and
 // validates the Connection-Allowlist Origin Trial for network responses.

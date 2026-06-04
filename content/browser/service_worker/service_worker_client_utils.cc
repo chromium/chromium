@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -498,15 +499,25 @@ void FocusWindowClient(
   std::move(callback).Run(std::move(result));
 }
 
-void OpenWindow(const GURL& url,
-                const GURL& script_url,
-                const blink::StorageKey& key,
-                int worker_id,
-                int worker_process_id,
-                const base::WeakPtr<ServiceWorkerContextCore>& context,
-                WindowType type,
-                NavigationCallback callback) {
+void OpenWindow(
+    const GURL& url,
+    const GURL& script_url,
+    const blink::StorageKey& key,
+    int worker_id,
+    int worker_process_id,
+    scoped_refptr<PolicyContainerHost> service_worker_policy_container_host,
+    const base::WeakPtr<ServiceWorkerContextCore>& context,
+    WindowType type,
+    NavigationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (service_worker_policy_container_host &&
+      !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+          service_worker_policy_container_host->policies(), url)) {
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
+    return;
+  }
 
   RenderProcessHost* render_process_host =
       RenderProcessHost::FromID(worker_process_id);
@@ -604,20 +615,12 @@ void NavigateClient(
       rfhi->BuildClientSecurityState()->ip_address_space !=
           worker_client_security_state->ip_address_space);
 
-  if (service_worker_policy_container_host) {
-    const PolicyContainerPolicies& policies =
-        service_worker_policy_container_host->policies();
-    if (base::FeatureList::IsEnabled(
-            network::features::kConnectionAllowlists) &&
-        policies.connection_allowlists.enforced.has_value()) {
-      if (!network::ConnectionAllowlistMatchesUrl(
-              policies.connection_allowlists.enforced.value(), url)) {
-        // TODO(crbug.com/482728970): Implement reporting.
-        DidNavigate(context, script_url, key, std::move(callback),
-                    GlobalRenderFrameHostId());
-        return;
-      }
-    }
+  if (service_worker_policy_container_host &&
+      !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+          service_worker_policy_container_host->policies(), url)) {
+    DidNavigate(context, script_url, key, std::move(callback),
+                GlobalRenderFrameHostId());
+    return;
   }
 
   bool set_initiator = base::FeatureList::IsEnabled(

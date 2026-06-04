@@ -72,6 +72,21 @@ bool IsRedirectAllowedByConnectionAllowlist(
   return true;
 }
 
+bool ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+    const PolicyContainerPolicies& policies,
+    const GURL& url) {
+  if (!base::FeatureList::IsEnabled(network::features::kConnectionAllowlists) ||
+      !policies.connection_allowlists.enforced.has_value()) {
+    return true;
+  }
+  if (network::ConnectionAllowlistMatchesUrl(
+          policies.connection_allowlists.enforced.value(), url)) {
+    return true;
+  }
+  // TODO(crbug.com/482728970): Implement reporting.
+  return false;
+}
+
 network::ConnectionAllowlists GetConnectionAllowlistsForWorker(
     const GURL& response_url,
     const network::mojom::URLResponseHead* response_head,
