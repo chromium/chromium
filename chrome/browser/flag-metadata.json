@@ -5439,6 +5439,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-os-icon-variant",
+    "owners": [ "andreaxg@google.com", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-pdf-summarize",
     "owners": [ "erikchen@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 155

@@ -47,6 +47,9 @@ found in the LICENSE file.
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT_LIGHT_V2" file="glic_profile_banner_top_right_light.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_MAC_ALT_STATUS_ICON" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_OS_ICON_VARIANT" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_OS_ICON_VARIANT_0" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_OS_ICON_VARIANT_1" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_OS_ICON_VARIANT_2" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
     </includes>
   </release>
 </grit>
