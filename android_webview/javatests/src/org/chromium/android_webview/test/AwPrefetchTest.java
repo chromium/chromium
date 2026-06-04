@@ -662,7 +662,8 @@ public class AwPrefetchTest extends AwParameterizedTest {
         try (var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectAnyRecord(
-                                "Prefetch.PrefetchContainer.PrefetchMatchMissedToPrefetchStarted.Embedder_WebView")
+                                "Prefetch.PrefetchContainer.PrefetchMatchMissed"
+                                        + "ToPrefetchStarted.Embedder_WebView")
                         .build()) {
 
             // Make a prefetch request with the exact same URL as the navigation.
@@ -705,7 +706,8 @@ public class AwPrefetchTest extends AwParameterizedTest {
         try (var histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(
-                                "Prefetch.PrefetchContainer.PrefetchMatchMissedToPrefetchStarted.Embedder_WebView")
+                                "Prefetch.PrefetchContainer.PrefetchMatchMissed"
+                                        + "ToPrefetchStarted.Embedder_WebView")
                         .build()) {
 
             // Make a prefetch request with the exact same URL as the navigation.
