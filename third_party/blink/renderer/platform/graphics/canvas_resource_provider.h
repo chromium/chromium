@@ -242,10 +242,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // instantiated by Canvas2D-specific subclasses.
   void RecordingCleared() override;
 
-  // Disables lines drawing as paths if necessary. Drawing lines as paths is
-  // only needed for ganesh.
-  virtual void DisableLineDrawingAsPathsIfNecessary() {}
-
  protected:
   // Should only be called from static Create*() methods.
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
@@ -531,7 +527,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
-  void DisableLineDrawingAsPathsIfNecessary() override;
+  void DisableLineDrawingAsPathsIfNecessary();
 
   sk_sp<SkSurface> CreateSkSurface() const override;
   gpu::raster::RasterInterface* RasterInterface() const;
