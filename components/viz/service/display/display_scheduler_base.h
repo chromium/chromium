@@ -38,7 +38,6 @@ struct VIZ_SERVICE_EXPORT DrawAndSwapParams {
   int max_pending_swaps = -1;
   std::optional<int64_t> choreographer_vsync_id;
   std::optional<PossibleDeadline> selected_deadline;
-  std::optional<PossibleDeadline> os_preferred_deadline;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
@@ -78,8 +77,7 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerBase
       int64_t choreographer_vsync_id,
       base::TimeTicks frame_time,
       base::TimeDelta interval,
-      std::optional<PossibleDeadline> selected_deadline,
-      std::optional<PossibleDeadline> os_preferred) = 0;
+      std::optional<PossibleDeadline> selected_deadline) = 0;
 
  protected:
   raw_ptr<DisplaySchedulerClient> client_ = nullptr;

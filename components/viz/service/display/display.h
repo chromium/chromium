@@ -253,8 +253,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
                 HintSession::BoostType boost_type,
                 int64_t choreographer_vsync_id,
                 int64_t swap_trace_id,
-                std::optional<PossibleDeadline> selected_deadline,
-                std::optional<PossibleDeadline> os_preferred);
+                std::optional<PossibleDeadline> selected_deadline);
     void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
     void OnPresent(const gfx::PresentationFeedback& feedback);
@@ -270,9 +269,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     const std::optional<PossibleDeadline>& selected_deadline() const {
       return selected_deadline_;
     }
-    const std::optional<PossibleDeadline>& os_preferred_deadline() const {
-      return os_preferred_deadline_;
-    }
 
    private:
     base::TimeTicks frame_time_;
@@ -287,7 +283,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     int64_t choreographer_vsync_id_ = 0;
     int64_t swap_trace_id_ = 0;
     std::optional<PossibleDeadline> selected_deadline_;
-    std::optional<PossibleDeadline> os_preferred_deadline_;
   };
 
   void InitializeRenderer();

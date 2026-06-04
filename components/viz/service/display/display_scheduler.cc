@@ -278,8 +278,7 @@ void DisplayScheduler::OnPresentationFeedback(
     int64_t choreographer_vsync_id,
     base::TimeTicks frame_time,
     base::TimeDelta interval,
-    std::optional<PossibleDeadline> selected_deadline,
-    std::optional<PossibleDeadline> os_preferred) {
+    std::optional<PossibleDeadline> selected_deadline) {
   if (selected_deadline.has_value() && !feedback.failed()) {
     base::TimeTicks target_latch_time =
         frame_time + selected_deadline->latch_delta;
@@ -352,7 +351,6 @@ bool DisplayScheduler::DrawAndSwap() {
         current_begin_frame_args_.frame_time + selected_deadline.latch_delta;
     params.choreographer_vsync_id = selected_deadline.vsync_id;
     params.selected_deadline = selected_deadline;
-    params.os_preferred_deadline = deadlines.GetOSPreferredDeadline();
   }
   bool success = client_ && client_->DrawAndSwap(params);
   if (!success)
