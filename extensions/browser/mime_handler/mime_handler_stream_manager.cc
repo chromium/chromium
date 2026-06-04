@@ -19,6 +19,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -348,8 +349,12 @@ void MimeHandlerStreamManager::AbortAndFallbackToNativeHandler(
   // the throttle's FTN-keyed peek matches the mark set here.
   content::NavigationController::LoadURLParams params(original_url);
   params.frame_tree_node_id = embedder_ftn;
-  params.should_replace_current_entry = true;
   params.transition_type = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
+  // The embedder is already committed on this URL. Without a reload
+  // classification, re-navigating to the same URL is treated as a
+  // same-document scroll when it carries a fragment, so the response
+  // throttle never re-runs to hand the body to the native handler.
+  params.reload_type = content::ReloadType::NORMAL;
   web_contents()->GetController().LoadURLWithParams(params);
 }
 

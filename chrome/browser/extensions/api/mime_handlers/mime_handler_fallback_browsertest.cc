@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -129,6 +130,32 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents))
       << "Generic handler aborted but built-in PDF viewer never loaded.";
+}
+
+// Same as the top-level embedder case, but the PDF URL carries a fragment.
+// The fallback re-navigates the embedder to its own current URL, so without
+// a reload classification it is misclassified as a same-document scroll: the
+// response throttle never re-runs and the built-in PDF viewer never takes
+// over. The user-visible URL, fragment included, must survive the fallback.
+IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+                       AbortAndFallbackSwapsToPdfViewerForFragmentedUrl) {
+  ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL pdf_url = embedded_test_server()->GetURL(
+      base::StrCat({kFallbackPdfPath, "#page=2"}));
+  ASSERT_TRUE(pdf_url.has_ref());
+
+  auto pdf_extension_observer = MakePdfExtensionObserver();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  pdf_extension_observer->WaitForNavigationFinished();
+
+  EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents))
+      << "Generic handler aborted on a fragmented URL but the built-in PDF "
+         "viewer never loaded.";
+  // The fragmented URL must survive the fallback unchanged.
+  EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
 }
 
 // Abort from an iframe-hosted generic handler must swap only the iframe
