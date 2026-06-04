@@ -11,7 +11,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/surface_embed/common/features.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -24,8 +23,7 @@ class SurfaceEmbedBackgroundTabCaptureInteractiveUiTest
  public:
   SurfaceEmbedBackgroundTabCaptureInteractiveUiTest() {
     feature_list_.InitWithFeatures(
-        {surface_embed::features::kSurfaceEmbed, ::features::kWebium,
-         ::features::kAttachUnownedInnerWebContents},
+        {surface_embed::features::kSurfaceEmbed, ::features::kWebium},
         {});
   }
 
