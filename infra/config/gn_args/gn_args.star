@@ -1342,6 +1342,14 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "tint_mesa_fuzz",
+    args = {
+        "tint_build_mesa": True,
+        "tint_build_fuzzer_vulkan_support": True,
+    },
+)
+
+gn_args.config(
     name = "try_builder",
     configs = [
         "dcheck_always_on",
