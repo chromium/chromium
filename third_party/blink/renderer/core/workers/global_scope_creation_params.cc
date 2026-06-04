@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 
 namespace blink {
@@ -127,6 +128,42 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       this->inherited_trial_features->push_back(feature);
     }
   }
+}
+
+// static
+std::unique_ptr<GlobalScopeCreationParams>
+GlobalScopeCreationParams::CreateForWorkerForTesting(
+    const SecurityOrigin* starter_origin,
+    const KURL& script_url,
+    const std::optional<ExecutionContextToken>& parent_context_token,
+    std::unique_ptr<WorkerSettings> worker_settings) {
+  return std::make_unique<GlobalScopeCreationParams>(
+      script_url, mojom::blink::ScriptType::kClassic, "fake global scope name",
+      "fake user agent", UserAgentMetadata(),
+      /*web_worker_fetch_context=*/nullptr,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      network::mojom::ReferrerPolicy::kDefault,
+      DocumentPolicy::DocumentPolicyBundle{}, starter_origin,
+      /*starter_secure_context=*/false, CalculateHttpsState(starter_origin),
+      MakeGarbageCollected<WorkerClients>(),
+      /*content_settings_client=*/nullptr,
+      /*inherited_trial_features=*/nullptr, base::UnguessableToken::Create(),
+      std::move(worker_settings), mojom::blink::V8CacheOptions::kDefault,
+      /*worklet_module_responses_map=*/nullptr, mojo::NullRemote(),
+      mojo::NullRemote(), mojo::NullRemote(), BeginFrameProviderParams(),
+      /*parent_permissions_policy=*/nullptr, base::UnguessableToken::Create(),
+      ukm::kInvalidSourceId, parent_context_token);
+}
+
+// static
+std::unique_ptr<GlobalScopeCreationParams>
+GlobalScopeCreationParams::CreateForWorkerForTesting(
+    const SecurityOrigin* starter_origin,
+    const KURL& script_url) {
+  return CreateForWorkerForTesting(
+      starter_origin, script_url, LocalFrameToken(),
+      std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()));
 }
 
 }  // namespace blink

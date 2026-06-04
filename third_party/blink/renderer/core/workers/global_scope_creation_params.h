@@ -103,6 +103,16 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
 
   ~GlobalScopeCreationParams() = default;
 
+  static std::unique_ptr<GlobalScopeCreationParams> CreateForWorkerForTesting(
+      const SecurityOrigin* starter_origin,
+      const KURL& script_url,
+      const std::optional<ExecutionContextToken>& parent_context_token,
+      std::unique_ptr<WorkerSettings> worker_settings);
+
+  static std::unique_ptr<GlobalScopeCreationParams> CreateForWorkerForTesting(
+      const SecurityOrigin* starter_origin,
+      const KURL& script_url);
+
   // The URL to be used as the worker global scope's URL.
   // According to the spec, this should be response URL of the top-level
   // worker script after the top-level worker script is loaded.

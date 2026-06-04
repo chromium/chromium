@@ -155,28 +155,9 @@ class WorkerThreadForTest : public WorkerThread {
 
   void StartWithSourceCode(const SecurityOrigin* security_origin,
                            const String& source,
-                           const KURL& script_url = KURL("http://fake.url/"),
-                           WorkerClients* worker_clients = nullptr) {
-    auto creation_params = std::make_unique<GlobalScopeCreationParams>(
-        script_url, mojom::blink::ScriptType::kClassic,
-        "fake global scope name", "fake user agent", UserAgentMetadata(),
-        nullptr /* web_worker_fetch_context */,
-        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-        network::mojom::ReferrerPolicy::kDefault,
-        DocumentPolicy::DocumentPolicyBundle{}, security_origin,
-        false /* starter_secure_context */,
-        CalculateHttpsState(security_origin), worker_clients,
-        nullptr /* content_settings_client */,
-        nullptr /* inherited_trial_features */,
-        base::UnguessableToken::Create(),
-        std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
-        mojom::blink::V8CacheOptions::kDefault,
-        nullptr /* worklet_module_responses_map */);
-    // Create a dummy parent context.
-    creation_params->parent_context_token = LocalFrameToken();
-
-    Start(std::move(creation_params),
+                           const KURL& script_url = KURL("http://fake.url/")) {
+    Start(GlobalScopeCreationParams::CreateForWorkerForTesting(security_origin,
+                                                               script_url),
           WorkerBackingThreadStartupData::CreateDefault(),
           std::make_unique<WorkerDevToolsParams>());
     EvaluateClassicScript(script_url, source, nullptr /* cached_meta_data */,

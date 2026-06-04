@@ -288,27 +288,15 @@ class DedicatedWorkerMessagingProxyForTest
       std::unique_ptr<GlobalScopeCreationParams> params = nullptr) {
     scoped_refptr<const SecurityOrigin> security_origin =
         SecurityOrigin::Create(script_url_);
-    auto worker_settings = std::make_unique<WorkerSettings>(
-        To<LocalDOMWindow>(GetExecutionContext())->GetFrame()->GetSettings());
     if (!params) {
-      params = std::make_unique<GlobalScopeCreationParams>(
-          script_url_, mojom::blink::ScriptType::kClassic,
-          "fake global scope name", "fake user agent", UserAgentMetadata(),
-          nullptr /* web_worker_fetch_context */,
-          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-          network::mojom::ReferrerPolicy::kDefault,
-          DocumentPolicy::DocumentPolicyBundle{}, security_origin.get(),
-          false /* starter_secure_context */,
-          CalculateHttpsState(security_origin.get()),
-          nullptr /* worker_clients */, nullptr /* content_settings_client */,
-          nullptr /* inherited_trial_features */,
-          base::UnguessableToken::Create(), std::move(worker_settings),
-          mojom::blink::V8CacheOptions::kDefault,
-          nullptr /* worklet_module_responses_map */);
+      params = GlobalScopeCreationParams::CreateForWorkerForTesting(
+          security_origin.get(), script_url_,
+          GetExecutionContext()->GetExecutionContextToken(),
+          std::make_unique<WorkerSettings>(
+              To<LocalDOMWindow>(GetExecutionContext())
+                  ->GetFrame()
+                  ->GetSettings()));
     }
-    params->parent_context_token =
-        GetExecutionContext()->GetExecutionContextToken();
     InitializeWorkerThread(
         std::move(params),
         WorkerBackingThreadStartupData(
