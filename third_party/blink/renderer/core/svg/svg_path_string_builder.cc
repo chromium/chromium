@@ -52,30 +52,6 @@ static void AppendPoint(StringBuilder& string_builder,
   AppendFloat(string_builder, point.y());
 }
 
-// TODO(fs): Centralized location for this (SVGPathSeg.h?)
-static const auto kPathSegmentCharacter = std::to_array<char>({
-    0,    // PathSegUnknown
-    'Z',  // PathSegClosePath
-    'M',  // PathSegMoveToAbs
-    'm',  // PathSegMoveToRel
-    'L',  // PathSegLineToAbs
-    'l',  // PathSegLineToRel
-    'C',  // PathSegCurveToCubicAbs
-    'c',  // PathSegCurveToCubicRel
-    'Q',  // PathSegCurveToQuadraticAbs
-    'q',  // PathSegCurveToQuadraticRel
-    'A',  // PathSegArcAbs
-    'a',  // PathSegArcRel
-    'H',  // PathSegLineToHorizontalAbs
-    'h',  // PathSegLineToHorizontalRel
-    'V',  // PathSegLineToVerticalAbs
-    'v',  // PathSegLineToVerticalRel
-    'S',  // PathSegCurveToCubicSmoothAbs
-    's',  // PathSegCurveToCubicSmoothRel
-    'T',  // PathSegCurveToQuadraticSmoothAbs
-    't',  // PathSegCurveToQuadraticSmoothRel
-});
-
 void SVGPathStringBuilder::EmitSegment(const PathSegmentData& segment) {
   DCHECK_GT(segment.command, kPathSegUnknown);
   DCHECK_LE(segment.command, kPathSegCurveToQuadraticSmoothRel);

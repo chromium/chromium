@@ -21,6 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_DATA_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -60,6 +62,30 @@ static inline bool IsAbsolutePathSegType(const SVGPathSegType type) {
   // relative command.
   return type < kPathSegMoveToAbs || type % 2 == 0;
 }
+
+// Command letter for each SVGPathSegType, indexed by enum value.
+inline constexpr auto kPathSegmentCharacter = std::to_array<char>({
+    0,    // kPathSegUnknown
+    'Z',  // kPathSegClosePath
+    'M',  // kPathSegMoveToAbs
+    'm',  // kPathSegMoveToRel
+    'L',  // kPathSegLineToAbs
+    'l',  // kPathSegLineToRel
+    'C',  // kPathSegCurveToCubicAbs
+    'c',  // kPathSegCurveToCubicRel
+    'Q',  // kPathSegCurveToQuadraticAbs
+    'q',  // kPathSegCurveToQuadraticRel
+    'A',  // kPathSegArcAbs
+    'a',  // kPathSegArcRel
+    'H',  // kPathSegLineToHorizontalAbs
+    'h',  // kPathSegLineToHorizontalRel
+    'V',  // kPathSegLineToVerticalAbs
+    'v',  // kPathSegLineToVerticalRel
+    'S',  // kPathSegCurveToCubicSmoothAbs
+    's',  // kPathSegCurveToCubicSmoothRel
+    'T',  // kPathSegCurveToQuadraticSmoothAbs
+    't',  // kPathSegCurveToQuadraticSmoothRel
+});
 
 struct PathSegmentData {
   DISALLOW_NEW();
