@@ -1342,38 +1342,35 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
   }
 
   // Record trace events according to the navigation milestone.
-  TRACE_EVENT_BEGIN("loading", "GWSNavigationStartToFirstRequestStart",
-                    perfetto::Track::FromPointer(this), navigation_start_time);
-  TRACE_EVENT_END("loading", /* GWSNavigationStartToFirstRequestStart */
-                  perfetto::Track::FromPointer(this),
+  const auto track =
+      perfetto::NamedTrack::FromPointer("GWSPageLoadMetricsObserver", this);
+  TRACE_EVENT_BEGIN("loading", "GWSNavigationStartToFirstRequestStart", track,
+                    navigation_start_time);
+  TRACE_EVENT_END("loading", /* GWSNavigationStartToFirstRequestStart */ track,
                   timing.first_request_start_time);
 
   TRACE_EVENT_BEGIN("loading", "GWSFirstRequestStartToFirstResponseStart",
-                    perfetto::Track::FromPointer(this),
-                    timing.first_request_start_time);
-  TRACE_EVENT_END("loading", /* GWSFirstRequestStartToFirstResponseStart */
-                  perfetto::Track::FromPointer(this),
+                    track, timing.first_request_start_time);
+  TRACE_EVENT_END("loading",
+                  /* GWSFirstRequestStartToFirstResponseStart */ track,
                   timing.first_response_start_time);
 
   TRACE_EVENT_BEGIN("loading", "GWSFirstResponseStartToFirstLoaderCallback",
-                    perfetto::Track::FromPointer(this),
-                    timing.first_response_start_time);
-  TRACE_EVENT_END("loading", /* GWSFirstResponseStartToFirstLoaderCallback */
-                  perfetto::Track::FromPointer(this),
+                    track, timing.first_response_start_time);
+  TRACE_EVENT_END("loading",
+                  /* GWSFirstResponseStartToFirstLoaderCallback */ track,
                   timing.first_loader_callback_time);
 
   TRACE_EVENT_BEGIN("loading", "GWSFirstLoadCallbackToFinalResponseStart",
-                    perfetto::Track::FromPointer(this),
-                    timing.first_loader_callback_time);
-  TRACE_EVENT_END("loading", /* GWSFirstLoadCallbackToFinalResponseStart */
-                  perfetto::Track::FromPointer(this),
+                    track, timing.first_loader_callback_time);
+  TRACE_EVENT_END("loading",
+                  /* GWSFirstLoadCallbackToFinalResponseStart */ track,
                   timing.final_response_start_time);
 
   TRACE_EVENT_BEGIN("loading", "GWSFinalResponseStartToFinalLoaderCallback",
-                    perfetto::Track::FromPointer(this),
-                    timing.final_response_start_time);
-  TRACE_EVENT_END("loading", /* GWSFinalResponseStartToFinalLoaderCallback */
-                  perfetto::Track::FromPointer(this),
+                    track, timing.final_response_start_time);
+  TRACE_EVENT_END("loading",
+                  /* GWSFinalResponseStartToFinalLoaderCallback */ track,
                   timing.final_loader_callback_time);
 }
 
