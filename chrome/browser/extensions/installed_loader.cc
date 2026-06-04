@@ -482,7 +482,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   int ntp_override_count = 0;
   int homepage_override_count = 0;
   int search_engine_override_count = 0;
-  int startup_pages_override_count = 0;
   int incognito_allowed_count = 0;
   int incognito_not_allowed_count = 0;
   int file_access_allowed_count = 0;
@@ -678,9 +677,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
     if (settings) {
       if (settings->search_engine) {
         ++search_engine_override_count;
-      }
-      if (!settings->startup_pages.empty()) {
-        ++startup_pages_override_count;
       }
       if (settings->homepage) {
         ++homepage_override_count;
@@ -975,8 +971,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
                               ntp_override_count);
   base::UmaHistogramCounts100("Extensions.SearchEngineOverrides2",
                               search_engine_override_count);
-  base::UmaHistogramCounts100("Extensions.StartupPagesOverrides2",
-                              startup_pages_override_count);
   base::UmaHistogramCounts100("Extensions.HomepageOverrides2",
                               homepage_override_count);
 

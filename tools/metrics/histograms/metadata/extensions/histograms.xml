@@ -4546,19 +4546,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.StartupPagesOverrides2" units="units"
-    expires_after="2027-05-15">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>kelvinjiang@chromium.org</owner>
-  <owner>junhaohuang@microsoft.com</owner>
-  <summary>
-    The number of enabled extensions with startup page overrides specified in
-    their manifest. Recorded once per &quot;user profile&quot; (profiles where
-    people can install extensions, specifically profiles that can have
-    non-component extensions installed) at profile initialization.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.SyncBlockedByDefaultWebAppMigration" enum="Boolean"
     expires_after="2024-02-08">
   <owner>alancutter@chromium.org</owner>
