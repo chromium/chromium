@@ -572,13 +572,6 @@ TYPED_TEST(TypedAudioBusTest, FromInterleaved) {
         this->as_bytes(this->GetInterleavedSpan()));
     VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
-  {
-    SCOPED_TRACE("Unsafe");
-    std::unique_ptr<AudioBus> bus = this->GetTestBus();
-    bus->template FromInterleaved<SampleTypeTraits>(
-        this->GetInterleavedSpan().data(), kFrames);
-    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
-  }
 }
 
 // Verify FromInterleaved() properly zeros remaining frames when
@@ -615,15 +608,6 @@ TYPED_TEST(TypedAudioBusTest, FromInterleaved_Zero) {
     bus->template FromInterleavedBytes<SampleTypeTraits>(
         this->as_bytes(interleaved_subspan),
         /*zero_remaining_frames=*/true);
-    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
-  }
-  {
-    SCOPED_TRACE("Unsafe");
-    // Fill with guard values that should be zero'ed out.
-    std::unique_ptr<AudioBus> bus =
-        this->GetTestBus(/*fill_value=*/kGuardValue);
-    bus->template FromInterleaved<SampleTypeTraits>(interleaved_subspan.data(),
-                                                    kPartialFrames);
     VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
 }
@@ -671,16 +655,6 @@ TYPED_TEST(TypedAudioBusTest, FromInterleavedPartial) {
 
     VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
   }
-  {
-    SCOPED_TRACE("Unsafe");
-    // Fill with guard values that should untouched.
-    std::unique_ptr<AudioBus> bus =
-        this->GetTestBus(/*fill_value=*/kGuardValue);
-    bus->template FromInterleavedPartial<SampleTypeTraits>(
-        interleaved_data.data(), kOffset, kCount);
-
-    VerifyAreEqualWithEpsilon(bus.get(), expected.get(), this->GetEpsilon());
-  }
 }
 
 // Verify ToInterleaved() interleaves audio in supported formats correctly.
@@ -711,13 +685,6 @@ TYPED_TEST(TypedAudioBusTest, ToInterleaved) {
     TestArray dest_array;
     source_bus->template ToInterleavedBytes<SampleTypeTraits>(
         this->as_writable_bytes(dest_array));
-    verify_array(dest_array);
-  }
-  {
-    SCOPED_TRACE("Unsafe");
-    TestArray dest_array;
-    source_bus->template ToInterleaved<SampleTypeTraits>(kFrames,
-                                                         dest_array.data());
     verify_array(dest_array);
   }
 }
@@ -761,19 +728,11 @@ TYPED_TEST(TypedAudioBusTest, ToInterleavedPartial) {
         kOffset, this->as_writable_bytes(dest_array));
     verify_array(dest_array);
   }
-  {
-    SCOPED_TRACE("Unsafe");
-    TestArray dest_array;
-    source_bus->template ToInterleavedPartial<SampleTypeTraits>(
-        kOffset, kCount, dest_array.data());
-    verify_array(dest_array);
-  }
 }
 
 TEST_F(AudioBusTest, ToInterleavedSanitized) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrames);
-  bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid,
-                                                bus->frames());
+  bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid);
   // Verify FromInterleaved applied no sanitization, for test setup.
   ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
 
@@ -795,39 +754,12 @@ TEST_F(AudioBusTest, ToInterleavedSanitized) {
   }
 }
 
-TEST_F(AudioBusTest, ToInterleavedSanitized_Unsafe) {
-  std::unique_ptr<AudioBus> bus = AudioBus::Create(kChannels, kFrames);
-  bus->FromInterleaved<Float32SampleTypeTraits>(
-      kTestVectorFloat32Invalid.data(), bus->frames());
-  // Verify FromInterleaved applied no sanity.
-  ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
-  std::array<float, std::size(kTestVectorFloat32Sanitized)> test_array;
-  bus->ToInterleaved<Float32SampleTypeTraits>(bus->frames(), test_array.data());
-  for (size_t i = 0; i < std::size(kTestVectorFloat32Sanitized); ++i) {
-    ASSERT_EQ(kTestVectorFloat32Sanitized[i], test_array[i]);
-  }
-
-  // Verify that Float32SampleTypeTraitsNoClip applied no sanity. Note: We don't
-  // use memcmp() here since the NaN type may change on x86 platforms in certain
-  // circumstances, see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=57484
-  bus->ToInterleaved<Float32SampleTypeTraitsNoClip>(bus->frames(),
-                                                    test_array.data());
-  for (size_t i = 0; i < kTotalFrames; ++i) {
-    if (std::isnan(test_array[i])) {
-      EXPECT_TRUE(std::isnan(kTestVectorFloat32Invalid[i]));
-    } else {
-      EXPECT_FLOAT_EQ(test_array[i], kTestVectorFloat32Invalid[i]);
-    }
-  }
-}
-
 TEST_F(AudioBusTest, CopyAndClipTo) {
   auto bus = AudioBus::Create(kChannels, kFrames);
-  bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid,
-                                                bus->frames());
+  bus->FromInterleaved<Float32SampleTypeTraits>(kTestVectorFloat32Invalid);
   auto expected = AudioBus::Create(kChannels, kFrames);
   expected->FromInterleaved<Float32SampleTypeTraits>(
-      kTestVectorFloat32Sanitized, bus->frames());
+      kTestVectorFloat32Sanitized);
 
   // Verify FromInterleaved applied no sanity.
   ASSERT_EQ(bus->channel(0)[0], kTestVectorFloat32Invalid[0]);
