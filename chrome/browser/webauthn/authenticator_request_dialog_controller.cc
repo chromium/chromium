@@ -781,7 +781,8 @@ void AuthenticatorRequestDialogController::StartFlow(
 }
 
 void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
-  DCHECK_EQ(model_->step(), Step::kPasskeyAutofill);
+  FIDO_LOG(EVENT) << "TransitionToModalWebAuthnRequest from step: "
+                  << model_->step();
 
   // Dispatch requests to any plugged in authenticators.
   for (auto& authenticator : ephemeral_state_.saved_authenticators_) {
@@ -1051,6 +1052,14 @@ void AuthenticatorRequestDialogController::
 
 void AuthenticatorRequestDialogController::OnCableEvent(
     device::cablev2::Event event) {
+  // Ignore background hybrid connection events if we are still showing the
+  // Autofill suggestion popup (conditional UI). We do not want to trigger any
+  // modal WebAuthn UI transitions in the background before the user selects an
+  // option.
+  if (model_->step() == Step::kPasskeyAutofill ||
+      model_->step() == Step::kNotStarted) {
+    return;
+  }
   switch (event) {
     case device::cablev2::Event::kPhoneConnected:
     case device::cablev2::Event::kBLEAdvertReceived:
