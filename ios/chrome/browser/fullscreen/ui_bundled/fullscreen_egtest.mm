@@ -867,6 +867,29 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 - (void)testEmpty {
 }
 
+// Tests that starting the app in landscape mode does not cause a crash.
+- (void)testStartInLandscape {
+  // Load a webpage first, so that it is restored on relaunch.
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
+  [ChromeEarlGrey waitForWebStateVisible];
+
+  // Rotate the simulator to landscape orientation.
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
+
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Verify the app successfully started in landscape mode.
+  UIInterfaceOrientation orientation = [ChromeEarlGrey interfaceOrientation];
+  GREYAssertTrue(UIInterfaceOrientationIsLandscape(orientation),
+                 @"App should start in landscape mode");
+
+  // Wait for the restored web page to become visible after startup.
+  [ChromeEarlGrey waitForWebStateVisible];
+}
+
 // TODO(crbug.com/499969010): Ensure PDFs display properly with new Fullscreen
 // implementation.
 - (void)testLongPDFInitialState {
