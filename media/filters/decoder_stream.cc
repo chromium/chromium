@@ -101,7 +101,7 @@ DecoderStream<StreamType>::DecoderStream(
     MediaLog* media_log)
     : traits_(std::move(traits)),
       task_runner_(std::move(task_runner)),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       state_(State::kStateUninitialized),
       stream_(nullptr),
       cdm_context_(nullptr),

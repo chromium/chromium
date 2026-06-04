@@ -95,7 +95,7 @@ class MEDIA_EXPORT DecryptingAudioDecoder : public AudioDecoder {
 
   // Set in constructor.
   scoped_refptr<base::SequencedTaskRunner> const task_runner_;
-  const raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   State state_ = kUninitialized;
 

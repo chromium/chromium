@@ -10,7 +10,8 @@
 
 namespace media {
 
-WebMAudioClient::WebMAudioClient(MediaLog* media_log) : media_log_(media_log) {
+WebMAudioClient::WebMAudioClient(MediaLog* media_log)
+    : media_log_(MediaLog::CloneSafely(media_log)) {
   Reset();
 }
 

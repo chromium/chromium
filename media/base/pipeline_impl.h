@@ -170,7 +170,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // Parameters passed in the constructor.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   CreateRendererCB create_renderer_cb_;
-  const raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // Pipeline client. Valid only while the pipeline is running.
   raw_ptr<Client> client_;

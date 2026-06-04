@@ -35,7 +35,7 @@ class MEDIA_EXPORT AudioTimestampValidator {
 
  private:
   bool has_codec_delay_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // Accumulates time from decoded audio frames. We adjust the base timestamp as
   // needed for the first few buffers (stabilization period) of decoded output

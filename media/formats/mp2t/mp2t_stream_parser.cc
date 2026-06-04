@@ -262,7 +262,7 @@ void Mp2tStreamParser::Init(
   encrypted_media_init_data_cb_ = std::move(encrypted_media_init_data_cb);
   new_segment_cb_ = std::move(new_segment_cb);
   end_of_segment_cb_ = std::move(end_of_segment_cb);
-  media_log_ = media_log;
+  media_log_ = MediaLog::CloneSafely(media_log);
 }
 
 void Mp2tStreamParser::Flush() {
@@ -501,8 +501,9 @@ std::unique_ptr<EsParser> Mp2tStreamParser::CreateMpeg1AudioParser(
       &Mp2tStreamParser::OnAudioConfigChanged, base::Unretained(this), pes_pid);
   auto on_emit_audio_buffer = base::BindRepeating(
       &Mp2tStreamParser::OnEmitAudioBuffer, base::Unretained(this), pes_pid);
-  return std::make_unique<EsParserMpeg1Audio>(
-      on_audio_config_changed, std::move(on_emit_audio_buffer), media_log_);
+  return std::make_unique<EsParserMpeg1Audio>(on_audio_config_changed,
+                                              std::move(on_emit_audio_buffer),
+                                              media_log_.get());
 }
 
 bool Mp2tStreamParser::ShouldForceEncryptedParser() {

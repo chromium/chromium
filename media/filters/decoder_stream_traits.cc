@@ -55,7 +55,7 @@ DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
     MediaLog* media_log,
     ChannelLayoutConfig initial_hw_layout,
     SampleFormat initial_hw_sample_format)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       initial_hw_layout_(initial_hw_layout),
       initial_hw_sample_format_(initial_hw_sample_format) {
   weak_this_ = weak_factory_.GetWeakPtr();
@@ -118,7 +118,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnStreamReset(
   // Stream is likely being seeked to a new timestamp, so make new validator to
   // build new timestamp expectations.
   audio_ts_validator_ = std::make_unique<AudioTimestampValidator>(
-      stream->audio_decoder_config(), media_log_);
+      stream->audio_decoder_config(), media_log_.get());
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecode(
@@ -137,7 +137,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnConfigChanged(
   // Reset validator with the latest config. Also ensures that we do not attempt
   // to match timestamps across config boundaries.
   audio_ts_validator_ =
-      std::make_unique<AudioTimestampValidator>(config, media_log_);
+      std::make_unique<AudioTimestampValidator>(config, media_log_.get());
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnOutputReady(

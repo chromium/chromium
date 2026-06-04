@@ -22,7 +22,7 @@ DecryptingRenderer::DecryptingRenderer(
     MediaLog* media_log,
     const scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     : renderer_(std::move(renderer)),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       media_task_runner_(media_task_runner),
       client_(nullptr),
       media_resource_(nullptr),
@@ -157,7 +157,7 @@ void DecryptingRenderer::CreateAndInitializeDecryptingMediaResource() {
   DCHECK(init_cb_);
 
   decrypting_media_resource_ = std::make_unique<DecryptingMediaResource>(
-      media_resource_, cdm_context_, media_log_, media_task_runner_);
+      media_resource_, cdm_context_, media_log_.get(), media_task_runner_);
   decrypting_media_resource_->Initialize(
       base::BindOnce(&DecryptingRenderer::InitializeRenderer,
                      weak_factory_.GetWeakPtr()),

@@ -29,7 +29,7 @@ bool IsValidProjectionType(int64_t projection_type_code) {
 namespace media {
 
 WebMProjectionParser::WebMProjectionParser(MediaLog* media_log)
-    : media_log_(media_log) {
+    : media_log_(MediaLog::CloneSafely(media_log)) {
   Reset();
 }
 

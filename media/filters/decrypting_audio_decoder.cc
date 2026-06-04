@@ -36,7 +36,7 @@ static inline bool IsOutOfSync(const base::TimeDelta& timestamp_1,
 DecryptingAudioDecoder::DecryptingAudioDecoder(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
-    : task_runner_(task_runner), media_log_(media_log) {}
+    : task_runner_(task_runner), media_log_(MediaLog::CloneSafely(media_log)) {}
 
 bool DecryptingAudioDecoder::SupportsDecryption() const {
   return true;

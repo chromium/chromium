@@ -547,7 +547,7 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
 
   // MediaLog for reporting messages and properties to debug content and engine.
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   PipelineStatusCallback init_cb_;
   // Callback to execute upon seek completion.

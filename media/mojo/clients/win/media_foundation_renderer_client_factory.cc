@@ -25,7 +25,7 @@ MediaFoundationRendererClientFactory::MediaFoundationRendererClientFactory(
     std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory,
     mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
         media_foundation_renderer_notifier)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       get_dcomp_texture_wrapper_cb_(std::move(get_dcomp_texture_wrapper_cb)),
       mojo_renderer_factory_(std::move(mojo_renderer_factory)),
       media_foundation_renderer_notifier_(
@@ -53,9 +53,9 @@ MediaFoundationRendererClientFactory::CreateRenderer(
   mojo::PendingReceiver<mojom::MediaLog> media_log_pending_receiver;
   auto media_log_pending_remote =
       media_log_pending_receiver.InitWithNewPipeAndPassRemote();
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<MojoMediaLogService>(media_log_->Clone()),
-      std::move(media_log_pending_receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<MojoMediaLogService>(
+                                  MediaLog::CloneSafely(media_log_.get())),
+                              std::move(media_log_pending_receiver));
 
   // Used to send messages from the MediaFoundationRendererClient (Renderer
   // process), to the MediaFoundationRenderer (MF_CDM LPAC Utility process).
@@ -87,9 +87,9 @@ MediaFoundationRendererClientFactory::CreateRenderer(
 
   // mojo_renderer's ownership is passed to MediaFoundationRendererClient.
   return std::make_unique<MediaFoundationRendererClient>(
-      media_task_runner, media_log_->Clone(), std::move(mojo_renderer),
-      std::move(renderer_extension_remote), std::move(dcomp_texture_wrapper),
-      video_renderer_sink,
+      media_task_runner, MediaLog::CloneSafely(media_log_.get()),
+      std::move(mojo_renderer), std::move(renderer_extension_remote),
+      std::move(dcomp_texture_wrapper), video_renderer_sink,
       std::move(media_foundation_renderer_observer_remote));
 }
 

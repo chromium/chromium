@@ -26,7 +26,7 @@ RendererImplFactory::RendererImplFactory(
     DecoderFactory* decoder_factory,
     const GetGpuFactoriesCB& get_gpu_factories_cb,
     MediaPlayerLoggingID media_player_id)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       decoder_factory_(decoder_factory),
       get_gpu_factories_cb_(get_gpu_factories_cb),
       media_player_id_(media_player_id) {
@@ -39,7 +39,7 @@ RendererImplFactory::RendererImplFactory(
     const GetGpuFactoriesCB& get_gpu_factories_cb,
     MediaPlayerLoggingID media_player_id,
     std::unique_ptr<SpeechRecognitionClient> speech_recognition_client)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       decoder_factory_(decoder_factory),
       get_gpu_factories_cb_(get_gpu_factories_cb),
       media_player_id_(media_player_id),
@@ -56,7 +56,7 @@ RendererImplFactory::CreateAudioDecoders(
   // Create our audio decoders and renderer.
   std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
 
-  decoder_factory_->CreateAudioDecoders(media_task_runner, media_log_,
+  decoder_factory_->CreateAudioDecoders(media_task_runner, media_log_.get(),
                                         &audio_decoders);
   return audio_decoders;
 }
@@ -71,7 +71,7 @@ RendererImplFactory::CreateVideoDecoders(
   std::vector<std::unique_ptr<VideoDecoder>> video_decoders;
 
   decoder_factory_->CreateVideoDecoders(
-      media_task_runner, gpu_factories, media_log_,
+      media_task_runner, gpu_factories, media_log_.get(),
       std::move(request_overlay_info_cb), target_color_space, &video_decoders);
 
   return video_decoders;
@@ -96,7 +96,7 @@ std::unique_ptr<Renderer> RendererImplFactory::CreateRenderer(
       // finishes.
       base::BindRepeating(&RendererImplFactory::CreateAudioDecoders,
                           base::Unretained(this), media_task_runner),
-      media_log_, media_player_id_
+      media_log_.get(), media_player_id_
 #if BUILDFLAG(IS_ANDROID)
       ));
 #else
@@ -128,7 +128,7 @@ std::unique_ptr<Renderer> RendererImplFactory::CreateRenderer(
                           base::Unretained(this), media_task_runner,
                           std::move(request_overlay_info_cb),
                           target_color_space, gpu_factories),
-      true, media_log_, std::move(mappable_si_pool), media_player_id_));
+      true, media_log_.get(), std::move(mappable_si_pool), media_player_id_));
 
   return std::make_unique<RendererImpl>(
       media_task_runner, std::move(audio_renderer), std::move(video_renderer));

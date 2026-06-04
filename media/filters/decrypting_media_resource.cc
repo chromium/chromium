@@ -27,7 +27,7 @@ DecryptingMediaResource::DecryptingMediaResource(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : media_resource_(media_resource),
       cdm_context_(cdm_context),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       task_runner_(task_runner) {
   DCHECK(media_resource);
   DCHECK(cdm_context_);
@@ -59,7 +59,7 @@ void DecryptingMediaResource::Initialize(InitCB init_cb, WaitingCB waiting_cb) {
 
   for (media::DemuxerStream* stream : streams) {
     auto decrypting_demuxer_stream = std::make_unique<DecryptingDemuxerStream>(
-        task_runner_, media_log_, waiting_cb);
+        task_runner_, media_log_.get(), waiting_cb);
 
     // DecryptingDemuxerStream always invokes the callback asynchronously so
     // that we have no reentrancy issues. "All public APIs and callbacks are

@@ -32,7 +32,7 @@ AudioTimestampValidator::AudioTimestampValidator(
     const AudioDecoderConfig& decoder_config,
     MediaLog* media_log)
     : has_codec_delay_(decoder_config.codec_delay() > 0),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       audio_base_ts_(kNoTimestamp),
       reached_stable_state_(false),
       num_unstable_audio_tries_(0),

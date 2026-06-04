@@ -78,7 +78,7 @@ DecoderSelector<StreamType>::DecoderSelector(
     bool enable_priority_based_selection)
     : task_runner_(std::move(task_runner)),
       create_decoders_cb_(std::move(create_decoders_cb)),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       enable_priority_based_selection_(enable_priority_based_selection) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -287,7 +287,7 @@ void DecoderSelector<StreamType>::InitializeDecryptingDemuxerStream() {
                     perfetto::Track::FromPointer(this));
 
   decrypting_demuxer_stream_ = std::make_unique<DecryptingDemuxerStream>(
-      task_runner_, media_log_, waiting_cb_);
+      task_runner_, media_log_.get(), waiting_cb_);
 
   decrypting_demuxer_stream_->Initialize(
       stream_, cdm_context_,

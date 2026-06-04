@@ -33,7 +33,7 @@ DecryptingDemuxerStream::DecryptingDemuxerStream(
     MediaLog* media_log,
     const WaitingCB& waiting_cb)
     : task_runner_(task_runner),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       waiting_cb_(waiting_cb) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

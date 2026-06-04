@@ -86,6 +86,11 @@ class MockMediaLog : public MediaLog {
 
   ~MockMediaLog() override;
 
+  // Important but subtle note: remember that media logs are often `Clone()`d,
+  // so the mock is the parent log rather than the instance that any particular
+  // class owns.  If you mock any `MediaLog` methods here, be sure they're
+  // actually called by clones.
+
   MOCK_METHOD1(DoAddLogRecordLogString, void(const std::string& event));
 
   // Trampoline method to workaround GMOCK problems with std::unique_ptr<>.
@@ -105,9 +110,6 @@ class MockMediaLog : public MediaLog {
   std::unique_ptr<MediaLogRecord> take_most_recent_event() {
     return std::move(most_recent_event_);
   }
-
-  // Disable console logging since the mock log is used in spammy tests.
-  bool ShouldLogToDebugConsole() const override;
 
  private:
   std::unique_ptr<MediaLogRecord> most_recent_event_;

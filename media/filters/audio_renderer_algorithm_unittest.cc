@@ -446,8 +446,8 @@ class AudioRendererAlgorithmTest : public testing::Test {
   }
 
  protected:
-  AudioRendererAlgorithm algorithm_;
   NullMediaLog media_log_;
+  AudioRendererAlgorithm algorithm_;
   int frames_enqueued_ = 0;
   int channels_ = 0;
   ChannelLayout channel_layout_ = CHANNEL_LAYOUT_NONE;

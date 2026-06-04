@@ -94,7 +94,7 @@ class D3DVideoDecoderWrapper {
   std::vector<uint8_t> slice_info_bytes_;
   std::optional<ScopedSequenceD3DInputBuffer> bitstream_buffer_;
 
-  raw_ptr<MediaLog> media_log_ = nullptr;
+  const std::unique_ptr<MediaLog> media_log_;
 };
 
 }  // namespace media

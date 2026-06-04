@@ -86,7 +86,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   // if timestamp gaps are detected. Sufficiently large gaps can lead to AV sync
   // drift.
   std::unique_ptr<AudioTimestampValidator> audio_ts_validator_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   // HW layout at the time pipeline was started. Will not reflect possible
   // device changes.
   ChannelLayoutConfig initial_hw_layout_;

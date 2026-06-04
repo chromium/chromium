@@ -133,17 +133,24 @@ class MEDIA_EXPORT MediaLog {
   // even if this occurs, in the "won't crash" sense.
   virtual std::unique_ptr<MediaLog> Clone();
 
+  // Clone `media_log` if it is not null, otherwise return nullptr.
+  static std::unique_ptr<MediaLog> CloneSafely(MediaLog* media_log) {
+    return media_log ? media_log->Clone() : nullptr;
+  }
+
   // Can be used for stopping a MediaLog during a garbage-collected destruction
   // sequence.
   virtual void Stop();
 
-  // Returns true if logs should be emitted to the console in debug mode. Some
-  // subclasses will disable this.
-  virtual bool ShouldLogToDebugConsole() const;
+  bool ShouldLogToDebugConsole() const;
 
  protected:
   // Ensures only subclasses and factories (e.g. Clone()) can create MediaLog.
   MediaLog();
+
+  void set_should_log_to_debug_console(bool should_log) {
+    should_log_to_debug_console_ = should_log;
+  }
 
   // Methods that may be overridden by inheritors.  All calls may arrive on any
   // thread, but will be synchronized with respect to any other *Locked calls on
@@ -204,13 +211,16 @@ class MEDIA_EXPORT MediaLog {
   FRIEND_TEST_ALL_PREFIXES(MediaLogTest, EventsAreNotForwardedAfterInvalidate);
 
   // Use |parent_log_record| instead of making a new one.
-  explicit MediaLog(scoped_refptr<ParentLogRecord> parent_log_record);
+  MediaLog(scoped_refptr<ParentLogRecord> parent_log_record,
+           bool should_log_to_debug_console);
 
   // Helper methods to create events and their parameters.
   std::unique_ptr<MediaLogRecord> CreateRecord(MediaLogRecord::Type type);
 
   // The underlying media log.
   scoped_refptr<ParentLogRecord> parent_log_record_;
+
+  bool should_log_to_debug_console_ = true;
 };
 
 // Helper class to make it easier to use MediaLog like DVLOG().

@@ -13,7 +13,8 @@ namespace media {
 DecryptingRendererFactory::DecryptingRendererFactory(
     media::MediaLog* media_log,
     std::unique_ptr<media::RendererFactory> renderer_factory)
-    : media_log_(media_log), renderer_factory_(std::move(renderer_factory)) {}
+    : media_log_(MediaLog::CloneSafely(media_log)),
+      renderer_factory_(std::move(renderer_factory)) {}
 
 DecryptingRendererFactory::~DecryptingRendererFactory() = default;
 
@@ -29,8 +30,8 @@ std::unique_ptr<Renderer> DecryptingRendererFactory::CreateRenderer(
       video_renderer_sink, std::move(request_overlay_info_cb),
       target_color_space);
 
-  return std::make_unique<DecryptingRenderer>(std::move(renderer), media_log_,
-                                              media_task_runner);
+  return std::make_unique<DecryptingRenderer>(
+      std::move(renderer), media_log_.get(), media_task_runner);
 }
 
 }  // namespace media

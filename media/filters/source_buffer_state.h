@@ -254,7 +254,7 @@ class MEDIA_EXPORT SourceBufferState {
 
   std::unique_ptr<FrameProcessor> frame_processor_;
   const CreateDemuxerStreamCB create_demuxer_stream_cb_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   StreamParser::InitCB init_cb_;
   StreamParser::EncryptedMediaInitDataCB encrypted_media_init_data_cb_;

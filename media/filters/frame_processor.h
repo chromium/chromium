@@ -202,7 +202,7 @@ class MEDIA_EXPORT FrameProcessor {
   const UpdateDurationCB update_duration_cb_;
 
   // MediaLog for reporting messages and properties to debug content and engine.
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // Callback for reporting problematic conditions that are not necessarily
   // errors.

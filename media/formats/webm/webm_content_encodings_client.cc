@@ -12,7 +12,7 @@
 namespace media {
 
 WebMContentEncodingsClient::WebMContentEncodingsClient(MediaLog* media_log)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       content_encryption_encountered_(false),
       content_encodings_ready_(false) {}
 

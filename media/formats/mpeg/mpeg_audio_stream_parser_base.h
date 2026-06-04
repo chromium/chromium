@@ -91,7 +91,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
                                bool* metadata_frame,
                                std::vector<uint8_t>* extra_data) = 0;
 
-  MediaLog* media_log() const { return media_log_; }
+  MediaLog* media_log() const { return media_log_.get(); }
 
  private:
   enum State {
@@ -147,7 +147,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   NewBuffersCB new_buffers_cb_;
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  raw_ptr<MediaLog> media_log_;
+  std::unique_ptr<MediaLog> media_log_;
 
   // Tracks how much data has not yet been attempted to be parsed from `queue_`
   // between calls to Parse(). AppendToParseBuffer() increases this from 0 as

@@ -78,7 +78,7 @@ class MEDIA_EXPORT RendererImplFactory final : public RendererFactory {
       const gfx::ColorSpace& target_color_space,
       GpuVideoAcceleratorFactories* gpu_factories);
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // Factory to create extra audio and video decoders.
   // Could be nullptr if not extra decoders are available.

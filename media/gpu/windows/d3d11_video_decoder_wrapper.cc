@@ -166,7 +166,8 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
                                              uint32_t desired_size) override {
     return std::make_unique<ScopedD3D11DecoderBuffer<
         D3D11VideoContext, D3D11VideoDecoderBufferDesc>>(
-        this, BufferTypeToD3D11BufferType(type), desired_size, media_log_);
+        this, BufferTypeToD3D11BufferType(type), desired_size,
+        media_log_.get());
   }
 
   bool SubmitBitstreamBuffer() {

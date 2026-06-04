@@ -71,7 +71,7 @@ class MEDIA_EXPORT EsParserMpeg1Audio : public EsParser {
 
   void SkipMpeg1AudioFrame(const Mpeg1AudioFrame& mpeg1audio_frame);
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   size_t mp3_parse_error_limit_ = 0;
 

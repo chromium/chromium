@@ -132,7 +132,7 @@ class MEDIA_EXPORT DecoderSelector {
   SEQUENCE_CHECKER(sequence_checker_);
 
   CreateDecodersCB create_decoders_cb_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   raw_ptr<StreamTraits, AcrossTasksDanglingUntriaged> traits_ = nullptr;
   raw_ptr<DemuxerStream, AcrossTasksDanglingUntriaged> stream_ = nullptr;

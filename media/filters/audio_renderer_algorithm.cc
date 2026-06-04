@@ -80,7 +80,7 @@ AudioRendererAlgorithm::AudioRendererAlgorithm(MediaLog* media_log)
 AudioRendererAlgorithm::AudioRendererAlgorithm(
     MediaLog* media_log,
     AudioRendererAlgorithmParameters params)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       audio_renderer_algorithm_params_(std::move(params)),
       channels_(0),
       samples_per_second_(0),

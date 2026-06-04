@@ -75,7 +75,7 @@ class MEDIA_EXPORT WebCodecsEncodedChunkStreamParser : public StreamParser {
 
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  raw_ptr<MediaLog> media_log_;
+  std::unique_ptr<MediaLog> media_log_;
 };
 
 }  // namespace media

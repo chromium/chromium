@@ -78,7 +78,7 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   void OnWaiting(WaitingReason reason);
 
   const std::unique_ptr<Renderer> renderer_;
-  const raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   bool waiting_for_cdm_ = false;
   raw_ptr<CdmContext> cdm_context_ = nullptr;

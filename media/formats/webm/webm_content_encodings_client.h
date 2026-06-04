@@ -41,7 +41,7 @@ class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
   bool OnBinary(int id, const uint8_t* data, int size) override;
 
  private:
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<ContentEncoding> cur_content_encoding_;
   bool content_encryption_encountered_;
   ContentEncodings content_encodings_;

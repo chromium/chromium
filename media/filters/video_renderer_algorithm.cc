@@ -34,7 +34,7 @@ bool VideoRendererAlgorithm::ReadyFrame::operator<(
 VideoRendererAlgorithm::VideoRendererAlgorithm(
     const TimeSource::WallClockTimeCB& wall_clock_time_cb,
     MediaLog* media_log)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       cadence_estimator_(
           base::Seconds(kMinimumAcceptableTimeBetweenGlitchesSecs)),
       wall_clock_time_cb_(wall_clock_time_cb),

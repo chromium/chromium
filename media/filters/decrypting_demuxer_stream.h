@@ -159,7 +159,7 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   WaitingCB waiting_cb_;
 
   State state_ = kUninitialized;

@@ -394,7 +394,7 @@ class MEDIA_EXPORT SourceBufferStream {
 
   // Used to report log messages that can help the web developer figure out what
   // is wrong with the content.
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // List of disjoint buffered ranges, ordered by start time.
   RangeList ranges_;

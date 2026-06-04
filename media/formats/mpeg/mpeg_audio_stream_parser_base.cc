@@ -80,7 +80,7 @@ void MPEGAudioStreamParserBase::Init(
   new_buffers_cb_ = std::move(new_buffers_cb);
   new_segment_cb_ = std::move(new_segment_cb);
   end_of_segment_cb_ = std::move(end_of_segment_cb);
-  media_log_ = media_log;
+  media_log_ = MediaLog::CloneSafely(media_log);
 
   ChangeState(INITIALIZED);
 }

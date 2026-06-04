@@ -290,7 +290,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // kInfiniteDuration if no buffers are currently missing duration.
   DecodeTimestamp ready_buffer_upper_bound_;
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 };
 
 }  // namespace media

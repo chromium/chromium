@@ -284,7 +284,7 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
   // UpdateEffectiveFramesQueued().
   size_t CountEffectiveFramesQueued() const;
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   int out_of_order_frame_logs_ = 0;
 
   // Queue of incoming frames waiting for rendering.

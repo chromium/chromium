@@ -57,7 +57,7 @@ void WebMStreamParser::Init(
   encrypted_media_init_data_cb_ = std::move(encrypted_media_init_data_cb);
   new_segment_cb_ = std::move(new_segment_cb);
   end_of_segment_cb_ = std::move(end_of_segment_cb);
-  media_log_ = media_log;
+  media_log_ = MediaLog::CloneSafely(media_log);
 }
 
 void WebMStreamParser::Flush() {
@@ -250,7 +250,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   cur_size -= result;
   bytes_parsed += result;
 
-  WebMTracksParser tracks_parser(media_log_);
+  WebMTracksParser tracks_parser(media_log_.get());
   result = tracks_parser.Parse(cur, cur_size);
 
   if (result <= 0)
@@ -300,7 +300,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_ns),
       tracks_parser.ignored_tracks(), tracks_parser.audio_encryption_key_id(),
       tracks_parser.video_encryption_key_id(), audio_config.codec(),
-      media_log_);
+      media_log_.get());
 
   if (init_cb_) {
     params.detected_audio_track_count =

@@ -15,7 +15,7 @@ PassthroughDTSAudioDecoder::PassthroughDTSAudioDecoder(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
     : task_runner_(task_runner),
-      media_log_(media_log),
+      media_log_(MediaLog::CloneSafely(media_log)),
       pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

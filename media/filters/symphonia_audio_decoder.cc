@@ -255,7 +255,9 @@ SymphoniaAudioDecoder::SymphoniaAudioDecoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     MediaLog* media_log,
     ExecutionMode mode)
-    : task_runner_(std::move(task_runner)), media_log_(media_log), mode_(mode) {
+    : task_runner_(std::move(task_runner)),
+      media_log_(MediaLog::CloneSafely(media_log)),
+      mode_(mode) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   if (mode_ == ExecutionMode::kAsynchronous) {
     CHECK(task_runner_);

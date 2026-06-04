@@ -128,7 +128,7 @@ class MEDIA_EXPORT SymphoniaAudioDecoder : public AudioDecoder {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // MediaLog for reporting messages and properties.
-  const raw_ptr<MediaLog> media_log_ = nullptr;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // The threading mode that this decoder should operate in.
   const ExecutionMode mode_ = ExecutionMode::kAsynchronous;

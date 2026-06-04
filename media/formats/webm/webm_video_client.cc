@@ -58,7 +58,8 @@ bool IsValidStereoMode(int64_t stereo_mode_code) {
 }  // namespace
 
 WebMVideoClient::WebMVideoClient(MediaLog* media_log)
-    : media_log_(media_log), projection_parser_(media_log) {
+    : media_log_(MediaLog::CloneSafely(media_log)),
+      projection_parser_(media_log) {
   Reset();
 }
 

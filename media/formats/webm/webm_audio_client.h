@@ -49,7 +49,7 @@ class WebMAudioClient : public WebMParserClient {
   bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   int channels_;
   double samples_per_second_;
   double output_samples_per_second_;

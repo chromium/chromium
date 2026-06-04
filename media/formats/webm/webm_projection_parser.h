@@ -35,7 +35,7 @@ class MEDIA_EXPORT WebMProjectionParser : public WebMParserClient {
   bool OnFloat(int id, double val) override;
 
   // private data
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   int64_t projection_type_;
   double pose_yaw_;    // value must be [-180, 180]
   double pose_pitch_;  // value must be [-90, 90]

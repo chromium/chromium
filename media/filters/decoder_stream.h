@@ -232,7 +232,7 @@ class MEDIA_EXPORT DecoderStream {
   std::unique_ptr<DecoderStreamTraits<StreamType>> traits_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   State state_;
 

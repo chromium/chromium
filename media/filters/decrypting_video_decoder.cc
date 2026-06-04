@@ -25,7 +25,7 @@ const char DecryptingVideoDecoder::kDecoderName[] = "DecryptingVideoDecoder";
 DecryptingVideoDecoder::DecryptingVideoDecoder(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     MediaLog* media_log)
-    : task_runner_(task_runner), media_log_(media_log) {
+    : task_runner_(task_runner), media_log_(MediaLog::CloneSafely(media_log)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

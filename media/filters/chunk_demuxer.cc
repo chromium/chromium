@@ -454,7 +454,7 @@ ChunkDemuxer::ChunkDemuxer(
     : open_cb_(std::move(open_cb)),
       progress_cb_(std::move(progress_cb)),
       encrypted_media_init_data_cb_(std::move(encrypted_media_init_data_cb)),
-      media_log_(media_log) {
+      media_log_(MediaLog::CloneSafely(media_log)) {
   DCHECK(open_cb_);
   DCHECK(encrypted_media_init_data_cb_);
   MEDIA_LOG(INFO, media_log_) << GetDisplayName();
@@ -704,7 +704,7 @@ ChunkDemuxer::Status ChunkDemuxer::AddId(const std::string& id,
   CHECK(init_cb_);
 
   std::unique_ptr<media::StreamParser> stream_parser(
-      CreateParserForTypeAndCodecs(content_type, codecs, media_log_));
+      CreateParserForTypeAndCodecs(content_type, codecs, media_log_.get()));
   if (!stream_parser) {
     DVLOG(1) << __func__ << " failed: unsupported content_type=" << content_type
              << " codecs=" << codecs;
@@ -752,14 +752,14 @@ ChunkDemuxer::Status ChunkDemuxer::AddIdInternal(
       std::make_unique<FrameProcessor>(
           base::BindRepeating(&ChunkDemuxer::IncreaseDurationIfNecessary,
                               base::Unretained(this)),
-          media_log_);
+          media_log_.get());
 
   std::unique_ptr<SourceBufferState> source_state =
       std::make_unique<SourceBufferState>(
           std::move(stream_parser), std::move(frame_processor),
           base::BindRepeating(&ChunkDemuxer::CreateDemuxerStream,
                               base::Unretained(this), id),
-          media_log_);
+          media_log_.get());
 
   // TODO(wolenetz): Change these to DCHECKs or switch to returning
   // kReachedIdLimit once less verification in release build is needed. See
@@ -1155,7 +1155,7 @@ bool ChunkDemuxer::CanChangeType(const std::string& id,
   // initialization segment for the source buffer corresponding to |id|.
 
   std::unique_ptr<media::StreamParser> stream_parser(
-      CreateParserForTypeAndCodecs(content_type, codecs, media_log_));
+      CreateParserForTypeAndCodecs(content_type, codecs, media_log_.get()));
   return !!stream_parser;
 }
 
@@ -1171,7 +1171,7 @@ void ChunkDemuxer::ChangeType(const std::string& id,
   DCHECK(IsValidId_Locked(id));
 
   std::unique_ptr<media::StreamParser> stream_parser(
-      CreateParserForTypeAndCodecs(content_type, codecs, media_log_));
+      CreateParserForTypeAndCodecs(content_type, codecs, media_log_.get()));
   // Caller should query CanChangeType() first to protect from failing this.
   DCHECK(stream_parser);
   source_state_map_[id]->ChangeType(std::move(stream_parser),

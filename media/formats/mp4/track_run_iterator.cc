@@ -117,7 +117,7 @@ DecodeTimestamp DecodeTimestampFromRational(int64_t numer, int64_t denom) {
 }
 
 TrackRunIterator::TrackRunIterator(const Movie* moov, MediaLog* media_log)
-    : moov_(moov), media_log_(media_log) {
+    : moov_(moov), media_log_(MediaLog::CloneSafely(media_log)) {
   CHECK(moov);
 }
 
@@ -447,7 +447,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       for (size_t k = 0; k < trun.sample_count; k++) {
         if (!PopulateSampleInfo(*trex, traf.header, trun, edit_list_offset, k,
                                 &tri.samples[k], traf.sdtp.sample_depends_on(k),
-                                tri.track_type, media_log_)) {
+                                tri.track_type, media_log_.get())) {
           return false;
         }
 

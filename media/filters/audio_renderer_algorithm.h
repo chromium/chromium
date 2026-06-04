@@ -224,7 +224,7 @@ class MEDIA_EXPORT AudioRendererAlgorithm {
   // Called by |resampler_| to get more audio data.
   void OnResamplerRead(int frame_delay, AudioBus* audio_bus);
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // Parameters.
   AudioRendererAlgorithmParameters audio_renderer_algorithm_params_;

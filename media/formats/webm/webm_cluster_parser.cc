@@ -36,17 +36,16 @@ enum {
   kMaxDurationEstimateLogs = 10,
 };
 
-WebMClusterParser::WebMClusterParser(
-    int64_t timecode_scale_ns,
-    int audio_track_num,
-    base::TimeDelta audio_default_duration,
-    int video_track_num,
-    base::TimeDelta video_default_duration,
-    const std::set<int64_t>& ignored_tracks,
-    const std::string& audio_encryption_key_id,
-    const std::string& video_encryption_key_id,
-    const AudioCodec audio_codec,
-    MediaLog* media_log)
+WebMClusterParser::WebMClusterParser(int64_t timecode_scale_ns,
+                                     int audio_track_num,
+                                     base::TimeDelta audio_default_duration,
+                                     int video_track_num,
+                                     base::TimeDelta video_default_duration,
+                                     const std::set<int64_t>& ignored_tracks,
+                                     const std::string& audio_encryption_key_id,
+                                     const std::string& video_encryption_key_id,
+                                     const AudioCodec audio_codec,
+                                     MediaLog* media_log)
     : timecode_multiplier_(timecode_scale_ns / 1000.0),
       ignored_tracks_(ignored_tracks),
       audio_encryption_key_id_(audio_encryption_key_id),
@@ -63,8 +62,7 @@ WebMClusterParser::WebMClusterParser(
              video_default_duration,
              media_log),
       ready_buffer_upper_bound_(kNoDecodeTimestamp),
-      media_log_(media_log) {
-}
+      media_log_(MediaLog::CloneSafely(media_log)) {}
 
 WebMClusterParser::~WebMClusterParser() = default;
 

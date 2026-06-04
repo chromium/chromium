@@ -119,7 +119,7 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
-  raw_ptr<MediaLog> media_log_;
+  std::unique_ptr<MediaLog> media_log_;
 
   // Bytes of the mp4 stream.
   // `max_parse_offset_` tracks the point in `queue_` beyond which no data may

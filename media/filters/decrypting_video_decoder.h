@@ -94,7 +94,7 @@ class MEDIA_EXPORT DecryptingVideoDecoder : public VideoDecoder {
 
   // Set in constructor.
   scoped_refptr<base::SequencedTaskRunner> const task_runner_;
-  const raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

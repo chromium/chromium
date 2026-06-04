@@ -55,7 +55,7 @@ class MEDIA_EXPORT DecryptingMediaResource : public MediaResource {
 
   const raw_ptr<MediaResource> media_resource_;
   const raw_ptr<CdmContext> cdm_context_;
-  const raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Number of DecryptingDemuxerStreams that have yet to be initialized.

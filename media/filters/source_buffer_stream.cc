@@ -148,7 +148,7 @@ std::string BufferQueueMetadataToLogString(
 
 SourceBufferStream::SourceBufferStream(const AudioDecoderConfig& audio_config,
                                        MediaLog* media_log)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       seek_buffer_timestamp_(kNoTimestamp),
       coded_frame_group_start_pts_(kNoTimestamp),
       range_for_next_append_(ranges_.end()),
@@ -163,7 +163,7 @@ SourceBufferStream::SourceBufferStream(const AudioDecoderConfig& audio_config,
 
 SourceBufferStream::SourceBufferStream(const VideoDecoderConfig& video_config,
                                        MediaLog* media_log)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       seek_buffer_timestamp_(kNoTimestamp),
       coded_frame_group_start_pts_(kNoTimestamp),
       range_for_next_append_(ranges_.end()),

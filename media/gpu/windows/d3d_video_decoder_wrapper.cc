@@ -13,7 +13,7 @@
 namespace media {
 
 D3DVideoDecoderWrapper::D3DVideoDecoderWrapper(MediaLog* media_log)
-    : media_log_(media_log) {}
+    : media_log_(MediaLog::CloneSafely(media_log)) {}
 
 D3DVideoDecoderWrapper::~D3DVideoDecoderWrapper() = default;
 

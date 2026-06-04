@@ -161,7 +161,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   std::optional<base::TimeDelta> initial_start_padding_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
   std::unique_ptr<VideoDecoderConfig> video_config_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
   Type type_ = UNKNOWN;
   StreamLiveness liveness_ = StreamLiveness::kUnknown;
   base::TimeDelta duration_;
@@ -353,7 +353,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // integrate with libavformat.
   raw_ptr<DataSource> data_source_;
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   // Derived bitrate after initialization has completed.
   int bitrate_ = 0;

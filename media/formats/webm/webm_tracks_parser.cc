@@ -18,7 +18,7 @@
 namespace media {
 
 WebMTracksParser::WebMTracksParser(MediaLog* media_log)
-    : media_log_(media_log),
+    : media_log_(MediaLog::CloneSafely(media_log)),
       audio_client_(media_log),
       video_client_(media_log) {
   Reset();
@@ -109,7 +109,7 @@ WebMParserClient* WebMTracksParser::OnListStart(int id) {
     }
 
     track_content_encodings_client_ =
-        std::make_unique<WebMContentEncodingsClient>(media_log_);
+        std::make_unique<WebMContentEncodingsClient>(media_log_.get());
     return track_content_encodings_client_->OnListStart(id);
   }
 

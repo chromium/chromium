@@ -40,7 +40,7 @@ class MEDIA_EXPORT DecryptingRendererFactory final : public RendererFactory {
       const gfx::ColorSpace& target_color_space) final;
 
  private:
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   std::unique_ptr<media::RendererFactory> renderer_factory_;
 };

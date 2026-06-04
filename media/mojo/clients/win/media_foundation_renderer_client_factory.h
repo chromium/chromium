@@ -43,9 +43,7 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
       const gfx::ColorSpace& target_color_space) override;
 
  private:
-  // Raw pointer is safe since both `this` and the `media_log` are owned by
-  // WebMediaPlayerImpl with the correct declaration order.
-  raw_ptr<MediaLog> media_log_ = nullptr;
+  const std::unique_ptr<MediaLog> media_log_;
 
   GetDCOMPTextureWrapperCB get_dcomp_texture_wrapper_cb_;
   std::unique_ptr<media::MojoRendererFactory> mojo_renderer_factory_;

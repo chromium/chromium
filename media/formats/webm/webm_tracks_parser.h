@@ -132,7 +132,7 @@ class MEDIA_EXPORT WebMTracksParser : public WebMParserClient {
   std::set<int64_t> ignored_tracks_;
   std::string audio_encryption_key_id_;
   std::string video_encryption_key_id_;
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   WebMAudioClient audio_client_;
   AudioDecoderConfig audio_decoder_config_;

@@ -383,7 +383,7 @@ std::unique_ptr<ScopedD3DBuffer> D3D12VideoDecoderWrapperImpl::GetBuffer(
           .Size = 0,  // Will be correctly populated in SubmitSlice().
       };
       return std::make_unique<ScopedD3D12ResourceBuffer>(this, bitstream_buffer,
-                                                         media_log_);
+                                                         media_log_.get());
   }
   NOTREACHED();
 }

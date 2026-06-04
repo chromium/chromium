@@ -62,7 +62,7 @@ class MEDIA_EXPORT PassthroughDTSAudioDecoder : public AudioDecoder {
 
   AudioDecoderConfig config_;
 
-  raw_ptr<MediaLog> media_log_;
+  const std::unique_ptr<MediaLog> media_log_;
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 };

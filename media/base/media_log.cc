@@ -20,10 +20,13 @@ namespace media {
 // only in one spot.
 const char MediaLog::kEventKey[] = "event";
 
-MediaLog::MediaLog() : MediaLog(base::MakeRefCounted<ParentLogRecord>(this)) {}
+MediaLog::MediaLog()
+    : MediaLog(base::MakeRefCounted<ParentLogRecord>(this), true) {}
 
-MediaLog::MediaLog(scoped_refptr<ParentLogRecord> parent_log_record)
-    : parent_log_record_(std::move(parent_log_record)) {}
+MediaLog::MediaLog(scoped_refptr<ParentLogRecord> parent_log_record,
+                   bool should_log_to_debug_console)
+    : parent_log_record_(std::move(parent_log_record)),
+      should_log_to_debug_console_(should_log_to_debug_console) {}
 
 MediaLog::~MediaLog() {
   // If we are the underlying log, then somebody should have called
@@ -51,7 +54,7 @@ std::string MediaLog::GetErrorMessageLocked() {
 void MediaLog::Stop() {}
 
 bool MediaLog::ShouldLogToDebugConsole() const {
-  return true;
+  return should_log_to_debug_console_;
 }
 
 void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
@@ -83,7 +86,8 @@ std::string MediaLog::GetErrorMessage() {
 
 std::unique_ptr<MediaLog> MediaLog::Clone() {
   // Protected ctor, so we can't use std::make_unique.
-  return base::WrapUnique(new MediaLog(parent_log_record_));
+  return base::WrapUnique(
+      new MediaLog(parent_log_record_, should_log_to_debug_console_));
 }
 
 void MediaLog::AddLogRecord(std::unique_ptr<MediaLogRecord> record) {
