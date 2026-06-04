@@ -23,6 +23,9 @@ import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
 import "services/network/public/mojom/attribution.mojom";
 import "services/viz/public/mojom/compositing/offset_tag.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
@@ -276,12 +279,25 @@ const uint64 kMaxCrashReportContextSize = 65536;
 // operations and window resizing actions for unbounded elements.
 // Note: This interface should only be exposed to trusted renderers.
 interface UnboundedSurfaceHost {
+  // Connects the dedicated rendering surface to the browser's compositor by
+  // establishing a direct CompositorFrameSink connection.
+  GetCompositorFrameSink(
+      pending_receiver<viz.mojom.CompositorFrameSink> sink,
+      pending_remote<viz.mojom.CompositorFrameSinkClient> client);
+
+  // Updates the bounds of the allocated popup window relative to the parent
+  // frame view.
+  UpdateBounds(gfx.mojom.Rect bounds);
 };
 
 // Implemented on the renderer side, this interface receives events
 // from the browser process when an unbounded element's display
 // surface is dismissed.
 interface UnboundedSurfaceClient {
+  // Invoked by the browser process once the popup surface has been created,
+  // providing routing IDs necessary for submitting compositor frames.
+  OnSurfaceAllocated(viz.mojom.FrameSinkId frame_sink_id,
+                     viz.mojom.LocalSurfaceId local_surface_id);
   // Notification from the browser that the unbounded element window has been
   // dismissed. E.g. by light dismiss or user hitting ESC.
   OnDismissed();

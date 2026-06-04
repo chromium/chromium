@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -281,6 +282,47 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementHighDPIBrowserTest,
   gfx::Rect bounds = popup_view->GetViewBounds();
   EXPECT_EQ(100, bounds.width());
   EXPECT_EQ(100, bounds.height());
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       VisualOverflowBoundsAndMasking) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <style>
+        #child {
+          width: 200px;
+          height: 90px;
+          border-radius: 6px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+      </style>
+      <div id="child" unbounded>
+        <div class="item">Content</div>
+      </div>
+    `;
+    document.getElementById('child').showUnboundedElement();
+  )";
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  EXPECT_EQ("visible", EvalJs(primary_main_frame_host(), R"(
+    window.getComputedStyle(document.querySelector('.item')).visibility;
+  )"));
+
+  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
+  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
+  RenderWidgetHostImpl* rwhi =
+      static_cast<RenderWidgetHostImpl*>(popup_view->GetRenderWidgetHost());
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(primary_main_frame_host());
+  EXPECT_EQ(rwhi, rfh->active_unbounded_widget());
+  gfx::Rect popup_bounds = popup_view->GetViewBounds();
+  EXPECT_GE(popup_bounds.width(), 200);
+  EXPECT_GE(popup_bounds.height(), 90);
 }
 
 }  // namespace content

@@ -108,6 +108,11 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplDelegate,
       std::unique_ptr<RenderFrameMetadataObserver> observer);
   void DetachInputDelegateAndRenderFrameObserver(
       CompletionEvent* completion_event);
+  void SetUnboundedFrameSink(
+      std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+      const viz::LocalSurfaceId& local_surface_id);
+  void DismissUnboundedFrameSink();
+  void SetUnboundedLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
   void MainFrameWillHappenOnImplForTesting(CompletionEvent* completion,
                                            bool* main_frame_will_happen);

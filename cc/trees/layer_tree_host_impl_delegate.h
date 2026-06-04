@@ -111,12 +111,7 @@ class LayerTreeHostImplDelegate {
 
   virtual void ReturnResource(viz::ReturnedResource returned_resource) {}
 
-  // Notifies the client to update the bounds of the dedicated unbounded
-  // surface.
-  virtual void UpdateUnboundedSurfaceBounds(const gfx::Rect& bounds) {}
 
-  // Submits the dedicated CompositorFrame to the browser's unbounded surface.
-  virtual void SubmitUnboundedCompositorFrame(viz::CompositorFrame frame) {}
 
   virtual size_t CommitDurationSampleCountForTesting() const = 0;
 

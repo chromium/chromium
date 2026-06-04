@@ -119,6 +119,7 @@ class SwapPromise;
 class SynchronousTaskGraphRunner;
 class TaskGraphRunner;
 class UIResourceBitmap;
+class UnboundedFrameSinkHandler;
 class Viewport;
 
 struct UIResourceChange {
@@ -536,6 +537,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ReportEventLatency(
       const viz::BeginFrameArgs& args,
       std::vector<EventLatencyTracker::LatencyData> latencies) override;
+
+  // Unbounded element implementation.
+  void SetUnboundedFrameSink(
+      std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+      const viz::LocalSurfaceId& local_surface_id);
+  void DismissUnboundedFrameSink();
+  void SetUnboundedLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
   // Called from LayerTreeImpl.
   void OnCanDrawStateChangedForTree();
@@ -1371,6 +1379,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool dump_compositor_frame_ = false;
   uint32_t dump_compositor_frame_begin_ = 0;
   uint32_t dump_compositor_frame_end_ = 0;
+
+  std::unique_ptr<UnboundedFrameSinkHandler> unbounded_frame_sink_handler_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

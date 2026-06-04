@@ -50,6 +50,8 @@
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/ime_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom-blink.h"
@@ -63,6 +65,7 @@
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -96,7 +99,9 @@ class PointF;
 
 namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
+class ExecutionContext;
 class HitTestResult;
+class HTMLElement;
 class HTMLPlugInElement;
 class Page;
 class PaintWorkletPaintDispatcher;
@@ -119,7 +124,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       public mojom::blink::FrameWidgetInputHandler,
       public FrameWidget,
       public AnimationFrameTimingMonitor::Client,
-      public WidgetEventHandler {
+      public WidgetEventHandler,
+      public mojom::blink::UnboundedSurfaceClient {
  public:
   struct PromiseCallbacks {
     base::OnceCallback<void(base::TimeTicks)> swap_time_callback;
@@ -505,6 +511,18 @@ class CORE_EXPORT WebFrameWidgetImpl
       mojo::PendingRemote<mojom::blink::ImeRenderWidgetHost>) override;
 #endif
   void NotifyClearedDisplayedGraphics() override;
+
+  // mojom::blink::UnboundedSurfaceClient overrides:
+  void OnSurfaceAllocated(const viz::FrameSinkId& frame_sink_id,
+                          const viz::LocalSurfaceId& local_surface_id) override;
+  void OnDismissed() override;
+
+  void RegisterActiveUnboundedElement(
+      HTMLElement* element,
+      mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceClient>
+          client_receiver,
+      mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost>
+          host_remote);
 
   // mojom::blink::FrameWidgetInputHandler overrides:
   void HandleStylusWritingGestureAction(
@@ -1354,6 +1372,44 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   double zoom_level_ = 0;
   double css_zoom_factor_ = 1;
+
+  class UnboundedSurfaceState final
+      : public GarbageCollected<UnboundedSurfaceState>,
+        public ExecutionContextLifecycleObserver {
+   public:
+    UnboundedSurfaceState(WebFrameWidgetImpl* widget, ExecutionContext* context)
+        : ExecutionContextLifecycleObserver(context),
+          widget_(widget),
+          client_receiver_(widget, context),
+          host_(context) {}
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(widget_);
+      visitor->Trace(client_receiver_);
+      visitor->Trace(host_);
+      visitor->Trace(active_element_);
+      ExecutionContextLifecycleObserver::Trace(visitor);
+    }
+
+    void ContextDestroyed() override { widget_->UnboundedContextDestroyed(); }
+
+    Member<WebFrameWidgetImpl> widget_;
+    HeapMojoAssociatedReceiver<mojom::blink::UnboundedSurfaceClient,
+                               WebFrameWidgetImpl>
+        client_receiver_;
+    HeapMojoAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_;
+
+    WeakMember<HTMLElement> active_element_;
+
+    viz::FrameSinkId frame_sink_id_;
+    viz::LocalSurfaceId local_surface_id_;
+  };
+
+  Member<UnboundedSurfaceState> unbounded_surface_state_;
+
+  UnboundedSurfaceState* GetOrCreateUnboundedSurfaceState();
+  void UnboundedContextDestroyed();
+  HTMLElement* GetActiveUnboundedElement() const;
 
   std::optional<float> browser_controls_top_height_override_;
 

@@ -344,7 +344,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public LockManager<storage::BucketId>::Observer,
       public base::trace_event::TraceSessionObserver,
       public BucketContext,
-      public base::PassiveMemoryConsumer {
+      public base::PassiveMemoryConsumer,
+      public blink::mojom::UnboundedSurfaceHost {
  public:
   using BeforeUnloadExecutionMode = NavigationHandle::BeforeUnloadExecutionMode;
   using JavaScriptDialogCallback =
@@ -2669,6 +2670,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const gfx::Rect& bounds) override;
   void DismissUnboundedSurface();
 
+  // blink::mojom::UnboundedSurfaceHost overrides:
+  void GetCompositorFrameSink(
+      mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink,
+      mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client)
+      override;
+  void UpdateBounds(const gfx::Rect& bounds) override;
+
+  RenderWidgetHostImpl* active_unbounded_widget() const {
+    return active_unbounded_widget_.get();
+  }
+
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
       blink::mojom::RendererEvictionReason,
@@ -4906,6 +4918,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // chrome:// scheme callers).
   mojo::AssociatedRemote<blink::mojom::UnboundedSurfaceClient>
       unbounded_surface_client_;
+  mojo::AssociatedReceiver<blink::mojom::UnboundedSurfaceHost>
+      unbounded_surface_host_receiver_{this};
+  base::WeakPtr<RenderWidgetHostImpl> active_unbounded_widget_;
 
   // Holds the cross-document NavigationRequests that are waiting to commit.
   // These are navigations that have passed ReadyToCommit stage and are waiting

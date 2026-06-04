@@ -613,6 +613,36 @@ void ProxyMain::NotifyTransitionRequestFinished(
   layer_tree_host_->NotifyTransitionRequestsFinished(sequence_id, rects);
 }
 
+void ProxyMain::SetUnboundedFrameSink(
+    std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(IsMainThread());
+  DCHECK(layer_tree_host_->GetSettings().enable_unbounded_element);
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::SetUnboundedFrameSink,
+                     base::Unretained(proxy_impl_.get()),
+                     std::move(unbounded_frame_sink), local_surface_id));
+}
+
+void ProxyMain::DismissUnboundedFrameSink() {
+  DCHECK(IsMainThread());
+  DCHECK(layer_tree_host_->GetSettings().enable_unbounded_element);
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(&ProxyImpl::DismissUnboundedFrameSink,
+                                base::Unretained(proxy_impl_.get())));
+}
+
+void ProxyMain::SetUnboundedLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(IsMainThread());
+  DCHECK(layer_tree_host_->GetSettings().enable_unbounded_element);
+  ImplThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ProxyImpl::SetUnboundedLocalSurfaceId,
+                     base::Unretained(proxy_impl_.get()), local_surface_id));
+}
+
 bool ProxyMain::IsStarted() const {
   DCHECK(IsMainThread());
   return started_;

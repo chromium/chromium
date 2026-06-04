@@ -2183,4 +2183,26 @@ void LayerTreeHost::DropActiveScrollDeltaNextCommit(ElementId scroll_element) {
   SetNeedsCommit();
 }
 
+void LayerTreeHost::SetUnboundedFrameSink(
+    std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(settings_.enable_unbounded_element);
+  DCHECK(IsMainThread());
+  proxy_->SetUnboundedFrameSink(std::move(unbounded_frame_sink),
+                                local_surface_id);
+}
+
+void LayerTreeHost::DismissUnboundedFrameSink() {
+  DCHECK(settings_.enable_unbounded_element);
+  DCHECK(IsMainThread());
+  proxy_->DismissUnboundedFrameSink();
+}
+
+void LayerTreeHost::SetUnboundedLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(settings_.enable_unbounded_element);
+  DCHECK(IsMainThread());
+  proxy_->SetUnboundedLocalSurfaceId(local_surface_id);
+}
+
 }  // namespace cc

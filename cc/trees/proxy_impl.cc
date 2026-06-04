@@ -364,6 +364,25 @@ void ProxyImpl::SetWaitingForScrollEvent(bool waiting_for_scroll_event) {
   scheduler_->SetWaitingForScrollEvent(waiting_for_scroll_event);
 }
 
+void ProxyImpl::SetUnboundedFrameSink(
+    std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(IsImplThread());
+  host_impl_->SetUnboundedFrameSink(std::move(unbounded_frame_sink),
+                                    local_surface_id);
+}
+
+void ProxyImpl::DismissUnboundedFrameSink() {
+  DCHECK(IsImplThread());
+  host_impl_->DismissUnboundedFrameSink();
+}
+
+void ProxyImpl::SetUnboundedLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(IsImplThread());
+  host_impl_->SetUnboundedLocalSurfaceId(local_surface_id);
+}
+
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion_event,
     std::unique_ptr<CommitState> commit_state,

@@ -1340,8 +1340,11 @@ _CONFIG = [
             'cc::SwapPromise',
             'stylus_handwriting::win::IsStylusHandwritingWinEnabled',
             'stylus_handwriting::win::ProximateBoundsCollectionHalfLimit',
+            'viz::CompositorFrame',
             'viz::CompositorFrameMetadata',
             'viz::FrameTimingDetails',
+            'viz::ReturnedResource',
+            'viz::TransferableResource',
         ],
     },
     {
@@ -1349,6 +1352,9 @@ _CONFIG = [
         ['third_party/blink/renderer/core/frame/web_frame_widget_impl.h'],
         'allowed': [
             'cc::CompositorCommitData',
+            'viz::CompositorFrame',
+            'viz::ReturnedResource',
+            'viz::TransferableResource',
         ],
     },
     {

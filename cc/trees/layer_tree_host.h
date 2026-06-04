@@ -943,6 +943,13 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
 
+  // Sets or dismisses the dedicated frame sink for unbounded element rendering.
+  void SetUnboundedFrameSink(
+      std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+      const viz::LocalSurfaceId& local_surface_id);
+  void DismissUnboundedFrameSink();
+  void SetUnboundedLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
+
   std::string LayersAsString() const;
 
   // Captures the on-screen text content, if success, fills the associated

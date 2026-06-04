@@ -86,6 +86,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
@@ -141,6 +143,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -1605,13 +1608,19 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
 
   SetUnboundedElementActive(true);
 
-  // TODO(crbug.com/508672616) Store and use the local mojo endpoints.
   mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_remote;
   auto host_receiver = host_remote.InitWithNewEndpointAndPassReceiver();
 
   mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceClient>
       client_receiver;
   auto client_remote = client_receiver.InitWithNewEndpointAndPassRemote();
+
+  if (auto* web_frame = WebLocalFrameImpl::FromFrame(frame)) {
+    if (WebFrameWidgetImpl* widget = web_frame->FrameWidgetImpl()) {
+      widget->RegisterActiveUnboundedElement(this, std::move(client_receiver),
+                                             std::move(host_remote));
+    }
+  }
 
   frame->GetLocalFrameHostRemote().RequestUnboundedSurface(
       std::move(host_receiver), std::move(client_remote), bounds);

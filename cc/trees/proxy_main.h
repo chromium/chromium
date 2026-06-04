@@ -79,6 +79,13 @@ class CC_EXPORT ProxyMain : public Proxy {
       uint32_t sequence_id,
       const viz::ViewTransitionElementResourceRects&);
 
+  void SetUnboundedFrameSink(
+      std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+      const viz::LocalSurfaceId& local_surface_id) override;
+  void DismissUnboundedFrameSink() override;
+  void SetUnboundedLocalSurfaceId(
+      const viz::LocalSurfaceId& local_surface_id) override;
+
   CommitPipelineStage max_requested_pipeline_stage() const {
     return max_requested_pipeline_stage_;
   }

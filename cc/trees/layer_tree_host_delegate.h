@@ -15,6 +15,7 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "components/viz/common/quads/compositor_frame.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {

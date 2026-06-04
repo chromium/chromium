@@ -113,6 +113,7 @@
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/trace_utils.h"
 #include "cc/trees/tree_synchronizer.h"
+#include "cc/trees/unbounded_frame_sink_handler.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/features.h"
@@ -3152,7 +3153,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
       };
 
   // Build and submit the dedicated CompositorFrame for the unbounded passes.
-  if (!frame->unbounded_render_passes.empty() && delegate_) {
+  if (!frame->unbounded_render_passes.empty() && delegate_ &&
+      unbounded_frame_sink_handler_) {
     // Unbounded element is not implemented for TreesInViz yet.
     CHECK(!settings_.TreesInVizInClientProcess());
     CHECK(settings_.enable_unbounded_element);
@@ -3164,22 +3166,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     unbounded_frame.metadata.begin_frame_ack = frame->begin_frame_ack;
     unbounded_frame.render_pass_list =
         std::move(frame->unbounded_render_passes);
+    populate_resources(unbounded_frame, unbounded_frame.render_pass_list);
 
-    // TODO(crbug.com/508672616): populate_resources is currently skipped for
-    // unbounded_frame because SubmitUnboundedCompositorFrame has an empty
-    // default implementation and drops the frame. In a later patchset when
-    // the frame is actually submitted to Viz, re-enable this call to ensure
-    // exported resources are properly tracked and returned.
-    // populate_resources(unbounded_frame, unbounded_frame.render_pass_list);
-
-    // TODO(508672616): Consider moving this Submit call to
-    // LayerTreeHostImpl::DrawLayers where the bounded compositor frame is
-    // submitted via LayerTreeFrameSink::SubmitCompositorFrame. Doing so
-    // requires structural changes to GenerateCompositorFrame's return type
-    // to pass back multiple frames, as well as updating DrawLayers'
-    // submission and metrics tracking pipelines to accommodate dual frame
-    // submissions.
-    delegate_->SubmitUnboundedCompositorFrame(std::move(unbounded_frame));
+    unbounded_frame_sink_handler_->SubmitFrame(std::move(unbounded_frame));
   }
 
   DCHECK(frame->begin_frame_ack.frame_id.IsSequenceValid());
@@ -6219,6 +6208,33 @@ void LayerTreeHostImpl::MaybeFlashEnteredViewportScrollbars(
     } else if (!is_visible && was_visible) {
       previously_visible_scrollable_elements_.erase(scroll_element_id);
     }
+  }
+}
+
+void LayerTreeHostImpl::SetUnboundedFrameSink(
+    std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(task_runner_provider_->IsImplThread());
+  if (!unbounded_frame_sink_handler_) {
+    unbounded_frame_sink_handler_ =
+        std::make_unique<UnboundedFrameSinkHandler>(this);
+  }
+  unbounded_frame_sink_handler_->SetFrameSink(std::move(unbounded_frame_sink),
+                                              local_surface_id);
+}
+
+void LayerTreeHostImpl::DismissUnboundedFrameSink() {
+  DCHECK(task_runner_provider_->IsImplThread());
+  if (unbounded_frame_sink_handler_) {
+    unbounded_frame_sink_handler_->DismissFrameSink();
+  }
+}
+
+void LayerTreeHostImpl::SetUnboundedLocalSurfaceId(
+    const viz::LocalSurfaceId& local_surface_id) {
+  DCHECK(task_runner_provider_->IsImplThread());
+  if (unbounded_frame_sink_handler_) {
+    unbounded_frame_sink_handler_->SetLocalSurfaceId(local_surface_id);
   }
 }
 

@@ -498,6 +498,8 @@ cc_component("cc") {
     "trees/transform_node.h",
     "trees/tree_synchronizer.cc",
     "trees/tree_synchronizer.h",
+    "trees/unbounded_frame_sink_handler.cc",
+    "trees/unbounded_frame_sink_handler.h",
     "trees/viewport_layers.cc",
     "trees/viewport_layers.h",
     "trees/viewport_property_ids.h",

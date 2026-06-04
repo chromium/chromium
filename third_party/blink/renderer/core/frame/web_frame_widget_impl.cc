@@ -50,17 +50,22 @@
 #include "cc/base/features.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/trees/compositor_commit_data.h"
+#include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/swap_promise.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/touch_event.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_non_composited_widget_client.h"
@@ -77,6 +82,7 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
@@ -114,6 +120,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
@@ -1627,6 +1634,7 @@ void WebFrameWidgetImpl::Trace(Visitor* visitor) const {
   visitor->Trace(mouse_capture_element_);
   visitor->Trace(device_emulator_);
   visitor->Trace(animation_frame_timing_monitor_);
+  visitor->Trace(unbounded_surface_state_);
 }
 
 void WebFrameWidgetImpl::SetNeedsRecalculateRasterScales() {
@@ -1864,6 +1872,19 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
         *browser_controls_top_height_override_;
   }
 
+  bool properties_changed = false;
+  if (unbounded_surface_state_ && unbounded_surface_state_->host_.is_bound()) {
+    CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    bool zoom_changed = (zoom_level_ != visual_properties.zoom_level) ||
+                        (css_zoom_factor_ != visual_properties.css_zoom_factor);
+    bool dsf_changed =
+        (widget_base_->screen_infos().current().device_scale_factor !=
+         visual_properties.screen_infos.current().device_scale_factor);
+    bool size_changed = (widget_base_->VisibleViewportSize() !=
+                         visual_properties.visible_viewport_size_device_px);
+    properties_changed = zoom_changed || dsf_changed || size_changed;
+  }
+
   SetZoomInternal(visual_properties.zoom_level,
                   visual_properties.css_zoom_factor);
 
@@ -1980,6 +2001,22 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // not use scroll_focused_node_into_view.
   if (visual_properties.scroll_focused_node_into_view)
     ScrollFocusedEditableElementIntoView();
+
+  if (properties_changed && unbounded_surface_state_ &&
+      unbounded_surface_state_->host_.is_bound()) {
+    CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    if (auto* active_element = GetActiveUnboundedElement()) {
+      active_element->GetDocument().UpdateStyleAndLayoutForNode(
+          active_element, DocumentUpdateReason::kJavaScript);
+      gfx::Rect bounds;
+      if (auto* layout_object = active_element->GetLayoutObject()) {
+        bounds = layout_object->AbsoluteBoundingBoxRect();
+      }
+      if (!bounds.IsEmpty()) {
+        unbounded_surface_state_->host_->UpdateBounds(bounds);
+      }
+    }
+  }
 }
 
 void WebFrameWidgetImpl::ApplyVisualPropertiesSizing(
@@ -2690,6 +2727,123 @@ void WebFrameWidgetImpl::OnCommitRequested() {
   }
   if (auto* view = LocalRootImpl()->GetFrame()->View())
     view->OnCommitRequested();
+}
+
+WebFrameWidgetImpl::UnboundedSurfaceState*
+WebFrameWidgetImpl::GetOrCreateUnboundedSurfaceState() {
+  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  if (!local_root_ || !local_root_->GetFrame() ||
+      !local_root_->GetFrame()->DomWindow()) {
+    return nullptr;
+  }
+  auto* execution_context = local_root_->GetFrame()->DomWindow();
+  if (!unbounded_surface_state_ ||
+      unbounded_surface_state_->GetExecutionContext() != execution_context) {
+    unbounded_surface_state_ =
+        MakeGarbageCollected<UnboundedSurfaceState>(this, execution_context);
+  }
+  return unbounded_surface_state_.Get();
+}
+
+void WebFrameWidgetImpl::UnboundedContextDestroyed() {
+  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  if (!unbounded_surface_state_) {
+    return;
+  }
+  if (unbounded_surface_state_->active_element_) {
+    unbounded_surface_state_->active_element_->SetUnboundedElementActive(false);
+  }
+  unbounded_surface_state_ = nullptr;
+  if (auto* host = LayerTreeHost()) {
+    host->DismissUnboundedFrameSink();
+  }
+}
+
+HTMLElement* WebFrameWidgetImpl::GetActiveUnboundedElement() const {
+  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  return unbounded_surface_state_
+             ? unbounded_surface_state_->active_element_.Get()
+             : nullptr;
+}
+
+void WebFrameWidgetImpl::RegisterActiveUnboundedElement(
+    HTMLElement* element,
+    mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceClient>
+        client_receiver,
+    mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost>
+        host_remote) {
+  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  if (auto* state = GetOrCreateUnboundedSurfaceState()) {
+    state->active_element_ = element;
+
+    state->client_receiver_.reset();
+    state->client_receiver_.Bind(
+        std::move(client_receiver),
+        local_root_->GetTaskRunner(TaskType::kInternalDefault));
+
+    state->host_.reset();
+    state->host_.Bind(std::move(host_remote),
+                      local_root_->GetTaskRunner(TaskType::kInternalDefault));
+  }
+}
+
+void WebFrameWidgetImpl::OnSurfaceAllocated(
+    const viz::FrameSinkId& frame_sink_id,
+    const viz::LocalSurfaceId& local_surface_id) {
+  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  auto* state = GetOrCreateUnboundedSurfaceState();
+  if (!state) {
+    return;
+  }
+
+  if (state->frame_sink_id_ != frame_sink_id) {
+    state->frame_sink_id_ = frame_sink_id;
+    state->local_surface_id_ = local_surface_id;
+
+    mojo::PendingRemote<viz::mojom::blink::CompositorFrameSink>
+        blink_sink_remote;
+    auto blink_sink_receiver =
+        blink_sink_remote.InitWithNewPipeAndPassReceiver();
+
+    mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSinkClient>
+        blink_client_receiver;
+    auto blink_client_remote =
+        blink_client_receiver.InitWithNewPipeAndPassRemote();
+
+    if (state->host_.is_bound()) {
+      state->host_->GetCompositorFrameSink(std::move(blink_sink_receiver),
+                                           std::move(blink_client_remote));
+    }
+
+    if (auto* host = LayerTreeHost()) {
+      std::unique_ptr<cc::LayerTreeFrameSink> unbounded_frame_sink =
+          widget_base_->CreateUnboundedFrameSink(
+              std::move(blink_sink_remote), std::move(blink_client_receiver));
+      if (unbounded_frame_sink) {
+        host->SetUnboundedFrameSink(std::move(unbounded_frame_sink),
+                                    local_surface_id);
+      }
+    }
+  } else if (state->local_surface_id_ != local_surface_id) {
+    state->local_surface_id_ = local_surface_id;
+    if (auto* host = LayerTreeHost()) {
+      host->SetUnboundedLocalSurfaceId(local_surface_id);
+    }
+  }
+}
+
+void WebFrameWidgetImpl::OnDismissed() {
+  CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+  if (!unbounded_surface_state_) {
+    return;
+  }
+  if (unbounded_surface_state_->active_element_) {
+    unbounded_surface_state_->active_element_->SetUnboundedElementActive(false);
+  }
+  unbounded_surface_state_ = nullptr;
+  if (auto* host = LayerTreeHost()) {
+    host->DismissUnboundedFrameSink();
+  }
 }
 
 void WebFrameWidgetImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {
@@ -4146,10 +4300,13 @@ void WebFrameWidgetImpl::DidNavigate() {
   // suppress input until the newly navigated page has a committed frame.
   // It also resets the state for UMA reporting of input arrival with respect
   // to document lifecycle.
-  if (!widget_base_->widget_input_handler_manager())
-    return;
-  widget_base_->widget_input_handler_manager()
-      ->InitializeInputEventSuppressionStates();
+  if (widget_base_->widget_input_handler_manager()) {
+    widget_base_->widget_input_handler_manager()
+        ->InitializeInputEventSuppressionStates();
+  }
+  if (RuntimeEnabledFeatures::UnboundedElementEnabled()) {
+    unbounded_surface_state_ = nullptr;
+  }
 }
 
 void WebFrameWidgetImpl::FlushInputForTesting(base::OnceClosure done_callback) {

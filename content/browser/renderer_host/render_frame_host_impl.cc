@@ -11249,7 +11249,6 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
     mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient> client,
     const gfx::Rect& bounds) {
-  // TODO(crbug.com/508672616) Store and use the mojo endpoints.
   if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
     local_frame_host_receiver_.ReportBadMessage(
         "kUnboundedElement feature must be enabled.");
@@ -11296,6 +11295,9 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
   CHECK(!unbounded_surface_client_.is_bound());
   CHECK(!outermost->active_unbounded_frame_);
 
+  unbounded_surface_host_receiver_.reset();
+  unbounded_surface_host_receiver_.Bind(std::move(host));
+
   unbounded_surface_client_.Bind(std::move(client));
   unbounded_surface_client_.set_disconnect_handler(base::BindOnce(
       &RenderFrameHostImpl::DismissUnboundedSurface, base::Unretained(this)));
@@ -11321,19 +11323,64 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
       widget_host_remote.InitWithNewEndpointAndPassReceiver(),
       std::move(widget_remote), GetGlobalId());
   if (widget) {
+    active_unbounded_widget_ = widget->GetWeakPtr();
     RenderWidgetHostViewBase* widget_host_view =
         static_cast<RenderWidgetHostViewBase*>(widget->GetView());
     if (widget_host_view) {
       float dsf = GetScaleFactorForView(parent_view);
-      int dip_x = std::round(bounds.x() / dsf);
-      int dip_y = std::round(bounds.y() / dsf);
-      int dip_w = std::round(bounds.width() / dsf);
-      int dip_h = std::round(bounds.height() / dsf);
-      gfx::Point origin =
-          parent_view->GetViewBounds().origin() + gfx::Vector2d(dip_x, dip_y);
-      gfx::Rect initial_rect = gfx::Rect(origin, gfx::Size(dip_w, dip_h));
+      gfx::Rect initial_rect = gfx::ScaleToRoundedRect(bounds, 1.f / dsf);
+      initial_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
       widget_host_view->InitAsPopup(parent_view, initial_rect, initial_rect);
+      unbounded_surface_client_->OnSurfaceAllocated(
+          widget->GetFrameSinkId(), widget_host_view->GetLocalSurfaceId());
     }
+  }
+}
+
+void RenderFrameHostImpl::GetCompositorFrameSink(
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client) {
+  if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
+    mojo::ReportBadMessage("kUnboundedElement feature must be enabled.");
+    return;
+  }
+  if (!active_unbounded_widget_) {
+    return;
+  }
+  active_unbounded_widget_->CreateFrameSink(
+      std::move(sink), std::move(client),
+      mojo::PendingRemote<blink::mojom::RenderInputRouterClient>());
+}
+
+void RenderFrameHostImpl::UpdateBounds(const gfx::Rect& bounds) {
+  if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
+    mojo::ReportBadMessage("kUnboundedElement feature must be enabled.");
+    return;
+  }
+  if (!active_unbounded_widget_) {
+    return;
+  }
+  RenderWidgetHostViewBase* widget_host_view =
+      static_cast<RenderWidgetHostViewBase*>(
+          active_unbounded_widget_->GetView());
+  if (!widget_host_view) {
+    return;
+  }
+  RenderWidgetHostView* parent_view = GetRenderWidgetHost()->GetView();
+  // TODO(crbug.com/508672616): This will break in some circumstances (such as
+  // going between monitors with different DSFs, mixed DSF multi-monitor
+  // setups, or dynamic scaling changes) and we need to propagate changes to
+  // the renderer.
+  float dsf = GetScaleFactorForView(parent_view);
+  gfx::Rect updated_rect = gfx::ScaleToRoundedRect(bounds, 1.f / dsf);
+  if (parent_view) {
+    updated_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
+  }
+  widget_host_view->SetBounds(updated_rect);
+  if (unbounded_surface_client_.is_bound()) {
+    unbounded_surface_client_->OnSurfaceAllocated(
+        active_unbounded_widget_->GetFrameSinkId(),
+        widget_host_view->GetLocalSurfaceId());
   }
 }
 

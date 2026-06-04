@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/threading/platform_thread.h"
@@ -150,6 +151,14 @@ class CC_EXPORT Proxy {
   // frame of a renderer and inside a cross-document view transition.
   // Only implemented for the proxy_main.
   virtual void SendImmediateBeginMainFrame() {}
+
+  // Callbacks for unbounded element frames.
+  virtual void SetUnboundedFrameSink(
+      std::unique_ptr<LayerTreeFrameSink> unbounded_frame_sink,
+      const viz::LocalSurfaceId& local_surface_id) {}
+  virtual void DismissUnboundedFrameSink() {}
+  virtual void SetUnboundedLocalSurfaceId(
+      const viz::LocalSurfaceId& local_surface_id) {}
 };
 
 }  // namespace cc

@@ -218,6 +218,14 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
       override;
 
+  std::unique_ptr<cc::LayerTreeFrameSink> CreateUnboundedFrameSink(
+      CrossVariantMojoRemote<
+          viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+          unbounded_sink_remote,
+      CrossVariantMojoReceiver<
+          viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+          unbounded_client_receiver);
+
   // scheduler::WidgetScheduler::Delegate overrides:
   void RequestBeginMainFrameNotExpected(bool) override;
   bool AreMainFramesPausedOrDeferred() const override;
