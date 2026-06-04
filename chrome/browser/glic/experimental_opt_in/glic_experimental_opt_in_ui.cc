@@ -31,6 +31,19 @@ namespace glic {
 
 namespace {
 
+std::string RequiredExperimentalOptInToString(RequiredExperimentalOptIn state) {
+  switch (state) {
+    case RequiredExperimentalOptIn::kGlic:
+      return "glic";
+    case RequiredExperimentalOptIn::kActuation:
+      return "actuation";
+    case RequiredExperimentalOptIn::kExperimental:
+      return "experimental";
+    case RequiredExperimentalOptIn::kNotNeeded:
+      NOTREACHED();
+  }
+}
+
 GURL GetExperimentalTriggeringOptInURL(Profile* profile,
                                        RequiredExperimentalOptIn state) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -45,23 +58,9 @@ GURL GetExperimentalTriggeringOptInURL(Profile* profile,
     return GURL();
   }
 
-  std::string state_str;
-  switch (state) {
-    case RequiredExperimentalOptIn::kGlic:
-      state_str = "glic";
-      break;
-    case RequiredExperimentalOptIn::kActuation:
-      state_str = "actuation";
-      break;
-    case RequiredExperimentalOptIn::kExperimental:
-      state_str = "experimental";
-      break;
-    case RequiredExperimentalOptIn::kNotNeeded:
-      NOTREACHED();
-  }
-
   url = net::AppendOrReplaceQueryParameter(
-      url, "experimental_triggering_opt_in", state_str);
+      url, "experimental_triggering_opt_in",
+      RequiredExperimentalOptInToString(state));
 
   return DecorateGlicOptInUrl(profile, url);
 }
@@ -115,9 +114,11 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
           : kGlicExperimentalOptInDefaultHeightGlic);
   source->AddInteger("glicExperimentalOptInDefaultWidth",
                      kGlicExperimentalOptInDefaultWidth);
-
-  GURL url = GetExperimentalTriggeringOptInURL(profile, required_state_);
-  source->AddString("glicExperimentalTriggeringOptInURL", url.spec());
+  source->AddString("glicRequiredExperimentalOptInState",
+                    RequiredExperimentalOptInToString(required_state_));
+  source->AddString(
+      "glicExperimentalTriggeringOptInURL",
+      GetExperimentalTriggeringOptInURL(profile, required_state_).spec());
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"offlineNoticeHeader", IDS_GLIC_OFFLINE_NOTICE_HEADER},
