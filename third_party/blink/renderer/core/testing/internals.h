@@ -70,7 +70,6 @@ class HitTestResult;
 class InternalRuntimeFlags;
 class InternalSettings;
 class InternalsUkmRecorder;
-class LocalDOMWindow;
 class LocalFrame;
 class Location;
 class NADCAttributeTest;
@@ -148,7 +147,6 @@ class Internals final : public ScriptWrappable {
   // are those that are optimized out for having no visual effect.
   bool isMainThreadAnimation(Animation*);
   void disableCompositedAnimation(Animation*);
-  void disableCSSAdditiveAnimations();
 
   // Advances an animated image. For BitmapImage (e.g., animated gifs) this
   // will advance to the next frame. For SVGImage, this will trigger an
@@ -359,12 +357,6 @@ class Internals final : public ScriptWrappable {
 
   String getParsedImportMap(Document*, ExceptionState&);
 
-  void SetDeviceProximity(Document*,
-                          const String& event_type,
-                          double value,
-                          double min,
-                          double max,
-                          ExceptionState&);
 
   String layerTreeAsText(Document*, unsigned flags, ExceptionState&) const;
   String layerTreeAsText(Document*, ExceptionState&) const;
@@ -375,8 +367,6 @@ class Internals final : public ScriptWrappable {
 
   unsigned numberOfLiveNodes() const;
   unsigned numberOfLiveDocuments() const;
-  LocalDOMWindow* OpenDummyInspectorFrontend(const String& url);
-  void CloseDummyInspectorFrontend();
 
   String counterValue(Element*);
 
