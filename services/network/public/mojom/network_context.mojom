@@ -1501,6 +1501,7 @@ interface NetworkContext {
   // managed by the same NetworkService. The particular NetworkContext this is
   // called on will determine which NetworkContext gets its information and
   // configuration summary written out at the end of the log.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
   CreateNetLogExporter(pending_receiver<NetLogExporter> receiver);
 
   // Tries to preconnect to `url`. `num_streams` may be used to request more
