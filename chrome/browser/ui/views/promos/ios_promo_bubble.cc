@@ -492,15 +492,21 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
     BubbleType bubble_type) {
   views::Builder<views::View> image_view;
   if (!ios_promo_config.promo_image.IsEmpty()) {
+    const int corner_radius =
+        views::LayoutProvider::Get()->GetCornerRadiusMetric(
+            views::Emphasis::kHigh);
     auto image_view_builder =
         views::Builder<views::ImageView>()
             .SetID(IOSPromoConstants::kImageViewID)
             .SetImage(ios_promo_config.promo_image)
             .SetImageSize(gfx::Size(IOSPromoConstants::kImageSize,
                                     IOSPromoConstants::kImageSize))
-            .SetCornerRadius(
-                views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                    views::Emphasis::kHigh));
+            // The QR code images have a border thickness of 1. Adjust the
+            // corner radius to accommodate for the different inner rounding
+            // when the QR code is shown.
+            .SetCornerRadius(bubble_type == BubbleType::kQRCode
+                                 ? corner_radius - 1
+                                 : corner_radius);
 
     if (bubble_type == BubbleType::kQRCode) {
       image_view_builder.SetAccessibleName(
