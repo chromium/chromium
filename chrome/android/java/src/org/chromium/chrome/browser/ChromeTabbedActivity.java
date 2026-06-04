@@ -209,6 +209,7 @@ import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
@@ -4310,6 +4311,22 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             if (entry != null && entry instanceof RecentlyClosedTab) {
                 mRecentlyClosedEntriesManager.openRecentlyClosedTab(
                         (RecentlyClosedTab) entry, WindowOpenDisposition.NEW_FOREGROUND_TAB);
+                RecordUserAction.record("MobileMenuRecentEntry");
+            }
+        } else if (id == R.id.recent_entry_group_menu_item) {
+            assert menuItemData != null;
+            assert menuItemData.get(
+                            AppMenuPropertiesDelegateImpl.RECENT_ENTRY_SESSION_ID_BUNDLE_KEY)
+                    != null;
+
+            int sessionId =
+                    menuItemData.getInt(
+                            AppMenuPropertiesDelegateImpl.RECENT_ENTRY_SESSION_ID_BUNDLE_KEY);
+            var entry =
+                    mRecentlyClosedEntriesManager.findRecentlyClosedEntry(
+                            sessionId, /* isInstanceId= */ false);
+            if (entry != null && entry instanceof RecentlyClosedGroup) {
+                mRecentlyClosedEntriesManager.openRecentlyClosedEntry(entry);
                 RecordUserAction.record("MobileMenuRecentEntry");
             }
         } else if (id == R.id.recent_entry_window_menu_item) {

@@ -102,6 +102,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -4515,6 +4516,120 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ListItem restoreItem = windowSubmenu.get(0);
         assertEquals(
                 closedWindow, restoreItem.model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY));
+    }
+
+    private void runHistorySubmenuWithRecentlyClosedGroupTest(
+            String title, List<MenuItem> expectedTitles) {
+        setUpMocksForPageMenu();
+
+        RecentlyClosedGroup closedGroup =
+                new RecentlyClosedGroup(
+                        /* sessionId= */ 1, /* timestamp= */ 0, title, /* color= */ 0);
+        RecentlyClosedTab tab1 =
+                new RecentlyClosedTab(
+                        /* sessionId= */ 10,
+                        /* timestamp= */ 0,
+                        "Tab 1 Title",
+                        JUnitTestGURLs.URL_1,
+                        /* tabGroupId= */ null);
+        RecentlyClosedTab tab2 =
+                new RecentlyClosedTab(
+                        /* sessionId= */ 20,
+                        /* timestamp= */ 0,
+                        "Tab 2 Title",
+                        JUnitTestGURLs.URL_2,
+                        /* tabGroupId= */ null);
+        closedGroup.getTabs().add(tab1);
+        closedGroup.getTabs().add(tab2);
+
+        List<RecentlyClosedEntry> entries = new ArrayList<>();
+        entries.add(closedGroup);
+        when(mRecentlyClosedEntriesManager.getRecentlyClosedEntries()).thenReturn(entries);
+
+        List<MenuItem> expectedSubmenu =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.id.open_history_menu_id),
+                                item(R.id.recent_tabs_menu_id),
+                                item(R.id.quick_delete_menu_id),
+                                item(R.id.divider_line_id),
+                                item(
+                                        R.id.recent_entry_menu_item,
+                                        item(R.id.recent_entry_group_menu_item))));
+
+        List<ListItem> items =
+                findItemById(
+                                mTabbedAppMenuPropertiesDelegate.getMenuItems(),
+                                R.id.history_parent_menu_id)
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get();
+
+        assertMenuTreesAreEqual(
+                items,
+                expectedSubmenu,
+                (item, expectedId) -> {
+                    assertEquals(
+                            "Mismatched item id",
+                            expectedId,
+                            item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
+                });
+
+        assertMenuTitlesAreEqual(items, expectedTitles);
+
+        // Verify the recent entry itself in the model.
+        // Index 4 is the first recently closed entry in the submenu.
+        ListItem groupItem = items.get(4);
+        List<ListItem> groupSubmenu =
+                groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+        ListItem restoreItem = groupSubmenu.get(0);
+        assertEquals(
+                closedGroup, restoreItem.model.get(AppMenuRecentEntryItemProperties.RECENT_ENTRY));
+    }
+
+    @Test
+    public void testHistorySubmenu_WithRecentlyClosedNamedGroup() {
+        Context context = ContextUtils.getApplicationContext();
+        String tabsText =
+                context.getResources()
+                        .getQuantityString(R.plurals.recent_tabs_group_closure_without_title, 2, 2);
+        String restoreText = context.getString(R.string.menu_recent_entry_restore_group);
+
+        List<MenuItem> expectedTitles =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.string.menu_history),
+                                item(R.string.menu_recent_tabs),
+                                item(R.string.menu_quick_delete),
+                                item(0),
+                                item(
+                                        context.getString(
+                                                R.string.menu_window_title_with_tab_count,
+                                                "Custom Group",
+                                                tabsText),
+                                        item(restoreText))));
+
+        runHistorySubmenuWithRecentlyClosedGroupTest("Custom Group", expectedTitles);
+    }
+
+    @Test
+    public void testHistorySubmenu_WithRecentlyClosedUnnamedGroup() {
+        Context context = ContextUtils.getApplicationContext();
+        String tabsText =
+                context.getResources()
+                        .getQuantityString(R.plurals.recent_tabs_group_closure_without_title, 2, 2);
+        String restoreText = context.getString(R.string.menu_recent_entry_restore_group);
+
+        List<MenuItem> expectedTitles =
+                new ArrayList<>(
+                        Arrays.asList(
+                                item(R.string.menu_history),
+                                item(R.string.menu_recent_tabs),
+                                item(R.string.menu_quick_delete),
+                                item(0),
+                                item(tabsText, item(restoreText))));
+
+        runHistorySubmenuWithRecentlyClosedGroupTest("", expectedTitles);
     }
 
     private static MenuItem item(Object id, MenuItem... subItems) {

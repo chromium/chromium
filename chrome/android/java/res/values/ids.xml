@@ -189,6 +189,7 @@ found in the LICENSE file.
     <item type="id" name="recent_entry_menu_item" />
     <item type="id" name="recent_entry_tab_menu_item" />
     <item type="id" name="recent_entry_window_menu_item" />
+    <item type="id" name="recent_entry_group_menu_item" />
     <item type="id" name="extensions_parent_menu_id" />
     <item type="id" name="extensions_menu_menu_id" />
     <item type="id" name="manage_extensions_menu_id" />

@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedGroup;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.ntp.RecentlyClosedWindow;
 import org.chromium.chrome.browser.ntp.TitleUtil;
@@ -106,6 +107,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -772,6 +774,19 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         () -> getTabGroupsSubmenuItems(currentTab)));
     }
 
+    private Drawable getTabGroupDrawable(@TabGroupColorId int color) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.OVAL);
+        drawable.setColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, color, isIncognitoShowing()));
+        int size =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
+        drawable.setSize(size, size);
+        return drawable;
+    }
+
     private List<ListItem> getTabGroupsSubmenuItems(@Nullable Tab currentTab) {
         List<ListItem> submenuItems = new ArrayList<>();
         if (shouldShowAddToGroup()) {
@@ -801,23 +816,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 mContext, tabModel.getTabCountForGroup(groupId));
             }
 
-            GradientDrawable drawable = new GradientDrawable();
-            drawable.setShape(GradientDrawable.OVAL);
-            drawable.setColor(
-                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                            mContext,
-                            tabModel.getTabGroupColorWithFallback(groupId),
-                            isIncognitoShowing()));
-            int size =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
-            drawable.setSize(size, size);
-
             PropertyModel model =
                     buildModelForMenuItemWithSubmenu(
                             R.id.tab_group_menu_item_id,
                             title,
-                            drawable,
+                            getTabGroupDrawable(tabModel.getTabGroupColorWithFallback(groupId)),
                             () -> getTabsSubmenuItems(groupId, tabModel));
             model.set(AppMenuItemProperties.ICON_NO_TINT, true);
 
@@ -1094,11 +1097,27 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 items.add(buildClosedWindowMenuItem(window));
                 manager.preFetchTabsForWindow(window);
                 count++;
+            } else if (entry instanceof RecentlyClosedGroup group) {
+                items.add(buildClosedGroupMenuItem(group));
+                count++;
             }
 
             // TODO(crbug.com/509065810): Support other bulk closures.
         }
         return items;
+    }
+
+    private String getRecentEntrySubmenuTitle(@Nullable String title, int tabCount) {
+        String tabsText =
+                mContext.getResources()
+                        .getQuantityString(
+                                R.plurals.recent_tabs_group_closure_without_title,
+                                tabCount,
+                                tabCount);
+
+        return TextUtils.isEmpty(title)
+                ? tabsText
+                : mContext.getString(R.string.menu_window_title_with_tab_count, title, tabsText);
     }
 
     private ListItem buildClosedWindowMenuItem(RecentlyClosedWindow window) {
@@ -1124,26 +1143,14 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                     return submenuItems;
                 };
 
-        int tabCount = window.getTabCount();
-        String tabsText =
-                mContext.getResources()
-                        .getQuantityString(
-                                R.plurals.recent_tabs_group_closure_without_title,
-                                tabCount,
-                                tabCount);
-
-        String title =
-                window.getTitle().equals(RecentlyClosedWindow.WINDOW_DEFAULT_TITLE)
-                        ? tabsText
-                        : mContext.getString(
-                                R.string.menu_window_title_with_tab_count,
-                                window.getTitle(),
-                                tabsText);
-
         PropertyModel model =
                 buildModelForMenuItemWithSubmenu(
                         R.id.recent_entry_menu_item,
-                        title,
+                        getRecentEntrySubmenuTitle(
+                                window.getTitle().equals(RecentlyClosedWindow.WINDOW_DEFAULT_TITLE)
+                                        ? null
+                                        : window.getTitle(),
+                                window.getTabCount()),
                         shouldShowIconBeforeItem() ? R.drawable.ic_window_24dp : Resources.ID_NULL,
                         submenuItemsSupplier);
 
@@ -1184,6 +1191,43 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         .with(AppMenuItemProperties.ICON_NO_TINT, true)
                         .with(AppMenuItemProperties.ENABLED, false)
                         .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, tab)
+                        .build();
+        return new ListItem(AppMenuHandler.AppMenuItemType.RECENT_ENTRY, model);
+    }
+
+    private ListItem buildClosedGroupMenuItem(RecentlyClosedGroup group) {
+        Supplier<List<ListItem>> submenuItemsSupplier =
+                () -> {
+                    List<ListItem> submenuItems = new ArrayList<>();
+                    submenuItems.add(buildRestoreGroupMenuItem(group));
+                    return submenuItems;
+                };
+
+        PropertyModel model =
+                buildModelForMenuItemWithSubmenu(
+                        R.id.recent_entry_menu_item,
+                        getRecentEntrySubmenuTitle(group.getTitle(), group.getTabs().size()),
+                        getTabGroupDrawable(group.getColor()),
+                        submenuItemsSupplier);
+        model.set(AppMenuItemProperties.ICON_NO_TINT, true);
+
+        return new ListItem(AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU, model);
+    }
+
+    private ListItem buildRestoreGroupMenuItem(RecentlyClosedGroup group) {
+        PropertyModel model =
+                populateBaseModelForTextItem(
+                                new PropertyModel.Builder(
+                                        AppMenuRecentEntryItemProperties.ALL_KEYS),
+                                R.id.recent_entry_group_menu_item)
+                        .with(
+                                AppMenuItemProperties.TITLE,
+                                mContext.getString(R.string.menu_recent_entry_restore_group))
+                        .with(AppMenuRecentEntryItemProperties.RECENT_ENTRY, group)
+                        .with(
+                                AppMenuItemProperties.ICON,
+                                AppCompatResources.getDrawable(
+                                        mContext, R.drawable.ic_open_in_new_24dp))
                         .build();
         return new ListItem(AppMenuHandler.AppMenuItemType.RECENT_ENTRY, model);
     }
