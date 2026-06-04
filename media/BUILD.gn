@@ -9,6 +9,7 @@ import("//build/config/cast.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -187,6 +188,11 @@ if (is_ios) {
 # TODO(xhwang): Move mojo/capture/remoting tests here where applicable.
 test("media_unittests") {
   use_xvfb = use_xvfb_in_this_config
+
+  fuzztests = []
+  if (use_av1_hw_decoder && media_use_ffmpeg) {
+    fuzztests += [ "AV1DecoderFuzz.DecodeDoesNotCrash" ]
+  }
 
   deps = [
     "//media/audio:unit_tests",

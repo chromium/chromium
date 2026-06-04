@@ -636,6 +636,7 @@ source_set("unit_tests") {
     "//media/gpu:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//ui/gl:test_support",
   ]
   sources = [
@@ -767,17 +768,6 @@ if (use_v4l2_codec || use_vaapi) {
       "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
     seed_corpuses = [ "//media/test/data" ]
-  }
-}
-
-if (use_av1_hw_decoder) {
-  fuzzer_test("media_av1_decoder_fuzzer") {
-    sources = [ "av1_decoder_fuzzertest.cc" ]
-    deps = [
-      ":common",
-      "//base",
-      "//media:test_support",
-    ]
   }
 }
 

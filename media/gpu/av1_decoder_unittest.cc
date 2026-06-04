@@ -30,6 +30,9 @@
 #include "media/parsers/ivf_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+#include "third_party/fuzztest/src/fuzztest/googletest_fixture_adapter.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 #include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
@@ -1052,6 +1055,83 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
   }
   EXPECT_EQ(results, expected);
 }
+
+class FuzzAV1Accelerator : public media::AV1Decoder::AV1Accelerator {
+ public:
+  FuzzAV1Accelerator() = default;
+  ~FuzzAV1Accelerator() override = default;
+  FuzzAV1Accelerator(const FuzzAV1Accelerator&) = delete;
+  FuzzAV1Accelerator& operator=(const FuzzAV1Accelerator&) = delete;
+
+  // media::AV1Decoder::AV1Accelerator implementation.
+  scoped_refptr<media::AV1Picture> CreateAV1Picture(bool apply_grain) override {
+    return base::MakeRefCounted<media::AV1Picture>();
+  }
+  Status SubmitDecode(const media::AV1Picture& pic,
+                      const libgav1::ObuSequenceHeader& sequence_header,
+                      const media::AV1ReferenceFrameVector& ref_frames,
+                      const libgav1::Vector<libgav1::TileBuffer>& tile_buffers,
+                      base::span<const uint8_t> data) override {
+    return Status::kOk;
+  }
+  bool OutputPicture(const media::AV1Picture& pic) override { return true; }
+};
+
+void DecodeDoesNotCrash(const std::vector<std::vector<uint8_t>>& streams) {
+  // Ignore warning logs due to invalid inputs from fuzzing.
+  const int old_level = logging::GetMinLogLevel();
+  logging::SetMinLogLevel(logging::LOGGING_ERROR);
+  auto restore_log_level =
+      absl::MakeCleanup([old_level]() { logging::SetMinLogLevel(old_level); });
+
+  media::AV1Decoder decoder(std::make_unique<FuzzAV1Accelerator>(),
+                            media::AV1PROFILE_PROFILE_MAIN);
+
+  for (size_t i = 0; i < streams.size(); ++i) {
+    scoped_refptr<media::DecoderBuffer> decoder_buffer =
+        media::DecoderBuffer::CopyFrom(streams[i]);
+    if (!decoder_buffer) {
+      continue;
+    }
+    decoder.SetStream(base::checked_cast<int32_t>(i), decoder_buffer);
+
+    // Decode should consume all the data unless it returns kConfigChange, and
+    // in that case it needs to be called again.
+    while (true) {
+      if (decoder.Decode() != media::AcceleratedVideoDecoder::kConfigChange) {
+        break;
+      }
+    }
+    decoder.Reset();
+  }
+  std::ignore = decoder.Flush();
+}
+
+std::vector<std::tuple<std::vector<std::vector<uint8_t>>>> GetAV1Seeds() {
+  std::vector<std::tuple<std::vector<std::vector<uint8_t>>>> seeds;
+  const std::string kSeedFiles[] = {
+      "av1-I-frame-320x240",
+      "av1-I-frame-1280x720",
+      "av1-monochrome-I-frame-320x240-8bpp",
+  };
+
+  for (const auto& name : kSeedFiles) {
+    base::FilePath path = GetTestDataFilePath(name);
+    std::string data;
+    if (base::ReadFileToString(path, &data)) {
+      std::vector<uint8_t> buffer(data.begin(), data.end());
+      seeds.emplace_back(std::vector<std::vector<uint8_t>>{buffer});
+    }
+  }
+  return seeds;
+}
+
+FUZZ_TEST(AV1DecoderFuzz, DecodeDoesNotCrash)
+    .WithDomains(fuzztest::VectorOf(
+                     fuzztest::Arbitrary<std::vector<uint8_t>>().WithMinSize(1))
+                     .WithMinSize(1)
+                     .WithMaxSize(3))
+    .WithSeeds(GetAV1Seeds);
 
 // TODO(hiroh): Add more tests: reference frame tracking, render size change,
 // profile change, bit depth change, render size different than the frame size,
