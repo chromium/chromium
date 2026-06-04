@@ -357,7 +357,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.19.0-rc01"
+        "version": "1.19.0"
     },
     {
         "name": "core-animation",
@@ -372,7 +372,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.19.0-rc01"
+        "version": "1.19.0"
     },
     {
         "name": "core-pip",
@@ -702,7 +702,7 @@
     {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
-        "version": "2.11.0-beta02"
+        "version": "2.11.0-rc01"
     },
     {
         "name": "lifecycle-runtime",

@@ -3315,7 +3315,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/autorolled',
-              'version': '2a3ci753KfPixA0wcCBa0iO29B_6CliYP_ZGoHQENdwC',
+              'version': 'KNdY8kbfjx9YiGfpnFENFuUhtDJxEw8ezJkx6bYR8RUC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
