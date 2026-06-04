@@ -116,7 +116,7 @@ public class H2OLauncher {
         SharedPreferences.Editor editor = WebApkSharedPreferences.getPrefs(activity).edit();
         editor.putLong(
                 WebApkSharedPreferences.PREF_REQUEST_HOST_BROWSER_RELAUNCH_TIMESTAMP, timestamp);
-        editor.apply();
+        editor.commit();
 
         Bundle extraExtras = new Bundle();
         extraExtras.putBoolean(WebApkConstants.EXTRA_RELAUNCH, true);
