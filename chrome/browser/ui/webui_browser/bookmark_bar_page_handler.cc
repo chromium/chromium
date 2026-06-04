@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -63,6 +64,10 @@ WebUIBrowserBookmarkBarPageHandler::WebUIBrowserBookmarkBarPageHandler(
     // else case: we'll receive notification back from the BookmarkModel when
     // done loading, then we'll populate the bar.
   }
+
+  SetBookmarkBarState(
+      BookmarkBarController::From(browser_)->bookmark_bar_state(),
+      BookmarkBar::AnimateChangeType::DONT_ANIMATE_STATE_CHANGE);
 }
 
 WebUIBrowserBookmarkBarPageHandler::~WebUIBrowserBookmarkBarPageHandler() {
@@ -153,14 +158,19 @@ void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeMoved(
     size_t old_index,
     const bookmarks::BookmarkNode* new_parent,
     size_t new_index) {
-  // TODO(webium): Implement.
+  if (old_parent == bookmark_model_->bookmark_bar_node() ||
+      new_parent == bookmark_model_->bookmark_bar_node()) {
+    page_->BookmarkLoaded();
+  }
 }
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  // TODO(webium): Implement.
+  if (parent == bookmark_model_->bookmark_bar_node()) {
+    page_->BookmarkLoaded();
+  }
 }
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeRemoved(
@@ -169,23 +179,29 @@ void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeRemoved(
     const bookmarks::BookmarkNode* node,
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  // TODO(webium): Implement.
+  if (parent == bookmark_model_->bookmark_bar_node()) {
+    page_->BookmarkLoaded();
+  }
 }
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkAllUserNodesRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
-  // TODO(webium): Implement.
+  page_->BookmarkLoaded();
 }
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
-  // TODO(webium): Implement.
+  if (node->parent() == bookmark_model_->bookmark_bar_node()) {
+    page_->BookmarkLoaded();
+  }
 }
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeChildrenReordered(
     const bookmarks::BookmarkNode* node) {
-  // TODO(webium): Implement.
+  if (node == bookmark_model_->bookmark_bar_node()) {
+    page_->BookmarkLoaded();
+  }
 }
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeFaviconChanged(

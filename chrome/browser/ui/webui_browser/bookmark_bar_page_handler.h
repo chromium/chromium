@@ -81,7 +81,7 @@ class WebUIBrowserBookmarkBarPageHandler
   const raw_ptr<content::WebUI> web_ui_;
   const raw_ptr<Browser> browser_;
 
-  BookmarkBar::State bookmark_bar_state_ = BookmarkBar::SHOW;
+  BookmarkBar::State bookmark_bar_state_ = BookmarkBar::HIDDEN;
 
   // BookmarkModel that owns the entries and folders that are shown in this
   // view. This is owned by the Profile.

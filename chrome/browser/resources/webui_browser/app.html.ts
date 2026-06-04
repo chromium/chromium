@@ -67,7 +67,7 @@ export function getHtml(this: WebuiBrowserAppElement) {
         title="$i18n{appMenuTooltip}"
         @click="${this.onAppMenuClick_}"></cr-icon-button>
     </div>
-    <webui-browser-bookmark-bar id="bookmarkBar">
+    <webui-browser-bookmark-bar id="bookmarkBar" hidden>
     </webui-browser-bookmark-bar>
   </div>
   <div id="main">
