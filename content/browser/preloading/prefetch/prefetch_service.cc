@@ -323,13 +323,7 @@ bool IsAllowedByConnectionAllowlist(const PrefetchRequest& request,
     return true;
   }
 
-  if (network::ConnectionAllowlistMatchesUrl(
-          policies.connection_allowlists.enforced.value(), url)) {
-    // TODO(crbug.com/482728970): Implement reporting.
-    return true;
-  }
-
-  return false;
+  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(policies, url);
 }
 
 }  // namespace

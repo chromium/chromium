@@ -7758,14 +7758,8 @@ bool NavigationRequest::IsAllowedByConnectionAllowlist(bool is_redirect) {
     return true;
   }
 
-  if (network::ConnectionAllowlistMatchesUrl(
-          policies->connection_allowlists.enforced.value(),
-          common_params_->url)) {
-    // TODO(crbug.com/482728970): Implement reporting.
-    return true;
-  }
-
-  return false;
+  return ConnectionAllowlistAllowsUrlAndReportIfNeeded(*policies,
+                                                       common_params_->url);
 }
 
 bool NavigationRequest::IsAllowedByCSPDirective(
