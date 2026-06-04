@@ -1154,14 +1154,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 // Either button, if clicked, triggers a navigation, but neither button should
 // treat this as a click. Since this test moves the pointer horizontally and
 // does so instantly, it should not trigger the long press logic.
-// TODO(crbug.com/514610392): Flaky on Mac 13 and ChromeOS debug.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_PointerDownOnOneUpOnAnother DISABLED_PointerDownOnOneUpOnAnother
-#else
-#define MAYBE_PointerDownOnOneUpOnAnother PointerDownOnOneUpOnAnother
-#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       MAYBE_PointerDownOnOneUpOnAnother) {
+                       PointerDownOnOneUpOnAnother) {
   WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
@@ -1171,56 +1165,82 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   std::string script = base::StringPrintf(
       R"((() => {
           const home = %s;
-          const home_rect = home.getBoundingClientRect();
+          const home_button = %s;
+          const home_rect = home_button.getBoundingClientRect();
           const home_x = home_rect.left + home_rect.width / 2;
           const home_y = home_rect.top + home_rect.height / 2;
           // The home button is where the down event occurs, so should be the
           // one with the usual mock pointer functions.
           %s
 
-          const reload = %s;
-          const reload_rect = reload.getBoundingClientRect();
+          const reload_button = %s;
+          const reload_rect = reload_button.getBoundingClientRect();
           const reload_x = reload_rect.left + reload_rect.width / 2;
           const reload_y = reload_rect.top + reload_rect.height / 2;
-          // The reload button should check for pointer capture, but then do
-          // nothing, since it doesn't have capture.
-          reload.setPointerCapture = () => {
-            throw 'setPointerCapture should not be called';
-          };
-          reload.hasPointerCapture = () => { return false; };
-          reload.releasePointerCapture = () => {
-            throw 'releasePointerCapture should not be called';
+
+          // Detect attempts to show a context menu, so can fail on them.
+          // Fail if the method does not exist.
+          if (!home.browserProxy_.toolbarUIHandler.showContextMenu) {
+            throw "showContextMenu function missing";
+          }
+          home.unexpectedContextMenu = false;
+          // This does catch any button trying to show a context menu, but that
+          // should be fine. Can't replace onLongPress_(), because that is
+          // bound and passed to the PressHandler.
+          home.browserProxy_.toolbarUIHandler.showContextMenu = () => {
+            home.unexpectedContextMenu = true;
           };
 
           // Down on the home button.
-          home.dispatchEvent(new PointerEvent('pointerdown',
+          home_button.dispatchEvent(new PointerEvent('pointerdown',
               {bubbles: true, cancelable: true, view: window,
                 pointerType: 'mouse', detail: 1, button: 0,
                 clientX: home_x, clientY: home_y}));
 
           // Move to the edge of the home button, and then to the center of the
-          // reload button
-          home.dispatchEvent(new PointerEvent('pointermove',
+          // reload button. Since the home button has capture, it will receive
+          // all mouse events.
+          home_button.dispatchEvent(new PointerEvent('pointermove',
               {bubbles: true, cancelable: true, view: window,
                 pointerType: 'mouse',
                 clientX: home_x + home_rect.width / 2 - 1, clientY: home_y}));
-          reload.dispatchEvent(new PointerEvent('pointermove',
+          home_button.dispatchEvent(new PointerEvent('pointermove',
               {bubbles: true, cancelable: true, view: window,
                 pointerType: 'mouse',
                 clientX: reload_x, clientY: reload_y}));
 
-          // Up on the reload button.
-          reload.dispatchEvent(new PointerEvent('pointerup',
+          // Up on the reload button, though event should be received by the
+          // home button.
+          home_button.dispatchEvent(new PointerEvent('pointerup',
               {bubbles: true, cancelable: true, view: window,
                 pointerType: 'mouse', detail: 1, button: 0,
                 clientX: reload_x, clientY: reload_y}));
       })();)",
-      GetButtonIconJS(kHomeSelector),
-      AddMockPointerCaptureFunctions("home").c_str(),
+      GetButtonAppJS(kHomeSelector), GetButtonIconJS(kHomeSelector),
+      AddMockPointerCaptureFunctions("home_button").c_str(),
       GetButtonIconJS(kReloadButtonSelector));
   EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), script));
 
+  // Wait two seconds before making sure nothing happened. Two seconds is 4
+  // times the long press timeout, so its long enough that if the long press
+  // timer were going to be triggered, it likely would be before the timeout
+  // passes.
+  base::RunLoop delay_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, delay_loop.QuitClosure(), base::Seconds(2));
+  delay_loop.Run();
+
   nav_observer.WaitForNoNavigations();
+  // Check for unexpected attempt to show context menu. Easier to check in
+  // Javascript than to set up a C++ observer.
+  EXPECT_EQ(content::EvalJs(web_view->GetWebContents(),
+                            base::StringPrintf(
+                                R"((() => {
+                                  const home = %s;
+                                  return home.unexpectedContextMenu;
+                                })();)",
+                                GetButtonAppJS(kHomeSelector))),
+            false);
 }
 
 class WebUIToolbarWebViewStabilityTest : public InProcessBrowserTest {

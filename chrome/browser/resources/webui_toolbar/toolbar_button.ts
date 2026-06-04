@@ -38,6 +38,18 @@ interface ContextMenuState {
   initialY: number;
 }
 
+// Tests if a mouse event occurred over the given HTMLElement. Since shadow DOM
+// interfered with using getElementFromPoint() and checking `target` contains
+// it, instead checks that the mouse is in the DOMRect of `target`.
+function isMouseEventOverTarget(e: MouseEvent, target: HTMLElement) {
+  const targetRect: DOMRect = target.getBoundingClientRect();
+  // Note that the area an element occupies is [left, right) and [top, bottom),
+  // hence this check only allows equality for the left and top edges, and not
+  // the right and bottom ones.
+  return e.clientX >= targetRect.left && e.clientX < targetRect.right &&
+      e.clientY >= targetRect.top && e.clientY < targetRect.bottom;
+}
+
 /**
  * A helper class for handling pointer events to trigger long press, short
  * press, as well as context menu actions.
@@ -207,6 +219,7 @@ export class PressHandler {
     if (!target.hasPointerCapture(e.pointerId)) {
       return;
     }
+
     // It's not necessary to release captured pointers on pointer up, since that
     // will be done automatically.
 
@@ -214,6 +227,15 @@ export class PressHandler {
     // pointer.
     if (this.contextMenuState_?.isListening &&
         e.pointerId !== this.contextMenuState_.activePointerId) {
+      return;
+    }
+
+    // Do nothing and reset state on release events that were not over the event
+    // target, which can happen when mouse down occurs over one element and then
+    // the mouse is captured by that element, and then mouse up occurs over
+    // another.
+    if (!isMouseEventOverTarget(e, target)) {
+      this.resetContextMenuState_();
       return;
     }
 
