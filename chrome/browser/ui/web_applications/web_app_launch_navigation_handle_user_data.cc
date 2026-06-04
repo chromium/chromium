@@ -135,11 +135,10 @@ void WebAppLaunchNavigationHandleUserData::
                                               !tab_helper->is_in_app_window());
 
   if (!force_iph_off_) {
-    // TODO(crbug.com/371237535): Avoid reliance on FindBrowserWithTab and
-    // instead pass in the Browser instance earlier.
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents_);
     BrowserWindowInterface* browser =
-        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            web_contents_);
+        tab ? tab->GetBrowserWindowInterface() : nullptr;
     if (browser) {
       MaybeShowNavigationCaptureIph(app_id, browser->GetProfile(),
                                     browser->GetBrowserForMigrationOnly());
