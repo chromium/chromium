@@ -247,11 +247,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
 
   config.additional_args.push_back(
       std::string("--mark_as_allowlisted_for_real_time=") + _safeURL1.spec());
-  config.relaunch_policy = ForceRelaunchByKilling;
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testRealTimeWarningForBookmark)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.features_enabled.push_back(kChromeNextIa);
+  config.features_enabled.push_back(kFullscreenRefactoring);
   return config;
 }
 
@@ -789,6 +787,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
                  @"Failed to toggle-on Enhanced Safe Browsing");
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notVisible()];
 
   // Verify that a dark red box prompting to turn on Enhanced Protection is not
   // visible.

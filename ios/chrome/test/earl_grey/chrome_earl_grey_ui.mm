@@ -143,6 +143,21 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)openToolsMenu {
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    // Dismiss infobar banner if present, as it might cover the tools menu
+    // button.
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kInfobarBannerViewIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    if (!error) {
+      [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                              kInfobarBannerViewIdentifier)]
+          performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+    }
+  }
+
   // TODO(crbug.com/41271107): Add logic to ensure the app is in the correct
   // state, for example DCHECK if no tabs are displayed.
   if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom] &&
@@ -199,18 +214,6 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)openSettingsMenu {
-  // Dismiss infobar banner if present, as it might cover the tools menu button.
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kInfobarBannerViewIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()
-                  error:&error];
-  if (!error) {
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kInfobarBannerViewIdentifier)]
-        performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-  }
-
   [self openToolsMenu];
   [self tapToolsMenuButton:SettingsDestinationButton()];
 }
