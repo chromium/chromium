@@ -15,3 +15,13 @@ The C++ library used in the PDF Viewer for annotating PDFs.
 Local Modifications:
 
 None
+
+Update Instructions:
+
+* Sources are autorolled by https://autoroll.skia.org/r/ink-chromium
+* BUILD.gn is manually maintained
+  * In order to avoid adding unused JNI implementations, ask gemini to use
+    find_required_jni.py to filter the is_android sources list.
+  * Note: It does not take into account methods that R8 determines as
+    unreachable. Trimming it based on R8 would be more correct, but may
+    also lead to more frequent updates.
