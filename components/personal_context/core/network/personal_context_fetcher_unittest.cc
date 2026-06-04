@@ -25,14 +25,15 @@
 namespace personal_context {
 namespace {
 
-const char kTestEndpointUrl[] = "https://example.com/fetch";
+const char kTestBaseUrl[] = "https://example.com/v1";
+const char kTestEndpointUrl[] = "https://example.com/v1:fetchContext";
 
 class PersonalContextFetcherTest : public testing::Test {
  public:
   PersonalContextFetcherTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPersonalContext,
-        {{"context_memory_fetch_context_endpoint_url", kTestEndpointUrl}});
+        {{features::kContextMemoryServiceBaseUrl.name, kTestBaseUrl}});
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

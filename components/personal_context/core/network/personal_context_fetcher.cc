@@ -190,10 +190,11 @@ void PersonalContextFetcher::OnAccessTokenReceived(
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      GURL(features::kContextMemoryFetchContextEndpointUrl.Get());
+  resource_request->url = GURL(base::StrCat(
+      {features::kContextMemoryServiceBaseUrl.Get(), ":fetchContext"}));
+
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      "Bearer " + std::string(access_token));
+                                      base::StrCat({"Bearer ", access_token}));
   if (timeout && timeout->is_positive()) {
     resource_request->headers.SetHeader(
         kServerTimeoutHeader, base::NumberToString(timeout->InSeconds()));

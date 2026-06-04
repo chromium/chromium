@@ -22,9 +22,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kPersonalContextEnableFetchContext);
 // Personal Context features (e.g., "1,2").
 BASE_DECLARE_FEATURE_PARAM(std::string, kPersonalContextEligibleTiers);
 
-// The URL of the Context Memory Service (CMS) endpoint used for fetching
-// personal context data.
-BASE_DECLARE_FEATURE_PARAM(std::string, kContextMemoryFetchContextEndpointUrl);
+// The base URL of the Context Memory Service (CMS) endpoint.
+BASE_DECLARE_FEATURE_PARAM(std::string, kContextMemoryServiceBaseUrl);
 
 // Controls whether the First Run and onboarding experience for Personal Context
 // is enabled. When disabled, the service remains in a "Not Eligible" state

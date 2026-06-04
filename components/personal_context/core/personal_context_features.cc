@@ -22,12 +22,11 @@ BASE_FEATURE_PARAM(std::string,
                    "personal_context_eligible_tiers",
                    "1,2");
 
-BASE_FEATURE_PARAM(
-    std::string,
-    kContextMemoryFetchContextEndpointUrl,
-    &kPersonalContext,
-    "context_memory_fetch_context_endpoint_url",
-    "https://contextmemoryservice-pa.googleapis.com/v1:fetchContext");
+BASE_FEATURE_PARAM(std::string,
+                   kContextMemoryServiceBaseUrl,
+                   &kPersonalContext,
+                   "context_memory_service_base_url",
+                   "https://contextmemoryservice-pa.googleapis.com/v1");
 
 BASE_FEATURE(kPersonalContextFirstRun, base::FEATURE_DISABLED_BY_DEFAULT);
 
