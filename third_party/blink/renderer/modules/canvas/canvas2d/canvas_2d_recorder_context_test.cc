@@ -57,10 +57,10 @@
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTileMode.h"
-#include "third_party/skia/include/private/base/SkPoint_impl.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {

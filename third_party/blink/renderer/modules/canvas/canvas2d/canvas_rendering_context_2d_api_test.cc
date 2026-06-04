@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/private/base/SkPoint_impl.h"
+#include "third_party/skia/include/core/SkPoint.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
 
