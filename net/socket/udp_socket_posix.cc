@@ -32,7 +32,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
 #include "base/task/current_thread.h"
@@ -45,7 +44,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_activity_monitor.h"
-#include "net/base/network_interfaces.h"
 #include "net/base/sockaddr_storage.h"
 #include "net/base/trace_constants.h"
 #include "net/log/net_log.h"
@@ -56,6 +54,7 @@
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/udp_net_log_parameters.h"
+#include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -534,7 +533,6 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
 
   int rv = 0;
   if (bind_type_ == DatagramSocket::RANDOM_BIND) {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Net.UDPSocketPosix.RandomBindTime");
     // Construct IPAddress of appropriate size (IPv4 or IPv6) of 0s,
     // representing INADDR_ANY or in6addr_any.
     size_t addr_size = address.GetSockAddrFamily() == AF_INET
@@ -553,10 +551,7 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
     return ERR_ADDRESS_INVALID;
   }
 
-  {
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Net.UDPSocketPosix.SyncConnectTime");
-    rv = HANDLE_EINTR(connect(socket_, storage.addr(), storage.addr_len));
-  }
+  rv = HANDLE_EINTR(connect(socket_, storage.addr(), storage.addr_len));
   if (rv < 0)
     return MapSystemError(errno);
 
