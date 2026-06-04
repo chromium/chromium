@@ -3441,8 +3441,8 @@ export function extractAnnotatedPageContent(
   }
 
   const documentWindow = document.defaultView;
-  if (!documentWindow) {
-    // A document without a window doesn't have any value.
+  if (!documentWindow || !document.documentElement) {
+    // A document without a window or root has no content to extract.
     return null;
   }
 
