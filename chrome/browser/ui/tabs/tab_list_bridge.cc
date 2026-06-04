@@ -149,8 +149,11 @@ void TabListBridge::ActivateTab(tabs::TabHandle tab) {
 tabs::TabInterface* TabListBridge::OpenTab(const GURL& url,
                                            int index,
                                            bool foreground) {
-  // If `index` is specified as `TabStripModel::kNoTab`, then the tab is added
-  // to the end of the tab strip.
+  // If `index` is `TabStripModel::kNoTab` or equals the tab strip size, then
+  // the tab is added to the end of the tab strip.
+  if (index == tab_strip_->count()) {
+    index = TabStripModel::kNoTab;
+  }
   CHECK(index == TabStripModel::kNoTab || tab_strip_->ContainsIndex(index));
 
   // TODO(crbug.com/460650221): It's a bit of a code smell to reach in and grab
