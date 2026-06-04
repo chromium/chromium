@@ -52,10 +52,15 @@ namespace {
 
 // The set of traits that describes the behavior of MemoryCache.
 constexpr base::MemoryConsumerTraits kMemoryCacheTraits(
+    // Strong reference budget is platform-specific; frees tens of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
+    // Pruning requires sorting or traversing HeapLinkedHashSet of resources.
     base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Cached resources reload from network/disk cache.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
-    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    // Synchronously prunes the references inline.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Holds references managed by Blink Oilpan GC.
     base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
 
 // Use function-local statics to cache the feature parameters. This avoids
