@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Util class for testing the Quick Action Search Widget. */
@@ -60,8 +61,11 @@ class QuickActionSearchWidgetTestUtils {
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class, Stage.CREATED, action);
         testRule.setActivity(activity);
+        ApplicationTestUtils.waitForActivityState(activity, Stage.RESUMED);
+        ChromeActivityTestRule.waitForActivityNativeInitializationComplete(activity);
 
-        CriteriaHelper.pollUiThread(
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Dino tab not launched",
                 () -> {
                     Tab activityTab = activity.getActivityTab();
                     Criteria.checkThat(activityTab, Matchers.notNullValue());
