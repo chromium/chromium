@@ -126,6 +126,7 @@ static_library("flags_android_impl") {
     "//components/sync_preferences:features",
     "//components/sync_sessions",
     "//components/tab_groups",
+    "//components/themes/cross_device:features",
     "//components/touch_to_search/core/browser",
     "//components/variations/net:omnibox_autofocus_http_headers",
     "//components/visited_url_ranking/public",

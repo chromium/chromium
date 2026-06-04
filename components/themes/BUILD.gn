@@ -36,6 +36,7 @@ source_set("themes") {
     "//components/optimization_guide/core:features",
     "//components/pref_registry",
     "//components/search",
+    "//components/themes/cross_device:features",
     "//components/version_info",
     "//ui/base:features",
     "//ui/base/mojom",

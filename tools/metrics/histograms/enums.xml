@@ -10903,6 +10903,7 @@ from previous Chrome versions.
   <int value="-1131848860" label="TilingWindowResize:enabled"/>
   <int value="-1131726331" label="BackGestureRefactorAndroid:disabled"/>
   <int value="-1131552305" label="autofill-ai-with-data-schema:enabled"/>
+  <int value="-1130897580" label="CrossDeviceThemeTracker:enabled"/>
   <int value="-1130835436" label="SuspendStateMachine:disabled"/>
   <int value="-1130445061" label="UseDHCPCD10:disabled"/>
   <int value="-1129664395" label="AutofillEnableBuyNowPayLaterForZip:disabled"/>
@@ -14410,6 +14411,7 @@ from previous Chrome versions.
   <int value="23016318" label="NewTabPageCustomizationV2:enabled"/>
   <int value="23121136" label="MobileIdentityConsistencyVar:enabled"/>
   <int value="23556595" label="MarkHttpAs:enabled"/>
+  <int value="24106600" label="CrossDeviceThemeTracker:disabled"/>
   <int value="24332306" label="ButtonARCNetworkDiagnostics:disabled"/>
   <int value="24559850" label="WinPdfUseFontProxy:enabled"/>
   <int value="25271976" label="AndroidAppIntegrationV2:enabled"/>

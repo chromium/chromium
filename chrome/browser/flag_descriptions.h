@@ -712,6 +712,12 @@ inline constexpr char kEnableCrossDevicePrefTrackerDescription[] =
     "Enables the tracking and sharing of select non-syncing preference values "
     "across a user's signed-in devices.";
 
+inline constexpr char kEnableCrossDeviceThemeTrackerName[] =
+    "Cross-Device Theme Tracker";
+inline constexpr char kEnableCrossDeviceThemeTrackerDescription[] =
+    "Enables tracking and querying theme configurations across devices "
+    "to facilitate theme imports and badge indicators.";
+
 inline constexpr char kEnableExtensionInstallPolicyFetchingName[] =
     "Enable Extension Install Policy Fetching";
 inline constexpr char kEnableExtensionInstallPolicyFetchingDescription[] =

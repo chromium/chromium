@@ -193,6 +193,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync_preferences/features.h"
 #include "components/tab_groups/features.h"
+#include "components/themes/cross_device/features.h"
 #include "components/thin_webview/features.h"
 #include "components/touch_to_search/core/browser/contextual_search_field_trial.h"
 #include "components/touch_to_search/core/browser/public.h"
@@ -11757,6 +11758,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCrossDevicePrefTrackerDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          sync_preferences::features::kEnableCrossDevicePrefTracker)},
+    {"enable-cross-device-theme-tracker",
+     flag_descriptions::kEnableCrossDeviceThemeTrackerName,
+     flag_descriptions::kEnableCrossDeviceThemeTrackerDescription, kOsAll,
+     FEATURE_VALUE_TYPE(themes::kCrossDeviceThemeTracker)},
 
 #if BUILDFLAG(IS_WIN)
     {

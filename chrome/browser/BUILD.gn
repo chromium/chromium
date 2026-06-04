@@ -989,6 +989,7 @@ source_set("core") {
     "//components/subresource_filter/core/browser",
     "//components/supervised_user/core/browser:device_parental_controls",
     "//components/sync_preferences:features",
+    "//components/themes/cross_device:features",
     "//components/tracing:background_tracing_utils",
     "//components/ui_devtools",
     "//components/ukm",
