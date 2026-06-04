@@ -75,6 +75,10 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
     int allowed_operations,
     ui::mojom::DragEventSource source) {
   CHECK(!g_is_dragging);
+  if (desktop_host_->IsInNativeMoveResizeLoop()) {
+    return ui::PreferredDragOperation(
+        ui::DragDropTypes::DropEffectToDragOperation(DROPEFFECT_NONE));
+  }
   gfx::Point touch_screen_point;
   if (source == ui::mojom::DragEventSource::kTouch) {
     display::Screen* screen = display::Screen::Get();
