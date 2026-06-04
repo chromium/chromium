@@ -13,8 +13,11 @@
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX)
 #include "base/containers/fixed_flat_set.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "base/files/file_path.h"
 #include "remoting/host/base/process_util.h"
 #endif
@@ -22,10 +25,6 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
-#include <memory>
-#include <string>
-
-#include "base/logging.h"
 #include "base/win/scoped_handle.h"
 #include "remoting/host/win/trust_util.h"
 #endif
@@ -58,24 +57,6 @@ constexpr auto kAllowedCallerPrograms =
     });
 
 #elif BUILDFLAG(IS_WIN)
-
-// Keys for base::PathService to retrieve paths to directories where apps are
-// installed.
-constexpr int kAppsDirectoryPathKeys[] = {
-    base::DIR_PROGRAM_FILES,
-    base::DIR_PROGRAM_FILESX86,
-    base::DIR_PROGRAM_FILES6432,
-    base::DIR_LOCAL_APP_DATA,
-};
-
-// Relative to the Program Files directory.
-constexpr auto kAllowedCallerPrograms =
-    base::MakeFixedFlatSet<base::FilePath::StringViewType>({
-        L"Google\\Chrome\\Application\\chrome.exe",
-        L"Google\\Chrome Beta\\Application\\chrome.exe",
-        L"Google\\Chrome SxS\\Application\\chrome.exe",
-        L"Google\\Chrome Dev\\Application\\chrome.exe",
-    });
 
 // Helper to verify that the cmd.exe binary is located in a trusted system
 // directory.
@@ -158,32 +139,11 @@ bool IsLaunchedByTrustedProcess() {
       parent_image_path = GetProcessImagePath(parent_pid);
     } else {
       PLOG(ERROR) << "Failed to query parent info.";
+      return false;
     }
   }
 
-  // Check if the caller's image path is allowlisted.
-  for (int path_key : kAppsDirectoryPathKeys) {
-    base::FilePath apps_dir_path;
-    if (!base::PathService::Get(path_key, &apps_dir_path)) {
-      continue;
-    }
-    if (!apps_dir_path.IsParent(parent_image_path)) {
-      continue;
-    }
-    for (const base::FilePath::StringViewType& allowed_caller_program :
-         kAllowedCallerPrograms) {
-      base::FilePath allowed_caller_program_full_path =
-          apps_dir_path.Append(allowed_caller_program);
-      if (base::FilePath::CompareEqualIgnoreCase(
-              parent_image_path.value(),
-              allowed_caller_program_full_path.value())) {
-        // Caller's path is allowlisted, now also check if it's properly signed.
-        return IsBinaryTrusted(parent_image_path);
-      }
-    }
-  }
-  // Caller's path is not allowlisted.
-  return false;
+  return IsBinaryTrusted(parent_image_path);
 #elif BUILDFLAG(IS_MAC)
   // TODO: crbug.com/410903981 - move away from PID-based security checks, which
   // might be susceptible of PID reuse attacks, if Apple provides APIs to query
