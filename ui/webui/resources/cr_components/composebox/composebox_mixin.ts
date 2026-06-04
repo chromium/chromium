@@ -1736,12 +1736,32 @@ export const ComposeboxEmbedderMixin =
         }
 
         computeSubmitEnabled(): boolean {
-          // Embedders can override this.
-          return this.hasValidQuery();
+          // `submitEnabled` controls the visibility of the submit button.
+          // Since files can be added but technically not be submittable (like
+          // injected inputs), this needs to check if any files are present to
+          // show the submit button. The button will still appear disabled
+          // because that is controlled by `canSubmitFilesAndInput`.
+          return this.hasValidQuery() || this.files.size > 0;
         }
 
         hasValidQuery(): boolean {
-          // Embedders can override this.
+          // If there is at least one file that supports unimodal search, the
+          // query is valid.
+          if (Array.from(this.files.values())
+                  .some((file: ComposeboxFile) => file.supportsUnimodal)) {
+            return true;
+          }
+
+          // If an autocomplete match is selected, it's a valid query.
+          if (this.selectedMatchIndex >= 0 && !!this.result) {
+            return true;
+          }
+
+          // If there is non-empty text input.
+          if (this.input.trim().length > 0) {
+            return true;
+          }
+
           return false;
         }
 

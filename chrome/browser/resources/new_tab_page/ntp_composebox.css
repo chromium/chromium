@@ -47,7 +47,8 @@
   width: 100%;
 }
 
-cr-composebox-input::part(cancel) {
+cr-composebox-input::part(cancel),
+cr-composebox-submit::part(submit) {
   opacity: 1;
 }
 
@@ -142,4 +143,19 @@ cr-composebox-input::part(cancel) {
 :host([searchbox-layout-mode='Compact'][show-dropdown]) .carousel-divider {
   --contextual-entrypoint-and-carousel-carousel-divider-margin-bottom: 8px;
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 12px;
+}
+
+:host([submit-enabled]) cr-composebox-submit::part(submit) {
+  inset-inline-end: 0;
+  margin-block: 12px 2px;
+  margin-inline: auto 10px;
+  position: relative;
+}
+
+:host([searchbox-next-enabled]) cr-composebox-submit::part(submit-icon) {
+  --cr-icon-button-icon-size: 12px;
+}
+
+:host(:not([submit-enabled])) cr-composebox-submit::part(submit) {
+  display: none;
 }

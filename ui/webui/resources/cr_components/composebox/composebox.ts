@@ -219,15 +219,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return super.shouldShowDivider();
   }
 
-  override computeSubmitEnabled(): boolean {
-    // `submitEnabled` controls the visibility of the submit button.
-    // Since files can be added but technically not be submittable (like
-    // injected inputs), this needs to check if any files are present to show
-    // the submit button. The button will still appear disabled because that is
-    // controlled by `canSubmitFilesAndInput`.
-    return this.hasValidQuery() || this.files.size > 0;
-  }
-
   override getDropdownElement(): ComposeboxDropdownElement {
     return this.$.matches;
   }
@@ -429,7 +420,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.expanding_ = expanding;
   }
 
-
+  // Default logic moved to mixin. This override is for contextual_tasks.
   override hasValidQuery(): boolean {
     // If there is at least one file that supports unimodal search, query is
     // valid.

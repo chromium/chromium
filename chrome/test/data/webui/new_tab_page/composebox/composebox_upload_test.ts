@@ -661,6 +661,45 @@ import * as testSupport from './test_support.js';
               assertFalse(await testSupport.areMatchesShowing(
                   testProxy.element, testProxy.searchboxCallbackRouterRemote));
             });
+
+        test('upload image', async () => {
+          testSupport.createComposeboxElement(testProxy);
+
+          if (useForked) {
+            // Set property so that the `ntp-composebox` renders the submit
+            // button.
+            testProxy.element.searchboxNextEnabled = true;
+            await testProxy.element.updateComplete;
+
+            // In `ntp-composebox`, the submit button is omitted when empty.
+            assertFalse(!!testProxy.element.shadowRoot.querySelector(
+                'cr-composebox-submit'));
+          } else {
+            // In `cr-composebox`, the submit button is rendered but disabled.
+            assertStyle(
+                testSupport.getSubmitContainer(testProxy), 'cursor',
+                'not-allowed');
+          }
+
+          // Upload image
+          await testSupport.uploadFileAndVerify(
+              testProxy, testSupport.FAKE_TOKEN_STRING,
+              new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+          testProxy.searchboxCallbackRouterRemote
+              .onContextualInputStatusChanged(
+                  testSupport.FAKE_TOKEN_STRING,
+                  ContextUploadStatus.kUploadSuccessful,
+                  null,
+              );
+          await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+          await testProxy.element.updateComplete;
+          await microtasksFinished();
+
+          // After upload, the button is rendered and enabled (cursor: pointer)
+          // in both layouts.
+          assertStyle(
+              testSupport.getSubmitContainer(testProxy), 'cursor', 'pointer');
+        });
       });
 });
 
@@ -1218,6 +1257,47 @@ import * as testSupport from './test_support.js';
               loadTimeData.getString('composeboxFileUploadFailed'),
               testProxy.element.$.errorScrim.errorMessage);
         });
+
+        test(
+            'composebox does not open match when only file present',
+            async () => {
+              testSupport.createComposeboxElement(testProxy);
+              if (useForked) {
+                // Set property so that the modern layout renders the submit
+                // button.
+                testProxy.element.searchboxNextEnabled = true;
+                await testProxy.element.updateComplete;
+              }
+
+              assertEquals(
+                  testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
+              await testSupport.uploadFileAndVerify(
+                  testProxy, testSupport.FAKE_TOKEN_STRING,
+                  new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
+              testProxy.searchboxCallbackRouterRemote
+                  .onContextualInputStatusChanged(
+                      testSupport.FAKE_TOKEN_STRING,
+                      ContextUploadStatus.kUploadSuccessful,
+                      /*error_type=*/ null,
+                  );
+              await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+              await testProxy.element.updateComplete;
+              await microtasksFinished();
+
+              // Submit button is rendered and clickable in both layouts after
+              // successful upload.
+              testSupport.getSubmitContainer(testProxy).click();
+              await microtasksFinished();
+
+              // Assert call occurs.
+              assertEquals(
+                  testProxy.searchboxHandler.getCallCount('submitQuery'), 1,
+                  'submitQuery count should be 1');
+              assertEquals(
+                  testProxy.searchboxHandler.getCallCount(
+                      'openAutocompleteMatch'),
+                  0, 'openAutocompleteMatch count should be 0');
+            });
       });
 });
 
@@ -1700,76 +1780,4 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
             testProxy.element.files.size, 1,
             'Same tab should be added back after clearing all.');
       });
-});
-
-// =========================================================================
-// 4. INCOMPATIBLE BASE TESTS (run on `cr-composebox` only).
-// TODO(crbug.com/517310220): This test can be moved to v2 suite once submit
-// button is added.
-// =========================================================================
-suite('NewTabPageComposeboxUploadFileTest', () => {
-  const testProxy = testSupport.setupComposeboxTest();
-
-  setup(() => {
-    loadTimeData.overrideValues({
-      useNtpComposeboxFork: false,
-    });
-  });
-
-
-
-  test('upload image', async () => {
-    testSupport.createComposeboxElement(testProxy);
-    // Submit button is disabled without any input.
-    assertStyle(
-        testSupport.getSubmitContainer(testProxy), 'cursor', 'not-allowed');
-    await testSupport.uploadFileAndVerify(
-        testProxy, testSupport.FAKE_TOKEN_STRING,
-        new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        testSupport.FAKE_TOKEN_STRING,
-        ContextUploadStatus.kUploadSuccessful,
-        null,
-    );
-    await testProxy.element.updateComplete;
-    await microtasksFinished();
-
-    assertStyle(testSupport.getSubmitContainer(testProxy), 'cursor', 'pointer');
-  });
-});
-
-suite('NewTabPageComposeboxUploadToolModeTest', () => {
-  const testProxy = testSupport.setupComposeboxTest();
-
-  setup(() => {
-    loadTimeData.overrideValues({
-      useNtpComposeboxFork: false,
-    });
-  });
-
-  test('composebox does not open match when only file present', async () => {
-    testSupport.createComposeboxElement(testProxy);
-
-    assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
-    await testSupport.uploadFileAndVerify(
-        testProxy, testSupport.FAKE_TOKEN_STRING,
-        new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        testSupport.FAKE_TOKEN_STRING,
-        ContextUploadStatus.kUploadSuccessful,
-        /*error_type=*/ null,
-    );
-    await microtasksFinished();
-
-    testSupport.getSubmitContainer(testProxy).click();
-    await microtasksFinished();
-
-    // Assert call occurs.
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('submitQuery'), 1,
-        'submitQuery count should be 1');
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 0,
-        'openAutocompleteMatch count should be 0');
-  });
 });

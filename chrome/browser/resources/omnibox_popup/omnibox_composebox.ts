@@ -178,35 +178,6 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
     return super.shouldShowDivider();
   }
 
-  override computeSubmitEnabled(): boolean {
-    // `submitEnabled` controls the visibility of the submit button.
-    // Since files can be added but technically not be submittable (like
-    // injected inputs), this needs to check if any files are present to show
-    // the submit button. The button will still appear disabled because that is
-    // controlled by `canSubmitFilesAndInput`.
-    return this.hasValidQuery() || this.files.size > 0;
-  }
-
-  override hasValidQuery(): boolean {
-    // If there is at least one file that supports unimodal search, query is
-    // valid.
-    for (const file of this.files.values()) {
-      if (file.supportsUnimodal) {
-        return true;
-      }
-    }
-
-    // If an autocomplete match is selected, it's a valid query.
-    if (this.selectedMatchIndex >= 0 && !!this.result) {
-      return true;
-    }
-
-    if (this.input.trim().length > 0) {
-      return true;
-    }
-    return false;
-  }
-
   addSearchContext(context: SearchContext|null) {
     if (context) {
       if (context.input.length > 0) {
