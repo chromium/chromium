@@ -34,6 +34,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/element_selector.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -340,6 +341,10 @@ id<GREYMatcher> DownloadButton() {
 
 // Tests that the export button successfully downloads a file.
 - (void)testExportLogsToJson {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/520106708): Failing on ipad device.
+    EARL_GREY_TEST_SKIPPED(@"Disabled on iPad");
+  }
   [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyLogsURL)];
   // Click "Export Logs to JSON" button
   [ChromeEarlGrey tapWebStateElementWithID:kExportLogsButton];
