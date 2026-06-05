@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -17,7 +17,7 @@ import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 // This is the realbox's lens button tests, not the lens searchbox's tests.
 suite('Lens search in ntp realbox', () => {
-  let realbox: SearchboxElement;
+  let realbox: NtpSearchboxElement;
 
   let testProxy: TestSearchboxBrowserProxy;
 
@@ -54,14 +54,14 @@ suite('Lens search in ntp realbox', () => {
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
 
-    realbox = document.createElement('cr-searchbox');
+    realbox = document.createElement('ntp-searchbox');
     document.body.appendChild(realbox);
   });
 
   test('Lens search button is present by default', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
+    realbox = document.createElement('ntp-searchbox');
     document.body.appendChild(realbox);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -75,7 +75,7 @@ suite('Lens search in ntp realbox', () => {
     // Arrange.
     loadTimeData.overrideValues({searchboxLensSearch: false});
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
+    realbox = document.createElement('ntp-searchbox');
     document.body.appendChild(realbox);
     await testProxy.callbackRouterRemote.$.flushForTesting();
 
@@ -91,7 +91,7 @@ suite('Lens search in ntp realbox', () => {
   test('clicking Lens search button hides matches', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
+    realbox = document.createElement('ntp-searchbox');
     document.body.appendChild(realbox);
 
     // Act.
@@ -121,7 +121,7 @@ suite('Lens search in ntp realbox', () => {
   test('clicking Lens search button sends Lens search event', async () => {
     // Arrange.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    realbox = document.createElement('cr-searchbox');
+    realbox = document.createElement('ntp-searchbox');
     document.body.appendChild(realbox);
     const whenOpenLensSearch = eventToPromise('open-lens-search', realbox);
     await testProxy.callbackRouterRemote.$.flushForTesting();
