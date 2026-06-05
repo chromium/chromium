@@ -42,6 +42,13 @@ enum SignerState {
   STATE_REMOVED = 5;
 }
 
+enum SignatureAlgorithm {
+  SIGNATURE_ALGORITHM_UNSET = 0;
+  SIGNATURE_ALGORITHM_ML_DSA44 = 1;
+  SIGNATURE_ALGORITHM_ML_DSA65 = 2;
+  SIGNATURE_ALGORITHM_ML_DSA87 = 3;
+}
+
 message OperatorChange {
   string name = 1;
   // Timestamp at which this operator started operating this signer.
@@ -99,6 +106,9 @@ message Signer {
   // The minimum log number that Chrome will accept. Only valid for issuer logs,
   // mirrors should not have this field set.
   int32 min_log_number = 13;
+
+  // The signature algorithm that the signer uses.
+  SignatureAlgorithm signature_algorithm = 14;
 }
 
 message SignerSet {
