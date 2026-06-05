@@ -273,7 +273,8 @@
         "chrome://os-settings/*",
         "chrome://parent-access/*",
         "chrome://password-change/*",
-        "chrome://lock-reauth/*"
+        "chrome://lock-reauth/*",
+        "chrome://skills/*"
       ]
     }, {
       "internal": true,
@@ -938,7 +939,8 @@
       "chrome://os-settings/*",
       "chrome://parent-access/*",
       "chrome://password-change/*",
-      "chrome://lock-reauth/*"
+      "chrome://lock-reauth/*",
+      "chrome://skills/*"
     ]
   }, {
     "internal": true,
@@ -984,7 +986,8 @@
       "chrome://os-settings/*",
       "chrome://parent-access/*",
       "chrome://password-change/*",
-      "chrome://lock-reauth/*"
+      "chrome://lock-reauth/*",
+      "chrome://skills/*"
     ]
   }, {
     "internal": true,
@@ -1024,7 +1027,8 @@
       "chrome://mobilesetup/*",
       "chrome://oobe/*",
       "chrome://os-settings/*",
-      "chrome://parent-access/*"
+      "chrome://parent-access/*",
+      "chrome://skills/*"
     ]
   }, {
     "channel": "stable",

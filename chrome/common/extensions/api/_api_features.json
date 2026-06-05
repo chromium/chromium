@@ -279,7 +279,8 @@
       "chrome://os-settings/*",
       "chrome://parent-access/*",
       "chrome://password-change/*",
-      "chrome://lock-reauth/*"
+      "chrome://lock-reauth/*",
+      "chrome://skills/*"
     ]
   }, {
     "internal": true,

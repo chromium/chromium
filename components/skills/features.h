@@ -16,6 +16,7 @@ BASE_DECLARE_FEATURE(kSkillsRefinementEnabled);
 BASE_DECLARE_FEATURE(kSkillsAutocomplete);
 BASE_DECLARE_FEATURE(kSkills1PDisabledForNonEnLocales);
 BASE_DECLARE_FEATURE(kSkillsSubheadersEnabled);
+BASE_DECLARE_FEATURE(kSkillsWebViewV2Enabled);
 
 BASE_DECLARE_FEATURE(kSkillsServiceApi);
 extern const base::FeatureParam<std::string> kSkillsServiceApiUrl;

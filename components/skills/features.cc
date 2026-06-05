@@ -13,6 +13,7 @@ BASE_FEATURE(kSkillsAutocomplete, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSkills1PDisabledForNonEnLocales,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSkillsSubheadersEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSkillsWebViewV2Enabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkillsServiceApi, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kSkillsServiceApiUrl{
