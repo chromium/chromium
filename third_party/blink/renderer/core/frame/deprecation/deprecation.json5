@@ -667,6 +667,26 @@
       chrome_status_feature: 5088568590598144,
     },
     {
+      name: "WebTransportDatagramDuplexStreamIncomingHighWaterMark",
+      message: "WebTransportDatagramDuplexStream.incomingHighWaterMark has been renamed to incomingMaxBufferedDatagrams. incomingHighWaterMark will be removed in a future version of Chrome.",
+      translation_note: "Warning for using the deprecated 'incomingHighWaterMark' attribute on WebTransportDatagramDuplexStream. Developers should use 'incomingMaxBufferedDatagrams' instead.",
+      web_features: [
+        "kWebTransportDatagramDuplexStreamIncomingHighWaterMark",
+      ],
+      chrome_status_feature: 5143839699501056,
+      milestone: 156,
+    },
+    {
+      name: "WebTransportDatagramDuplexStreamOutgoingHighWaterMark",
+      message: "WebTransportDatagramDuplexStream.outgoingHighWaterMark has been renamed to outgoingMaxBufferedDatagrams. outgoingHighWaterMark will be removed in a future version of Chrome.",
+      translation_note: "Warning for using the deprecated 'outgoingHighWaterMark' attribute on WebTransportDatagramDuplexStream. Developers should use 'outgoingMaxBufferedDatagrams' instead.",
+      web_features: [
+        "kWebTransportDatagramDuplexStreamOutgoingHighWaterMark",
+      ],
+      chrome_status_feature: 5143839699501056,
+      milestone: 156,
+    },
+    {
       name: "XHRJSONEncodingDetection",
       message: "UTF-16 is not supported by response json in `XMLHttpRequest`",
       translation_note: "Warning displayed to developers that they are using `XMLHttpRequest` API in a way that they expect an unsupported character encoding `UTF-16` could be used in the server reply.",

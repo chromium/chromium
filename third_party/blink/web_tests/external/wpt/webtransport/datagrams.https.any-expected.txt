@@ -18,6 +18,6 @@ This is a testharness.js-based test.
 [FAIL] Datagram MaxAge getters/setters work correctly
   assert_throws_js: function "() => { wt.datagrams.incomingMaxAge = -1; }" did not throw
 [FAIL] Datagram MaxBufferedDatagrams getters/setters work correctly
-  assert_greater_than_equal: expected a number but got a "undefined"
+  assert_equals: expected 1 but got 0
 Harness: the test ran to completion.
 

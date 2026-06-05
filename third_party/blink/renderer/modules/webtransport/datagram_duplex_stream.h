@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -19,7 +20,7 @@ namespace blink {
 class ReadableStream;
 class WritableStream;
 
-constexpr int32_t kDefaultIncomingHighWaterMark = 1;
+inline constexpr uint32_t kDefaultIncomingMaxBufferedDatagrams = 1;
 
 class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -29,10 +30,12 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   // readable and writable separately.
   // TODO(ricea): Once the legacy getters are removed from WebTransport, store
   // the readable and writable in this object.
-  explicit DatagramDuplexStream(WebTransport* web_transport,
-                                int32_t initial_outgoing_high_water_mark)
+  explicit DatagramDuplexStream(
+      WebTransport* web_transport,
+      uint32_t initial_outgoing_max_buffered_datagrams)
       : web_transport_(web_transport),
-        outgoing_high_water_mark_(initial_outgoing_high_water_mark) {}
+        outgoing_max_buffered_datagrams_(
+            initial_outgoing_max_buffered_datagrams) {}
 
   ReadableStream* readable() const {
     return web_transport_->datagramReadable();
@@ -49,11 +52,34 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   std::optional<double> outgoingMaxAge() const { return outgoing_max_age_; }
   void setOutgoingMaxAge(std::optional<double> max_age);
 
-  int32_t incomingHighWaterMark() const { return incoming_high_water_mark_; }
-  void setIncomingHighWaterMark(int32_t high_water_mark);
+  // Spec-renamed attributes use Web IDL unsigned long (uint32_t).
+  uint32_t incomingMaxBufferedDatagrams() const {
+    return incoming_max_buffered_datagrams_;
+  }
+  void setIncomingMaxBufferedDatagrams(uint32_t value) {
+    incoming_max_buffered_datagrams_ = value;
+  }
 
-  int32_t outgoingHighWaterMark() const { return outgoing_high_water_mark_; }
-  void setOutgoingHighWaterMark(int32_t high_water_mark);
+  uint32_t outgoingMaxBufferedDatagrams() const {
+    return outgoing_max_buffered_datagrams_;
+  }
+  void setOutgoingMaxBufferedDatagrams(uint32_t value) {
+    outgoing_max_buffered_datagrams_ = value;
+  }
+
+  // Deprecated aliases preserve the old Web IDL long (int32_t) surface.
+  // Negative setter values are ignored to match previous behavior.
+  // Values larger than INT32_MAX are clamped for the deprecated getters because
+  // the old IDL type cannot represent the full uint32_t range.
+  int32_t incomingHighWaterMark() const {
+    return base::saturated_cast<int32_t>(incoming_max_buffered_datagrams_);
+  }
+  void setIncomingHighWaterMark(int32_t value);
+
+  int32_t outgoingHighWaterMark() const {
+    return base::saturated_cast<int32_t>(outgoing_max_buffered_datagrams_);
+  }
+  void setOutgoingHighWaterMark(int32_t value);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(web_transport_);
@@ -70,8 +96,9 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   uint32_t max_datagram_size_ = 1024;
   std::optional<double> incoming_max_age_;
   std::optional<double> outgoing_max_age_;
-  int32_t incoming_high_water_mark_ = kDefaultIncomingHighWaterMark;
-  int32_t outgoing_high_water_mark_;
+  uint32_t incoming_max_buffered_datagrams_ =
+      kDefaultIncomingMaxBufferedDatagrams;
+  uint32_t outgoing_max_buffered_datagrams_;
 };
 
 }  // namespace blink

@@ -1,0 +1,5 @@
+Verifies that using the deprecated WebTransport datagram high water mark attributes causes issues.
+
+Inspector issue type: WebTransportDatagramDuplexStreamIncomingHighWaterMark
+Inspector issue type: WebTransportDatagramDuplexStreamOutgoingHighWaterMark
+

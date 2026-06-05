@@ -22,15 +22,15 @@ void DatagramDuplexStream::setOutgoingMaxAge(std::optional<double> max_age) {
   }
 }
 
-void DatagramDuplexStream::setIncomingHighWaterMark(int high_water_mark) {
-  if (high_water_mark >= 0) {
-    incoming_high_water_mark_ = high_water_mark;
+void DatagramDuplexStream::setIncomingHighWaterMark(int32_t value) {
+  if (value >= 0) {
+    setIncomingMaxBufferedDatagrams(static_cast<uint32_t>(value));
   }
 }
 
-void DatagramDuplexStream::setOutgoingHighWaterMark(int high_water_mark) {
-  if (high_water_mark >= 0) {
-    outgoing_high_water_mark_ = high_water_mark;
+void DatagramDuplexStream::setOutgoingHighWaterMark(int32_t value) {
+  if (value >= 0) {
+    setOutgoingMaxBufferedDatagrams(static_cast<uint32_t>(value));
   }
 }
 

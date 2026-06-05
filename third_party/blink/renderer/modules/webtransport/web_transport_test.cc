@@ -858,7 +858,9 @@ TEST_F(WebTransportTest, BackpressureForOutgoingDatagrams) {
         std::move(callback).Run(true);
       });
 
-  web_transport->datagrams()->setOutgoingHighWaterMark(3);
+  constexpr uint32_t kMaxBufferedDatagrams = 3;
+  web_transport->datagrams()->setOutgoingMaxBufferedDatagrams(
+      kMaxBufferedDatagrams);
   auto* writable = web_transport->datagrams()->writable();
   auto* script_state = scope.GetScriptState();
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
@@ -1209,7 +1211,7 @@ TEST_F(WebTransportTest, DatagramsShouldBeErroredAfterClose) {
   EXPECT_TRUE(tester1.IsRejected());
 }
 
-TEST_F(WebTransportTest, ResettingIncomingHighWaterMarkWorksAfterClose) {
+TEST_F(WebTransportTest, ResettingIncomingMaxBufferedDatagramsWorksAfterClose) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
@@ -1227,7 +1229,9 @@ TEST_F(WebTransportTest, ResettingIncomingHighWaterMarkWorksAfterClose) {
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
-  web_transport->datagrams()->setIncomingHighWaterMark(0);
+  constexpr uint32_t kNoBufferedDatagrams = 0;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kNoBufferedDatagrams);
   auto result = reader->read(script_state, ASSERT_NO_EXCEPTION);
 
   ScriptPromiseTester tester(script_state, result);
@@ -1306,15 +1310,16 @@ TEST_F(WebTransportTest, DatagramsAreDropped) {
               ElementsAre('C'));
 }
 
-TEST_F(WebTransportTest, IncomingHighWaterMarkIsObeyed) {
+TEST_F(WebTransportTest, IncomingMaxBufferedDatagramsIsObeyed) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  constexpr int32_t kHighWaterMark = 5;
-  web_transport->datagrams()->setIncomingHighWaterMark(kHighWaterMark);
+  constexpr uint32_t kMaxBufferedDatagrams = 5;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kMaxBufferedDatagrams);
 
-  for (int i = 0; i < kHighWaterMark + 1; ++i) {
+  for (uint32_t i = 0; i < kMaxBufferedDatagrams + 1; ++i) {
     const std::array<uint8_t, 1> chunk = {static_cast<uint8_t>('0' + i)};
     client_remote_->OnDatagramReceived(chunk);
   }
@@ -1327,7 +1332,7 @@ TEST_F(WebTransportTest, IncomingHighWaterMarkIsObeyed) {
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
-  for (int i = 0; i < kHighWaterMark; ++i) {
+  for (uint32_t i = 0; i < kMaxBufferedDatagrams; ++i) {
     auto result = reader->read(script_state, ASSERT_NO_EXCEPTION);
 
     ScriptPromiseTester tester(script_state, result);
@@ -1339,15 +1344,16 @@ TEST_F(WebTransportTest, IncomingHighWaterMarkIsObeyed) {
   }
 }
 
-TEST_F(WebTransportTest, ResettingHighWaterMarkClearsQueue) {
+TEST_F(WebTransportTest, ResettingMaxBufferedDatagramsClearsQueue) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  constexpr int32_t kHighWaterMark = 5;
-  web_transport->datagrams()->setIncomingHighWaterMark(kHighWaterMark);
+  constexpr uint32_t kMaxBufferedDatagrams = 5;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kMaxBufferedDatagrams);
 
-  for (int i = 0; i < kHighWaterMark; ++i) {
+  for (uint32_t i = 0; i < kMaxBufferedDatagrams; ++i) {
     const std::array<uint8_t, 1> chunk = {'A'};
     client_remote_->OnDatagramReceived(chunk);
   }
@@ -1355,7 +1361,9 @@ TEST_F(WebTransportTest, ResettingHighWaterMarkClearsQueue) {
   // Make sure that the calls have run.
   test::RunPendingTasks();
 
-  web_transport->datagrams()->setIncomingHighWaterMark(0);
+  constexpr uint32_t kNoBufferedDatagrams = 0;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kNoBufferedDatagrams);
 
   auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
@@ -1374,11 +1382,14 @@ TEST_F(WebTransportTest, ResettingHighWaterMarkClearsQueue) {
   EXPECT_FALSE(tester.IsRejected());
 }
 
-TEST_F(WebTransportTest, ReadIncomingDatagramWorksWithHighWaterMarkZero) {
+TEST_F(WebTransportTest,
+       ReadIncomingDatagramWorksWithMaxBufferedDatagramsZero) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
-  web_transport->datagrams()->setIncomingHighWaterMark(0);
+  constexpr uint32_t kNoBufferedDatagrams = 0;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kNoBufferedDatagrams);
 
   auto* readable = web_transport->datagrams()->readable();
   auto* script_state = scope.GetScriptState();
@@ -1405,7 +1416,9 @@ TEST_F(WebTransportTest, IncomingMaxAgeIsObeyed) {
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
 
-  web_transport->datagrams()->setIncomingHighWaterMark(2);
+  constexpr uint32_t kMaxBufferedDatagrams = 2;
+  web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
+      kMaxBufferedDatagrams);
 
   const std::array<uint8_t, 1> chunk1 = {'A'};
   client_remote_->OnDatagramReceived(chunk1);

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransportDatagramsWritable interface: existence and properties of interface object
   assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
 [FAIL] WebTransportDatagramsWritable interface object length
@@ -18,10 +18,6 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "WebTransportDatagramsWritable" expected property "WebTransportDatagramsWritable" missing
 [FAIL] WebTransportDatagramDuplexStream interface: operation createWritable(optional WebTransportSendOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "createWritable" missing
-[FAIL] WebTransportDatagramDuplexStream interface: attribute incomingMaxBufferedDatagrams
-  assert_true: The prototype object must have a property "incomingMaxBufferedDatagrams" expected true got false
-[FAIL] WebTransportDatagramDuplexStream interface: attribute outgoingMaxBufferedDatagrams
-  assert_true: The prototype object must have a property "outgoingMaxBufferedDatagrams" expected true got false
 [FAIL] WebTransport interface: operation exportKeyingMaterial(BufferSource, optional BufferSource)
   assert_own_property: interface prototype object missing non-static operation expected property "exportKeyingMaterial" missing
 [FAIL] WebTransport interface: attribute reliability
@@ -69,4 +65,3 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebTransportWriter interface: operation commit()
   assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
 Harness: the test ran to completion.
-
