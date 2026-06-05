@@ -9,3 +9,32 @@ source_set("features") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("cross_device") {
+  sources = [
+    "cross_device_theme_tracker.cc",
+    "cross_device_theme_tracker.h",
+  ]
+  public_deps = [
+    ":features",
+    "//components/keyed_service/core",
+    "//components/sync/protocol",
+    "//components/sync_device_info",
+    "//skia",
+    "//url",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cross_device_theme_tracker_unittest.cc" ]
+  deps = [
+    ":cross_device",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync_device_info:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

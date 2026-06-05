@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/sync/protocol",
+  "+components/sync_device_info",
+]
