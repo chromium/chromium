@@ -1,3 +1,22 @@
+# 2.12.1
+
+## What's Changed
+* Rework the `#[flag_name]` feature and re-stabilize as `#[bitflags(flag_name)]` by @KodrAus in https://github.com/bitflags/bitflags/pull/487
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.12.0...2.12.1
+
+# 2.12.0
+
+## Yanked
+
+This release has been yanked because the `#[flag_name]` processing noticeably increases macro recursion, hitting the default limit in cases that are already close to it.
+
+## What's Changed
+* Add a custom `#[flag_name]` attribute by @KodrAus in https://github.com/bitflags/bitflags/pull/483
+* Add an all_named ctor for filtering out catch-all flags by @KodrAus in https://github.com/bitflags/bitflags/pull/484
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.11.1...2.12.0
+
 # 2.11.1
 
 ## What's Changed

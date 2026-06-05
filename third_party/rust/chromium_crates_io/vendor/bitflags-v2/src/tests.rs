@@ -1,4 +1,5 @@
 mod all;
+mod all_named;
 mod bitflags_match;
 mod bits;
 mod clear;
@@ -8,6 +9,7 @@ mod difference;
 mod empty;
 mod eq;
 mod extend;
+mod flag_name;
 mod flags;
 mod fmt;
 mod from_bits;
@@ -28,6 +30,10 @@ mod truncate;
 mod union;
 mod unknown;
 mod unknown_bits;
+
+mod custom {
+    pub const NAME: &'static str = "custom";
+}
 
 bitflags! {
     #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
@@ -133,5 +139,22 @@ bitflags! {
     pub struct TestExternalFull: u8 {
         /// External
         const _ = !0;
+    }
+
+    #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+    pub struct TestRenamed: u8 {
+        /// 1
+        #[bitflags(flag_name = "a")]
+        #[bitflags(flag_name = custom::NAME)]
+        const A = 1;
+        /// 1 << 1
+        #[bitflags(flag_name = "custom")]
+        const B = 1 << 1;
+        /// 1 << 2
+        #[bitflags(flag_name = "c")]
+        const C = 1 << 2;
+        /// 1 << 3
+        #[bitflags(flag_name = "custom | e")]
+        const D = 1 << 3;
     }
 }

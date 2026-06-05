@@ -152,6 +152,18 @@ pub trait Flags: Sized + 'static {
         Self::from_bits_retain(truncated)
     }
 
+    /// Get a flags value with all bits from named flags set.
+    ///
+    /// This method is equivalent to [`Flags::all`] unless [`Flags::FLAGS`] contains unnamed flags.
+    fn all_named() -> Self {
+        Self::from_bits_retain(
+            Self::FLAGS
+                .iter()
+                .filter(|f| !f.name().is_empty())
+                .fold(Self::empty().bits(), |acc, f| acc | f.value().bits()),
+        )
+    }
+
     /// Get the known bits from a flags value.
     fn known_bits(&self) -> Self::Bits {
         self.bits() & Self::all().bits()
