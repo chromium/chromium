@@ -2807,23 +2807,6 @@
     Refresh WiFi Direct Clients Info
   </message>
 
-  <!-- Set time/date UI display strings -->
-  <message name="IDS_SET_TIME_TITLE" desc="Title of the set time/date UI.">
-    Check your system time
-  </message>
-  <message name="IDS_SET_TIME_PROMPT" desc="Text prompting the user to check and set the system time.">
-    Chrome was unable to set the system time. Please check the time below and correct it if needed.
-  </message>
-  <message name="IDS_SET_TIME_DATE_LABEL" desc="Label for the set time dialog date input element.">
-    Date
-  </message>
-  <message name="IDS_SET_TIME_TIME_LABEL" desc="Label for the set time dialog time input element.">
-    Time
-  </message>
-  <message name="IDS_SET_TIME_TIMEZONE_LABEL" desc="Label for the set time dialog timezone select element.">
-    Timezone
-  </message>
-
   <!-- Webstore widget -->
   <message name="IDS_WEBSTORE_WIDGET_LOADING_SPINNER_ALT" desc="Alt text for spinner shown in Chrome Web Store Gallery widget while the widget contents is loading. This is the text that will be read by screen reader when the spinner is focused. The string should be translated as a verb.">
     Loading

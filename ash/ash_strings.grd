@@ -10012,6 +10012,23 @@ To shut down the device, press and hold the power button on the device again.
         <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph> was removed from this device
       </message>
 
+      <!-- Set time/date UI display strings -->
+      <message name="IDS_SET_TIME_TITLE" desc="Title of the set time/date UI.">
+        Check your system time
+      </message>
+      <message name="IDS_SET_TIME_PROMPT" desc="Text prompting the user to check and set the system time.">
+        Chrome was unable to set the system time. Please check the time below and correct it if needed.
+      </message>
+      <message name="IDS_SET_TIME_DATE_LABEL" desc="Label for the set time dialog date input element.">
+        Date
+      </message>
+      <message name="IDS_SET_TIME_TIME_LABEL" desc="Label for the set time dialog time input element.">
+        Time
+      </message>
+      <message name="IDS_SET_TIME_TIMEZONE_LABEL" desc="Label for the set time dialog timezone select element.">
+        Timezone
+      </message>
+
       <!-- Skip Enrollment confirmation dialog -->
       <message name="IDS_SKIP_ENROLLMENT_DIALOG_TITLE" desc="The title for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
         Skip enterprise enrollment?

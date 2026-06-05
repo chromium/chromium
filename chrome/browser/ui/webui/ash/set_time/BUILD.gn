@@ -15,6 +15,7 @@ static_library("set_time") {
   ]
 
   deps = [
+    "//ash/strings",
     "//base",
     "//base:build_time",
     "//chrome/browser/ash/child_accounts/parent_access_code",
