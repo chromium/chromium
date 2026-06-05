@@ -82,6 +82,13 @@ def _discover_testcase_files(
     all_tests = list(extensions_path.glob(f'*/tests/**/*{TESTCASE_EXTENSION}'))
     prompts_path = constants.CHROMIUM_SRC / 'agents' / 'prompts' / 'eval'
     all_tests.extend(list(prompts_path.glob(f'**/*{TESTCASE_EXTENSION}')))
+
+    internal_prompts_path = (constants.CHROMIUM_SRC / 'internal' / 'agents' /
+                             'prompts' / 'eval')
+    if internal_prompts_path.exists():
+        all_tests.extend(
+            list(internal_prompts_path.glob(f'**/*{TESTCASE_EXTENSION}')))
+
     if extra_tests_paths:
         for extra_tests_path in extra_tests_paths:
             fullPath = constants.CHROMIUM_SRC / extra_tests_path

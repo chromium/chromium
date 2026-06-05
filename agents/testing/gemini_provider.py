@@ -16,6 +16,7 @@ import sys
 import textwrap
 import threading
 import time
+from collections import defaultdict
 from collections.abc import Collection
 from typing import Any
 
@@ -138,6 +139,9 @@ def _get_env_with_overrides(
     if home:
         env['HOME'] = str(home)
         logging.debug('HOME: %s', env.get('HOME'))
+        mock_bin_path = home / 'mock_bin'
+        env['PATH'] = f"{mock_bin_path}:{env.get('PATH', '')}"
+        logging.debug('PATH: %s', env.get('PATH'))
     if sandbox_flags:
         env['SANDBOX_FLAGS'] = ' '.join(sandbox_flags)
         logging.debug('SANDBOX_FLAGS: %s', env.get('SANDBOX_FLAGS'))
@@ -214,6 +218,8 @@ def _install_skills(skills: Collection[str] | None = None,
 
     for skill in skills:
         src = pathlib.Path('agents', 'skills', skill)
+        if not src.exists():
+            src = pathlib.Path('internal', 'agents', 'skills', skill)
         dest = skills_dir / skill
         if not src.exists():
             raise FileNotFoundError(f'Skill {skill} not found at {src}')
@@ -293,7 +299,9 @@ def _get_installed_extensions(gemini_cli_cmd: list[str],
     )
 
 
-def _get_sandbox_flags(gemini_cli_cmd: list[str]) -> tuple[list[str], str]:
+def _get_sandbox_flags(
+        gemini_cli_cmd: list[str],
+        home_dir: pathlib.Path | None = None) -> tuple[list[str], str]:
     """Gets flags for the gemini-cli sandbox.
 
     Returns:
@@ -308,10 +316,18 @@ def _get_sandbox_flags(gemini_cli_cmd: list[str]) -> tuple[list[str], str]:
                 'Sandbox requires depot_tools, but it could not be located.')
     sandbox_flags.append(f'-v {depot_tools_path.as_posix()}:/depot_tools')
 
+    if home_dir:
+        mock_bin_path = home_dir / 'mock_bin'
+        sandbox_flags.append(f'-v {mock_bin_path.as_posix()}:/mock_bin')
+
     container_path = _get_container_path(
         _get_sandbox_image_tag(gemini_cli_cmd=gemini_cli_cmd))
     if container_path:
-        sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
+        if home_dir:
+            sandbox_flags.append(
+                f'-e PATH=/mock_bin:/depot_tools:{container_path}')
+        else:
+            sandbox_flags.append(f'-e PATH=/depot_tools:{container_path}')
     else:
         return ([], 'Could not determine container PATH. PATH will not be '
                 'overridden.')
@@ -401,15 +417,16 @@ def _get_gemini_cli_arguments(
         base_gemini_cli_cmd = gemini_helpers.get_gemini_command()
     gemini_cli_args.extend(['-y', '--model', MODEL])
 
+    home_dir_str = provider_vars.get('home_dir')
+    home_dir = pathlib.Path(home_dir_str) if home_dir_str else None
+
     sandbox_flags = []
     if provider_vars.get('sandbox', False):
         gemini_cli_args.append('--sandbox')
-        sandbox_flags, error = _get_sandbox_flags(base_gemini_cli_cmd)
+        sandbox_flags, error = _get_sandbox_flags(base_gemini_cli_cmd,
+                                                  home_dir)
         if error:
             return None, error
-
-    home_dir_str = provider_vars.get('home_dir')
-    home_dir = pathlib.Path(home_dir_str) if home_dir_str else None
 
     return GeminiCliArguments(
         base_gemini_cli_cmd=base_gemini_cli_cmd,
@@ -642,6 +659,66 @@ def call_api(prompt: str, options: dict[str, Any],
                                                      telemetry_outfile)
 
 
+def _install_mock_commands(provider_config: dict[str, Any],
+                           home_dir: pathlib.Path) -> None:
+    """Installs generic mock executables in home_dir/mock_bin."""
+    mocks = provider_config.get('mocks', [])
+    if not mocks:
+        return
+
+    mock_bin_dir = home_dir / 'mock_bin'
+    mock_bin_dir.mkdir(parents=True, exist_ok=True)
+
+    command_rules = defaultdict(list)
+    for mock in mocks:
+        command = mock.get('command')
+        if not command:
+            raise ValueError('Mock command has no command name.')
+        rules = mock.get('rules', [])
+        command_rules[command].extend(rules)
+
+    for command, rules in command_rules.items():
+        cmd_path = mock_bin_dir / command
+
+        # Generate Python script content
+        rules_json = json.dumps(rules, indent=4)
+        script_content = textwrap.dedent(f"""\
+            #!/usr/bin/env python3
+            import sys
+            import fnmatch
+            import json
+
+            RULES = {rules_json}
+
+            def match_args(rule_args, sys_args):
+                args_str = " ".join(sys_args)
+                return all(fnmatch.fnmatch(args_str, f"*{{pattern}}*") for pattern in rule_args)
+
+            def main():
+                args = sys.argv[1:]
+                for rule in RULES:
+                    if match_args(rule.get("args", []), args):
+                        if rule.get("stdout"):
+                            sys.stdout.write(rule["stdout"])
+                        if rule.get("stderr"):
+                            sys.stderr.write(rule["stderr"])
+                        sys.exit(rule.get("exit_code", 0))
+
+                sys.stderr.write(f"Mock command {command} failed to match arguments: {{args}}\\n")
+                sys.exit(1)
+
+            if __name__ == "__main__":
+                main()
+        """)
+        cmd_path.write_text(script_content, encoding='utf-8')
+        cmd_path.chmod(0o755)
+        logging.info(
+            'Installed generic mock command: %s with %d rules',
+            command,
+            len(rules),
+        )
+
+
 def _run_gemini_cli_with_telemetry_output(
         provider_config: dict[str, Any], provider_vars: dict[str, Any],
         user_prompt: str, telemetry_outfile: pathlib.Path) -> dict[str, Any]:
@@ -666,6 +743,7 @@ def _run_gemini_cli_with_telemetry_output(
     # The provider is also used for asserts which do not receive the
     # full options/context
     if gcli_arguments.home_dir:
+        _install_mock_commands(provider_config, gcli_arguments.home_dir)
         _configure_gemini_cli(gcli_arguments.home_dir, telemetry_outfile)
         _install_extensions(provider_config.get('extensions',
                                                 DEFAULT_EXTENSIONS),

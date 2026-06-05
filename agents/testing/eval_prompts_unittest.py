@@ -124,6 +124,10 @@ class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
             contents='tests: [{}]')
         self.fs.create_file('/chromium/src/agents/prompts/eval/test5.yaml',
                             contents='tests: [{}]')
+        self.fs.create_file(
+            '/chromium/src/internal/agents/prompts/eval/'
+            'test_internal.promptfoo.yaml',
+            contents='tests: [{}]')
 
         expected_files = [
             pathlib.Path('/chromium/src/agents/extensions/ext1/tests/'
@@ -134,6 +138,8 @@ class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
                 '/chromium/src/agents/prompts/eval/test3.promptfoo.yaml'),
             pathlib.Path(
                 '/chromium/src/agents/prompts/eval/sub/test4.promptfoo.yaml'),
+            pathlib.Path('/chromium/src/internal/agents/prompts/eval/'
+                         'test_internal.promptfoo.yaml'),
         ]
 
         found_files = eval_prompts._discover_testcase_files()
