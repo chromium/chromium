@@ -112,9 +112,9 @@ following information present and accurate:
 
 Once you've verified all the above, you're ready to request a merge! Simply
 update the issue's *Merge-Request* field with the milestone(s) you'd like to
-merge to. Within the next ~15 minutes, automation will create a new Merge
-Request issue, link it to the original (parent) issue, copy relevant metadata,
-and assign the issue to you.
+merge to. Within the next hour, automation will create a new Merge Request
+issue, link it to the original (parent) issue, copy relevant metadata, and
+assign the issue to you.
 
 If you don't have an existing Chromium Tracker issue, you can request a merge by
 filling out the bug template at
