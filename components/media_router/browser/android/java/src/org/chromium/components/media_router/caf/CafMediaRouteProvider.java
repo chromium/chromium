@@ -148,6 +148,7 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
 
     @Override
     protected void handleSessionStart(CastSession session, String sessionId) {
+        mLastRemovedRouteRecord = null;
         super.handleSessionStart(session, sessionId);
 
         for (ClientRecord clientRecord : mClientIdToRecords.values()) {
