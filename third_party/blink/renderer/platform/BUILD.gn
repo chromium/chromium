@@ -11,6 +11,10 @@ import("//build/nocompile.gni")
 import("//media/media_options.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+import("//third_party/blink/renderer/platform/blink_fuzzer_test.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
@@ -2727,6 +2731,25 @@ source_set("blink_fuzzer_test_support") {
   ]
 }
 
+if (is_android) {
+  java_group("blink_fuzzer_test_support_assets") {
+    testonly = true
+    visibility = []  # Allow re-assignment of list.
+    visibility = [ "*" ]
+    deps = [
+      # Provides org.chromium.components.metrics.LowEntropySource.
+      "//components/metrics:metrics_java",
+
+      # Provides
+      # org.chromium.components.variations.firstrun.VariationsSeedBridge.
+      "//components/variations/android:variations_java",
+
+      # Provides org.chromium.ui.base.ResourceBundle.
+      "//ui/android:ui_no_recycler_view_java",
+    ]
+  }
+}
+
 # This source set is used by image decoder fuzzers to initialize their decoders.
 source_set("blink_image_decoder_fuzzer_test_support") {
   testonly = true
@@ -2743,42 +2766,30 @@ source_set("blink_image_decoder_fuzzer_test_support") {
 }
 
 # Fuzzer for blink::unicode::MathVariant.
-fuzzer_test("math_transform_fuzzer") {
+blink_fuzzer_test("math_transform_fuzzer") {
   sources = [ "math_transform_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
+  deps = [ ":platform" ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/math_transform.dict"
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("layout_locale_fuzzer") {
+blink_fuzzer_test("layout_locale_fuzzer") {
   sources = [ "text/layout_locale_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
+  deps = [ ":platform" ]
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("segmented_string_fuzzer") {
+blink_fuzzer_test("segmented_string_fuzzer") {
   sources = [ "text/segmented_string_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
+  deps = [ ":platform" ]
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::FindCategory.
-fuzzer_test("mathml_operator_dictionary_fuzzer") {
+blink_fuzzer_test("mathml_operator_dictionary_fuzzer") {
   sources = [ "text/mathml_operator_dictionary_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
+  deps = [ ":platform" ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
@@ -2786,10 +2797,9 @@ fuzzer_test("mathml_operator_dictionary_fuzzer") {
 
 if (rtc_use_h265) {
   # Fuzzer for blink::H265ParameterSetsTracker
-  fuzzer_test("h265_parameter_sets_tracker_fuzzer") {
+  blink_fuzzer_test("h265_parameter_sets_tracker_fuzzer") {
     sources = [ "peerconnection/h265_parameter_sets_tracker_fuzzer.cc" ]
     deps = [
-      ":blink_fuzzer_test_support",
       ":platform",
       "//testing/libfuzzer:libfuzzer_base_wrappers",
     ]
@@ -2799,10 +2809,9 @@ if (rtc_use_h265) {
 }
 
 # Fuzzer for blink::OpenTypeMathSupportTest.
-fuzzer_test("open_type_math_support_fuzzer") {
+blink_fuzzer_test("open_type_math_support_fuzzer") {
   sources = [ "fonts/opentype/open_type_math_support_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -2814,10 +2823,9 @@ fuzzer_test("open_type_math_support_fuzzer") {
 }
 
 # Fuzzer for blink::StretchyOperatorShaper
-fuzzer_test("stretchy_operator_shaper_fuzzer") {
+blink_fuzzer_test("stretchy_operator_shaper_fuzzer") {
   sources = [ "fonts/shaping/stretchy_operator_shaper_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -2829,10 +2837,9 @@ fuzzer_test("stretchy_operator_shaper_fuzzer") {
 }
 
 # Fuzzer for blink::MHTMLParser.
-fuzzer_test("mhtml_parser_fuzzer") {
+blink_fuzzer_test("mhtml_parser_fuzzer") {
   sources = [ "mhtml/mhtml_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -2846,22 +2853,18 @@ fuzzer_test("mhtml_parser_fuzzer") {
 }
 
 # Fuzzer for blink::WebIconSizesParser.
-fuzzer_test("web_icon_sizes_fuzzer") {
+blink_fuzzer_test("web_icon_sizes_fuzzer") {
   sources = [ "exported/web_icon_sizes_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
+  deps = [ ":platform" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/web_icon_sizes.dict"
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 if (enable_dav1d_decoder) {
   # Fuzzer for blink::AVIFImageDecoder
-  fuzzer_test("blink_avif_decoder_fuzzer") {
+  blink_fuzzer_test("blink_avif_decoder_fuzzer") {
     sources = [ "image-decoders/avif/avif_image_decoder_fuzzer.cc" ]
     deps = [
-      ":blink_fuzzer_test_support",
       ":blink_image_decoder_fuzzer_test_support",
       ":platform",
     ]
@@ -2880,10 +2883,9 @@ if (enable_dav1d_decoder) {
 
 if (enable_jxl_decoder) {
   # Fuzzer for blink::JXLImageDecoder
-  fuzzer_test("blink_jxl_decoder_fuzzer") {
+  blink_fuzzer_test("blink_jxl_decoder_fuzzer") {
     sources = [ "image-decoders/jxl/jxl_image_decoder_fuzzer.cc" ]
     deps = [
-      ":blink_fuzzer_test_support",
       ":blink_image_decoder_fuzzer_test_support",
       ":platform",
       "//third_party/rust/jxl/v0_4/wrapper:jxl_rs",
@@ -2903,10 +2905,9 @@ if (enable_jxl_decoder) {
 }
 
 # Fuzzer for blink::ICOImageDecoder.
-fuzzer_test("blink_ico_decoder_fuzzer") {
+blink_fuzzer_test("blink_ico_decoder_fuzzer") {
   sources = [ "image-decoders/ico/ico_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -2916,10 +2917,9 @@ fuzzer_test("blink_ico_decoder_fuzzer") {
 }
 
 # Fuzzer for blink::GIFImageDecoder
-fuzzer_test("blink_gif_decoder_fuzzer") {
+blink_fuzzer_test("blink_gif_decoder_fuzzer") {
   sources = [ "image-decoders/gif/gif_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -2928,10 +2928,9 @@ fuzzer_test("blink_gif_decoder_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_png_decoder_fuzzer") {
+blink_fuzzer_test("blink_png_decoder_fuzzer") {
   sources = [ "image-decoders/png/png_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
@@ -2945,10 +2944,9 @@ fuzzer_test("blink_png_decoder_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_jpeg_decoder_fuzzer") {
+blink_fuzzer_test("blink_jpeg_decoder_fuzzer") {
   sources = [ "image-decoders/jpeg/jpeg_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
@@ -2957,10 +2955,9 @@ fuzzer_test("blink_jpeg_decoder_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_bmp_decoder_fuzzer") {
+blink_fuzzer_test("blink_bmp_decoder_fuzzer") {
   sources = [ "image-decoders/bmp/bmp_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
@@ -2972,10 +2969,9 @@ fuzzer_test("blink_bmp_decoder_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_bmp_rust_decoder_fuzzer") {
+blink_fuzzer_test("blink_bmp_rust_decoder_fuzzer") {
   sources = [ "image-decoders/bmp/bmp_rust_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":blink_image_decoder_fuzzer_test_support",
     ":platform",
   ]
@@ -2988,10 +2984,9 @@ fuzzer_test("blink_bmp_rust_decoder_fuzzer") {
 }
 
 # Fuzzer for blink::WEBPImageDecoder.
-fuzzer_test("blink_webp_decoder_fuzzer") {
+blink_fuzzer_test("blink_webp_decoder_fuzzer") {
   sources = [ "image-decoders/webp/webp_image_decoder_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -3001,10 +2996,9 @@ fuzzer_test("blink_webp_decoder_fuzzer") {
 }
 
 # Fuzzer for blink::DateTimeFormat.
-fuzzer_test("blink_date_time_format_fuzzer") {
+blink_fuzzer_test("blink_date_time_format_fuzzer") {
   sources = [ "text/date_time_format_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -3014,10 +3008,9 @@ fuzzer_test("blink_date_time_format_fuzzer") {
 }
 
 # Fuzzer for blink::JSONParser.
-fuzzer_test("blink_json_parser_fuzzer") {
+blink_fuzzer_test("blink_json_parser_fuzzer") {
   sources = [ "json/json_parser_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -3026,20 +3019,16 @@ fuzzer_test("blink_json_parser_fuzzer") {
 }
 
 # Fuzzer for blink::SecurityOrigin.
-fuzzer_test("blink_security_origin_fuzzer") {
+blink_fuzzer_test("blink_security_origin_fuzzer") {
   sources = [ "weborigin/security_origin_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    ":platform",
-  ]
+  deps = [ ":platform" ]
   dict = "//url/gurl_fuzzer.dict"
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
+blink_fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
   sources = [ "fonts/shaping/harfbuzz_shaper_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//third_party/icu",
   ]
@@ -3047,10 +3036,9 @@ fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_http_parsers_fuzzer") {
+blink_fuzzer_test("blink_http_parsers_fuzzer") {
   sources = [ "network/http_parsers_fuzzer.cc" ]
   deps = [
-    ":blink_fuzzer_test_support",
     ":platform",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
@@ -3058,12 +3046,9 @@ fuzzer_test("blink_http_parsers_fuzzer") {
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
-fuzzer_test("blink_storage_key_fuzzer") {
+blink_fuzzer_test("blink_storage_key_fuzzer") {
   sources = [ "storage/blink_storage_key_fuzzer.cc" ]
-  deps = [
-    ":blink_fuzzer_test_support",
-    "//third_party/blink/public/common",
-  ]
+  deps = [ "//third_party/blink/public/common" ]
   seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
   additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
@@ -3075,12 +3060,9 @@ template("blink_text_codec_fuzzer") {
     defines = [ "$target_name" ]
   }
   name = target_name
-  fuzzer_test("blink_text_codec_" + name + "_fuzzer") {
+  blink_fuzzer_test("blink_text_codec_" + name + "_fuzzer") {
     sources = [ "text_codec_fuzzer.cc" ]
-    deps = [
-      ":blink_fuzzer_test_support",
-      ":platform",
-    ]
+    deps = [ ":platform" ]
     additional_configs = [
       ":" + name + "_config",
       "//third_party/blink/renderer:inside_blink",

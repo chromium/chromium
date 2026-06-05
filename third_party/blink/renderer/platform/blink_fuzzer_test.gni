@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+# Template for Blink fuzzers that automatically adds the necessary support
+# dependencies, including Android assets when building for Android.
+#
+# Asset dependencies only work when they're direct, not transitive through a C++
+# target, hence the use of a template instead of adding the assets as a dep of
+# `blink_fuzzer_test_support`.
+template("blink_fuzzer_test") {
+  fuzzer_test(target_name) {
+    forward_variables_from(invoker, "*", [ "deps" ])
+    deps = [ "//third_party/blink/renderer/platform:blink_fuzzer_test_support" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    if (is_android) {
+      # Add assets target for Android.
+      deps += [ "//third_party/blink/renderer/platform:blink_fuzzer_test_support_assets" ]
+    }
+  }
+}

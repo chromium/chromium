@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/blink/renderer/platform/blink_fuzzer_test.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -311,7 +311,7 @@ source_set("scheduler_fuzzer_tests") {
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
 }
 
-fuzzer_test("sequence_manager_fuzzer") {
+blink_fuzzer_test("sequence_manager_fuzzer") {
   sources = [
     "test/fuzzer/sequence_manager_fuzzer.cc",
     "test/fuzzer/sequence_manager_fuzzer_processor.cc",
@@ -329,7 +329,6 @@ fuzzer_test("sequence_manager_fuzzer") {
     ":sequence_manager_test_description_proto",
     "//base/test:test_support",
     "//third_party/blink/renderer/platform",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/libprotobuf-mutator",
   ]

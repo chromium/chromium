@@ -90,6 +90,7 @@ import("//third_party/blink/renderer/core/view_transition/build.gni")
 import("//third_party/blink/renderer/core/workers/build.gni")
 import("//third_party/blink/renderer/core/xml/build.gni")
 import("//third_party/blink/renderer/core/xmlhttprequest/build.gni")
+import("//third_party/blink/renderer/platform/blink_fuzzer_test.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -1473,15 +1474,12 @@ action("generate_eventhandler_names") {
 }
 
 # Fuzzer for blink::TextResourceDecoder.
-fuzzer_test("text_resource_decoder_fuzzer") {
+blink_fuzzer_test("text_resource_decoder_fuzzer") {
   sources = [
     "html/parser/text_resource_decoder_for_fuzzing.h",
     "html/parser/text_resource_decoder_fuzzer.cc",
   ]
-  deps = [
-    ":core",
-    "../platform:blink_fuzzer_test_support",
-  ]
+  deps = [ ":core" ]
 }
 
 source_set("unit_tests") {
@@ -1820,30 +1818,24 @@ source_set("fuzztest_utils") {
 }
 
 # Fuzzer for blink::StyleSheetContents
-fuzzer_test("stylesheet_contents_fuzzer") {
+blink_fuzzer_test("stylesheet_contents_fuzzer") {
   sources = [ "css/style_sheet_contents_fuzzer.cc" ]
-  deps = [
-    ":core",
-    "../platform:blink_fuzzer_test_support",
-  ]
+  deps = [ ":core" ]
   dict = "//third_party/blink/renderer/core/css/css.dict"
   seed_corpus = "//third_party/blink/web_tests/fast/css/resources"
   libfuzzer_options = [ "max_len=1024" ]
 }
 
 # Fuzzer for blink::CSSParserFastPaths
-fuzzer_test("css_parser_fast_paths_fuzzer") {
+blink_fuzzer_test("css_parser_fast_paths_fuzzer") {
   sources = [ "css/parser/css_parser_fast_paths_fuzzer.cc" ]
-  deps = [
-    ":core",
-    "../platform:blink_fuzzer_test_support",
-  ]
+  deps = [ ":core" ]
   dict = "//third_party/blink/renderer/core/css/css.dict"
   libfuzzer_options = [ "max_len=128" ]
 }
 
 # Fuzzer for blink::HTMLPreloadScanner.
-fuzzer_test("html_preload_scanner_fuzzer") {
+blink_fuzzer_test("html_preload_scanner_fuzzer") {
   sources = [
     "html/parser/html_preload_scanner_fuzzer.cc",
     "html/parser/text_resource_decoder_for_fuzzing.h",
@@ -1852,7 +1844,6 @@ fuzzer_test("html_preload_scanner_fuzzer") {
   deps = [
     ":core",
     ":element_locator_proto",
-    "../platform:blink_fuzzer_test_support",
   ]
 }
 
@@ -1869,7 +1860,7 @@ css_properties("make_css_proto") {
   ]
 }
 
-fuzzer_test("css_parser_proto_fuzzer") {
+blink_fuzzer_test("css_parser_proto_fuzzer") {
   sources = [
     "css/parser/css_parser_proto_fuzzer.cc",
     "css/parser/css_proto_converter.cc",
@@ -1878,7 +1869,6 @@ fuzzer_test("css_parser_proto_fuzzer") {
   deps = [
     ":core",
     ":css_proto",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/libprotobuf-mutator",
   ]
   dict = "//third_party/blink/renderer/core/css/css.dict"
@@ -1985,32 +1975,25 @@ action_foreach("element_locator_test_protobuf") {
   ]
 }
 
-fuzzer_test("blink_html_tokenizer_fuzzer") {
+blink_fuzzer_test("blink_html_tokenizer_fuzzer") {
   sources = [ "html/parser/html_tokenizer_fuzzer.cc" ]
-  deps = [
-    ":core",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-  ]
+  deps = [ ":core" ]
 }
 
 # Fuzzer for SVG path string parsing
-fuzzer_test("svg_path_parser_fuzzer") {
+blink_fuzzer_test("svg_path_parser_fuzzer") {
   sources = [ "svg/svg_path_parser_fuzzer.cc" ]
-  deps = [
-    ":core",
-    "../platform:blink_fuzzer_test_support",
-  ]
+  deps = [ ":core" ]
   dict = "//third_party/blink/renderer/core/svg/svg_path_parser.dict"
   seed_corpus = "//third_party/blink/renderer/core/svg/svg_path_parser_corpus"
 }
 
 # Fuzzers for blink::PermissionsPolicyParser.
-fuzzer_test("feature_policy_fuzzer") {
+blink_fuzzer_test("feature_policy_fuzzer") {
   sources = [ "permissions_policy/feature_policy_fuzzer.cc" ]
   deps = [
     "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
   dict =
@@ -2018,12 +2001,11 @@ fuzzer_test("feature_policy_fuzzer") {
   seed_corpus = "//third_party/blink/renderer/core/permissions_policy/feature_policy_corpus"
 }
 
-fuzzer_test("permissions_policy_attr_fuzzer") {
+blink_fuzzer_test("permissions_policy_attr_fuzzer") {
   sources = [ "permissions_policy/permissions_policy_attr_fuzzer.cc" ]
   deps = [
     "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
   dict =
@@ -2031,24 +2013,22 @@ fuzzer_test("permissions_policy_attr_fuzzer") {
   seed_corpus = "//third_party/blink/renderer/core/permissions_policy/feature_policy_corpus"
 }
 
-fuzzer_test("document_policy_fuzzer") {
+blink_fuzzer_test("document_policy_fuzzer") {
   sources = [ "permissions_policy/document_policy_fuzzer.cc" ]
   deps = [
     "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
   dict = "//third_party/blink/renderer/core/permissions_policy/document_policy.dict"
   seed_corpus = "//third_party/blink/renderer/core/permissions_policy/document_policy_corpus"
 }
 
-fuzzer_test("permissions_policy_fuzzer") {
+blink_fuzzer_test("permissions_policy_fuzzer") {
   sources = [ "permissions_policy/permissions_policy_fuzzer.cc" ]
   deps = [
     "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/icu",
   ]
   dict = "//third_party/blink/renderer/core/permissions_policy/permissions_policy.dict"

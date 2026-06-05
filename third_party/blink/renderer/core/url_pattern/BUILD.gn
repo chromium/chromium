@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/core/core.gni")
+import("//third_party/blink/renderer/platform/blink_fuzzer_test.gni")
 
 blink_core_sources("url_pattern") {
   sources = [
@@ -29,12 +29,11 @@ blink_core_sources("url_pattern") {
   deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
-fuzzer_test("url_pattern_fuzzer") {
+blink_fuzzer_test("url_pattern_fuzzer") {
   sources = [ "url_pattern_fuzzer.cc" ]
   deps = [
     "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//third_party/blink/renderer/core",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
   ]
   seed_corpus = "fuzzer_seed_corpus"
   libfuzzer_options = [ "max_len=4096" ]
