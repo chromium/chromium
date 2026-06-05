@@ -198,6 +198,8 @@ bool DMGAnalyzer::ResumeExtraction() {
         results()->archived_binary.RemoveLast();
       }
     } else {
+      // Get a new `stream` because it was read from in previous branches.
+      stream = iterator_->GetReadStream();
       DownloadFileType_InspectionType file_type =
           GetFileType(base::FilePath(path));
       if (file_type == DownloadFileType::ZIP ||

@@ -11,9 +11,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
@@ -251,6 +253,63 @@ TEST(DMGAnalyzerTest, NestedArchive) {
   ASSERT_EQ(1u, results.archived_archive_filenames.size());
   EXPECT_EQ(FILE_PATH_LITERAL("Nested.7z"),
             results.archived_archive_filenames[0].value());
+}
+
+// Regression test for crbug.com/517063658. The entire contents of the nested
+// archive should be copied; we shouldn't lose any bytes from the beginning due
+// to checking for the Mach-O header.
+TEST(DMGAnalyzerTest, NestedArchiveCopiedIntact) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment;
+  DMGAnalyzer analyzer_;
+  base::FilePath temp_path;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &temp_path));
+  base::File temp_file;
+  // Persistent (no DELETE_ON_CLOSE) temp file so we can read it back after
+  // the analyzer runs.
+  temp_file.Initialize(temp_path,
+                       (base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
+                        base::File::FLAG_WRITE));
+  ASSERT_TRUE(temp_file.IsValid());
+
+  const std::vector<uint8_t> inner = {
+      0x50, 0x4B, 0x03, 0x04,  // 4 bytes not matching the Mach-O magic.
+      0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xBA, 0xBE,
+      0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+  };
+
+  MockDMGIterator::FileList file_list{{"inner.7z", inner}};
+  std::unique_ptr<MockDMGIterator> iterator =
+      std::make_unique<MockDMGIterator>(true, file_list);
+  safe_browsing::ArchiveAnalyzerResults results;
+  base::RunLoop run_loop;
+
+  analyzer_.SetGetTempFileCallbackForTesting(base::BindLambdaForTesting(
+      [&](base::OnceCallback<void(base::File)> callback) {
+        base::FilePath path;
+        ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &path));
+        base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                                  base::File::FLAG_READ |
+                                  base::File::FLAG_WRITE);
+        std::move(callback).Run(std::move(file));
+      }));
+
+  analyzer_.AnalyzeDMGFileForTesting(std::move(iterator), &results,
+                                     std::move(temp_file),
+                                     run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(results.has_archive);
+  ASSERT_EQ(1u, results.archived_archive_filenames.size());
+  EXPECT_EQ(FILE_PATH_LITERAL("inner.7z"),
+            results.archived_archive_filenames[0].value());
+
+  std::string written;
+  ASSERT_TRUE(base::ReadFileToString(temp_path, &written));
+  std::vector<uint8_t> written_bytes(written.begin(), written.end());
+
+  EXPECT_EQ(inner, written_bytes);
 }
 
 }  // namespace
