@@ -30,7 +30,6 @@
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -233,7 +232,6 @@ TableView::TableView(ui::TableModel* model,
 }
 
 TableView::~TableView() {
-  hover_view_ = nullptr;
   if (model_) {
     model_->SetObserver(nullptr);
   }
@@ -281,7 +279,8 @@ void TableView::Init(ui::TableModel* model,
                      const std::vector<ui::TableColumn>& columns,
                      TableType table_type,
                      bool single_selection) {
-  InitializeHoverView();
+  hover_layer_.SetBounds(gfx::Rect(0, 0, 1, 1));
+  hover_layer_.SetName("TableView/Hover");
 
   SetColumns(columns);
   SetTableType(table_type);
@@ -368,16 +367,6 @@ void TableView::SetGrouperVisibility(bool visible) {
 
   grouper_visible_ = visible;
   SchedulePaint();
-}
-
-void TableView::InitializeHoverView() {
-  auto hover_view = std::make_unique<View>();
-  hover_view->SetCanProcessEventsWithinSubtree(false);
-  hover_view->SetBackground(
-      views::CreateLayerBasedSolidBackground(ui::kColorTableRowHighlight));
-  hover_view->GetBackground()->SetInternalName("TableView/Hover");
-  hover_view->SetBoundsRect(gfx::Rect(0, 0, 1, 1));
-  hover_view_ = AddChildView(std::move(hover_view));
 }
 
 size_t TableView::GetRowCount() const {
@@ -882,6 +871,12 @@ void TableView::SyncHoverToScroll() {
   if (!IsHoverEffectEnabled()) {
     return;
   }
+  if (ScrollView* scroll_view = ScrollView::GetScrollViewForContents(this)) {
+    gfx::PointF current_offset = scroll_view->CurrentOffset();
+    scroll_offset_.set_x(static_cast<int>(current_offset.x()));
+    scroll_offset_.set_y(static_cast<int>(current_offset.y()));
+  }
+
   ForceHoverUpdate();
 }
 
@@ -948,9 +943,17 @@ void TableView::UpdateHoverLayer() {
     return;
   }
 
+  // Parent it to ScrollView's Viewport if we haven't already.
+  if (hover_layer_.parent() != parent()->layer()) {
+    CHECK(parent()->parent() == ScrollView::GetScrollViewForContents(this))
+        << "Not parented to a ScrollView. Mouse hovering is only supported for "
+           "TableViews who are parented to a ScrollView.";
+    parent()->layer()->Add(&hover_layer_);
+  }
+
   if (!hovered_rows_.has_value() ||
       !view_index_of_row_under_cursor_.has_value()) {
-    hover_view_->layer()->SetTransform(gfx::Transform());
+    hover_layer_.SetTransform(gfx::Transform());
     return;
   }
 
@@ -965,12 +968,13 @@ void TableView::UpdateHoverLayer() {
   if (end <= GetRowCount()) {
     gfx::Rect row_start_bounds = GetRowBounds(start);
 
-    hover_view_->layer()->SetTransform(
+    hover_layer_.SetTransform(
         gfx::Transform(gfx::AxisTransform2d::FromScaleAndTranslation(
             gfx::Vector2dF(
                 row_start_bounds.width(),
                 row_start_bounds.height() * static_cast<int>(range.length)),
-            gfx::Vector2dF(row_start_bounds.x(), row_start_bounds.y()))));
+            gfx::Vector2dF(row_start_bounds.x() - scroll_offset_.x(),
+                           row_start_bounds.y() - scroll_offset_.y()))));
   }
 }
 
@@ -1143,6 +1147,14 @@ void TableView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
   // Recompute the hovered rows and transform of the hover layer.
   ForceHoverUpdate();
+}
+
+void TableView::OnThemeChanged() {
+  View::OnThemeChanged();
+
+  // Update the color by resolving the the color token.
+  hover_layer_.SetColor(
+      GetColorProvider()->GetColor(ui::kColorTableRowHighlight));
 }
 
 void TableView::OnModelChanged() {

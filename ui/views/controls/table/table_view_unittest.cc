@@ -28,7 +28,6 @@
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -175,7 +174,7 @@ class TableViewTestHelper {
   }
 
   gfx::Transform GetHoverLayerTransform() const {
-    return table_->hover_view_->layer()->transform();
+    return table_->hover_layer_.transform();
   }
 
   void SetHover(gfx::Point view_coordinates) {
@@ -184,13 +183,7 @@ class TableViewTestHelper {
 
   void ClearHover() { table_->ClearHover(); }
 
-  gfx::Point GetScrollOffset() {
-    if (auto* scroll_view = ScrollView::GetScrollViewForContents(table_);
-        scroll_view) {
-      return gfx::ToFlooredPoint(scroll_view->CurrentOffset());
-    }
-    return gfx::Point();
-  }
+  gfx::Point GetScrollOffset() { return table_->scroll_offset_; }
 
   void ScrollTableTo(gfx::PointF offset) {
     ScrollView* scroll_view = ScrollView::GetScrollViewForContents(table_);
@@ -2957,7 +2950,7 @@ TEST_F(TableViewMouseHoverTest, TestScrollingHoverInteraction) {
   helper_->ScrollTableTo(gfx::PointF(0, table_->GetRowHeight()));
   EXPECT_SCROLL_OFFSET(0, table_->GetRowHeight());
   EXPECT_HOVERED_ROWS(GroupRange(1, 1));
-  EXPECT_HOVERED_TRANSFORM(/*x=*/0, /*y=*/table_->GetRowHeight(),
+  EXPECT_HOVERED_TRANSFORM(/*x=*/0, /*y=*/0,
                            /*width=*/table_->GetLocalBounds().width(),
                            /*height=*/table_->GetRowHeight());
 }

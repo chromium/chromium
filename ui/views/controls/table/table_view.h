@@ -215,10 +215,6 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // Determines whether to draw the TableGrouper on the left side of the table.
   void SetGrouperVisibility(bool visible);
 
-  // Creates `hover_view_` which provides the TableView instance with row
-  // highlight when the mouse cursor hovers over a row(s).
-  void InitializeHoverView();
-
   // Returns the number of rows in the TableView.
   size_t GetRowCount() const;
 
@@ -366,6 +362,7 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   std::u16string GetRenderedTooltipText(const gfx::Point& p) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnThemeChanged() override;
 
   // ui::TableModelObserver overrides:
   void OnModelChanged() override;
@@ -746,15 +743,17 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   // tokens are refined on all platforms.
   bool hovering_enabled_ = false;
 
-  // A 1x1 view which paints to a solid colored layer. The layer is used to
-  // highlight row(s) based on mouse cursor position.
-  raw_ptr<views::View> hover_view_ = nullptr;
+  // Hover Layer used to highlight a row based on mouse cursor position.
+  ui::Layer hover_layer_{ui::LAYER_SOLID_COLOR};
 
   // RenderText cache from row,col.
   std::vector<std::vector<std::unique_ptr<gfx::RenderText>>> render_text_cache_;
 
-  // Callback subscriptions for when the scroll view is scrolled.
+  // Callback subscriptions.
   base::CallbackListSubscription on_scroll_view_scrolled_;
+
+  // Last received offset from the on_scroll_view_scrolled_ callback
+  gfx::Point scroll_offset_{0, 0};
 
   // Weak pointer factory, enables using PostTask safely.
   base::WeakPtrFactory<TableView> weak_factory_;
