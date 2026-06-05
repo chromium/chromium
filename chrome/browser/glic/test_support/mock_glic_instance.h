@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,6 +39,7 @@ class MockGlicInstance : public GlicInstance {
               (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
+  MOCK_METHOD(std::optional<Target>, GetInvokeTarget, (), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));
   MOCK_METHOD(std::optional<std::string>,
               conversation_id,

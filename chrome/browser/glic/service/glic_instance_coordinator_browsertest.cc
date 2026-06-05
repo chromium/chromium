@@ -1334,7 +1334,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
   // Create a completion callback for the handler itself.
   base::test::TestFuture<void> handler_completion_future;
   auto handler = std::make_unique<GlicInvokeHandler>(
-      *instance, GlicInvokeHandler::ResolvedTarget{active_tab, false},
+      *instance,
+      GlicInvokeHandler::ResolvedTarget{
+          GlicInvokeHandler::TabSurface{active_tab, false}},
       std::move(options), GlicInvokeWithAutoSubmitOptions(), std::nullopt,
       base::BindLambdaForTesting([&](GlicInstance*, GlicInvokeHandler*) {
         handler_completion_future.SetValue();
@@ -1435,6 +1437,29 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, HotkeyTriggersOpen) {
   EXPECT_TRUE(handled);
 
   ASSERT_OK(WaitForGlicOpen());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       GetInvokeTargetCases) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+
+  // 1. Verify non-nullopt case (attached embedder).
+  std::optional<Target> target = instance->GetInvokeTarget();
+  ASSERT_TRUE(target.has_value());
+  EXPECT_TRUE(std::holds_alternative<tabs::TabHandle>(target->surface));
+  EXPECT_EQ(std::get<tabs::TabHandle>(target->surface), tab->GetHandle());
+
+  // Prevent deletion on close so the instance stays alive when closed.
+  PreventDeletionOnClose(instance);
+
+  // Close the embedder.
+  instance->Close(EmbedderKey(tab), CloseOptions());
+  ASSERT_OK(WaitForGlicClose(instance));
+
+  // 2. Verify nullopt case (no active embedder).
+  EXPECT_FALSE(instance->HasActiveEmbedder());
+  EXPECT_EQ(instance->GetInvokeTarget(), std::nullopt);
 }
 
 }  // namespace glic

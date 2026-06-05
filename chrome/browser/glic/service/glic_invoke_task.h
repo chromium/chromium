@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -99,27 +100,27 @@ class WaitForNavigationTask : public GlicInvokeTask,
 // Task that shows the Glic instance.
 class ShowInstanceTask : public GlicInvokeTask {
  public:
-  ShowInstanceTask(GlicInstanceImpl* instance, ShowOptions options);
+  ShowInstanceTask(GlicInstanceImpl& instance, ShowOptions options);
   ~ShowInstanceTask() override;
   void Start(base::OnceClosure done_callback) override;
 
  private:
   // Safe because GlicInvokeHandler (which owns this task) is owned by
   // GlicInstanceCoordinatorImpl and its lifetime is tied to the instance.
-  raw_ptr<GlicInstanceImpl> instance_;
+  const base::raw_ref<GlicInstanceImpl> instance_;
   ShowOptions options_;
 };
 
 // Task that sets up the instance for a hidden panel.
 class SetupHiddenPanelTask : public GlicInvokeTask {
  public:
-  SetupHiddenPanelTask(GlicInstanceImpl* instance, tabs::TabInterface* tab);
+  SetupHiddenPanelTask(GlicInstanceImpl& instance, tabs::TabInterface& tab);
   ~SetupHiddenPanelTask() override;
   void Start(base::OnceClosure done_callback) override;
 
  private:
-  raw_ptr<GlicInstanceImpl> instance_;
-  raw_ptr<tabs::TabInterface> tab_;
+  const base::raw_ref<GlicInstanceImpl> instance_;
+  const base::raw_ref<tabs::TabInterface> tab_;
 };
 
 class MaybeInitializeHiddenClientTask : public GlicInvokeTask {
@@ -142,7 +143,7 @@ class MaybeInitializeHiddenClientTask : public GlicInvokeTask {
 class WaitForClientConnectedTask : public GlicInvokeTask,
                                    public Host::Observer {
  public:
-  explicit WaitForClientConnectedTask(Host* host);
+  explicit WaitForClientConnectedTask(Host& host);
   ~WaitForClientConnectedTask() override;
   void Start(base::OnceClosure done_callback) override;
   void WebClientConnected() override;
@@ -151,7 +152,7 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
   // Safe because GlicInvokeHandler (which owns this task) is owned by
   // GlicInstanceCoordinatorImpl and its lifetime is tied to the instance,
   // which owns the Host.
-  raw_ptr<Host> host_;
+  const base::raw_ref<Host> host_;
   base::ScopedObservation<Host, Host::Observer> observation_{this};
   base::OnceClosure done_callback_;
 };
@@ -159,13 +160,13 @@ class WaitForClientConnectedTask : public GlicInvokeTask,
 // Task that notifies the host of invoking state.
 class NotifyIsInvokingTask : public GlicInvokeTask {
  public:
-  explicit NotifyIsInvokingTask(Host* host);
+  explicit NotifyIsInvokingTask(Host& host);
   ~NotifyIsInvokingTask() override;
   void Start(base::OnceClosure done_callback) override;
   void OnSequenceCompleted(bool success) override;
 
  private:
-  raw_ptr<Host> host_;
+  const base::raw_ref<Host> host_;
   bool did_start_ = false;
 };
 

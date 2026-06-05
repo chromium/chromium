@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INVOKE_HANDLER_H_
 
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -37,10 +38,12 @@ class GlicInvokeHandler {
   using CompletionCallback =
       base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
 
-  struct ResolvedTarget {
-    raw_ptr<tabs::TabInterface> tab = nullptr;
+  struct TabSurface {
+    raw_ptr<tabs::TabInterface> tab;
     bool is_new = false;
   };
+
+  using ResolvedTarget = std::variant<TabSurface, Floating>;
 
   // Resolves the target surface to a specific tab.
   static ResolvedTarget ResolveTargetSurface(Profile* profile,
@@ -64,8 +67,10 @@ class GlicInvokeHandler {
   // Kicks off the invocation process.
   void Invoke();
 
-
  private:
+  bool IsFloatingTarget() const;
+  bool IsTabTarget() const;
+  tabs::TabInterface& GetTab() const;
   mojom::InvokeOptionsPtr CreateMojoOptions();
   bool IsActuatingFeatureMode() const;
 
@@ -78,7 +83,7 @@ class GlicInvokeHandler {
   void OnInstanceWillBeDestroyed(GlicInstance* instance);
   void OnConversationInfoChanged(const mojom::ConversationInfo& info);
   const base::raw_ref<GlicInstanceImpl> instance_;
-  raw_ptr<tabs::TabInterface> tab_;
+  ResolvedTarget resolved_target_;
   GlicInvokeOptions options_;
   std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey_;
   // Calling this synchronously destroys `this`.

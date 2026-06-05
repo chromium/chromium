@@ -55,9 +55,20 @@ struct NewTab {
   raw_ptr<BrowserWindowInterface> window = nullptr;
   bool open_in_foreground = true;
 };
+
+// Intended for internal use only. If you believe you need access to this
+// option, please reach out to c/b/glic/API_OWNERS.
+struct Floating {
+ private:
+  friend class GlicInstanceImpl;
+  friend class GlicInvokeHandler;
+  Floating() = default;
+};
+
 // The target for the invocation.
 struct Target {
-  using Surface = std::variant<DefaultSurface, NewTab, tabs::TabHandle>;
+  using Surface =
+      std::variant<DefaultSurface, NewTab, tabs::TabHandle, Floating>;
 
   Target();
   explicit Target(tabs::TabInterface& tab);
@@ -82,6 +93,7 @@ struct Target {
   // - NewTab: Creates a new tab in the specified window, or a new window if
   // null.
   // - TabHandle: Targets a specific tab.
+  // - Floating: Targets the floating panel.
   Surface surface = DefaultSurface();
 
   // Specifies which conversation to use or create.

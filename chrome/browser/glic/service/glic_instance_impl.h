@@ -148,6 +148,7 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicInstance implementation.
   bool IsShowing() const override;
   gfx::Size GetPanelSize() override;
+  std::optional<Target> GetInvokeTarget() override;
   bool IsActive() override;
 
   bool HasActiveEmbedder() const;

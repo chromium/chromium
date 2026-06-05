@@ -570,8 +570,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
         GlicInvokeHandler::ResolveTargetSurface(incognito_profile,
                                                 glic::Target{});
 
-    EXPECT_TRUE(resolved.is_new);
-    ASSERT_TRUE(resolved.tab);
+    EXPECT_TRUE(
+        std::holds_alternative<GlicInvokeHandler::TabSurface>(resolved));
+    auto tab_surface = std::get<GlicInvokeHandler::TabSurface>(resolved);
+    EXPECT_TRUE(tab_surface.is_new);
+    ASSERT_TRUE(tab_surface.tab);
 
     // Verify it created an incognito browser.
     new_browser = ProfileBrowserCollection::GetForProfile(incognito_profile)
@@ -582,6 +585,21 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 
   // Clean up the new window.
   CloseBrowserSynchronously(new_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, ResolveTargetSurfaceFloating) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance,
+                       OpenGlicForActiveTabAndDetach());
+  ASSERT_TRUE(instance->IsDetached());
+
+  std::optional<Target> target = instance->GetInvokeTarget();
+  ASSERT_TRUE(target.has_value());
+  EXPECT_TRUE(std::holds_alternative<Floating>(target->surface));
+
+  GlicInvokeHandler::ResolvedTarget resolved =
+      GlicInvokeHandler::ResolveTargetSurface(GetProfile(), *target);
+
+  EXPECT_TRUE(std::holds_alternative<Floating>(resolved));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -318,6 +318,25 @@ gfx::Size GlicInstanceImpl::GetPanelSize() {
   return gfx::Size();
 }
 
+std::optional<Target> GlicInstanceImpl::GetInvokeTarget() {
+  if (!active_embedder_key_.has_value()) {
+    return std::nullopt;
+  }
+
+  Target target;
+  target.conversation = ConversationId(conversation_id().value_or(""));
+
+  target.surface = std::visit(
+      absl::Overload{
+          [](tabs::TabInterface* tab) {
+            return Target::Surface(tab->GetHandle());
+          },
+          [](FloatingEmbedderKey) { return Target::Surface(Floating()); }},
+      active_embedder_key_.value());
+
+  return target;
+}
+
 bool GlicInstanceImpl::IsActuating() const {
   return actor_task_manager_ && actor_task_manager_->IsActuating();
 }

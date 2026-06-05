@@ -139,7 +139,7 @@ void WaitForNavigationTask::DidFinishNavigation(
   }
 }
 
-ShowInstanceTask::ShowInstanceTask(GlicInstanceImpl* instance,
+ShowInstanceTask::ShowInstanceTask(GlicInstanceImpl& instance,
                                    ShowOptions options)
     : instance_(instance), options_(options) {}
 
@@ -150,15 +150,15 @@ void ShowInstanceTask::Start(base::OnceClosure done_callback) {
   std::move(done_callback).Run();
 }
 
-SetupHiddenPanelTask::SetupHiddenPanelTask(GlicInstanceImpl* instance,
-                                           tabs::TabInterface* tab)
+SetupHiddenPanelTask::SetupHiddenPanelTask(GlicInstanceImpl& instance,
+                                           tabs::TabInterface& tab)
     : instance_(instance), tab_(tab) {}
 
 SetupHiddenPanelTask::~SetupHiddenPanelTask() = default;
 
 void SetupHiddenPanelTask::Start(base::OnceClosure done_callback) {
   instance_->SuppressShowOnNextTabAddedToTask(true);
-  instance_->BindTabWithoutShowing(tab_, GlicPinTrigger::kActuation,
+  instance_->BindTabWithoutShowing(&*tab_, GlicPinTrigger::kActuation,
                                    /*pin_on_bind=*/true);
   std::move(done_callback).Run();
 }
@@ -206,9 +206,9 @@ void MaybeInitializeHiddenClientTask::OnSequenceCompleted(bool success) {
   }
 }
 
-WaitForClientConnectedTask::WaitForClientConnectedTask(Host* host)
+WaitForClientConnectedTask::WaitForClientConnectedTask(Host& host)
     : host_(host) {
-  observation_.Observe(host_);
+  observation_.Observe(&*host_);
 }
 
 WaitForClientConnectedTask::~WaitForClientConnectedTask() = default;
@@ -228,7 +228,7 @@ void WaitForClientConnectedTask::WebClientConnected() {
   }
 }
 
-NotifyIsInvokingTask::NotifyIsInvokingTask(Host* host) : host_(host) {}
+NotifyIsInvokingTask::NotifyIsInvokingTask(Host& host) : host_(host) {}
 
 NotifyIsInvokingTask::~NotifyIsInvokingTask() = default;
 

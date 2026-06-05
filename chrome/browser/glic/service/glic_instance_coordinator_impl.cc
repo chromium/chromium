@@ -461,17 +461,19 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
 
   GlicInvokeHandler::ResolvedTarget resolved_target =
       GlicInvokeHandler::ResolveTargetSurface(profile_, options.target);
-  tabs::TabInterface* tab = resolved_target.tab;
-
-  if (!tab || !GlicInstanceHelper::From(tab)) {
-    if (options.on_error) {
-      std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
+  tabs::TabInterface* tab = nullptr;
+  if (const auto* tab_surface =
+          std::get_if<GlicInvokeHandler::TabSurface>(&resolved_target)) {
+    tab = tab_surface->tab;
+    if (!tab || !GlicInstanceHelper::From(tab)) {
+      if (options.on_error) {
+        std::move(options.on_error).Run(GlicInvokeError::kTabClosed);
+      }
+      // TODO(crbug.com/483387751): Show default toast here once implemented.
+      return nullptr;
     }
-    // TODO(crbug.com/483387751): Show default toast here once implemented.
-    return nullptr;
+    options.target.surface = tab->GetHandle();
   }
-
-  options.target.surface = tab->GetHandle();
 
   GlicInstanceImpl* instance = nullptr;
 
@@ -493,6 +495,9 @@ base::WeakPtr<GlicInstance> GlicInstanceCoordinatorImpl::InvokeInternal(
           [&](NewConversation) { return CreateGlicInstance(); },
           [&](const InstanceId& id) { return GetInstanceImplFor(id); },
           [&](DefaultConversation) {
+            if (std::holds_alternative<Floating>(resolved_target)) {
+              return GetOrCreateInstanceImplForFloaty();
+            }
             return GetOrCreateGlicInstanceImplForTab(tab);
           }},
       options.target.conversation);
