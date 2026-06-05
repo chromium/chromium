@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
@@ -39,13 +40,36 @@ using DirectivesMap =
 
 namespace {
 
+// The set of required ASCII whitespace for CSP matches the definition of ASCII
+// whitespace from the WHATWG Infra standard. (TAB, LF, FF, CR, SPACE).
+// This differs from base::kWhitespaceASCII which also includes U+000B (VT).
+// https://w3c.github.io/webappsec-csp/#grammardef-required-ascii-whitespace
+constexpr std::string_view kCspWhitespace =
+    base::as_string_view(base::kInfraAsciiWhitespace);
+
+// Like base::SplitStringPiece() but trims using kCspWhitespace
+// instead of base::kWhitespaceASCII.
+std::vector<std::string_view> SplitAndTrim(std::string_view input,
+                                           std::string_view delimiter) {
+  std::vector<std::string_view> result;
+  for (std::string_view piece :
+       base::SplitStringPiece(input, delimiter, base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    piece = base::TrimString(piece, kCspWhitespace, base::TRIM_ALL);
+    if (!piece.empty()) {
+      result.push_back(piece);
+    }
+  }
+  return result;
+}
+
 bool IsDirectiveNameCharacter(char c) {
   return base::IsAsciiAlphaNumeric(c) || c == '-';
 }
 
 bool IsDirectiveValueCharacter(char c) {
   // Whitespace + VCHAR, but not ',' and ';'
-  return base::IsAsciiWhitespace(c) ||
+  return std::ranges::contains(kCspWhitespace, c) ||
          (base::IsAsciiPrintable(c) && c != ',' && c != ';');
 }
 
@@ -378,21 +402,20 @@ DirectivesMap ParseHeaderValue(std::string_view header) {
   // U+003B SEMICOLON character (;):
   // 1. Strip leading and trailing ASCII whitespace from token.
   // 2. If token is an empty string, continue.
-  for (const auto& directive : base::SplitStringPiece(
-           header, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+  for (std::string_view directive : SplitAndTrim(header, ";")) {
     // 3. Let directive name be the result of collecting a sequence of
     // code points from token which are not ASCII whitespace.
     // 4. Set directive name to be the result of running ASCII lowercase
     // on directive name.
-    size_t pos = directive.find_first_of(base::kWhitespaceASCII);
+    size_t pos = directive.find_first_of(kCspWhitespace);
     std::string_view name = directive.substr(0, pos);
 
     // 5. Let directive value be the result of splitting token on ASCII
     // whitespace.
     std::string_view value;
     if (pos != std::string::npos) {
-      value = base::TrimString(directive.substr(pos + 1),
-                               base::kWhitespaceASCII, base::TRIM_ALL);
+      value = base::TrimString(directive.substr(pos + 1), kCspWhitespace,
+                               base::TRIM_ALL);
     }
 
     // 6. Let directive be a new directive whose name is directive name,
@@ -647,16 +670,15 @@ mojom::CSPSourceListPtr ParseSourceList(
     std::string_view directive_value,
     std::vector<std::string>& parsing_errors) {
   std::string_view value =
-      base::TrimString(directive_value, base::kWhitespaceASCII, base::TRIM_ALL);
+      base::TrimString(directive_value, kCspWhitespace, base::TRIM_ALL);
 
   auto directive = mojom::CSPSourceList::New();
 
   if (base::EqualsCaseInsensitiveASCII(value, "'none'"))
     return directive;
 
-  std::vector<std::string_view> tokens =
-      base::SplitStringPiece(value, base::kWhitespaceASCII,
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      value, kCspWhitespace, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   bool contains_none = false;
 
@@ -866,9 +888,9 @@ network::mojom::CSPRequireTrustedTypesFor ParseRequireTrustedTypesFor(
     std::vector<std::string>& parsing_errors) {
   network::mojom::CSPRequireTrustedTypesFor out =
       network::mojom::CSPRequireTrustedTypesFor::None;
-  for (const auto expression : base::SplitStringPiece(
-           value, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
+  for (const auto expression :
+       base::SplitStringPiece(value, kCspWhitespace, base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
     if (expression == "'script'") {
       out = network::mojom::CSPRequireTrustedTypesFor::Script;
     } else {
@@ -906,9 +928,8 @@ network::mojom::CSPTrustedTypesPtr ParseTrustedTypes(
     std::string_view value,
     std::vector<std::string>& parsing_errors) {
   auto out = network::mojom::CSPTrustedTypes::New();
-  std::vector<std::string_view> pieces =
-      base::SplitStringPiece(value, base::kWhitespaceASCII,
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> pieces = base::SplitStringPiece(
+      value, kCspWhitespace, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (pieces.size() == 1 && pieces[0] == "'none'")
     return out;
@@ -946,9 +967,8 @@ void ParseReportDirective(const GURL& request_url,
                           bool using_reporting_api,
                           std::vector<std::string>* report_endpoints,
                           std::vector<std::string>& parsing_errors) {
-  std::vector<std::string_view> values =
-      base::SplitStringPiece(value, base::kWhitespaceASCII,
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string_view> values = base::SplitStringPiece(
+      value, kCspWhitespace, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   if (using_reporting_api && values.size() > 1) {
     parsing_errors.emplace_back(
@@ -1372,9 +1392,7 @@ std::vector<mojom::ContentSecurityPolicyPtr> ParseContentSecurityPolicies(
   // RFC7230, section 3.2.2 specifies that headers appearing multiple times can
   // be combined with a comma. Walk the header string, and parse each comma
   // separated chunk as a separate header.
-  for (const auto& header :
-       base::SplitStringPiece(header_value, ",", base::TRIM_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY)) {
+  for (std::string_view header : SplitAndTrim(header_value, ",")) {
     auto policy = mojom::ContentSecurityPolicy::New();
     AddContentSecurityPolicyFromHeader(header, type, source, base_url, policy);
 

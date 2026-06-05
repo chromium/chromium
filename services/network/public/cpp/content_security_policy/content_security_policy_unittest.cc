@@ -689,6 +689,36 @@ TEST(ContentSecurityPolicy, ParseDirectives) {
   }
 }
 
+// The required ASCII whitespace defined by CSP does not include U+000B (VT):
+// https://w3c.github.io/webappsec-csp/#grammardef-required-ascii-whitespace.
+TEST(ContentSecurityPolicy, VerticalTabIsNotAsciiWhitespace) {
+  auto parse = [](std::string_view header) {
+    return ParseContentSecurityPolicies(
+        header, mojom::ContentSecurityPolicyType::kEnforce,
+        mojom::ContentSecurityPolicySource::kHTTP,
+        GURL("https://example.com/"));
+  };
+
+  // VT must not act as whitespace anywhere a valid default-src could appear.
+  for (const char* header : {
+           "default-src\v'self'",
+           "default-src 'self'\v'unsafe-inline'",
+           "script-src 'none';\vdefault-src 'self'",
+       }) {
+    SCOPED_TRACE(header);
+    auto policies = parse(header);
+    ASSERT_EQ(1u, policies.size());
+    EXPECT_FALSE(
+        policies[0]->directives.contains(CSPDirectiveName::DefaultSrc));
+  }
+
+  // VT after ',' must not be trimmed (second policy's name is "\vdefault-src").
+  auto policies = parse("default-src 'none',\vdefault-src 'self'");
+  ASSERT_EQ(2u, policies.size());
+  EXPECT_TRUE(policies[0]->directives.contains(CSPDirectiveName::DefaultSrc));
+  EXPECT_FALSE(policies[1]->directives.contains(CSPDirectiveName::DefaultSrc));
+}
+
 TEST(ContentSecurityPolicy, ParseAllow) {
   std::vector<mojom::ContentSecurityPolicyPtr> policies =
       ParseCSP("allow    'none'");
