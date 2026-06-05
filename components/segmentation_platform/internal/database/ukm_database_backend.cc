@@ -438,6 +438,7 @@ void UkmDatabaseBackend::DeleteAllUrls() {
     transaction->Commit();
   }
 
+  // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();
 }
 
@@ -463,6 +464,7 @@ void UkmDatabaseBackend::TrackChangesInTransaction(int change_count) {
 
 void UkmDatabaseBackend::RestartTransaction() {
   if (inhibit_transaction_) {
+    db_.CheckpointDatabase(/*truncate=*/true);
     return;
   }
 
