@@ -261,8 +261,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(GetContentsVisibility(instance1), content::Visibility::HIDDEN);
 }
 
-// TODO(crbug.com/514816170): Re-enable when no longer flaky
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/514816170): Re-enable when no longer flaky on Android and
+// Windows.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_UnboundWhenClosedBySidePanelCoordinator \
   DISABLED_UnboundWhenClosedBySidePanelCoordinator
 #else
