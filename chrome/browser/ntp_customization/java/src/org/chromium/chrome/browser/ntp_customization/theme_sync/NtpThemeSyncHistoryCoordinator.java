@@ -41,6 +41,7 @@ public class NtpThemeSyncHistoryCoordinator {
     private final List<NtpBackgroundDataBase> mDataShowingList;
     private final NtpBackgroundDataColor mDefaultNtpBackgroundData;
 
+    private NtpBackgroundDataGroup @Nullable [] mNtpBackgroundDataGroups;
     private @Nullable NtpThemeSyncHistoryRecyclerViewAdaptor mRecyclerViewAdaptor;
     private @Nullable NtpBackgroundDataBase mLastSelectedNtpBackgroundData;
     private int mLastSelectedIndex;
@@ -77,6 +78,8 @@ public class NtpThemeSyncHistoryCoordinator {
 
     /** Prepare data before showing the NTP theme history. */
     int prepareData() {
+        mDataShowingList.clear();
+
         // The default option is placed at the first.
         mDataShowingList.add(mDefaultNtpBackgroundData);
         int lastSelectedIndex = 0;
@@ -84,10 +87,18 @@ public class NtpThemeSyncHistoryCoordinator {
                 NtpCustomizationConfigManager.getInstance().getBackgroundType()
                         == NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
 
-        // Adds all history data to the list.
-        NtpBackgroundDataGroup[] groups =
-                mNtpBackgroundDataManager.getBackgroundDataListFromSharedPreference();
-        NtpBackgroundDataGroup localGroup = groups[PlatformType.ANDROID_LOCAL];
+        if (mNtpBackgroundDataGroups == null) {
+            // Adds all history data to the list.
+            mNtpBackgroundDataGroups =
+                    mNtpBackgroundDataManager.getBackgroundDataListFromSharedPreference();
+        } else {
+            // Only updates the local history data.
+            mNtpBackgroundDataGroups[PlatformType.ANDROID_LOCAL] =
+                    mNtpBackgroundDataManager.getBackgroundDataGroupFromSharedPreference(
+                            PlatformType.ANDROID_LOCAL);
+        }
+
+        NtpBackgroundDataGroup localGroup = mNtpBackgroundDataGroups[PlatformType.ANDROID_LOCAL];
         assumeNonNull(localGroup);
         if (!localGroup.isEmpty()) {
             // The last selected index is set to the first item from local selected history if the
@@ -100,7 +111,7 @@ public class NtpThemeSyncHistoryCoordinator {
 
         // Adds sync data from remote platforms.
         for (int i = PlatformType.ANDROID_REMOTE; i < PlatformType.MAX_COUNT; i++) {
-            NtpBackgroundDataGroup remoteDataGroup = groups[i];
+            NtpBackgroundDataGroup remoteDataGroup = mNtpBackgroundDataGroups[i];
             if (remoteDataGroup == null || remoteDataGroup.isEmpty()) continue;
 
             // Finds the first remote data which isn't in the local history.

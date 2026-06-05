@@ -49,8 +49,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -82,7 +80,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -109,9 +106,8 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private SnackbarManager mSnackbarManager;
-    @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlObserverCaptor;
-
     private NtpCustomizationMediator mMediator;
+    private final Runnable mShowMainBottomSheetRunnable = () -> mMediator.showBottomSheet(MAIN);
     private Map<Integer, Integer> mViewFlipperMap;
     private ListContainerViewDelegate mListDelegate;
     private Context mContext;
@@ -141,7 +137,8 @@ public class NtpCustomizationMediatorUnitTest {
                         mContainerPropertyModel,
                         mProfileSupplier,
                         mWindowAndroid,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mShowMainBottomSheetRunnable);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
         mListDelegate = mMediator.createListDelegate();
     }
@@ -671,7 +668,8 @@ public class NtpCustomizationMediatorUnitTest {
                         mContainerPropertyModel,
                         mProfileSupplier,
                         mWindowAndroid,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mShowMainBottomSheetRunnable);
         mListDelegate = mMediator.createListDelegate();
         mMediator.setCurrentBottomSheetForTesting(MAIN);
 
@@ -704,7 +702,8 @@ public class NtpCustomizationMediatorUnitTest {
                         mContainerPropertyModel,
                         mProfileSupplier,
                         mWindowAndroid,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mShowMainBottomSheetRunnable);
         mListDelegate = mMediator.createListDelegate();
         mMediator.setCurrentBottomSheetForTesting(MAIN);
 
@@ -736,7 +735,8 @@ public class NtpCustomizationMediatorUnitTest {
                         mContainerPropertyModel,
                         mProfileSupplier,
                         mWindowAndroid,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mShowMainBottomSheetRunnable);
         mListDelegate = mMediator.createListDelegate();
         mMediator.setCurrentBottomSheetForTesting(MAIN);
 
@@ -762,7 +762,8 @@ public class NtpCustomizationMediatorUnitTest {
                         mContainerPropertyModel,
                         mProfileSupplier,
                         mWindowAndroid,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mShowMainBottomSheetRunnable);
         mMediator.setCurrentBottomSheetForTesting(FEED);
 
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
@@ -802,7 +803,8 @@ public class NtpCustomizationMediatorUnitTest {
                         mContainerPropertyModel,
                         mProfileSupplier,
                         mWindowAndroid,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mShowMainBottomSheetRunnable);
 
         NtpThemeStateProvider ntpThemeStateProvider = mock(NtpThemeStateProvider.class);
         NtpThemeStateProvider.setInstanceForTesting(ntpThemeStateProvider);

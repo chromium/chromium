@@ -193,7 +193,8 @@ public class NtpCustomizationCoordinator {
                         containerPropertyModel,
                         mProfileSupplier,
                         windowAndroid,
-                        snackbarManager);
+                        snackbarManager,
+                        this::showMainBottomSheet);
         mMediator.registerBottomSheetLayout(MAIN);
 
         mDelegate = createBottomSheetDelegate();
@@ -252,8 +253,8 @@ public class NtpCustomizationCoordinator {
                                 mViewFlipperView,
                                 mDelegate,
                                 (view) -> showThemeBottomSheet());
-                mNtpThemeSyncHistoryCoordinator.prepareToShow();
             }
+            mNtpThemeSyncHistoryCoordinator.prepareToShow();
         }
         mMediator.showBottomSheet(MAIN);
     }

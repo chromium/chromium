@@ -158,7 +158,7 @@ public class NtpBackgroundDataManager {
      * @param platformType The platform type to get the background data for.
      * @return The background data for the given platform type.
      */
-    NtpBackgroundDataGroup getBackgroundDataGroupFromSharedPreference(
+    public NtpBackgroundDataGroup getBackgroundDataGroupFromSharedPreference(
             @PlatformType int platformType) {
         JSONArray historyDataArray = getJsonArrayFromSharedPreferenceImpl(platformType);
         if (historyDataArray != null) {

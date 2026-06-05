@@ -278,4 +278,86 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // Verify delegate isn't notified.
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
     }
+
+    @Test
+    public void testPrepareToShow_SubsequentCallUpdatesOnlyLocalHistory() {
+        // 1. Initial Setup: one local (BLUE), one remote (AQUA).
+        NtpBackgroundDataColor localColor1 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_LOCAL,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor1);
+
+        NtpBackgroundDataColor remoteColor1 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_REMOTE,
+                        NtpThemeColorId.NTP_COLORS_AQUA,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor1);
+
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.CHROME_COLOR);
+
+        // Call first time
+        mCoordinator.prepareToShow();
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        // Should contain: Default, localColor1 (blue), remoteColor1 (aqua).
+        assertEquals(3, dataList.size());
+        assertEquals(
+                NtpThemeColorId.DEFAULT,
+                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_AQUA,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+
+        // 2. Update Setup: add new local (VIRIDIAN), add new remote (GREEN).
+        NtpBackgroundDataColor localColor2 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_LOCAL,
+                        NtpThemeColorId.NTP_COLORS_VIRIDIAN,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor2);
+
+        NtpBackgroundDataColor remoteColor2 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_REMOTE,
+                        NtpThemeColorId.NTP_COLORS_GREEN,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor2);
+
+        // Call second time.
+        mCoordinator.prepareToShow();
+
+        dataList = mCoordinator.getDataShowingListForTesting();
+        // Should contain: Default, localColor2 (viridian), localColor1 (blue), remoteColor1 (aqua)
+        // remoteColor2 (green) should NOT be here because remote history is not reloaded.
+        assertEquals(4, dataList.size());
+        assertEquals(
+                NtpThemeColorId.DEFAULT,
+                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIRIDIAN,
+                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_AQUA,
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+
+        // Highlighted index should be 1 (localColor2, the new first local history item).
+        assertEquals(
+                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
 }
