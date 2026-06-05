@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/stereo_panner_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_stereo_panner_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -32,7 +33,7 @@ StereoPannerNode::StereoPannerNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeStereoPannerPan,
           kDefaultPanValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           kMinPanValue,
           kMaxPanValue)) {

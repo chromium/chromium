@@ -190,7 +190,7 @@ float ValueCurveAtTime(double t,
 AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
                                      AudioParamType param_type,
                                      double default_value,
-                                     AutomationRate rate,
+                                     V8AutomationRate::Enum rate,
                                      AutomationRateMode rate_mode,
                                      float min_value,
                                      float max_value)

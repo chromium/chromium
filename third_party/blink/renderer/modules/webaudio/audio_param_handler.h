@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
@@ -81,14 +82,6 @@ class MODULES_EXPORT AudioParamHandler final
     kParamTypeAudioWorklet,
   };
 
-  // Automation rate of the AudioParam
-  enum class AutomationRate {
-    // a-rate
-    kAudio,
-    // k-rate
-    kControl
-  };
-
   // Indicates whether automation rate can be changed.
   enum class AutomationRateMode {
     // Rate can't be changed after construction
@@ -100,7 +93,7 @@ class MODULES_EXPORT AudioParamHandler final
   static scoped_refptr<AudioParamHandler> Create(BaseAudioContext& context,
                                                  AudioParamType param_type,
                                                  double default_value,
-                                                 AutomationRate rate,
+                                                 V8AutomationRate::Enum rate,
                                                  AutomationRateMode rate_mode,
                                                  float min_value,
                                                  float max_value) {
@@ -114,11 +107,11 @@ class MODULES_EXPORT AudioParamHandler final
 
   float Value();
   void SetValue(float value);
-  AutomationRate GetAutomationRate() const {
+  V8AutomationRate::Enum GetAutomationRate() const {
     base::AutoLock rate_locker(RateLock());
     return automation_rate_;
   }
-  void SetAutomationRate(AutomationRate automation_rate) {
+  void SetAutomationRate(V8AutomationRate::Enum automation_rate) {
     base::AutoLock rate_locker(RateLock());
     automation_rate_ = automation_rate;
   }
@@ -172,7 +165,7 @@ class MODULES_EXPORT AudioParamHandler final
   bool HasSampleAccurateValues() const;
 
   bool IsAudioRate() const {
-    return automation_rate_ == AutomationRate::kAudio;
+    return automation_rate_ == V8AutomationRate::Enum::kARate;
   }
 
   // Calculates parameter values starting at the context's current time.  Must
@@ -357,7 +350,7 @@ class MODULES_EXPORT AudioParamHandler final
   AudioParamHandler(BaseAudioContext&,
                     AudioParamType,
                     double default_value,
-                    AutomationRate rate,
+                    V8AutomationRate::Enum rate,
                     AutomationRateMode rate_mode,
                     float min,
                     float max);
@@ -583,7 +576,7 @@ class MODULES_EXPORT AudioParamHandler final
   mutable base::Lock rate_lock_;
 
   // The automation rate of the AudioParam (k-rate or a-rate)
-  AutomationRate automation_rate_;
+  V8AutomationRate::Enum automation_rate_;
 
   // `rate_mode_` determines if the user can change the automation rate to a
   // different value.

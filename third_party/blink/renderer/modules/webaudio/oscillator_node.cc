@@ -29,6 +29,7 @@
 #include <limits>
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -60,7 +61,7 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeOscillatorFrequency,
           kDefaultFrequencyValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           /*min_value=*/-context.sampleRate() / 2,
           /*max_value=*/context.sampleRate() / 2)),
@@ -70,7 +71,7 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeOscillatorDetune,
           kDefaultDetuneValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           /*min_value=*/-1200 * log2f(std::numeric_limits<float>::max()),
           /*max_value=*/1200 * log2f(std::numeric_limits<float>::max()))) {

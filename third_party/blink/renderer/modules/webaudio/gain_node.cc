@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/gain_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gain_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/gain_handler.h"
@@ -44,7 +45,7 @@ GainNode::GainNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeGainGain,
           kDefaultGainValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)) {
   SetHandler(
       GainHandler::Create(*this, context.sampleRate(), gain_->Handler()));

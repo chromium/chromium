@@ -28,6 +28,7 @@
 #include <limits>
 
 #include "base/metrics/histogram_functions.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_biquad_filter_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -89,7 +90,7 @@ BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeBiquadFilterFrequency,
           kDefaultFrequencyValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           kMinFrequencyValue,
           /*max_value=*/context.sampleRate() / 2)),
@@ -98,14 +99,14 @@ BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeBiquadFilterQ,
           kDefaultQValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       gain_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeBiquadFilterGain,
           kDefaultGainValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           kMinGainValue,
           /*max_value=*/40 * log10f(std::numeric_limits<float>::max()))),
@@ -114,7 +115,7 @@ BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeBiquadFilterDetune,
           kDefaultDetuneValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           /*min_value=*/-1200 * log2f(std::numeric_limits<float>::max()),
           /*max_value=*/1200 * log2f(std::numeric_limits<float>::max()))) {

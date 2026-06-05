@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/dynamics_compressor_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dynamics_compressor_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
@@ -69,7 +70,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
                              AudioParamHandler::AudioParamType::
                                  kParamTypeDynamicsCompressorThreshold,
                              kDefaultThresholdValue,
-                             AudioParamHandler::AutomationRate::kControl,
+                             V8AutomationRate::Enum::kKRate,
                              AudioParamHandler::AutomationRateMode::kFixed,
                              kMinThresholdValue,
                              kMaxThresholdValue)),
@@ -78,7 +79,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeDynamicsCompressorKnee,
           kDefaultKneeValue,
-          AudioParamHandler::AutomationRate::kControl,
+          V8AutomationRate::Enum::kKRate,
           AudioParamHandler::AutomationRateMode::kFixed,
           kMinKneeValue,
           kMaxKneeValue)),
@@ -87,7 +88,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeDynamicsCompressorRatio,
           kDefaultRatioValue,
-          AudioParamHandler::AutomationRate::kControl,
+          V8AutomationRate::Enum::kKRate,
           AudioParamHandler::AutomationRateMode::kFixed,
           kMinRatioValue,
           kMaxRatioValue)),
@@ -96,7 +97,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeDynamicsCompressorAttack,
           kDefaultAttackValue,
-          AudioParamHandler::AutomationRate::kControl,
+          V8AutomationRate::Enum::kKRate,
           AudioParamHandler::AutomationRateMode::kFixed,
           kMinAttackValue,
           kMaxAttackValue)),
@@ -105,7 +106,7 @@ DynamicsCompressorNode::DynamicsCompressorNode(BaseAudioContext& context)
                                   AudioParamHandler::AudioParamType::
                                       kParamTypeDynamicsCompressorRelease,
                                   kDefaultReleaseValue,
-                                  AudioParamHandler::AutomationRate::kControl,
+                                  V8AutomationRate::Enum::kKRate,
                                   AudioParamHandler::AutomationRateMode::kFixed,
                                   kMinReleaseValue,
                                   kMaxReleaseValue)) {

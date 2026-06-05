@@ -45,7 +45,7 @@ AudioParam::AudioParam(BaseAudioContext& context,
                        const String& parent_uuid,
                        AudioParamHandler::AudioParamType param_type,
                        double default_value,
-                       AudioParamHandler::AutomationRate rate,
+                       V8AutomationRate::Enum rate,
                        AudioParamHandler::AutomationRateMode rate_mode,
                        float min_value,
                        float max_value)
@@ -64,7 +64,7 @@ AudioParam* AudioParam::Create(BaseAudioContext& context,
                                const String& parent_uuid,
                                AudioParamHandler::AudioParamType param_type,
                                double default_value,
-                               AudioParamHandler::AutomationRate rate,
+                               V8AutomationRate::Enum rate,
                                AudioParamHandler::AutomationRateMode rate_mode,
                                float min_value,
                                float max_value) {
@@ -144,13 +144,7 @@ void AudioParam::SetCustomParamName(const String name) {
 }
 
 V8AutomationRate AudioParam::automationRate() const {
-  switch (Handler().GetAutomationRate()) {
-    case AudioParamHandler::AutomationRate::kAudio:
-      return V8AutomationRate(V8AutomationRate::Enum::kARate);
-    case AudioParamHandler::AutomationRate::kControl:
-      return V8AutomationRate(V8AutomationRate::Enum::kKRate);
-  }
-  NOTREACHED();
+  return V8AutomationRate(Handler().GetAutomationRate());
 }
 
 void AudioParam::setAutomationRate(const V8AutomationRate& rate,
@@ -164,15 +158,7 @@ void AudioParam::setAutomationRate(const V8AutomationRate& rate,
     return;
   }
 
-  switch (rate.AsEnum()) {
-    case V8AutomationRate::Enum::kARate:
-      Handler().SetAutomationRate(AudioParamHandler::AutomationRate::kAudio);
-      return;
-    case V8AutomationRate::Enum::kKRate:
-      Handler().SetAutomationRate(AudioParamHandler::AutomationRate::kControl);
-      return;
-  }
-  NOTREACHED();
+  Handler().SetAutomationRate(rate.AsEnum());
 }
 
 AudioParam* AudioParam::setValueAtTime(float value,

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 
 #include "base/synchronization/lock.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/panner_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -58,63 +59,63 @@ AudioListener::AudioListener(BaseAudioContext& context)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerPositionX,
           kDefaultPositionXValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       position_y_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerPositionY,
           kDefaultPositionYValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       position_z_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerPositionZ,
           kDefaultPositionZValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       forward_x_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerForwardX,
           kDefaultForwardXValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       forward_y_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerForwardY,
           kDefaultForwardYValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       forward_z_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerForwardZ,
           kDefaultForwardZValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       up_x_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerUpX,
           kDefaultUpXValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       up_y_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerUpY,
           kDefaultUpYValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)),
       up_z_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioListenerUpZ,
           kDefaultUpZValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable)) {
   SetHandler(AudioListenerHandler::Create(
       position_x_->Handler(), position_y_->Handler(), position_z_->Handler(),

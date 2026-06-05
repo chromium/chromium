@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_delay_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/delay_handler.h"
@@ -50,7 +51,7 @@ DelayNode::DelayNode(BaseAudioContext& context, double max_delay_time)
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeDelayDelayTime,
           kDefaultDelayTimeValue,
-          AudioParamHandler::AutomationRate::kAudio,
+          V8AutomationRate::Enum::kARate,
           AudioParamHandler::AutomationRateMode::kVariable,
           kMinDelayTimeValue,
           max_delay_time)) {

@@ -27,6 +27,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_source_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -55,14 +56,14 @@ AudioBufferSourceNode::AudioBufferSourceNode(BaseAudioContext& context)
                              AudioParamHandler::AudioParamType::
                                  kParamTypeAudioBufferSourcePlaybackRate,
                              kDefaultPlaybackRateValue,
-                             AudioParamHandler::AutomationRate::kControl,
+                             V8AutomationRate::Enum::kKRate,
                              AudioParamHandler::AutomationRateMode::kFixed)),
       detune_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::AudioParamType::kParamTypeAudioBufferSourceDetune,
           kDefaultDetuneValue,
-          AudioParamHandler::AutomationRate::kControl,
+          V8AutomationRate::Enum::kKRate,
           AudioParamHandler::AutomationRateMode::kFixed)) {
   SetHandler(AudioBufferSourceHandler::Create(*this, context.sampleRate(),
                                               playback_rate_->Handler(),

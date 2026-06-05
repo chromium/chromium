@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
@@ -47,10 +48,10 @@ AudioWorkletNode::AudioWorkletNode(
   HashMap<String, scoped_refptr<AudioParamHandler>> param_handler_map;
   for (const auto& param_info : param_info_list) {
     String param_name = param_info.Name();
-    AudioParamHandler::AutomationRate param_automation_rate(
-        AudioParamHandler::AutomationRate::kAudio);
+    V8AutomationRate::Enum param_automation_rate =
+        V8AutomationRate::Enum::kARate;
     if (param_info.AutomationRate() == "k-rate") {
-      param_automation_rate = AudioParamHandler::AutomationRate::kControl;
+      param_automation_rate = V8AutomationRate::Enum::kKRate;
     }
     AudioParam* audio_param = AudioParam::Create(
         context, Uuid(),
