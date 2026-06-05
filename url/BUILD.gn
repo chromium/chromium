@@ -418,11 +418,11 @@ rust_static_library("url_rust") {
     "url.rs",
   ]
   allow_unsafe = true
-  deps = [
+  public_deps = [
     ":url",
     ":url_shim",
-    "//third_party/rust/cxx/v1:lib",
   ]
+  deps = [ "//third_party/rust/cxx/v1:lib" ]
   cxx_bindings = [
     "gurl.rs",
     "origin.rs",

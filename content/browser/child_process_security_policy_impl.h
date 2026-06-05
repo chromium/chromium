@@ -395,11 +395,18 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& process_lock_origin,
       bool are_v8_optimizations_disabled);
+  void AddV8OptimizationDisabledStateForOriginIfNotCached_Cpp(
+      const BrowsingInstanceId& browsing_instance_id,
+      const url::Origin& process_lock_origin,
+      bool are_v8_optimizations_disabled);
 
   // Returns whether v8-optimization should be disabled for the passed-in
   // (`browsing_instance_id`, `process_lock_origin`) pair. Returns std::nullopt
   // if there is no cached v8-optimization verdict.
   std::optional<bool> LookupAreV8OptimizationsDisabled(
+      const BrowsingInstanceId& browsing_instance_id,
+      const url::Origin& process_lock_origin);
+  std::optional<bool> LookupAreV8OptimizationsDisabled_Cpp(
       const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& process_lock_origin);
 
@@ -1034,6 +1041,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Internal helper for RemoveAllStateForBrowsingInstance().
   void RemoveAllStateForBrowsingInstanceInternal(
       const BrowsingInstanceId browsing_instance_id);
+
+  // Helper for RemoveAllStateForBrowsingInstanceInternal().
+  void EraseV8OptimizationState(const BrowsingInstanceId& browsing_instance_id);
+  void EraseV8OptimizationState_Cpp(
+      const BrowsingInstanceId& browsing_instance_id);
 
   // Creates the value to place in the "killed_process_origin_lock" crash key
   // based on the contents of |security_state|.

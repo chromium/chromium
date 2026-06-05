@@ -120,10 +120,24 @@ bool IsCppEnabled() {
 template <typename T>
 T CheckAndReturnRustAndCppResults(const T& rust_result, const T& cpp_result) {
   if (GetRustPolicy() == RustPolicy::kRustAndCpp) {
-    // TODO(crbug.com/482216433): CHECK_EQ doesn't support std::optional types;
-    // comparing those types will need another helper.
     CHECK_EQ(rust_result, cpp_result)
         << "Rust: " << rust_result << " vs C++: " << cpp_result;
+  }
+  // Rust return values get priority.
+  return IsRustEnabled() ? rust_result : cpp_result;
+}
+
+// Similar to the above, but includes a workaround since CHECK_EQ does not
+// support optional<T>.
+template <typename T>
+std::optional<T> CheckAndReturnOptionalRustAndCppResults(
+    const std::optional<T>& rust_result,
+    const std::optional<T>& cpp_result) {
+  if (GetRustPolicy() == RustPolicy::kRustAndCpp) {
+    // Use CHECK rather than CHECK_EQ to support std::optional types.
+    CHECK(rust_result == cpp_result)
+        << "rust_result: " << rust_result.value_or("(none)")
+        << " cpp_result: " << cpp_result.value_or("(none)");
   }
   // Rust return values get priority.
   return IsRustEnabled() ? rust_result : cpp_result;
@@ -3347,11 +3361,22 @@ void ChildProcessSecurityPolicyImpl::RemoveAllStateForBrowsingInstanceInternal(
     }
   }
 
-  {
-    base::AutoLock are_v8_optimizations_disabled_lock(
-        are_v8_optimizations_disabled_lock_);
-    are_v8_optimizations_disabled_map_.erase(browsing_instance_id);
-  }
+  EraseV8OptimizationState(browsing_instance_id);
+}
+
+void ChildProcessSecurityPolicyImpl::EraseV8OptimizationState(
+    const BrowsingInstanceId& browsing_instance_id) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::erase_v8_optimization_state(
+          browsing_instance_id.value()),
+      EraseV8OptimizationState_Cpp(browsing_instance_id));
+}
+
+void ChildProcessSecurityPolicyImpl::EraseV8OptimizationState_Cpp(
+    const BrowsingInstanceId& browsing_instance_id) {
+  base::AutoLock are_v8_optimizations_disabled_lock(
+      are_v8_optimizations_disabled_lock_);
+  are_v8_optimizations_disabled_map_.erase(browsing_instance_id);
 }
 
 void ChildProcessSecurityPolicyImpl::SecurityStateMaps::
@@ -3496,12 +3521,33 @@ void ChildProcessSecurityPolicyImpl::
         const BrowsingInstanceId& browsing_instance_id,
         const url::Origin& process_lock_origin,
         bool are_v8_optimizations_disabled) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::
+          add_v8_optimization_disabled_state_for_origin_if_not_cached(
+              browsing_instance_id.value(),
+              // Make a copy for Rust to own.
+              std::make_unique<url::Origin>(process_lock_origin),
+              are_v8_optimizations_disabled),
+      AddV8OptimizationDisabledStateForOriginIfNotCached_Cpp(
+          browsing_instance_id, process_lock_origin,
+          are_v8_optimizations_disabled));
+}
+
+void ChildProcessSecurityPolicyImpl::
+    AddV8OptimizationDisabledStateForOriginIfNotCached_Cpp(
+        const BrowsingInstanceId& browsing_instance_id,
+        const url::Origin& process_lock_origin,
+        bool are_v8_optimizations_disabled) {
   if (!IsolatedOriginUtil::IsValidIsolatedOrigin(process_lock_origin)) {
     return;
   }
 
-  if (LookupAreV8OptimizationsDisabled(browsing_instance_id,
-                                       process_lock_origin) != std::nullopt) {
+  // Note that checking if a value is cached and then inserting it below without
+  // holding the lock between the two calls introduces a race condition (another
+  // thread could insert in the meantime). The Rust implementation resolves this
+  // by keeping the CPSP lock held for the entire check and insert block.
+  if (LookupAreV8OptimizationsDisabled_Cpp(
+          browsing_instance_id, process_lock_origin) != std::nullopt) {
     return;
   }
 
@@ -3513,6 +3559,36 @@ void ChildProcessSecurityPolicyImpl::
 
 std::optional<bool>
 ChildProcessSecurityPolicyImpl::LookupAreV8OptimizationsDisabled(
+    const BrowsingInstanceId& browsing_instance_id,
+    const url::Origin& process_lock_origin) {
+  // We cannot use the RUST_CPP_RETURN_FUNCTION macro here because CXX does not
+  // support passing Option/std::optional across the FFI boundary (see
+  // https://github.com/dtolnay/cxx/issues/87). We must use a custom out
+  // parameter FFI bridge and call CheckAndReturnOptionalRustAndCppResults.
+  std::optional<bool> rust_result = std::nullopt;
+
+  if (IsRustEnabled()) {
+    bool result = false;
+    if (rust::child_process_security_policy::
+            lookup_are_v8_optimizations_disabled(
+                browsing_instance_id.value(),
+                // Make a copy for Rust to own.
+                std::make_unique<url::Origin>(process_lock_origin), result)) {
+      rust_result = std::make_optional(result);
+    }
+  }
+
+  std::optional<bool> cpp_result = std::nullopt;
+  if (IsCppEnabled()) {
+    cpp_result = LookupAreV8OptimizationsDisabled_Cpp(browsing_instance_id,
+                                                      process_lock_origin);
+  }
+
+  return CheckAndReturnOptionalRustAndCppResults(rust_result, cpp_result);
+}
+
+std::optional<bool>
+ChildProcessSecurityPolicyImpl::LookupAreV8OptimizationsDisabled_Cpp(
     const BrowsingInstanceId& browsing_instance_id,
     const url::Origin& process_lock_origin) {
   base::AutoLock are_v8_optimizations_disabled_lock(
