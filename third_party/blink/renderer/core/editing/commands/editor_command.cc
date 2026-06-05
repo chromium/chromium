@@ -141,7 +141,7 @@ InputEvent::InputType InputTypeFromCommandType(EditingCommandType command_type,
                                           InputType caret_type) -> InputType {
     if (RuntimeEnabledFeatures::
             InputEventsDeleteNonCollapsedSelectionEnabled()) {
-      return frame.Selection().ComputeVisibleSelectionInDOMTree().IsRange()
+      return frame.Selection().ComputeVisibleSelectionInDomTree().IsRange()
                  ? selection_type
                  : caret_type;
     }
@@ -255,7 +255,7 @@ GCedStaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
 
 EphemeralRange ComputeRangeForTranspose(LocalFrame& frame) {
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTree();
+      frame.Selection().ComputeVisibleSelectionInDomTree();
   if (!selection.IsCaret()) {
     return EphemeralRange();
   }
@@ -319,7 +319,7 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
 bool ExpandSelectionToGranularity(LocalFrame& frame,
                                   TextGranularity granularity) {
   const SelectionInDOMTree& selection = ExpandWithGranularity(
-      frame.Selection().ComputeVisibleSelectionInDOMTree().AsSelection(),
+      frame.Selection().ComputeVisibleSelectionInDomTree().AsSelection(),
       granularity);
   const EphemeralRange& new_range = NormalizeRange(selection);
   if (new_range.IsNull()) {
@@ -1027,7 +1027,7 @@ static bool ExecuteTranspose(LocalFrame& frame,
 
   // Select the two characters.
   if (CreateVisibleSelection(new_selection) !=
-      frame.Selection().ComputeVisibleSelectionInDOMTree()) {
+      frame.Selection().ComputeVisibleSelectionInDomTree()) {
     frame.Selection().SetSelectionAndEndTyping(new_selection);
   }
 
@@ -1262,7 +1262,7 @@ static bool EnabledInRichlyEditableText(LocalFrame& frame,
     return false;
   }
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTree();
+      frame.Selection().ComputeVisibleSelectionInDomTree();
   return !selection.IsNone() && IsRichlyEditablePosition(selection.Anchor()) &&
          selection.RootEditableElement();
 }
@@ -1299,7 +1299,7 @@ static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
     return false;
   }
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTree();
+      frame.Selection().ComputeVisibleSelectionInDomTree();
   return selection.IsRange() && IsRichlyEditablePosition(selection.Anchor());
 }
 
@@ -1351,7 +1351,7 @@ static bool EnabledSelectAll(LocalFrame& frame,
   // needs to be audited.  See http://crbug.com/590369 for more details.
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTree();
+      frame.Selection().ComputeVisibleSelectionInDomTree();
   if (selection.IsNone()) {
     return true;
   }

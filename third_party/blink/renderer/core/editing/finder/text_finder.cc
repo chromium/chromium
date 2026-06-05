@@ -232,7 +232,7 @@ bool TextFinder::FindInternal(int identifier,
   // TODO(editing-dev): The use of VisibleSelection should be audited. See
   // crbug.com/657237 for details.
   VisibleSelection selection(
-      OwnerFrame().GetFrame()->Selection().ComputeVisibleSelectionInDOMTree());
+      OwnerFrame().GetFrame()->Selection().ComputeVisibleSelectionInDomTree());
   bool active_selection = !selection.IsNone();
   if (active_selection) {
     active_match_ = CreateRange(FirstEphemeralRangeOf(selection));

@@ -1724,7 +1724,7 @@ const GCedStaticRangeVector* TargetRangesForInputEvent(const Node& node) {
       FirstEphemeralRangeOf(node.GetDocument()
                                 .GetFrame()
                                 ->Selection()
-                                .ComputeVisibleSelectionInDOMTree());
+                                .ComputeVisibleSelectionInDomTree());
   if (range.IsNull())
     return nullptr;
   return MakeGarbageCollected<GCedStaticRangeVector>(
@@ -1800,7 +1800,7 @@ void InsertTextAndSendInputEventsOfTypeInsertReplacementText(
 
   // Dispatch 'beforeinput'.
   Element* const target = FindEventTargetFrom(
-      frame, frame.Selection().ComputeVisibleSelectionInDOMTree());
+      frame, frame.Selection().ComputeVisibleSelectionInDomTree());
 
   // Copy the original target text into a string, in case the 'beforeinput'
   // event handler modifies the text.

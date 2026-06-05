@@ -3935,7 +3935,7 @@ static PositionWithAffinity PositionForSmartClipPoint(
   }
 
   return PositionRespectingEditingBoundary(
-      frame->Selection().ComputeVisibleSelectionInDOMTree().Start(), result);
+      frame->Selection().ComputeVisibleSelectionInDomTree().Start(), result);
 }
 
 // TODO(editing-dev): We should move |CreateMarkupInRect()| to
@@ -4287,7 +4287,7 @@ void LocalFrame::PerformFullContentSpellCheck() {
       mojom::blink::UserActivationNotificationType::kInteraction);
 
   ContainerNode* container_node = HighestEditableRoot(
-      Selection().ComputeVisibleSelectionInDOMTree().Start());
+      Selection().ComputeVisibleSelectionInDomTree().Start());
   if (!container_node) {
     return;
   }

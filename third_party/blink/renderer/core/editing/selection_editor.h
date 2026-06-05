@@ -47,7 +47,7 @@ class SelectionEditor final : public GarbageCollected<SelectionEditor> {
 
   const SelectionInDOMTree& GetSelectionInDOMTree() const;
 
-  VisibleSelection ComputeVisibleSelectionInDOMTree() const;
+  VisibleSelection ComputeVisibleSelectionInDomTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
   bool ComputeAbsoluteBounds(gfx::Rect& anchor, gfx::Rect& focus) const;
   void SetSelectionAndEndTyping(const SelectionInDOMTree&);

@@ -151,12 +151,12 @@ class CORE_EXPORT FrameSelection final
   // An implementation of |WebFrame::moveCaretSelection()|
   void MoveCaretSelection(const gfx::Point&);
 
-  VisibleSelection ComputeVisibleSelectionInDOMTree() const;
+  VisibleSelection ComputeVisibleSelectionInDomTree() const;
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
 
   // TODO(editing-dev): We should replace
   // |ComputeVisibleSelectionInDomTreeDeprecated()| with update layout and
-  // |ComputeVisibleSelectionInDOMTree()| to increase places hoisting update
+  // |ComputeVisibleSelectionInDomTree()| to increase places hoisting update
   // layout.
   VisibleSelection ComputeVisibleSelectionInDomTreeDeprecated() const;
 

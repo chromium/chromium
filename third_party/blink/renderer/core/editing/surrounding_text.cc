@@ -45,7 +45,7 @@ EphemeralRange ComputeRangeFromFrameSelection(LocalFrame* frame) {
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   return frame->Selection()
-      .ComputeVisibleSelectionInDOMTree()
+      .ComputeVisibleSelectionInDomTree()
       .ToNormalizedEphemeralRange();
 }
 

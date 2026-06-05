@@ -67,7 +67,7 @@ void RemoveFormatCommand::DoApply(EditingState* editing_state) {
   // TODO(editing-dev): Stop accessing FrameSelection in edit commands.
   LocalFrame* frame = GetDocument().GetFrame();
   const VisibleSelection selection =
-      frame->Selection().ComputeVisibleSelectionInDOMTree();
+      frame->Selection().ComputeVisibleSelectionInDomTree();
   if (selection.IsNone() || !selection.IsValidFor(GetDocument()))
     return;
 

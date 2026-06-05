@@ -126,7 +126,7 @@ bool SpellChecker::IsSpellCheckingEnabled() const {
 void SpellChecker::IgnoreSpelling() {
   RemoveMarkers(GetFrame()
                     .Selection()
-                    .ComputeVisibleSelectionInDOMTree()
+                    .ComputeVisibleSelectionInDomTree()
                     .ToNormalizedEphemeralRange(),
                 DocumentMarker::MarkerTypes::Spelling());
 }
@@ -142,7 +142,7 @@ void SpellChecker::AdvanceToNextMisspelling(bool start_before_selection) {
   // Start at the end of the selection, search to edge of document. Starting at
   // the selection end makes repeated "check spelling" commands work.
   VisibleSelection selection(
-      GetFrame().Selection().ComputeVisibleSelectionInDOMTree());
+      GetFrame().Selection().ComputeVisibleSelectionInDomTree());
   Position spelling_search_start, spelling_search_end;
   Range::selectNodeContents(GetFrame().GetDocument(), spelling_search_start,
                             spelling_search_end);
@@ -428,7 +428,7 @@ void SpellChecker::RemoveSpellingAndGrammarMarkers(const HTMLElement& element,
 DocumentMarkerGroup* SpellChecker::GetSpellCheckMarkerGroupUnderSelection()
     const {
   const VisibleSelection& selection =
-      GetFrame().Selection().ComputeVisibleSelectionInDOMTree();
+      GetFrame().Selection().ComputeVisibleSelectionInDomTree();
   if (selection.IsNone())
     return {};
 
@@ -449,7 +449,7 @@ std::pair<String, String> SpellChecker::SelectMisspellingAsync() {
     return {};
 
   const VisibleSelection& selection =
-      GetFrame().Selection().ComputeVisibleSelectionInDOMTree();
+      GetFrame().Selection().ComputeVisibleSelectionInDomTree();
   // Caret and range selections (one of which we must have since we found a
   // marker) always return valid normalized ranges.
   const EphemeralRange& selection_range =
@@ -542,7 +542,7 @@ bool SpellChecker::SelectionStartHasMarkerFor(
     int length) const {
   Node* node = FindFirstMarkable(GetFrame()
                                      .Selection()
-                                     .ComputeVisibleSelectionInDOMTree()
+                                     .ComputeVisibleSelectionInDomTree()
                                      .Start()
                                      .AnchorNode());
   auto* text_node = DynamicTo<Text>(node);

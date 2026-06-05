@@ -48,7 +48,7 @@ class SelectionControllerTest : public EditingTestBase {
   }
 
   VisibleSelection VisibleSelectionInDOMTree() const {
-    return Selection().ComputeVisibleSelectionInDOMTree();
+    return Selection().ComputeVisibleSelectionInDomTree();
   }
 
   VisibleSelectionInFlatTree GetVisibleSelectionInFlatTree() const {

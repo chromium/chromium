@@ -186,7 +186,7 @@ Element* ClipboardCommands::FindEventTargetForClipboardEvent(
   // position types, the container is the parent of the anchor node.
   if (RuntimeEnabledFeatures::ClipboardEventTargetUsesContainerNodeEnabled()) {
     const VisibleSelection& selection =
-        frame.Selection().ComputeVisibleSelectionInDOMTree();
+        frame.Selection().ComputeVisibleSelectionInDomTree();
     const Position& start = selection.Start();
     Node* container = start.ComputeContainerNode();
     if (!container) {
@@ -208,7 +208,7 @@ Element* ClipboardCommands::FindEventTargetForClipboardEvent(
   }
 
   return FindEventTargetFrom(
-      frame, frame.Selection().ComputeVisibleSelectionInDOMTree());
+      frame, frame.Selection().ComputeVisibleSelectionInDomTree());
 }
 
 // Returns true if Editor should continue with default processing.
@@ -256,8 +256,9 @@ bool ClipboardCommands::DispatchCopyOrCutEvent(LocalFrame& frame,
   // needs to be audited.  See http://crbug.com/590369 for more details.
   frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (IsInPasswordField(
-          frame.Selection().ComputeVisibleSelectionInDOMTree().Start()))
+          frame.Selection().ComputeVisibleSelectionInDomTree().Start())) {
     return true;
+  }
 
   return DispatchClipboardEvent(frame, event_type,
                                 DataTransferAccessPolicy::kWritable, source,
@@ -362,7 +363,7 @@ bool ClipboardCommands::ExecuteCopy(LocalFrame& frame,
           ImageElementFromImageDocument(document)) {
     // In an image document, normally there isn't anything to select, and we
     // only want to copy the image itself.
-    if (frame.Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
+    if (frame.Selection().ComputeVisibleSelectionInDomTree().IsNone()) {
       WriteImageNodeToClipboard(*frame.GetSystemClipboard(), *image_element,
                                 document->title());
       return true;
@@ -380,7 +381,7 @@ bool ClipboardCommands::ExecuteCopy(LocalFrame& frame,
     return true;
 
   if (EnclosingTextControl(
-          frame.Selection().ComputeVisibleSelectionInDOMTree().Start())) {
+          frame.Selection().ComputeVisibleSelectionInDomTree().Start())) {
     frame.GetSystemClipboard()->WritePlainText(frame.SelectedTextForClipboard(),
                                                GetSmartReplaceOption(frame));
     frame.GetSystemClipboard()->CommitWrite();
@@ -436,7 +437,7 @@ bool ClipboardCommands::ExecuteCut(LocalFrame& frame,
   if (!CanDeleteRange(frame.GetEditor().SelectedRange()))
     return true;
   if (EnclosingTextControl(
-          frame.Selection().ComputeVisibleSelectionInDOMTree().Start())) {
+          frame.Selection().ComputeVisibleSelectionInDomTree().Start())) {
     const String plain_text = frame.SelectedTextForClipboard();
     frame.GetSystemClipboard()->WritePlainText(plain_text,
                                                GetSmartReplaceOption(frame));
@@ -677,7 +678,7 @@ class CORE_EXPORT PasteImageResourceObserver final
       return frame_->Selection().GetDocument().body();
     }
     return FindEventTargetFrom(
-        *frame_, frame_->Selection().ComputeVisibleSelectionInDOMTree());
+        *frame_, frame_->Selection().ComputeVisibleSelectionInDomTree());
   }
 
   String BuildMarkup() const {

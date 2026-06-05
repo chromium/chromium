@@ -53,7 +53,7 @@ class FrameSelectionTest : public EditingTestBase {
 
  protected:
   VisibleSelection VisibleSelectionInDOMTree() const {
-    return Selection().ComputeVisibleSelectionInDOMTree();
+    return Selection().ComputeVisibleSelectionInDomTree();
   }
   VisibleSelectionInFlatTree GetVisibleSelectionInFlatTree() const {
     return Selection().ComputeVisibleSelectionInFlatTree();
@@ -145,7 +145,7 @@ TEST_F(FrameSelectionTest, FirstEphemeralRangeOf) {
   // Move |VisibleSelection| before "abc".
   UpdateAllLifecyclePhasesForTest();
   const EphemeralRange& range =
-      FirstEphemeralRangeOf(Selection().ComputeVisibleSelectionInDOMTree());
+      FirstEphemeralRangeOf(Selection().ComputeVisibleSelectionInDomTree());
   EXPECT_EQ(Position(sample->nextSibling(), 0), range.StartPosition())
       << "firstRange() should return current selection value";
   EXPECT_EQ(Position(sample->nextSibling(), 0), range.EndPosition());
@@ -159,7 +159,7 @@ TEST_F(FrameSelectionTest, SetValidSelection) {
           .SetBaseAndExtent(Position(text, 0), Position(text, 5))
           .Build(),
       SetSelectionOptions());
-  EXPECT_FALSE(Selection().ComputeVisibleSelectionInDOMTree().IsNone());
+  EXPECT_FALSE(Selection().ComputeVisibleSelectionInDomTree().IsNone());
 }
 
 #define EXPECT_EQ_SELECTED_TEXT(text) \
@@ -545,14 +545,14 @@ TEST_F(FrameSelectionTest, ModifyWithUserTriggered) {
       TextGranularity::kCharacter, SetSelectionBy::kSystem))
       << "Selection.modify() returns false for non-user-triggered call when "
          "selection isn't modified.";
-  EXPECT_EQ(end_of_text, Selection().ComputeVisibleSelectionInDOMTree().Start())
+  EXPECT_EQ(end_of_text, Selection().ComputeVisibleSelectionInDomTree().Start())
       << "Selection isn't modified";
 
   EXPECT_TRUE(Selection().Modify(
       SelectionModifyAlteration::kMove, SelectionModifyDirection::kForward,
       TextGranularity::kCharacter, SetSelectionBy::kUser))
       << "Selection.modify() returns true for user-triggered call";
-  EXPECT_EQ(end_of_text, Selection().ComputeVisibleSelectionInDOMTree().Start())
+  EXPECT_EQ(end_of_text, Selection().ComputeVisibleSelectionInDomTree().Start())
       << "Selection isn't modified";
 }
 
@@ -599,7 +599,7 @@ TEST_F(FrameSelectionTest, MoveRangeSelectionNoLiveness) {
                        sample->firstChild());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   const VisibleSelection& selection =
-      Selection().ComputeVisibleSelectionInDOMTree();
+      Selection().ComputeVisibleSelectionInDomTree();
   // Inserting "abc" before "xyz" should not affect to selection.
   EXPECT_EQ(Position(sample->lastChild(), 0), selection.Start());
   EXPECT_EQ(Position(sample->lastChild(), 3), selection.End());
@@ -614,7 +614,7 @@ TEST_F(FrameSelectionTest, SelectAllWithInputElement) {
   Node* const last_child = GetDocument().body()->lastChild();
   Selection().SelectAll();
   const SelectionInDOMTree& result_in_dom_tree =
-      Selection().ComputeVisibleSelectionInDOMTree().AsSelection();
+      Selection().ComputeVisibleSelectionInDomTree().AsSelection();
   const SelectionInFlatTree& result_in_flat_tree =
       Selection().ComputeVisibleSelectionInFlatTree().AsSelection();
   EXPECT_EQ(SelectionInDOMTree::Builder(result_in_dom_tree)
@@ -634,7 +634,7 @@ TEST_F(FrameSelectionTest, SelectAllWithUnselectableRoot) {
   GetDocument().ReplaceChild(select, GetDocument().documentElement());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SelectAll();
-  EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsNone())
+  EXPECT_TRUE(Selection().ComputeVisibleSelectionInDomTree().IsNone())
       << "Nothing should be selected if the "
          "content of the documentElement is not "
          "selctable.";
@@ -1549,7 +1549,7 @@ TEST_F(FrameSelectionTest, PaintCaretRecordsSelectionWithNoSelectionHandles) {
       SelectionInDOMTree::Builder().Collapse(Position(text, 0)).Build(),
       SetSelectionOptions());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsCaret());
+  EXPECT_TRUE(Selection().ComputeVisibleSelectionInDomTree().IsCaret());
   EXPECT_TRUE(Selection().ShouldPaintCaret(
       *To<LayoutBlock>(GetDocument().body()->GetLayoutObject())));
 

@@ -4686,7 +4686,7 @@ void WebFrameWidgetImpl::PasteFromImageBytes(mojo_base::BigBuffer image_bytes,
 
   Element* const target = FindEventTargetFrom(
       *local_frame,
-      local_frame->Selection().ComputeVisibleSelectionInDOMTree());
+      local_frame->Selection().ComputeVisibleSelectionInDomTree());
 
   if (!target) {
     return;

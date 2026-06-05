@@ -2190,7 +2190,7 @@ EditingTriState EditingStyle::SelectionHasStyle(const LocalFrame& frame,
 
   return MakeGarbageCollected<EditingStyle>(property_id, value,
                                             secure_context_mode)
-      ->TriStateOfStyle(frame.Selection().ComputeVisibleSelectionInDOMTree(),
+      ->TriStateOfStyle(frame.Selection().ComputeVisibleSelectionInDomTree(),
                         secure_context_mode);
 }
 

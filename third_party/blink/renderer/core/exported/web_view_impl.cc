@@ -1962,7 +1962,7 @@ void WebViewImpl::SetPageFocus(bool enable) {
           DocumentUpdateReason::kFocus);
       Element* element = focused_frame->GetDocument()->FocusedElement();
       if (element && focused_frame->Selection()
-                         .ComputeVisibleSelectionInDOMTree()
+                         .ComputeVisibleSelectionInDomTree()
                          .IsNone()) {
         // If the selection was cleared while the WebView was not
         // focused, then the focus element shows with a focus ring but

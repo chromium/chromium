@@ -502,7 +502,7 @@ PositionWithAffinity PositionForContentsPointRespectingEditingBoundary(
 
   if (result.InnerNode()) {
     return PositionRespectingEditingBoundary(
-        frame->Selection().ComputeVisibleSelectionInDOMTree().Start(), result);
+        frame->Selection().ComputeVisibleSelectionInDomTree().Start(), result);
   }
   return PositionWithAffinity();
 }

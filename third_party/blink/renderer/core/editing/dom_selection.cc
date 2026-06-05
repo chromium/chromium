@@ -100,7 +100,7 @@ VisibleSelection DomSelection::GetVisibleSelection() const {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  return Selection().ComputeVisibleSelectionInDOMTree();
+  return Selection().ComputeVisibleSelectionInDomTree();
 }
 
 bool DomSelection::IsAnchorFirstInSelection() const {
@@ -211,7 +211,7 @@ String DomSelection::direction() const {
        // Use IsCaret() instead of isCollapsed() so that directionality is still
        // reported for selections that cross shadow boundaries.
        Selection().GetSelectionInDOMTree().IsCaret()) ||
-      Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
+      Selection().ComputeVisibleSelectionInDomTree().IsNone()) {
     return "none";
   }
   if (IsAnchorFirstInSelection()) {
@@ -231,7 +231,7 @@ unsigned DomSelection::rangeCount() const {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
+  if (Selection().ComputeVisibleSelectionInDomTree().IsNone()) {
     return 0;
   }
   // Any selection can be adjusted to Range for Document.
@@ -791,7 +791,7 @@ void DomSelection::deleteFromDocument() {
       DocumentUpdateReason::kSelection);
 
   Range* selected_range = CreateRange(Selection()
-                                          .ComputeVisibleSelectionInDOMTree()
+                                          .ComputeVisibleSelectionInDomTree()
                                           .ToNormalizedEphemeralRange());
   if (!selected_range)
     return;
@@ -821,7 +821,7 @@ bool DomSelection::containsNode(const Node* n, bool allow_partial) const {
       DocumentUpdateReason::kSelection);
 
   const EphemeralRange selected_range = Selection()
-                                            .ComputeVisibleSelectionInDOMTree()
+                                            .ComputeVisibleSelectionInDomTree()
                                             .ToNormalizedEphemeralRange();
   if (selected_range.IsNull())
     return false;
@@ -884,7 +884,7 @@ String DomSelection::toString() {
       DomWindow()->document()->Lifecycle());
 
   const EphemeralRange range = Selection()
-                                   .ComputeVisibleSelectionInDOMTree()
+                                   .ComputeVisibleSelectionInDomTree()
                                    .ToNormalizedEphemeralRange();
 
   TextIteratorBehavior::Builder behavior_builder;

@@ -106,7 +106,7 @@ EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
 
 const PositionWithAffinity FrameCaret::CaretPosition() const {
   const VisibleSelection& selection =
-      selection_editor_->ComputeVisibleSelectionInDOMTree();
+      selection_editor_->ComputeVisibleSelectionInDomTree();
   if (!selection.IsCaret())
     return PositionWithAffinity();
   DCHECK(selection.Start().IsValidFor(*frame_->GetDocument()));
@@ -326,9 +326,10 @@ bool FrameCaret::ShouldShowCaret() const {
   }
 
   if (!IsEditablePosition(
-          selection_editor_->ComputeVisibleSelectionInDOMTree().Start()) &&
-      !frame_->IsCaretBrowsingEnabled())
+          selection_editor_->ComputeVisibleSelectionInDomTree().Start()) &&
+      !frame_->IsCaretBrowsingEnabled()) {
     return false;
+  }
 
   // Only show the caret if the selection has focus.
   return frame_->Selection().SelectionHasFocus();

@@ -222,7 +222,7 @@ SubstringUtil::AttributedSubstringInRange(LocalFrame* frame,
   ContainerNode* container_node = nullptr;
   if (RuntimeEnabledFeatures::HandleShadowDOMInSubstringUtilEnabled()) {
     Position start =
-        frame->Selection().ComputeVisibleSelectionInDOMTree().Start();
+        frame->Selection().ComputeVisibleSelectionInDomTree().Start();
     if (IsEditablePosition(start)) {
       container_node = RootEditableElementOf(start);
     } else if (start.AnchorNode() && start.AnchorNode()->IsInShadowTree()) {

@@ -650,7 +650,7 @@ static void WriteSelection(StringBuilder& ts, const LayoutObject* o) {
     return;
 
   const VisibleSelection& selection =
-      frame->Selection().ComputeVisibleSelectionInDOMTree();
+      frame->Selection().ComputeVisibleSelectionInDomTree();
   if (selection.IsCaret()) {
     ts << "caret: position " << selection.Start().ComputeEditingOffset()
        << " of " << NodePosition(selection.Start().AnchorNode());

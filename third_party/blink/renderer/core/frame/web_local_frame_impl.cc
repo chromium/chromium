@@ -1384,15 +1384,14 @@ bool WebLocalFrameImpl::SelectionTextDirection(
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
-
-  if (selection.ComputeVisibleSelectionInDOMTree()
-          .ToNormalizedEphemeralRange()
-          .IsNull())
+  auto visible_selection = selection.ComputeVisibleSelectionInDomTree();
+  if (visible_selection.ToNormalizedEphemeralRange().IsNull()) {
     return false;
-  start = ToBaseTextDirection(PrimaryDirectionOf(
-      *selection.ComputeVisibleSelectionInDOMTree().Start().AnchorNode()));
-  end = ToBaseTextDirection(PrimaryDirectionOf(
-      *selection.ComputeVisibleSelectionInDOMTree().End().AnchorNode()));
+  }
+  start = ToBaseTextDirection(
+      PrimaryDirectionOf(*visible_selection.Start().AnchorNode()));
+  end = ToBaseTextDirection(
+      PrimaryDirectionOf(*visible_selection.End().AnchorNode()));
   return true;
 }
 
@@ -1452,7 +1451,7 @@ bool WebLocalFrameImpl::HasSelection() const {
   // needs to be audited.  See http://crbug.com/590369 for more details.
   GetFrame()->GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
-  return GetFrame()->Selection().ComputeVisibleSelectionInDOMTree().IsRange();
+  return GetFrame()->Selection().ComputeVisibleSelectionInDomTree().IsRange();
 }
 
 WebRange WebLocalFrameImpl::SelectionRange() const {
@@ -1463,7 +1462,7 @@ WebRange WebLocalFrameImpl::SelectionRange() const {
 
   return GetFrame()
       ->Selection()
-      .ComputeVisibleSelectionInDOMTree()
+      .ComputeVisibleSelectionInDomTree()
       .ToNormalizedEphemeralRange();
 }
 

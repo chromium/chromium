@@ -620,7 +620,7 @@ WebInputEventResult SelectionController::UpdateSelectionForMouseDrag(
   const PositionWithAffinity& raw_target_position =
       Selection().SelectionHasFocus()
           ? PositionRespectingEditingBoundary(
-                Selection().ComputeVisibleSelectionInDOMTree().Start(),
+                Selection().ComputeVisibleSelectionInDomTree().Start(),
                 hit_test_result)
           : PositionWithAffinity();
   const PositionInFlatTreeWithAffinity target_position =

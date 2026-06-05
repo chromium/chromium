@@ -233,7 +233,7 @@ void HTMLLabelElement::DefaultEventHandlerInternal(Event& evt) {
         // Check if there is a selection and click is not on the
         // selection.
         if (GetLayoutObject() && GetLayoutObject()->IsSelectable() &&
-            frame->Selection().ComputeVisibleSelectionInDOMTree().IsRange() &&
+            frame->Selection().ComputeVisibleSelectionInDomTree().IsRange() &&
             !frame->GetEventHandler()
                  .GetSelectionController()
                  .MouseDownWasSingleClickInSelection() &&

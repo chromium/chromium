@@ -53,7 +53,7 @@ class VisibleSelectionTest : public EditingTestBase {
     Selection().SetSelection(SetSelectionTextToBody(selection_text),
                              SetSelectionOptions());
     const VisibleSelection& visible =
-        Selection().ComputeVisibleSelectionInDOMTree();
+        Selection().ComputeVisibleSelectionInDomTree();
     return GetSelectionTextFromBody(visible.AsSelection());
   }
 };

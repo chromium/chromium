@@ -316,7 +316,7 @@ bool StyleCommands::ExecuteToggleStyleInList(LocalFrame& frame,
                                              const CSSValue& value) {
   EditingStyle* const selection_style =
       EditingStyleUtilities::CreateStyleAtSelectionStart(
-          frame.Selection().ComputeVisibleSelectionInDOMTree());
+          frame.Selection().ComputeVisibleSelectionInDomTree());
   if (!selection_style || !selection_style->Style())
     return false;
 
@@ -331,7 +331,7 @@ bool StyleCommands::ExecuteToggleStyleInList(LocalFrame& frame,
       new_style == "none" &&
       property_id == CSSPropertyID::kWebkitTextDecorationsInEffect) {
     const VisibleSelection& selection =
-        frame.Selection().ComputeVisibleSelectionInDOMTree();
+        frame.Selection().ComputeVisibleSelectionInDomTree();
 
     if (selection.IsCaret()) {
       Element* element = AssociatedElementOf(selection.Start());

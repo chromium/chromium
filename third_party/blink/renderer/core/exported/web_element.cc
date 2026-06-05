@@ -253,7 +253,7 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
   // clipboard but instead pastes `text`. This block is a stripped-down version
   // of ClipboardCommands::Paste() that's limited to pasting plain text.
   Element* target = FindEventTargetFrom(
-      *frame, frame->Selection().ComputeVisibleSelectionInDOMTree());
+      *frame, frame->Selection().ComputeVisibleSelectionInDomTree());
   auto create_data_transfer = [](const WebString& text) {
     return DataTransfer::Create(DataTransfer::kCopyAndPaste,
                                 DataTransferAccessPolicy::kReadable,

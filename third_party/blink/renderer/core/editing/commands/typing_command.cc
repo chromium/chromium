@@ -228,7 +228,7 @@ void TypingCommand::DeleteSelection(Document& document, Options options) {
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
 
-  if (!frame->Selection().ComputeVisibleSelectionInDOMTree().IsRange()) {
+  if (!frame->Selection().ComputeVisibleSelectionInDomTree().IsRange()) {
     return;
   }
 
@@ -370,7 +370,7 @@ void TypingCommand::AdjustSelectionAfterIncrementalInsertion(
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   Element* element = frame->Selection()
-                         .ComputeVisibleSelectionInDOMTree()
+                         .ComputeVisibleSelectionInDomTree()
                          .RootEditableElement();
 
   // TODO(editing-dev): The text insertion should probably always leave the

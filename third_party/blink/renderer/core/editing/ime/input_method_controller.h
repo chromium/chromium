@@ -47,6 +47,7 @@ namespace blink {
 
 class Editor;
 class EditContext;
+class FrameSelection;
 class LocalDOMWindow;
 class LocalFrame;
 class Range;
@@ -195,6 +196,7 @@ class CORE_EXPORT InputMethodController final
 
   Editor& GetEditor() const;
   LocalFrame& GetFrame() const;
+  FrameSelection& Selection() const;
 
   String ComposingText() const;
   void SelectComposition() const;

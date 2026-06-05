@@ -552,10 +552,9 @@ static bool SetSelectionToDragCaret(LocalFrame* frame,
   frame->Selection().SetSelection(drag_caret, SetSelectionOptions());
   // TODO(crbug.com/40458806): Audit the usage of `UpdateStyleAndLayout`.
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  if (!frame->Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
-    return frame->Selection()
-        .ComputeVisibleSelectionInDOMTree()
-        .IsContentEditable();
+  auto selection = frame->Selection().ComputeVisibleSelectionInDomTree();
+  if (!selection.IsNone()) {
+    return selection.IsContentEditable();
   }
 
   const PositionWithAffinity& position = frame->PositionForPoint(point);
@@ -568,7 +567,7 @@ static bool SetSelectionToDragCaret(LocalFrame* frame,
   // TODO(crbug.com/40458806): Audit the usage of `UpdateStyleAndLayout`.
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   const VisibleSelection& visible_selection =
-      frame->Selection().ComputeVisibleSelectionInDOMTree();
+      frame->Selection().ComputeVisibleSelectionInDomTree();
   range = CreateRange(visible_selection.ToNormalizedEphemeralRange());
   return !visible_selection.IsNone() && visible_selection.IsContentEditable();
 }

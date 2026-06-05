@@ -77,7 +77,7 @@ Document& SelectionEditor::GetDocument() const {
   return *document_;
 }
 
-VisibleSelection SelectionEditor::ComputeVisibleSelectionInDOMTree() const {
+VisibleSelection SelectionEditor::ComputeVisibleSelectionInDomTree() const {
   DCHECK_EQ(GetFrame()->GetDocument(), GetDocument());
   DCHECK_EQ(GetFrame(), GetDocument().GetFrame());
   UpdateCachedVisibleSelectionIfNeeded();
@@ -600,7 +600,7 @@ void SelectionEditor::UpdateCachedAbsoluteBoundsIfNeeded() const {
 #endif
   cached_absolute_bounds_are_dirty_ = false;
 
-  const VisibleSelection selection = ComputeVisibleSelectionInDOMTree();
+  const VisibleSelection selection = ComputeVisibleSelectionInDomTree();
 
   if (selection.IsCaret()) {
     DCHECK(selection.IsValidFor(*frame_->GetDocument()));

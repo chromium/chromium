@@ -3123,7 +3123,7 @@ Node* Internals::visibleSelectionAnchorNode() {
     return nullptr;
   GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Position position =
-      GetFrame()->Selection().ComputeVisibleSelectionInDOMTree().Anchor();
+      GetFrame()->Selection().ComputeVisibleSelectionInDomTree().Anchor();
   return position.IsNull() ? nullptr : position.ComputeContainerNode();
 }
 
@@ -3132,7 +3132,7 @@ unsigned Internals::visibleSelectionAnchorOffset() {
     return 0;
   GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Position position =
-      GetFrame()->Selection().ComputeVisibleSelectionInDOMTree().Anchor();
+      GetFrame()->Selection().ComputeVisibleSelectionInDomTree().Anchor();
   return position.IsNull() ? 0 : position.ComputeOffsetInContainerNode();
 }
 
@@ -3141,7 +3141,7 @@ Node* Internals::visibleSelectionFocusNode() {
     return nullptr;
   GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Position position =
-      GetFrame()->Selection().ComputeVisibleSelectionInDOMTree().Focus();
+      GetFrame()->Selection().ComputeVisibleSelectionInDomTree().Focus();
   return position.IsNull() ? nullptr : position.ComputeContainerNode();
 }
 
@@ -3150,7 +3150,7 @@ unsigned Internals::visibleSelectionFocusOffset() {
     return 0;
   GetFrame()->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Position position =
-      GetFrame()->Selection().ComputeVisibleSelectionInDOMTree().Focus();
+      GetFrame()->Selection().ComputeVisibleSelectionInDomTree().Focus();
   return position.IsNull() ? 0 : position.ComputeOffsetInContainerNode();
 }
 

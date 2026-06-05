@@ -6154,13 +6154,13 @@ TEST_F(WebFrameTest, MoveRangeSelectionExtentScollsInputField) {
 
   EXPECT_EQ(0, frame->GetFrame()
                    ->Selection()
-                   .ComputeVisibleSelectionInDOMTree()
+                   .ComputeVisibleSelectionInDomTree()
                    .RootEditableElement()
                    ->scrollLeft());
   frame->MoveRangeSelectionExtent(gfx::Point(end_rect.x() + 500, end_rect.y()));
   EXPECT_GE(frame->GetFrame()
                 ->Selection()
-                .ComputeVisibleSelectionInDOMTree()
+                .ComputeVisibleSelectionInDomTree()
                 .RootEditableElement()
                 ->scrollLeft(),
             1);
@@ -6301,7 +6301,7 @@ TEST_F(WebFrameTest, DISABLED_PositionForPointTest) {
   WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
   LayoutObject* layout_object = main_frame->GetFrame()
                                     ->Selection()
-                                    .ComputeVisibleSelectionInDOMTree()
+                                    .ComputeVisibleSelectionInDomTree()
                                     .RootEditableElement()
                                     ->GetLayoutObject();
   EXPECT_EQ(0, ComputeOffset(layout_object, -1, -1));
@@ -6313,7 +6313,7 @@ TEST_F(WebFrameTest, DISABLED_PositionForPointTest) {
   main_frame = web_view_helper.LocalMainFrame();
   layout_object = main_frame->GetFrame()
                       ->Selection()
-                      .ComputeVisibleSelectionInDOMTree()
+                      .ComputeVisibleSelectionInDomTree()
                       .RootEditableElement()
                       ->GetLayoutObject();
   EXPECT_EQ(0, ComputeOffset(layout_object, -1, -1));
@@ -6874,7 +6874,7 @@ TEST_F(WebFrameTest, ReplaceMisspelledRange) {
                      WebLocalFrame::kSelectionSetFocus);
   EphemeralRange selection_range = frame->GetFrame()
                                        ->Selection()
-                                       .ComputeVisibleSelectionInDOMTree()
+                                       .ComputeVisibleSelectionInDomTree()
                                        .ToNormalizedEphemeralRange();
 
   EXPECT_EQ(1, textcheck.NumberOfTimesChecked());
@@ -6923,7 +6923,7 @@ TEST_F(WebFrameTest, RemoveSpellingMarkers) {
                      WebLocalFrame::kSelectionSetFocus);
   EphemeralRange selection_range = frame->GetFrame()
                                        ->Selection()
-                                       .ComputeVisibleSelectionInDOMTree()
+                                       .ComputeVisibleSelectionInDomTree()
                                        .ToNormalizedEphemeralRange();
 
   EXPECT_EQ(0, NumMarkersInRange(document, selection_range,

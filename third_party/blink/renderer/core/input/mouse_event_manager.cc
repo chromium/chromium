@@ -565,7 +565,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // TODO(editing-dev): The use of VisibleSelection should be audited. See
   // crbug.com/657237 for details.
   if (element &&
-      frame_->Selection().ComputeVisibleSelectionInDOMTree().IsRange()) {
+      frame_->Selection().ComputeVisibleSelectionInDomTree().IsRange()) {
     // Don't check for scroll controls pseudo-elements, since they can't
     // be in selection, until we support selecting their content.
     // Just clear the selection, since it won't be cleared otherwise.
@@ -574,7 +574,7 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
       frame_->Selection().Clear();
     } else {
       const EphemeralRange& range = frame_->Selection()
-                                        .ComputeVisibleSelectionInDOMTree()
+                                        .ComputeVisibleSelectionInDomTree()
                                         .ToNormalizedEphemeralRange();
       if (IsNodeFullyContained(range, *element) &&
           element->IsDescendantOf(frame_->GetDocument()->FocusedElement())) {
@@ -1056,7 +1056,7 @@ bool MouseEventManager::TryStartDrag(
   frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kInput);
   if (GetDragState().drag_type_ == kDragSourceActionSelection &&
       IsInPasswordField(
-          frame_->Selection().ComputeVisibleSelectionInDOMTree().Start())) {
+          frame_->Selection().ComputeVisibleSelectionInDomTree().Start())) {
     return false;
   }
 

@@ -60,7 +60,7 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
             GetDocument().body()->GetInnerHTMLString());
   EXPECT_TRUE(frame->Selection().GetSelectionInDOMTree().IsCaret());
   EXPECT_EQ(Position(div, 0), frame->Selection()
-                                  .ComputeVisibleSelectionInDOMTree()
+                                  .ComputeVisibleSelectionInDomTree()
                                   .Anchor()
                                   .ToOffsetInAnchor());
 }

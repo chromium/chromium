@@ -143,12 +143,13 @@ EditingBehavior Editor::Behavior() const {
 }
 
 static bool IsCaretAtStartOfWrappedLine(const FrameSelection& selection) {
-  if (!selection.ComputeVisibleSelectionInDOMTree().IsCaret())
+  if (!selection.ComputeVisibleSelectionInDomTree().IsCaret()) {
     return false;
+  }
   if (selection.GetSelectionInDOMTree().Affinity() != TextAffinity::kDownstream)
     return false;
   const Position& position =
-      selection.ComputeVisibleSelectionInDOMTree().Start();
+      selection.ComputeVisibleSelectionInDomTree().Start();
   if (InSameLine(PositionWithAffinity(position, TextAffinity::kUpstream),
                  PositionWithAffinity(position, TextAffinity::kDownstream)))
     return false;
@@ -274,7 +275,7 @@ bool Editor::CanPaste() const {
 bool Editor::CanDelete() const {
   FrameSelection& selection = GetFrameSelection();
   return selection.ComputeVisibleSelectionInDomTreeDeprecated().IsRange() &&
-         selection.ComputeVisibleSelectionInDOMTree().RootEditableElement();
+         selection.ComputeVisibleSelectionInDomTree().RootEditableElement();
 }
 
 bool Editor::SmartInsertDeleteEnabled() const {
@@ -322,7 +323,7 @@ void Editor::ReplaceSelectionWithFragment(
     DataTransfer* data_transfer) {
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   const VisibleSelection& selection =
-      GetFrameSelection().ComputeVisibleSelectionInDOMTree();
+      GetFrameSelection().ComputeVisibleSelectionInDomTree();
   if (selection.IsNone() || !selection.IsContentEditable() || !fragment)
     return;
 
@@ -577,7 +578,7 @@ bool Editor::InsertLineBreak() {
     return false;
 
   VisiblePosition caret =
-      GetFrameSelection().ComputeVisibleSelectionInDOMTree().VisibleStart();
+      GetFrameSelection().ComputeVisibleSelectionInDomTree().VisibleStart();
   DCHECK(GetFrame().GetDocument());
   if (!TypingCommand::InsertLineBreak(*GetFrame().GetDocument()))
     return false;
@@ -594,7 +595,7 @@ bool Editor::InsertParagraphSeparator() {
     return InsertLineBreak();
 
   VisiblePosition caret =
-      GetFrameSelection().ComputeVisibleSelectionInDOMTree().VisibleStart();
+      GetFrameSelection().ComputeVisibleSelectionInDomTree().VisibleStart();
   DCHECK(GetFrame().GetDocument());
   EditingState editing_state;
   if (!TypingCommand::InsertParagraphSeparator(*GetFrame().GetDocument()))
@@ -1007,7 +1008,7 @@ FrameSelection& Editor::GetFrameSelection() const {
 }
 
 void Editor::SetMark() {
-  mark_ = GetFrameSelection().ComputeVisibleSelectionInDOMTree();
+  mark_ = GetFrameSelection().ComputeVisibleSelectionInDomTree();
   mark_is_directional_ = GetFrameSelection().IsDirectional();
 }
 
