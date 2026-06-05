@@ -27,6 +27,7 @@ suite('TopToolbarTest', () => {
     proxy = new TestContextualTasksBrowserProxy(
         'chrome://webui-test/contextual_tasks/test.html');
     BrowserProxyImpl.setInstance(proxy);
+    loadTimeData.overrideValues({contextManagementInComposeboxEnabled: false});
   });
 
   suite('Expand button enabled', () => {
