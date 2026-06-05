@@ -115,8 +115,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
 // Ensure actuation for a page tool simulates the page having focus. This is
 // important to ensure, e.g. 'focus' events are fired on the page in a way that
 // matches if a real user was interacting with the page.
+// TODO(crbug.com/460575305): Re-enable when no longer flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EnsureFocusSimulatedWhenActing \
+  DISABLED_EnsureFocusSimulatedWhenActing
+#else
+#define MAYBE_EnsureFocusSimulatedWhenActing EnsureFocusSimulatedWhenActing
+#endif
 IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
-                       EnsureFocusSimulatedWhenActing) {
+                       MAYBE_EnsureFocusSimulatedWhenActing) {
   const GURL url_background =
       embedded_test_server()->GetURL("/actor/focus.html");
   const GURL url_foreground =
