@@ -239,20 +239,10 @@ class TypePredicate {
           if (template_args[i].getKind() != clang::TemplateArgument::Type) {
             continue;
           }
-#ifdef LLVM_FORCE_HEAD_REVISION
-          clang::SourceLocation template_kw_loc;
-          if (auto* eii =
-                  field_record_template->getExplicitInstantiationInfo()) {
-            template_kw_loc = eii->TemplateKeywordLoc;
-          }
-#else
-          clang::SourceLocation template_kw_loc =
-              field_record_template->getTemplateKeywordLoc();
-#endif
           match->MergeSubResult(
               GetMatchResult(template_args[i].getAsType().getTypePtrOrNull(),
                              visited),
-              template_kw_loc);
+              field_record_template->getTemplateKeywordLoc());
 
           // Verdict finalized: early return.
           if (match->verdict_ == MatchResult::kMatch) {
