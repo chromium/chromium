@@ -40,8 +40,17 @@ ScopedMessagePipeHandle IsolatedConnection::Connect(
 ScopedMessagePipeHandle IsolatedConnection::Connect(
     PlatformChannelEndpoint endpoint,
     base::Process process) {
+  return Connect(std::move(endpoint), std::move(process),
+                 MOJO_SEND_INVITATION_FLAG_NONE);
+}
+
+ScopedMessagePipeHandle IsolatedConnection::Connect(
+    PlatformChannelEndpoint endpoint,
+    base::Process process,
+    MojoSendInvitationFlags invitation_flags) {
   return OutgoingInvitation::SendIsolated(std::move(endpoint),
-                                          token_.ToString(), process.Handle());
+                                          token_.ToString(), process.Handle(),
+                                          invitation_flags);
 }
 
 ScopedMessagePipeHandle IsolatedConnection::Connect(
