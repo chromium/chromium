@@ -53,16 +53,6 @@ using testing::Property;
 constexpr char kDefaultUrl[] = "https://example.com/";
 constexpr char kDataUrl[] = "data:text/html,";
 
-net::FirstPartySetMetadata ComputeFirstPartySetMetadataSync(
-    const url::Origin& origin,
-    const net::CookieMonster* cookie_store,
-    const net::IsolationInfo& isolation_info) {
-  base::test::TestFuture<net::FirstPartySetMetadata> future;
-  network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
-      origin, cookie_store, isolation_info, future.GetCallback());
-  return future.Take();
-}
-
 class CookieStoreTest : public testing::Test {
  protected:
   CookieStoreTest() : CookieStoreTest(url::Origin::Create(GURL(kDefaultUrl))) {}
@@ -111,9 +101,10 @@ class CookieStoreTest : public testing::Test {
             /*devtools_cookies_setting_overrides=*/
             net::CookieSettingOverrides(),
             /*cookie_observer=*/mojo::NullRemote(),
-            ComputeFirstPartySetMetadataSync(origin_,
-                                             &cookie_monster_,
-                                             isolation_info_))) {
+            network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
+                origin_,
+                &cookie_monster_,
+                isolation_info_))) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &CookieStoreTest::OnBadMessage, base::Unretained(this)));
   }

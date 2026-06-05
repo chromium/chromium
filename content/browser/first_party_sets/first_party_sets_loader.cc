@@ -65,16 +65,8 @@ void FirstPartySetsLoader::SetComponentSets(base::Version version,
     return;
   }
 
-  // We may use USER_BLOCKING here since First-Party Set initialization may
-  // block network navigations at startup. Otherwise, initialization blocks
-  // resolution of promises from `document.requestStorageAccess()`, but those
-  // calls are unlikely to occur during startup.
-  base::TaskPriority priority =
-      base::FeatureList::IsEnabled(net::features::kWaitForFirstPartySetsInit)
-          ? base::TaskPriority::USER_BLOCKING
-          : base::TaskPriority::USER_VISIBLE;
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), priority},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadSetsFile, std::move(sets_file)),
       base::BindOnce(&FirstPartySetsLoader::OnReadSetsFile,
                      weak_factory_.GetWeakPtr(), std::move(version)));

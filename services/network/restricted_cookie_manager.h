@@ -117,8 +117,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     origin_ = new_origin;
   }
 
-  // This spins the event loop, since the cookie partition key may be computed
-  // asynchronously.
   void OverrideIsolationInfoForTesting(
       const net::IsolationInfo& new_isolation_info);
 
@@ -185,13 +183,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
 
   // Computes the First-Party Set metadata corresponding to the given `origin`,
   // `cookie_store`, and `isolation_info`.
-  //
-  // May invoke `callback` either synchronously or asynchronously.
-  static void ComputeFirstPartySetMetadata(
+  static net::FirstPartySetMetadata ComputeFirstPartySetMetadata(
       const url::Origin& origin,
       const net::CookieStore* cookie_store,
-      const net::IsolationInfo& isolation_info,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
+      const net::IsolationInfo& isolation_info);
 
   // The owner of this class has context into cookie settings changes. Calling
   // this function makes sure the appropriate state is updated internally to
@@ -304,11 +299,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   bool SkipAccessNotificationForCookieItem(
       CookieAccesses* cookie_accesses,
       const net::CookieWithAccessResult& cookie_item);
-
-  // Called while overriding the cookie_partition_key during testing.
-  void OnGotFirstPartySetMetadataForTesting(
-      base::OnceClosure done_closure,
-      net::FirstPartySetMetadata first_party_set_metadata);
 
   // Computes the CookieSettingOverrides to be used by this instance.
   net::CookieSettingOverrides GetCookieSettingOverrides(

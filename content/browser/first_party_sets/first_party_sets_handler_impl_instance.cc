@@ -55,9 +55,7 @@ FirstPartySetsHandler* g_test_instance = nullptr;
 FirstPartySetsHandlerImpl* g_impl_test_instance = nullptr;
 
 base::TaskPriority GetTaskPriority() {
-  return base::FeatureList::IsEnabled(net::features::kWaitForFirstPartySetsInit)
-             ? base::TaskPriority::USER_BLOCKING
-             : base::TaskPriority::BEST_EFFORT;
+  return base::TaskPriority::BEST_EFFORT;
 }
 
 }  // namespace

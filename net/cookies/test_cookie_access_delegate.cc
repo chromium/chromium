@@ -67,26 +67,16 @@ bool TestCookieAccessDelegate::ShouldTreatUrlAsTrustworthy(
   return trustworthy_site_.IsSameSiteWith(url);
 }
 
-std::optional<
-    std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
-TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
+std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
+TestCookieAccessDelegate::ComputeFirstPartySetMetadata(
     const SchemefulSite& site,
-    const SchemefulSite* top_frame_site,
-    base::OnceCallback<void(FirstPartySetMetadata,
-                            FirstPartySetsCacheFilter::MatchInfo)> callback)
-    const {
+    const SchemefulSite* top_frame_site) const {
   FirstPartySetMetadata metadata(
       FindFirstPartySetEntry(site),
       top_frame_site ? FindFirstPartySetEntry(*top_frame_site) : std::nullopt);
   FirstPartySetsCacheFilter::MatchInfo match_info(
       first_party_sets_cache_filter_.GetMatchInfo(site));
 
-  if (invoke_callbacks_asynchronously_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(metadata), match_info));
-    return std::nullopt;
-  }
   return std::pair(std::move(metadata), match_info);
 }
 

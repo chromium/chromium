@@ -1122,23 +1122,6 @@ void NetworkContext::GetCookieManager(
   cookie_manager_->AddReceiver(std::move(receiver));
 }
 
-void NetworkContext::GetRestrictedCookieManager(
-    mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
-    mojom::RestrictedCookieManagerRole role,
-    const url::Origin& origin,
-    const net::IsolationInfo& isolation_info,
-    const net::CookieSettingOverrides& cookie_setting_overrides,
-    const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
-    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
-  RestrictedCookieManager::ComputeFirstPartySetMetadata(
-      origin, url_request_context_->cookie_store(), isolation_info,
-      base::BindOnce(&NetworkContext::OnComputedFirstPartySetMetadata,
-                     weak_factory_.GetWeakPtr(), std::move(receiver), role,
-                     origin, isolation_info, cookie_setting_overrides,
-                     devtools_cookie_setting_overrides,
-                     std::move(cookie_observer)));
-}
-
 void NetworkContext::OnRCMDisconnect(
     const network::RestrictedCookieManager* rcm) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1156,16 +1139,17 @@ void NetworkContext::RemoveConnectionChangeObserver(
   }
 }
 
-void NetworkContext::OnComputedFirstPartySetMetadata(
+void NetworkContext::GetRestrictedCookieManager(
     mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
     mojom::RestrictedCookieManagerRole role,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     const net::CookieSettingOverrides& cookie_setting_overrides,
     const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
-    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-    net::FirstPartySetMetadata first_party_set_metadata) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
+  net::FirstPartySetMetadata first_party_set_metadata =
+      RestrictedCookieManager::ComputeFirstPartySetMetadata(
+          origin, url_request_context_->cookie_store(), isolation_info);
 
   std::unique_ptr<RestrictedCookieManager> ptr =
       std::make_unique<RestrictedCookieManager>(

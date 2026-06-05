@@ -72,16 +72,6 @@ namespace network {
 
 namespace {
 
-net::FirstPartySetMetadata ComputeFirstPartySetMetadataSync(
-    const url::Origin& origin,
-    const net::CookieStore* cookie_store,
-    const net::IsolationInfo& isolation_info) {
-  base::test::TestFuture<net::FirstPartySetMetadata> future;
-  RestrictedCookieManager::ComputeFirstPartySetMetadata(
-      origin, cookie_store, isolation_info, future.GetCallback());
-  return future.Take();
-}
-
 // Creates a CookieManagerGetOptions appropriate for getting all cookies.
 mojom::CookieManagerGetOptionsPtr GetAllCookiesOptions() {
   auto options = mojom::CookieManagerGetOptions::New();
@@ -300,9 +290,10 @@ class RestrictedCookieManagerTest
             /*devtools_cookies_setting_overrides=*/
             DevtoolsCookieSettingOverrides(),
             recording_client_.GetRemote(),
-            ComputeFirstPartySetMetadataSync(kDefaultOrigin,
-                                             &cookie_monster_,
-                                             isolation_info_))),
+            RestrictedCookieManager::ComputeFirstPartySetMetadata(
+                kDefaultOrigin,
+                &cookie_monster_,
+                isolation_info_))),
         receiver_(service_.get(),
                   service_remote_.BindNewPipeAndPassReceiver()) {
     sync_service_ =
@@ -1435,8 +1426,8 @@ TEST_P(RestrictedCookieManagerTest,
       /*devtools_cookies_setting_overrides=*/
       DevtoolsCookieSettingOverrides(),
       mojo::PendingRemote<mojom::CookieAccessObserver>(),
-      ComputeFirstPartySetMetadataSync(kDefaultOrigin, &cookie_monster_,
-                                       isolation_info_));
+      RestrictedCookieManager::ComputeFirstPartySetMetadata(
+          kDefaultOrigin, &cookie_monster_, isolation_info_));
 
   mojo::Receiver<mojom::RestrictedCookieManager> local_receiver(
       local_service.get(), local_service_remote.BindNewPipeAndPassReceiver());

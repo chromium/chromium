@@ -818,18 +818,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // On disconnect of owned RCMs references need to be cleaned up.
   void OnRCMDisconnect(const network::RestrictedCookieManager* rcm);
 
-  // Invoked with the FirstPartySetMetadata to be associated with the given
-  // RestrictedCookieManager that is being set up.
-  void OnComputedFirstPartySetMetadata(
-      mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
-      mojom::RestrictedCookieManagerRole role,
-      const url::Origin& origin,
-      const net::IsolationInfo& isolation_info,
-      const net::CookieSettingOverrides& cookie_setting_overrides,
-      const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
-      mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
-      net::FirstPartySetMetadata first_party_set_metadata);
-
   GURL GetHSTSRedirectForPreconnect(const GURL& original_url);
 
 #if BUILDFLAG(IS_P2P_ENABLED)

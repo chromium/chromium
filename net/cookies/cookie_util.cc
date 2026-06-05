@@ -1102,20 +1102,16 @@ bool IsTimeLimitedInsecureCookiesEnabled() {
          base::FeatureList::IsEnabled(features::kTimeLimitedInsecureCookies);
 }
 
-std::optional<
-    std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
-ComputeFirstPartySetMetadataMaybeAsync(
+std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
+ComputeFirstPartySetMetadata(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate,
-    base::OnceCallback<void(FirstPartySetMetadata,
-                            FirstPartySetsCacheFilter::MatchInfo)> callback) {
+    const CookieAccessDelegate* cookie_access_delegate) {
   if (cookie_access_delegate) {
-    return cookie_access_delegate->ComputeFirstPartySetMetadataMaybeAsync(
+    return cookie_access_delegate->ComputeFirstPartySetMetadata(
         request_site,
         base::OptionalToPtr(
-            isolation_info.network_isolation_key().GetTopFrameSite()),
-        std::move(callback));
+            isolation_info.network_isolation_key().GetTopFrameSite()));
   }
 
   return std::pair(FirstPartySetMetadata(),

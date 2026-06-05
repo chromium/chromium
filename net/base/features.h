@@ -309,16 +309,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieSameSiteConsidersRedirectChain);
 // restrictions.
 NET_EXPORT BASE_DECLARE_FEATURE(kAllowSameSiteNoneCookiesInSandbox);
 
-// When this feature is enabled, the network service will wait until First-Party
-// Sets are initialized before issuing requests that use the HTTP cache or
-// cookies.
-NET_EXPORT BASE_DECLARE_FEATURE(kWaitForFirstPartySetsInit);
-
-// Controls the maximum time duration an outermost frame navigation should be
-// deferred by RWS initialization.
-NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kWaitForFirstPartySetsInitNavigationThrottleTimeout;
-
 // When enabled, requestStorageAccessFor will require storage access permissions
 // granted by StorageAccessApi or StorageAccessHeaders to send cookies on
 // requests allowed because of requestStorageAccessFor instead of cors.

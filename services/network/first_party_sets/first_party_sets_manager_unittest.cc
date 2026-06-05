@@ -23,32 +23,14 @@
 #include "url/gurl.h"
 
 using ::testing::IsEmpty;
-using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
 namespace network {
 
-class WaitingFeatureInitializer {
+class FirstPartySetsManagerTest : public ::testing::Test {
  public:
-  explicit WaitingFeatureInitializer(bool enabled) {
-    if (enabled) {
-      features_.InitAndEnableFeature(net::features::kWaitForFirstPartySetsInit);
-    } else {
-      features_.InitAndDisableFeature(
-          net::features::kWaitForFirstPartySetsInit);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-class FirstPartySetsManagerTest : public ::testing::Test,
-                                  public WaitingFeatureInitializer {
- public:
-  explicit FirstPartySetsManagerTest(bool enabled, bool wait_for_init)
-      : WaitingFeatureInitializer(wait_for_init), manager_(enabled) {}
+  explicit FirstPartySetsManagerTest(bool enabled) : manager_(enabled) {}
 
   void SetCompleteSets(
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
@@ -58,37 +40,17 @@ class FirstPartySetsManagerTest : public ::testing::Test,
         base::Version("1.2.3"), content, aliases));
   }
 
-  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
-  FindEntriesAndWait(const base::flat_set<net::SchemefulSite>& sites,
-                     const net::FirstPartySetsContextConfig& config) {
-    std::vector<std::pair<
-        net::SchemefulSite,
-        base::test::TestFuture<std::optional<net::FirstPartySetEntry>>>>
-        futures;
-    futures.reserve(sites.size());
-    for (const auto& site : sites) {
-      auto& pair = futures.emplace_back(
-          site,
-          base::test::TestFuture<std::optional<net::FirstPartySetEntry>>());
-      std::optional<net::FirstPartySetMetadata> maybe_metadata =
-          manager_.ComputeMetadata(
-              site, /*top_frame_site=*/std::nullopt, config,
-              base::BindOnce([](net::FirstPartySetMetadata metadata) {
-                return metadata.frame_entry();
-              }).Then(pair.second.GetCallback()));
-      if (maybe_metadata) {
-        pair.second.SetValue(maybe_metadata->frame_entry());
-      }
-    }
-
+  base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> FindEntries(
+      const base::flat_set<net::SchemefulSite>& sites,
+      const net::FirstPartySetsContextConfig& config) {
     std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> entries;
-    for (auto& [site, future] : futures) {
-      std::optional<net::FirstPartySetEntry> entry = future.Take();
-      if (entry) {
-        entries.emplace_back(site, std::move(entry).value());
+    for (const auto& site : sites) {
+      net::FirstPartySetMetadata metadata = manager_.ComputeMetadata(
+          site, /*top_frame_site=*/std::nullopt, config);
+      if (metadata.frame_entry()) {
+        entries.emplace_back(site, metadata.frame_entry().value());
       }
     }
-
     return entries;
   }
 
@@ -102,7 +64,7 @@ class FirstPartySetsManagerTest : public ::testing::Test,
 class FirstPartySetsManagerDisabledTest : public FirstPartySetsManagerTest {
  public:
   FirstPartySetsManagerDisabledTest()
-      : FirstPartySetsManagerTest(/*enabled=*/false, /*wait_for_init=*/true) {}
+      : FirstPartySetsManagerTest(/*enabled=*/false) {}
 };
 
 TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
@@ -116,7 +78,7 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
                                       example_test, net::SiteType::kPrimary)}},
                   {{example_cctld, example_test}});
 
-  EXPECT_THAT(FindEntriesAndWait(
+  EXPECT_THAT(FindEntries(
                   {
                       aaaa,
                       example_test,
@@ -129,7 +91,7 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
 class FirstPartySetsManagerEnabledTest : public FirstPartySetsManagerTest {
  public:
   FirstPartySetsManagerEnabledTest()
-      : FirstPartySetsManagerTest(/*enabled=*/true, /*wait_for_init=*/true) {}
+      : FirstPartySetsManagerTest(/*enabled=*/true) {}
 };
 
 TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets) {
@@ -144,7 +106,7 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets) {
                   {{example_cctld, example_test}});
 
   EXPECT_THAT(
-      FindEntriesAndWait(
+      FindEntries(
           {
               aaaa,
               example_test,
@@ -165,14 +127,14 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets_Idempotent) {
   net::SchemefulSite aaaa(GURL("https://aaaa.test"));
 
   SetCompleteSets({}, {});
-  EXPECT_THAT(FindEntriesAndWait({}, {}), IsEmpty());
+  EXPECT_THAT(FindEntries({}, {}), IsEmpty());
 
   // The second call to SetCompleteSets should have no effect.
   SetCompleteSets(
       {{aaaa, net::FirstPartySetEntry(example, net::SiteType::kAssociated)},
        {example, net::FirstPartySetEntry(example, net::SiteType::kPrimary)}},
       {});
-  EXPECT_THAT(FindEntriesAndWait(
+  EXPECT_THAT(FindEntries(
                   {
                       aaaa,
                       example,
@@ -186,9 +148,8 @@ TEST_F(FirstPartySetsManagerEnabledTest, SetCompleteSets_Idempotent) {
 class AsyncPopulatedFirstPartySetsManagerTest
     : public FirstPartySetsManagerTest {
  public:
-  explicit AsyncPopulatedFirstPartySetsManagerTest(bool wait_for_init)
-      : FirstPartySetsManagerTest(/*enabled=*/true,
-                                  /*wait_for_init=*/wait_for_init) {}
+  explicit AsyncPopulatedFirstPartySetsManagerTest()
+      : FirstPartySetsManagerTest(/*enabled=*/true) {}
 
  protected:
   void Populate() {
@@ -228,51 +189,13 @@ class AsyncPopulatedFirstPartySetsManagerTest
   }
 };
 
-class AsyncWaitingFirstPartySetsManagerTest
-    : public AsyncPopulatedFirstPartySetsManagerTest {
- public:
-  AsyncWaitingFirstPartySetsManagerTest()
-      : AsyncPopulatedFirstPartySetsManagerTest(/*wait_for_init=*/true) {}
-};
-
-TEST_F(AsyncWaitingFirstPartySetsManagerTest,
-       QueryBeforeReady_ComputeMetadata) {
-  base::test::TestFuture<net::FirstPartySetMetadata> future;
-  {
-    // Force deallocation to provoke a UAF if the impl just copies the pointer.
-    net::SchemefulSite associatedSite(GURL("https://associatedSite1.test"));
-
-    EXPECT_FALSE(manager().ComputeMetadata(associatedSite, &associatedSite,
-                                           net::FirstPartySetsContextConfig(),
-                                           future.GetCallback()));
-  }
-
-  Populate();
-
-  {
-    net::FirstPartySetEntry entry(
-        net::SchemefulSite(GURL("https://example.test")),
-        net::SiteType::kAssociated);
-
-    EXPECT_EQ(future.Get(), net::FirstPartySetMetadata(entry, entry));
-  }
-}
-
-class AsyncNonwaitingFirstPartySetsManagerTest
-    : public AsyncPopulatedFirstPartySetsManagerTest {
- public:
-  AsyncNonwaitingFirstPartySetsManagerTest()
-      : AsyncPopulatedFirstPartySetsManagerTest(/*wait_for_init=*/false) {}
-};
-
-TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
+TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
        QueryBeforeReady_ComputeMetadata) {
   net::SchemefulSite associatedSite(GURL("https://associatedSite1.test"));
 
   EXPECT_EQ(net::FirstPartySetMetadata(),
             manager().ComputeMetadata(associatedSite, &associatedSite,
-                                      net::FirstPartySetsContextConfig(),
-                                      base::NullCallback()));
+                                      net::FirstPartySetsContextConfig()));
 
   Populate();
 
@@ -282,8 +205,7 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
 
   EXPECT_EQ(net::FirstPartySetMetadata(entry, entry),
             manager().ComputeMetadata(associatedSite, &associatedSite,
-                                      net::FirstPartySetsContextConfig(),
-                                      base::NullCallback()));
+                                      net::FirstPartySetsContextConfig()));
 }
 
 }  // namespace network

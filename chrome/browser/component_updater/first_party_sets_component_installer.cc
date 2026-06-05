@@ -24,13 +24,7 @@ base::TaskPriority GetTaskPriority() {
   // components unless its priority is elevated.
   return base::TaskPriority::USER_BLOCKING;
 #else
-  // We may use USER_BLOCKING here since First-Party Set initialization can
-  // block network requests at startup.
-  return content::FirstPartySetsHandler::GetInstance()->IsEnabled() &&
-                 base::FeatureList::IsEnabled(
-                     net::features::kWaitForFirstPartySetsInit)
-             ? base::TaskPriority::USER_BLOCKING
-             : base::TaskPriority::BEST_EFFORT;
+  return base::TaskPriority::BEST_EFFORT;
 #endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 

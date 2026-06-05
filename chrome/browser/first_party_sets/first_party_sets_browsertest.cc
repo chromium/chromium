@@ -8,13 +8,16 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/test_launcher_utils.h"
 #include "components/component_updater/installer_policies/first_party_sets_component_installer_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -38,6 +41,18 @@ class FirstPartySetsBrowserTestBase : public InProcessBrowserTest {
     return content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   }
 
+  // Waits until the current browser context's RWS service has fully initialized
+  // (including waiting for any relevant data to have been cleared).
+  void WaitForFirstPartySetsInit() {
+    first_party_sets::FirstPartySetsPolicyService* service =
+        first_party_sets::FirstPartySetsPolicyServiceFactory::
+            GetForBrowserContext(web_contents()->GetBrowserContext());
+    ASSERT_NE(service, nullptr);
+    base::test::TestFuture<void> future;
+    service->WaitForFirstInitCompleteForTesting(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
  private:
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
@@ -46,8 +61,8 @@ class FirstPartySetsBrowserTestBase : public InProcessBrowserTest {
 
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
-        /* enabled_features = */ {net::features::kForceThirdPartyCookieBlocking,
-                                  net::features::kWaitForFirstPartySetsInit},
+        /* enabled_features = */ {net::features::
+                                      kForceThirdPartyCookieBlocking},
         /* disabled_features = */ {});
     CHECK(component_dir_.CreateUniqueTempDir());
     component_updater::FirstPartySetsComponentInstallerPolicy::
@@ -82,6 +97,7 @@ class FirstPartySetsBrowserTestWithSetChangeNotAffectingSitesUnderTest
 IN_PROC_BROWSER_TEST_F(
     FirstPartySetsBrowserTestWithSetChangeNotAffectingSitesUnderTest,
     PRE_CookieNotDeleted) {
+  WaitForFirstPartySetsInit();
   // Set a cookie for b.test/.
   ASSERT_TRUE(
       content::SetCookie(web_contents()->GetBrowserContext(), kUrlB,
@@ -91,6 +107,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     FirstPartySetsBrowserTestWithSetChangeNotAffectingSitesUnderTest,
     CookieNotDeleted) {
+  WaitForFirstPartySetsInit();
   // After restart, check the cookies of b.test. Since b.test stayed in the
   // Related Website Sets, its cookies are still present.
   EXPECT_EQ("foo=bar",
@@ -115,6 +132,7 @@ class FirstPartySetsBrowserTestWithSiteLeavingSet
 
 IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
                        PRE_CookieDeleted) {
+  WaitForFirstPartySetsInit();
   // Set a cookie for b.test/.
   ASSERT_TRUE(
       content::SetCookie(web_contents()->GetBrowserContext(), kUrlB,
@@ -129,6 +147,7 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
 #endif
 IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
                        MAYBE_CookieDeleted) {
+  WaitForFirstPartySetsInit();
   // After restart, check the cookies of b.test. Since b.test moved out of the
   // Related Website Sets, its cookies are going to be deleted.
   EXPECT_EQ("",

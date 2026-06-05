@@ -4,7 +4,6 @@
 
 #include "services/network/first_party_sets/first_party_sets_manager.h"
 
-#include <memory>
 #include <optional>
 #include <utility>
 
@@ -21,14 +20,7 @@
 
 namespace network {
 
-FirstPartySetsManager::FirstPartySetsManager(bool enabled)
-    : enabled_(enabled),
-      wait_for_init_(base::FeatureList::IsEnabled(
-          net::features::kWaitForFirstPartySetsInit)),
-      pending_queries_(
-          enabled && wait_for_init_
-              ? std::make_unique<base::circular_deque<base::OnceClosure>>()
-              : nullptr) {
+FirstPartySetsManager::FirstPartySetsManager(bool enabled) : enabled_(enabled) {
   if (!enabled)
     SetCompleteSets(net::GlobalFirstPartySets());
 }
@@ -37,65 +29,17 @@ FirstPartySetsManager::~FirstPartySetsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::optional<net::FirstPartySetMetadata>
-FirstPartySetsManager::ComputeMetadata(
+net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadata(
     const net::SchemefulSite& site,
     base::optional_ref<const net::SchemefulSite> top_frame_site,
-    const net::FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
+    const net::FirstPartySetsContextConfig& fps_context_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!sets_.has_value()) {
-    if (!wait_for_init_) {
-      return net::FirstPartySetMetadata();
-    }
-    EnqueuePendingQuery(base::BindOnce(
-        &FirstPartySetsManager::ComputeMetadataAndInvoke,
-        weak_factory_.GetWeakPtr(), site, top_frame_site.CopyAsOptional(),
-        fps_context_config.Clone(), std::move(callback)));
-    return std::nullopt;
+    return net::FirstPartySetMetadata();
   }
-
-  return ComputeMetadataInternal(site, top_frame_site, fps_context_config);
-}
-
-void FirstPartySetsManager::ComputeMetadataAndInvoke(
-    const net::SchemefulSite& site,
-    base::optional_ref<const net::SchemefulSite> top_frame_site,
-    const net::FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(sets_.has_value());
-
-  std::move(callback).Run(
-      ComputeMetadataInternal(site, top_frame_site, fps_context_config));
-}
-
-net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
-    const net::SchemefulSite& site,
-    base::optional_ref<const net::SchemefulSite> top_frame_site,
-    const net::FirstPartySetsContextConfig& fps_context_config) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(sets_.has_value());
 
   return sets_->ComputeMetadata(site, top_frame_site, fps_context_config);
-}
-
-void FirstPartySetsManager::InvokePendingQueries() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(sets_.has_value());
-
-  if (!pending_queries_) {
-    return;
-  }
-
-  std::unique_ptr<base::circular_deque<base::OnceClosure>> queue;
-  queue.swap(pending_queries_);
-  while (!queue->empty()) {
-    base::OnceClosure query_task = std::move(queue->front());
-    queue->pop_front();
-    std::move(query_task).Run();
-  }
 }
 
 void FirstPartySetsManager::SetCompleteSets(net::GlobalFirstPartySets sets) {
@@ -103,15 +47,6 @@ void FirstPartySetsManager::SetCompleteSets(net::GlobalFirstPartySets sets) {
   if (sets_.has_value())
     return;
   sets_ = std::move(sets);
-  InvokePendingQueries();
-}
-
-void FirstPartySetsManager::EnqueuePendingQuery(base::OnceClosure run_query) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!sets_.has_value());
-  CHECK(pending_queries_);
-
-  pending_queries_->push_back(std::move(run_query));
 }
 
 }  // namespace network

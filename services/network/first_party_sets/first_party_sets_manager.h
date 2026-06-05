@@ -39,16 +39,12 @@ class FirstPartySetsManager {
   }
 
   // Computes the First-Party Set metadata related to the given request context.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] std::optional<net::FirstPartySetMetadata> ComputeMetadata(
+  // If `SetCompleteSets` has not yet been called, returns a default-constructed
+  // `FirstPartySetMetadata` instance.
+  [[nodiscard]] net::FirstPartySetMetadata ComputeMetadata(
       const net::SchemefulSite& site,
       base::optional_ref<const net::SchemefulSite> top_frame_site,
-      const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
+      const net::FirstPartySetsContextConfig& fps_context_config);
 
   // Stores the First-Party Sets data.
   //
@@ -57,28 +53,6 @@ class FirstPartySetsManager {
   void SetCompleteSets(net::GlobalFirstPartySets sets);
 
  private:
-  // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
-  // only be called once the instance is fully initialized.
-  void ComputeMetadataAndInvoke(
-      const net::SchemefulSite& site,
-      base::optional_ref<const net::SchemefulSite> top_frame_site,
-      const net::FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
-
-  // Synchronous version of `ComputeMetadata`, to be run only once the instance
-  // is fully initialized.
-  net::FirstPartySetMetadata ComputeMetadataInternal(
-      const net::SchemefulSite& site,
-      base::optional_ref<const net::SchemefulSite> top_frame_site,
-      const net::FirstPartySetsContextConfig& fps_context_config) const;
-
-  // Enqueues a query to be answered once the instance is fully initialized.
-  void EnqueuePendingQuery(base::OnceClosure run_query);
-
-  // Runs all pending queries. Must not be called until the instance is fully
-  // initialized.
-  void InvokePendingQueries();
-
   // The global First-Party Sets data.
   //
   // Optional because it is unset until the data has been received from the
@@ -87,14 +61,6 @@ class FirstPartySetsManager {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
-  // Whether this instance should wait for First-Party Sets initialization (in
-  // the browser process) before responding to queries.
-  const bool wait_for_init_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // The queue of queries that are waiting for the instance to be initialized.
-  std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

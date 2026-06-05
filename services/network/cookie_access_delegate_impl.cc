@@ -69,20 +69,16 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
   return false;
 }
 
-std::optional<std::pair<net::FirstPartySetMetadata,
-                        net::FirstPartySetsCacheFilter::MatchInfo>>
-CookieAccessDelegateImpl::ComputeFirstPartySetMetadataMaybeAsync(
+std::pair<net::FirstPartySetMetadata, net::FirstPartySetsCacheFilter::MatchInfo>
+CookieAccessDelegateImpl::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
-    base::OnceCallback<void(net::FirstPartySetMetadata,
-                            net::FirstPartySetsCacheFilter::MatchInfo)>
-        callback) const {
+    const net::SchemefulSite* top_frame_site) const {
   if (!first_party_sets_access_delegate_) {
     return std::make_pair(net::FirstPartySetMetadata(),
                           net::FirstPartySetsCacheFilter::MatchInfo());
   }
-  return first_party_sets_access_delegate_->ComputeMetadata(
-      site, top_frame_site, std::move(callback));
+  return first_party_sets_access_delegate_->ComputeMetadata(site,
+                                                            top_frame_site);
 }
 
 }  // namespace network

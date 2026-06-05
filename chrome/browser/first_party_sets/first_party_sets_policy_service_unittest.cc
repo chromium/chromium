@@ -34,10 +34,6 @@
 #include "url/gurl.h"
 
 using ::testing::_;
-using ::testing::Eq;
-using ::testing::IsEmpty;
-using ::testing::Not;
-using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -827,21 +823,8 @@ TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, AlwaysEnabled) {
   env().RunUntilIdle();
 }
 
-class FirstPartySetsPolicyServiceResumeThrottleTest
-    : public FirstPartySetsPolicyServiceTest {
- public:
-  FirstPartySetsPolicyServiceResumeThrottleTest() {
-    features_.InitAndEnableFeatureWithParameters(
-        net::features::kWaitForFirstPartySetsInit, {});
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
 // Verify the throttle resume callback is always invoked.
-TEST_F(FirstPartySetsPolicyServiceResumeThrottleTest,
-       RegisterThrottleResumeCallback) {
+TEST_F(FirstPartySetsPolicyServiceTest, RegisterThrottleResumeCallback) {
   SetInvokeCallbacksAsynchronously(true);
   service()->InitForTesting();
   base::RunLoop run_loop;

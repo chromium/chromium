@@ -251,11 +251,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // `override_response_info_::headers`.
   HttpResponseHeaders* GetResponseHeaders() const;
 
-  // Called after getting the FirstPartySetMetadata during Start for this job.
-  void OnGotFirstPartySetMetadata(
-      FirstPartySetMetadata first_party_set_metadata,
-      FirstPartySetsCacheFilter::MatchInfo match_info);
-
   // Returns true iff this request leg should include the Cookie header. Note
   // that cookies may still be eventually blocked by the CookieAccessDelegate
   // even if this method returns true.

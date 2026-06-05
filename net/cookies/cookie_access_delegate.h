@@ -58,23 +58,14 @@ class NET_EXPORT CookieAccessDelegate {
       const SiteForCookies& site_for_cookies,
       const url::Origin& top_level_origin) const = 0;
 
-  // Calls `callback` with First-Party Sets metadata about `site` and
-  // `top_frame_site`, and cache filter info for `site`. Cache filter info is
-  // used to determine if the existing HTTP cache entries for `site` are allowed
-  // to be accessed.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] virtual std::optional<
-      std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
-  ComputeFirstPartySetMetadataMaybeAsync(
+  // Returns First-Party Sets metadata about `site` and `top_frame_site`, and
+  // cache filter info for `site`. Cache filter info is used to determine if the
+  // existing HTTP cache entries for `site` are allowed to be accessed.
+  [[nodiscard]] virtual std::pair<FirstPartySetMetadata,
+                                  FirstPartySetsCacheFilter::MatchInfo>
+  ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      base::OnceCallback<void(FirstPartySetMetadata,
-                              FirstPartySetsCacheFilter::MatchInfo)> callback)
-      const = 0;
+      const net::SchemefulSite* top_frame_site) const = 0;
 };
 
 }  // namespace net

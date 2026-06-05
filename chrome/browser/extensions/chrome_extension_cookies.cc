@@ -84,11 +84,9 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
 
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &IOData::ComputeFirstPartySetMetadataAndCreateRestrictedCookieManager,
-          base::Unretained(io_data_.get()), origin, isolation_info,
-          std::move(receiver)));
+      FROM_HERE, base::BindOnce(&IOData::CreateRestrictedCookieManager,
+                                base::Unretained(io_data_.get()), origin,
+                                isolation_info, std::move(receiver)));
 }
 
 void ChromeExtensionCookies::ClearCookies(const GURL& origin,
@@ -132,25 +130,13 @@ ChromeExtensionCookies::IOData::~IOData() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 }
 
-void ChromeExtensionCookies::IOData::
-    ComputeFirstPartySetMetadataAndCreateRestrictedCookieManager(
-        const url::Origin& origin,
-        const net::IsolationInfo& isolation_info,
-        mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
-            receiver) {
-  network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
-      origin, GetOrCreateCookieStore(), isolation_info,
-      base::BindOnce(&IOData::CreateRestrictedCookieManager,
-                     weak_factory_.GetWeakPtr(), origin, isolation_info,
-                     std::move(receiver)));
-}
-
 void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
-    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
-    net::FirstPartySetMetadata first_party_set_metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
+  net::FirstPartySetMetadata first_party_set_metadata =
+      network::RestrictedCookieManager::ComputeFirstPartySetMetadata(
+          origin, GetOrCreateCookieStore(), isolation_info);
 
   // TODO(crbug.com/40247160): Consider whether the following check should
   // somehow determine real CookieSettingOverrides rather than default to none.

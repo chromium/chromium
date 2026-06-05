@@ -16,7 +16,6 @@
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_sharing/data_sharing_navigation_throttle.h"
 #include "chrome/browser/enterprise/data_protection/view_source_navigation_throttle.h"
-#include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 #include "chrome/browser/glic/glic_navigation_throttle.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
@@ -61,7 +60,6 @@
 #include "components/payments/content/payment_handler_navigation_throttle.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
 #include "components/policy/content/safe_search_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
@@ -589,14 +587,6 @@ void CreateAndAddChromeThrottlesForNavigation(
 #if !BUILDFLAG(IS_ANDROID)
   MaybeCreateAndAddWebViewSidePanelThrottle(registry);
 #endif
-
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  if (privacy_sandbox_settings &&
-      privacy_sandbox_settings->AreRelatedWebsiteSetsEnabled()) {
-    first_party_sets::FirstPartySetsNavigationThrottle::MaybeCreateAndAdd(
-        registry);
-  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   // Don't perform platform authentication in incognito and guest profiles.

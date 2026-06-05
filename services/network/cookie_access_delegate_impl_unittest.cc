@@ -49,14 +49,9 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
   net::FirstPartySetMetadata expected_metadata(
       /*frame_entry=*/std::nullopt,
       /*top_frame_entry=*/std::nullopt);
-  EXPECT_THAT(
-      delegate().ComputeFirstPartySetMetadataMaybeAsync(
-          site, &site,
-          base::BindOnce(
-              [](net::FirstPartySetMetadata,
-                 net::FirstPartySetsCacheFilter::MatchInfo) { FAIL(); })),
-      Optional(std::make_pair(std::cref(expected_metadata),
-                              net::FirstPartySetsCacheFilter::MatchInfo())));
+  EXPECT_THAT(delegate().ComputeFirstPartySetMetadata(site, &site),
+              std::make_pair(std::cref(expected_metadata),
+                             net::FirstPartySetsCacheFilter::MatchInfo()));
 }
 
 }  // namespace

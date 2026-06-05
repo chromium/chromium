@@ -355,6 +355,11 @@ const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
+bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
+  return privacy_mode == PRIVACY_MODE_ENABLED ||
+         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
+}
+
 }  // namespace
 
 std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
@@ -476,34 +481,10 @@ void URLRequestHttpJob::Start() {
 
   request_->net_log().BeginEvent(NetLogEventType::FIRST_PARTY_SETS_METADATA);
 
-  std::optional<
-      std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
-      maybe_metadata = cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
-          SchemefulSite(request()->url()), request()->isolation_info(),
-          delegate,
-          base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
-                         weak_factory_.GetWeakPtr()));
-
-  if (maybe_metadata.has_value()) {
-    auto [metadata, match_info] = std::move(maybe_metadata).value();
-    OnGotFirstPartySetMetadata(std::move(metadata), std::move(match_info));
-  }
-}
-
-namespace {
-
-bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
-  return privacy_mode == PRIVACY_MODE_ENABLED ||
-         privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
-}
-
-}  // namespace
-
-void URLRequestHttpJob::OnGotFirstPartySetMetadata(
-    FirstPartySetMetadata first_party_set_metadata,
-    FirstPartySetsCacheFilter::MatchInfo match_info) {
-  TRACE_EVENT("net", "URLRequestHttpJob::OnGotFirstPartySetMetadata",
-              NetLogWithSourceToFlow(request_->net_log()));
+  auto [first_party_set_metadata, match_info] =
+      cookie_util::ComputeFirstPartySetMetadata(SchemefulSite(request()->url()),
+                                                request()->isolation_info(),
+                                                delegate);
 
   first_party_set_metadata_ = std::move(first_party_set_metadata);
   request_info_.fps_cache_filter = match_info.clear_at_run_id;

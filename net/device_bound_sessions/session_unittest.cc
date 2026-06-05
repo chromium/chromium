@@ -707,15 +707,12 @@ class InsecureDelegate : public CookieAccessDelegate {
       const url::Origin& top_level_origin) const override {
     return true;
   }
-  [[nodiscard]] std::optional<
-      std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>>
-  ComputeFirstPartySetMetadataMaybeAsync(
+  [[nodiscard]]
+  std::pair<FirstPartySetMetadata, FirstPartySetsCacheFilter::MatchInfo>
+  ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      base::OnceCallback<void(FirstPartySetMetadata,
-                              FirstPartySetsCacheFilter::MatchInfo)> callback)
-      const override {
-    return std::nullopt;
+      const net::SchemefulSite* top_frame_site) const override {
+    return {};
   }
 };
 

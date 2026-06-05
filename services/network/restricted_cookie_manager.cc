@@ -157,29 +157,17 @@ RestrictedCookieManager::UmaMetricsUpdater::UmaMetricsUpdater() = default;
 RestrictedCookieManager::UmaMetricsUpdater::~UmaMetricsUpdater() = default;
 
 // static
-void RestrictedCookieManager::ComputeFirstPartySetMetadata(
+net::FirstPartySetMetadata
+RestrictedCookieManager::ComputeFirstPartySetMetadata(
     const url::Origin& origin,
     const net::CookieStore* cookie_store,
-    const net::IsolationInfo& isolation_info,
-    base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
-  std::pair<base::OnceCallback<void(net::FirstPartySetMetadata)>,
-            base::OnceCallback<void(net::FirstPartySetMetadata)>>
-      callbacks = base::SplitOnceCallback(std::move(callback));
-  std::optional<std::pair<net::FirstPartySetMetadata,
-                          net::FirstPartySetsCacheFilter::MatchInfo>>
-      metadata_and_match_info =
-          net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
-              /*request_site=*/net::SchemefulSite(origin), isolation_info,
-              cookie_store->cookie_access_delegate(),
-              base::BindOnce([](net::FirstPartySetMetadata metadata,
-                                net::FirstPartySetsCacheFilter::MatchInfo
-                                    match_info) {
-                return metadata;
-              }).Then(std::move(callbacks.first)));
-  if (metadata_and_match_info.has_value()) {
-    std::move(callbacks.second)
-        .Run(std::move(metadata_and_match_info.value().first));
-  }
+    const net::IsolationInfo& isolation_info) {
+  std::pair<net::FirstPartySetMetadata,
+            net::FirstPartySetsCacheFilter::MatchInfo>
+      metadata_and_match_info = net::cookie_util::ComputeFirstPartySetMetadata(
+          /*request_site=*/net::SchemefulSite(origin), isolation_info,
+          cookie_store->cookie_access_delegate());
+  return std::move(metadata_and_match_info).first;
 }
 
 bool CookieWithAccessResultComparer::operator()(
@@ -486,33 +474,16 @@ void RestrictedCookieManager::IncrementSharedVersion() {
 
 void RestrictedCookieManager::OverrideIsolationInfoForTesting(
     const net::IsolationInfo& new_isolation_info) {
-  base::RunLoop run_loop;
   isolation_info_ = new_isolation_info;
 
-  cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
-      isolation_info_.network_isolation_key(),
-      isolation_info_.site_for_cookies(), net::SchemefulSite(origin_),
-      isolation_info_.IsMainFrameRequest());
-
-  ComputeFirstPartySetMetadata(
-      origin_, cookie_store_, isolation_info_,
-      base::BindOnce(
-          &RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting,
-          weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
-  run_loop.Run();
-}
-
-void RestrictedCookieManager::OnGotFirstPartySetMetadataForTesting(
-    base::OnceClosure done_closure,
-    net::FirstPartySetMetadata first_party_set_metadata) {
-  first_party_set_metadata_ = std::move(first_party_set_metadata);
+  first_party_set_metadata_ =
+      ComputeFirstPartySetMetadata(origin_, cookie_store_, isolation_info_);
   cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
       isolation_info_.network_isolation_key(),
       isolation_info_.site_for_cookies(), net::SchemefulSite(origin_),
       isolation_info_.IsMainFrameRequest());
   cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection(cookie_partition_key_);
-  std::move(done_closure).Run();
 }
 
 bool RestrictedCookieManager::IsPartitionedCookiesEnabled() const {
