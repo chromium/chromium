@@ -499,8 +499,7 @@ class EventRouter : public KeyedService,
                            const std::set<std::string>& events,
                            RegisteredEventType type);
 
-  // TODO(crbug.com/474558883): Remove this after webRequest listener
-  // persistence is stable for a few milestones.
+  // TODO(crbug.com/474558883): Remove this in M157.
   void RemoveOrphanedWebRequestEvents(const ExtensionId& extension_id,
                                       std::set<std::string>& events,
                                       RegisteredEventType type);

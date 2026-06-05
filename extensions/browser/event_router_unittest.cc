@@ -649,8 +649,7 @@ TEST_F(EventRouterTest, AddLazyListenerForUnloadedExtension) {
   EXPECT_TRUE(registered_sw_events.count(kEventName2));
 }
 
-// TODO(crbug.com/474558883): Remove this after webRequest listener
-// persistence is stable for a few milestones.
+// TODO(crbug.com/474558883): Remove this in M157.
 TEST_F(EventRouterTest, RemovesOrphanedWebRequestEvents) {
   EventRouter* router = EventRouter::Get(browser_context());
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();

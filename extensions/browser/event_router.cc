@@ -1689,8 +1689,7 @@ void EventRouter::AddFilterToEvent(const std::string& event_name,
   filter_list->Append(filter.Clone());
 }
 
-// TODO(crbug.com/474558883): Remove this after webRequest listener persistence
-// is stable for a few milestones.
+// TODO(crbug.com/474558883): Remove this in M157.
 void EventRouter::RemoveOrphanedWebRequestEvents(
     const ExtensionId& extension_id,
     std::set<std::string>& events,
