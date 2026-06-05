@@ -10,7 +10,7 @@ error: lifetime may not live long enough
    |     ^^^^^^^^^^^^ assignment requires that `'small` must outlive `'big`
    |
    = help: consider adding the following bound: `'small: 'big`
-   = note: requirement occurs because of the type `Ptr<'_, &u32, (zerocopy::invariant::Exclusive, zerocopy::invariant::Aligned, zerocopy::invariant::Valid)>`, which makes the generic argument `&u32` invariant
+   = note: requirement occurs because of the type `Ptr<'_, &u32, (zerocopy::invariant::Exclusive, Aligned, zerocopy::invariant::Valid)>`, which makes the generic argument `&u32` invariant
    = note: the struct `Ptr<'a, T, I>` is invariant over the parameter `T`
    = help: see <https://doc.rust-lang.org/nomicon/subtyping.html> for more information about variance
 
@@ -26,7 +26,7 @@ error: lifetime may not live long enough
    |     ^^^^^^^^^^^^ assignment requires that `'small` must outlive `'big`
    |
    = help: consider adding the following bound: `'small: 'big`
-   = note: requirement occurs because of the type `Ptr<'_, &u32, (zerocopy::invariant::Shared, zerocopy::invariant::Aligned, zerocopy::invariant::Valid)>`, which makes the generic argument `&u32` invariant
+   = note: requirement occurs because of the type `Ptr<'_, &u32, (Shared, Aligned, zerocopy::invariant::Valid)>`, which makes the generic argument `&u32` invariant
    = note: the struct `Ptr<'a, T, I>` is invariant over the parameter `T`
    = help: see <https://doc.rust-lang.org/nomicon/subtyping.html> for more information about variance
 

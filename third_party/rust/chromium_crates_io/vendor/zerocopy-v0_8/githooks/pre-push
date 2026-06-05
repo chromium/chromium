@@ -49,7 +49,7 @@ wait $VALIDATE_CONFIG_PID
 # This was added because, in #728, we added `ci/check_all_toolchains_tested.sh`
 # without calling it from this script.
 shopt -s extglob
-GLOBIGNORE="./*/@(release_crate_version|check_todo).sh" # We don't want to run these
+GLOBIGNORE="./*/@(release_crate_version|check_todo|release_anneal_version).sh" # We don't want to run these
 for f in ./ci/*; do
     grep "$f" githooks/pre-push >/dev/null || { echo "$f not called from githooks/pre-push" >&2 ; exit 1; }
 done

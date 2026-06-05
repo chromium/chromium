@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.56.0"
 name = "zerocopy"
-version = "0.8.48"
+version = "0.8.50"
 authors = [
     "Joshua Liebow-Feeser <joshlf@google.com>",
     "Jack Wrenn <jswrenn@amazon.com>",
@@ -66,6 +66,13 @@ rustdoc-args = [
     "--generate-link-to-definition",
     "--extend-css",
     "rustdoc/style.css",
+]
+targets = [
+    "x86_64-unknown-linux-gnu",
+    "x86_64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "i686-unknown-linux-gnu",
+    "i686-pc-windows-msvc",
 ]
 
 [package.metadata.playground]
@@ -382,7 +389,7 @@ name = "zero_static_size"
 path = "benches/zero_static_size.rs"
 
 [dependencies.zerocopy-derive]
-version = "=0.8.48"
+version = "=0.8.50"
 optional = true
 
 [dev-dependencies.elain]
@@ -406,7 +413,7 @@ version = "1.0"
 version = "1.1"
 
 [dev-dependencies.zerocopy-derive]
-version = "=0.8.48"
+version = "=0.8.50"
 
 [target."cfg(any())".dependencies.zerocopy-derive]
-version = "=0.8.48"
+version = "=0.8.50"

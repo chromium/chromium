@@ -18,7 +18,7 @@ Instruction Info:
 [6]: HasSideEffects (U)
 
 [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
- 1      1     0.33                        movabs	rax, 9223372036854775805
+ 1      1     0.33                        movabs	rax, 4611686018427387901
  1      1     0.33                        cmp	rdx, rax
  2      2     1.00                        seta	cl
  1      1     0.33                        mov	rax, rdi
@@ -50,7 +50,7 @@ Resource pressure per iteration:
 
 Resource pressure by instruction:
 [0]    [1]    [2]    [3]    [4]    [5]    [6.0]  [6.1]  Instructions:
- -      -      -     0.99    -     0.01    -      -     movabs	rax, 9223372036854775805
+ -      -      -     0.99    -     0.01    -      -     movabs	rax, 4611686018427387901
  -      -     0.33   0.67    -      -      -      -     cmp	rdx, rax
  -      -     1.98    -      -     0.02    -      -     seta	cl
  -      -     0.01   0.99    -      -      -      -     mov	rax, rdi

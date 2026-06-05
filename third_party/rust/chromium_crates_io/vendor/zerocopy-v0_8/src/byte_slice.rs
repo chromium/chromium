@@ -365,7 +365,7 @@ mod proofs {
 
     fn any_vec() -> Vec<u8> {
         let len = kani::any();
-        kani::assume(len <= isize::MAX as usize);
+        kani::assume(len <= crate::DstLayout::MAX_SIZE);
         vec![0u8; len]
     }
 

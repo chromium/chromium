@@ -6,6 +6,8 @@
 // This file may not be copied, modified, or distributed except according to
 // those terms.
 
+#![allow(missing_docs)]
+
 use core::{
     cell::{Cell, UnsafeCell},
     mem::{ManuallyDrop, MaybeUninit},
@@ -223,7 +225,6 @@ where
 }
 
 #[allow(missing_debug_implementations, missing_copy_implementations)]
-#[doc(hidden)]
 pub enum BecauseInvariantsEq {}
 
 macro_rules! unsafe_impl_invariants_eq {

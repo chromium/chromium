@@ -1,30 +1,19 @@
 bench_ref_from_bytes_with_elems_dynamic_padding:
-	mov rcx, rdx
-	mov edx, 3
-	mov rax, rcx
-	mul rdx
-	jo .LBB5_5
-	cmp rax, -10
-	ja .LBB5_5
-	mov edx, eax
-	not edx
-	and edx, 3
-	add rdx, rax
-	add rdx, 9
-	cmp rsi, rdx
-	jne .LBB5_5
-	mov r8d, edi
-	and r8d, 3
-	jne .LBB5_5
-	add rax, 9
+	movabs rax, 3074457345618258598
 	cmp rdx, rax
-	jb .LBB5_5
+	seta cl
 	mov rax, rdi
-	mov rdx, rcx
-	ret
-.LBB5_5:
-	xor edi, edi
-	mov rcx, rsi
-	mov rax, rdi
-	mov rdx, rcx
+	test al, 3
+	setne dil
+	or dil, cl
+	jne .LBB5_2
+	lea rcx, [rdx + 2*rdx]
+	or rcx, 3
+	add rcx, 9
+	cmp rsi, rcx
+	je .LBB5_3
+.LBB5_2:
+	xor eax, eax
+	mov rdx, rsi
+.LBB5_3:
 	ret

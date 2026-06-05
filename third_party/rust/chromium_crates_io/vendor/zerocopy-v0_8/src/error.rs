@@ -662,6 +662,7 @@ where
 {
     type Inner = Src;
     type Mapped = crate::ValidityError<NewSrc, Dst>;
+    #[inline]
     fn map<F: FnOnce(Src) -> NewSrc>(self, f: F) -> Self::Mapped {
         self.map_src(f)
     }
@@ -800,6 +801,7 @@ where
     type Inner = Src;
     type Mapped = crate::CastError<NewSrc, Dst>;
 
+    #[inline]
     fn map<F: FnOnce(Src) -> NewSrc>(self, f: F) -> Self::Mapped {
         self.map_src(f)
     }

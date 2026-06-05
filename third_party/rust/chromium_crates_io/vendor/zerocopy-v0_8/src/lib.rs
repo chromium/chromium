@@ -359,7 +359,8 @@ mod impls;
 #[doc(hidden)]
 pub mod layout;
 mod macros;
-#[doc(hidden)]
+#[cfg_attr(not(zerocopy_unstable_ptr), doc(hidden))]
+#[cfg_attr(doc_cfg, doc(cfg(zerocopy_unstable_ptr)))]
 pub mod pointer;
 mod r#ref;
 mod split_at;
@@ -385,9 +386,10 @@ use core::{
 use std::io;
 
 #[doc(hidden)]
-pub use crate::pointer::invariant::{self, BecauseExclusive};
-#[doc(hidden)]
-pub use crate::pointer::PtrInner;
+pub use crate::pointer::{
+    invariant::{self, BecauseExclusive},
+    PtrInner,
+};
 pub use crate::{
     byte_slice::*,
     byteorder::*,
@@ -404,8 +406,6 @@ use alloc::{boxed::Box, vec::Vec};
 #[cfg(any(feature = "alloc", test))]
 use core::alloc::Layout;
 
-use util::MetadataOf;
-
 // Used by `KnownLayout`.
 #[doc(hidden)]
 pub use crate::layout::*;
@@ -420,6 +420,9 @@ pub use crate::pointer::{invariant::BecauseImmutable, Maybe, Ptr};
 // See the documentation on `util::polyfills` for more information.
 #[allow(unused_imports)]
 use crate::util::polyfills::{self, NonNullExt as _, NumExt as _};
+#[cfg_attr(not(zerocopy_unstable_ptr), doc(hidden))]
+#[cfg_attr(doc_cfg, doc(cfg(zerocopy_unstable_ptr)))]
+pub use crate::util::MetadataOf;
 
 #[cfg(all(test, not(__ZEROCOPY_INTERNAL_USE_ONLY_DEV_MODE)))]
 const _: () = {
@@ -863,6 +866,19 @@ pub unsafe trait KnownLayout {
     fn size_for_metadata(meta: Self::PointerMetadata) -> Option<usize> {
         meta.size_for_metadata(Self::LAYOUT)
     }
+
+    /// Computes whether `meta` can describe a valid allocation of `Self`.
+    ///
+    /// # Safety
+    ///
+    /// `is_valid_metadata` promises to return `true` if and only if the size of
+    /// an allocation of `Self` with `meta` would not overflow an
+    /// [`isize::MAX`].
+    #[doc(hidden)]
+    #[inline(always)]
+    fn is_valid_metadata(meta: Self::PointerMetadata) -> bool {
+        meta.to_elem_count() <= maximum_trailing_slice_len::<Self>().to_elem_count()
+    }
 }
 
 /// Efficiently produces the [`TrailingSliceLayout`] of `T`.
@@ -888,9 +904,39 @@ where
     T::SIZE_INFO
 }
 
+/// Efficiently produces the maximum trailing slice length `T`.
+#[inline(always)]
+pub(crate) fn maximum_trailing_slice_len<T>() -> usize
+where
+    T: ?Sized + KnownLayout,
+{
+    trait LayoutFacts {
+        const MAX_LEN: usize;
+    }
+
+    impl<T: ?Sized> LayoutFacts for T
+    where
+        T: KnownLayout,
+    {
+        const MAX_LEN: usize = match T::LAYOUT.size_info {
+            SizeInfo::SliceDst(TrailingSliceLayout { elem_size: 0, .. }) => usize::MAX,
+            _ => match T::LAYOUT.validate_cast_and_convert_metadata(
+                T::LAYOUT.align.get(),
+                DstLayout::MAX_SIZE,
+                CastType::Prefix,
+            ) {
+                Ok((elems, _)) => elems,
+                Err(_) => const_panic!("unreachable"),
+            },
+        };
+    }
+
+    T::MAX_LEN
+}
+
 /// The metadata associated with a [`KnownLayout`] type.
 #[doc(hidden)]
-pub trait PointerMetadata: Copy + Eq + Debug {
+pub trait PointerMetadata: Copy + Eq + Debug + Ord {
     /// Constructs a `Self` from an element count.
     ///
     /// If `Self = ()`, this returns `()`. If `Self = usize`, this returns

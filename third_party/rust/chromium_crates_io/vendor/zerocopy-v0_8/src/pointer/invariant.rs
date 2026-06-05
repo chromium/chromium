@@ -6,7 +6,7 @@
 // This file may not be copied, modified, or distributed except according to
 // those terms.
 
-#![allow(missing_copy_implementations, missing_debug_implementations)]
+#![allow(missing_copy_implementations, missing_debug_implementations, missing_docs)]
 
 //! The parameterized invariants of a [`Ptr`][super::Ptr].
 //!
@@ -265,13 +265,11 @@ impl<T: ?Sized> Read<Exclusive, BecauseExclusive> for T {}
 /// Unsynchronized reads are permitted because only one live [`Ptr`](crate::Ptr)
 /// or reference may exist to the referent bytes at a time.
 #[derive(Copy, Clone, Debug)]
-#[doc(hidden)]
 pub enum BecauseExclusive {}
 
 /// Unsynchronized reads are permitted because no live [`Ptr`](crate::Ptr)s or
 /// references permit interior mutation.
 #[derive(Copy, Clone, Debug)]
-#[doc(hidden)]
 pub enum BecauseImmutable {}
 
 use sealed::Sealed;

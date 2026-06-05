@@ -3,32 +3,20 @@ bench_new_box_zeroed_with_elems_dynamic_padding:
 	push rbx
 	push rax
 	mov rbx, rdi
-	mov ecx, 3
-	mov rax, rdi
-	mul rcx
-	jo .LBB5_6
-	mov r14, rax
-	cmp rax, -10
-	ja .LBB5_6
-	lea rax, [r14 + 9]
-	not r14d
-	and r14d, 3
-	add r14, rax
-	setb al
-	movabs rcx, 9223372036854775803
-	cmp r14, rcx
-	seta cl
-	or cl, al
-	je .LBB5_4
-.LBB5_6:
-	xor eax, eax
-	jmp .LBB5_5
-.LBB5_4:
+	movabs rax, 3074457345618258598
+	cmp rdi, rax
+	ja .LBB5_1
+	lea r14, [rbx + 2*rbx]
+	or r14, 3
+	add r14, 9
 	call qword ptr [rip + __rustc::__rust_no_alloc_shim_is_unstable_v2@GOTPCREL]
 	mov esi, 4
 	mov rdi, r14
 	call qword ptr [rip + __rustc::__rust_alloc_zeroed@GOTPCREL]
-.LBB5_5:
+	jmp .LBB5_3
+.LBB5_1:
+	xor eax, eax
+.LBB5_3:
 	mov rdx, rbx
 	add rsp, 8
 	pop rbx

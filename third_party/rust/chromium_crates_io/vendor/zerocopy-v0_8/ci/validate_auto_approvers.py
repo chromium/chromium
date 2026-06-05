@@ -87,10 +87,13 @@ def main():
             sys.exit(TECHNICAL_ERROR)
 
         if not file_objects or len(file_objects) != args.expected_count:
+            # This can happen when a PR contains a large number of files. It
+            # doesn't necessarily represent a bug, so we treat this as
+            # `NOT_APPROVED` rather than `TECHNICAL_ERROR`.
             print(
                 f"::error::❌ File truncation mismatch or empty PR. Expected {args.expected_count}, got {len(file_objects) if file_objects else 0}."
             )
-            sys.exit(TECHNICAL_ERROR)
+            sys.exit(NOT_APPROVED)
 
         if not all(isinstance(obj, list) for obj in file_objects):
             print("::error::❌ Invalid payload format. Expected a list of lists.")
