@@ -256,7 +256,14 @@ TEST_F(PasswordChangePageStabilityWaiterTest, MonitorDisconnects) {
   EXPECT_TRUE(future.Wait());
 }
 
-TEST_F(PasswordChangePageStabilityWaiterTest, DisconnectDuringNavigation) {
+// TODO(crbug.com/517949256): Disabled on Linux due to excessive flakiness.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DisconnectDuringNavigation DISABLED_DisconnectDuringNavigation
+#else
+#define MAYBE_DisconnectDuringNavigation DisconnectDuringNavigation
+#endif
+TEST_F(PasswordChangePageStabilityWaiterTest,
+       MAYBE_DisconnectDuringNavigation) {
   base::test::TestFuture<void> future;
 
   // We expect two calls to CreatePageStabilityMonitor: one for the initial
