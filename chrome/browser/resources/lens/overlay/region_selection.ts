@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {skColorToRgba} from '//resources/js/color_utils.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -177,6 +178,10 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
       loadTimeData.getBoolean('enableGradientRegionStroke');
   private readonly whiteRegionStrokeEnabled: boolean =
       loadTimeData.getBoolean('enableWhiteRegionStroke');
+  private lineSelectionStrokeWidth: number = 0;
+  private lineSelectionColor1: string = '';
+  private lineSelectionColor2: string = '';
+  private lineSelectionColor3: string = '';
   // The tap region dimensions are the height and width that the region should
   // have when the user taps instead of drag.
   private readonly tapRegionHeight: number =
@@ -191,6 +196,17 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
     super.ready();
 
     this.context = this.$.regionSelectionCanvas.getContext('2d')!;
+
+    if (this.lineSelectionEnabled) {
+      this.lineSelectionStrokeWidth =
+          loadTimeData.getInteger('lineSelectionStrokeWidth');
+      this.lineSelectionColor1 = skColorToRgba(
+          {value: loadTimeData.getInteger('colorLineSelectionGradient1')});
+      this.lineSelectionColor2 = skColorToRgba(
+          {value: loadTimeData.getInteger('colorLineSelectionGradient2')});
+      this.lineSelectionColor3 = skColorToRgba(
+          {value: loadTimeData.getInteger('colorLineSelectionGradient3')});
+    }
   }
 
   override connectedCallback() {
@@ -299,11 +315,23 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
       maxX = Math.max(maxX, point.x);
     }
 
-    this.context.save();
-    this.context.globalAlpha = 0.5;
+    if (this.lineSelectionStrokeWidth > 0) {
+      this.context.lineWidth = this.lineSelectionStrokeWidth;
+      this.context.lineCap = 'round';
+      this.context.lineJoin = 'round';
 
-    this.context.stroke();
-    this.context.restore();
+      const gradient = this.context.createLinearGradient(
+          minX, 0, Math.max(minX + 1, maxX), 0);
+      gradient.addColorStop(0, this.lineSelectionColor1);
+      gradient.addColorStop(0.5, this.lineSelectionColor2);
+      gradient.addColorStop(1, this.lineSelectionColor3);
+
+      this.context.save();
+      this.context.globalAlpha = 0.5;
+      this.context.strokeStyle = gradient;
+      this.context.stroke();
+      this.context.restore();
+    }
   }
 
   private onKeyboardSelection(event: Event): boolean {
