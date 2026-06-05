@@ -919,8 +919,9 @@ void AXTreeFormatterUia::AddCustomProperties(IUIAutomationElement* node,
   // Custom properties need to be added separately.
   for (const auto& property : GetCustomPropertiesMap()) {
     base::win::ScopedVariant variant;
-    if (SUCCEEDED(
-            node->GetCurrentPropertyValue(property.first, variant.Receive()))) {
+    HRESULT hr =
+        node->GetCurrentPropertyValue(property.first, variant.Receive());
+    if (SUCCEEDED(hr)) {
       WriteProperty(property.first, variant, dict);
     }
   }
@@ -981,6 +982,9 @@ void AXTreeFormatterUia::WriteProperty(long propertyId,
     case VT_UNKNOWN:
       WriteUnknownProperty(propertyId, var.ptr()->punkVal, dict);
       break;
+    case VT_ARRAY | VT_UNKNOWN:
+      WriteRawElementArray(propertyId, var.ptr()->parray, dict);
+      break;
     default:
       switch (propertyId) {
         case UIA_BoundingRectanglePropertyId:
@@ -1016,6 +1020,67 @@ void AXTreeFormatterUia::WriteI4Property(long propertyId,
   }
 }
 
+void AXTreeFormatterUia::WriteRawElementArray(long propertyId,
+                                              SAFEARRAY* sa,
+                                              base::DictValue* dict) const {
+  // UIA may return custom UIAutomationType_ElementArray properties as a
+  // raw SAFEARRAY of IUnknown rather than wrapping them in an
+  // IUIAutomationElementArray. Handle that case by iterating the array
+  // and extracting element names directly.
+  if (!sa) {
+    return;
+  }
+  LONG lower_bound = 0;
+  LONG upper_bound = -1;
+  if (FAILED(SafeArrayGetLBound(sa, 1, &lower_bound)) ||
+      FAILED(SafeArrayGetUBound(sa, 1, &upper_bound))) {
+    return;
+  }
+  std::u16string element_list;
+  for (LONG i = lower_bound; i <= upper_bound; i++) {
+    IUnknown* raw_element = nullptr;
+    if (FAILED(SafeArrayGetElement(sa, &i, &raw_element)) || !raw_element) {
+      continue;
+    }
+    Microsoft::WRL::ComPtr<IUnknown> element;
+    element.Attach(raw_element);
+
+    std::u16string name;
+    // Try client-side IUIAutomationElement first.
+    Microsoft::WRL::ComPtr<IUIAutomationElement> uia_element;
+    if (SUCCEEDED(element.As(&uia_element))) {
+      name = GetNodeName(uia_element.Get());
+      if (name.empty()) {
+        base::win::ScopedBstr role;
+        uia_element->get_CurrentAriaRole(role.Receive());
+        if (role.Get()) {
+          name = u"{" + base::WideToUTF16(role.Get()) + u"}";
+        }
+      }
+    } else {
+      // Fall back to provider-side IRawElementProviderSimple.
+      Microsoft::WRL::ComPtr<IRawElementProviderSimple> provider;
+      if (SUCCEEDED(element.As(&provider))) {
+        base::win::ScopedVariant name_var;
+        if (SUCCEEDED(provider->GetPropertyValue(UIA_NamePropertyId,
+                                                 name_var.Receive())) &&
+            name_var.type() == VT_BSTR && name_var.ptr()->bstrVal) {
+          name = base::WideToUTF16(name_var.ptr()->bstrVal);
+        }
+      }
+    }
+    if (!name.empty()) {
+      if (!element_list.empty()) {
+        element_list += u", ";
+      }
+      element_list += name;
+    }
+  }
+  if (!element_list.empty()) {
+    dict->SetByDottedPath(GetPropertyName(propertyId), element_list);
+  }
+}
+
 void AXTreeFormatterUia::WriteUnknownProperty(long propertyId,
                                               IUnknown* unk,
                                               base::DictValue* dict) const {
@@ -1038,6 +1103,14 @@ void AXTreeFormatterUia::WriteUnknownProperty(long propertyId,
       break;
     }
     default:
+      // Custom properties use dynamic IDs that can't appear in case labels.
+      if (propertyId ==
+          UiaRegistrarWin::GetInstance().GetAriaActionsPropertyId()) {
+        Microsoft::WRL::ComPtr<IUIAutomationElementArray> array;
+        if (unk && SUCCEEDED(unk->QueryInterface(IID_PPV_ARGS(&array)))) {
+          WriteElementArray(propertyId, array.Get(), dict);
+        }
+      }
       break;
   }
 }
@@ -1098,9 +1171,12 @@ std::u16string AXTreeFormatterUia::GetNodeName(
   // Update the cache for this node.
   if (uncached_node) {
     Microsoft::WRL::ComPtr<IUIAutomationElement> node;
-    uncached_node->BuildUpdatedCache(element_cache_request_.Get(), &node);
+    if (FAILED(uncached_node->BuildUpdatedCache(element_cache_request_.Get(),
+                                                &node)) ||
+        !node) {
+      return std::u16string();
+    }
 
-    base::win::ScopedBstr name;
     base::win::ScopedVariant variant;
     if (SUCCEEDED(node->GetCachedPropertyValue(UIA_NamePropertyId,
                                                variant.Receive())) &&
@@ -1150,6 +1226,9 @@ void AXTreeFormatterUia::BuildCacheRequests() {
 void AXTreeFormatterUia::BuildCustomPropertiesMap() {
   GetCustomPropertiesMap().insert(
       {UiaRegistrarWin::GetInstance().GetMathMLPropertyId(), "MathML"});
+  GetCustomPropertiesMap().insert(
+      {UiaRegistrarWin::GetInstance().GetAriaActionsPropertyId(),
+       "AccessibleActions"});
 }
 
 std::string AXTreeFormatterUia::ProcessTreeForOutput(

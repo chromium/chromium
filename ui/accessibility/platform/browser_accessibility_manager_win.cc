@@ -19,7 +19,6 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/assistive_tech.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -93,12 +92,12 @@ BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     AXNodeIdDelegate& node_id_delegate,
     AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
-  // Hydrate the custom property registry if MathML support is enabled.
-  // Since we don't fire any events that call into the registrar like the other
-  // custom properties, we need to ensure it's initialized here.
-  if (features::IsUiaMathMlSupportEnabled()) {
-    ui::UiaRegistrarWin::GetInstance();
-  }
+  // Hydrate the custom property registry. Properties like MathML and
+  // AriaActions don't fire events that call into the registrar like the other
+  // custom properties, so we ensure it's initialized here. The AriaActions
+  // property is registered unconditionally; MathML is registered when its
+  // feature flag is enabled.
+  ui::UiaRegistrarWin::GetInstance();
   Initialize(initial_tree);
 }
 

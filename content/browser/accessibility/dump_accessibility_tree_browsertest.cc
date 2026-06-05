@@ -31,6 +31,10 @@
 #include "base/mac/mac_util.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 // Tests that use @DEFAULT_ACTION-ON to open a popup for an <input> (such as
 // color or date/time pickers) never complete on Android, where native pickers
 // are used. Because that UI is native, it is not necessary to pass those tests.
@@ -717,6 +721,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaActions) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam() == ui::AXApiType::kWinUIA &&
+      base::win::GetVersion() < base::win::Version::WIN11) {
+    GTEST_SKIP() << "UIA AccessibleActions custom property requires Win11+.";
+  }
+#endif
   RunAriaTest(FILE_PATH_LITERAL("aria-actions.html"));
 }
 

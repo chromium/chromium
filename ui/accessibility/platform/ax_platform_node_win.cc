@@ -5855,6 +5855,25 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
             V_BSTR(result) = SysAllocString(outer_math.c_str());
           }
         }
+      } else if (property_id ==
+                 UiaRegistrarWin::GetInstance().GetAriaActionsPropertyId()) {
+        if (HasState(ax::mojom::State::kHasActions) &&
+            HasIntListAttribute(ax::mojom::IntListAttribute::kActionsIds)) {
+          const std::vector<int32_t>& aria_actions =
+              GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+          std::vector<AXPlatformNodeWin*> target_nodes;
+          for (int32_t action_id : aria_actions) {
+            AXPlatformNodeWin* target_node = static_cast<AXPlatformNodeWin*>(
+                GetDelegate()->GetFromNodeID(action_id));
+            if (target_node && IsValidUiaRelationTarget(target_node)) {
+              target_nodes.push_back(target_node);
+            }
+          }
+          if (!target_nodes.empty()) {
+            V_VT(result) = VT_ARRAY | VT_UNKNOWN;
+            V_ARRAY(result) = CreateUIAElementsSafeArray(target_nodes);
+          }
+        }
       }
       break;
   }

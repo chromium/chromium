@@ -7,6 +7,7 @@
 #include <wrl/implements.h>
 
 #include "base/no_destructor.h"
+#include "base/win/windows_version.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace ui {
@@ -41,6 +42,17 @@ UiaRegistrarWin::UiaRegistrarWin() {
         kUiaPropertyMathMlGuid, L"MathML", UIAutomationType_String};
     registrar->RegisterProperty(&mathml_property_info, &mathml_property_id_);
   }
+
+  // Register the custom UIA property that exposes the list of
+  // aria-actions action names. UIAutomationType_ElementArray is only
+  // supported for custom properties on Windows 11 and later.
+  if (base::win::GetVersion() >= base::win::Version::WIN11) {
+    UIAutomationPropertyInfo aria_actions_property_info = {
+        kUiaPropertyAriaActionsGuid, L"AccessibleActions",
+        UIAutomationType_ElementArray};
+    registrar->RegisterProperty(&aria_actions_property_info,
+                                &aria_actions_property_id_);
+  }
 }
 
 UiaRegistrarWin::~UiaRegistrarWin() = default;
@@ -60,6 +72,10 @@ PROPERTYID UiaRegistrarWin::GetMathMLPropertyId() const {
     return 0;
   }
   return mathml_property_id_;
+}
+
+PROPERTYID UiaRegistrarWin::GetAriaActionsPropertyId() const {
+  return aria_actions_property_id_;
 }
 
 const UiaRegistrarWin& UiaRegistrarWin::GetInstance() {

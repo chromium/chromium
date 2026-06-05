@@ -40,6 +40,13 @@ static const GUID kUiaPropertyMathMlGuid = {
     0x4E7C,
     {0x82, 0x7F, 0xDD, 0x05, 0xEE, 0x04, 0x81, 0xD9}};
 
+// {8C787AC3-0405-4C94-AC09-7A56A173F7EF}
+static const GUID kUiaPropertyAriaActionsGuid = {
+    0x8c787ac3,
+    0x0405,
+    0x4c94,
+    {0xac, 0x09, 0x7a, 0x56, 0xa1, 0x73, 0xf7, 0xef}};
+
 class COMPONENT_EXPORT(AX_PLATFORM) UiaRegistrarWin {
  public:
   UiaRegistrarWin();
@@ -52,6 +59,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) UiaRegistrarWin {
   PROPERTYID GetUniqueIdPropertyId() const;
 
   PROPERTYID GetMathMLPropertyId() const;
+  PROPERTYID GetAriaActionsPropertyId() const;
 
   static const UiaRegistrarWin& GetInstance();
 
@@ -63,6 +71,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) UiaRegistrarWin {
   PROPERTYID unique_id_property_id_ = 0;
 
   PROPERTYID mathml_property_id_ = 0;
+  PROPERTYID aria_actions_property_id_ = 0;
 };
 
 }  // namespace ui

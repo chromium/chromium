@@ -93,6 +93,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatterUia
                               int root_x,
                               int root_y,
                               base::DictValue* dict) const;
+  void WriteRawElementArray(long propertyId,
+                            SAFEARRAY* sa,
+                            base::DictValue* dict) const;
   void WriteElementArray(long propertyId,
                          IUIAutomationElementArray* array,
                          base::DictValue* dict) const;
