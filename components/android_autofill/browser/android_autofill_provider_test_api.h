@@ -28,6 +28,15 @@ class AndroidAutofillProviderTestApi {
                ? provider_->session_state_->current_field.origin
                : url::Origin{};
   }
+  const content::GlobalRenderFrameHostId last_queried_field_rfh_id() && {
+    return provider_->session_state_
+               ? provider_->session_state_->last_queried_field_rfh_id
+               : content::GlobalRenderFrameHostId{};
+  }
+  bool is_credman_sheet_showing() && {
+    return provider_->credman_sheet_status_ ==
+           AndroidAutofillProvider::CredManBottomSheetLifecycle::kIsShowing;
+  }
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor() {
     return *provider_->keyboard_suppressor_;

@@ -167,6 +167,12 @@ void AndroidAutofillProvider::RenderFrameDeleted(
     OnHidePopup(session_state_->manager.get());
     session_state_->last_queried_field_rfh_id = {};
   }
+  if (credman_sheet_rfh_id_ == rfh->GetGlobalId()) {
+    // `WebAuthnCredManDelegateFactory` takes care of cleaning up
+    // `GetCredManDelegate(rfh)`.
+    credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
+    credman_sheet_rfh_id_ = {};
+  }
 }
 
 void AndroidAutofillProvider::DidFinishNavigation(
@@ -177,7 +183,23 @@ void AndroidAutofillProvider::DidFinishNavigation(
       !navigation_handle->IsSameDocument()) {
     OnHidePopup(session_state_->manager.get());
     session_state_->last_queried_field_rfh_id = {};
+  }
+
+  if (credman_sheet_rfh_id_ ==
+          navigation_handle->GetPreviousRenderFrameHostId() &&
+      !navigation_handle->IsSameDocument()) {
+    if (content::RenderFrameHost* rfh =
+            content::RenderFrameHost::FromID(credman_sheet_rfh_id_)) {
+      if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
+        // Clear the callback to prevent a race condition where the platform UI
+        // dismissal (triggered by navigation) calls back and overwrites the
+        // `credman_sheet_status_` to `kClosed` after we reset it to
+        // `kNotShown`.
+        delegate->SetRequestCompletionCallback(base::DoNothing());
+      }
+    }
     credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
+    credman_sheet_rfh_id_ = {};
   }
 }
 

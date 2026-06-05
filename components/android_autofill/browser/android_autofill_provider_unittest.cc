@@ -73,6 +73,7 @@ using test::CreateTestCreditCardFormData;
 using test::CreateTestFormField;
 using test::CreateTestPasswordFormData;
 using test::CreateTestPersonalInformationFormData;
+using test::GetFormData;
 
 auto EqualsFieldInfo(size_t index) {
   return Field("index", &AndroidAutofillProviderBridge::FieldInfo::index,
@@ -1228,6 +1229,93 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   // Verify origin remains foo.com (spoof blocked!).
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
             url::Origin::Create(GURL("https://foo.com")));
+}
+
+class AndroidAutofillProviderCredManSpoofSheetStatusTest
+    : public AndroidAutofillProviderWithCredManTest {
+ public:
+  static constexpr char kAttackerOrigin[] = "https://attacker.com";
+  static constexpr char kVictimOrigin[] = "https://victim.com";
+
+  void SetUp() override {
+    AndroidAutofillProviderWithCredManTest::SetUp();
+
+    // Navigate main frame to victim origin.
+    // This will destroy the delegate emplaced by base class SetUp.
+    NavigateAndCommit(GURL(kVictimOrigin));
+
+    // Re-emplace mock delegate for main frame.
+    auto mock_delegate =
+        std::make_unique<NiceMock<webauthn::MockWebAuthnCredManDelegate>>();
+    ON_CALL(*mock_delegate, HasPasskeys())
+        .WillByDefault(
+            Return(webauthn::WebAuthnCredManDelegate::State::kHasPasskeys));
+
+    webauthn::test_api(web_authn_delegate_factory())
+        .EmplaceDelegateForFrame(main_frame(), std::move(mock_delegate));
+
+    // Create subframe (attacker).
+    attacker_frame_ = content::RenderFrameHostTester::For(main_frame())
+                          ->AppendChild(std::string("child"));
+    attacker_frame_ = NavigateAndCommitFrame(
+        attacker_frame_, GURL(std::string(kAttackerOrigin)));
+  }
+
+  void TearDown() override {
+    attacker_frame_ = nullptr;
+    AndroidAutofillProviderWithCredManTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<content::RenderFrameHost> attacker_frame_ = nullptr;
+};
+
+// Tests that navigation in an attacker subframe does not reset the CredMan
+// sheet status if the CredMan UI was triggered by a different frame.
+// (See crbug.com/519485704)
+TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
+       AttackerSubframeNavDoesNotResetCredManSheetStatus) {
+  const url::Origin attacker_origin =
+      url::Origin::Create(GURL(kAttackerOrigin));
+  const url::Origin victim_origin = url::Origin::Create(GURL(kVictimOrigin));
+
+  // Setup form spanning multiple frames.
+  FormData form = GetFormData({
+      .fields = {{
+                     .host_frame = LocalFrameToken(
+                         attacker_frame_->GetFrameToken().value()),
+                     .origin = attacker_origin,
+                 },
+                 {
+                     .host_frame =
+                         LocalFrameToken(main_frame()->GetFrameToken().value()),
+                     .autocomplete_attribute = "webauthn",
+                     .origin = victim_origin,
+                 }},
+      .url = std::string(kVictimOrigin) + "/form.html",
+      .main_frame_origin = victim_origin,
+  });
+
+  const FormFieldData& attacker_field = form.fields()[0];
+  const FormFieldData& victim_field = form.fields()[1];
+
+  android_autofill_manager().OnFormsSeen({form}, {});
+
+  // Attacker frame queries autofill.
+  android_autofill_manager().SimulateOnAskForValuesToFill(form, attacker_field);
+  ASSERT_EQ(test_api(autofill_provider()).last_queried_field_rfh_id(),
+            attacker_frame_->GetGlobalId());
+
+  // Victim frame focuses, triggering CredMan sheet.
+  android_autofill_manager().SimulateOnFocusOnFormField(form, victim_field);
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  // Navigate attacker frame. This should keep `credman_sheet_status_ ==
+  // kIsShowing` because the navigated frame is not the one hosting the CredMan
+  // sheet.
+  NavigateAndCommitFrame(
+      attacker_frame_, GURL(std::string(kAttackerOrigin) + "/navigated.html"));
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
 }
 
 using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;
