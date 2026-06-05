@@ -1614,13 +1614,15 @@ enum InvocationSource {
   // Used exclusively for invocations originating from the
   // GlicExperimentalTriggeringMessageHandler.
   [MinVersion=19] kExperimentalTriggering = 28,
+  // From the promotion page.
+  [MinVersion=20] kPromotionPage = 29,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)
 
 // @generate glic_api
 // Mode for specific feature behaviors.
-// Next version: 2
+// Next version: 3
 [Stable, Extensible]
 enum FeatureMode {
   [Default] kUnspecified = 0,
@@ -1630,6 +1632,8 @@ enum FeatureMode {
   [MinVersion=1] kExperimentalTriggering = 3,
   // Client feature mode to initiate actuation for Universal Cart.
   [MinVersion=1] kUniversalCart = 4,
+  // Client feature mode for Promotion Page.
+  [MinVersion=2] kPromotionPage = 5,
 };
 
 // @generate glic_api

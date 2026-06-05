@@ -35,6 +35,7 @@ declare namespace chrome {
     export enum InvocationSource {
       INVOCATION_SOURCE_UNKNOWN = 'INVOCATION_SOURCE_UNKNOWN',
       INVOCATION_SOURCE_UNIVERSAL_CART = 'INVOCATION_SOURCE_UNIVERSAL_CART',
+      INVOCATION_SOURCE_PROMOTION_PAGE = 'INVOCATION_SOURCE_PROMOTION_PAGE',
     }
 
     export interface InvokeDetails {

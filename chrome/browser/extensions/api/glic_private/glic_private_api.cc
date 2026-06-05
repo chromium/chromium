@@ -48,6 +48,8 @@ std::string InvocationSourceToString(
   switch (source) {
     case api::glic_private::InvocationSource::kUniversalCart:
       return "INVOCATION_SOURCE_UNIVERSAL_CART";
+    case api::glic_private::InvocationSource::kPromotionPage:
+      return "INVOCATION_SOURCE_PROMOTION_PAGE";
     case api::glic_private::InvocationSource::kUnknown:
       return "INVOCATION_SOURCE_UNKNOWN";
     case api::glic_private::InvocationSource::kNone:
@@ -388,25 +390,32 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
       glic::mojom::InvocationSource::kUnsupported;
   glic::mojom::FeatureMode feature_mode =
       glic::mojom::FeatureMode::kUnspecified;
+  bool is_valid_source =
+      params->details.invocation_source ==
+          api::glic_private::InvocationSource::kUniversalCart ||
+      params->details.invocation_source ==
+          api::glic_private::InvocationSource::kPromotionPage;
+
+  if (is_valid_source &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kApiGlicAccessFromGoogleWebpage)) {
+    return RespondNow(GetPromptResponseValueAndLog(
+        extensions::api::glic_private::ErrorCode::kLocalGlicNotEnabled));
+  }
+
   switch (params->details.invocation_source) {
     case api::glic_private::InvocationSource::kUniversalCart:
-      if (!base::FeatureList::IsEnabled(
-              extensions_features::kApiGlicAccessFromGoogleWebpage)) {
-        return RespondNow(GetPromptResponseValueAndLog(
-            extensions::api::glic_private::ErrorCode::kLocalGlicNotEnabled));
-      }
       source = glic::mojom::InvocationSource::kUniversalCart;
       feature_mode = glic::mojom::FeatureMode::kUniversalCart;
+      break;
+    case api::glic_private::InvocationSource::kPromotionPage:
+      source = glic::mojom::InvocationSource::kPromotionPage;
+      feature_mode = glic::mojom::FeatureMode::kPromotionPage;
       break;
     default:
       return RespondNow(GetPromptResponseValueAndLog(
           extensions::api::glic_private::ErrorCode::
               kLocalInvalidInvocationSource));
-  }
-
-  if (params->details.prompt_id.empty()) {
-    return RespondNow(GetPromptResponseValueAndLog(
-        extensions::api::glic_private::ErrorCode::kLocalMissingPromptId));
   }
 
   glic::GlicInvokeOptions options{source};
@@ -416,7 +425,27 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
 
   bool in_new_tab = params->details.in_new_tab.value_or(false);
 
-  GetPromptFromId(*profile, params->details.prompt_id,
+  if (!params->details.prompt_id || params->details.prompt_id->empty()) {
+    // Promotion page invocations do not require a prompt ID. We skip
+    // fetching the prompt from the server and proceed directly, passing nullopt
+    // for the prompt.
+    if (params->details.invocation_source ==
+        api::glic_private::InvocationSource::kPromotionPage) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved, this,
+                         std::move(options), in_new_tab,
+                         params->details.document_id,
+                         extensions::api::glic_private::ErrorCode::kNone,
+                         /*prompt=*/std::nullopt));
+      return RespondLater();
+    } else {
+      return RespondNow(GetPromptResponseValueAndLog(
+          extensions::api::glic_private::ErrorCode::kLocalMissingPromptId));
+    }
+  }
+
+  GetPromptFromId(*profile, *params->details.prompt_id,
                   InvocationSourceToString(params->details.invocation_source),
                   base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved,
                                  this, std::move(options), in_new_tab,
@@ -440,7 +469,9 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
     return;
   }
 
-  options.prompts.push_back(std::move(*prompt));
+  if (prompt && !prompt->empty()) {
+    options.prompts.push_back(std::move(*prompt));
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 

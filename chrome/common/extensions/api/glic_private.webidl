@@ -32,12 +32,13 @@ dictionary ProfileState {
 
 enum InvocationSource {
   "unknown",
-  "universal-cart"
+  "universal-cart",
+  "promotion-page"
 };
 
 dictionary InvokeDetails {
-  // The prompt ID to lookup from Chrome.
-  required DOMString promptId;
+  // The prompt ID to lookup from Chrome, required unless called from the promotion page.
+  DOMString promptId;
 
   // The source of the invocation.
   required InvocationSource invocationSource;

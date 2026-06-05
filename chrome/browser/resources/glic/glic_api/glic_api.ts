@@ -2992,6 +2992,8 @@ export enum InvocationSource {
   // Used exclusively for invocations originating from the
   // GlicExperimentalTriggeringMessageHandler.
   EXPERIMENTAL_TRIGGERING = 28,
+  // From the promotion page.
+  PROMOTION_PAGE = 29,
 }
 
 ///////////////////////////////////////////////
@@ -3005,6 +3007,8 @@ export enum FeatureMode {
   EXPERIMENTAL_TRIGGERING = 3,
   // Client feature mode to initiate actuation for Universal Cart.
   UNIVERSAL_CART = 4,
+  // Client feature mode for Promotion Page.
+  PROMOTION_PAGE = 5,
 }
 
 ///////////////////////////////////////////////

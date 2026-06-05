@@ -132,7 +132,11 @@ enum class ResponseSegmentation {
   kExperimentalTriggeringAttachedAudio = 114,
   kExperimentalTriggeringDetachedText = 115,
   kExperimentalTriggeringDetachedAudio = 116,
-  kMaxValue = kExperimentalTriggeringDetachedAudio,
+  kPromotionPageAttachedText = 117,
+  kPromotionPageAttachedAudio = 118,
+  kPromotionPageDetachedText = 119,
+  kPromotionPageDetachedAudio = 120,
+  kMaxValue = kPromotionPageDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

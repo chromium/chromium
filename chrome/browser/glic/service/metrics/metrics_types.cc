@@ -112,6 +112,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "WhatsNew";
     case mojom::InvocationSource::kZeroStateAutoSummarize:
       return "ZeroStateAutoSummarize";
+    case mojom::InvocationSource::kPromotionPage:
+      return "PromotionPage";
   }
 }
 }  // namespace glic
