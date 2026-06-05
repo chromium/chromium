@@ -112,6 +112,8 @@ AndroidActivityType ToProtobufActivityType(int32_t type) {
       return AndroidActivityType::PRE_FIRST_TAB;
     case 6:
       return AndroidActivityType::AUTH_TAB;
+    case 7:
+      return AndroidActivityType::DEV_TOOLS;
     default:
       NOTREACHED();
   }

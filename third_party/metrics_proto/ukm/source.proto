@@ -47,6 +47,7 @@ enum AndroidActivityType {
   WEB_APK = 4;
   PRE_FIRST_TAB = 5;
   AUTH_TAB = 6;
+  DEV_TOOLS = 7;
 }
 
 // This signifies if the reported source is a navigation to the same origin as
