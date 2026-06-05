@@ -501,7 +501,7 @@ source_set("data_sharing") {
 #
 # - c/b/ui/webui/data_sharing/data_sharing_page_handler.h
 # - c/b/ui/views/data_sharing/collaboration_controller_delegate_desktop.h
-# - c/b/ui/browser_finder.h
+# - c/b/ui/browser.h
 #
 # Hence, depending on //c/b/ui:ui isn't itself a problem. However, in this case,
 # if `data_sharing` depends on it, there will be non-trivial circular dependency

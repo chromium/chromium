@@ -706,12 +706,12 @@ static_library("ui") {
     "//chrome/browser/page_load_metrics:impl",
 
     # profiles:misc includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser.h, browser_finder.h).
+    # split out yet (e.g. browser.h).
     "//chrome/browser/profiles:misc",
     "//chrome/browser/profiles:profile_manager_impl",
 
     # sessions includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser.h, browser_finder.h).
+    # split out yet (e.g. browser.h).
     "//chrome/browser/sessions",
     "//chrome/browser/sessions:impl",
 
@@ -887,7 +887,7 @@ static_library("ui") {
     "//chrome/browser/feedback:feedback_impl",
 
     # lifetime:impl includes headers from //chrome/browser/ui that can't be
-    # split out yet (e.g. browser.h, browser_finder.h, browser_window.h).
+    # split out yet (e.g. browser.h, browser_window.h).
     "//chrome/browser/lifetime:impl",
 
     # notifications:impl includes chrome/browser/ui/browser.h,
@@ -972,12 +972,14 @@ static_library("ui") {
     # be split out yet.
     "//chrome/browser/policy:impl",
 
-    # vr_tab_helper.cc includes //c/b/ui/browser.h, browser_finder.h,
+    # vr_tab_helper.cc includes //c/b/ui/browser.h,
     # browser_window_interface.h, and tab_strip_model.h.
     "//chrome/browser/vr:impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependency when
-    # c/b/ui/browser_finder.h gets componentized.
+    # TODO(crbug.com/353332589): Remove this circular dependency when the
+    # following headers get componentized:
+    # - c/b/ui/chrome_pages.h
+    # - c/b/ui/views/chrome_layout_provider.h
     "//chrome/browser/supervised_user:impl",
 
     # webauthn:impl includes headers from //chrome/browser/ui that can't be
@@ -1154,8 +1156,6 @@ static_library("ui") {
       "browser_commands.h",
       "browser_content_setting_bubble_model_delegate.cc",
       "browser_content_setting_bubble_model_delegate.h",
-      "browser_finder.cc",
-      "browser_finder.h",
       "browser_instant_controller.cc",
       "browser_instant_controller.h",
       "browser_live_tab_context.cc",
@@ -1935,7 +1935,7 @@ static_library("ui") {
 
       # TODO(crbug.com/438226511): Remove this circular dependency when the
       # following headers get componentized:
-      # - c/b/ui/browser.h, browser_finder.h, browser_window.h, browser_window_state.h,
+      # - c/b/ui/browser.h, browser_window.h, browser_window_state.h,
       #   browser_commands.h, chrome_pages.h, browser_navigator.h, intent_picker_tab_helper.h,
       #   browser_tabstrip.h, intent_picker_tab_helper.h.
       "//chrome/browser/ui/web_applications:impl",
@@ -1948,8 +1948,7 @@ static_library("ui") {
       # panel.
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
 
-      # hid's :impl includes //chrome/browser/ui/browser_finder.h,
-      # //chrome/browser/ui/dialogs/browser_dialogs.h, and
+      # hid's :impl includes //chrome/browser/ui/dialogs/browser_dialogs.h, and
       # //chrome/browser/ui/chrome_pages.h from //chrome/browser/ui.
       "//chrome/browser/hid:impl",
     ]
@@ -4814,7 +4813,7 @@ static_library("ui") {
     # TODO(crbug.com/432061436) Remove this dependency when the following
     # headers get
     # componentized:
-    # c/b/ui/browser.h, browser_finder.h, browser_window.h.
+    # c/b/ui/browser.h, browser_window.h.
     # c/b/ui/passwords/passwords_model_delegate.h, passwords_client_ui_delegate.h.
     deps += [ "//chrome/browser/actor/ui" ]
 
@@ -4848,7 +4847,7 @@ static_library("ui") {
 
       # TODO(crbug.com/408801109): Remove this circular dependency when the
       # following headers get componentized:
-      # c/b/ui/browser.h, browser_finder.h, browser_window.h
+      # c/b/ui/browser.h, browser_window.h
       # c/b/ui/views/chrome_layout_provider.h
       # c/b/ui/views/controls/rich_controls_container_view.h, rich_hover_button.h
       # c/b/ui/views/frame/browser_view.h
@@ -4863,7 +4862,7 @@ static_library("ui") {
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the
       # following headers get componentized:
-      # c/b/ui/browser.h, browser_dialogs.h, browser_finder.h, browser_tabstrip.h, view_ids.h, browser_window.h.
+      # c/b/ui/browser.h, browser_dialogs.h, browser_tabstrip.h, view_ids.h, browser_window.h.
       # c/b/ui/views/chrome_layout_provider.h
       # c/b/ui/views/frame/browser_view.h
       "//chrome/browser/ui/views/location_bar:impl",
@@ -4874,7 +4873,7 @@ static_library("ui") {
 
       # TODO(crbug.com/432061436) Remove this circular dependency when the
       # following headers get componentized:
-      # c/b/ui/browser.h, browser_finder.h, browser_window.h.
+      # c/b/ui/browser.h, browser_window.h.
       "//chrome/browser/ui/webauthn:impl",
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the
@@ -4894,7 +4893,7 @@ static_library("ui") {
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the
       # following headers get componentized:
-      # c/b/ui/browser.h, browser_finder.h, browser_navigator.h, browser_window.h
+      # c/b/ui/browser.h, browser_navigator.h, browser_window.h
       # c/b/ui/views/chrome_layout_provider.h, chrome_typography.h
       # c/b/ui/views/controls/hover_button.h
       # c/b/ui/views/frame/browser_view.h

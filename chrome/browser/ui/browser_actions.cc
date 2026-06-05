@@ -967,27 +967,27 @@ void BrowserActions::InitializeChromeMenuActions() {
 
   const bool is_incognito = profile_->IsIncognitoProfile();
   root_action_item_->AddChild(
-      ChromeMenuAction(base::BindRepeating(
-                           [](BrowserWindowInterface* bwi, bool is_incognito,
-                              actions::ActionItem* item,
-                              actions::ActionInvocationContext context) {
-                             Browser* const browser_for_opening_webui =
-                                 bwi->GetBrowserForMigrationOnly()
-                                     ->GetBrowserForOpeningWebUi();
-                             if (is_incognito) {
-                               chrome::ShowIncognitoClearBrowsingDataDialog(
-                                   browser_for_opening_webui);
-                             } else {
-                               chrome::ShowClearBrowsingDataDialog(
-                                   browser_for_opening_webui);
-                             }
-                           },
-                           bwi, is_incognito),
-                       kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
-                       IDS_CLEAR_BROWSING_DATA,
-                       features::IsRoundedIconsEnabled()
-                           ? kDeleteIcon
-                           : kTrashCanRefreshOldIcon)
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](BrowserWindowInterface* bwi, bool is_incognito,
+                 actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                BrowserWindowInterface* const browser_for_opening_webui =
+                    bwi->GetBrowserForMigrationOnly()
+                        ->GetBrowserForOpeningWebUi();
+                if (is_incognito) {
+                  chrome::ShowIncognitoClearBrowsingDataDialog(
+                      browser_for_opening_webui);
+                } else {
+                  chrome::ShowClearBrowsingDataDialog(
+                      browser_for_opening_webui);
+                }
+              },
+              bwi, is_incognito),
+          kActionClearBrowsingData, IDS_CLEAR_BROWSING_DATA,
+          IDS_CLEAR_BROWSING_DATA,
+          features::IsRoundedIconsEnabled() ? kDeleteIcon
+                                            : kTrashCanRefreshOldIcon)
           .SetEnabled(is_incognito ||
                       (!is_guest_session && !profile->IsSystemProfile()))
           .Build());

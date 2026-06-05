@@ -101,7 +101,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_manager_service.h"
 #include "chrome/browser/ui/browser_manager_service_factory.h"
@@ -114,6 +113,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -798,7 +798,7 @@ void Browser::SetWindowUserTitle(const std::string& user_title) {
   WindowMetadataController::From(this)->SetWindowUserTitle(user_title);
 }
 
-Browser* Browser::GetBrowserForOpeningWebUi() {
+BrowserWindowInterface* Browser::GetBrowserForOpeningWebUi() {
   if (!is_type_picture_in_picture()) {
     return this;
   }
@@ -809,7 +809,9 @@ Browser* Browser::GetBrowserForOpeningWebUi() {
     // We should always have an opener web contents if the current browser is a
     // picture-in-picture type.
     DCHECK(opener_web_contents);
-    opener_browser_ = chrome::FindBrowserWithTab(opener_web_contents);
+    opener_browser_ =
+        GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+            opener_web_contents);
   }
 
   return opener_browser_;

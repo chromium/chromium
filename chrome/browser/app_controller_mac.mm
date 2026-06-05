@@ -184,26 +184,26 @@ void BeginHandlingWebAuthenticationSessionRequestWithProfile(
 }
 
 // Activates a browser window having the given profile (the last one active) if
-// possible and returns a pointer to the activate |Browser| or NULL if this was
+// possible and returns a pointer to the activated browser or NULL if this was
 // not possible. If the last active browser is minimized (in particular, if
 // there are only minimized windows), it will unminimize it.
-Browser* ActivateBrowser(Profile* profile) {
+BrowserWindowInterface* ActivateBrowser(Profile* profile) {
   ProfileBrowserCollection* collection =
       ProfileBrowserCollection::GetForProfile(
           profile->IsGuestSession()
               ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
               : profile);
-  BrowserWindowInterface* current_browser =
+  BrowserWindowInterface* browser =
       collection ? collection->GetLastActiveBrowser() : nullptr;
-  Browser* browser =
-      current_browser ? current_browser->GetBrowserForMigrationOnly() : nullptr;
 
   if (browser) {
-    browser = browser->GetBrowserForOpeningWebUi();
+    browser =
+        browser->GetBrowserForMigrationOnly()->GetBrowserForOpeningWebUi();
   }
 
-  if (browser)
-    browser->window()->Activate();
+  if (browser) {
+    browser->GetWindow()->Activate();
+  }
   return browser;
 }
 
@@ -262,8 +262,9 @@ BrowserWindowInterface* CreateBrowser(Profile* profile) {
 // possible or creates an empty one if necessary. Returns a pointer to the
 // activated/new |BrowserWindowInterface|.
 BrowserWindowInterface* ActivateOrCreateBrowser(Profile* profile) {
-  if (Browser* browser = ActivateBrowser(profile))
+  if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
     return browser;
+  }
   return CreateBrowser(profile);
 }
 
@@ -1718,7 +1719,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     case IDC_NEW_TAB:
       // Create a new tab in an existing browser window (which we activate) if
       // possible.
-      if (Browser* browser = ActivateBrowser(profile)) {
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ExecuteCommand(browser, IDC_NEW_TAB);
         break;
       }
@@ -1745,7 +1746,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       break;
     case IDC_CLEAR_BROWSING_DATA: {
       // There may not be a browser open, so use the default profile.
-      if (Browser* browser = ActivateBrowser(profile)) {
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowClearBrowsingDataDialog(browser);
       } else {
         chrome::OpenClearBrowsingDataDialogWindow(profile);
@@ -1753,7 +1754,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       break;
     }
     case IDC_IMPORT_SETTINGS: {
-      if (Browser* browser = ActivateBrowser(profile)) {
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowImportDialog(browser);
       } else {
         chrome::OpenImportSettingsDialogWindow(profile);
@@ -1761,7 +1762,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       break;
     }
     case IDC_SHOW_BOOKMARK_MANAGER:
-      if (Browser* browser = ActivateBrowser(profile)) {
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowBookmarkManager(browser);
       } else {
         // No browser window, so create one for the bookmark manager tab.
@@ -1769,28 +1770,32 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       }
       break;
     case IDC_SHOW_HISTORY:
-      if (Browser* browser = ActivateBrowser(profile))
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowHistory(browser);
-      else
+      } else {
         chrome::OpenHistoryWindow(profile);
+      }
       break;
     case IDC_SHOW_DOWNLOADS:
-      if (Browser* browser = ActivateBrowser(profile))
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowDownloads(browser);
-      else
+      } else {
         chrome::OpenDownloadsWindow(profile);
+      }
       break;
     case IDC_MANAGE_EXTENSIONS:
-      if (Browser* browser = ActivateBrowser(profile))
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowExtensions(browser);
-      else
+      } else {
         chrome::OpenExtensionsWindow(profile);
+      }
       break;
     case IDC_HELP_PAGE_VIA_MENU:
-      if (Browser* browser = ActivateBrowser(profile))
+      if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
         chrome::ShowHelp(browser, chrome::HelpSource::kMenu);
-      else
+      } else {
         chrome::OpenHelpWindow(profile, chrome::HelpSource::kMenu);
+      }
       break;
     case IDC_OPTIONS:
       [self showPreferences:sender];
@@ -2061,10 +2066,11 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     return;
   }
   // Re-use an existing browser, or create a new one.
-  if (Browser* browser = ActivateBrowser(profile))
+  if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
     chrome::ShowSettings(browser);
-  else
+  } else {
     chrome::OpenOptionsWindow(profile);
+  }
 }
 
 - (IBAction)orderFrontStandardAboutPanel:(id)sender {
@@ -2082,10 +2088,11 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
     return;
   }
   // Re-use an existing browser, or create a new one.
-  if (Browser* browser = ActivateBrowser(profile))
+  if (BrowserWindowInterface* browser = ActivateBrowser(profile)) {
     chrome::ShowAboutChrome(browser);
-  else
+  } else {
     chrome::OpenAboutWindow(profile);
+  }
 }
 
 - (IBAction)toggleConfirmToQuit:(id)sender {

@@ -85,7 +85,6 @@ source_set("impl") {
     # gone.
     # - c/b/ui/browser.h"
     # - c/b/ui/browser_dialogs.h"
-    # - c/b/ui/browser_finder.h"
     # - c/b/ui/chrome_pages.h"
     "//chrome/browser/ui",
   ]

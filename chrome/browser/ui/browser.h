@@ -681,7 +681,7 @@ class Browser : public TabStripModelObserver,
   // Gets the browser for opening chrome:// pages. This will return the opener
   // browser if the current browser is in picture-in-picture mode, otherwise
   // returns the current browser.
-  Browser* GetBrowserForOpeningWebUi();
+  BrowserWindowInterface* GetBrowserForOpeningWebUi();
 
   std::vector<StatusBubble*> GetStatusBubblesForTesting();
   UnloadController* GetUnloadControllerForTesting() {
@@ -1193,7 +1193,7 @@ class Browser : public TabStripModelObserver,
 
   // The opener browser of the document picture-in-picture browser. Null if the
   // current browser is a regular browser.
-  raw_ptr<Browser> opener_browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> opener_browser_ = nullptr;
 
   WebContentsCollection web_contents_collection_{this};
 
