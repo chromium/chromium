@@ -1528,9 +1528,9 @@
                 {
                     "name": "RaiseDisplayCriticalThreadPriorityV2",
                     "params": {
-                        "interactive": "-12",
+                        "interactive": "-8",
                         "obey_soc_restrictions": "false",
-                        "presentation": "-12"
+                        "presentation": "-8"
                     },
                     "enable_features": [
                         "AndroidThreadPriority"
