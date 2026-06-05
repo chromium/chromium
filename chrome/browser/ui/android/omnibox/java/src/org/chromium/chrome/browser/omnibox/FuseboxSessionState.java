@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.WebContents;
 
@@ -173,9 +174,8 @@ public class FuseboxSessionState implements UserData {
                     .setUserText(mAutocompleteInput.getInitialUserText())
                     .setSelection(
                             OmniboxCapabilities.hasDesktopExperience(context)
-                                    ? 0
-                                    : Integer.MAX_VALUE,
-                            Integer.MAX_VALUE);
+                                    ? TextSelection.SELECT_ALL
+                                    : TextSelection.SELECT_END);
         }
 
         // Stop here if we're already waiting for profile.

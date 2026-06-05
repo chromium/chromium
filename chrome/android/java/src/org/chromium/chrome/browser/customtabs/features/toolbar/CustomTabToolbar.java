@@ -112,6 +112,7 @@ import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -1470,7 +1471,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                     UrlBarData.forNonUrlText(
                             getContext().getString(R.string.twa_running_in_chrome)),
                     UrlBar.ScrollType.NO_SCROLL,
-                    UrlBarData.SELECT_ALL);
+                    TextSelection.SELECT_ALL);
         }
 
         private void runAfterBrandingRunnables() {
@@ -1598,7 +1599,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             Tab tab = getCurrentTab();
             if (tab == null) {
                 mUrlCoordinator.setUrlBarData(
-                        UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, UrlBarData.SELECT_ALL);
+                        UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, TextSelection.SELECT_ALL);
                 return;
             }
 
@@ -1652,7 +1653,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             mUrlCoordinator.setUrlBarData(
                     UrlBarData.create(url, displayText, originStart, originEnd, url.getSpec()),
                     UrlBar.ScrollType.SCROLL_TO_TLD,
-                    UrlBarData.SELECT_ALL);
+                    TextSelection.SELECT_ALL);
 
             WebContents webContents = tab.getWebContents();
             if (webContents != null) {

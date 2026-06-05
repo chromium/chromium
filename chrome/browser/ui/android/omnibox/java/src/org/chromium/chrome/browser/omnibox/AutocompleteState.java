@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.omnibox.TextSelection;
 
 import java.util.Locale;
 import java.util.Objects;
@@ -21,8 +22,7 @@ class AutocompleteState {
     private String mUserText;
     private @Nullable String mAutocompleteText;
     private @Nullable String mAdditionalText;
-    private int mSelStart;
-    private int mSelEnd;
+    private TextSelection mSelection;
     private @Nullable String mSiteSearchLabel;
 
     public AutocompleteState(AutocompleteState a) {
@@ -33,15 +33,13 @@ class AutocompleteState {
             String userText,
             @Nullable String autocompleteText,
             @Nullable String additionalText,
-            int selStart,
-            int selEnd,
+            TextSelection selection,
             @Nullable String siteSearchLabel) {
         set(
                 userText,
                 TextUtils.isEmpty(autocompleteText) ? null : autocompleteText,
                 TextUtils.isEmpty(additionalText) ? null : additionalText,
-                selStart,
-                selEnd,
+                selection,
                 siteSearchLabel);
     }
 
@@ -50,25 +48,17 @@ class AutocompleteState {
             String userText,
             @Nullable String autocompleteText,
             @Nullable String additionalText,
-            int selStart,
-            int selEnd,
+            TextSelection selection,
             @Nullable String siteSearchLabel) {
         mUserText = userText;
         mAutocompleteText = autocompleteText;
         mAdditionalText = additionalText;
-        mSelStart = selStart;
-        mSelEnd = selEnd;
+        mSelection = selection;
         mSiteSearchLabel = siteSearchLabel;
     }
 
     public void copyFrom(AutocompleteState a) {
-        set(
-                a.mUserText,
-                a.mAutocompleteText,
-                a.mAdditionalText,
-                a.mSelStart,
-                a.mSelEnd,
-                a.mSiteSearchLabel);
+        set(a.mUserText, a.mAutocompleteText, a.mAdditionalText, a.mSelection, a.mSiteSearchLabel);
     }
 
     public String getUserText() {
@@ -94,17 +84,12 @@ class AutocompleteState {
         return mUserText.concat(mAutocompleteText != null ? mAutocompleteText : "");
     }
 
-    public int getSelStart() {
-        return mSelStart;
+    public TextSelection getSelection() {
+        return mSelection;
     }
 
-    public int getSelEnd() {
-        return mSelEnd;
-    }
-
-    public void setSelection(int selStart, int selEnd) {
-        mSelStart = selStart;
-        mSelEnd = selEnd;
+    public void setSelection(TextSelection selection) {
+        mSelection = selection;
     }
 
     public void setUserText(String userText) {
@@ -120,11 +105,11 @@ class AutocompleteState {
     }
 
     public boolean isCursorAtEndOfUserText() {
-        return mSelStart == mUserText.length() && mSelEnd == mUserText.length();
+        return mSelection.to >= mUserText.length();
     }
 
     public boolean isWholeUserTextSelected() {
-        return mSelStart == 0 && mSelEnd == mUserText.length();
+        return mSelection.selectsAll(mUserText.length());
     }
 
     /**
@@ -132,6 +117,9 @@ class AutocompleteState {
      * @return Whether the current state is backward-deleted from prevState.
      */
     public boolean isBackwardDeletedFrom(AutocompleteState prevState) {
+        if (prevState.isWholeUserTextSelected() && mUserText.length() > 0) {
+            return false;
+        }
         return isCursorAtEndOfUserText()
                 && prevState.isCursorAtEndOfUserText()
                 && isPrefix(mUserText, prevState.mUserText);
@@ -191,35 +179,30 @@ class AutocompleteState {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (!(o instanceof AutocompleteState)) return false;
         if (o == this) return true;
         AutocompleteState a = (AutocompleteState) o;
         return mUserText.equals(a.mUserText)
                 && Objects.equals(mAutocompleteText, a.mAutocompleteText)
-                && mSelStart == a.mSelStart
-                && mSelEnd == a.mSelEnd
+                && Objects.equals(mSelection, a.mSelection)
                 && Objects.equals(mSiteSearchLabel, a.mSiteSearchLabel);
     }
 
     @Override
     public int hashCode() {
-        return mUserText.hashCode() * 2
-                + (mAutocompleteText != null ? mAutocompleteText.hashCode() : 0) * 3
-                + mSelStart * 5
-                + mSelEnd * 7
-                + (mSiteSearchLabel != null ? mSiteSearchLabel.hashCode() : 0) * 11;
+        return Objects.hash(mUserText, mAutocompleteText, mSelection, mSiteSearchLabel);
     }
 
     @Override
     public String toString() {
         return String.format(
                 Locale.US,
-                "AutocompleteState {[%s][%s] [%d-%d] [%s]}",
+                "AutocompleteState {[%s][%s][%s] %s [%s]}",
                 mUserText,
                 mAutocompleteText,
-                mSelStart,
-                mSelEnd,
+                mAdditionalText,
+                mSelection,
                 mSiteSearchLabel);
     }
 }

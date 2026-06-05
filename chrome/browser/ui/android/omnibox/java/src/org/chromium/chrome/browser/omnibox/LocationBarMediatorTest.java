@@ -129,6 +129,7 @@ import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -510,7 +511,8 @@ public class LocationBarMediatorTest {
         doReturn(JUnitTestGURLs.BLUE_1).when(mLocationBarDataProvider).getCurrentGurl();
         mMediator.revertChanges();
         verify(mUrlCoordinator)
-                .setUrlBarData(mUrlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);
+                .setUrlBarData(
+                        mUrlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL);
     }
 
     @Test
@@ -586,7 +588,7 @@ public class LocationBarMediatorTest {
 
         assertEquals(
                 functionalUrl.getSpec(),
-                mMediator.getReplacementCutCopyText(text, 0, text.length()));
+                mMediator.getReplacementCutCopyText(text, new TextSelection(0, text.length())));
     }
 
     @Test
@@ -1149,7 +1151,7 @@ public class LocationBarMediatorTest {
                 .setUrlBarData(
                         urlBarDataCaptor.capture(),
                         eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(UrlBarData.SELECT_END));
+                        eq(TextSelection.SELECT_END));
         assertEquals("keyword", urlBarDataCaptor.getValue().displayText.toString());
     }
 
@@ -1176,7 +1178,7 @@ public class LocationBarMediatorTest {
                 .setUrlBarData(
                         urlBarDataCaptor.capture(),
                         eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(UrlBarData.SELECT_END));
+                        eq(TextSelection.SELECT_END));
         assertEquals("keyword ", urlBarDataCaptor.getValue().displayText.toString());
     }
 
@@ -1377,7 +1379,8 @@ public class LocationBarMediatorTest {
         // Verify that setUrlBarData() was invoked exactly once, after the first invocation of
         // setUrl() when the URL bar was not focused.
         verify(mUrlCoordinator, times(1))
-                .setUrlBarData(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);
+                .setUrlBarData(
+                        urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL);
     }
 
     @Test
@@ -1484,7 +1487,10 @@ public class LocationBarMediatorTest {
                 .setUrlBarData(
                         any(),
                         eq(UrlBar.ScrollType.NO_SCROLL),
-                        eq(expectDesktopMode ? UrlBarData.SELECT_ALL : UrlBarData.SELECT_END));
+                        eq(
+                                expectDesktopMode
+                                        ? TextSelection.SELECT_ALL
+                                        : TextSelection.SELECT_END));
         verify(mUrlCoordinator).onUrlFocusChange(true);
 
         mMediator.finishUrlFocusChange(true, true);
@@ -1570,7 +1576,8 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).endInput();
         verify(mUrlCoordinator).onUrlFocusChange(false);
         verify(mUrlCoordinator, atLeastOnce())
-                .setUrlBarData(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);
+                .setUrlBarData(
+                        urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL);
     }
 
     @Test
@@ -2206,7 +2213,8 @@ public class LocationBarMediatorTest {
         final int newSelectionEnd = 6;
         var newState = mSessionState;
         newState.getAutocompleteInput().setUserText(newText);
-        newState.getAutocompleteInput().setSelection(newSelectionStart, newSelectionEnd);
+        newState.getAutocompleteInput()
+                .setSelection(new TextSelection(newSelectionStart, newSelectionEnd));
         newState.activate(mContext, null, mProfileSupplier, null);
 
         FuseboxSessionState previousState = new FuseboxSessionState();
@@ -2237,11 +2245,8 @@ public class LocationBarMediatorTest {
         assertTrue(previousState.isSessionActive());
         assertEquals(previousText, previousState.getAutocompleteInput().getUserText());
         assertEquals(
-                previousSelectionStart,
-                (int) previousState.getAutocompleteInput().getSelection().getLower());
-        assertEquals(
-                previousSelectionEnd,
-                (int) previousState.getAutocompleteInput().getSelection().getUpper());
+                previousSelectionStart, previousState.getAutocompleteInput().getSelection().from);
+        assertEquals(previousSelectionEnd, previousState.getAutocompleteInput().getSelection().to);
     }
 
     @Test

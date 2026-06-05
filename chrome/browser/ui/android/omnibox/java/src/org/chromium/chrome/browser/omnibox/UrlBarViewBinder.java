@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Range;
 import android.view.ActionMode;
 
 import androidx.annotation.ColorInt;
@@ -23,6 +22,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -98,13 +98,8 @@ class UrlBarViewBinder {
                 // Be careful when extending selection to override OS settings - Android 12 is
                 // particularly sensitive here.
                 int textLength = view.getText().length();
-                Range<Integer> selectionRange;
-                try {
-                    selectionRange = state.selection.intersect(0, textLength);
-                } catch (IllegalArgumentException rangesDoNotOverlap) {
-                    selectionRange = Range.create(textLength, textLength);
-                }
-                view.setSelection(selectionRange.getLower(), selectionRange.getUpper());
+                TextSelection selection = state.selection.trimTo(textLength);
+                view.setSelection(selection.from, selection.to);
                 view.requestAccessibilityFocus();
             }
         } else if (UrlBarProperties.TEXT_COLOR.equals(propertyKey)) {

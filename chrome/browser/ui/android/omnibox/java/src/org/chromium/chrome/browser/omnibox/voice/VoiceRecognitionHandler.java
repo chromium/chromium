@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -266,7 +267,7 @@ public class VoiceRecognitionHandler {
         AutocompleteInput input =
                 new AutocompleteInput(OmniboxFocusReason.SEARCH_QUERY)
                         .setUserText(query)
-                        .setSelection(0, query.length())
+                        .setSelection(TextSelection.SELECT_ALL)
                         .setRequestType(requestType);
         mOmniboxStub.beginInput(input);
     }

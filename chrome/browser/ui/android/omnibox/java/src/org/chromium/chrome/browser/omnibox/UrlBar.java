@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -228,7 +229,7 @@ public class UrlBar extends AutocompleteEditText {
          * @return The text to be cut/copied instead of the currently selected text.
          */
         default @Nullable String getReplacementCutCopyText(
-                String currentText, int selectionStart, int selectionEnd) {
+                String currentText, TextSelection selection) {
             return null;
         }
     }
@@ -249,8 +250,7 @@ public class UrlBar extends AutocompleteEditText {
          * @param selectionEnd The selection end in the display text.
          * @return The text to be cut/copied instead of the currently selected text.
          */
-        @Nullable String getReplacementCutCopyText(
-                String currentText, int selectionStart, int selectionEnd);
+        @Nullable String getReplacementCutCopyText(String currentText, TextSelection selection);
     }
 
     public UrlBar(Context context, AttributeSet attrs) {
@@ -803,14 +803,15 @@ public class UrlBar extends AutocompleteEditText {
         boolean isCutOption = false;
         int selStart = isFocused() ? getSelectionStart() : 0;
         int selEnd = isFocused() ? getSelectionEnd() : getText().length();
+        TextSelection selection = new TextSelection(selStart, selEnd);
 
         switch (id) {
             case android.R.id.paste:
                 String pasteString = mTextContextMenuDelegate.getTextToPaste();
                 // Forbid pasting to unfocused Omnibox.
                 if (pasteString == null || !isFocused()) return true;
-                Selection.setSelection(getText(), selEnd);
-                getText().replace(selStart, selEnd, pasteString);
+                getText().replace(selection.getLower(), selection.getUpper(), pasteString);
+                Selection.setSelection(getText(), selection.getLower() + pasteString.length());
                 onPaste();
                 return true;
 
@@ -828,13 +829,13 @@ public class UrlBar extends AutocompleteEditText {
                 // replacement text - we use it instead of the selection.
                 String replacementCutCopyText =
                         mTextContextMenuDelegate.getReplacementCutCopyText(
-                                getText().toString(), selStart, selEnd);
+                                getText().toString(), selection);
 
                 // No text from the Delegate - let OS handle the action.
                 if (replacementCutCopyText == null) break;
 
                 Clipboard.getInstance().setText(replacementCutCopyText);
-                if (isCutOption) getText().replace(selStart, selEnd, "");
+                if (isCutOption) getText().replace(selection.getLower(), selection.getUpper(), "");
                 return true;
 
             case android.R.id.shareText:
@@ -844,12 +845,14 @@ public class UrlBar extends AutocompleteEditText {
                     String replacementShareText =
                             mTextContextMenuDelegate != null
                                     ? mTextContextMenuDelegate.getReplacementCutCopyText(
-                                            getText().toString(), selStart, selEnd)
+                                            getText().toString(), selection)
                                     : null;
                     mUrlBarDelegate.shareText(
                             replacementShareText != null
                                     ? replacementShareText
-                                    : getText().toString().substring(selStart, selEnd));
+                                    : getText()
+                                            .toString()
+                                            .substring(selection.getLower(), selection.getUpper()));
                     return true;
                 }
                 break;

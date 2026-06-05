@@ -20,7 +20,6 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.util.FloatProperty;
-import android.util.Range;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -123,6 +122,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -684,7 +684,7 @@ class LocationBarMediator
             mUrlCoordinator.setUrlBarData(
                     getUrlBarDataForCurrentInput(mCurrentInput),
                     UrlBar.ScrollType.NO_SCROLL,
-                    UrlBarData.SELECT_ALL);
+                    TextSelection.SELECT_ALL);
             mUrlCoordinator.setKeyboardVisibility(false, false);
         } else {
             setUrl(
@@ -1059,7 +1059,7 @@ class LocationBarMediator
         }
 
         mOriginalUrl = currentUrl;
-        setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, UrlBarData.SELECT_ALL);
+        setUrlBarText(urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, TextSelection.SELECT_ALL);
     }
 
     /* package */ void deleteButtonClicked(View view) {
@@ -1739,7 +1739,7 @@ class LocationBarMediator
      * @return Whether the URL was changed as a result of this call.
      */
     /* package */ boolean setUrlBarText(
-            UrlBarData urlBarData, @UrlBar.ScrollType int scrollType, Range<Integer> selection) {
+            UrlBarData urlBarData, @UrlBar.ScrollType int scrollType, TextSelection selection) {
         return mUrlCoordinator.setUrlBarData(urlBarData, scrollType, selection);
     }
 
@@ -2308,7 +2308,7 @@ class LocationBarMediator
                     mUrlCoordinator.setUrlBarData(
                             UrlBarData.forNonUrlText(searchText),
                             UrlBar.ScrollType.NO_SCROLL,
-                            UrlBarData.SELECT_END);
+                            TextSelection.SELECT_END);
                     return true;
                 }
             }
@@ -2386,7 +2386,9 @@ class LocationBarMediator
         // Save the previous tab state.
         if (mCurrentInput != null) {
             mCurrentInput.setSelection(
-                    mUrlCoordinator.getSelectionStart(), mUrlCoordinator.getSelectionEnd());
+                    new TextSelection(
+                            mUrlCoordinator.getSelectionStart(),
+                            mUrlCoordinator.getSelectionEnd()));
         }
 
         // Restore the saved tab state.
@@ -2605,8 +2607,7 @@ class LocationBarMediator
     }
 
     @Override
-    public @Nullable String getReplacementCutCopyText(
-            String currentText, int selectionStart, int selectionEnd) {
+    public @Nullable String getReplacementCutCopyText(String currentText, TextSelection selection) {
         GURL currentGurl = mLocationBarDataProvider.getCurrentGurl();
         if (!ContextualTasksUtils.isContextualTasksUrl(currentGurl)) return null;
 
@@ -2619,7 +2620,7 @@ class LocationBarMediator
         }
 
         return ContextualTasksUtils.getReplacementUrl(
-                currentText, selectionStart, selectionEnd, functionalGurl);
+                currentText, selection.from, selection.to, functionalGurl);
     }
 
     @Override

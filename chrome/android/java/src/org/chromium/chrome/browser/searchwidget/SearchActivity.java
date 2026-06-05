@@ -60,7 +60,6 @@ import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
-import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -87,6 +86,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -669,7 +669,7 @@ public class SearchActivity extends AsyncInitializationActivity
         mLocationBarCoordinator.setUrlBarFocus(
                 new AutocompleteInput(OmniboxFocusReason.OMNIBOX_TAP)
                         .setUserText(query)
-                        .setSelection(UrlBarData.SELECT_ALL));
+                        .setSelection(TextSelection.SELECT_ALL));
 
         mSearchBox.beginQuery(mIntentOrigin, mSearchType, getWindowAndroid());
     }

@@ -43,7 +43,7 @@ class SpanCursorController {
     }
 
     public void setSpan(AutocompleteState state) {
-        int sel = state.getSelStart();
+        int sel = state.getSelection().from;
 
         Editable editable = mDelegate.getEditableText();
 
@@ -75,7 +75,8 @@ class SpanCursorController {
         }
 
         // Keep the original selection before adding spannable string.
-        Selection.setSelection(editable, sel, sel);
+        int clampedSel = Math.min(sel, editable.length());
+        Selection.setSelection(editable, clampedSel, clampedSel);
         setCursorVisible(false);
         if (DEBUG) Log.i(TAG, "setSpan: " + toDebugString(editable));
     }

@@ -656,6 +656,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/omnibox/AutocompleteRequestType.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxFocusReason.java",
+      "android/java/src/org/chromium/components/omnibox/TextSelection.java",
       "android/java/src/org/chromium/components/omnibox/ToolModeUtils.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionDelegate.java",

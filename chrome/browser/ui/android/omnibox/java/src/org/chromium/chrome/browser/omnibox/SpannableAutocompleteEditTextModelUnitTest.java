@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.content.Context;
+import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -32,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.omnibox.TextSelection;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -186,5 +188,26 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         clearInvocations(mConnection, mDelegate);
         mModel.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
         assertEquals("goo", mCurrentState.getText());
+    }
+
+    @Test
+    public void testSpanCursorController_setSpan_clampsSelection() {
+        SpannableStringBuilder editable = new SpannableStringBuilder("userText");
+        doReturn(editable).when(mDelegate).getEditableText();
+
+        SpanCursorController controller = mModel.getSpanCursorController();
+
+        AutocompleteState state =
+                new AutocompleteState(
+                        "userText",
+                        "auto",
+                        null,
+                        new TextSelection(Integer.MAX_VALUE, Integer.MAX_VALUE),
+                        null);
+
+        controller.setSpan(state);
+
+        assertEquals(12, Selection.getSelectionStart(editable));
+        assertEquals(12, Selection.getSelectionEnd(editable));
     }
 }

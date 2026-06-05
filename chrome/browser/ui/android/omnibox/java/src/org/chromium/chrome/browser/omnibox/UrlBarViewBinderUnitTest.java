@@ -39,8 +39,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -171,5 +174,29 @@ public class UrlBarViewBinderUnitTest {
         Runnable mockCallback = mock(Runnable.class);
         mModel.set(UrlBarProperties.MANAGE_SEARCH_ENGINES_CALLBACK, mockCallback);
         assertEquals(mockCallback, mUrlBar.getManageSearchEnginesCallbackForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testTextState_reverseSelection() {
+        UrlBar mockView = mock(UrlBar.class);
+        android.text.Editable editable = mock(android.text.Editable.class);
+        doReturn(10).when(editable).length();
+        doReturn(editable).when(mockView).getText();
+        doReturn(true).when(mockView).hasFocus();
+
+        UrlBarTextState state =
+                new UrlBarTextState(
+                        "1234567890",
+                        "1234567890",
+                        ScrollType.NO_SCROLL,
+                        0,
+                        new TextSelection(10, 0),
+                        false);
+
+        mModel.set(UrlBarProperties.TEXT_STATE, state);
+        UrlBarViewBinder.bind(mModel, mockView, UrlBarProperties.TEXT_STATE);
+
+        verify(mockView).setSelection(10, 0);
     }
 }

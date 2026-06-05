@@ -5,7 +5,6 @@
 package org.chromium.components.omnibox;
 
 import android.text.TextUtils;
-import android.util.Range;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -124,7 +123,7 @@ public class AutocompleteInput implements UserData {
     private boolean mAllowExactKeywordMatch;
     private boolean mHasAttachments;
     private @AutocompleteState int mAutocompleteState = AutocompleteState.ENABLED;
-    private Range<Integer> mSelection;
+    private TextSelection mSelection;
     private @RefineActionUsage int mRefineActionUsage;
     private boolean mSuggestionsListScrolled;
     private @OmniboxFocusReason int mFocusReason;
@@ -180,7 +179,7 @@ public class AutocompleteInput implements UserData {
         mAllowExactKeywordMatch = other.mAllowExactKeywordMatch;
         mHasAttachments = other.mHasAttachments;
         mAutocompleteState = other.mAutocompleteState;
-        mSelection = other.mSelection;
+        mSelection = other.mSelection; // Copied.
         mRefineActionUsage = other.mRefineActionUsage;
         mSuggestionsListScrolled = other.mSuggestionsListScrolled;
         mFocusReason = other.mFocusReason;
@@ -371,7 +370,7 @@ public class AutocompleteInput implements UserData {
 
         mUserText.set(text);
         // Place cursor at the end of text.
-        mSelection = Range.create(text.length(), text.length());
+        mSelection = TextSelection.SELECT_END;
         return this;
     }
 
@@ -532,17 +531,12 @@ public class AutocompleteInput implements UserData {
         mHasAttachments = hasAttachments;
     }
 
-    public AutocompleteInput setSelection(int rangeStart, int rangeEnd) {
-        mSelection = Range.create(rangeStart, rangeEnd);
-        return this;
-    }
-
-    public AutocompleteInput setSelection(Range<Integer> selection) {
+    public AutocompleteInput setSelection(TextSelection selection) {
         mSelection = selection;
         return this;
     }
 
-    public Range<Integer> getSelection() {
+    public TextSelection getSelection() {
         return mSelection;
     }
 
@@ -572,7 +566,7 @@ public class AutocompleteInput implements UserData {
         mPageTitle = "";
         mHasAttachments = false;
         // Selection after all text
-        mSelection = Range.create(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        mSelection = TextSelection.SELECT_END;
         mRefineActionUsage = RefineActionUsage.NOT_USED;
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;

@@ -9,7 +9,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Range;
 import android.view.View.OnKeyListener;
 
 import androidx.annotation.ColorInt;
@@ -31,6 +30,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -47,7 +47,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
 
     private UrlBarData mUrlBarData = UrlBarData.EMPTY;
     private @ScrollType int mScrollType = ScrollType.NO_SCROLL;
-    private Range<Integer> mSelection = UrlBarData.SELECT_ALL;
+    private TextSelection mSelection = TextSelection.SELECT_ALL;
 
     // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
     // and we couldn't change it by the branded color scheme.
@@ -138,7 +138,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
      * @return Whether this data differs from the previously passed in values.
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, Range<Integer> selection) {
+            UrlBarData data, @ScrollType int scrollType, TextSelection selection) {
         assert data != null;
 
         if (data.originEndIndex == data.originStartIndex) {
@@ -345,21 +345,22 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     }
 
     @Override
-    public @Nullable String getReplacementCutCopyText(
-            String currentText, int selectionStart, int selectionEnd) {
+    public @Nullable String getReplacementCutCopyText(String currentText, TextSelection selection) {
         if (mUrlBarData.url == null) return null;
 
         // Replace the cut/copy text only applies if the user selected from the beginning of the
         // display text.
-        if (selectionStart != 0) return null;
+        int minSel = selection.getLower();
+        int maxSel = selection.getUpper();
+
+        if (minSel != 0) return null;
 
         // Trim to just the currently selected text as that is the only text we are replacing.
-        currentText = currentText.substring(selectionStart, selectionEnd);
+        currentText = currentText.substring(minSel, maxSel);
 
         UrlBarDelegate delegate = mModel.get(UrlBarProperties.DELEGATE);
         if (delegate != null) {
-            String replacement =
-                    delegate.getReplacementCutCopyText(currentText, selectionStart, selectionEnd);
+            String replacement = delegate.getReplacementCutCopyText(currentText, selection);
             if (replacement != null) return replacement;
         }
 
@@ -390,7 +391,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         // As long as the full original text was selected, it will replace that with the original
         // URL and keep any further modifications by the user.
         if (!currentText.startsWith(formattedUrlLocation)
-                || selectionEnd < formattedUrlLocation.length()) {
+                || maxSel < formattedUrlLocation.length()) {
             return null;
         }
 

@@ -93,6 +93,7 @@ import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -853,7 +854,9 @@ public class LocationBarCoordinator
     @Override
     public void setOmniboxEditingText(String text) {
         mUrlCoordinator.setUrlBarData(
-                UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL, UrlBarData.SELECT_END);
+                UrlBarData.forNonUrlText(text),
+                UrlBar.ScrollType.NO_SCROLL,
+                TextSelection.SELECT_END);
         updateButtonVisibility();
     }
 

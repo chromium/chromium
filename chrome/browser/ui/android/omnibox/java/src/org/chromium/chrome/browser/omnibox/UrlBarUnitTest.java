@@ -72,6 +72,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
@@ -1242,7 +1243,7 @@ public class UrlBarUnitTest {
         mUrlBar.setSelection(0, 8);
         doReturn("override text")
                 .when(mTextContextMenuDelegate)
-                .getReplacementCutCopyText(eq("original text"), anyInt(), anyInt());
+                .getReplacementCutCopyText(eq("original text"), any());
 
         assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.copy));
 
@@ -1257,7 +1258,7 @@ public class UrlBarUnitTest {
         mUrlBar.setSelection(0, 8);
         doReturn("override text")
                 .when(mTextContextMenuDelegate)
-                .getReplacementCutCopyText(eq("original text"), anyInt(), anyInt());
+                .getReplacementCutCopyText(eq("original text"), any());
 
         assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.cut));
 
@@ -1270,9 +1271,7 @@ public class UrlBarUnitTest {
         doReturn(true).when(mUrlBar).isFocused();
         mUrlBar.setText("original text");
         mUrlBar.setSelection(0, 8);
-        doReturn(null)
-                .when(mTextContextMenuDelegate)
-                .getReplacementCutCopyText(any(), anyInt(), anyInt());
+        doReturn(null).when(mTextContextMenuDelegate).getReplacementCutCopyText(any(), any());
 
         mUrlBar.onTextContextMenuItem(android.R.id.copy);
         // Expect control to be passed to TextView.
@@ -1283,14 +1282,57 @@ public class UrlBarUnitTest {
     public void onTextContextMenuItem_cut_delegateDoesNotOverride() {
         mUrlBar.setText("original text");
         mUrlBar.setSelection(0, 8);
-        doReturn(null)
-                .when(mTextContextMenuDelegate)
-                .getReplacementCutCopyText(any(), anyInt(), anyInt());
+        doReturn(null).when(mTextContextMenuDelegate).getReplacementCutCopyText(any(), any());
 
         mUrlBar.onTextContextMenuItem(android.R.id.cut);
 
         // Expect control to be passed to TextView.
         verify(mClipboard, never()).setText(any());
+    }
+
+    @Test
+    public void onTextContextMenuItem_copy_reverseSelection_delegateOverrides() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(8, 0); // Reverse selection
+        doReturn("override text")
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(eq("original text"), any());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.copy));
+
+        // Verify the delegate was called with raw selection indices
+        verify(mTextContextMenuDelegate)
+                .getReplacementCutCopyText("original text", new TextSelection(8, 0));
+    }
+
+    @Test
+    public void onTextContextMenuItem_cut_reverseSelection_delegateOverrides() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(8, 0); // Reverse selection
+        doReturn("override text")
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(eq("original text"), any());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.cut));
+
+        verify(mClipboard).setText("override text");
+        assertEquals(" text", mUrlBar.getText().toString());
+    }
+
+    @Test
+    public void onTextContextMenuItem_paste_reverseSelection() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(8, 0); // Reverse selection
+        doReturn("pasted").when(mTextContextMenuDelegate).getTextToPaste();
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.paste));
+
+        assertEquals("pasted text", mUrlBar.getText().toString());
+        assertEquals(6, mUrlBar.getSelectionStart());
+        assertEquals(6, mUrlBar.getSelectionEnd());
     }
 
     @Test
@@ -1383,5 +1425,107 @@ public class UrlBarUnitTest {
         doReturn(true).when(mUrlBar).hasWindowFocus();
         mUrlBar.onWindowFocusChanged(true);
         assertTrue(mUrlBar.isCursorVisible());
+    }
+
+    @Test
+    public void testAutocompleteUpdatedOnSelection() {
+        mUrlBar.setIgnoreTextChangesForAutocomplete(false);
+        mUrlBar.requestFocus();
+
+        // 1. Verify that setting a selection before the autocomplete clears it.
+        verifySelectionState(
+                "test", "ing is fun", "foo.com", 1, 1, false, "test", "test", "foo.com");
+
+        // 2. Verify that setting a selection range before the autocomplete clears it.
+        verifySelectionState(
+                "test", "ing is fun", "foo.com", 0, 4, false, "test", "test", "foo.com");
+
+        // 3. Verify that setting a selection range that covers a portion of the non-autocomplete
+        // and autocomplete text does not delete the autocomplete text.
+        verifySelectionState(
+                "test",
+                "ing_is_fun",
+                "foo.com",
+                2,
+                5,
+                false,
+                "testing_is_fun",
+                "testing_is_fun",
+                "foo.com");
+
+        // 4. Verify that setting a selection range that over the entire string does not delete
+        // the autocomplete text.
+        verifySelectionState(
+                "test",
+                "ing_is_fun",
+                "foo.com",
+                0,
+                14,
+                false,
+                "testing_is_fun",
+                "testing_is_fun",
+                "foo.com");
+
+        // 5. Verify that setting a selection at the end of the text does not delete the
+        // autocomplete text.
+        verifySelectionState(
+                "test",
+                "ing_is_fun",
+                "foo.com",
+                14,
+                14,
+                false,
+                "testing_is_fun",
+                "testing_is_fun",
+                "foo.com");
+    }
+
+    private void verifySelectionState(
+            String text,
+            String inlineAutocomplete,
+            String additionalText,
+            int selectionStart,
+            int selectionEnd,
+            boolean expectedHasAutocomplete,
+            String expectedTextWithoutAutocomplete,
+            String expectedTextWithAutocomplete,
+            String expectedAdditionalText) {
+        mUrlBar.setText(text);
+        mUrlBar.setSelection(text.length());
+        try {
+            java.lang.reflect.Field modelField =
+                    AutocompleteEditText.class.getDeclaredField("mModel");
+            modelField.setAccessible(true);
+            AutocompleteEditTextModelBase model =
+                    (AutocompleteEditTextModelBase) modelField.get(mUrlBar);
+            if (model == null) {
+                java.lang.reflect.Method ensureModelMethod =
+                        AutocompleteEditText.class.getDeclaredMethod("ensureModel");
+                ensureModelMethod.setAccessible(true);
+                ensureModelMethod.invoke(mUrlBar);
+                model = (AutocompleteEditTextModelBase) modelField.get(mUrlBar);
+            }
+            model.onCreateInputConnection(mock(android.view.inputmethod.InputConnection.class));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        mUrlBar.setAutocompleteText(text, inlineAutocomplete, additionalText, null);
+
+        mUrlBar.setSelection(selectionStart, selectionEnd);
+        mUrlBar.onSelectionChanged(selectionStart, selectionEnd);
+
+        assertEquals("Has autocomplete", expectedHasAutocomplete, mUrlBar.hasAutocomplete());
+        assertEquals(
+                "Text w/o Autocomplete",
+                expectedTextWithoutAutocomplete,
+                mUrlBar.getTextWithoutAutocomplete());
+        assertEquals(
+                "Text w/ Autocomplete",
+                expectedTextWithAutocomplete,
+                mUrlBar.getTextWithAutocomplete());
+        assertEquals(
+                "Addition Text",
+                expectedAdditionalText,
+                mUrlBar.getAdditionalText() != null ? mUrlBar.getAdditionalText() : "");
     }
 }

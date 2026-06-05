@@ -46,13 +46,13 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -222,7 +222,7 @@ public class ActivityRecreationControllerUnitTest {
         AutocompleteInput input = mAutocompleteInputCaptor.getValue();
         assertEquals(text, input.getUserText());
         assertEquals(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, input.getFocusReason());
-        assertEquals(UrlBarData.SELECT_ALL, input.getSelection());
+        assertEquals(TextSelection.SELECT_ALL, input.getSelection());
     }
 
     @Test
@@ -243,7 +243,7 @@ public class ActivityRecreationControllerUnitTest {
         AutocompleteInput input = mAutocompleteInputCaptor.getValue();
         assertEquals(text, input.getUserText());
         assertEquals(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, input.getFocusReason());
-        assertEquals(UrlBarData.SELECT_ALL, input.getSelection());
+        assertEquals(TextSelection.SELECT_ALL, input.getSelection());
         // Omnibox code should restore keyboard.
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(mContentView);
     }
@@ -344,7 +344,7 @@ public class ActivityRecreationControllerUnitTest {
         AutocompleteInput input = mAutocompleteInputCaptor.getValue();
         assertEquals(text, input.getUserText());
         assertEquals(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION, input.getFocusReason());
-        assertEquals(UrlBarData.SELECT_ALL, input.getSelection());
+        assertEquals(TextSelection.SELECT_ALL, input.getSelection());
     }
 
     @Test
@@ -363,7 +363,7 @@ public class ActivityRecreationControllerUnitTest {
         assertEquals(
                 OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
                 mAutocompleteInputCaptor.getValue().getFocusReason());
-        assertEquals(UrlBarData.SELECT_ALL, mAutocompleteInputCaptor.getValue().getSelection());
+        assertEquals(TextSelection.SELECT_ALL, mAutocompleteInputCaptor.getValue().getSelection());
 
         String newText = "newEditText";
         persistableBundle.putString(URL_BAR_EDIT_TEXT, newText);
@@ -373,7 +373,7 @@ public class ActivityRecreationControllerUnitTest {
         assertEquals(
                 OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION,
                 mAutocompleteInputCaptor.getValue().getFocusReason());
-        assertEquals(UrlBarData.SELECT_ALL, mAutocompleteInputCaptor.getValue().getSelection());
+        assertEquals(TextSelection.SELECT_ALL, mAutocompleteInputCaptor.getValue().getSelection());
 
         // Omnibox code should restore keyboard.
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(mContentView);

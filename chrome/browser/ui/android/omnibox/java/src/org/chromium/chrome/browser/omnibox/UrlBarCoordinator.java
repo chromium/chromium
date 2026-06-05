@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.content.Context;
-import android.util.Range;
 import android.view.ActionMode;
 import android.view.View.OnKeyListener;
 import android.view.View.OnLongClickListener;
@@ -19,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -144,10 +144,10 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarData(UrlBarData, int, Range<Integer>)
+     * @see UrlBarMediator#setUrlBarData(UrlBarData, int, TextSelection)
      */
     public boolean setUrlBarData(
-            UrlBarData data, @ScrollType int scrollType, Range<Integer> selection) {
+            UrlBarData data, @ScrollType int scrollType, TextSelection selection) {
         return mMediator.setUrlBarData(data, scrollType, selection);
     }
 

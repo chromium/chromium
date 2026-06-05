@@ -301,6 +301,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
         if (currentState.isForwardTypedFrom(mPreBatchEditState)
                 || (mPreBatchEditState.isWholeUserTextSelected()
                         && currentState.getUserText().length() > 0
+                        && currentState.getSelection().isCollapsed()
                         && currentState.isCursorAtEndOfUserText())) {
             mInputDelegate.setLastEditWasTyping(true);
         }

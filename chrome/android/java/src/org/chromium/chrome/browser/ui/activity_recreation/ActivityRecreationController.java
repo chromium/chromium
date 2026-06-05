@@ -22,11 +22,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /**
@@ -317,7 +317,7 @@ public class ActivityRecreationController {
         AutocompleteInput input =
                 new AutocompleteInput(OmniboxFocusReason.ACTIVITY_RECREATION_RESTORATION)
                         .setUserText(urlBarText)
-                        .setSelection(UrlBarData.SELECT_ALL);
+                        .setSelection(TextSelection.SELECT_ALL);
         // TODO(b/509988739): use proper session suspend/resume once we have this available.
         toolbarManager.beginFuseboxInput(input);
     }

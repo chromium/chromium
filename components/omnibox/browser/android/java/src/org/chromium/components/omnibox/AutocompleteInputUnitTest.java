@@ -450,7 +450,7 @@ public class AutocompleteInputUnitTest {
         input1.setInitialUserText(initialUserText);
         input1.setHasAttachments(hasAttachments);
         input1.setAutocompleteState(autocompleteState);
-        input1.setSelection(selectionStart, selectionEnd);
+        input1.setSelection(new TextSelection(selectionStart, selectionEnd));
         input1.setRefineActionUsage(refineActionUsage);
         input1.setSuggestionsListScrolled();
         input1.setFocusReason(focusReason);
@@ -469,8 +469,8 @@ public class AutocompleteInputUnitTest {
         assertEquals(initialUserText, input2.getInitialUserText());
         assertEquals(input1.allowExactKeywordMatch(), input2.allowExactKeywordMatch());
         assertEquals(autocompleteState, input2.getAutocompleteState());
-        assertEquals(selectionStart, (int) input2.getSelection().getLower());
-        assertEquals(selectionEnd, (int) input2.getSelection().getUpper());
+        assertEquals(selectionStart, input2.getSelection().from);
+        assertEquals(selectionEnd, input2.getSelection().to);
         assertEquals(refineActionUsage, input2.getRefineActionUsage());
         assertTrue(input2.isSuggestionsListScrolled());
         assertEquals(focusReason, input2.getFocusReason());

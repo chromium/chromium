@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.omnibox.TextSelection;
 
 /** Unit tests for {@link AutocompleteState}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -29,48 +30,62 @@ public class AutocompleteStateUnitTest {
     @Test
     public void testIsForwardTyped() {
         assertTrue(
-                new AutocompleteState("abc", "de", null, 3, 3, null)
-                        .isForwardTypedFrom(new AutocompleteState("ab", "c", null, 2, 2, null)));
+                new AutocompleteState("abc", "de", null, new TextSelection(3, 3), null)
+                        .isForwardTypedFrom(
+                                new AutocompleteState(
+                                        "ab", "c", null, new TextSelection(2, 2), null)));
         assertTrue(
-                new AutocompleteState("abcd", "e", null, 4, 4, null)
-                        .isForwardTypedFrom(new AutocompleteState("ab", "c", null, 2, 2, null)));
+                new AutocompleteState("abcd", "e", null, new TextSelection(4, 4), null)
+                        .isForwardTypedFrom(
+                                new AutocompleteState(
+                                        "ab", "c", null, new TextSelection(2, 2), null)));
 
         assertFalse(
-                new AutocompleteState("abc", "de", null, 3, 3, null)
-                        .isForwardTypedFrom(new AutocompleteState("abc", "", null, 3, 3, null)));
+                new AutocompleteState("abc", "de", null, new TextSelection(3, 3), null)
+                        .isForwardTypedFrom(
+                                new AutocompleteState(
+                                        "abc", "", null, new TextSelection(3, 3), null)));
         assertFalse(
-                new AutocompleteState("abc", "de", null, 3, 3, null)
-                        .isForwardTypedFrom(new AutocompleteState("abcd", "e", null, 4, 4, null)));
+                new AutocompleteState("abc", "de", null, new TextSelection(3, 3), null)
+                        .isForwardTypedFrom(
+                                new AutocompleteState(
+                                        "abcd", "e", null, new TextSelection(4, 4), null)));
     }
 
     @Test
     public void testGetBackwardDeletedTextFrom() {
         assertEquals(
                 "c",
-                new AutocompleteState("ab", "", null, 2, 2, null)
+                new AutocompleteState("ab", "", null, new TextSelection(2, 2), null)
                         .getBackwardDeletedTextFrom(
-                                new AutocompleteState("abc", "d", null, 3, 3, null)));
+                                new AutocompleteState(
+                                        "abc", "d", null, new TextSelection(3, 3), null)));
         // A string is not seen as backward deleted from itself.
         assertEquals(
                 null,
-                new AutocompleteState("ab", "", null, 2, 2, null)
+                new AutocompleteState("ab", "", null, new TextSelection(2, 2), null)
                         .getBackwardDeletedTextFrom(
-                                new AutocompleteState("ab", "d", null, 2, 2, null)));
+                                new AutocompleteState(
+                                        "ab", "d", null, new TextSelection(2, 2), null)));
         // Reversed.
         assertEquals(
                 null,
-                new AutocompleteState("abc", "", null, 3, 3, null)
+                new AutocompleteState("abc", "", null, new TextSelection(3, 3), null)
                         .getBackwardDeletedTextFrom(
-                                new AutocompleteState("ab", "d", null, 2, 2, null)));
-        // Selection not valid.
+                                new AutocompleteState(
+                                        "ab", "d", null, new TextSelection(2, 2), null)));
+        // Selection at the end is valid.
+        assertEquals(
+                "c",
+                new AutocompleteState("ab", "", null, new TextSelection(2, 2), null)
+                        .getBackwardDeletedTextFrom(
+                                new AutocompleteState(
+                                        "abc", "d", null, new TextSelection(2, 3), null)));
         assertNull(
-                new AutocompleteState("ab", "", null, 2, 2, null)
+                new AutocompleteState("ab", "", null, new TextSelection(2, 3), null)
                         .getBackwardDeletedTextFrom(
-                                new AutocompleteState("abc", "d", null, 2, 3, null)));
-        assertNull(
-                new AutocompleteState("ab", "", null, 2, 3, null)
-                        .getBackwardDeletedTextFrom(
-                                new AutocompleteState("abc", "d", null, 2, 2, null)));
+                                new AutocompleteState(
+                                        "abc", "d", null, new TextSelection(2, 2), null)));
     }
 
     private void verifyReuseAutocompleteText(
@@ -85,33 +100,34 @@ public class AutocompleteStateUnitTest {
     @Test
     public void testReuseAutocompleteText() {
         verifyReuseAutocompleteText(
-                new AutocompleteState("ab", "cd", null, 2, 2, null),
-                new AutocompleteState("abc", "", null, 3, 3, null),
+                new AutocompleteState("ab", "cd", null, new TextSelection(2, 2), null),
+                new AutocompleteState("abc", "", null, new TextSelection(3, 3), null),
                 true,
                 "d");
         verifyReuseAutocompleteText(
-                new AutocompleteState("ab", "dc", null, 2, 2, null),
-                new AutocompleteState("ab", "", null, 2, 2, null),
+                new AutocompleteState("ab", "dc", null, new TextSelection(2, 2), null),
+                new AutocompleteState("ab", "", null, new TextSelection(2, 2), null),
                 true,
                 "dc");
 
         // The new state cannot reuse autocomplete text.
         verifyReuseAutocompleteText(
-                new AutocompleteState("ab", "dc", null, 2, 2, null),
-                new AutocompleteState("abc", "a", null, 3, 3, null),
+                new AutocompleteState("ab", "dc", null, new TextSelection(2, 2), null),
+                new AutocompleteState("abc", "a", null, new TextSelection(3, 3), null),
                 false,
                 "a");
         // There is no autocomplete text to start with.
         verifyReuseAutocompleteText(
-                new AutocompleteState("ab", "", null, 2, 2, null),
-                new AutocompleteState("ab", "a", null, 3, 3, null),
+                new AutocompleteState("ab", "", null, new TextSelection(2, 2), null),
+                new AutocompleteState("ab", "a", null, new TextSelection(3, 3), null),
                 false,
                 "a");
     }
 
     @Test
     public void testNullAutocompleteText() {
-        AutocompleteState autocompleteState = new AutocompleteState("abc", null, null, 3, 3, null);
+        AutocompleteState autocompleteState =
+                new AutocompleteState("abc", null, null, new TextSelection(3, 3), null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
         assertNull(autocompleteState.getAutocompleteText());
@@ -119,7 +135,8 @@ public class AutocompleteStateUnitTest {
 
     @Test
     public void testEmptyAutocompleteText() {
-        AutocompleteState autocompleteState = new AutocompleteState("abc", "", "", 3, 3, null);
+        AutocompleteState autocompleteState =
+                new AutocompleteState("abc", "", "", new TextSelection(3, 3), null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
         assertNull(autocompleteState.getAutocompleteText());
@@ -127,7 +144,8 @@ public class AutocompleteStateUnitTest {
 
     @Test
     public void testSetAutocompleteText() {
-        AutocompleteState autocompleteState = new AutocompleteState("abc", null, null, 3, 3, null);
+        AutocompleteState autocompleteState =
+                new AutocompleteState("abc", null, null, new TextSelection(3, 3), null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
         assertNull(autocompleteState.getAutocompleteText());
@@ -147,7 +165,7 @@ public class AutocompleteStateUnitTest {
     @Test
     public void testAdditionalText() {
         AutocompleteState autocompleteState =
-                new AutocompleteState("abc", null, "foo.com", 3, 3, null);
+                new AutocompleteState("abc", null, "foo.com", new TextSelection(3, 3), null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
         assertNotNull(autocompleteState.getAdditionalText());
@@ -156,7 +174,8 @@ public class AutocompleteStateUnitTest {
 
     @Test
     public void testNullAdditionalText() {
-        AutocompleteState autocompleteState = new AutocompleteState("abc", null, null, 3, 3, null);
+        AutocompleteState autocompleteState =
+                new AutocompleteState("abc", null, null, new TextSelection(3, 3), null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
         assertNull(autocompleteState.getAdditionalText());
@@ -164,9 +183,81 @@ public class AutocompleteStateUnitTest {
 
     @Test
     public void testEmptyAdditionalText() {
-        AutocompleteState autocompleteState = new AutocompleteState("abc", "", "", 3, 3, null);
+        AutocompleteState autocompleteState =
+                new AutocompleteState("abc", "", "", new TextSelection(3, 3), null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
         assertNull(autocompleteState.getAdditionalText());
+    }
+
+    @Test
+    public void testIsWholeUserTextSelected() {
+        // LTR selection
+        assertTrue(
+                new AutocompleteState("abc", null, null, new TextSelection(0, 3), null)
+                        .isWholeUserTextSelected());
+        // RTL (reverse) selection
+        assertTrue(
+                new AutocompleteState("abc", null, null, new TextSelection(3, 0), null)
+                        .isWholeUserTextSelected());
+        // SELECT_ALL constant
+        assertTrue(
+                new AutocompleteState("abc", null, null, TextSelection.SELECT_ALL, null)
+                        .isWholeUserTextSelected());
+        // Partial selection
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(1, 3), null)
+                        .isWholeUserTextSelected());
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(3, 1), null)
+                        .isWholeUserTextSelected());
+    }
+
+    @Test
+    public void testIsCursorAtEndOfUserText() {
+        // SELECT_END ⮕ true
+        assertTrue(
+                new AutocompleteState("abc", null, null, TextSelection.SELECT_END, null)
+                        .isCursorAtEndOfUserText());
+        // SELECT_ALL ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, TextSelection.SELECT_ALL, null)
+                        .isCursorAtEndOfUserText());
+        // 0 .. text.length() ⮕ true
+        assertTrue(
+                new AutocompleteState("abc", null, null, new TextSelection(0, 3), null)
+                        .isCursorAtEndOfUserText());
+        // text.length() .. 0 ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(3, 0), null)
+                        .isCursorAtEndOfUserText());
+        // text.length() - 1 .. text.length() ⮕ true
+        assertTrue(
+                new AutocompleteState("abc", null, null, new TextSelection(2, 3), null)
+                        .isCursorAtEndOfUserText());
+        // text.length() .. text.length() - 1 ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(3, 2), null)
+                        .isCursorAtEndOfUserText());
+        // 0 .. text.length() - 1 ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(0, 2), null)
+                        .isCursorAtEndOfUserText());
+        // text.length() - 1 .. 0 ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(2, 0), null)
+                        .isCursorAtEndOfUserText());
+        // 1 .. text.length() - 1 ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(1, 2), null)
+                        .isCursorAtEndOfUserText());
+        // text.length() - 1 .. 1 ⮕ false
+        assertFalse(
+                new AutocompleteState("abc", null, null, new TextSelection(2, 1), null)
+                        .isCursorAtEndOfUserText());
+        // INVALID
+        assertFalse(
+                new AutocompleteState("abc", null, null, TextSelection.INVALID, null)
+                        .isCursorAtEndOfUserText());
     }
 }
