@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -28,6 +30,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -38,6 +41,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "net/base/url_util.h"
@@ -732,6 +736,10 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, SyncsCookiesToWebview) {
   service_ptr->enabling().SetUserEnabledActuationOnWeb(true);
   service_ptr->enabling().SetExperimentalTriggeringEnabled(false);
 
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kGlicExperimentalFreURL,
+      embedded_https_test_server().GetURL("google.fr", "/title1.html").spec());
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   views::Widget* widget = ShowDialogAndWait(web_contents);
@@ -744,9 +752,6 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, SyncsCookiesToWebview) {
   // Confirm directly within the webview DOM that the Google cookie is
   // accessible. Note that FakeGaia hardcodes ".google.fr" for multilogin
   // cookies.
-  ASSERT_TRUE(content::NavigateToURL(
-      guest_contents,
-      embedded_https_test_server().GetURL("google.fr", "/title1.html")));
   std::string webview_cookies =
       content::EvalJs(guest_contents, "document.cookie").ExtractString();
   EXPECT_NE(
@@ -828,6 +833,34 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpenGoogleLinkInNewTab) {
             GURL("https://policies.google.com/"));
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  service()->opt_in_controller().CloseDialog(false);
+}
+
+// Regression test for b/516601993: Prevent webview from navigating to different
+// origin.
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       BlocksNavigationToOtherOrigin) {
+  service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
+  views::Widget* widget = ShowDialogAndWait();
+  ASSERT_TRUE(widget);
+
+  content::WebContents* guest_contents = WaitForGuestContents();
+  ASSERT_TRUE(guest_contents);
+
+  GURL initial_url = guest_contents->GetLastCommittedURL();
+
+  GURL disallowed_url =
+      embedded_https_test_server().GetURL("b.test", "/title1.html");
+  content::TestNavigationObserver nav_observer(guest_contents);
+  ASSERT_TRUE(content::ExecJs(
+      guest_contents,
+      "window.location.href = '" + disallowed_url.spec() + "';"));
+
+  nav_observer.Wait();
+
+  EXPECT_EQ(guest_contents->GetLastCommittedURL(), initial_url);
+  EXPECT_NE(guest_contents->GetLastCommittedURL(), disallowed_url);
 
   service()->opt_in_controller().CloseDialog(false);
 }
