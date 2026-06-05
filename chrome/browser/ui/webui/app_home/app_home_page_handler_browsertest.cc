@@ -605,7 +605,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, HandlePageCalls) {
       embedded_https_test_server().GetURL("/web_apps/updating/index.html");
   Browser* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), app_url);
-  const webapps::AppId app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
   page_handler->Wait();
 
   // Ensure that the `UpdateApp()` call happens twice, once after the start url
@@ -650,7 +651,8 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, MigrationCalls) {
       "/web_apps/migration/migrate_from/no_migration_info.html");
   Browser* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), from_url);
-  const webapps::AppId source_app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId source_app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
   page_handler->Wait();
 
   // The old app should be removed, and the new "Migrate To" app should be

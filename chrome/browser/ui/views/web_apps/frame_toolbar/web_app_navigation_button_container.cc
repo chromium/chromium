@@ -69,7 +69,7 @@ WebAppNavigationButtonContainer::WebAppNavigationButtonContainer(
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
   chrome::AddCommandObserver(browser_, IDC_BACK, this);
 
-  const auto* app_controller = browser_->app_controller();
+  const auto* app_controller = web_app::AppBrowserController::From(browser_);
   if (app_controller->HasReloadButton()) {
     reload_button_ = AddChildView(std::make_unique<ReloadButton>(
         browser_->profile(), browser_->command_controller(),

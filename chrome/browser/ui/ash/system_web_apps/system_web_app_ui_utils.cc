@@ -336,7 +336,8 @@ int CountSystemWebAppBrowsers(Profile* profile, SystemWebAppType app_type) {
 
 bool IsSystemWebApp(Browser* browser) {
   DCHECK(browser);
-  return browser->app_controller() && browser->app_controller()->system_app();
+  auto* const app_controller = web_app::AppBrowserController::From(browser);
+  return app_controller && app_controller->system_app();
 }
 
 bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
@@ -357,8 +358,9 @@ std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {
   DCHECK(browser);
-  if (browser->app_controller() && browser->app_controller()->system_app()) {
-    return browser->app_controller()->system_app()->GetMinimumWindowSize();
+  auto* const app_controller = web_app::AppBrowserController::From(browser);
+  if (app_controller && app_controller->system_app()) {
+    return app_controller->system_app()->GetMinimumWindowSize();
   }
 
   return gfx::Size();

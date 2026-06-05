@@ -124,7 +124,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
   Browser* app_browser;
   LaunchAppWithoutWaiting(GetAppType(), &app_browser);
 
-  webapps::AppId app_id = app_browser->app_controller()->app_id();
+  webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
   EXPECT_EQ(GetManager().GetAppIdForSystemApp(GetAppType()), app_id);
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
@@ -163,14 +164,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   LaunchAppWithoutWaiting(GetAppType(), &app_browser);
 
   // In scope, the toolbar should not be visible.
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 
   // Out of scope chrome:// URL.
   GURL out_of_scope_chrome_page("chrome://foo");
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(),
       out_of_scope_chrome_page, 1);
-  EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser)
+                  ->ShouldShowCustomTabBar());
 
   // Even though the url is secure it is not being served over chrome:// so a
   // toolbar should be shown.
@@ -178,14 +181,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest,
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(), off_scheme_page,
       1);
-  EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser)
+                  ->ShouldShowCustomTabBar());
 
   // URL has been added to be within scope for the SWA.
   GURL in_scope_for_swa_page("https://example.com/in-scope");
   content::NavigateToURLBlockUntilNavigationsComplete(
       app_browser->tab_strip_model()->GetActiveWebContents(),
       in_scope_for_swa_page, 1);
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTest, LaunchMetricsWork) {
@@ -923,8 +928,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripWithNewTabButtonTest,
 
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
-  EXPECT_TRUE(browser->app_controller()->has_tab_strip());
-  EXPECT_FALSE(browser->app_controller()->ShouldHideNewTabButton());
+  EXPECT_TRUE(web_app::AppBrowserController::From(browser)->has_tab_strip());
+  EXPECT_FALSE(
+      web_app::AppBrowserController::From(browser)->ShouldHideNewTabButton());
 }
 
 class SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest
@@ -943,8 +949,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasTabStripWithHiddenNewTabButtonTest,
 
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
-  EXPECT_TRUE(browser->app_controller()->has_tab_strip());
-  EXPECT_TRUE(browser->app_controller()->ShouldHideNewTabButton());
+  EXPECT_TRUE(web_app::AppBrowserController::From(browser)->has_tab_strip());
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(browser)->ShouldHideNewTabButton());
 }
 
 class SystemWebAppManagerHasNoTabStripWithNewTabButtonTest
@@ -963,8 +970,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHasNoTabStripWithNewTabButtonTest,
 
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
-  EXPECT_FALSE(browser->app_controller()->has_tab_strip());
-  EXPECT_TRUE(browser->app_controller()->ShouldHideNewTabButton());
+  EXPECT_FALSE(web_app::AppBrowserController::From(browser)->has_tab_strip());
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(browser)->ShouldHideNewTabButton());
 }
 
 class SystemWebAppManagerHasNoTabStripWithHiddenNewTabButtonTest
@@ -984,8 +992,9 @@ IN_PROC_BROWSER_TEST_P(
 
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
-  EXPECT_FALSE(browser->app_controller()->has_tab_strip());
-  EXPECT_TRUE(browser->app_controller()->ShouldHideNewTabButton());
+  EXPECT_FALSE(web_app::AppBrowserController::From(browser)->has_tab_strip());
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(browser)->ShouldHideNewTabButton());
 }
 
 // We only support custom bounds on Chrome OS.
@@ -1007,7 +1016,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerDefaultBoundsTest, HasDefaultBounds) {
 
   Browser* browser;
   EXPECT_TRUE(LaunchApp(GetAppType(), &browser));
-  EXPECT_EQ(kDefaultBounds, browser->app_controller()->GetDefaultBounds());
+  EXPECT_EQ(kDefaultBounds,
+            web_app::AppBrowserController::From(browser)->GetDefaultBounds());
   EXPECT_EQ(kDefaultBounds, browser->window()->GetBounds());
 }
 
@@ -1215,7 +1225,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
 
   webapps::AppId app_id =
       GetManager().GetAppIdForSystemApp(GetAppType()).value();
-  EXPECT_EQ(app_id, app_browser->app_controller()->app_id());
+  EXPECT_EQ(app_id, web_app::AppBrowserController::From(app_browser)->app_id());
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
   Profile* profile = app_browser->profile();

@@ -48,6 +48,7 @@ source_set("location_bar") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/views/frame:immersive_mode_controller",
       "//chrome/browser/ui/views/page_action",
+      "//chrome/browser/ui/web_applications",
       "//components/browser_apis/ui_controllers/toolbar:mojom",
       "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
       "//components/browser_apis/ui_controllers/toolbar:types",

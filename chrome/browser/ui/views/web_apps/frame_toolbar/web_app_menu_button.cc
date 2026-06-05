@@ -95,7 +95,7 @@ void WebAppMenuButton::OnWebAppPendingUpdateChanged(
     const webapps::AppId& app_id,
     bool has_pending_update) {
   web_app::AppBrowserController* app_controller =
-      browser_view_->browser()->app_controller();
+      web_app::AppBrowserController::From(browser_view_->browser());
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
   // tab bar view for an ARC app.
   if (!app_controller) {
@@ -110,7 +110,7 @@ void WebAppMenuButton::OnWebAppPendingMigrationInfoChanged(
     const webapps::AppId& app_id,
     bool has_pending_migration) {
   web_app::AppBrowserController* app_controller =
-      browser_view_->browser()->app_controller();
+      web_app::AppBrowserController::From(browser_view_->browser());
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
   // tab bar view for an ARC app.
   if (!app_controller) {
@@ -190,7 +190,7 @@ void WebAppMenuButton::UpdateState() {
 
 bool WebAppMenuButton::CanShowPendingUpdate() {
   web_app::AppBrowserController* app_controller =
-      browser_view_->browser()->app_controller();
+      web_app::AppBrowserController::From(browser_view_->browser());
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
   // tab bar view for an ARC app.
   return app_controller && app_controller->HasPendingUpdateNotIgnoredByUser();
@@ -198,7 +198,7 @@ bool WebAppMenuButton::CanShowPendingUpdate() {
 
 bool WebAppMenuButton::CanShowPendingMigration() {
   web_app::AppBrowserController* app_controller =
-      browser_view_->browser()->app_controller();
+      web_app::AppBrowserController::From(browser_view_->browser());
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
   // tab bar view for an ARC app.
   return app_controller && app_controller->HasPendingMigration();
@@ -207,7 +207,7 @@ bool WebAppMenuButton::CanShowPendingMigration() {
 void WebAppMenuButton::UpdateTextAndHighlightColor(
     bool has_pending_update_or_migration_info) {
   web_app::AppBrowserController* app_controller =
-      browser_view_->browser()->app_controller();
+      web_app::AppBrowserController::From(browser_view_->browser());
   // `app_controller` can be null if this button is used in a (Chrome OS) custom
   // tab bar view for an ARC app.
 

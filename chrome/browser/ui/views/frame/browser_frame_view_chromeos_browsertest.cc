@@ -1999,7 +1999,9 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   // despite the fact that the web contents background color hasn't loaded
   // yet.
   EXPECT_EQ(contents_web_view->layer()->background_color(),
-            browser->app_controller()->GetBackgroundColor().value());
+            web_app::AppBrowserController::From(browser)
+                ->GetBackgroundColor()
+                .value());
   EXPECT_FALSE(web_contents->GetBackgroundColor().has_value());
 
   // Wait for the web contents background color to load and verify that the
@@ -2008,7 +2010,9 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
     EXPECT_EQ(contents_web_view->layer()->background_color(),
-              browser->app_controller()->GetBackgroundColor().value());
+              web_app::AppBrowserController::From(browser)
+                  ->GetBackgroundColor()
+                  .value());
     EXPECT_EQ(contents_web_view->layer()->background_color(),
               web_contents->GetBackgroundColor().value());
   }
@@ -2022,7 +2026,9 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
   // that the web contents background color update is async.
   ToggleColorMode();
   EXPECT_EQ(contents_web_view->layer()->background_color(),
-            browser->app_controller()->GetBackgroundColor().value());
+            web_app::AppBrowserController::From(browser)
+                ->GetBackgroundColor()
+                .value());
   EXPECT_EQ(contents_web_view->layer()->background_color(),
             web_contents->GetBackgroundColor().value());
 
@@ -2041,7 +2047,9 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewAshThemeChangeTest, ThemeChange) {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
     EXPECT_EQ(contents_web_view->layer()->background_color(),
-              browser->app_controller()->GetBackgroundColor().value());
+              web_app::AppBrowserController::From(browser)
+                  ->GetBackgroundColor()
+                  .value());
     EXPECT_EQ(contents_web_view->layer()->background_color(),
               web_contents->GetBackgroundColor().value());
   }

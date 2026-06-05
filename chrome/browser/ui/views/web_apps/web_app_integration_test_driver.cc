@@ -1991,7 +1991,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   ASSERT_TRUE(app_browser_);
   ASSERT_TRUE(app_browser_->is_type_app());
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
-  active_app_id_ = app_browser()->app_controller()->app_id();
+  active_app_id_ = web_app::AppBrowserController::From(app_browser())->app_id();
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // In certain tests where window controls overlay is being tested, if the app
@@ -2024,7 +2024,8 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   active_app_id_ = app_id;
 
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
-  EXPECT_EQ(app_browser()->app_controller()->app_id(), app_id);
+  EXPECT_EQ(web_app::AppBrowserController::From(app_browser())->app_id(),
+            app_id);
   AfterStateChangeAction();
 }
 
@@ -2592,7 +2593,8 @@ void WebAppIntegrationTestDriver::OpenInChrome() {
     return;
   }
   ASSERT_TRUE(IsBrowserOpen(app_browser())) << "No current app browser.";
-  webapps::AppId app_id = app_browser()->app_controller()->app_id();
+  webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser())->app_id();
   GURL app_url = GetCurrentTab(app_browser())->GetURL();
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   ui_test_utils::BrowserDestroyedObserver observer(app_browser());
@@ -3697,7 +3699,8 @@ void WebAppIntegrationTestDriver::CheckCustomToolbar() {
     return;
   }
   ASSERT_TRUE(app_browser());
-  EXPECT_TRUE(app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser())
+                  ->ShouldShowCustomTabBar());
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
   EXPECT_TRUE(app_view->toolbar()
                   ->custom_tab_bar()
@@ -3711,7 +3714,8 @@ void WebAppIntegrationTestDriver::CheckNoToolbar() {
     return;
   }
   ASSERT_TRUE(app_browser());
-  EXPECT_FALSE(app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser())
+                   ->ShouldShowCustomTabBar());
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser());
   EXPECT_FALSE(app_view->toolbar()->custom_tab_bar()->GetVisible());
   AfterStateCheckAction();
@@ -3986,7 +3990,8 @@ void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
   ASSERT_TRUE(app_browser());
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(),
                                                 GetAppIdBySiteMode(site)));
-  EXPECT_EQ(app_browser()->app_controller()->AppUsesWindowControlsOverlay(),
+  EXPECT_EQ(web_app::AppBrowserController::From(app_browser())
+                ->AppUsesWindowControlsOverlay(),
             is_shown == IsShown::kShown);
   WebAppFrameToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(app_browser())
@@ -4040,7 +4045,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayMinimal() {
   }
   ASSERT_TRUE(app_browser());
   web_app::AppBrowserController* app_controller =
-      app_browser()->app_controller();
+      web_app::AppBrowserController::From(app_browser());
   ASSERT_TRUE(app_controller->AsWebAppBrowserController());
   std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
@@ -4068,7 +4073,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayTabbed() {
   ASSERT_TRUE(app_browser());
 
   web_app::AppBrowserController* app_controller =
-      app_browser()->app_controller();
+      web_app::AppBrowserController::From(app_browser());
   ASSERT_TRUE(app_controller->AsWebAppBrowserController());
   std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);
@@ -4096,7 +4101,7 @@ void WebAppIntegrationTestDriver::CheckWindowDisplayStandalone() {
   ASSERT_TRUE(app_browser());
 
   web_app::AppBrowserController* app_controller =
-      app_browser()->app_controller();
+      web_app::AppBrowserController::From(app_browser());
   ASSERT_TRUE(app_controller->AsWebAppBrowserController());
   std::optional<AppState> app_state = GetStateForAppId(
       after_state_change_action_state_.get(), profile(), active_app_id_);

@@ -38,7 +38,8 @@ IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, DarkColors) {
 
   WebAppBrowserController* controller;
   Browser* app_browser = LaunchWebAppBrowser(app_id);
-  controller = app_browser->app_controller()->AsWebAppBrowserController();
+  controller = web_app::AppBrowserController::From(app_browser)
+                   ->AsWebAppBrowserController();
 
   EXPECT_EQ(controller->GetThemeColor().value(), SK_ColorBLUE);
   EXPECT_EQ(controller->GetBackgroundColor().value(), SK_ColorBLUE);

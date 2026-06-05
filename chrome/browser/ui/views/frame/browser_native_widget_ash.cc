@@ -204,7 +204,8 @@ views::Widget::InitParams BrowserNativeWidgetAsh::GetWidgetParams(
       chromeos::kShouldHaveHighlightBorderOverlay, true);
 
   bool is_app = browser->is_type_app() || browser->is_type_app_popup();
-  web_app::AppBrowserController* controller = browser->app_controller();
+  web_app::AppBrowserController* controller =
+      web_app::AppBrowserController::From(browser);
   if (controller && controller->system_app()) {
     params.init_properties_container.SetProperty(chromeos::kAppTypeKey,
                                                  chromeos::AppType::SYSTEM_APP);

@@ -198,7 +198,8 @@ void LoadTestPopUpExtension(Profile* profile) {
 }
 
 SkColor GetFrameColor(Browser* browser) {
-  CustomThemeSupplier* theme = browser->app_controller()->GetThemeSupplier();
+  CustomThemeSupplier* theme =
+      web_app::AppBrowserController::From(browser)->GetThemeSupplier();
   SkColor result;
   EXPECT_TRUE(theme->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE, &result));
   return result;
@@ -340,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   const auto& properties_provider =
       page_actions::PageActionPropertiesProvider();
   for (auto action_id :
-       helper()->app_browser()->app_controller()->GetTitleBarPageActions()) {
+       web_app::AppBrowserController::From(helper()->app_browser())
+           ->GetTitleBarPageActions()) {
     const auto& properties = properties_provider.GetProperties(action_id);
 
     // When the page action migration is not enabled, the view should not be
@@ -1791,8 +1793,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   gfx::Point point_in_widget = widget_in_screen_bounds.CenterPoint();
   views::View::ConvertPointToTarget(
       browser_view, browser_view->contents_web_view(), &point_in_widget);
-  EXPECT_TRUE(browser_view->browser()
-                  ->app_controller()
+  EXPECT_TRUE(web_app::AppBrowserController::From(browser_view->browser())
                   ->draggable_region()
                   .has_value());
   EXPECT_TRUE(browser_view->ShouldDescendIntoChildForEventHandling(
@@ -1918,11 +1919,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        OpenWithOverlayEnabled) {
   webapps::AppId app_id = InstallAndLaunchWebApp();
   base::test::TestFuture<void> future;
-  helper()
-      ->browser_view()
-      ->browser()
-      ->app_controller()
-      ->ToggleWindowControlsOverlayEnabled(future.GetCallback());
+  auto* app_controller =
+      web_app::AppBrowserController::From(helper()->browser_view()->browser());
+  app_controller->ToggleWindowControlsOverlayEnabled(future.GetCallback());
   EXPECT_TRUE(future.Wait());
   web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   // If there's no crash, the test has passed.
@@ -2165,7 +2164,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ToggleWindowControlsOverlayAndWait();
 
   std::optional<SkRegion> draggable_region =
-      helper()->browser_view()->browser()->app_controller()->draggable_region();
+      web_app::AppBrowserController::From(helper()->app_browser())
+          ->draggable_region();
 
   EXPECT_TRUE(draggable_region.has_value());
   EXPECT_FALSE(draggable_region.value().isEmpty());
@@ -2184,7 +2184,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   content::WaitForLoadStop(helper()->browser_view()->GetActiveWebContents());
 
   std::optional<SkRegion> draggable_region =
-      helper()->browser_view()->browser()->app_controller()->draggable_region();
+      web_app::AppBrowserController::From(helper()->app_browser())
+          ->draggable_region();
 
   EXPECT_TRUE(draggable_region.has_value());
   EXPECT_FALSE(draggable_region.value().isEmpty());
@@ -2197,7 +2198,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   // Install and launch the web app, verify WCO is disabled by default.
   webapps::AppId app_id = InstallAndLaunchWebApp();
   web_app::AppBrowserController* app_controller_window1 =
-      helper()->app_browser()->app_controller();
+      web_app::AppBrowserController::From(helper()->app_browser());
   EXPECT_FALSE(app_controller_window1->IsWindowControlsOverlayEnabled());
 
   ToggleWindowControlsOverlayAndWait();
@@ -2207,7 +2208,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   BrowserView* browser_view_window2 = BrowserView::GetBrowserViewForBrowser(
       web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id));
   web_app::AppBrowserController* app_controller_window2 =
-      browser_view_window2->browser()->app_controller();
+      web_app::AppBrowserController::From(browser_view_window2->browser());
   EXPECT_TRUE(app_controller_window2->IsWindowControlsOverlayEnabled());
 
   // Verify window 1 still has WCO enabled (independent per-window state).
@@ -3148,8 +3149,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(), nav_url));
   ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
                                        VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
-  EXPECT_FALSE(
-      helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                   ->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(nav_url);
 }
 
@@ -3163,16 +3164,16 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(), nav_url));
   ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
                                        VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
-  EXPECT_TRUE(
-      helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(helper()->app_browser())
+                  ->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(nav_url);
 
   // Origin text should not show if navigating back to the start url.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(helper()->app_browser(), app_url()));
   ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
                                        VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
-  EXPECT_FALSE(
-      helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                   ->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(app_url());
 }
 
@@ -3201,8 +3202,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   content::AwaitDocumentOnLoadCompleted(web_contents);
   EXPECT_EQ(GetFrameColor(helper()->app_browser()), SK_ColorYELLOW);
   origin_text_waiter.WaitForOriginTextAnimation();
-  EXPECT_FALSE(
-      helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                   ->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(nav_url);
 }
 
@@ -3236,8 +3237,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
     // out-of-scope bar is shown. Behavior with scope_extensions: origin text
     // should be created with the URL of the page.
     origin_text_waiter.WaitForOriginTextAnimation();
-    EXPECT_TRUE(
-        helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+    EXPECT_TRUE(web_app::AppBrowserController::From(helper()->app_browser())
+                    ->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(nav_url);
   }
 
@@ -3246,8 +3247,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   content::AwaitDocumentOnLoadCompleted(web_contents);
   ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
                                        VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
-  EXPECT_FALSE(
-      helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                   ->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(app_url());
 }
 
@@ -3406,8 +3407,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
         ui_test_utils::NavigateToURL(helper()->app_browser(), extension_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
     origin_text_waiter.WaitForOriginTextAnimation();
-    EXPECT_FALSE(
-        helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+    EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                     ->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(extension_url());
   }
   {
@@ -3419,8 +3420,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
         ui_test_utils::NavigateToURL(helper()->app_browser(), app_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
     origin_text_waiter.WaitForOriginTextAnimation();
-    EXPECT_FALSE(
-        helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+    EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                     ->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(app_url());
   }
 }
@@ -3441,8 +3442,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
         ui_test_utils::NavigateToURL(helper()->app_browser(), extension_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
     origin_text_waiter.WaitForOriginTextAnimation();
-    EXPECT_FALSE(
-        helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+    EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                     ->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(extension_url());
   }
   // From extended scope, navigate to another origin out of scope. Origin text
@@ -3453,8 +3454,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
   content::AwaitDocumentOnLoadCompleted(web_contents);
   ui_test_utils::WaitForViewVisibility(helper()->app_browser(),
                                        VIEW_ID_WEB_APP_ORIGIN_TEXT, false);
-  EXPECT_TRUE(
-      helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(helper()->app_browser())
+                  ->ShouldShowCustomTabBar());
   ExpectLastCommittedUrl(nav_url);
 }
 
@@ -3474,8 +3475,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
         ui_test_utils::NavigateToURL(helper()->app_browser(), extension_url()));
     content::AwaitDocumentOnLoadCompleted(web_contents);
     origin_text_waiter.WaitForOriginTextAnimation();
-    EXPECT_FALSE(
-        helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+    EXPECT_FALSE(web_app::AppBrowserController::From(helper()->app_browser())
+                     ->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(extension_url());
   }
   {
@@ -3491,8 +3492,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
     content::AwaitDocumentOnLoadCompleted(web_contents);
     origin_text_waiter.WaitForOriginTextAnimation();
     EXPECT_EQ(GetFrameColor(helper()->app_browser()), SK_ColorYELLOW);
-    EXPECT_TRUE(
-        helper()->app_browser()->app_controller()->ShouldShowCustomTabBar());
+    EXPECT_TRUE(web_app::AppBrowserController::From(helper()->app_browser())
+                    ->ShouldShowCustomTabBar());
     ExpectLastCommittedUrl(nav_url);
   }
 }

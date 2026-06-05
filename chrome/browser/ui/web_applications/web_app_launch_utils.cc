@@ -751,10 +751,9 @@ content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params) {
     nav_params.web_app_navigation_data.emplace();
   }
   nav_params.web_app_navigation_data->SetNavigationCapturingForceOff(true);
-  if (nav_params.browser->GetBrowserForMigrationOnly()->app_controller() &&
-      nav_params.browser->GetBrowserForMigrationOnly()
-          ->app_controller()
-          ->IsUrlInHomeTabScope(nav_params.url)) {
+  auto* const app_controller =
+      web_app::AppBrowserController::From(nav_params.browser);
+  if (app_controller && app_controller->IsUrlInHomeTabScope(nav_params.url)) {
     // Navigations to the home tab URL in tabbed apps should happen in the home
     // tab.
     nav_params.browser->GetBrowserForMigrationOnly()

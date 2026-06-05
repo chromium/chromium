@@ -199,10 +199,10 @@ class LinkCapturingNavigationThrottleBrowserTest
     ClickPage();
 
     Browser* app_browser = browser_observer.Wait();
-    if (app_id_ != app_browser->app_controller()->app_id()) {
+    if (app_id_ != web_app::AppBrowserController::From(app_browser)->app_id()) {
       return AssertionFailure()
-             << "Started browser has app_id=" << app_id_
-             << ", but expected=" << app_browser->app_controller()->app_id();
+             << "Started browser has app_id=" << app_id_ << ", but expected="
+             << web_app::AppBrowserController::From(app_browser)->app_id();
     }
 
     return AssertionSuccess();

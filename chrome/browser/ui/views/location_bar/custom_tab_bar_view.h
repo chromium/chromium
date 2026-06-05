@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/menus/simple_menu_model.h"
@@ -120,7 +121,7 @@ class CustomTabBarView : public views::AccessiblePaneView,
 
   // Get the app controller associated with the browser, if any.
   web_app::AppBrowserController* app_controller() const {
-    return browser_->app_controller();
+    return web_app::AppBrowserController::From(browser_);
   }
 
   // Populates child elements with page details from the current WebContents.

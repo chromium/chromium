@@ -145,7 +145,7 @@ bool BrowserViewLayoutDelegateImpl::IsContentsSeparatorEnabled() const {
   // based on whether it is visible instead of setting the height to 0px. This
   // will enable BrowserViewLayout to hide the contents separator on its own
   // using the same logic used by normal BrowserElementsViews.
-  return !browser_view_->browser()->app_controller();
+  return !web_app::AppBrowserController::From(browser_view_->browser());
 }
 
 bool BrowserViewLayoutDelegateImpl::IsActiveTabSplit() const {

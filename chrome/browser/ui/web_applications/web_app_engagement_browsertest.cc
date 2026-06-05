@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInTab) {
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
-  EXPECT_FALSE(browser->app_controller());
+  EXPECT_FALSE(web_app::AppBrowserController::From(browser));
   NavigateViaLinkClickToURLAndWait(browser, example_url);
 
   Histograms histograms;
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DiyAppInTab) {
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
-  EXPECT_FALSE(browser->app_controller());
+  EXPECT_FALSE(web_app::AppBrowserController::From(browser));
   NavigateViaLinkClickToURLAndWait(browser, example_url);
 
   Histograms histograms;
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
 
   EXPECT_EQ(GetAppIdFromApplicationName(browser->app_name()), app_id);
-  EXPECT_TRUE(browser->app_controller());
+  EXPECT_TRUE(web_app::AppBrowserController::From(browser));
   NavigateViaLinkClickToURLAndWait(browser, example_url);
 
   Histograms histograms;
@@ -532,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   webapps::AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
 
   Browser* browser = LaunchBrowserForWebAppInTab(app_id);
-  EXPECT_FALSE(browser->app_controller());
+  EXPECT_FALSE(web_app::AppBrowserController::From(browser));
 
   NavigateViaLinkClickToURLAndWait(browser, start_url);
   {

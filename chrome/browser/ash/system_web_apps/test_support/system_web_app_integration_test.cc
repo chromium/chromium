@@ -43,7 +43,8 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
   Browser* app_browser;
   LaunchAppWithoutWaiting(app_type, &app_browser);
 
-  webapps::AppId app_id = app_browser->app_controller()->app_id();
+  webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
   EXPECT_EQ(GetManager().GetAppIdForSystemApp(app_type), app_id);
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 

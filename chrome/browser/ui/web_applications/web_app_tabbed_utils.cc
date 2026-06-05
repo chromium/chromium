@@ -29,9 +29,10 @@ bool IsTabClosable(const TabStripModel* tab_strip_model, int index) {
 }
 
 bool IsHomeTabUrl(const Browser* browser, const GURL& url) {
-  return browser && browser->app_controller() &&
-         HasPinnedHomeTab(browser->tab_strip_model()) &&
-         browser->app_controller()->IsUrlInHomeTabScope(url);
+  auto* const app_controller =
+      browser ? web_app::AppBrowserController::From(browser) : nullptr;
+  return app_controller && HasPinnedHomeTab(browser->tab_strip_model()) &&
+         app_controller->IsUrlInHomeTabScope(url);
 }
 
 }  // namespace web_app

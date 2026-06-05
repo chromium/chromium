@@ -148,9 +148,11 @@ std::unique_ptr<TabStrip> CreateTabStrip(
     TabStripRegionView* tab_strip_region_view,
     BrowserView* browser_view) {
   std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
-  if (browser_view && browser_view->browser()->app_controller()) {
+  if (browser_view &&
+      web_app::AppBrowserController::From(browser_view->browser())) {
     tab_menu_model_factory =
-        browser_view->browser()->app_controller()->GetTabMenuModelFactory();
+        web_app::AppBrowserController::From(browser_view->browser())
+            ->GetTabMenuModelFactory();
   }
 
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(

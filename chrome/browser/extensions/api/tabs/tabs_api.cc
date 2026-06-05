@@ -1423,7 +1423,7 @@ base::expected<void, std::string> WindowsCreateFunction::ValidateTab(
   Browser* source_browser = source_window->GetBrowser();
   CHECK(source_browser);
   if (web_app::AppBrowserController* controller =
-          source_browser->app_controller();
+          web_app::AppBrowserController::From(source_browser);
       controller && controller->IsIsolatedWebApp()) {
     return base::unexpected(kCannotMoveIwaTabError);
   }

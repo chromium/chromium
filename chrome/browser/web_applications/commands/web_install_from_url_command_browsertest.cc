@@ -419,7 +419,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
   Browser* app_browser = web_app::InstallWebAppFromPageGetBrowser(
       browser(),
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html"));
-  const webapps::AppId app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   histograms.ExpectBucketCount("WebApp.LaunchSource",
@@ -1114,7 +1115,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallBackgroundAppAlreadyInstalledBrowserTest,
 
   Browser* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), install_url);
-  const webapps::AppId app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   histograms.ExpectBucketCount("WebApp.LaunchSource",

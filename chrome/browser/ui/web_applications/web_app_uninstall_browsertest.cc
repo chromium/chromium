@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallBrowserTest,
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   EXPECT_TRUE(IsBrowserOpen(app_browser));
-  auto* app_controller = app_browser->app_controller();
+  auto* app_controller = web_app::AppBrowserController::From(app_browser);
   ASSERT_TRUE(app_controller);
 
   EXPECT_FALSE(app_controller->ShouldShowCustomTabBar());

@@ -127,7 +127,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
     } else if (web_app::AppBrowserController::IsWebApp(browser_)) {
       window = FindMostRecentWindow(
           [profile = browser_->profile(),
-           app_id = browser_->app_controller()->app_id(),
+           app_id = web_app::AppBrowserController::From(browser_)->app_id(),
            display = display::Screen::Get()->GetDisplayForNewWindows()](
               BrowserWindowInterface* browser) {
             if (browser->GetProfile() != profile) {

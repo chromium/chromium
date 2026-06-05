@@ -35,9 +35,9 @@ void WindowControlsOverlayToggleButton::UpdateState() {
   // Use app_controller's IsWindowControlsOverlayEnabled rather than
   // browser_view's to avoid this returning false at startup due to the CCT
   // displaying momentarily.
-  bool enabled = browser_view_->browser()
-                     ->app_controller()
-                     ->IsWindowControlsOverlayEnabled();
+  auto* const app_controller =
+      web_app::AppBrowserController::From(browser_view_->browser());
+  bool enabled = app_controller->IsWindowControlsOverlayEnabled();
   // If you update the features::IsRoundedIconsEnabled() ?
   // kKeyboardArrowDownIcon : kKeyboardArrowDownOldIcon, please update
   // kKeyboardArrowLeftIcon defined in `ash/resources/vector_icons` as well.

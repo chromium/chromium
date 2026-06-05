@@ -212,9 +212,9 @@ BrowserFrameViewChromeOS* BrowserFrameViewChromeOS::Get(aura::Window* window) {
 void BrowserFrameViewChromeOS::Init() {
   Browser* browser = GetBrowserView()->browser();
 
+  auto* const app_controller = web_app::AppBrowserController::From(browser);
   const bool is_close_button_enabled =
-      !(browser->app_controller() &&
-        browser->app_controller()->IsPreventCloseEnabled());
+      !(app_controller && app_controller->IsPreventCloseEnabled());
 
   caption_button_container_ =
       AddChildView(std::make_unique<chromeos::FrameCaptionButtonContainerView>(
@@ -345,7 +345,8 @@ SkColor BrowserFrameViewChromeOS::GetCaptionColor(
     BrowserFrameActiveState active_state) const {
   // Web apps apply a theme color if specified by the extension/manifest.
   std::optional<SkColor> frame_theme_color =
-      GetBrowserView()->browser()->app_controller()->GetThemeColor();
+      web_app::AppBrowserController::From(GetBrowserView()->browser())
+          ->GetThemeColor();
   const SkColor frame_color =
       frame_theme_color.value_or(GetFrameColor(active_state));
   const SkColor active_caption_color =
@@ -369,7 +370,8 @@ SkColor BrowserFrameViewChromeOS::GetFrameColor(
 
   std::optional<SkColor> color;
   if (GetBrowserView()->GetIsWebAppType()) {
-    color = GetBrowserView()->browser()->app_controller()->GetThemeColor();
+    color = web_app::AppBrowserController::From(GetBrowserView()->browser())
+                ->GetThemeColor();
   }
 
   SkColor fallback_color = chromeos::kDefaultFrameColor;
@@ -791,8 +793,9 @@ void BrowserFrameViewChromeOS::OnImmersiveFullscreenExited() {
 void BrowserFrameViewChromeOS::OnAppUpdate(const apps::AppUpdate& update) {
   Browser* browser = GetBrowserView()->browser();
 
-  if (!browser->app_controller() ||
-      browser->app_controller()->app_id() != update.AppId() ||
+  if (!web_app::AppBrowserController::From(browser) ||
+      web_app::AppBrowserController::From(browser)->app_id() !=
+          update.AppId() ||
       !caption_button_container_) {
     return;
   }
@@ -1113,7 +1116,9 @@ void BrowserFrameViewChromeOS::MaybeAnimateThemeChanged() {
   // request the behavior.
   bool animate_theme_change_for_swa =
       ash::IsSystemWebApp(browser) &&
-      browser->app_controller()->system_app()->ShouldAnimateThemeChanges();
+      web_app::AppBrowserController::From(browser)
+          ->system_app()
+          ->ShouldAnimateThemeChanges();
   if (!animate_theme_change_for_swa) {
     return;
   }

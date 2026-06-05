@@ -187,7 +187,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   // Install WCO app and toggle the Window Controls Overlay display.
   Browser* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), GetAppUrlWithWCO());
-  const webapps::AppId app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
 
   // Toggle the Window Controls Overlay display in the current app_browser so
   // that the behavior is stored.

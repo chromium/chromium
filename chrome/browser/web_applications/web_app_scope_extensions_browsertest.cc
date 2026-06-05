@@ -157,7 +157,7 @@ class WebAppScopeExtensionsBrowserTest
     }
 
     Browser* app_browser = browser_created_observer.Wait();
-    if (!app_browser->app_controller()) {
+    if (!web_app::AppBrowserController::From(app_browser)) {
       chrome::CloseWindow(app_browser);
       return std::nullopt;
     }
@@ -165,7 +165,8 @@ class WebAppScopeExtensionsBrowserTest
     EXPECT_EQ(
         app_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
         url);
-    webapps::AppId captured_app_id = app_browser->app_controller()->app_id();
+    webapps::AppId captured_app_id =
+        web_app::AppBrowserController::From(app_browser)->app_id();
     chrome::CloseWindow(app_browser);
     return captured_app_id;
   }

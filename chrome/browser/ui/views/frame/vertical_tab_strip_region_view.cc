@@ -528,9 +528,11 @@ void VerticalTabStripRegionView::InitializeTabStrip() {
                           base::Unretained(this)));
 
   std::unique_ptr<TabMenuModelFactory> tab_menu_model_factory;
-  if (browser_view_ && browser_view_->browser()->app_controller()) {
+  if (browser_view_ &&
+      web_app::AppBrowserController::From(browser_view_->browser())) {
     tab_menu_model_factory =
-        browser_view_->browser()->app_controller()->GetTabMenuModelFactory();
+        web_app::AppBrowserController::From(browser_view_->browser())
+            ->GetTabMenuModelFactory();
   }
 
   TabStripModel* tab_strip_model = browser_view_->browser()->GetTabStripModel();

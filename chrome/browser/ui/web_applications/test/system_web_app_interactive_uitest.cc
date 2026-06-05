@@ -129,7 +129,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
@@ -151,7 +152,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
   ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
@@ -193,7 +195,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
       EXPECT_EQ(1 + starting_browser_count,
                 GlobalBrowserCollection::GetInstance()->GetSize());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-      EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+      EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                       ->ShouldShowCustomTabBar());
       ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
       app_browser->window()->Close();
       destroyed_observer.Wait();
@@ -238,7 +241,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
   app_browser->window()->Close();
   destroyed_observer.Wait();
@@ -284,7 +288,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
   ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
   app_browser->window()->Close();
   destroyed_observer.Wait();
@@ -318,7 +323,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, ChangeLocationHref) {
   EXPECT_EQ(1 + starting_browser_count,
             GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 
   // Check the initiating browser window is intact.
   EXPECT_EQ(initiating_url, initiating_web_contents->GetLastCommittedURL());
@@ -355,7 +361,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
       EXPECT_EQ(1 + starting_browser_count,
                 GlobalBrowserCollection::GetInstance()->GetSize());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-      EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+      EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                       ->ShouldShowCustomTabBar());
       ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
       app_browser->window()->Close();
       destroyed_observer.Wait();
@@ -397,7 +404,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
       // initiating system app, the link capturing system app.
       EXPECT_EQ(3U, GlobalBrowserCollection::GetInstance()->GetSize());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-      EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+      EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                       ->ShouldShowCustomTabBar());
       ui_test_utils::BrowserDestroyedObserver destroyed_observer(app_browser);
       app_browser->window()->Close();
       destroyed_observer.Wait();
@@ -464,7 +472,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
   ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
   EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 class SystemWebAppManagerWindowSizeControlsTest

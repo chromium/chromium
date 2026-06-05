@@ -599,7 +599,8 @@ Browser::Browser(const CreateParams& params)
           : BrowserWindow::CreateBrowserWindow(this, params.user_gesture,
                                                params.in_tab_dragging);
 
-  if (auto* const app_browser_controller = app_controller()) {
+  if (auto* const app_browser_controller =
+          web_app::AppBrowserController::From(this)) {
     app_browser_controller->UpdateCustomTabBarVisibility(false);
   }
 
@@ -693,7 +694,8 @@ base::WeakPtr<const Browser> Browser::AsWeakPtr() const {
 // Browser, State Storage and Retrieval for UI:
 
 GURL Browser::GetNewTabURL() const {
-  if (auto* const app_browser_controller = app_controller()) {
+  if (auto* const app_browser_controller =
+          web_app::AppBrowserController::From(this)) {
     return app_browser_controller->GetAppNewTabUrl();
   }
   return chrome::ChromeUINewTabURLAsGURL();
@@ -915,7 +917,7 @@ bool Browser::IsActive() const {
 // whether `this` is active.
 #if BUILDFLAG(IS_MAC)
   // If this is a standalone PWA window, check BrowserList instead.
-  if (app_controller()) {
+  if (web_app::AppBrowserController::From(this)) {
     return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == this;
   }
 #endif
@@ -1619,7 +1621,8 @@ void Browser::NavigationStateChanged(WebContents* source,
     GetCommandController()->TabStateChanged();
   }
 
-  if (auto* const app_browser_controller = app_controller()) {
+  if (auto* const app_browser_controller =
+          web_app::AppBrowserController::From(this)) {
     app_browser_controller->UpdateCustomTabBarVisibility(true);
   }
 }
@@ -1631,7 +1634,8 @@ void Browser::VisibleSecurityStateChanged(WebContents* source) {
   if (tab_strip_model_->GetActiveWebContents() == source) {
     UpdateToolbarSecurityState();
 
-    if (auto* const app_browser_controller = app_controller()) {
+    if (auto* const app_browser_controller =
+            web_app::AppBrowserController::From(this)) {
       app_browser_controller->UpdateCustomTabBarVisibility(true);
     }
   }
@@ -1660,7 +1664,8 @@ content::WebContents* Browser::AddNewContents(
       screen && source && source->GetContentNativeView() &&
       screen->GetDisplayNearestView(source->GetContentNativeView()) !=
           screen->GetDisplayMatching(window_features.bounds);
-  if (!app_controller() && disposition == WindowOpenDisposition::NEW_POPUP &&
+  if (!web_app::AppBrowserController::From(this) &&
+      disposition == WindowOpenDisposition::NEW_POPUP &&
       fullscreen_controller->IsFullscreenForBrowser() &&
       !targeting_different_display) {
     disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -2026,7 +2031,8 @@ bool Browser::ShouldUseInstancedSystemMediaControls() const {
 void Browser::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {
-  if (auto* const app_browser_controller = app_controller()) {
+  if (auto* const app_browser_controller =
+          web_app::AppBrowserController::From(this)) {
     app_browser_controller->DraggableRegionsChanged(regions, contents);
   }
 }
@@ -2102,7 +2108,7 @@ bool Browser::GetCanResize() {
 #if !BUILDFLAG(IS_ANDROID)
 bool Browser::CanUseWindowingControls(
     content::RenderFrameHost* requesting_frame) {
-  if (!app_controller()) {
+  if (!web_app::AppBrowserController::From(this)) {
     requesting_frame->AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "API called from something else than a web_app.");
@@ -2188,7 +2194,8 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   }
 
   if (is_type_app() || is_type_devtools() || is_type_app_popup()) {
-    auto* const app_browser_controller = app_controller();
+    auto* const app_browser_controller =
+        web_app::AppBrowserController::From(this);
     if (app_browser_controller &&
         app_browser_controller->HasMinimalUiButtons()) {
       return blink::mojom::DisplayMode::kMinimalUi;
@@ -2417,7 +2424,8 @@ bool Browser::CheckMediaAccessPermission(
 }
 
 std::string Browser::GetTitleForMediaControls(WebContents* web_contents) {
-  auto* const app_browser_controller = app_controller();
+  auto* const app_browser_controller =
+      web_app::AppBrowserController::From(this);
   return app_browser_controller
              ? app_browser_controller->GetTitleForMediaControls()
              : std::string();
@@ -2892,7 +2900,8 @@ std::vector<StatusBubble*> Browser::GetStatusBubbles() {
   // We hide the status bar for web apps windows as this matches native
   // experience. However, we include the status bar for 'minimal-ui' display
   // mode, as the minimal browser UI includes the status bar.
-  auto* const app_browser_controller = app_controller();
+  auto* const app_browser_controller =
+      web_app::AppBrowserController::From(this);
   if (app_browser_controller &&
       !app_browser_controller->HasMinimalUiButtons()) {
     return {};

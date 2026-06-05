@@ -189,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   // navigation.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 
   const GURL update_url = embedded_https_test_server().GetURL(
       "/web_apps/scope_updating/page_update.html");
@@ -202,14 +203,16 @@ IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,
   }
 
   // After update, we are on the update page, which is in scope.
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 
   // Now navigate to the out-of-scope URL and check that the toolbar is
   // hidden because the scope has been widened.
   const GURL out_of_scope_url = embedded_https_test_server().GetURL(
       "/web_apps/scope_updating/out-of-scope.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestSilentUpdateCommandBrowserTest,

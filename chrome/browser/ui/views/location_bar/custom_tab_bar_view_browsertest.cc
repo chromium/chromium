@@ -247,7 +247,7 @@ class CustomTabBarViewBrowserTest : public web_app::WebAppBrowserTestBase {
     DCHECK(app_browser_);
     DCHECK(app_browser_ != browser());
 
-    app_controller_ = app_browser_->app_controller();
+    app_controller_ = web_app::AppBrowserController::From(app_browser_);
     DCHECK(app_controller_);
   }
 
@@ -299,7 +299,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_TRUE(popup_browser->is_type_app_popup());
 
   // Out of scope, so custom tab bar should be shown.
-  EXPECT_TRUE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(popup_browser)
+                  ->ShouldShowCustomTabBar());
 
   // As the popup was opened out of scope the close button should not be shown.
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(popup_browser)

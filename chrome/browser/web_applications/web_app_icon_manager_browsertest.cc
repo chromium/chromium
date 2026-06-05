@@ -101,8 +101,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   run_loop.Run();
 
-  gfx::ImageSkia app_icon =
-      app_browser->app_controller()->GetWindowAppIcon().Rasterize(nullptr);
+  gfx::ImageSkia app_icon = web_app::AppBrowserController::From(app_browser)
+                                ->GetWindowAppIcon()
+                                .Rasterize(nullptr);
 
 #if BUILDFLAG(IS_CHROMEOS)
   gfx::ImageSkia image_skia =

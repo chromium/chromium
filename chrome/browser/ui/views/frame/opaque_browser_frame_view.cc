@@ -161,7 +161,7 @@ OpaqueBrowserFrameView::~OpaqueBrowserFrameView() = default;
 
 void OpaqueBrowserFrameView::InitViews() {
   web_app::AppBrowserController* controller =
-      GetBrowserView()->browser()->app_controller();
+      web_app::AppBrowserController::From(GetBrowserView()->browser());
 
   if (controller && controller->IsWindowControlsOverlayEnabled()) {
     caption_button_placeholder_container_ =

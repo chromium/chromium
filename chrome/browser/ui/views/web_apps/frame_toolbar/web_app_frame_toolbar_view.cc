@@ -115,7 +115,8 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
     layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   }
 
-  const auto* app_controller = browser_view_->browser()->app_controller();
+  const auto* app_controller =
+      web_app::AppBrowserController::From(browser_view_->browser());
 
   if (app_controller->HasMinimalUiButtons()) {
     left_container_ =

@@ -40,7 +40,8 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
   auto* profile = browser_view->browser()->profile();
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
-  auto* app_controller = browser_view->browser()->app_controller();
+  auto* app_controller =
+      web_app::AppBrowserController::From(browser_view->browser());
 
   // Ignore the toolkit theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using

@@ -318,6 +318,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
 
   const webapps::AppId& app_id() const { return app_id_; }
 
+  // Returns whether this app browser was created from a trusted source.
+  bool IsTrustedSource() const;
+
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser() const { return browser_->GetBrowserForMigrationOnly(); }
 #endif

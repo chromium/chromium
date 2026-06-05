@@ -1455,12 +1455,12 @@ void MoveGroupToNewWindow(BrowserWindowInterface* browser,
   Browser* current_browser = browser->GetBrowserForMigrationOnly();
   Browser* new_browser;
   if (current_browser->is_type_app() &&
-      current_browser->app_controller()->has_tab_strip()) {
+      web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
+    auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        current_browser->app_name(), current_browser->is_trusted_source(),
+        current_browser->app_name(), app_controller->IsTrustedSource(),
         gfx::Rect(), current_browser->profile(), true));
-    web_app::MaybeAddPinnedHomeTab(new_browser,
-                                   new_browser->app_controller()->app_id());
+    web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(current_browser, true);
   }
@@ -1478,12 +1478,12 @@ void MoveTabsToNewWindow(BrowserWindowInterface* browser,
   Browser* new_browser;
   base::TimeTicks now = base::TimeTicks::Now();
   if (current_browser->is_type_app() &&
-      current_browser->app_controller()->has_tab_strip()) {
+      web_app::AppBrowserController::From(current_browser)->has_tab_strip()) {
+    auto* app_controller = web_app::AppBrowserController::From(current_browser);
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-        current_browser->app_name(), current_browser->is_trusted_source(),
+        current_browser->app_name(), app_controller->IsTrustedSource(),
         gfx::Rect(), current_browser->profile(), true));
-    web_app::MaybeAddPinnedHomeTab(new_browser,
-                                   new_browser->app_controller()->app_id());
+    web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
   } else {
     new_browser = CreateNewBrowser(current_browser, true);
   }

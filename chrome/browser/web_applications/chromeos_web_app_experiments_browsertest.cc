@@ -173,7 +173,8 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
   // different scope in the web app window.
   Browser* app_browser = LaunchWebAppBrowser(app_id_);
   NavigateViaLinkClickToURLAndWait(app_browser, extended_scope_page_);
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
@@ -197,7 +198,9 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
 IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
                        IgnoreManifestColor) {
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
-  EXPECT_FALSE(app_browser->app_controller()->GetThemeColor().has_value());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->GetThemeColor()
+                   .has_value());
 
   // If the page starts setting its own theme-color it should not be ignored.
   content::WebContents* web_contents =
@@ -212,7 +215,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsBrowserTest,
   ASSERT_TRUE(EvalJs(web_contents, script).is_ok());
   waiter.Wait();
 
-  EXPECT_EQ(app_browser->app_controller()->GetThemeColor(),
+  EXPECT_EQ(web_app::AppBrowserController::From(app_browser)->GetThemeColor(),
             SkColorSetARGB(0xFF, 0x0, 0xFF, 0x0));
 }
 

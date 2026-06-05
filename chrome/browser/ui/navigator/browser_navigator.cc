@@ -113,9 +113,8 @@ bool WindowCanOpenTabs(const NavigateParams& params) {
   // url is in the app scope since we know it was saved directly from the app.
   if (params.browser->GetBrowserForMigrationOnly()->creation_source() !=
           Browser::CreationSource::kDeskTemplate &&
-      params.browser->GetBrowserForMigrationOnly()->app_controller() &&
-      !params.browser->GetBrowserForMigrationOnly()
-           ->app_controller()
+      web_app::AppBrowserController::From(params.browser) &&
+      !web_app::AppBrowserController::From(params.browser)
            ->IsUrlInAppScope(params.url)) {
     return false;
   }
@@ -691,8 +690,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   // the new tab is focused.
   if (source_browser && source_browser->is_type_app() &&
       params->disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      !(source_browser->app_controller() &&
-        source_browser->app_controller()->has_tab_strip())) {
+      !(web_app::AppBrowserController::From(source_browser) &&
+        web_app::AppBrowserController::From(source_browser)->has_tab_strip())) {
     params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   }
 

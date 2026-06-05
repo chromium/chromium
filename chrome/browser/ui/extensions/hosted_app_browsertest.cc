@@ -559,10 +559,15 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, HasReloadButton) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
   SetupAppWithURL(app_url);
-  EXPECT_EQ(app_browser_->app_controller()->app_id(), app_id_);
-  EXPECT_EQ(app_browser_->app_controller()->GetTitle(), u"Hosted App");
-  EXPECT_EQ(app_browser_->app_controller()->GetDefaultBounds(), gfx::Rect());
-  EXPECT_TRUE(app_browser_->app_controller()->HasReloadButton());
+  EXPECT_EQ(web_app::AppBrowserController::From(app_browser_)->app_id(),
+            app_id_);
+  EXPECT_EQ(web_app::AppBrowserController::From(app_browser_)->GetTitle(),
+            u"Hosted App");
+  EXPECT_EQ(
+      web_app::AppBrowserController::From(app_browser_)->GetDefaultBounds(),
+      gfx::Rect());
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(app_browser_)->HasReloadButton());
 }
 
 class HostedAppTestWithPrerendering : public HostedOrWebAppTest {
@@ -710,7 +715,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, DISABLED_LoadIcon) {
   EXPECT_TRUE(app_service_test().AreIconImageEqual(
       app_service_test().LoadAppIconBlocking(
           app_id_, extension_misc::EXTENSION_ICON_SMALL),
-      app_browser_->app_controller()->GetWindowAppIcon().Rasterize(nullptr)));
+      web_app::AppBrowserController::From(app_browser_)
+          ->GetWindowAppIcon()
+          .Rasterize(nullptr)));
 }
 #endif
 
@@ -761,7 +768,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithAutoupgradesDisabled,
       app_browser_->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(TryToLoadImage(
       web_contents, embedded_test_server()->GetURL("foo.com", kImagePath)));
-  EXPECT_TRUE(app_browser_->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser_)
+                  ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
@@ -901,7 +909,8 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, CanUserUninstall) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL app_url = embedded_test_server()->GetURL("app.com", "/title1.html");
   SetupAppWithURL(app_url);
-  EXPECT_TRUE(app_browser_->app_controller()->CanUserUninstall());
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(app_browser_)->CanUserUninstall());
 }
 
 // Tests that platform apps can still load mixed content.

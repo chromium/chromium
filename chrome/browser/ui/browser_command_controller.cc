@@ -1348,9 +1348,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     case IDC_WEB_APP_SETTINGS:
 #if !BUILDFLAG(IS_CHROMEOS)
-      CHECK(browser_->app_controller());
-      ShowWebAppSettings(browser_, browser_->app_controller()->app_id(),
-                         web_app::AppSettingsPageEntryPoint::kBrowserCommand);
+      CHECK(web_app::AppBrowserController::From(browser_));
+      ShowWebAppSettings(
+          browser_, web_app::AppBrowserController::From(browser_)->app_id(),
+          web_app::AppSettingsPageEntryPoint::kBrowserCommand);
 #endif
       break;
     case IDC_WEB_APP_MENU_APP_INFO: {
@@ -1616,9 +1617,10 @@ void BrowserCommandController::InitCommandState() {
 
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
+  auto* const app_controller = web_app::AppBrowserController::From(browser_);
   command_updater_.UpdateCommandEnabled(
-      IDC_NEW_TAB, !browser_->app_controller() ||
-                       !browser_->app_controller()->ShouldHideNewTabButton());
+      IDC_NEW_TAB,
+      !app_controller || !app_controller->ShouldHideNewTabButton());
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB, true);
   command_updater_.UpdateCommandEnabled(
       IDC_DUPLICATE_TAB, !browser_->is_type_picture_in_picture());
@@ -2061,8 +2063,9 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   UpdateCommandAndActionEnabled(IDC_SHOW_TRANSLATE, kActionShowTranslate,
                                 can_translate);
 
-  bool is_isolated_app = browser_->app_controller() &&
-                         browser_->app_controller()->IsIsolatedWebApp();
+  bool is_isolated_app =
+      web_app::AppBrowserController::From(browser_) &&
+      web_app::AppBrowserController::From(browser_)->IsIsolatedWebApp();
   bool is_pinned_home_tab = web_app::IsPinnedHomeTab(
       browser_->tab_strip_model(), browser_->tab_strip_model()->active_index());
   command_updater_.UpdateCommandEnabled(

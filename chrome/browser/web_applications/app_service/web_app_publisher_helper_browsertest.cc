@@ -239,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperMigrationTest, MigrationCalls) {
       "/web_apps/migration/migrate_from/no_migration_info.html");
   Browser* app_browser =
       web_app::InstallWebAppFromPageGetBrowser(browser(), from_url);
-  const webapps::AppId source_app_id = app_browser->app_controller()->app_id();
+  const webapps::AppId source_app_id =
+      web_app::AppBrowserController::From(app_browser)->app_id();
 
   auto* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());

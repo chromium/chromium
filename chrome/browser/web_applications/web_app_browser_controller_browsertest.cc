@@ -79,7 +79,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
   Browser* app_browser = web_app::LaunchWebAppBrowser(profile(), app_id);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
   WebAppBrowserController* controller =
-      app_browser->app_controller()->AsWebAppBrowserController();
+      web_app::AppBrowserController::From(app_browser)
+          ->AsWebAppBrowserController();
   EXPECT_TRUE(controller->ShouldShowCustomTabBar());
 
   // 3. "User" installs the app with a wider scope.
@@ -140,7 +141,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserControllerBrowserTest,
   // the app should now be in scope.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, out_of_scope_url));
   WebAppBrowserController* controller =
-      app_browser->app_controller()->AsWebAppBrowserController();
+      web_app::AppBrowserController::From(app_browser)
+          ->AsWebAppBrowserController();
   EXPECT_FALSE(controller->ShouldShowCustomTabBar());
 
   // 4. "User" installs the app with a narrower scope.

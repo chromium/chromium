@@ -158,7 +158,8 @@ std::u16string WindowMetadataController::GetWindowTitleForMaxWidth(
   // |contents| can be NULL if GetWindowTitleForMenu is called during the
   // window's creation (before tabs have been added).
   if (contents) {
-    auto* const app_browser_controller = browser_->app_controller();
+    auto* const app_browser_controller =
+        web_app::AppBrowserController::From(browser_);
     title = FormatTitleForDisplay(app_browser_controller
                                       ? app_browser_controller->GetTitle()
                                       : contents->GetTitle());
@@ -193,7 +194,8 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
   // |contents| can be NULL because GetWindowTitleForCurrentTab is called by the
   // window during the window's creation (before tabs have been added).
   if (title.empty() && contents) {
-    auto* const app_browser_controller = browser_->app_controller();
+    auto* const app_browser_controller =
+        web_app::AppBrowserController::From(browser_);
     title = FormatTitleForDisplay(app_browser_controller
                                       ? app_browser_controller->GetTitle()
                                       : contents->GetTitle());
@@ -231,7 +233,8 @@ std::u16string WindowMetadataController::GetWindowTitleFromWebContents(
       (browser_->is_type_app() || browser_->is_type_app_popup() ||
        browser_->is_type_devtools()) &&
       include_app_name) {
-    auto* const app_browser_controller = browser_->app_controller();
+    auto* const app_browser_controller =
+        web_app::AppBrowserController::From(browser_);
     return app_browser_controller ? app_browser_controller->GetAppShortName()
                                   : base::UTF8ToUTF16(browser_->app_name());
   }

@@ -2350,10 +2350,10 @@ void TabDragController::CompleteDrag() {
             attached_context_->GetWidget()->GetNativeWindow())
             ->browser();
 
-    if (new_browser->app_controller() &&
-        new_browser->app_controller()->has_tab_strip()) {
-      web_app::MaybeAddPinnedHomeTab(new_browser,
-                                     new_browser->app_controller()->app_id());
+    auto* const app_controller =
+        web_app::AppBrowserController::From(new_browser);
+    if (app_controller && app_controller->has_tab_strip()) {
+      web_app::MaybeAddPinnedHomeTab(new_browser, app_controller->app_id());
     }
   }
 

@@ -390,7 +390,7 @@ ui::NativeTheme* WebUIBrowserWindow::GetNativeTheme() {
 
 const ui::ThemeProvider* WebUIBrowserWindow::GetThemeProvider() const {
   // Copied from BrowserWidget::GetThemeProvider().
-  auto* app_controller = browser_->app_controller();
+  auto* app_controller = web_app::AppBrowserController::From(browser_);
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
@@ -414,7 +414,7 @@ WebUIBrowserWindow::GetThemeInitializerSupplier() const {
     return nullptr;
   }
 
-  auto* app_controller = browser_->app_controller();
+  auto* app_controller = web_app::AppBrowserController::From(browser_);
   // Ignore the system theme for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
@@ -432,7 +432,7 @@ ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
   auto key = ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
       GetThemeInitializerSupplier());
 
-  key.app_controller = browser_->app_controller();
+  key.app_controller = web_app::AppBrowserController::From(browser_);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS SystemWebApps use the OS theme all the time.

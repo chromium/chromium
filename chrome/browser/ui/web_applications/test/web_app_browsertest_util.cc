@@ -458,12 +458,13 @@ void NavigateAndCheckForToolbar(Browser* browser,
                                 bool expected_visibility,
                                 bool proceed_through_interstitial) {
   NavigateViaLinkClickToURLAndWait(browser, url, proceed_through_interstitial);
-  EXPECT_EQ(expected_visibility,
-            browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_EQ(
+      expected_visibility,
+      web_app::AppBrowserController::From(browser)->ShouldShowCustomTabBar());
 }
 
 AppMenuCommandState GetAppMenuCommandState(int command_id, Browser* browser) {
-  DCHECK(!browser->app_controller())
+  DCHECK(!web_app::AppBrowserController::From(browser))
       << "This check only applies to regular browser windows.";
   auto app_menu_model = std::make_unique<AppMenuModel>(nullptr, browser);
   app_menu_model->Init();

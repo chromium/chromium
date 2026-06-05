@@ -328,7 +328,8 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       break;
     }
     case IDC_TOGGLE_FULLSCREEN_TOOLBAR: {
-      web_app::AppBrowserController* app_controller = browser->app_controller();
+      web_app::AppBrowserController* app_controller =
+          web_app::AppBrowserController::From(browser);
       if (app_controller) {
         result->new_toggle_state =
             app_controller->AlwaysShowToolbarInFullscreen();

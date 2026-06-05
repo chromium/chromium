@@ -293,6 +293,10 @@ AppBrowserController::~AppBrowserController() {
   }
 }
 
+bool AppBrowserController::IsTrustedSource() const {
+  return browser_->GetBrowserForMigrationOnly()->is_trusted_source();
+}
+
 bool AppBrowserController::ShouldShowCustomTabBar() const {
   if (!IsInstalled()) {
     // If the app is uninstalled, the window should be closed. If it is

@@ -1334,8 +1334,8 @@ bool BrowserView::ShouldDrawTabStrokes() const {
   return false;
 #else   // BUILDFLAG(IS_CHROMEOS)
 
-  if (browser()->app_controller() &&
-      !browser()->app_controller()->has_tab_strip()) {
+  if (web_app::AppBrowserController::From(browser()) &&
+      !web_app::AppBrowserController::From(browser())->has_tab_strip()) {
     // Web apps only draw strokes when there is a TabStrip.
     return false;
   }
@@ -2486,13 +2486,13 @@ void BrowserView::LinkOpeningFromGesture(WindowOpenDisposition disposition) {
 }
 
 bool BrowserView::AppUsesWindowControlsOverlay() const {
-  return browser()->app_controller() &&
-         browser()->app_controller()->AppUsesWindowControlsOverlay();
+  auto* const app_controller = web_app::AppBrowserController::From(browser());
+  return app_controller && app_controller->AppUsesWindowControlsOverlay();
 }
 
 bool BrowserView::AppUsesTabbed() const {
-  return browser()->app_controller() &&
-         browser()->app_controller()->AppUsesTabbed();
+  auto* const app_controller = web_app::AppBrowserController::From(browser());
+  return app_controller && app_controller->AppUsesTabbed();
 }
 
 bool BrowserView::IsWindowControlsOverlayEnabled() const {
@@ -2504,9 +2504,10 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
 
   // If the toggle is not visible, we can assume that Window Controls Overlay
   // is not enabled.
+  auto* const app_controller = web_app::AppBrowserController::From(browser());
   bool enabled = should_show_window_controls_overlay_toggle_ &&
-                 browser()->app_controller() &&
-                 browser()->app_controller()->IsWindowControlsOverlayEnabled();
+                 app_controller &&
+                 app_controller->IsWindowControlsOverlayEnabled();
 
   if (enabled == window_controls_overlay_enabled_) {
     return;
@@ -2632,8 +2633,9 @@ void BrowserView::UpdateUnframedModeEnabled() {
           status == blink::mojom::PermissionStatus::GRANTED;
     }
 
-    if (unframed_mode_enabled && browser()->app_controller() &&
-        !browser()->app_controller()->UrlMatchesUnframedPattern(
+    auto* const app_controller = web_app::AppBrowserController::From(browser());
+    if (unframed_mode_enabled && app_controller &&
+        !app_controller->UrlMatchesUnframedPattern(
             web_contents->GetVisibleURL())) {
       unframed_mode_enabled = false;
     }
@@ -2697,10 +2699,11 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForUnframedMode(
 }
 
 void BrowserView::ToggleWindowControlsOverlayEnabled(base::OnceClosure done) {
-  browser()->app_controller()->ToggleWindowControlsOverlayEnabled(
-      base::BindOnce(&BrowserView::UpdateWindowControlsOverlayEnabled,
-                     weak_ptr_factory_.GetWeakPtr())
-          .Then(std::move(done)));
+  web_app::AppBrowserController::From(browser())
+      ->ToggleWindowControlsOverlayEnabled(
+          base::BindOnce(&BrowserView::UpdateWindowControlsOverlayEnabled,
+                         weak_ptr_factory_.GetWeakPtr())
+              .Then(std::move(done)));
 }
 
 bool BrowserView::WidgetOwnedByAnchorContainsPoint(
@@ -2737,8 +2740,8 @@ BrowserView* BrowserView::AsBrowserView() {
 }
 
 bool BrowserView::AppUsesUnframedMode() const {
-  return browser()->app_controller() &&
-         browser()->app_controller()->AppUsesUnframedMode();
+  auto* const app_controller = web_app::AppBrowserController::From(browser());
+  return app_controller && app_controller->AppUsesUnframedMode();
 }
 
 bool BrowserView::AreDraggableRegionsEnabled() const {
@@ -2817,7 +2820,7 @@ ui::mojom::WindowShowState BrowserView::GetWindowShowState() const {
 
 void BrowserView::SetResizableFromWebApi(std::optional<bool> resizable) {
   // The API is allowed only for PWAs and IWAs
-  CHECK(browser()->app_controller());
+  CHECK(web_app::AppBrowserController::From(browser()));
   if (resizable == resizable_from_web_api_) {
     return;
   }
@@ -3806,7 +3809,7 @@ bool BrowserView::CanChangeWindowIcon() const {
   if (browser_->is_type_devtools()) {
     return false;
   }
-  if (browser_->app_controller()) {
+  if (web_app::AppBrowserController::From(browser_)) {
     return true;
   }
 #if BUILDFLAG(IS_CHROMEOS)
@@ -3846,7 +3849,8 @@ bool BrowserView::ShouldShowWindowIcon() const {
 }
 
 ui::ImageModel BrowserView::GetWindowAppIcon() {
-  web_app::AppBrowserController* app_controller = browser()->app_controller();
+  web_app::AppBrowserController* app_controller =
+      web_app::AppBrowserController::From(browser());
   return app_controller ? app_controller->GetWindowAppIcon() : GetWindowIcon();
 }
 
@@ -3857,7 +3861,8 @@ ui::ImageModel BrowserView::GetWindowIcon() {
   }
 
   // Hosted apps always show their app icon.
-  web_app::AppBrowserController* app_controller = browser()->app_controller();
+  web_app::AppBrowserController* app_controller =
+      web_app::AppBrowserController::From(browser());
   if (app_controller) {
     return app_controller->GetWindowIcon();
   }
@@ -4477,7 +4482,8 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
     const gfx::Point& location) {
   // Window for PWAs with window-controls-overlay display override should claim
   // mouse events that fall within the draggable region.
-  web_app::AppBrowserController* controller = browser()->app_controller();
+  web_app::AppBrowserController* controller =
+      web_app::AppBrowserController::From(browser());
   if (AreDraggableRegionsEnabled() && controller &&
       controller->draggable_region().has_value()) {
     // Draggable regions are defined relative to the web contents.
@@ -4705,7 +4711,8 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
 
   // For apps with window-controls-overlay or unframed display mode, see if
   // we're in an app defined draggable region so we can return `HTCAPTION`.
-  web_app::AppBrowserController* controller = browser()->app_controller();
+  web_app::AppBrowserController* controller =
+      web_app::AppBrowserController::From(browser());
 
   if (AreDraggableRegionsEnabled() && controller &&
       controller->draggable_region().has_value()) {

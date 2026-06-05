@@ -555,7 +555,8 @@ bool UnloadController::IsUnclosableApp() const {
   if (!active_web_contents) {
     return false;
   }
+  auto* const app_controller = web_app::AppBrowserController::From(browser_);
   return web_app::WebAppProvider::GetForWebContents(active_web_contents)
       ->policy_manager()
-      .IsPreventCloseEnabled(browser_->app_controller()->app_id());
+      .IsPreventCloseEnabled(app_controller->app_id());
 }

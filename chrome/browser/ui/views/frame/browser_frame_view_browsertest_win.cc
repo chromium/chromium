@@ -390,8 +390,8 @@ class WebAppBrowserFrameViewWinWindowControlsOverlayTest
 
     // TODO(crbug.com/40174440): Register binder for BrowserInterfaceBroker
     // during testing.
-    app_browser->app_controller()->SetOnUpdateDraggableRegionForTesting(
-        loop.QuitClosure());
+    web_app::AppBrowserController::From(app_browser)
+        ->SetOnUpdateDraggableRegionForTesting(loop.QuitClosure());
     web_app::NavigateViaLinkClickToURLAndWait(app_browser, start_url);
     loop.Run();
     navigation_observer.WaitForNavigationFinished();

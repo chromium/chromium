@@ -51,9 +51,9 @@ bool ShouldAllowOpenInChrome(Browser* browser) {
   const bool is_isolated_web_app =
       web_app::AppBrowserController::IsIsolatedWebApp(browser);
   // Web Apps with enabled prevent close shouldn't be opened in Chrome.
+  auto* const app_controller = web_app::AppBrowserController::From(browser);
   const bool prevent_close_enabled =
-      browser->app_controller() &&
-      browser->app_controller()->IsPreventCloseEnabled();
+      app_controller && app_controller->IsPreventCloseEnabled();
   return !is_isolated_web_app && !prevent_close_enabled;
 }
 
@@ -81,7 +81,7 @@ WebAppMenuModel::~WebAppMenuModel() = default;
 bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
     case kUninstallAppCommandId:
-      return browser()->app_controller()->CanUserUninstall();
+      return web_app::AppBrowserController::From(browser())->CanUserUninstall();
     case kExtensionsMenuCommandId:
     case IDC_OPEN_IN_CHROME:
     case IDC_WEB_APP_UPGRADE_DIALOG:
@@ -100,7 +100,7 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case kUninstallAppCommandId:
       LogMenuAction(MENU_ACTION_UNINSTALL_APP);
-      browser()->app_controller()->Uninstall(
+      web_app::AppBrowserController::From(browser())->Uninstall(
           webapps::WebappUninstallSource::kAppMenu);
       break;
     case kExtensionsMenuCommandId:
@@ -113,8 +113,8 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
       break;
     case IDC_WEB_APP_UPGRADE_DIALOG:
       LogMenuAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG);
-      browser()->app_controller()->TriggerAppUpdateOrMigrationDialog(
-          base::TimeTicks::Now());
+      web_app::AppBrowserController::From(browser())
+          ->TriggerAppUpdateOrMigrationDialog(base::TimeTicks::Now());
       break;
     default:
       AppMenuModel::ExecuteCommand(command_id, event_flags);
@@ -123,9 +123,11 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
 }
 
 void WebAppMenuModel::Build() {
-  CHECK(browser()->app_controller());
+  auto* const app_browser_controller =
+      web_app::AppBrowserController::From(browser());
+  CHECK(app_browser_controller);
   web_app::WebAppBrowserController* app_controller =
-      browser()->app_controller()->AsWebAppBrowserController();
+      app_browser_controller->AsWebAppBrowserController();
   if (app_controller && (app_controller->HasPendingUpdate() ||
                          app_controller->HasPendingMigration())) {
     if (app_controller->HasPendingMigration()) {
@@ -170,8 +172,7 @@ void WebAppMenuModel::Build() {
     // string of characters, so instead of displaying the origin, the short name
     // of the app will be displayed.
     if (is_isolated_web_app) {
-      std::u16string short_name =
-          browser()->app_controller()->GetAppShortName();
+      std::u16string short_name = app_browser_controller->GetAppShortName();
       // For Isolated Web Apps, |GetAppShortName()| must be non-empty.
       display_text = short_name;
     } else {
@@ -196,9 +197,8 @@ void WebAppMenuModel::Build() {
     AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  if (browser()->app_controller() &&
-      browser()->app_controller()->has_tab_strip() &&
-      !browser()->app_controller()->ShouldHideNewTabButton()) {
+  if (app_browser_controller && app_browser_controller->has_tab_strip() &&
+      !app_browser_controller->ShouldHideNewTabButton()) {
     AddItemWithStringIdAndVectorIcon(
         this, IDC_NEW_TAB, IDS_NEW_TAB,
         features::IsRoundedIconsEnabled() ? kTabIcon : kNewTabRefreshOldIcon);
@@ -231,15 +231,15 @@ void WebAppMenuModel::Build() {
 // Chrome OS's app list is prominent enough to not need a separate uninstall
 // option in the app menu.
 #if !BUILDFLAG(IS_CHROMEOS)
-  DCHECK(browser()->app_controller());
-  if (browser()->app_controller()->IsInstalled()) {
+  DCHECK(app_browser_controller);
+  if (app_browser_controller->IsInstalled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithIcon(
         kUninstallAppCommandId,
         l10n_util::GetStringFUTF16(
             IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
             ui::EscapeMenuLabelAmpersands(
-                browser()->app_controller()->GetAppShortName())),
+                app_browser_controller->GetAppShortName())),
         ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
                                            ? kDeleteIcon
                                            : kTrashCanRefreshOldIcon));

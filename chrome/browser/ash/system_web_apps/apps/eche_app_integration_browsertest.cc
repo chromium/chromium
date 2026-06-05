@@ -137,7 +137,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, ShouldAllowCloseWindow) {
   WaitForTestSystemAppInstall();
   Browser* browser;
   LaunchApp(ash::SystemWebAppType::ECHE, &browser);
-  EXPECT_TRUE(browser->app_controller()
+  EXPECT_TRUE(web_app::AppBrowserController::From(browser)
                   ->system_app()
                   ->ShouldAllowScriptsToCloseWindows());
 }

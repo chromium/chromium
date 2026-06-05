@@ -394,9 +394,9 @@ NavigationCapturingProcess::NavigationCapturingProcess(
       source_browser_app_id_(
           params.browser &&
                   web_app::AppBrowserController::IsWebApp(params.browser)
-              ? std::optional(params.browser->GetBrowserForMigrationOnly()
-                                  ->app_controller()
-                                  ->app_id())
+              ? std::optional(
+                    web_app::AppBrowserController::From(params.browser)
+                        ->app_id())
               : std::nullopt),
       source_tab_app_id_(params.source_contents
                              ? base::OptionalFromPtr(WebAppTabHelper::GetAppId(
@@ -756,10 +756,10 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
         (app_display_mode == DisplayMode::kBrowser ||
          (app_id == source_browser_app_id_ &&
           is_in_source_app_with_url_in_scope))) {
+      auto* const app_controller =
+          web_app::AppBrowserController::From(params.browser);
       if (source_browser_app_id_.has_value() &&
-          !params.browser->GetBrowserForMigrationOnly()
-               ->app_controller()
-               ->ShouldHideNewTabButton()) {
+          !app_controller->ShouldHideNewTabButton()) {
         // Apps that support tabbed mode can open a new tab in the current app
         // browser itself.
         return ForcedNewAppContext(
@@ -771,7 +771,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
         // the originating browser to ensure the new tab pops under in the
         // typical place.
         if (navigation_params_browser_ &&
-            !navigation_params_browser_->app_controller()) {
+            !web_app::AppBrowserController::From(navigation_params_browser_)) {
           app_host_window = navigation_params_browser_.get();
         } else if (client_mode_and_browser->browser) {
           app_host_window = client_mode_and_browser->browser.get();
@@ -861,8 +861,10 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
       } else {
         host_window = CreateWebAppWindowFromNavigationParams(app_id, params);
       }
-      CHECK(host_window->app_controller()->has_tab_strip());
-      if (host_window->app_controller()->IsUrlInHomeTabScope(params.url)) {
+      CHECK(web_app::AppBrowserController::From(host_window));
+      if (web_app::AppBrowserController::From(host_window)->has_tab_strip() &&
+          web_app::AppBrowserController::From(host_window)
+              ->IsUrlInHomeTabScope(params.url)) {
         return CapturedNavigateExisting(host_window, 0);
       }
       break;
@@ -1705,7 +1707,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       if (navigation_params_browser_ &&
           WebAppBrowserController::IsForWebApp(navigation_params_browser_,
                                                app_id) &&
-          navigation_params_browser_->app_controller()->has_tab_strip()) {
+          web_app::AppBrowserController::From(navigation_params_browser_)
+              ->has_tab_strip()) {
         result.browser = navigation_params_browser_;
         break;
       }
@@ -1717,8 +1720,8 @@ NavigationCapturingProcess::GetEffectiveClientModeAndBrowser(
       // If somehow we found a browser that doesn't have a tab strip (which
       // might be possible if the manifest updated while a window is open),
       // don't return it to use for new tabs.
-      if (result.browser &&
-          !result.browser->app_controller()->has_tab_strip()) {
+      if (result.browser && !web_app::AppBrowserController::From(result.browser)
+                                 ->has_tab_strip()) {
         result.browser = nullptr;
       }
       break;
@@ -1786,7 +1789,7 @@ NavigationCapturingProcess::AuxiliaryContext() {
 
 NavigationCapturingProcess::MaybeNavigationCapturingOverride
 NavigationCapturingProcess::AuxiliaryContextInAppWindow(Browser* app_browser) {
-  CHECK(app_browser->app_controller());
+  CHECK(web_app::AppBrowserController::From(app_browser));
   initial_nav_handling_result_ =
       NavigationCapturingInitialResult::kAuxiliaryContextAppWindow;
   if (first_navigation_app_id_.has_value()) {
@@ -1823,7 +1826,7 @@ NavigationCapturingProcess::ForcedNewAppContext(
   CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
       app_display_mode));
   CHECK((app_display_mode != blink::mojom::DisplayMode::kBrowser) ==
-        (!!host_browser->app_controller()));
+        (!!web_app::AppBrowserController::From(host_browser)));
   CHECK(disposition_ == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
         disposition_ == WindowOpenDisposition::NEW_WINDOW);
   CHECK(is_user_modified_click());
@@ -1877,7 +1880,7 @@ NavigationCapturingProcess::CapturedNewClient(
                               base::ToString((app_display_mode)));
   SCOPED_CRASH_KEY_STRING1024(
       "crbug396028223", "contains_app_controller",
-      base::ToString((!!host_browser->app_controller())));
+      base::ToString((!!web_app::AppBrowserController::From(host_browser))));
 
   debug_data_.Set("!result", "captured new client");
   SCOPED_CRASH_KEY_STRING1024("crbug396028223", "capturing_debug_info",
@@ -1887,7 +1890,7 @@ NavigationCapturingProcess::CapturedNewClient(
   CHECK(WebAppRegistrar::IsSupportedDisplayModeForNavigationCapture(
       app_display_mode));
   CHECK((app_display_mode != blink::mojom::DisplayMode::kBrowser) ==
-        (!!host_browser->app_controller()));
+        (!!web_app::AppBrowserController::From(host_browser)));
 
   if (isolated_web_app_navigation_) {
     CHECK(disposition_ == WindowOpenDisposition::NEW_FOREGROUND_TAB ||

@@ -265,7 +265,7 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
     webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
     Browser* app_browser = LaunchWebAppBrowser(app_id);
     DCHECK(app_browser->is_type_app());
-    DCHECK(app_browser->app_controller());
+    DCHECK(web_app::AppBrowserController::From(app_browser));
     tester.ExpectUniqueSample(kLaunchWebAppDisplayModeHistogram,
                               expected_launch_display, 1);
 
@@ -276,7 +276,8 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
                     .ManifestOrLoadedNoManifest()
                     .WaitAndFlushCommands());
 
-    const bool result = app_browser->app_controller()->HasMinimalUiButtons();
+    const bool result =
+        web_app::AppBrowserController::From(app_browser)->HasMinimalUiButtons();
     EXPECT_EQ(
         result,
         EvalJs(web_contents,
@@ -503,8 +504,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     Browser* app_browser = LaunchWebAppBrowser(app_id);
 
     EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
-    EXPECT_EQ(SkColorSetA(theme_color, SK_AlphaOPAQUE),
-              app_browser->app_controller()->GetThemeColor());
+    EXPECT_EQ(
+        SkColorSetA(theme_color, SK_AlphaOPAQUE),
+        web_app::AppBrowserController::From(app_browser)->GetThemeColor());
     test::UninstallWebApp(profile(), app_id);
   }
   {
@@ -515,7 +517,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ThemeColor) {
     Browser* app_browser = LaunchWebAppBrowser(app_id);
 
     EXPECT_EQ(GetAppIdFromApplicationName(app_browser->app_name()), app_id);
-    EXPECT_EQ(std::nullopt, app_browser->app_controller()->GetThemeColor());
+    EXPECT_EQ(
+        std::nullopt,
+        web_app::AppBrowserController::From(app_browser)->GetThemeColor());
   }
 }
 
@@ -582,7 +586,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
   {
     content::BackgroundColorChangeWaiter waiter(web_contents, SK_ColorWHITE);
     waiter.Wait();
-    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+    EXPECT_EQ(web_app::AppBrowserController::From(app_browser)
+                  ->GetBackgroundColor()
+                  .value(),
               SK_ColorWHITE);
   }
   content::AwaitDocumentOnLoadCompleted(web_contents);
@@ -593,12 +599,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
     EXPECT_TRUE(content::ExecJs(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
-    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+    EXPECT_EQ(web_app::AppBrowserController::From(app_browser)
+                  ->GetBackgroundColor()
+                  .value(),
               SK_ColorCYAN);
     SkColor active_tab_color;
-    app_browser->app_controller()->GetThemeSupplier()->GetColor(
-        ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
-        &active_tab_color);
+    web_app::AppBrowserController::From(app_browser)
+        ->GetThemeSupplier()
+        ->GetColor(ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
+                   &active_tab_color);
     EXPECT_EQ(active_tab_color, SK_ColorCYAN);
   }
 }
@@ -657,7 +666,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(DynamicColorSystemWebAppBrowserTest, DISABLED_Colors) {
   const webapps::AppId app_id = WaitForSwaInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  auto* app_controller = app_browser->app_controller();
+  auto* app_controller = web_app::AppBrowserController::From(app_browser);
   auto theme_color = app_controller->GetThemeColor().value();
   auto bg_color = app_controller->GetBackgroundColor().value();
   if (UseSystemThemeColor()) {
@@ -854,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
 
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_NE(app_browser, nullptr);
-  EXPECT_TRUE(app_browser->app_controller());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
@@ -1020,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInApp) {
   const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   NavigateViaLinkClickToURLAndWait(app_browser, app_url);
-  ASSERT_TRUE(app_browser->app_controller());
+  ASSERT_TRUE(web_app::AppBrowserController::From(app_browser));
   NavigateAndCheckForToolbar(app_browser, GURL(kExampleURL), true);
 }
 
@@ -1032,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
   NavigateViaLinkClickToURLAndWait(app_browser, app_url);
   ui_test_utils::WaitForBrowserSetLastActive(app_browser);
-  ASSERT_TRUE(app_browser->app_controller());
+  ASSERT_TRUE(web_app::AppBrowserController::From(app_browser));
 
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   Browser* browser2 = ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
@@ -1108,10 +1117,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   EXPECT_TRUE(AppBrowserController::IsWebApp(popup_browser));
 
   // Toolbar should be shown, as the popup is out of scope.
-  EXPECT_TRUE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(popup_browser)
+                  ->ShouldShowCustomTabBar());
 
   // Skip animating the toolbar visibility.
-  popup_browser->app_controller()->UpdateCustomTabBarVisibility(false);
+  web_app::AppBrowserController::From(popup_browser)
+      ->UpdateCustomTabBarVisibility(false);
 
   // The popup window should be the size we specified.
   EXPECT_EQ(size, popup_browser->window()->GetContentsSize());
@@ -1144,10 +1155,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   EXPECT_TRUE(AppBrowserController::IsWebApp(popup_browser));
 
   // Toolbar should not be shown, as the popup is in scope.
-  EXPECT_FALSE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(popup_browser)
+                   ->ShouldShowCustomTabBar());
 
   // Skip animating the toolbar visibility.
-  popup_browser->app_controller()->UpdateCustomTabBarVisibility(false);
+  web_app::AppBrowserController::From(popup_browser)
+      ->UpdateCustomTabBarVisibility(false);
 
   // The popup window should be the size we specified.
   EXPECT_EQ(size, popup_browser->window()->GetContentsSize());
@@ -1174,7 +1187,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AboutBlankPWAPopup) {
   EXPECT_TRUE(popup_browser->is_type_app_popup());
 
   // Toolbar should not be shown, as about:blank app popups are a special case.
-  EXPECT_FALSE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(popup_browser)
+                   ->ShouldShowCustomTabBar());
 
   // Navigate to out of scope URL.
   const GURL offscope_url =
@@ -1183,13 +1197,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AboutBlankPWAPopup) {
 
   // Toolbar should be shown as the popup window has navigated to a URL that is
   // out of scope relative to the start URL of the original app.
-  EXPECT_TRUE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(popup_browser)
+                  ->ShouldShowCustomTabBar());
 
   // Navigate to in scope URL.
   NavigateViaLinkClickToURLAndWait(popup_browser, app_url);
 
   // Toolbar should not be shown.
-  EXPECT_FALSE(popup_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(popup_browser)
+                   ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWANavigatedToAboutBlank) {
@@ -1208,7 +1224,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWANavigatedToAboutBlank) {
 
   // Toolbar should be shown as app windows navigated to about:blank is not
   // considered a special case.
-  EXPECT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser)
+                  ->ShouldShowCustomTabBar());
 }
 
 // Test navigating to an out of scope url on the same origin causes the url
@@ -1220,7 +1237,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   // Toolbar should not be visible in the app.
-  ASSERT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  ASSERT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 
   // The installed PWA's scope is app.com:{PORT}/ssl,
   // so app.com:{PORT}/accessibility_fail.html is out of scope.
@@ -1228,7 +1246,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
   NavigateViaLinkClickToURLAndWait(app_browser, out_of_scope);
 
   // Location should be visible off scope.
-  ASSERT_TRUE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  ASSERT_TRUE(web_app::AppBrowserController::From(app_browser)
+                  ->ShouldShowCustomTabBar());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UpgradeWithoutCustomTabBar) {
@@ -1242,12 +1261,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, UpgradeWithoutCustomTabBar) {
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   NavigateViaLinkClickToURLAndWait(app_browser, secure_app_url);
 
-  EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
+  EXPECT_FALSE(web_app::AppBrowserController::From(app_browser)
+                   ->ShouldShowCustomTabBar());
 
   const GURL off_origin_url =
       embedded_https_test_server().GetURL("example.org", "/empty.html");
   NavigateViaLinkClickToURLAndWait(app_browser, off_origin_url);
-  EXPECT_EQ(app_browser->app_controller()->ShouldShowCustomTabBar(), true);
+  EXPECT_EQ(web_app::AppBrowserController::From(app_browser)
+                ->ShouldShowCustomTabBar(),
+            true);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OverscrollEnabled) {
@@ -2318,7 +2340,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, OriginTextRemoved) {
   const GURL app_url = GetInstallableAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
-  EXPECT_TRUE(app_browser->app_controller()->HasTitlebarAppOriginText());
+  EXPECT_TRUE(web_app::AppBrowserController::From(app_browser)
+                  ->HasTitlebarAppOriginText());
 }
 
 // Check that a subframe on a regular web page can navigate to a URL that
@@ -2490,8 +2513,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowControlsOverlay) {
   EXPECT_EQ(DisplayMode::kWindowControlsOverlay, app_display_mode_override[0]);
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  EXPECT_EQ(true,
-            app_browser->app_controller()->AppUsesWindowControlsOverlay());
+  EXPECT_EQ(true, web_app::AppBrowserController::From(app_browser)
+                      ->AppUsesWindowControlsOverlay());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestShareTarget) {
@@ -2680,9 +2703,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Unframed, Unframed) {
   EXPECT_EQ(DisplayMode::kUnframed, app_display_mode_override[0]);
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
-  app_browser->app_controller()->SetIsolatedWebAppTrueForTesting();
+  web_app::AppBrowserController::From(app_browser)
+      ->SetIsolatedWebAppTrueForTesting();
 
-  EXPECT_TRUE(app_browser->app_controller()->AppUsesUnframedMode());
+  EXPECT_TRUE(
+      web_app::AppBrowserController::From(app_browser)->AppUsesUnframedMode());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed, TabbedDisplayOverride) {

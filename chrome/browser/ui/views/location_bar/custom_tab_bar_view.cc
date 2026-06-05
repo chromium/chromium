@@ -354,7 +354,7 @@ void CustomTabBarView::UpdateContents() {
   // If the toolbar should not be shown don't update the UI, as the toolbar may
   // be animating out and it looks messy.
   web_app::AppBrowserController* const app_controller =
-      browser_->app_controller();
+      web_app::AppBrowserController::From(browser_);
   if (app_controller && !app_controller->ShouldShowCustomTabBar()) {
     return;
   }

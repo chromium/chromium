@@ -571,7 +571,7 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
              const auto data = GetStorageService(browser)->ReadPromoData(
                  kFeaturePromoLifecycleTestPromo);
              return data->shown_for_keys.contains(
-                 browser->app_controller()->app_id());
+                 web_app::AppBrowserController::From(browser)->app_id());
            }))
         .SetDescription("CheckShownForApp()");
   }
