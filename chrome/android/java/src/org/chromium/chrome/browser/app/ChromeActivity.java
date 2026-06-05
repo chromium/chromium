@@ -1458,16 +1458,21 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return mActorPipController;
         }
 
-        mActorPipController =
-                new ActorPictureInPictureController(
-                        this,
-                        () -> mTabModelProfileSupplier.get(),
-                        () -> findViewById(android.R.id.content),
-                        getTabModelSelectorSupplier(),
-                        this::exitOverviewModeOnActorPiPExpand,
-                        this::toggleGlic,
-                        getLastNormalSizeBeforeEnteringActorPiP(),
-                        this::onActorPictureInPictureChanged);
+        try {
+            mActorPipController =
+                    new ActorPictureInPictureController(
+                            this,
+                            () -> mTabModelProfileSupplier.get(),
+                            () -> findViewById(android.R.id.content),
+                            getTabModelSelectorSupplier(),
+                            this::exitOverviewModeOnActorPiPExpand,
+                            this::toggleGlic,
+                            getLastNormalSizeBeforeEnteringActorPiP(),
+                            this::onActorPictureInPictureChanged);
+        } catch (RuntimeException e) {
+            Log.w(TAG, "Activity does not support Picture-in-Picture", e);
+            return null;
+        }
         return mActorPipController;
     }
 
