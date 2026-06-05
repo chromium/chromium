@@ -627,6 +627,11 @@ void RenderWidgetHostViewAura::HandleBoundsInRootChanged() {
 }
 
 void RenderWidgetHostViewAura::ParentHierarchyChanged() {
+  // The window is being destroyed, so just stop observing the position.
+  if (window_->is_destroying()) {
+    position_in_root_observer_.reset();
+    return;
+  }
   if (window_->parent()) {
     // Track changes of the window relative to the root. This is done to snap
     // `window_` to a pixel boundary, which could change when the bounds
@@ -3300,7 +3305,9 @@ void RenderWidgetHostViewAura::DetachFromInputMethod(bool is_removed) {
   if (input_method) {
     input_method->DetachTextInputClient(this);
 #if BUILDFLAG(IS_CHROMEOS)
-    wm::RestoreWindowBoundsOnClientFocusLost(window_->GetToplevelWindow());
+    if (!window_->is_destroying()) {
+      wm::RestoreWindowBoundsOnClientFocusLost(window_->GetToplevelWindow());
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
