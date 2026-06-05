@@ -2360,9 +2360,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kSessionRestoreTurnOffFromSessionInfoBarTimesShown);
   profile_prefs->ClearPref(kSessionRestorePrefChanged);
 
-  privacy_sandbox::PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
-      profile_prefs);
-
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(profile_prefs);
 

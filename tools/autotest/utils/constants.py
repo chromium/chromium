@@ -32,7 +32,6 @@ TEST_TARGET_ALLOWLIST: list[str] = [
     '//chrome/browser/glic/e2e_test:glic_internal_e2e_interactive_ui_tests',
     '//chrome/browser/mac:install_sh_test',
     '//chrome/browser/metrics/perf:profile_provider_unittest',
-    '//chrome/browser/privacy_sandbox/notice:fuzz_tests',
     '//chrome/browser/web_applications:web_application_fuzztests',
     '//chromecast/media/base:video_plane_controller_test',
     '//chromecast/metrics:cast_metrics_unittest',

@@ -95,17 +95,6 @@ struct NoticeStorageData {
   std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
 };
 
-// Stores pre-migration interactions on a notice in the v1 schema.
-struct V1MigrationData {
-  int schema_version = 0;
-  NoticeActionTaken notice_action_taken = NoticeActionTaken::kNotSet;
-  base::Time notice_action_taken_time;
-  base::Time notice_last_shown;
-
-  static void RegisterJSONConverter(
-      base::JSONValueConverter<V1MigrationData>* converter);
-};
-
 std::string GetNoticeActionStringFromEvent(
     notice::mojom::PrivacySandboxNoticeEvent event);
 
@@ -151,16 +140,6 @@ class PrivacySandboxNoticeStorage : public NoticeStorage {
 
   void RecordEvent(const Notice& notice,
                    notice::mojom::PrivacySandboxNoticeEvent event) override;
-
-  // Migration functions.
-
-  // Updates fields to schema version 2.
-  // TODO(crbug.com/392088228): Remove this once deprecation of old V1 fields is
-  // complete.
-  static void UpdateNoticeSchemaV2(PrefService* pref_service);
-
-  // Migrates fields in the notice data v1 schema to the notice data v2 schema.
-  static NoticeStorageData ToV2Schema(const V1MigrationData& data_v1);
 
  private:
   raw_ptr<PrefService> pref_service_;

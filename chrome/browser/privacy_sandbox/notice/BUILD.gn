@@ -136,19 +136,6 @@ if (!is_android) {
   }
 }
 
-test("fuzz_tests") {
-  sources = [ "notice_storage_fuzztest.cc" ]
-  fuzztests = [
-    "PrivacySandboxNoticeStorageFuzzTest.CheckConvertsV1SchemaSuccessfully",
-  ]
-  deps = [
-    ":core",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
-}
-
 source_set("test_support") {
   testonly = true
   sources = [

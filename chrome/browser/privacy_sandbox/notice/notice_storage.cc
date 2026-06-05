@@ -51,11 +51,6 @@ constexpr char kEventKey[] = "event";
 // Key value in the dict entry contained within `events`
 constexpr char kTimestampKey[] = "timestamp";
 
-// V1 Fields - DEPRECATED
-constexpr char kNoticeActionTakenKey[] = "notice_action_taken";
-constexpr char kNoticeActionTakenTimeKey[] = "notice_action_taken_time";
-constexpr char kNoticeLastShownKey[] = "notice_last_shown";
-
 // --- Histogramming helpers ---
 constexpr char kHistogramPrefix[] = "PrivacySandbox.Notice.";
 
@@ -125,11 +120,6 @@ base::DictValue BuildDictEntryEvent(Event event,
       .Set(kTimestampKey, base::TimeToValue(event_time));
 }
 
-base::DictValue BuildDictEntryEvent(NoticeEventTimestampPair* pair) {
-  CHECK(pair);
-  return BuildDictEntryEvent(pair->event, pair->timestamp);
-}
-
 bool MaybeValueToTime(const base::Value* value, base::Time* time) {
   if (!value || !value->is_string()) {
     return false;
@@ -155,31 +145,6 @@ bool MaybeValueToEnum(const base::Value* value, T* output) {
   }
   *output = static_cast<T>(int_value);
   return true;
-}
-
-void PopulateV2NoticeData(PrefService* pref_service,
-                          std::string_view notice,
-                          const NoticeStorageData& data) {
-  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
-  base::DictValue* dict = update->EnsureDict(notice);
-  dict->Set(kSchemaVersionKey, data.schema_version);
-  if (data.notice_events.empty()) {
-    return;
-  }
-  base::ListValue* event_list = dict->EnsureList(kEventsKey);
-  for (const auto& event_ptr : data.notice_events) {
-    event_list->Append(BuildDictEntryEvent(event_ptr.get()));
-  }
-}
-
-void MaybeEraseV1Fields(PrefService* pref_service, std::string_view notice) {
-  ScopedDictPrefUpdate update(pref_service, kNoticeDataPath);
-  base::DictValue* dict = update->FindDict(notice);
-  CHECK(dict);
-  for (const char* key : {kNoticeActionTakenKey, kNoticeActionTakenTimeKey,
-                          kNoticeLastShownKey}) {
-    dict->Remove(key);
-  }
 }
 
 // Emits histograms for new events, comparing against existing notice_data for
@@ -322,21 +287,6 @@ void NoticeStorageData::RegisterJSONConverter(
       kEventsKey, &NoticeStorageData::notice_events);
 }
 
-void V1MigrationData::RegisterJSONConverter(
-    base::JSONValueConverter<V1MigrationData>* converter) {
-  converter->RegisterIntField(kSchemaVersionKey,
-                              &V1MigrationData::schema_version);
-  converter->RegisterCustomValueField<NoticeActionTaken>(
-      kNoticeActionTakenKey, &V1MigrationData::notice_action_taken,
-      &MaybeValueToEnum<NoticeActionTaken>);
-  converter->RegisterCustomValueField<base::Time>(
-      kNoticeActionTakenTimeKey, &V1MigrationData::notice_action_taken_time,
-      &MaybeValueToTime);
-  converter->RegisterCustomValueField<base::Time>(
-      kNoticeLastShownKey, &V1MigrationData::notice_last_shown,
-      &MaybeValueToTime);
-}
-
 // PrivacySandboxNoticeStorage definitions.
 void PrivacySandboxNoticeStorage::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -374,59 +324,6 @@ std::optional<Event> NoticeActionToEvent(NoticeActionTaken action) {
       return kSettings;
     default:
       return std::nullopt;
-  }
-}
-
-// static
-NoticeStorageData PrivacySandboxNoticeStorage::ToV2Schema(
-    const V1MigrationData& data_v1) {
-  std::vector<std::unique_ptr<NoticeEventTimestampPair>> notice_events;
-
-  if (data_v1.notice_last_shown != base::Time()) {
-    notice_events.emplace_back(std::make_unique<NoticeEventTimestampPair>(
-        NoticeEventTimestampPair{kShown, data_v1.notice_last_shown}));
-  }
-
-  if (auto notice_event = NoticeActionToEvent(data_v1.notice_action_taken)) {
-    notice_events.emplace_back(
-        std::make_unique<NoticeEventTimestampPair>(NoticeEventTimestampPair{
-            *notice_event, data_v1.notice_action_taken_time}));
-  }
-
-  NoticeStorageData notice_data;
-  notice_data.schema_version = 2;
-  notice_data.notice_events = std::move(notice_events);
-  return notice_data;
-}
-
-// static
-void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
-    PrefService* pref_service) {
-  const auto* notice_data_pref =
-      pref_service->GetUserPrefValue(kNoticeDataPath);
-  if (!notice_data_pref) {
-    return;
-  }
-
-  const base::DictValue* data = notice_data_pref->GetIfDict();
-
-  if (!data) {
-    return;
-  }
-
-  for (const auto [notice, notice_value] : *data) {
-    auto data_v1 = ConvertTo<V1MigrationData>(&notice_value);
-    if (!data_v1) {
-      continue;
-    }
-
-    if (data_v1->schema_version == 1) {
-      PopulateV2NoticeData(pref_service, notice, ToV2Schema(*data_v1));
-    }
-
-    // We always erase V1 fields. Even if the current version isn't V1. This is
-    // because the previously migration to V2 didn't erase the V1 fields.
-    MaybeEraseV1Fields(pref_service, notice);
   }
 }
 
