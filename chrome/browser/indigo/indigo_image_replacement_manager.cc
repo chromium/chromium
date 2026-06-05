@@ -226,6 +226,19 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
   GenerateReplacementImage();
 }
 
+IndigoPageActionController*
+IndigoImageReplacementManager::GetIndigoPageActionController() {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  if (!tab) {
+    return nullptr;
+  }
+  auto* controller = indigo::IndigoPageActionController::From(tab);
+  CHECK(controller);
+  return controller;
+}
+
 void IndigoImageReplacementManager::GenerateReplacementImage() {
   CHECK(primary_receiver_id_.has_value());
   CHECK(!primary_original_image_webp_bytes_.empty());
@@ -255,14 +268,6 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 
   cancel_active_request_.Reset();
 
-  IndigoPageActionController* controller = nullptr;
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
-  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    controller = indigo::IndigoPageActionController::From(tab);
-    CHECK(controller);
-  }
-
   if (!result.has_value()) {
     DVLOG(1) << "Generate image failed: " << result.error().message;
     base::UmaHistogramEnumeration(
@@ -271,9 +276,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
     base::RecordAction(
         base::UserMetricsAction("Indigo.Transformation.Failure"));
     Reset(ResetType::kResetReplacementsAndContentScript);
-    if (controller) {
-      controller->ShowInvocationErrorToast();
-    }
+    ShowErrorToast();
     return;
   }
 
@@ -288,7 +291,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
     image_replacement->ReplacementImageURLReady();
   }
 
-  if (controller) {
+  if (auto* controller = GetIndigoPageActionController()) {
     controller->ShowToolbar();
   }
 }
@@ -308,16 +311,19 @@ void IndigoImageReplacementManager::OnReceiverDisconnected() {
     DVLOG(1) << "Primary image replacement disconnected before receiving "
                 "generated image";
     Reset(ResetType::kResetReplacementsAndContentScript);
+    ShowErrorToast();
   }
 }
 
 void IndigoImageReplacementManager::Reset(ResetType reset_type) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
-  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    auto* controller = indigo::IndigoPageActionController::From(tab);
-    CHECK(controller);
+  if (auto* controller = GetIndigoPageActionController()) {
     controller->Reset(reset_type);
+  }
+}
+
+void IndigoImageReplacementManager::ShowErrorToast() {
+  if (auto* controller = GetIndigoPageActionController()) {
+    controller->ShowInvocationErrorToast();
   }
 }
 

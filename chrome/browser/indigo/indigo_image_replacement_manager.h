@@ -87,12 +87,14 @@ class IndigoImageReplacementManager
 
   explicit IndigoImageReplacementManager(content::Page& page);
 
+  IndigoPageActionController* GetIndigoPageActionController();
   void GenerateReplacementImage();
   void OnReplacementImageGenerated(
       base::expected<GeneratedImage, GenerateImageError> result);
   void CancelActiveRequest();
   void OnReceiverDisconnected();
   void Reset(ResetType reset_type);
+  void ShowErrorToast();
 
   mojo::ReceiverSet<blink::mojom::ImageReplacementHost, IndigoImageReplacement>
       receivers_;
