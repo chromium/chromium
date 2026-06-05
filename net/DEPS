@@ -21,74 +21,74 @@ include_rules = [
 
 specific_include_rules = {
   # Within net, only used by file: requests.
-  "directory_lister(\.cc|_unittest\.cc)": [
+  "directory_lister(\\.cc|_unittest\\.cc)": [
     "+base/i18n",
   ],
 
   # Functions largely not used by the rest of net.
-  "directory_listing\.cc": [
+  "directory_listing\\.cc": [
     "+base/i18n",
   ],
 
   # Within net, only used by file: requests.
-  "filename_util_icu\.cc": [
+  "filename_util_icu\\.cc": [
     "+base/i18n/file_util_icu.h",
   ],
 
   # Consolidated string functions that depend on icu.
-  "net_string_util_icu\.cc": [
+  "net_string_util_icu\\.cc": [
     "+base/i18n/case_conversion.h",
     "+base/i18n/i18n_constants.h",
     "+base/i18n/icu_string_conversions.h",
     "+third_party/icu/source/common/unicode/ucnv.h"
   ],
 
-  "websocket_channel\.h": [
+  "websocket_channel\\.h": [
     "+base/i18n",
   ],
 
-  "brotli_source_stream\.cc": [
+  "brotli_source_stream\\.cc": [
     "+third_party/brotli",
   ],
 
-  "cert_compression\.cc": [
+  "cert_compression\\.cc": [
     "+third_party/brotli",
   ],
 
-  "fuzzer_test_support.cc": [
+  "fuzzer_test_support\\.cc": [
     "+base/i18n",
   ],
 
-  "zstd_source_stream\.cc": [
+  "zstd_source_stream\\.cc": [
     "+third_party/zstd",
   ],
 
   # CDT cache compression: zstd decompression of compressed cache entry bodies.
-  "cache_body_decompressor\.(cc|h)": [
+  "cache_body_decompressor\\.(cc|h)": [
     "+third_party/zstd",
   ],
 
   # CDT cache compression: zstd compression at cache-write time.
-  "cache_body_compressor\.(cc|h)": [
+  "cache_body_compressor\\.(cc|h)": [
     "+third_party/zstd",
   ],
 
   # Tests call ZSTD_compress() to produce fixtures for zstd read-path coverage.
-  "http_cache_unittest\.cc": [
+  "http_cache_unittest\\.cc": [
     "+third_party/zstd",
   ],
 
   # Unit test for the cache compressor uses ZSTD_decompressStream() to verify
   # round-trip correctness.
-  "cache_body_compressor_unittest\.cc": [
+  "cache_body_compressor_unittest\\.cc": [
     "+third_party/zstd",
   ],
 
-  "cookie_partition_key\.(cc|h)": [
+  "cookie_partition_key\\.(cc|h)": [
     "+mojo/public/cpp/bindings/default_construct_tag.h",
   ],
 
-  "proxy_config_service_linux.cc": [
+  "proxy_config_service_linux\\.cc": [
     "+ui/base/glib",
   ],
 
@@ -101,16 +101,16 @@ specific_include_rules = {
   ],
 
   # Fuzzers may also be included in unit tests.
-  ".*test\.cc": [
+  ".*test\\.cc": [
     "+third_party/fuzztest",
   ],
 
   # WinHTTP pre-check helper uses ScopedHInternet for RAII handle management.
-  "websocket_end_to_end_test\.cc": [
+  "websocket_end_to_end_test\\.cc": [
     "+components/winhttp/scoped_hinternet.h",
   ],
 
-  "cookie_monster_unittest.cc": [
+  "cookie_monster_unittest\\.cc": [
     "+base/i18n/time_formatting.h",
   ],
 }
