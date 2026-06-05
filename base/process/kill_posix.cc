@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "base/logging.h"
+#include "base/memory/self_deleting.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_iterator.h"
 #include "base/threading/platform_thread.h"
@@ -125,14 +126,19 @@ bool CleanupProcesses(const FilePath::StringType& executable_name,
 
 namespace {
 
-class BackgroundReaper : public PlatformThread::Delegate {
+class BackgroundReaper : public PlatformThread::Delegate, public SelfDeleting {
  public:
-  BackgroundReaper(base::Process child_process, const TimeDelta& wait_time)
-      : child_process_(std::move(child_process)), wait_time_(wait_time) {}
+  BackgroundReaper(Process child_process,
+                   const TimeDelta& wait_time,
+                   SelfDeletingPassKey key)
+      : SelfDeleting(key),
+        child_process_(std::move(child_process)),
+        wait_time_(wait_time) {}
 
   BackgroundReaper(const BackgroundReaper&) = delete;
   BackgroundReaper& operator=(const BackgroundReaper&) = delete;
 
+  // PlatformThread::Delegate:
   void ThreadMain() override {
     if (!wait_time_.is_zero()) {
       child_process_.WaitForExitWithTimeout(wait_time_, nullptr);
@@ -143,6 +149,9 @@ class BackgroundReaper : public PlatformThread::Delegate {
   }
 
  private:
+  // Self-deleting.
+  ~BackgroundReaper() override = default;
+
   Process child_process_;
   const TimeDelta wait_time_;
 };
@@ -157,7 +166,7 @@ void EnsureProcessTerminated(Process process) {
   }
 
   PlatformThread::CreateNonJoinable(
-      0, new BackgroundReaper(std::move(process), Seconds(2)));
+      0, MakeSelfDeleting<BackgroundReaper>(std::move(process), Seconds(2)));
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -170,7 +179,7 @@ void EnsureProcessGetsReaped(Process process) {
   }
 
   PlatformThread::CreateNonJoinable(
-      0, new BackgroundReaper(std::move(process), TimeDelta()));
+      0, MakeSelfDeleting<BackgroundReaper>(std::move(process), TimeDelta()));
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
