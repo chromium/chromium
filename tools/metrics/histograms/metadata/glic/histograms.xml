@@ -473,6 +473,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.CookieSynchronization.FailureByTrigger"
+    enum="GlicCookieSyncTrigger" expires_after="2027-04-23">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the trigger that initiated a failed cookie synchronization operation
+    for Glic. Recorded when the multilogin operation completes with failure in
+    OnAuthFinished, or when it times out in OnTimeout, for each trigger that
+    requested a sync.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CookieSynchronization.Latency.Error" units="ms"
     expires_after="2027-04-23">
   <owner>harringtond@chromium.org</owner>
@@ -503,6 +515,17 @@ chromium-metrics-reviews@google.com.
     Records the result of Glic cookie synchronization operation. Recorded when
     the operation completes with success or failure, or upon destruction when a
     sync is in progress.
+  </summary>
+</histogram>
+
+<histogram name="Glic.CookieSynchronization.SuccessByTrigger"
+    enum="GlicCookieSyncTrigger" expires_after="2027-04-23">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the trigger that initiated a successful cookie synchronization
+    operation for Glic. Recorded when the multilogin operation completes with
+    success in OnAuthFinished, for each trigger that requested a sync.
   </summary>
 </histogram>
 

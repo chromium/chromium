@@ -52,6 +52,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
+#include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
@@ -1240,7 +1241,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void SyncCookies(SyncCookiesCallback callback) override {
-    glic_service_->GetAuthController().ForceSyncCookies(std::move(callback));
+    glic_service_->GetAuthController().ForceSyncCookies(
+        GlicCookieSyncTrigger::kGlicClient, std::move(callback));
   }
 
   void ClientErrorDialogStateChanged(

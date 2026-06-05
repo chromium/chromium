@@ -43,23 +43,18 @@ class FakeGlicCookieSynchronizer : public GlicCookieSynchronizer {
   int copy_cookies_called_count() const { return copy_cookies_called_count_; }
   void set_sync_result(bool result) { sync_result_ = result; }
 
-  void WaitForSyncToComplete() {
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
+  void WaitForSyncToComplete() { std::ignore = sync_complete_future_.Take(); }
 
  private:
   void RunCallback(base::OnceCallback<void(bool)> callback) {
     std::move(callback).Run(sync_result_);
-    if (quit_closure_) {
-      std::move(quit_closure_).Run();
-    }
+    sync_complete_future_.SetValue(true);
   }
 
   int copy_cookies_called_count_ = 0;
   bool sync_result_ = true;
-  base::OnceClosure quit_closure_;
+  base::test::TestFuture<bool> sync_complete_future_{
+      base::test::TestFutureMode::kQueue};
   base::WeakPtrFactory<FakeGlicCookieSynchronizer> weak_ptr_factory_{this};
 };
 
@@ -105,10 +100,34 @@ TEST_F(AuthControllerTest, SkipCookieSyncOnOpen_Disabled) {
   auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
 
   EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+  synchronizer_->WaitForSyncToComplete();
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
   histogram_tester.ExpectUniqueSample(
       "Glic.Auth.CheckAuthBeforeLoadOutcome",
       glic::CheckAuthBeforeLoadOutcome::kSyncAttempted, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kCheckAuthBeforeLoad, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.CookieSynchronization.FailureByTrigger", 0);
+}
+
+TEST_F(AuthControllerTest, CookieSyncFailureHistograms) {
+  base::HistogramTester histogram_tester;
+  synchronizer_->set_sync_result(false);
+
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+
+  EXPECT_EQ(future.Get(),
+            mojom::PrepareForClientResult::kErrorResyncingCookies);
+  synchronizer_->WaitForSyncToComplete();
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CookieSynchronization.FailureByTrigger",
+      GlicCookieSyncTrigger::kCheckAuthBeforeLoad, 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.CookieSynchronization.SuccessByTrigger", 0);
 }
 
 TEST_F(AuthControllerTest, SkipCookieSyncOnOpen_Enabled) {
@@ -140,6 +159,7 @@ TEST_F(AuthControllerTest,
 
 TEST_F(AuthControllerTest, CookieSyncOnTokenChange_PrimaryAccountChanged) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  base::HistogramTester histogram_tester;
 
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
 
@@ -148,10 +168,12 @@ TEST_F(AuthControllerTest, CookieSyncOnTokenChange_PrimaryAccountChanged) {
   identity_test_env_->MakePrimaryAccountAvailable(
       "user2@gmail.com", signin::ConsentLevel::kSignin);
 
-  // Expect 1 or more calls because both OnPrimaryAccountChanged and
-  // OnErrorStateOfRefreshTokenUpdatedForAccount may be triggered when setting
-  // a new account.
+  synchronizer_->WaitForSyncToComplete();
+
   EXPECT_GT(synchronizer_->copy_cookies_called_count(), 0);
+  histogram_tester.ExpectBucketCount(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kOnPrimaryAccountChanged, 1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -205,6 +227,7 @@ TEST_F(AuthControllerTest,
 TEST_F(AuthControllerTest,
        CookieSyncOnTokenChange_SetRefreshTokenForAccountTriggerSync) {
   feature_list_.InitAndEnableFeature(features::kGlicCookieSyncOnTokenChange);
+  base::HistogramTester histogram_tester;
 
   CoreAccountInfo account_info =
       identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
@@ -213,6 +236,9 @@ TEST_F(AuthControllerTest,
   identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
   synchronizer_->WaitForSyncToComplete();
   ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.CookieSynchronization.SuccessByTrigger",
+      GlicCookieSyncTrigger::kOnRefreshTokenUpdated, 1);
 }
 
 TEST_F(AuthControllerTest,
@@ -235,6 +261,10 @@ TEST_F(AuthControllerTest,
   // Both calls should eventually succeed.
   EXPECT_EQ(future1.Get(), mojom::PrepareForClientResult::kSuccess);
   EXPECT_EQ(future2.Get(), mojom::PrepareForClientResult::kSuccess);
+
+  // Both syncs should have completed.
+  synchronizer_->WaitForSyncToComplete();
+  synchronizer_->WaitForSyncToComplete();
 }
 
 TEST_F(AuthControllerTest, CookieSyncOnError_Disabled) {
@@ -356,6 +386,36 @@ TEST_F(AuthControllerTest, CookieSyncOnError_TransientError) {
   auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
   EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
   EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+}
+
+TEST_F(AuthControllerTest, CookieSyncOnOpenEvenIfNoSyncNeeded_Enabled) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange,
+                            features::kGlicCookieSyncOnOpenEvenIfNoSyncNeeded},
+      /*disabled_features=*/{});
+
+  // Prepare a successful sync beforehand to mark needs_sync as false.
+  CoreAccountInfo account_info =
+      identity_test_env_->identity_manager()->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+  identity_test_env_->SetRefreshTokenForAccount(account_info.account_id);
+  synchronizer_->WaitForSyncToComplete();
+  ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  // Call CheckAuthBeforeLoad. Since kGlicCookieSyncOnOpenEvenIfNoSyncNeeded is
+  // enabled, it should trigger another sync in the background immediately.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+
+  // We should not wait for the background sync to finish before the load
+  // callback returns.
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+
+  // A new sync should have been triggered in the background.
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
+
+  // Wait for the background sync to complete to cleanup.
+  synchronizer_->WaitForSyncToComplete();
 }
 
 }  // namespace glic

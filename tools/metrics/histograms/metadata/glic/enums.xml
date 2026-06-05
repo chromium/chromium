@@ -154,6 +154,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic_cookie_synchronizer.h:GlicCookieSyncResult) -->
 
+<!-- LINT.IfChange(GlicCookieSyncTrigger) -->
+
+<enum name="GlicCookieSyncTrigger">
+  <int value="0" label="CheckAuthBeforeLoad"/>
+  <int value="1" label="CheckAuthBeforeLoadForced"/>
+  <int value="2" label="OnPrimaryAccountChanged"/>
+  <int value="3" label="OnRefreshTokenUpdated"/>
+  <int value="4" label="MaybeSyncCookiesOnError"/>
+  <int value="5" label="GlicClient"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/auth_controller.h:GlicCookieSyncTrigger) -->
+
 <!-- LINT.IfChange(GlicDaisyChainFirstAction) -->
 
 <enum name="GlicDaisyChainFirstAction">

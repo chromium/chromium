@@ -91,6 +91,7 @@ BASE_DECLARE_FEATURE(kGlicCookieSyncOnTokenChange);
 BASE_DECLARE_FEATURE(kGlicCookieSyncOnError);
 extern const base::FeatureParam<base::TimeDelta>
     kGlicCookieSyncOnErrorMinInterval;
+BASE_DECLARE_FEATURE(kGlicCookieSyncOnOpenEvenIfNoSyncNeeded);
 BASE_DECLARE_FEATURE(kGlicShareImageViaInvoke);
 
 BASE_DECLARE_FEATURE(kGlicWebClientLoadTimes);
