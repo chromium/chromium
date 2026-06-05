@@ -107,7 +107,9 @@ class FirstRunFinishOrContinuePixelTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunFinishOrContinuePixelTest, InvokeUi_default) {
+// Flaky: crbug.com/520054743
+IN_PROC_BROWSER_TEST_P(FirstRunFinishOrContinuePixelTest,
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
