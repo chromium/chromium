@@ -137,5 +137,40 @@ TEST_F(ManualFillVirtualCardCacheTest, OriginIsolated) {
   EXPECT_EQ(nullptr, cache()->GetUnmaskedCard("test_server_id", origin_b));
 }
 
+// Tests that consecutive caching of the same or different virtual cards
+// with the same or different origins succeeds safely without crashes or
+// assertions.
+TEST_F(ManualFillVirtualCardCacheTest, ConsecutiveCachingSucceedsSafely) {
+  CreditCard card = GetVirtualCard();
+  card.set_server_id("test_server_id");
+
+  url::Origin origin_a = url::Origin::Create(GURL("https://a.com"));
+  url::Origin origin_b = url::Origin::Create(GURL("https://b.com"));
+
+  // Cache card for Origin A.
+  cache()->CacheUnmaskedCard(card, origin_a);
+
+  // Overwrite the card cache for the same card with the same origin
+  // (simulates consecutive or duplicate unmasking prompts).
+  // This must succeed gracefully without hitting assertions or crashes.
+  CreditCard updated_card = card;
+  updated_card.SetNumber(u"4111111111111111");
+  cache()->CacheUnmaskedCard(updated_card, origin_a);
+
+  const CreditCard* retrieved =
+      cache()->GetUnmaskedCard("test_server_id", origin_a);
+  ASSERT_NE(nullptr, retrieved);
+  EXPECT_EQ(retrieved->number(), u"4111111111111111");
+
+  // Cache the card for a different origin
+  // (simulates an interleaved cross-origin unmasking flow).
+  // This must succeed safely and maintain origin isolation.
+  cache()->CacheUnmaskedCard(card, origin_b);
+
+  const CreditCard* retrieved_b =
+      cache()->GetUnmaskedCard("test_server_id", origin_b);
+  ASSERT_NE(nullptr, retrieved_b);
+  EXPECT_EQ(retrieved_b->number(), card.number());
+}
 
 }  // namespace
