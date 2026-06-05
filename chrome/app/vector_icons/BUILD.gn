@@ -163,7 +163,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "guardian.icon",
     "guardian_old.icon",
     "hardware_computer_old.icon",
-    "hardware_computer_small_old.icon",
+    "hardware_computer_small_custom.icon",
     "hardware_smartphone_old.icon",
     "help_custom.icon",
     "help_menu_old.icon",
