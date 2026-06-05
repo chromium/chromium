@@ -6,6 +6,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("page_info") {
   public = [
+    "page_info_bubble_specification.h",
     "page_info_bubble_view.h",
     "page_info_bubble_view_base.h",
     "page_info_navigation_handler.h",
@@ -26,6 +27,7 @@ source_set("page_info") {
 
 source_set("impl") {
   sources = [
+    "page_info_bubble_specification.cc",
     "page_info_bubble_view.cc",
     "page_info_bubble_view_base.cc",
   ]

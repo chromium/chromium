@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
-#include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
 #include "content/public/browser/web_contents.h"
@@ -38,7 +37,7 @@ void DocumentPipHost::CreatePipWidget(
   child_web_contents->SetDelegate(this);
 
   widget_delegate_ = std::make_unique<DocumentPipWidgetDelegate>(
-      GetProfile(), std::move(child_web_contents));
+      this, std::move(child_web_contents));
 
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
@@ -53,8 +52,6 @@ void DocumentPipHost::CreatePipWidget(
   params.bounds = gfx::Rect(pip_options_.width, pip_options_.height);
 
   widget_ = std::make_unique<views::Widget>();
-  widget_->SetProperty(kPipDisallowReturnToOpenerKey,
-                       pip_options_.disallow_return_to_opener);
   widget_->Init(std::move(params));
   // Intercept external close paths (OS close button, DialogDelegate, etc.) so
   // they route through our teardown logic.
