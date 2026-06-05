@@ -317,6 +317,13 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="1214639335214075459">GPU donanımı video kodu çözmeyi etkinleştir</translation>
 <translation id="1214942205301731697">Uzantılar sayfasında geliştirici modunun kullanılmasına izin verme</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
+<translation id="1217033439268053263">Bu politika kullanımdan kaldırılmıştır. Bu politikayı geçersiz kılan ve daha ayrıntılı ayarlamaya olanak tanıyan <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikasını kullanma seçeneğini değerlendirin.
+
+<ph name="YOUTUBE_PRODUCT_NAME" />Orta Düzey Kısıtlı Modu'nu zorlar ve kullanıcıların bu ayarı değiştirmesini engeller.
+
+Bu ayar etkinleştirilirse <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Kısıtlı Mod her zaman en azından Orta Düzey olacak şekilde zorunlu kılınır.
+
+Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph name="PRODUCT_NAME" /> tarafından <ph name="YOUTUBE_PRODUCT_NAME" /> Kısıtlı Mod zorunlu kılınmaz. Bununla birlikte, <ph name="YOUTUBE_PRODUCT_NAME" /> politikaları gibi harici politikalar Kısıtlı Mod'u zorunlu kılmaya devam edebilir.</translation>
 <translation id="1219027971768347970">Ses korumalı alanı için varsayılan yapılandırmayı kullan</translation>
 <translation id="1219036692926668273"><ph name="HAPPY_EYEBALLS_V3" /> algoritması kullanılıyor.</translation>
 <translation id="1221359380862872747">Demo girişinde belirtilen URL'leri yükle</translation>
@@ -559,6 +566,7 @@ Bu politika, Gizli modda geçerli değildir veya çalışmaz.</translation>
 <translation id="1417888712677507140">Farklı kaynaklı alt çerçevelerden tetiklenen JavaScript iletişim kutuları engellenir</translation>
 <translation id="1418387035898607074">Güvenilir kaynaklardan indirilen dosyalar için Güvenli Tarama kontrollerini atla</translation>
 <translation id="1419020637569060510">Yönetilen bir hesabın ChromeOS'te ikincil hesap olarak kullanılmasını kısıtla</translation>
+<translation id="1423311643274506889">Google Arama'da Güvenli Arama ve <ph name="YOUTUBE_PRODUCT_NAME" /> Kısıtlı Modu kullanımını en azından Orta Düzey olmaya zorla</translation>
 <translation id="1423359855587524289">Politika, Etkin seçeneğine ayarlanır veya ayarlanmadan bırakılırsa uygulama, iOS Bildirim Merkezi'nde bildirimleri sunmak için iOS'un "Hazırlayıcı" bildirim yetkilendirmesini kullanabilir.
 
 Politika, Devre Dışı seçeneğine ayarlanırsa uygulama hazırlayıcı bildirimleri kullanmaz.</translation>
@@ -2145,6 +2153,7 @@ Bu politika etkinleştirilir veya ayarlanmazsa kullanıcı, bir Google Fotoğraf
 <translation id="2393862222659066027">Bir URL listesi açıp son oturumu geri yükle</translation>
 <translation id="239416486107542256">F11 ayarları, ctrl ve üst karakter değiştiricileri içeren kısayolu kullanır</translation>
 <translation id="2394429297128584919">Sayfa kapatma işlemi sırasında sayfaların eş zamanlı XHR istekleri göndermesine izin verme</translation>
+<translation id="2398817690049129302"><ph name="YOUTUBE_PRODUCT_NAME" /> Güvenlik Modu'nu zorunlu kıl</translation>
 <translation id="2399987589969059485">Bu politikanın yapılandırılması, <ph name="PRODUCT_NAME" /> ürününde hangi varyasyonların uygulanmasına izin verileceğini belirtmeye olanak tanır.
 
       Varyasyonlar, halihazırda varolan özellikler arasından seçilenleri etkinleştirerek veya devre dışı bırakarak tarayıcının yeni bir sürümünü göndermeden <ph name="PRODUCT_NAME" /> ürününde değişiklikler sunmanın bir yolunu sağlar. Daha fazla bilgi için https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework sayfasına bakın.
@@ -2635,6 +2644,7 @@ zorunlu kılınmaz ve istekler engellenmez.
 <ph name="PRIVATE_NETWORK_ACCESS" /> kısıtlamaları için https://wicg.github.io/private-network-access/ sayfasına bakabilirsiniz.</translation>
 <translation id="2600005880585324062">Aynı sitedeki diğer kaynaklardan hangi kaynakların yaltılacağına <ph name="PRODUCT_NAME" /> karar versin.</translation>
 <translation id="26023406105317310">Kerberos hesaplarını yapılandır</translation>
+<translation id="2603163741218691337"><ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerinin silinmesini kısıtlama</translation>
 <translation id="2603237557651009842">Bu sitelerde WebPrinting API'yi engelle</translation>
 <translation id="2603382859270873566">PPB_VideoDecoder(Dev) API için desteği etkinleştir.</translation>
 <translation id="2604182581880595781">Ağ Üzerinde Dosya Paylaşımı ile ilgili politikaları yapılandırın.</translation>
@@ -3417,6 +3427,7 @@ Bu politika devre dışı olarak ayarlanırsa veya ayarlanmadan bırakılırsa k
 <translation id="3142410959002029864">Politika ayarlanırsa varsayılan dupleks yazdırma modu geçersiz kılınır. Mod kullanılamıyorsa bu politika yok sayılır.</translation>
 <translation id="3143203373436771188"><ph name="BASIC_EDITOR_NAME" /> tarafından işlenen Office dokümanlarına gidildiğinde bunları <ph name="BASIC_EDITOR_NAME" /> içinde aç</translation>
 <translation id="3144173889708944482"><ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_BLOCKLIST" /> seçiliyken <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanamayacağı belirlenir. Bu politikada listelenen kimlikler dışında kalan tüm yazıcılar kullanıcılara sağlanır. Kimliklerin, <ph name="DEVICE_PRINTERS_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
+<translation id="3144419820067745871"><ph name="YOUTUBE_PRODUCT_NAME" /> (135 sürümünden itibaren desteklenir)</translation>
 <translation id="3146711617256415776">Seç ve Dinle özelliğini kullanırken gelişmiş ağ metin okuma seslerine izin verme</translation>
 <translation id="315013437951136266"><ph name="IP_PROTECTION_NAME" /> özelliğini etkinleştirin.</translation>
 <translation id="3150351525324499342">Araç çubuğunda <ph name="PRODUCT_NAME" /> simgesini varsayılan olarak gösterme, kullanıcıların seçmesine izin ver</translation>
@@ -4310,6 +4321,7 @@ Bu politikayı Etkin değerine ayarlar veya ayarlamadan bırakırsanız kullanı
 Protected Audience API desteğinin sonlandırılmasıyla birlikte bu politikanın desteği de <ph name="PRODUCT_NAME" /> 144 sürümü itibarıyla sonlandırılmıştır.</translation>
 <translation id="3733014427925403568">Haftanın hangi gününde ara verileceği.</translation>
 <translation id="3736879847913515635">Kullanıcı yöneticisinde kişi eklemeyi etkinleştir</translation>
+<translation id="3741204225338304131">Minimum <ph name="YOUTUBE_PRODUCT_NAME" /> Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="3744984310825999317"><ph name="PEPPER_NAME" /> eklentisinin, donanım hızlandırmalı video kod çözme işlemi için yeni bir kod çözücü kullanmasına izin ver.</translation>
 <translation id="3749259744154402564">Desteklenmiyor</translation>
 <translation id="3749511622128647337">Ses çıkışını devre dışı bırak</translation>
@@ -5645,6 +5657,7 @@ Eski davranış: "beforeunload" komutunda "event.preventDefault()" çağrısı y
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="4624417808625504735">Bu sitelerde JavaScript'in JIT kullanmasını engelle</translation>
 <translation id="46321462262887935">Üst sıradaki tuşlara işlev tuşu olarak davran, ancak kullanıcının değişiklik yapmasına izin ver</translation>
+<translation id="4635757219046879316"><ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında en azından Orta Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="4636354638176939375">Gözetimli kullanıcı oluşturmayı devre dışı bırak</translation>
 <translation id="4637701328641064644">Bu politika, blob URL'lerinin getirme ve gezinme işlemleri sırasında bölümlendirilip bölümlendirilmeyeceğini kontrol eder.
 Bu politika Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa blob URL'leri bölümlendirilir.
@@ -6232,6 +6245,7 @@ Bu politika, kullanıcıların <ph name="PRODUCT_NAME" /> ürününde oturum aç
 
       Uygulamaları <ph name="PRODUCT_OS_NAME" /> rafına sabitlemek için <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> politikasına bakın.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
+<translation id="4947257516265472776"><ph name="YOUTUBE_PRODUCT_NAME" /> için Yüksek Düzey Kısıtlı Mod'u zorunlu kıl</translation>
 <translation id="494924690085329212">Android başlatılmışsa kullanıcı oturumu kapatıldığında cihazı yeniden başlat.</translation>
 <translation id="4950447493143157880">Yerleşik DNS istemcisini hiçbir zaman kullanma</translation>
 <translation id="4953541641325278286">Hiçbir sitenin kullanıcının boşta kalma durumunu algılamasına izin verme</translation>
@@ -6870,6 +6884,13 @@ katılmayan içeriklerin önceliğini düşürme) göre belirler.</translation>
       <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> özelliği, <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> isteği içinde tanımlanırsa tüm ekran yüzeyleri, kullanıcının açık izni gerekmeden otomatik olarak yakalanır.
       Politika ayarlanmazsa <ph name="AUTO_SELECT_ALL_SCREENS_NAME" />, hiçbir web uygulaması tarafından kullanılamaz.
 Bu politika, gizliliği iyileştirmek için <ph name="PRODUCT_NAME" /> 116 sürümünden itibaren dinamik yenilemeyi desteklemeyecektir. Dolayısıyla kullanıcılar, oturum başlangıcında izin verilmediyse giriş yaptıktan sonra başka hiçbir sayfanın, ekran görüntüsü almayacağından emin olabilir.</translation>
+<translation id="5351894784463048975">Bu politika kullanımda kaldırılmıştır. Lütfen bunun yerine <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> ve <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> politikalarını kullanın. <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> veya (kullanımdan kaldırılan) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" /> politikası ayarlanırsa bu politika yoksayılır.
+
+      Google Web Arama'daki sorguları Güvenli Arama etkin olarak yapılmaya zorlar ve kullanıcıların bu ayarı değiştirmelerini engeller. Bu ayar, aynı zamanda <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Orta Düzey Kısıtlı Mod'un kullanılmasını da zorunlu kılar.
+
+      Bu ayarı etkinleştirirseniz Google Arama'da Güvenli Arama ve <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Orta Düzey Kısıtlı Mod her zaman etkin olur.
+
+      Bu ayarı devre dışı bırakır veya herhangi bir değer belirlemezseniz, Google Arama'da Güvenli Arama ve <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Kısıtlı Mod uygulanmaz.</translation>
 <translation id="5361167871898066799">Fiziksel klavyede otomatik düzeltme özelliğini kontrol et</translation>
 <translation id="5361708558735884308">Politikanın ayarlanması <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına istisna olarak, listelenen URL'lere erişim sağlar. Bu listedeki girişlerin biçimi için söz konusu politikanın açıklamasına bakın. Örneğin, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasını * olarak ayarlamak tüm istekleri engeller. Bu durumda bu politikayı sınırlı bir URL listesine erişim izni vermek için kullanabilirsiniz. Bu ayarı, (https://support.google.com/chrome/a?p=url_blocklist_filter_format) adresinde belirtilen biçimi kullanarak belirli şemalar, diğer alan adlarının alt alan adları, bağlantı noktaları veya belirli yollara ilişkin istisnaları açmak için kullanın. Bir URL'nin engellenip engellenmediğini, en spesifik filtre belirler. <ph name="URL_ALLOWLIST_POLICY_NAME" /> politikası, <ph name="URL_BLOCKLIST_POLICY_NAME" /> politikasına göre daha önceliklidir. Bu politika 1.000 giriş ile sınırlıdır.
 
@@ -7184,6 +7205,7 @@ Ayrıca https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed#Kerber
 
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns/ adresine bakabilirsiniz.</translation>
 <translation id="554903022911579950">Kerberos</translation>
+<translation id="5549325536554939195"><ph name="YOUTUBE_PRODUCT_NAME" /> Kısıtlı Modu'nu en azından Orta Düzey olmaya zorla</translation>
 <translation id="555022085242359084">Giriş ekranında yüksek kontrastı etkinleştir</translation>
 <translation id="555077880566103058">Tüm sitelerin otomatik olarak <ph name="FLASH_PLUGIN_NAME" /> eklentisini çalıştırmasına izin ver</translation>
 <translation id="5555361544583789006">Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> kullanıcılara ürün bilgilerini tam sekme içeriği olarak gösterebilir.
@@ -7653,6 +7675,15 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
       Burada <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> ile kastedilen, "13305.0.0" gibi bir tam sürüm veya "13305" gibi bir sürüm öneki olabilir.
       <ph name="WARNING_PERIOD_PROPERTY_NAME" /> ve <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" />, gün sayısı şeklinde belirtilen isteğe bağlı değerlerdir. Bunlar için varsayılan değer 0 gündür ve uyarı süresi olmadığı anlamına gelir.
       <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" />, varsayılan değeri False (Yanlış) olan isteğe bağlı bir özelliktir.</translation>
+<translation id="5876812185674131521"><ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerinin manuel olarak silinmesini engeller.
+
+Bu politika, kullanıcıların site ayarları sayfasından <ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerini manuel olarak temizledikten sonra <ph name="YOUTUBE_PRODUCT_NAME" /> hizmetlerine yetkisiz erişmesini engellemeyi amaçlar.
+
+Politika, Etkin değerine ayarlanırsa <ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerinin manuel olarak silinmesi engellenir.
+
+Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="YOUTUBE_PRODUCT_NAME" /> çerezleri normal şekilde silinebilir.
+
+Not: Bu politika yalnızca site ayarları kullanıcı arayüzünden manuel silme işlemini engeller. <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> veya <ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" /> politikalarıyla otomatik silme işlemini engellemez. Ayrıca, <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> politikası etkinleştirilirse kullanıcılar, Tarama Verilerini Temizle iletişim kutusunu kullanarak tüm çerezlerini temizleyebilir.</translation>
 <translation id="5879014913445067283"><ph name="NETBIOS_NAME" /> aracılığıyla Ağ Üzerinde Dosya Paylaşımı keşfini kontrol et</translation>
 <translation id="588135807064822874">Dokun ve Ara'yı etkinleştir</translation>
 <translation id="5882345429632338713">Alternatif tarayıcı açılmadan önce geçecek süre (milisaniye)</translation>
@@ -7902,6 +7933,7 @@ Bu politikanın desteği, M124 sürümüyle birlikte sonlandırılmıştır.</tr
 <translation id="6035597431797865964">Görüntü özelliklerini tutması için yönetilen misafir oturumuna izin ver</translation>
 <translation id="6036459377708946958">Güncelleme denetiminin ayın hangi gününde [1-31] yapılması gerektiği (cihazın yerel saat dilimine göre). Yalnızca "frequency", "MONTHLY" olarak ayarlandığında kullanılır. Bu sayı, belirli bir aydaki maksimum gün sayısından fazlaysa ayın son günü seçilir.</translation>
 <translation id="6036523166753287175">Uzaktan erişim ana makinesinden güvenlik duvarı geçişini etkinleştir</translation>
+<translation id="6037328895573728112"><ph name="YOUTUBE_PRODUCT_NAME" /> çerezlerinin silinmesini kısıtla</translation>
 <translation id="603768430528561926">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kurumsal cihaz kullanıcıları, <ph name="PRODUCT_OS_NAME" /> Kaydı aracılığıyla teklifleri kullanabilirler.
 
       Politika, Devre Dışı değerine ayarlanırsa kullanıcılar teklifleri kullanamazlar.</translation>
@@ -8635,6 +8667,7 @@ Belirli ana makine adlarının veya ana makine adı kalıplarının bu özellik 
 Devre Dışı seçeneğine ayarlanırsa <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" />, hiçbir web sayfasında kullanılamaz.
 
 Bu özellik kapsamındaki üretken yapay zeka özellikleri, eğitim hesaplarında veya kurumsal hesaplarda kullanılamaz.</translation>
+<translation id="6466693757921765054">Bu politikanın <ph name="ANDROID_NAME" /> <ph name="YOUTUBE_PRODUCT_NAME" /> uygulaması üzerinde etkisi yoktur. <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Güvenlik Modu'nun zorunlu kılınması gerekiyorsa <ph name="ANDROID_NAME" /> <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasının yüklenmesine izin verilmemelidir.</translation>
 <translation id="6467613372414922590">Kullanıcı düzeyinde Yerel Mesajlaşma ana makinelerine izin ver (yönetici şifreleri olmadan yüklenir)</translation>
 <translation id="6467707081687600148"><ph name="PRODUCT_OS_NAME" /> güncellemesi uygulandıktan sonra otomatik yeniden başlatma planlayın.
 
@@ -9141,6 +9174,7 @@ kısayolları yapılandırmasına olanak tanır.</translation>
 
       chrome://flags ve tarayıcı özelliklerini açıp kapatmak için kullanılan herhangi başka bir yöntem, bu politikanın Etkin ya da Devre Dışı olmasından bağımsız olarak, beklendiği şekilde davranacaktır.</translation>
 <translation id="6794273802619210652">Yüzle kumanda erişilebilirlik özelliğini etkinleştir</translation>
+<translation id="6795338611092628062">Google Arama'da Güvenli Arama ve <ph name="YOUTUBE_PRODUCT_NAME" /> Kısıtlı Modu kullanımını zorlama</translation>
 <translation id="6795485990775913659">Yalnızca PIN olmadan yazdırmaya izin ver</translation>
 <translation id="6796215185873669533">User-Agent dizesi sürümü için varsayılan olarak tarayıcı ayarlarını kullan.</translation>
 <translation id="6800181452282128474">Quirks Sunucularını sorgulama</translation>
@@ -9480,6 +9514,13 @@ Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel 
        Proxy politikalarının ayarlanmasıyla ilgili olarak başka bir mod seçtiyseniz bu politikayı ayarlamadan bırakın.
 
        Not: Ayrıntılı örnekler için Chromium Projeleri'ni ziyaret edin ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
+<translation id="7001463504545085491">Politika ayarlanırsa <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında minimum Kısıtlı mod uygulanır ve kullanıcıların daha az kısıtlı bir mod seçmeleri engellenir. Politikayı:
+
+      * Yüksek Düzey seçeneğine ayarlarsanız <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Yüksek Düzey Kısıtlı mod her zaman etkin olur.
+
+      * Orta Düzey olarak ayarlarsanız kullanıcı <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında yalnızca Orta Düzey Kısıtlı mod'u ve Yüksek Düzey Kısıtlı mod'u seçebilir, ancak Kısıtlı mod'u kapatamaz.
+
+      * Kapalı olarak ayarlar veya hiçbir değer ayarlamazsanız Chrome, <ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Kısıtlı mod'u zorunlu tutmaz. Ancak <ph name="YOUTUBE_PRODUCT_NAME" /> politikaları gibi harici politikalar Kısıtlı mod'un uygulanmasını zorunlu tutabilir.</translation>
 <translation id="7001915679435065291">Politikayı 1 değerine ayarlamak tüm web sitelerde görsellere izin verir. Politikayı 2 değerine ayarlamak görselleri engeller.
 
 Politikayı ayarlamadan bırakırsanız görsellere izin verilir. Kullanıcılar bu ayarı değiştirebilir.</translation>
@@ -9897,6 +9938,7 @@ Not: Bu politikayı, saat dilimini otomatik olarak çözümlemek için kullanıy
 <translation id="7179187054027029272">Politikayı True (Doğru) değerine ayarlamak veya ayarlamadan bırakmak, uygun izinleri olan kullanıcıların, uygulamaların ve uzantıların Tam ekran moduna (yalnızca web içeriğinin göründüğü) girebileceği anlamına gelir.
 
       Politikayı False (Yanlış) değerine ayarlamak kullanıcıların, uygulamaların ve uzantıların Tam ekran moduna giremeyeceği anlamına gelir.</translation>
+<translation id="7180529638251181928"><ph name="YOUTUBE_PRODUCT_NAME" /> uygulamasında Kısıtlı Mod'u zorunlu kılma</translation>
 <translation id="718126088895133062">Bu politika, bu cihaz için <ph name="PLUGIN_VM_NAME" /> lisanslama kullanıcı kimliğini belirtmektedir.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Yazım hatalarının düzeltilmesine yardımcı olması için bir Google web hizmeti kullan</translation>
@@ -11478,6 +11520,7 @@ Tüm işleme değerlerinin ayrıntılı açıklaması için RFC 8828 belgesinin 
 <translation id="82530263956734297">Engellenenler listesinden muaf tutulacak uzantı kimlikleri</translation>
 <translation id="8254749125469750814">Bir uzantının yüklenip yüklenemeyeceğini bulut hizmetiyle doğrulama.</translation>
 <translation id="8256006033157034334">Bu politikanın desteği sonlandırıldığı için lütfen bunun yerine <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" /> politikasını kullanın.</translation>
+<translation id="8256324351037372224"><ph name="YOUTUBE_PRODUCT_NAME" /> Kısıtlı Modu'nu zorunlu kılma</translation>
 <translation id="8256688113167012935">Hesap adının (<ph name="PRODUCT_OS_NAME" />) ilgili cihaz-yerel hesap için giriş ekranında görüntülenip görüntülenmeyeceğini kontrol eder.
 
       Bu politika ayarlanırsa, giriş ekranı tarafından, ilgili cihaz-yerel hesap için resimle giriş seçicisinde belirtilen dize kullanılır.

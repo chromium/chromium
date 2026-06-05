@@ -641,6 +641,7 @@
 <translation id="3771290962915251154">ಪೋಷಕರ ನಿಯಂತ್ರಣಗಳು ಆನ್ ಆಗಿರುವ ಕಾರಣ, ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3771694256347217732">Google ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="3777796259512476958">ಬಹುತೇಕ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತದೆ</translation>
+<translation id="3786379886124795923">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ್ದೀರಿ. ಈ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ನೀವು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="3792938779249970121">ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3795154175078851242">ಚಿತ್ರವನ್ನು ಲಿಂಕ್‌ನೊಂದಿಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
@@ -824,6 +825,7 @@
 <translation id="4532845899244822526">ಫೋಲ್ಡರ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4535755320005483982">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ <ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="4537137366307982887">ಸಲಹೆಗಳ ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="4537987892902330164">ನೀವು <ph name="NAME_OR_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದ್ದೀರಿ.</translation>
 <translation id="4543131175509360848">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಇಲ್ಲ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
 <translation id="4558311620361989323">ವೆಬ್‌ಪುಟ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -1281,6 +1283,7 @@
 <translation id="6411219469806822692">ಮೇಲಕ್ಕೆ ಹೋಗಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುಟದ ಇನ್ನು ಮೇಲಿನಿಂದ ಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಮಾಡಿದ ಟ್ಯಾಬ್</translation>
 <translation id="641643625718530986">ಮುದ್ರಿಸು...</translation>
+<translation id="6427723330233512782">ಎತ್ತರಕ್ಕೆ ತಕ್ಕಂತೆ ಹೊಂದಿಸಿ</translation>
 <translation id="6433501201775827830">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇಂಜಿನ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6434309073475700221">ತಿರಸ್ಕರಿಸಿ</translation>
 <translation id="6435307030888827407">ಸೈನ್ ಔಟ್ ಆಗಿಯೇ ಇರಿ</translation>
@@ -1434,6 +1437,7 @@
 <translation id="6937524809504266803">ವೈಯಕ್ತೀಕರಣ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="6937876069006524083">ಅಡ್ಡ ಹೆಸರು (ಐಚ್ಛಿಕ)</translation>
 <translation id="6942665639005891494">ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೆನು ಆಯ್ಕೆಯನ್ನು ಬಳಸಿ, ಡಿಫಾಲ್ಟ್ ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳವನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಿ</translation>
+<translation id="6944854424004126054">ವಿಂಡೋ ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6955535239952325894">ನಿರ್ವಹಿಸಲಾದ ಬ್ರೌಸರ್‌ಗಳಲ್ಲಿ ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6963766334940102469">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಿ</translation>
@@ -2014,9 +2018,11 @@
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿರುವ ಪಿಕ್ಚರ್-ಇನ್-ಪಿಕ್ಚರ್ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
+<translation id="949667118776341807">ತಿರುಗಿಸಿ</translation>
 <translation id="95817756606698420">Chrome ಚೀನಾದಲ್ಲಿ ಹುಡುಕಲು <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ಬಳಸಬಹುದು. ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="963246339335003378">ಟಾಸ್ಕ್‌ ಮ್ಯಾನೇಜರ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="966337994629449077">ನೀವು <ph name="FROM_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ.\n\nನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಮುಂದುವರಿಯಲು, <ph name="TO_EMAIL" /> ಗೆ ಬದಲಿಸಿ. ಈ ಖಾತೆಯಿಂದ ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="983192555821071799">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>

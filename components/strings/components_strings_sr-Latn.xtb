@@ -306,6 +306,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1458140305240870199">Donji veš</translation>
 <translation id="1458770162980644530">Ekran sa uslovima korišćenja usluge Kupite odmah, platite kasnije. Tastatura je sakrivena.</translation>
 <translation id="1459693405370120464">Vreme</translation>
+<translation id="1460317464907341501">Želite da automatski verifikujete ovaj imejl?</translation>
 <translation id="1461041542809785877">Performanse</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Koristi fontove na računaru da biste mogli da pravite sadržaj visoke vernosti</translation>
@@ -849,7 +850,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2316087952091171402">Manje od <ph name="UPPER_ESTIMATE" />. Neki sajtovi mogu da se učitavaju sporije tokom sledeće posete.</translation>
 <translation id="2316090909467242775">Isprobajte ovu lozinku za oporavak</translation>
 <translation id="2316159751672436664">Personalizujte alatke za pristupačnost u podešavanjima Chrome OS-a</translation>
-<translation id="2316887270356262533">Oslobađa manje od 1 MB. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> zahteva korisničko ime i lozinku.</translation>
 <translation id="2318594867107319532">Poslednja vremenska oznaka smernica:</translation>
 <translation id="2320564945062300737">Proizvodi za negu lica</translation>
@@ -2005,6 +2005,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="412601465078863288">Vreme za otpremanje je isteklo</translation>
 <translation id="4127317221386336246">Modni detalji</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{još 1}one{još #}few{još #}other{još #}}</translation>
+<translation id="4129810348470013900">Došlo je do greške. Proverite internet vezu i probajte ponovo.</translation>
 <translation id="4129992181550680635">Obrazovna sredstva</translation>
 <translation id="4130226655945681476">da proverite mrežne kablove, modem i ruter</translation>
 <translation id="4132448310531350254">Duplirani obrađivači za ekstenziju fajla<ph name="FILE_EXTENSION" /> navedeni u aplikacijama <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3399,7 +3400,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="633348045801643466">Prikaži <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />opcije za kasnije plaćanje<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> prilikom plaćanja</translation>
 <translation id="6335029926534404762">Sportska obuća</translation>
 <translation id="6336948221660696475">VR nije dozvoljen</translation>
-<translation id="6337133576188860026">Oslobađa manje od <ph name="SIZE" />. Neki sajtovi će se možda sporije učitavati kad ih sledeći put posetite.</translation>
 <translation id="6337534724793800597">Filtriraj smernice prema nazivu</translation>
 <translation id="633770708279464947">Vrednost <ph name="SECURE_DNS_SALT" /> je nevažeća i neće se koristiti.</translation>
 <translation id="6338645927051849741">Lozinka • Google menadžer lozinki</translation>
@@ -3950,7 +3950,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="718872491229180389">Navijanje</translation>
 <translation id="7188840756966467339">Restartuj i primeni smernice</translation>
 <translation id="7192188280913829296">Morate da navedete i atribut „vendor_id“.</translation>
-<translation id="7192203810768312527">Oslobodiće se <ph name="SIZE" />. Neki sajtovi će se sporije učitavati pri sledećoj poseti.</translation>
 <translation id="7192537357091279678">Računarski diskovi i uređaji za skladištenje podataka</translation>
 <translation id="7193661028827781021">Reference</translation>
 <translation id="719464814642662924">Visa</translation>

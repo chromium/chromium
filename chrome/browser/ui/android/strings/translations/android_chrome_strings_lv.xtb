@@ -641,6 +641,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3771290962915251154">Šis iestatījums ir atspējots, jo ir ieslēgta vecāku kontrole</translation>
 <translation id="3771694256347217732">Google pakalpojumu sniegšanas noteikumi</translation>
 <translation id="3777796259512476958">Automātiski izrakstīsieties no lielākās daļas vietņu.</translation>
+<translation id="3786379886124795923">Jūs skenējāt kvadrātkodu, lai pierakstītos pārlūkā Chrome. Apstipriniet, ka vēlaties iegūt paroles, grāmatzīmes un citus datus no šī profila.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 cilne}zero{# ciļņu}one{# cilne}other{# cilnes}}</translation>
 <translation id="3792938779249970121">Konta atlasīšana</translation>
 <translation id="3795154175078851242">Kopēt attēlu un saiti</translation>
@@ -825,6 +826,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4532845899244822526">Mapes izvēlēšanās</translation>
 <translation id="4535755320005483982">Kopīgotā ciļņu grupa “<ph name="GROUP_TITLE" />”</translation>
 <translation id="4537137366307982887">Padomu paziņojumu izvēles ekrāns ir atvērts pilna ekrāna augstumā</translation>
+<translation id="4537987892902330164">Jūs joprojām esat pierakstījies kā <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Lapa “Nav piekļuves atslēgu”</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> cilne}zero{<ph name="TAB_COUNT_MANY" /> ciļņu, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}one{<ph name="TAB_COUNT_MANY" /> cilne, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}other{<ph name="TAB_COUNT_MANY" /> cilnes, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Tīmekļa lapu īsinājumtaustiņi</translation>
@@ -1282,6 +1284,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6411219469806822692">Augstāku ekrāna daļu nevar ietvert. Mēģiniet iegūt ekrānuzņēmumu no augstākas vietas lapā.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, vairākkārt atlasīta cilne</translation>
 <translation id="641643625718530986">Drukāt...</translation>
+<translation id="6427723330233512782">Pielāgot augstumam</translation>
 <translation id="6433501201775827830">Meklētājprogrammas izvēle</translation>
 <translation id="6434309073475700221">Atmest</translation>
 <translation id="6435307030888827407">Nepierakstīties</translation>
@@ -1435,6 +1438,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6937524809504266803">Personalizācija un saistīšana</translation>
 <translation id="6937876069006524083">Segvārds (neobligāti)</translation>
 <translation id="6942665639005891494">Noklusējuma lejupielādes vietu var mainīt jebkurā laikā, izmantojot izvēlnes Iestatījumi opciju.</translation>
+<translation id="6944854424004126054">Atjaunot logu</translation>
 <translation id="6945221475159498467">Atlasīt</translation>
 <translation id="6955535239952325894">Šis iestatījums ir atspējots pārvaldītās pārlūkprogrammās</translation>
 <translation id="6963766334940102469">Dzēst grāmatzīmes</translation>
@@ -2015,9 +2019,11 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="939598580284253335">Ievadiet ieejas frāzi</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" /> ir piesprausta inkognito cilne, kas tiek rādīta režīmā “Attēls attēlā”</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
+<translation id="949667118776341807">Pagriezt</translation>
 <translation id="95817756606698420">Pārlūkā Chrome var izmantot meklētājprogrammu <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />, lai veiktu meklēšanu Ķīnā. Varat to mainīt sadaļā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Dzēst pārlūkošanas datus</translation>
 <translation id="963246339335003378">Atvērt uzdevumu pārvaldnieku</translation>
+<translation id="966337994629449077">Jūs esat pierakstījies kā <ph name="FROM_EMAIL" />.\n\nLai turpinātu darbību datorā, pārslēdzieties uz kontu <ph name="TO_EMAIL" />. Jūs iegūsiet paroles, grāmatzīmes un citus datus no šī konta.</translation>
 <translation id="970715775301869095">Atlikušas <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Bezsaistē</translation>
 <translation id="983192555821071799">Aizvērt visas cilnes</translation>

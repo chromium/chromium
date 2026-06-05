@@ -356,6 +356,7 @@
 <translation id="253498598929009420">സൈറ്റിന് നിങ്ങളുടെ സ്ക്രീനിലെ ഉള്ളടക്കങ്ങൾ കാണാൻ സാധിക്കും</translation>
 <translation id="2535807170289627159">എല്ലാ ടാബുകളും</translation>
 <translation id="2536728043171574184">ഈ പേജിന്റെ ഒരു ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
+<translation id="2537574774089209541">നിങ്ങൾ ബ്രൗസ് ചെയ്യുമ്പോൾ Gemini-യിലേക്ക് എളുപ്പത്തിൽ ആക്‌സസ് നൽകുന്നതിന് ചില ടൂളുകൾ നീക്കിയിരിക്കുന്നു</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, പിൻ ചെയ്ത, മ്യൂട്ട് ചെയ്ത അദൃശ്യ ടാബ്</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ടാബ്</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കാൻ, <ph name="EMAIL" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ഇപ്പോൾ</translation>
+<translation id="276378135349383280">താഴെ ടൂൾബാറിൽ Gemini കാണിക്കുക</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> എന്നായി സൈൻ ഇൻ ചെയ്‌തു.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> സെക്കൻഡ് ശേഷിക്കുന്നു</translation>
 <translation id="2779651927720337254">പരാജയപ്പെട്ടു</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3614126103057878858">നിരക്ക് ഉൾക്കാഴ്‌ചകൾ</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
+<translation id="3616798734782988169"><ph name="DOWNLOAD_DOMAIN" /> എന്നതിനെ നിങ്ങൾ വിശ്വസിക്കുന്നുണ്ടെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="3619255692378312441">ആക്‌സസ് മാനേജ് ചെയ്യുക</translation>
 <translation id="3622349720008044802">വിൻഡോകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 സൈറ്റ്}other{+ # സൈറ്റുകൾ}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">തിരയാൻ സ്‌പർശിക്കുക</translation>
 <translation id="3739455665973395693">നിങ്ങളുടെ Google Account-ൽ അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകളൊന്നുമില്ല</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> എന്നതിൽ ബുക്ക്‌മാർക്ക് ചെയ്‌തു</translation>
+<translation id="3740290940447881599">ഈ സൈറ്റ് നിങ്ങൾക്ക് വിശ്വാസമുള്ളതാണെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="3740525748616366977">ഈ ഉപകരണത്തിൽ ശബ്ദ തിരയൽ ലഭ്യമല്ല</translation>
 <translation id="3763110477555836428">നിങ്ങളുടെ യഥാർത്ഥ വിശദാംശങ്ങൾ പരിരക്ഷിക്കുന്നതിന് ഈ കാർഡ് ഉപയോഗിച്ച് ചെക്ക് ഔട്ട് ചെയ്യുമ്പോൾ ഒരു വെർച്വൽ കാർഡ് നമ്പർ പൂരിപ്പിക്കും. Google Wallet-ൽ മാനേജ് ചെയ്യുക. <ph name="BEGIN_LINK1" />വെർച്വൽ കാർഡുകളെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">ചില ഡാറ്റ ഇതുവരെ സംരക്ഷിച്ചിട്ടില്ല</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">രക്ഷാകർതൃ നിയന്ത്രണങ്ങൾ ഓണായതിനാൽ ഈ ക്രമീകരണം പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="3771694256347217732">Google സേവന നിബന്ധനകൾ</translation>
 <translation id="3777796259512476958">നിങ്ങൾ മിക്ക സൈറ്റുകളിൽ നിന്നും സൈൻ ഔട്ടാകും.</translation>
+<translation id="3786379886124795923">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾ ഒരു QR കോഡ് സ്കാൻ ചെയ്തു. ഈ പ്രൊഫൈലിൽ നിന്ന് പാസ്‌വേഡുകളും ബുക്ക്‌മാർക്കുകളും മറ്റും നേടാൻ നിങ്ങൾ ആഗ്രഹിക്കുന്നുവെന്ന് സ്ഥിരീകരിക്കുക.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ടാബ്}other{# ടാബുകൾ}}</translation>
 <translation id="3792938779249970121">അക്കൗണ്ട് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3795154175078851242">ലിങ്കിനൊപ്പം ചിത്രം പകർത്തുക</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4535755320005483982">പങ്കിട്ട <ph name="GROUP_TITLE" /> ടാബ് ഗ്രൂപ്പ്</translation>
 <translation id="4537137366307982887">നുറുങ്ങുകളുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ഓപ്റ്റ് ഇൻ ചെയ്യൽ മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
+<translation id="4537987892902330164">നിങ്ങൾ മുമ്പേ <ph name="NAME_OR_EMAIL" /> എന്നതായി സൈൻ ഇൻ ചെയ്തിട്ടുണ്ട്.</translation>
 <translation id="4543131175509360848">പാസ്‌കീകളുടെ ഷീറ്റൊന്നുമില്ല</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
 <translation id="4558311620361989323">വെബ്‌പേജ് കുറുക്കുവഴികൾ</translation>
@@ -1282,6 +1288,7 @@
 <translation id="6411219469806822692">മുകളിലേക്ക് പോകാനാകില്ല. പേജിന്റെ കുറച്ച് കൂടെ മുകളിൽ നിന്ന് ആരംഭിക്കാൻ ശ്രമിക്കൂ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത ടാബ്</translation>
 <translation id="641643625718530986">പ്രിന്‍റ് ചെയ്യുക…</translation>
+<translation id="6427723330233512782">ഉയരത്തിന് അനുയോജ്യമാക്കുക</translation>
 <translation id="6433501201775827830">നിങ്ങളുടെ തിരയൽ യന്ത്രം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6434309073475700221">നിരാകരിക്കുക</translation>
 <translation id="6435307030888827407">സൈൻ ഔട്ട് ചെയ്‌ത നിലയിൽ തുടരുക</translation>
@@ -1435,6 +1442,7 @@
 <translation id="6937524809504266803">വ്യക്തിപരമാക്കലും ലിങ്കിംഗും</translation>
 <translation id="6937876069006524083">വിളിപ്പേര് (ഓപ്ഷണൽ)</translation>
 <translation id="6942665639005891494">ക്രമീകരണ മെനു ഓപ്‌ഷൻ ഉപയോഗിച്ച്, ഏതുസമയത്തും ഡിഫോൾട്ട് ഡൗൺലോഡ് ലൊക്കേഷൻ മാറ്റുക.</translation>
+<translation id="6944854424004126054">വിൻഡോ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6955535239952325894">മാനേജ് ചെയ്യപ്പെടുന്ന ബ്രൗസറുകളിൽ ഈ ക്രമീകരണം പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു</translation>
 <translation id="6963766334940102469">ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കുക</translation>
@@ -1528,6 +1536,7 @@
 <translation id="7291910923717764901">ഈ പേജിനായി ചിത്രത്തിന്റെ വിവരണങ്ങൾ ചേർത്തു</translation>
 <translation id="7293429513719260019">ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന ടാബ്</translation>
+<translation id="7304003340539141201">നിങ്ങളുടെ ടാബുകളും ടാസ്ക്കുകളും സംബന്ധിച്ച് സഹായിക്കാൻ Gemini-യോട് ആവശ്യപ്പെടുക</translation>
 <translation id="7311244614769792472">ഫലങ്ങളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7314734791127433392">പാസ്‌വേഡുകൾ പരിശോധിക്കാനാകുന്നില്ല</translation>
 <translation id="7324354302972299151">“Do Not Track” അഭ്യർത്ഥന അയയ്ക്കുക</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8696297579102085705">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="8697753151306746444">പകരം വിൻഡോ അല്ലെങ്കിൽ സ്ക്രീൻ പങ്കിടുക</translation>
 <translation id="8699120352855309748">ഈ ഭാഷകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
+<translation id="8700565880437506364">Chrome-ൽ Gemini അവതരിപ്പിക്കുന്നു</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8715286883001906001">നിങ്ങളുടെ Google Account-ലെ പാസ്‍വേഡുകൾ ശക്തിപ്പെടുത്തുക</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> അടയ്ക്കും</translation>
@@ -1941,6 +1951,7 @@
 <translation id="8996847606757455498">മറ്റൊരു ദാതാവിനെ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8998837250940831980">ടാബ് ചെറുതാക്കാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="9001604755921395912">Chrome-ലെ അദൃശ്യ മോഡിൽ തുറക്കൂ</translation>
+<translation id="9010094279589497751">നിങ്ങൾക്ക് ആവശ്യമുള്ളപ്പോൾ Gemini അതിവേഗം തുറക്കുക</translation>
 <translation id="9012585441087414258">അപകടകരമെന്ന് തിരിച്ചറിഞ്ഞ സൈറ്റുകൾ, ഡൗൺലോഡുകൾ, വിപുലീകരണങ്ങൾ എന്നിവയിൽ നിന്ന് പരിരക്ഷിക്കുന്നു. പേജ് സംശയാസ്പദമായ എന്തെങ്കിലും ചെയ്താൽ, URL-കളും പേജ് ഉള്ളടക്കത്തിന്റെ ബിറ്റുകളും 'Google സുരക്ഷിത ബ്രൗസിംഗിലേക്ക്' അയയ്ക്കും.</translation>
 <translation id="9019199799064251516">കാറിന്റെ പ്രൊഫൈൽ ലോക്ക് ഇല്ലാതെ തുടരണോ?</translation>
 <translation id="9022774213089566801">പതിവായി സന്ദർശിക്കുന്നവ</translation>
@@ -1998,6 +2009,7 @@
 <translation id="9190355771000652811">വിലാസ ബാറിൽ, തിരയൽ എഞ്ചിനുകൾക്കും സൈറ്റ് തിരയലിനുമുള്ള കുറുക്കുവഴികൾക്കൊപ്പം ഈ കീബോർഡ് കുറുക്കുവഴി ഉപയോഗിക്കുക.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, തിരഞ്ഞെടുത്ത അദൃശ്യ ടാബ്</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ഒരു മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}other{# മിനിറ്റ് മുമ്പ് പരിശോധിച്ചു}}</translation>
+<translation id="9202894533863490414">ഈ സൈറ്റിൽ നിന്ന് ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="9204836675896933765">ഒരു ഫയൽ ശേഷിക്കുന്നു</translation>
 <translation id="9205933215779845960">ആ പേജ് കണ്ടെത്താനാകുന്നില്ല. നിങ്ങളുടെ സ്പെല്ലിംഗ് പരിശോധിക്കുകയോ <ph name="SEARCH_ENGINE" /> എന്നതിൽ തിരയുകയോ ചെയ്യുക.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2015,9 +2027,11 @@
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത 'പിക്ച്ചർ-ഇൻ-പിക്ച്ചർ' അദൃശ്യ ടാബ്</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
+<translation id="949667118776341807">റൊട്ടേറ്റ് ചെയ്യുക</translation>
 <translation id="95817756606698420"><ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ഉപയോഗിച്ച് Chrome-ന് ചൈനയിൽ തിരയാനാവും. നിങ്ങൾക്കിത്‌ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> മാറ്റാനാവും.</translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>
 <translation id="963246339335003378">ടാസ്‌ക് മാനേജർ തുറക്കുക</translation>
+<translation id="966337994629449077"><ph name="FROM_EMAIL" /> എന്ന അക്കൗണ്ടിലാണ് നിങ്ങൾ സൈൻ ഇൻ ചെയ്തിരിക്കുന്നത്.\n\nനിങ്ങളുടെ കമ്പ്യൂട്ടറിൽ നിന്ന് തുടരാൻ, <ph name="TO_EMAIL" /> എന്നതിലേക്ക് മാറുക. ഈ അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾക്ക് പാസ്‌വേഡുകളും ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കും.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
 <translation id="981121421437150478">ഓഫ്‌ലൈൻ</translation>
 <translation id="983192555821071799">ടാബെല്ലാം അടയ്‌ക്കൂ</translation>

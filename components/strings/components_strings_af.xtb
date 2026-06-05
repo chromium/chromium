@@ -849,7 +849,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2316087952091171402">Minder as <ph name="UPPER_ESTIMATE" />. Sommige werwe sal dalk met jou volgende besoek stadiger laai.</translation>
 <translation id="2316090909467242775">Probeer hierdie terugstelwagwoord</translation>
 <translation id="2316159751672436664">Personaliseer jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings</translation>
-<translation id="2316887270356262533">Maak minder as 1 MB beskikbaar. Sommige werwe sal dalk op jou volgende besoek stadiger laai.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> vereis 'n gebruikernaam en wagwoord.</translation>
 <translation id="2318594867107319532">Laaste beleidtydstempel:</translation>
 <translation id="2320564945062300737">Gesigsorgprodukte</translation>
@@ -3400,7 +3399,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="633348045801643466">Wys <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />betaal-later<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />-opsies by betaalpunt</translation>
 <translation id="6335029926534404762">Sportskoene</translation>
 <translation id="6336948221660696475">VR word nie toegelaat nie</translation>
-<translation id="6337133576188860026">Maak minder as <ph name="SIZE" /> beskikbaar. Sommige werwe sal dalk op jou volgende besoek stadiger laai.</translation>
 <translation id="6337534724793800597">Filtreer beleide volgens naam</translation>
 <translation id="633770708279464947">Die <ph name="SECURE_DNS_SALT" />-waarde is ongeldig en sal nie gebruik word nie.</translation>
 <translation id="6338645927051849741">Wagwoord • Google Wagwoordbestuurder</translation>
@@ -3950,7 +3948,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="718872491229180389">Rasieleiding</translation>
 <translation id="7188840756966467339">Herbegin en pas beleide toe</translation>
 <translation id="7192188280913829296">Die kenmerk "vendor_id" moet ook gespesifiseer wees.</translation>
-<translation id="7192203810768312527">Maak <ph name="SIZE" /> beskikbaar. Sommige werwe sal dalk stadiger laai met jou volgende besoek.</translation>
 <translation id="7192537357091279678">Rekenaarhardeskyf en -berging</translation>
 <translation id="7193661028827781021">Naslaanwerke</translation>
 <translation id="719464814642662924">Visa</translation>

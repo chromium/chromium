@@ -380,6 +380,7 @@
 <translation id="5294316920224716406">以無痕模式瀏覽網頁時，Chromium 會在使用不安全的連線載入網站前發出警告</translation>
 <translation id="5313228254328109263">Chromium 更新工具內部服務</translation>
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
+<translation id="5348677704241861105">讓 Chromium 內建 Gemini 快速歸納這份文件的摘要，並回答你的問題</translation>
 <translation id="5352264705793813212">Chromium 發現一些安全性建議需要你檢查</translation>
 <translation id="5352361688875342522">其他 Chromium 設定檔</translation>
 <translation id="5358375970380395591">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chromium 設定檔。你的 Chromium 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
@@ -485,6 +486,7 @@
 <translation id="6390800440335263989">如要繼續操作，請用 <ph name="EMAIL" /> 登入 Chromium，確保貴機構的政策會套用到 Chromium 上。</translation>
 <translation id="6400112897226594999">電腦螢幕畫面中的 Chromium 標誌。</translation>
 <translation id="6403826409255603130">Chromium 網路瀏覽器開啟網頁和執行應用程式的速度十分迅速。除了迅速、穩定且易於使用之外，Chromium 的內建惡意軟體與網路釣魚防護功能，可讓你安心悠遊網路。</translation>
+<translation id="6414624068245092115">請驗證身分，確保你隨時可以將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料</translation>
 <translation id="642132557830635295">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作</translation>
 <translation id="6436260184216827876">「圖片搜尋」無法使用，請稍後再試。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium OS</translation>

@@ -853,7 +853,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />-ից պակաս։ Որոշ կայքեր կարող են ավելի դանդաղ բեռնվել հաջորդ այցելության ժամանակ։</translation>
 <translation id="2316090909467242775">Փորձեք վերականգնման այս գաղտնաբառը</translation>
 <translation id="2316159751672436664">Անհատականացնել հատուկ գործառույթների գործիքները ChromeOS-ի կարգավորումներում</translation>
-<translation id="2316887270356262533">Կազատվի մինչև 1 ՄԲ տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> տիրույթը պահանջում է օգտանուն և գաղտնաբառ:</translation>
 <translation id="2318594867107319532">Կանոնի վերջին ժամադրոշմը՝</translation>
 <translation id="2320564945062300737">Դեմքի խնամքի համար նախատեսված ապրանքներ</translation>
@@ -3409,7 +3408,6 @@
 <translation id="633348045801643466">Վճարելիս ցույց տալ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />ապառիկ գնման<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> տարբերակները</translation>
 <translation id="6335029926534404762">Սպորտային կոշիկներ</translation>
 <translation id="6336948221660696475">VR-ի օգտագործման թույլտվությունը մերժվել է</translation>
-<translation id="6337133576188860026">Կազատվի մինչև <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="6337534724793800597">Զտել կանոններն ըստ անվան</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> կանոնի արժեքը անվավեր է և չի կարող օգտագործվել։</translation>
 <translation id="6338645927051849741">Գաղտնաբառ • Google գաղտնաբառերի կառավարիչ</translation>
@@ -3959,7 +3957,6 @@
 <translation id="718872491229180389">Չիրլիդինգ</translation>
 <translation id="7188840756966467339">Վերագործարկել դիտարկիչը և կիրառել կանոնները</translation>
 <translation id="7192188280913829296">Նաև պետք է նշվի «vendor_id» հատկանիշը։</translation>
-<translation id="7192203810768312527">Կազատվի <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
 <translation id="7192537357091279678">Համակարգչային սկավառակներ և կրիչներ</translation>
 <translation id="7193661028827781021">Տեղեկատվական նյութեր</translation>
 <translation id="719464814642662924">Visa</translation>

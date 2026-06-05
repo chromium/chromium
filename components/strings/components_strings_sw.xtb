@@ -306,6 +306,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1458140305240870199">Mavazi ya ndani</translation>
 <translation id="1458770162980644530">Skrini ya sheria na masharti ya mbinu ya Nunua Sasa, Lipa Baadaye. Kibodi imefichwa.</translation>
 <translation id="1459693405370120464">Hali ya Hewa</translation>
+<translation id="1460317464907341501">Ungependa kuthibitisha barua pepe hii kiotomatiki?</translation>
 <translation id="1461041542809785877">Utandaji</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Kutumia fonti zilizo kwenye kompyuta yako ili uweze kuunda maudhui yenye usahihi wa hali ya juu</translation>
@@ -849,7 +850,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2316087952091171402">Chini ya <ph name="UPPER_ESTIMATE" />. Huenda baadhi ya tovuti zikapakia polepole zaidi wakati mwingine utakapozitembelea.</translation>
 <translation id="2316090909467242775">Jaribu nenosiri hili la kurejesha akaunti</translation>
 <translation id="2316159751672436664">Weka mapendeleo ya zana zako za ufikivu katika mipangilio ya Mfumo wa Uendeshaji wa Chrome</translation>
-<translation id="2316887270356262533">Huongeza nafasi isiyozidi MB 1. Baadhi ya tovuti huenda zikapakia polepole zaidi utakapozivinjari tena.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> inahitaji jina la mtumiaji na nenosiri.</translation>
 <translation id="2318594867107319532">Muhuri wa wakati wa mwisho wa sera:</translation>
 <translation id="2320564945062300737">Bidhaa za Utunzaji wa Uso</translation>
@@ -2005,6 +2005,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="412601465078863288">Muda wa kupakia umeisha</translation>
 <translation id="4127317221386336246">Vifuasi vya Mavazi</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Nyingine 1 }other{Nyingine #}}</translation>
+<translation id="4129810348470013900">Hitilafu fulani imetokea. Angalia muunganisho wako wa intaneti kisha ujaribu tena.</translation>
 <translation id="4129992181550680635">Rasilimali za Elimu</translation>
 <translation id="4130226655945681476">Kukagua kebo za mtandao, modemu au kisambaza data</translation>
 <translation id="4132448310531350254">Vidhibiti viwili vya file_extension "<ph name="FILE_EXTENSION" />" vilivyorejelewa na programu "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3400,7 +3401,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="633348045801643466">Onyesha chaguo za <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />kulipa baadaye<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> wakati wa kulipa</translation>
 <translation id="6335029926534404762">Viatu vya Michezo</translation>
 <translation id="6336948221660696475">VR hairuhusiwi</translation>
-<translation id="6337133576188860026">Huongeza nafasi isiyozidi <ph name="SIZE" />. Baadhi ya tovuti huenda zikapakia polepole zaidi utakapozivinjari tena.</translation>
 <translation id="6337534724793800597">Chuja sera kwa jina</translation>
 <translation id="633770708279464947">Thamani ya <ph name="SECURE_DNS_SALT" /> si sahihi na haitatumika.</translation>
 <translation id="6338645927051849741">Nenosiri • Kidhibiti cha Manenosiri cha Google</translation>
@@ -3951,7 +3951,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="718872491229180389">Ushangiliaji</translation>
 <translation id="7188840756966467339">Zima kisha uwashe na utumie sera</translation>
 <translation id="7192188280913829296">Sifa ya "vendor_id" lazima pia ibainishwe.</translation>
-<translation id="7192203810768312527">Huongeza nafasi ya <ph name="SIZE" />. Huenda baadhi ya tovuti zikapakia polepole katika tembeleo lako lijalo.</translation>
 <translation id="7192537357091279678">Hifadhi na Nafasi za Kompyuta</translation>
 <translation id="7193661028827781021">Marejeleo</translation>
 <translation id="719464814642662924">Visa</translation>

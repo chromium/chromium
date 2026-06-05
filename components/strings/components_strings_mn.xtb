@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">Дотуур хувцаснууд</translation>
 <translation id="1458770162980644530">"Одоо ав, дараа төл" төлбөрийн хэрэгслийн үйлчилгээний нөхцөлийн дэлгэц. Гарыг нуусан.</translation>
 <translation id="1459693405370120464">Цаг агаар</translation>
+<translation id="1460317464907341501">Энэ имэйлийг автоматаар баталгаажуулах уу?</translation>
 <translation id="1461041542809785877">Хүчин чадал</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Компьютер дээрээ фонтыг ашигласнаар та дуу авиаг яг таг шилжүүлэх контент үүсгэх боломжтой болно</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />-с бага байна. Таныг дараагийн удаа зочлоход зарим сайт илүү удаан ачаалж магадгүй.</translation>
 <translation id="2316090909467242775">Энэ сэргээх нууц үгийг туршиж үзнэ үү</translation>
 <translation id="2316159751672436664">ChromeOS-н тохиргоонд хүртээмжтэй хэрэгслээ хувийн болгоно уу</translation>
-<translation id="2316887270356262533">1 MB-с бага зай гаргана. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> хэрэглэгчийн нэр, нууц үгийг шаардаж байна.</translation>
 <translation id="2318594867107319532">Бодлогын сүүлийн хугацаа тэмдэглэгч:</translation>
 <translation id="2320564945062300737">Нүүрний арчилгааны бүтээгдэхүүнүүд</translation>
@@ -2006,6 +2006,7 @@
 <translation id="412601465078863288">Байршуулах үйлдэл завсарласан</translation>
 <translation id="4127317221386336246">Хувцасны чимэглэлүүд</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 бусад}other{# бусад}}</translation>
+<translation id="4129810348470013900">Ямар нэг алдаа гарлаа. Интернэт холболтоо шалгаад, дахин оролдоно уу.</translation>
 <translation id="4129992181550680635">Боловсролын нөөцүүд</translation>
 <translation id="4130226655945681476">Сүлжээний кабель, модем болон чиглүүлэгчийг шалгаж байна</translation>
 <translation id="4132448310531350254">Аппуудын "<ph name="POLICY_IDS_LIST" />"-с file_extension "<ph name="FILE_EXTENSION" />"-н хуулбар хариуцагчдыг лавласан</translation>
@@ -3023,6 +3024,7 @@
 <translation id="5728246486828755318">Хэвлэгчийн дэвшилтэт онцлогуудыг ашиглахыг хүсэх боломжтой</translation>
 <translation id="5729442113829771034">Сургуулийн өмнөх насны хүүхдийн боловсрол</translation>
 <translation id="5730040223043577876">Хэрэв та нууц үгээ бусад сайтад дахин ашигласан бол Chrome-с үүнийг шинэчлэхийг зөвлөж байна.</translation>
+<translation id="5735174108294025227">Баталгаажуулсан имэйл хаягууд энд гарч ирнэ</translation>
 <translation id="573555826359077410">Маягт үүсгэх товчлуур, Google Маягтад шинэ маягт шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="5738385766833540397">Та хянаж буй бүтээгдэхүүнүүдийнхээ үнэ хямдарсан талаарх сэрэмжлүүлгийг хэрхэн хүлээн авахаа удирдана уу</translation>
 <translation id="5739619009927381786">Дараагийн алхамд ихэвчлэн хурууны хээгээ ашиглан дэлгэцийнхээ түгжээг тайлна уу. Эсвэл та <ph name="BEGIN_LINK" />өөр аргаар баталгаажуулах<ph name="END_LINK" /> боломжтой.</translation>
@@ -3400,7 +3402,6 @@
 <translation id="633348045801643466">Тооцоо хийх үед <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />дараа төлөх<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> сонголтуудыг харуулах</translation>
 <translation id="6335029926534404762">Биеийн тамирын гутал</translation>
 <translation id="6336948221660696475">VR-г ашиглахыг зөвшөөрөөгүй</translation>
-<translation id="6337133576188860026"><ph name="SIZE" />-с бага зай гаргана. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="6337534724793800597">Журмуудыг нэрээр нь шүү</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />-н утга буруу тул ашиглахгүй.</translation>
 <translation id="6338645927051849741">Нууц үг • Google Нууц үгний менежер</translation>
@@ -3950,7 +3951,6 @@
 <translation id="718872491229180389">Хөгжөөн дэмжих</translation>
 <translation id="7188840756966467339">Дахин эхлүүлж, бодлогыг хэрэгжүүлэх</translation>
 <translation id="7192188280913829296">"Vendor_id" атрибутыг мөн заасан байх ёстой.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" />-н зай гаргана уу. Зарим сайтад зочлох үед удаан ачаалж болзошгүй.</translation>
 <translation id="7192537357091279678">Компьютерын драйвууд болон хадгалах сан</translation>
 <translation id="7193661028827781021">Лавлагаа</translation>
 <translation id="719464814642662924">Виз</translation>

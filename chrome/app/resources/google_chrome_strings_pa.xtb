@@ -153,6 +153,7 @@
 <translation id="2580411288591421699">ਉਹ Google Chrome ਵਰਜਨ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਜੋ ਇਸ ਵੇਲੇ ਚੱਲ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ Google Chrome ਬੰਦ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2586406160782125153">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="259935314519650377">ਡਾਊਨਲੋਡ ਕੀਤੇ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਕੈਸ਼ੇ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਗੜਬੜ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
+<translation id="2608461706055011366">ਇਸ ਦਸਤਾਵੇਜ਼ ਦੀ ਤਤਕਾਲ ਰੂਪ-ਰੇਖਾ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ Chrome ਵਿੱਚ Gemini ਤੋਂ ਸਵਾਲ ਪੁੱਛੋ</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
 <translation id="263447411082773721">ਆਪਣੇ ਪਾਸਵਰਡ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਡੀਵਾਈਸਾਂ ਵਿਚਕਾਰ ਪੂਰੀ ਤਰ੍ਹਾਂ ਸਿੰਕ ਰੱਖੋ। ਆਪਣੇ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ Chrome 'ਤੇ ਅੱਪਡੇਟ ਕਰ ਕੇ ਉਨ੍ਹਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਤੱਕ ਆਸਾਨੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ, ਜਿਨ੍ਹਾਂ ਬਾਰੇ ਤੁਸੀਂ ਜਾਣਦੇ ਹੋ ਅਤੇ ਪਸੰਦ ਕਰਦੇ ਹੋ। ਤਤਕਾਲ ਪਹੁੰਚ ਲਈ Chrome ਨੂੰ ਤੁਹਾਡੀ ਟਾਸਕਬਾਰ 'ਤੇ ਪਿੰਨ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">ਨਵੀਂ Chrome &amp;ਟੈਬ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="2665296953892887393">Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਅਤੇ <ph name="UMA_LINK" /> ਭੇਜ ਕੇ Google Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="2668094785979141847">Google Lens ਤੋਂ ਬਾਹਰ ਜਾਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="2674238339205910678">ChromeOS Flex ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ</translation>
 <translation id="2681444469812712297">Google Chrome ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਵਿੱਚ <ph name="URL" /> ਖੋਲ੍ਹੋ।</translation>
 <translation id="2699790011615497488">Chrome ਬੀਟਾ ਵਿੱਚ Gemini ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="2712141162840347885">Google Lens ਨਾਲ ਖੋਜਣ ਲਈ ਕੁਝ ਵੀ ਚੁਣੋ ਜਾਂ Google Lens ਤੋਂ ਬਾਹਰ ਜਾਣ ਕਰਨ Escape ਦਬਾਓ</translation>
@@ -538,6 +540,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6497147134301593682">Chrome ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੰਦ ਹੋ ਗਿਆ ਸੀ</translation>
 <translation id="6506909944137591434">Chrome ਨੂੰ ਤੁਹਾਡੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਉਣ ਲਈ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਣ ਕਰਕੇ ChromeOS Flex ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>
 <translation id="6520670145826811516">ਆਪਣੇ ਟਿਕਾਣੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਜਾ ਕੇ Chrome ਨੂੰ ਇਸ ਤੱਕ ਪਹੁੰਚ ਦਿਓ</translation>
 <translation id="652948702951888897">Chrome ਇਤਿਹਾਸ</translation>
 <translation id="6532945796722480006">Chrome Canary ਵਿੱਚ Gemini ਨੂੰ ਖੋਲ੍ਹੋ</translation>
@@ -585,6 +588,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7011190694940573312">ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ ਕਿਉਂਕਿ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਦਾ ਇਹ ਵਰਜਨ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7024536598735240744">ਅਣਪੈਕ ਕਰਨ ਸੰਬੰਧੀ ਗੜਬੜ: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025800014283535195">ਤੁਸੀਂ ਇੱਥੇ Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="7026856149118332950">ਤਤਕਾਲ ਪਹੁੰਚ ਲਈ Chrome ਨੂੰ ਆਪਣੀ ਟਾਸਕਬਾਰ 'ਤੇ ਪਿੰਨ ਕਰਨ ਵਾਸਤੇ Windows ਸੂਚਨਾ ਵਿੱਚ <ph name="BEGIN_BOLD" />ਹਾਂ<ph name="END_BOLD" /> 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="7047386856539490735">ਕੀ ਇਹ ਨਤੀਜੇ ਲਾਹੇਵੰਦ ਹਨ?</translation>
 <translation id="7051685429025310665">ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਨਹੀਂ ਗਏ ਹੋ। Chrome ਨੇ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="7059914902409643750">ਸਾਈਨ-ਇਨ ਕਰਕੇ Chrome ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
@@ -677,6 +681,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7890208801193284374">ਜੇਕਰ ਤੁਸੀਂ ਕੋਈ ਕੰਪਿਊਟਰ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਦੋਸਤ ਅਤੇ ਪਰਿਵਾਰ ਵੱਖਰੇ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰ ਸਕਦੇ ਹਨ ਅਤੇ ਆਪਣੇ ਤਰੀਕੇ ਨਾਲ Chrome ਦਾ ਸੈੱਟ ਅੱਪ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="7896673875602241923">ਕਿਸੇ ਵਿਅਕਤੀ ਨੇ ਪਹਿਲਾਂ ਹੀ <ph name="ACCOUNT_EMAIL_LAST" /> ਵਜੋਂ ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ Chrome 'ਤੇ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਆਪਣੀ ਜਾਣਕਾਰੀ ਵੱਖਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨਵਾਂ Chrome ਵਰਤੋਂਕਾਰ ਬਣਾਓ।</translation>
 <translation id="7904985524660297937">Google Chrome ਵਿੱਚ Gemini ਨੂੰ ਅਜ਼ਮਾਓ</translation>
+<translation id="7905880575591690197">ChromeOS ਸਾਈਨ-ਇਨ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਣ ਕਰਕੇ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਿਆ</translation>
 <translation id="7917876797003313048">ਤੁਸੀਂ ਆਪਣੇ ਸਾਈਨ-ਇਨ ਕੀਤੇ ਗਏ Google ਖਾਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੇ Google ਖਾਤਿਆਂ ਦੀ ਵਰਤੋਂ Chrome ਬ੍ਰਾਊਜ਼ਰ, Play Store, Gmail ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਕਿਸੇ ਹੋਰ ਲਈ ਇੱਕ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਜਿਵੇਂ ਕਿ ਕਿਸੇ ਪਰਿਵਾਰਕ ਮੈਂਬਰ ਲਈ, ਤਾਂ ਇਸਦੀ ਬਜਾਏ ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਵਿੱਚ ਕੋਈ ਨਵਾਂ ਵਿਅਕਤੀ ਸ਼ਾਮਲ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ਨੇ ਇਸ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ ਕਿਉਂਕਿ ਫ਼ਾਈਲ ਭਰਮਾਊ ਹੈ ਅਤੇ ਇਹ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਅਣਕਿਆਸੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="7951272445806340501">ਅੱਪਡੇਟ ਲਾਗੂ ਕਰਨ ਲਈ ChromeOS Flex ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
@@ -752,6 +757,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="8624541899164515475">ਸੈਟਿੰਗਾਂ, ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ।</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}one{Chrome # ਮਿੰਟ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}other{Chrome # ਮਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਲਾਂਚ ਹੋਵੇਗਾ}}</translation>
 <translation id="8637932705841171563">ਆਪਣੀ ਵਿੰਡੋ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ Chrome ਵਾਸਤੇ ਸਕ੍ਰੀਨ ਰਿਕਾਰਡ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
+<translation id="8642497536370021917">ਇਹ ਪੱਕਾ ਕਰਨ ਲਈ ਕਿ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਕਦੇ ਵੀ Chrome ਡਾਟਾ ਵਰਤ ਸਕੋ ਅਤੇ ਰੱਖਿਅਤ ਕਰ ਸਕੋ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8656634243791296665">Chrome Dev ਵਿੱਚ Gemini ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="8669527147644353129">Google Chrome ਸਹਾਇਕ</translation>
 <translation id="8679801911857917785">ਇਹ ਇਸ ਨੂੰ ਵੀ ਕੰਟਰੋਲ ਕਰਦਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
@@ -801,6 +807,7 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="93760716455950538">ChromeOS Flex ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="943390475793766444">Chrome ਵੱਲੋਂ ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਸਕੈਨ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਕਿਉਂਕਿ ਇਹ ਹਾਨੀਕਾਰਕ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="945522503751344254">ਪ੍ਰਤੀਕਰਮ ਭੇਜੋ</translation>
+<translation id="973195869036269770">ChromeOS ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟਾ ਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਖਾਤੇ ਦੇ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਪੁਰਾਣੇ ਹਨ</translation>
 <translation id="983803489796659991">ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ ਕਿਉਂਕਿ ਅੱਪਡੇਟ ਸਰਵਰ ਵਿੱਚ ਐਪਲੀਕੇਸ਼ਨ ਲਈ ਕੋਈ ਹੈਸ਼ ਡਾਟਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="989369509083708165">Google Chrome ਤੁਹਾਡਾ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਹੈ</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome ਪ੍ਰੋਫਾਈਲਾਂ ਵਿਚਾਲੇ ਅਦਲਾ-ਬਦਲੀ ਕਰ ਸਕਦਾ ਹੈ</translation>

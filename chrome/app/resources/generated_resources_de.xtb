@@ -6165,7 +6165,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Gemäß <ph name="MANAGER" /> ist es notwendig, ein Daten-Backup zu erstellen und dieses <ph name="DEVICE_TYPE" /> heute zurückzugeben. <ph name="LINK_BEGIN" />Details anzeigen.<ph name="LINK_END" />}other{Gemäß <ph name="MANAGER" /> ist es notwendig, ein Daten-Backup zu erstellen und dieses <ph name="DEVICE_TYPE" /> innerhalb von {NUM_DAYS} Tagen zurückzugeben. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">App hinzufügen</translation>
 <translation id="5485435764083510385">Bevorzugte Sprache für Untertitel</translation>
-<translation id="5485754497697573575">Alle Tabs wiederherstellen</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> erfordert möglicherweise ein neueres Gerät oder einen anderen Gerätetyp</translation>
 <translation id="5486261815000869482">Passwort bestätigen</translation>
 <translation id="5486561344817861625">Browser-Neustart simulieren</translation>
@@ -7746,7 +7745,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6680442031740878064">Verfügbar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Geschwindigkeit</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
-<translation id="6683087162435654533">Alle Tabs wi&amp;ederherstellen</translation>
 <translation id="6683433919380522900">Aktivierte Berechtigung: <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Das neueste Update wird heruntergeladen</translation>
 <translation id="668599234725812620">Google Play öffnen</translation>
@@ -8121,6 +8119,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6943060957016121200">Instant Tethering aktivieren</translation>
 <translation id="6943939122536910181">Verbindung zu <ph name="DEVICE" /> getrennt</translation>
 <translation id="6944750221184785444">Dieses Profil konnte nicht installiert werden. Wende dich an deinen Mobilfunkanbieter, um technischen Support zu erhalten.</translation>
+<translation id="6944854424004126054">Fenster wiederherstellen</translation>
 <translation id="6945221475159498467">Auswählen</translation>
 <translation id="694592694773692225">Weiterleitung auf dieser Seite blockiert.</translation>
 <translation id="6949089178006131285">Informationen zum ChromeOS Flex-Netzwerk lesen</translation>
@@ -9141,7 +9140,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7698507637739331665">Einige Elemente sind blockiert</translation>
 <translation id="7700516433658473670">Drucker und Scanner</translation>
 <translation id="7700873336634517379">Nein, dieses Profil für die Bildungseinrichtung verwenden</translation>
-<translation id="7701040980221191251">Keine</translation>
+<translation id="7701040980221191251">Keine Einträge</translation>
 <translation id="7701869757853594372">NUTZER-Handles</translation>
 <translation id="7702463352133825032">Streamen an „<ph name="DEVICE_NAME" />“ beenden</translation>
 <translation id="7704305437604973648">Task</translation>
@@ -9681,7 +9680,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8082390128630131497">Wenn du die ADB-Fehlerbehebung deaktivierst, wird <ph name="DEVICE_TYPE" /> auf die Werkseinstellungen zurückgesetzt. Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
 <translation id="8084114998886531721">Gespeichertes Passwort</translation>
 <translation id="8084429490152575036">Einstellungen für Mobilfunk-APN</translation>
-<translation id="8084510406207562688">Alle Tabs wi&amp;ederherstellen</translation>
 <translation id="8084628902026812045">Diese Website verwendet keine verschlüsselte Verbindung und die Datei wurde möglicherweise manipuliert</translation>
 <translation id="808488435221187916">Deine Informationen sind in Google Wallet auf allen angemeldeten Geräten verfügbar</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> wird konfiguriert...</translation>
@@ -11217,7 +11215,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# Apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=2{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" /> und <ph name="APP1_NAME" /> aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}=3{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und einer weiteren App aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}other{Dein Administrator kann deinen Bildschirm mit <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> und # weiteren Apps aufzeichnen. Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.}}</translation>
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 Tab wird geteilt}other{# Tabs werden geteilt}}</translation>
 <translation id="9187967020623675250">Die Tasten stimmen nicht überein. Drücke zum <ph name="RESPONSE" /> eine beliebige Taste.</translation>
 <translation id="9188142767272053574">Prozessisolierung aktivieren</translation>
 <translation id="9192019773545828776">Du erhältst gesprochenes Feedback, sodass du dein Gerät nutzen kannst, ohne auf das Display sehen zu müssen. Braille-Feedback ist auf einem verbundenen Gerät verfügbar. Verwende Strg + Alt + Z, um ChromeVox zu aktivieren oder zu deaktivieren. Mit der Suchtaste + Links- oder Rechtspfeil kannst du den Cursor bewegen. Drücke die Suchtaste + Leertaste, um ein Element auszuwählen (zu aktivieren).</translation>

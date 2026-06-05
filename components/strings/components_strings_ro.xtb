@@ -849,7 +849,6 @@
 <translation id="2316087952091171402">Mai puțin de <ph name="UPPER_ESTIMATE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea vizită.</translation>
 <translation id="2316090909467242775">Încearcă această parolă de recuperare</translation>
 <translation id="2316159751672436664">Personalizează instrumentele de accesibilitate în setările sistemului de operare Chrome</translation>
-<translation id="2316887270356262533">Eliberează mai puțin de 1 MB. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> necesită un nume de utilizator și o parolă.</translation>
 <translation id="2318594867107319532">Ultimul marcaj temporal pentru politică:</translation>
 <translation id="2320564945062300737">Produse pentru îngrijirea tenului</translation>
@@ -3022,6 +3021,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5728246486828755318">Poate solicita permisiunea de a folosi funcții avansate ale imprimantei</translation>
 <translation id="5729442113829771034">Educație pentru copii mici</translation>
 <translation id="5730040223043577876">Chrome îți recomandă să resetezi parola dacă ai folosit-o și pe alte site-uri.</translation>
+<translation id="5735174108294025227">Adresele de e-mail verificate vor apărea aici</translation>
 <translation id="573555826359077410">Butonul Creează un formular, activează pentru a crea rapid un formular în Formulare Google</translation>
 <translation id="5738385766833540397">Gestionează modul în care primești alertele de scădere de preț pentru produsele pe care le urmărești</translation>
 <translation id="5739619009927381786">Deblochează ecranul la pasul următor, de obicei cu amprenta. Sau poți <ph name="BEGIN_LINK" />confirma în alt mod<ph name="END_LINK" />.</translation>
@@ -3400,7 +3400,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="633348045801643466">Afișează opțiunile de <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />efectuare a plății mai târziu<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> la finalizarea achiziției</translation>
 <translation id="6335029926534404762">Încălțăminte sport</translation>
 <translation id="6336948221660696475">RV nepermisă</translation>
-<translation id="6337133576188860026">Eliberează mai puțin de <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="6337534724793800597">Filtrați politicile după nume</translation>
 <translation id="633770708279464947">Valoarea <ph name="SECURE_DNS_SALT" /> este nevalidă și nu va fi folosită.</translation>
 <translation id="6338645927051849741">Parola • Manager de parole Google</translation>
@@ -3951,7 +3950,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="718872491229180389">Majorete</translation>
 <translation id="7188840756966467339">Repornește și aplică politicile</translation>
 <translation id="7192188280913829296">Trebuie specificat și atributul vendor_id.</translation>
-<translation id="7192203810768312527">Eliberează <ph name="SIZE" />. Este posibil ca unele site-uri să se încarce mai lent la următoarea accesare.</translation>
 <translation id="7192537357091279678">Unități și stocare pentru computere</translation>
 <translation id="7193661028827781021">Lucrări de referință</translation>
 <translation id="719464814642662924">Visa</translation>

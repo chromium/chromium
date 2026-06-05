@@ -645,6 +645,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3771290962915251154">Denne innstillingen er avslått fordi foreldrekontroll er på</translation>
 <translation id="3771694256347217732">Googles vilkår for bruk</translation>
 <translation id="3777796259512476958">Logger deg av de fleste nettsteder</translation>
+<translation id="3786379886124795923">Du skannet en QR-kode for å logge på Chrome. Bekreft at du vil hente passordene, bokmerkene med mer fra denne profilen.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="3792938779249970121">Velg konto</translation>
 <translation id="3795154175078851242">Kopier bilde med link</translation>
@@ -829,6 +830,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4532845899244822526">Velg en mappe</translation>
 <translation id="4535755320005483982">Delte fanegruppen <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Samtykke for varsler for tips er åpnet i full høyde</translation>
+<translation id="4537987892902330164">Du forble pålogget som <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Ark for ingen passnøkler</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}other{<ph name="TAB_COUNT_MANY" /> faner, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Hurtigtaster for nettsider</translation>
@@ -1286,6 +1288,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6411219469806822692">Kan ikke gå høyere. Prøv å starte fra lenger opp på siden.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, fane valgt flere ganger</translation>
 <translation id="641643625718530986">Skriv ut</translation>
+<translation id="6427723330233512782">Tilpass til høyde</translation>
 <translation id="6433501201775827830">Velg søkemotor</translation>
 <translation id="6434309073475700221">Forkast</translation>
 <translation id="6435307030888827407">Forbli avlogget</translation>
@@ -1439,6 +1442,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
 <translation id="6937876069006524083">Kallenavn (valgfritt)</translation>
 <translation id="6942665639005891494">Endre standard nedlastingssted når som helst via menyalternativet Innstillinger</translation>
+<translation id="6944854424004126054">Gjenopprett vinduet</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="6955535239952325894">Denne innstillingen er slått av for administrerte nettlesere</translation>
 <translation id="6963766334940102469">Slett bokmerker</translation>
@@ -2023,9 +2027,11 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="939598580284253335">Angi en passordfrase</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, festet inkognito bilde-i-bilde-fane</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>
+<translation id="949667118776341807">Rotér</translation>
 <translation id="95817756606698420">Chrome kan bruke <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for søk i Kina. Du kan endre dette i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="963246339335003378">Åpne Oppgavebehandling</translation>
+<translation id="966337994629449077">Du er logget på som <ph name="FROM_EMAIL" />.\n\nFor å fortsette fra datamaskinen, bytt til <ph name="TO_EMAIL" />. Du får passordene, bokmerkene med mer fra denne kontoen.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter igjen</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="983192555821071799">Lukk alle faner</translation>

@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">Іш киім</translation>
 <translation id="1458770162980644530">Бөліп төлеудің Қызмет көрсету шарттарының экраны. Пернетақта жасырылды.</translation>
 <translation id="1459693405370120464">Ауа райы</translation>
+<translation id="1460317464907341501">Осы электрондық мекенжайды автоматты түрде растау керек пе?</translation>
 <translation id="1461041542809785877">Өнімділік</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Жоғары сапалы контент жасау үшін компьютердегі қаріптерді пайдаланыңыз.</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />-тан аз. Келесі жолы кейбір сайттар баяу жүктелуі мүмкін.</translation>
 <translation id="2316090909467242775">Осы қалпына келтіру құпия сөзін пайдаланып көріңіз.</translation>
 <translation id="2316159751672436664">ChromeOS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру</translation>
-<translation id="2316887270356262533">1 MБ аз орын босатады. Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> пайдаланушы аты мен құпия сөзді қажет етеді.</translation>
 <translation id="2318594867107319532">Саясаттың соңғы рет жаңартылған уақыт белгісі:</translation>
 <translation id="2320564945062300737">Бет күтімі өнімдері</translation>
@@ -2004,6 +2004,7 @@
 <translation id="412601465078863288">Жүктеп салу уақыты өтіп кетті</translation>
 <translation id="4127317221386336246">Киім аксессуарлары</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{тағы 1}other{тағы #}}</translation>
+<translation id="4129810348470013900">Бірдеңе дұрыс болмады. Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="4129992181550680635">Оқу материалдары</translation>
 <translation id="4130226655945681476">Желі кабельдерін, модем және роутерді тексеру</translation>
 <translation id="4132448310531350254">Қолданбаларда file_extension "<ph name="FILE_EXTENSION" />" кеңейтімін өңдейтін бірнеше құрал көрсетілген: "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5728246486828755318">Озық принтер функцияларын пайдалануға рұқсат сұрай алады</translation>
 <translation id="5729442113829771034">Мектепке дейінгі білім</translation>
 <translation id="5730040223043577876">Chrome басқа сайттарда пайдаланылған құпия сөзіңізді қайта орнатуды ұсынады.</translation>
+<translation id="5735174108294025227">Расталған электрондық мекенжайлар осы жерде көрсетіледі.</translation>
 <translation id="573555826359077410">"Үлгі жасау" түймесі, Google Forms-да жылдам жаңа үлгі жасау үшін белсендіріңіз</translation>
 <translation id="5738385766833540397">Қадағалайтын тауарлар бағасының түсуі туралы хабарландырулар алуды реттеңіз.</translation>
 <translation id="5739619009927381786">Келесі қадамда экран құлпын ашыңыз (әдетте саусақ ізі қолданылады). Болмаса <ph name="BEGIN_LINK" />басқа әдіспен растауға<ph name="END_LINK" /> болады.</translation>
@@ -3399,7 +3401,6 @@
 <translation id="633348045801643466">Төлейтін кезде, <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />кейін төлеу<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> опцияларын көрсету</translation>
 <translation id="6335029926534404762">Спорттық аяқ киім</translation>
 <translation id="6336948221660696475">VR-ға рұқсат берілмеген.</translation>
-<translation id="6337133576188860026"><ph name="SIZE" /> аз орын босатады .Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
 <translation id="6337534724793800597">Атауы бойынша сүзгі саясаттары</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> мәні жарамсыз және пайдаланылмайды.</translation>
 <translation id="6338645927051849741">Құпия сөз • Google Password Manager</translation>
@@ -3949,7 +3950,6 @@
 <translation id="718872491229180389">Чирлидинг</translation>
 <translation id="7188840756966467339">Өшіріп қосу және саясаттарды қолдану</translation>
 <translation id="7192188280913829296">Сондай-ақ "vendor_id" төлсипатын анықтау керек.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> дейін босатады. Кейбір сайттар келесі рет кірген кезіңізде баяу жүктелуі мүмкін.</translation>
 <translation id="7192537357091279678">Компьютер дискілері және жады</translation>
 <translation id="7193661028827781021">Анықтамалық материалдар</translation>
 <translation id="719464814642662924">Visa</translation>

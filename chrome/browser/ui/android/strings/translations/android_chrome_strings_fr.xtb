@@ -641,6 +641,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3771290962915251154">Ce paramètre est désactivé en raison de l'activation du contrôle parental</translation>
 <translation id="3771694256347217732">Conditions d'utilisation de Google</translation>
 <translation id="3777796259512476958">Vous déconnecte de la plupart des sites</translation>
+<translation id="3786379886124795923">Vous avez scanné un QR code pour vous connecter à Chrome. Confirmez que vous souhaitez récupérer les mots de passe, les favoris et d'autres éléments de ce profil.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="3792938779249970121">Sélectionner un compte</translation>
 <translation id="3795154175078851242">Copier l'image avec le lien</translation>
@@ -825,6 +826,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
 <translation id="4535755320005483982">Groupe d'onglets <ph name="GROUP_TITLE" /> partagé</translation>
 <translation id="4537137366307982887">Activation des notifications de conseils ouverte à pleine hauteur</translation>
+<translation id="4537987892902330164">Vous êtes resté connecté en tant que <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Aucune feuille de clés d'accès</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> en navigation privée}}</translation>
 <translation id="4558311620361989323">Raccourcis de pages Web</translation>
@@ -1282,6 +1284,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6411219469806822692">Impossible d'aller plus haut. Essayez de commencer plus haut sur la page.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, onglet multisélectionné</translation>
 <translation id="641643625718530986">Imprimer…</translation>
+<translation id="6427723330233512782">Ajuster à la hauteur</translation>
 <translation id="6433501201775827830">Sélectionnez votre moteur de recherche</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6435307030888827407">Rester déconnecté</translation>
@@ -1435,6 +1438,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6937524809504266803">Personnalisation et association</translation>
 <translation id="6937876069006524083">Pseudo (facultatif)</translation>
 <translation id="6942665639005891494">Modifier à tout moment l'emplacement de téléchargement par défaut à l'aide de l'option de menu "Paramètres"</translation>
+<translation id="6944854424004126054">Restaurer la fenêtre</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="6955535239952325894">Ce paramètre est désactivé sur les navigateurs gérés</translation>
 <translation id="6963766334940102469">Supprimer des favoris</translation>
@@ -2015,9 +2019,11 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé en Picture-in-picture</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
+<translation id="949667118776341807">Faire pivoter</translation>
 <translation id="95817756606698420">Chrome peut utiliser <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pour les recherches effectuées en Chine. Vous pouvez modifier cette option dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Supprimer les données de navigation</translation>
 <translation id="963246339335003378">Ouvrir le gestionnaire de tâches</translation>
+<translation id="966337994629449077">Vous êtes connecté en tant que <ph name="FROM_EMAIL" />.\n\nPour continuer depuis votre ordinateur, connectez-vous à <ph name="TO_EMAIL" />. Vous pourrez accéder aux mots de passe et aux favoris de ce compte, et plus encore.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>

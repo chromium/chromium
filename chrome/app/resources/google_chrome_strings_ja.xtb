@@ -147,6 +147,7 @@
 <translation id="2580411288591421699">実行中の Google Chrome と同じバージョンをインストールすることはできません。Google Chrome を閉じてからもう一度お試しください。</translation>
 <translation id="2586406160782125153">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="259935314519650377">ダウンロードしたインストーラのキャッシュに失敗しました。エラー: <ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2608461706055011366">Gemini in Chrome でこのドキュメントの概要をすばやく把握し、質問することができます</translation>
 <translation id="2620436844016719705">システム</translation>
 <translation id="263447411082773721">パスワード、ブックマーク、履歴をデバイス間で完全に同期できます。既定のブラウザを Chrome に変更すると、お馴染みの機能を簡単に利用できるようになります。Chrome はタスクバーに固定され、すばやくアクセスできます。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -154,6 +155,7 @@
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
 <translation id="2665296953892887393">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Google Chrome の機能向上に役立てる</translation>
 <translation id="2668094785979141847">クリックして Google レンズを終了</translation>
+<translation id="2674238339205910678">アカウントのログイン情報が最新でないため、ChromeOS Flex は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="2681444469812712297">Google Chrome の新しいタブで <ph name="URL" /> を開きます。</translation>
 <translation id="2699790011615497488">Gemini in Chrome Beta を開く</translation>
 <translation id="2712141162840347885">Google レンズで検索する範囲を選択してください。Esc キーを押すと Google レンズを終了します</translation>
@@ -527,6 +529,7 @@
 <translation id="6497147134301593682">Chrome は自動的に終了しました</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ログイン時にエラーが発生したため、ChromeOS Flex は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="6520670145826811516">位置情報を使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="652948702951888897">Chrome 履歴</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary を開く</translation>
@@ -574,6 +577,7 @@
 <translation id="7011190694940573312">このバージョンのオペレーティング システムはサポートされていないため、インストールできませんでした。</translation>
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">こちらで Chrome プロファイルを切り替えることができます</translation>
+<translation id="7026856149118332950">Windows の通知で [<ph name="BEGIN_BOLD" />はい<ph name="END_BOLD" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります。</translation>
 <translation id="7047386856539490735">この結果は役に立ちましたか？</translation>
 <translation id="7051685429025310665">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました。</translation>
 <translation id="7059914902409643750">Chrome を自分用にカスタマイズ</translation>
@@ -666,6 +670,7 @@
 <translation id="7890208801193284374">パソコンを共有している場合、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
 <translation id="7896673875602241923">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chrome にログインしました。情報を個別に保持するには、新しい Chrome ユーザーを作成してください。</translation>
 <translation id="7904985524660297937">Gemini in Google Chrome にアクセス</translation>
+<translation id="7905880575591690197">ログイン時にエラーが発生したため、ChromeOS は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="7917876797003313048">ログインする Google アカウントを管理できます。Google アカウントは、Chrome ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">このダウンロードは Chrome でブロックされました。ファイルが虚偽のもので、デバイスに予期しない変更を加える可能性があります</translation>
 <translation id="7951272445806340501">アップデートを適用するには ChromeOS Flex を再起動する必要があります。</translation>
@@ -741,6 +746,7 @@
 <translation id="8624541899164515475">設定、新しいタブで開きます。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome は 1 分後に再起動されます}other{Chrome は # 分後に再起動されます}}</translation>
 <translation id="8637932705841171563">ウィンドウを共有するには、[システム設定] で Chrome に画面の録画を許可してください。</translation>
+<translation id="8642497536370021917">Google アカウントで Chrome のデータを使用、保存できるようにするには、本人確認を行ってください</translation>
 <translation id="8656634243791296665">Gemini in Chrome Dev を開く</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">この拡張機能では、Chrome の起動時に表示されるページも制御されます。</translation>
@@ -790,6 +796,7 @@
 <translation id="93760716455950538">ChromeOS Flex を再起動</translation>
 <translation id="943390475793766444">このファイルは危害を及ぼす可能性があるため、スキャンすることをおすすめします。</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
+<translation id="973195869036269770">アカウントのログイン情報が最新でないため、ChromeOS は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="983803489796659991">更新サーバーにアプリケーションのハッシュデータがないため、インストールできませんでした。</translation>
 <translation id="989369509083708165">既定のブラウザは Google Chrome です</translation>
 <translation id="989816563149873169">Chrome プロフィールを切り替えるには、<ph name="SHORTCUT" /> を使用します</translation>

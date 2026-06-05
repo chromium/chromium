@@ -356,6 +356,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="253498598929009420">El sitio podrá ver el contenido de tu pantalla</translation>
 <translation id="2535807170289627159">Todas las pestañas</translation>
 <translation id="2536728043171574184">Se muestra una copia sin conexión de esta página</translation>
+<translation id="2537574774089209541">Algunas herramientas se han movido para que puedas acceder fácilmente a Gemini mientras navegas</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, pestaña de Incógnito silenciada seleccionada fijada</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestaña</translation>
@@ -404,6 +405,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2751271371269891762">Inicia sesión como <ph name="EMAIL" /> para acceder a tus marcadores y otras opciones en todos tus dispositivos</translation>
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2762000892062317888">justo ahora</translation>
+<translation id="276378135349383280">Mostrar Gemini en la barra de herramientas inferior</translation>
 <translation id="276969039800130567">Has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">ha fallado</translation>
@@ -603,6 +605,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3614126103057878858">Estadísticas sobre precios</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Comprueba que <ph name="DOWNLOAD_DOMAIN" /> sea de confianza</translation>
 <translation id="3619255692378312441">Gestionar acceso</translation>
 <translation id="3622349720008044802">Gestionar ventanas</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sitio}other{+ # sitios}}</translation>
@@ -633,6 +636,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3738139272394829648">Tocar para buscar</translation>
 <translation id="3739455665973395693">No hay contraseñas vulneradas en tu cuenta de Google</translation>
 <translation id="3739899004075612870">Marcador añadido a <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Comprueba que este sitio sea de confianza</translation>
 <translation id="3740525748616366977">La búsqueda por voz no está disponible en este dispositivo</translation>
 <translation id="3763110477555836428">Se rellenará un número de tarjeta virtual cuando pagues con esta tarjeta para proteger tus datos reales. Puedes gestionar esto en Google Wallet. <ph name="BEGIN_LINK1" />Más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Algunos datos aún no se han guardado</translation>
@@ -641,6 +645,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3771290962915251154">Este ajuste está inhabilitado porque el control parental está activado</translation>
 <translation id="3771694256347217732">Términos del Servicio de Google</translation>
 <translation id="3777796259512476958">Cierra tu sesión en la mayoría de los sitios.</translation>
+<translation id="3786379886124795923">Has escaneado un código QR para iniciar sesión en Chrome. Confirma que quieres obtener las contraseñas, los marcadores y otro contenido de este perfil.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestaña}other{# pestañas}}</translation>
 <translation id="3792938779249970121">Seleccionar una cuenta</translation>
 <translation id="3795154175078851242">Copiar imagen con enlace</translation>
@@ -825,6 +830,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4532845899244822526">Seleccionar carpeta</translation>
 <translation id="4535755320005483982">Grupo de pestañas <ph name="GROUP_TITLE" /> compartido</translation>
 <translation id="4537137366307982887">Aceptación de notificaciones de consejos abierta a altura completa</translation>
+<translation id="4537987892902330164">Has mantenido la sesión iniciada como <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">No hay ninguna hoja de llaves de acceso</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestaña}other{<ph name="TAB_COUNT_MANY" /> pestañas, <ph name="TAB_COUNT_INCOGNITO" /> de incógnito}}</translation>
 <translation id="4558311620361989323">Combinaciones de teclas en páginas web</translation>
@@ -1282,6 +1288,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6411219469806822692">No se puede ir más arriba. Intenta empezar desde más arriba de la página.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, pestaña en selección múltiple</translation>
 <translation id="641643625718530986">Imprimir…</translation>
+<translation id="6427723330233512782">Ajustar a la altura</translation>
 <translation id="6433501201775827830">Elige tu buscador</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6435307030888827407">Mantener sesión cerrada</translation>
@@ -1435,6 +1442,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6937524809504266803">Personalización y vinculación</translation>
 <translation id="6937876069006524083">Nombre (opcional)</translation>
 <translation id="6942665639005891494">Cambia la ubicación predeterminada de las descargas en cualquier momento con la opción del menú Configuración</translation>
+<translation id="6944854424004126054">Restaura la ventana</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6955535239952325894">Este ajuste está inhabilitado en los navegadores gestionados</translation>
 <translation id="6963766334940102469">Eliminar marcadores</translation>
@@ -1528,6 +1536,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7291910923717764901">Descripciones de imágenes añadidas para esta página</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, pestaña que comparte contenido fijada seleccionada</translation>
+<translation id="7304003340539141201">Pídele a Gemini que te ayude con tus pestañas y tareas</translation>
 <translation id="7311244614769792472">No se han encontrado resultados</translation>
 <translation id="7314734791127433392">No se pueden comprobar las contraseñas</translation>
 <translation id="7324354302972299151">Enviar una solicitud "Do Not Track"</translation>
@@ -1874,6 +1883,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8696297579102085705">Enviar a tu dispositivo</translation>
 <translation id="8697753151306746444">En su lugar, comparte la ventana o la pantalla</translation>
 <translation id="8699120352855309748">No ofrecer que se traduzcan estos idiomas</translation>
+<translation id="8700565880437506364">Presentamos Gemini en Chrome</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="8715286883001906001">Refuerza tus contraseñas en tu cuenta de Google</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> se cerrará</translation>
@@ -1941,6 +1951,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998837250940831980">No se ha podido minimizar la pestaña. Inténtalo de nuevo más tarde.</translation>
 <translation id="9001604755921395912">Abrir pestaña Incógnito Chrome</translation>
+<translation id="9010094279589497751">Abre Gemini rápidamente cuando lo necesites</translation>
 <translation id="9012585441087414258">Protege frente a sitios, descargas y extensiones que se sabe que son peligrosos. Si una página hace algo sospechoso, las URLs y los fragmentos de contenido de la página se envían a Navegación segura de Google.</translation>
 <translation id="9019199799064251516">¿Continuar sin un bloqueo de perfil del coche?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
@@ -1998,6 +2009,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="9190355771000652811">En la barra de direcciones, usa esta combinación de teclas con atajos para buscadores y búsquedas en sitios.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestaña de Incógnito fija seleccionada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Comprobado hace 1 minuto}other{Comprobado hace # minutos}}</translation>
+<translation id="9202894533863490414">¿Descargar desde este sitio?</translation>
 <translation id="9204836675896933765">1 archivo restante</translation>
 <translation id="9205933215779845960">No se puede encontrar la página. Comprueba que la hayas escrito bien o prueba a buscarla en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2015,9 +2027,11 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, pestaña de Incógnito de imagen en imagen fijada</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
+<translation id="949667118776341807">Girar</translation>
 <translation id="95817756606698420">Chrome puede utilizar <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para hacer búsquedas en China. Puedes cambiar esta opción en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Borrar datos navegación</translation>
 <translation id="963246339335003378">Abrir administrador de tareas</translation>
+<translation id="966337994629449077">Has iniciado sesión como <ph name="FROM_EMAIL" />.\n\nPara continuar desde tu ordenador, cambia a <ph name="TO_EMAIL" />. Podrás acceder a las contraseñas, los marcadores y otro contenido de esta cuenta.</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>

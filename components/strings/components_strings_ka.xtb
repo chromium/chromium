@@ -850,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />-ზე ნაკლები. შესაძლოა, ზოგიერთი საიტი შემდეგ ვიზიტზე უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="2316090909467242775">ცადეთ ეს სათადარიგო პაროლი</translation>
 <translation id="2316159751672436664">მარტივი წვდომის ხელსაწყოების პერსონალიზირება ChromeOS პარამეტრებიდან</translation>
-<translation id="2316887270356262533">გამოთავისუფლდება 1 მბაიტზე ნაკლები. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> საჭიროებს მომხმარებლის სახელსა და პაროლს.</translation>
 <translation id="2318594867107319532">წესების ბოლო დროის ანაბეჭდი:</translation>
 <translation id="2320564945062300737">სახის მოვლის საშუალებები</translation>
@@ -3403,7 +3402,6 @@
 <translation id="633348045801643466">ანგარიშსწორებისას <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />მოგვიანებით გადახდის<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ვარიანტების ჩვენება</translation>
 <translation id="6335029926534404762">სპორტული ფეხსაცმელი</translation>
 <translation id="6336948221660696475">VR არ არის ნებადართული</translation>
-<translation id="6337133576188860026">გამოთავისუფლდება <ph name="SIZE" /> ან ნაკლები. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="6337534724793800597">ფილტრის წესები სახელის მიხედვით</translation>
 <translation id="633770708279464947">მნიშვნელობა <ph name="SECURE_DNS_SALT" /> არასწორია და არ იქნება გამოყენებული.</translation>
 <translation id="6338645927051849741">პაროლი • Google პაროლების მმართველი</translation>
@@ -3953,7 +3951,6 @@
 <translation id="718872491229180389">ჩირლიდინგი</translation>
 <translation id="7188840756966467339">გადატვირთვა და წესების ამოქმედება</translation>
 <translation id="7192188280913829296">ატრიბუტი „vendor_id“, ასევე, უნდა იყოს განსაზღვრული.</translation>
-<translation id="7192203810768312527">გამოთავისუფლდება <ph name="SIZE" />. ზოგიერთი საიტი შემდეგი მონახულებისას შეიძლება უფრო ნელა ჩაიტვირთოს.</translation>
 <translation id="7192537357091279678">კომპიუტერული დისკები და მეხსიერებები</translation>
 <translation id="7193661028827781021">ცნობარი</translation>
 <translation id="719464814642662924">Visa</translation>

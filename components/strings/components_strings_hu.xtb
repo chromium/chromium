@@ -849,7 +849,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2316087952091171402">Kevesebb mint <ph name="UPPER_ESTIMATE" /> maradt. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="2316090909467242775">Próbálja ki ezt a helyreállítási jelszót</translation>
 <translation id="2316159751672436664">Személyre szabhatja a kisegítő lehetőségeket a ChromeOS beállításaiban</translation>
-<translation id="2316887270356262533">1 MB-nál kevesebb hely szabadul fel. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="2317259163369394535">A(z) <ph name="DOMAIN" /> felhasználónevet és jelszót kér.</translation>
 <translation id="2318594867107319532">Irányelv legutóbbi időbélyege:</translation>
 <translation id="2320564945062300737">Arcápolási termékek</translation>
@@ -3397,7 +3396,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="633348045801643466"><ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />Későbbi fizetési<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> lehetőségek megjelenítése fizetéskor</translation>
 <translation id="6335029926534404762">Sportcipők</translation>
 <translation id="6336948221660696475">VR nincs engedélyezve</translation>
-<translation id="6337133576188860026"><ph name="SIZE" />-nál kevesebb hely szabadul fel. Előfordulhat, hogy egyes webhelyek lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="6337534724793800597">Házirendek szűrése név szerint</translation>
 <translation id="633770708279464947">A(z) <ph name="SECURE_DNS_SALT" /> érték érvénytelen, és nem fogja használni a rendszer.</translation>
 <translation id="6338645927051849741">Jelszó • Google Jelszókezelő</translation>
@@ -3948,7 +3946,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="718872491229180389">Pomponlányok</translation>
 <translation id="7188840756966467339">Újraindítás és a házirendek alkalmazása</translation>
 <translation id="7192188280913829296">A „vendor_id” attribútumot is meg kell adni.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> szabadul fel. Előfordulhat, hogy bizonyos oldalak lassabban töltődnek be, amikor legközelebb felkeresi őket.</translation>
 <translation id="7192537357091279678">Számítógépes meghajtók és tárolóeszközök</translation>
 <translation id="7193661028827781021">Referenciák</translation>
 <translation id="719464814642662924">Visa</translation>

@@ -849,7 +849,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2316087952091171402">Llai na <ph name="UPPER_ESTIMATE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n fwy araf ar eich ymweliad nesaf.</translation>
 <translation id="2316090909467242775">Rhowch gynnig ar y cyfrinair adfer hwn</translation>
 <translation id="2316159751672436664">Personoleiddio'ch offer hygyrchedd yng ngosodiadau ChromeOS</translation>
-<translation id="2316887270356262533">Yn creu llai nag 1 MB. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="2317259163369394535">Mae <ph name="DOMAIN" /> yn gofyn am enw defnyddiwr a chyfrinair.</translation>
 <translation id="2318594867107319532">Stamp amser polisi diweddar</translation>
 <translation id="2320564945062300737">Cynhyrchion Gofal Wyneb</translation>
@@ -3400,7 +3399,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="633348045801643466">Dangos opsiynau <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />talu'n ddiweddarach<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> wrth dalu</translation>
 <translation id="6335029926534404762">Esgidiau Athletig</translation>
 <translation id="6336948221660696475">Ni chaniateir VR</translation>
-<translation id="6337133576188860026">Yn creu llai na <ph name="SIZE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="6337534724793800597">Hidlo polisïau yn ôl enw</translation>
 <translation id="633770708279464947">Mae'r gwerth <ph name="SECURE_DNS_SALT" /> yn annilys ac ni chaiff ei ddefnyddio.</translation>
 <translation id="6338645927051849741">Cyfrinair • Rheolwr Cyfrineiriau Google</translation>
@@ -3950,7 +3948,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="718872491229180389">Codi hwyl</translation>
 <translation id="7188840756966467339">Ailgychwyn a chymhwyso polisïau</translation>
 <translation id="7192188280913829296">Rhaid nodi'r briodwedd "vendor_id" hefyd.</translation>
-<translation id="7192203810768312527">Yn creu <ph name="SIZE" />. Mae'n bosib y bydd rhai gwefannau yn llwytho'n arafach ar eich ymweliad nesaf.</translation>
 <translation id="7192537357091279678">Gyriannau a Storfa Cyfrifiaduron</translation>
 <translation id="7193661028827781021">Cyfeiriad</translation>
 <translation id="719464814642662924">Visa</translation>

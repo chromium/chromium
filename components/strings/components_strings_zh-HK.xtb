@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">內衣</translation>
 <translation id="1458770162980644530">「先買後付」嘅服務條款畫面。隱藏咗鍵盤。</translation>
 <translation id="1459693405370120464">天氣</translation>
+<translation id="1460317464907341501">要自動驗證此電郵嗎？</translation>
 <translation id="1461041542809785877">效能</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用電腦上的字型，以便製作高傳真度內容</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402">小於 <ph name="UPPER_ESTIMATE" />。下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="2316090909467242775">試用此復原密碼</translation>
 <translation id="2316159751672436664">在 Chrome OS 設定中個人化您的無障礙工具</translation>
-<translation id="2316887270356262533">釋出的快取不到 1 MB。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
 <translation id="2318594867107319532">上次政策時間戳記：</translation>
 <translation id="2320564945062300737">面部護理產品</translation>
@@ -2004,6 +2004,7 @@
 <translation id="412601465078863288">上載逾時</translation>
 <translation id="4127317221386336246">服裝配飾</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表格資料}other{以及另外 # 項表格資料}}</translation>
+<translation id="4129810348470013900">發生問題，請檢查你的互聯網連線，然後再試一次。</translation>
 <translation id="4129992181550680635">教育資源</translation>
 <translation id="4130226655945681476">檢查網絡連接線、數據機或路由器</translation>
 <translation id="4132448310531350254">應用程式「<ph name="POLICY_IDS_LIST" />」參照的 file_extension「<ph name="FILE_EXTENSION" />」被指派給多個處理常式。</translation>
@@ -3021,6 +3022,7 @@
 <translation id="5728246486828755318">可以要求使用進階打印機功能</translation>
 <translation id="5729442113829771034">幼兒教育</translation>
 <translation id="5730040223043577876">如果您已在其他網站上重用密碼，Chrome 建議您重設密碼。</translation>
+<translation id="5735174108294025227">已驗證的電子郵件地址會顯示在這裡</translation>
 <translation id="573555826359077410">建立表格按鈕，啟動之後就可以喺喺「Google 表格」度快速建立新表格</translation>
 <translation id="5738385766833540397">管理如何接收已追蹤產品的減價通知</translation>
 <translation id="5739619009927381786">在下一個步驟中解鎖螢幕，通常是使用指紋。你亦可<ph name="BEGIN_LINK" />透過其他方法驗證<ph name="END_LINK" />。</translation>
@@ -3399,7 +3401,6 @@
 <translation id="633348045801643466">在結帳頁面顯示<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />稍後付款<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />選項</translation>
 <translation id="6335029926534404762">運動鞋</translation>
 <translation id="6336948221660696475">不允許使用 VR</translation>
-<translation id="6337133576188860026">釋的快取不到 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統將不會使用該值。</translation>
 <translation id="6338645927051849741">密碼 • Google 密碼管理工具</translation>
@@ -3950,7 +3951,6 @@
 <translation id="718872491229180389">啦啦隊</translation>
 <translation id="7188840756966467339">重新啟動並套用政策</translation>
 <translation id="7192188280913829296">亦必須指定「vendor_id」屬性。</translation>
-<translation id="7192203810768312527">釋出 <ph name="SIZE" />。在您下次瀏覽部分網站時，載入速度可能會變慢。</translation>
 <translation id="7192537357091279678">電腦硬碟和儲存裝置</translation>
 <translation id="7193661028827781021">參考資料</translation>
 <translation id="719464814642662924">Visa</translation>

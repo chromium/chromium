@@ -641,6 +641,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3771290962915251154">Ovo podešavanje je onemogućeno zato što je uključen roditeljski nadzor</translation>
 <translation id="3771694256347217732">Google uslovi korišćenja usluge</translation>
 <translation id="3777796259512476958">Odjaviće vas sa većine sajtova</translation>
+<translation id="3786379886124795923">Skenirali ste QR kôd da biste se prijavili u Chrome. Potvrdite da želite da preuzmete lozinke, obeleživače i drugo sa ovog profila.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="3792938779249970121">Izaberite nalog</translation>
 <translation id="3795154175078851242">Kopiraj sliku sa linkom</translation>
@@ -825,6 +826,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4532845899244822526">Izaberite folder</translation>
 <translation id="4535755320005483982">Deljena grupa kartica <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Opcija za omogućavanje obaveštenja o savetima je otvorena na celom ekranu</translation>
+<translation id="4537987892902330164">Ostali ste prijavljeni kao <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Nema tabele sa pristupnim ključevima</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> bez arhiviranja}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> bez arhiviranja}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> bez arhiviranja}}</translation>
 <translation id="4558311620361989323">Prečice za veb-stranice</translation>
@@ -1282,6 +1284,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6411219469806822692">Ne možete da odete više. Probajte da počnete sa veće visine na stranici.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, višestruko izabrana kartica</translation>
 <translation id="641643625718530986">Štampaj...</translation>
+<translation id="6427723330233512782">Uklopi po visini</translation>
 <translation id="6433501201775827830">Izaberite pretraživač</translation>
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6435307030888827407">Ostanite odjavljeni</translation>
@@ -1435,6 +1438,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6937524809504266803">Personalizacija i povezivanje</translation>
 <translation id="6937876069006524083">Nadimak (opcionalno)</translation>
 <translation id="6942665639005891494">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku pomoći opcije u meniju Podešavanja</translation>
+<translation id="6944854424004126054">Vratite prozor</translation>
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6955535239952325894">Ovo podešavanje je onemogućeno u pregledačima kojima se upravlja</translation>
 <translation id="6963766334940102469">Izbriši obeleživače</translation>
@@ -2015,9 +2019,11 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="939598580284253335">Unesite pristupnu frazu</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, zakačena kartica bez arhiviranja u režimu slike u slici</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
+<translation id="949667118776341807">Rotiraj</translation>
 <translation id="95817756606698420">Chrome može da koristi <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> za pretragu u Kini. Ovo možete da promenite u <ph name="BEGIN_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Izbriši podatke pregledanja</translation>
 <translation id="963246339335003378">Otvori Menadžer zadataka</translation>
+<translation id="966337994629449077">Prijavljeni ste kao <ph name="FROM_EMAIL" />.\n\nDa biste nastavili sa računara, pređite na <ph name="TO_EMAIL" />. Dobićete lozinke, obeleživače i drugo sa ovog naloga.</translation>
 <translation id="970715775301869095">Još <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Oflajn</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>

@@ -156,6 +156,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
 <translation id="2665296953892887393">Ajudeu a millorar Google Chrome; envieu informes d'error i <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2668094785979141847">Fes clic per sortir de Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex no ha pogut desar les dades de Chrome al teu Compte de Google perquè els detalls d'inici de sessió del compte no estan actualitzats</translation>
 <translation id="2681444469812712297">Obre <ph name="URL" /> en una pestanya nova a Google Chrome.</translation>
 <translation id="2699790011615497488">Obre Gemini a Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona el que vulguis per cercar-ho amb Google Lens o prem Esc per sortir de Google Lens</translation>
@@ -530,6 +531,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6497147134301593682">Chrome s'ha tancat automàticament</translation>
 <translation id="6506909944137591434">Chrome necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex no ha pogut desar les dades de Chrome al teu Compte de Google a causa d'un error en iniciar la sessió</translation>
 <translation id="6520670145826811516">Per poder utilitzar la ubicació, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532945796722480006">Obre Gemini a Chrome Canary</translation>
@@ -577,6 +579,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7011190694940573312">La instal·lació ha fallat perquè aquesta versió del sistema operatiu no és compatible.</translation>
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025800014283535195">Pots canviar entre perfils de Chrome aquí</translation>
+<translation id="7026856149118332950">Fes clic a <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> a la notificació de Windows per fixar Chrome a la barra de tasques i accedir-hi ràpidament.</translation>
 <translation id="7047386856539490735">Aquests resultats són útils?</translation>
 <translation id="7051685429025310665">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
@@ -669,6 +672,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7890208801193284374">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chrome com vulguin.</translation>
 <translation id="7896673875602241923">Algú ha iniciat anteriorment la sessió a Chrome en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chrome per mantenir la informació separada.</translation>
 <translation id="7904985524660297937">Prova Gemini a Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS no ha pogut desar les dades de Chrome al teu Compte de Google a causa d'un error en iniciar la sessió</translation>
 <translation id="7917876797003313048">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chrome, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
 <translation id="7951272445806340501">Cal reiniciar ChromeOS Flex per aplicar l'actualització.</translation>
@@ -793,6 +797,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="93760716455950538">Reinicia ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome recomana que s'analitzi aquest fitxer perquè pot ser perillós.</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
+<translation id="973195869036269770">ChromeOS no ha pogut desar les dades de Chrome al teu Compte de Google perquè els detalls d'inici de sessió del compte no estan actualitzats</translation>
 <translation id="983803489796659991">La instal·lació ha fallat perquè el servidor d'actualitzacions no disposa de dades de valor resum per a l'aplicació.</translation>
 <translation id="989369509083708165">Google Chrome és el navegador predeterminat</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet canviar entre perfils de Chrome</translation>

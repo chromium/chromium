@@ -356,6 +356,7 @@
 <translation id="253498598929009420">সাইটটি আপনার স্ক্রিনের কন্টেন্ট দেখতে পারবে</translation>
 <translation id="2535807170289627159">সব ট্যাব</translation>
 <translation id="2536728043171574184">এই পৃষ্ঠার একটি অফলাইন কপি দেখছেন</translation>
+<translation id="2537574774089209541">ব্রাউজ করার সময় Gemini-তে সহজে অ্যাক্সেস পাওয়ার জন্য কিছু টুল সরিয়ে দেওয়া হয়েছে</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা মিউট করা ছদ্মবেশী ট্যাব</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ট্যাব</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">আপনার সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পেতে, <ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">এখনই</translation>
+<translation id="276378135349383280">বটম টুলবারে Gemini দেখুন</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> রূপে প্রবেশ করেছেন৷</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> সেকেন্ড বাকি আছে</translation>
 <translation id="2779651927720337254">করা যায়নি</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3614126103057878858">প্রাইস ইনসাইট</translation>
 <translation id="3616113530831147358">অডিও</translation>
+<translation id="3616798734782988169"><ph name="DOWNLOAD_DOMAIN" /> যে আপনার বিশ্বস্ত তা নিশ্চিত করুন</translation>
 <translation id="3619255692378312441">অ্যাক্সেস ম্যানেজ করুন</translation>
 <translation id="3622349720008044802">উইন্ডো ম্যানেজ করুন</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ ১টি সাইট}one{+ #টি সাইট}other{+ #টি সাইট}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">স্পর্শের মাধ্যমে সার্চ</translation>
 <translation id="3739455665973395693">আপনার Google অ্যাকাউন্ট চুরি হয়ে যাওয়া কোনও পাসওয়ার্ড নেই</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
+<translation id="3740290940447881599">নিশ্চিত করুন যে আপনি এই সাইটকে বিশ্বাস করেন</translation>
 <translation id="3740525748616366977">এই ডিভাইসে ভয়েস সার্চ উপলভ্য নেই</translation>
 <translation id="3763110477555836428">আপনার প্রকৃত বিবরণ সুরক্ষিত রাখতে, এই কার্ড দিয়ে চেক-আউট করার সময় একটি ভার্চুয়াল কার্ড নম্বর পূরণ করা হবে। Google Wallet-এ ম্যানেজ করুন। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">কিছু ডেটা এখনও সেভ হয়নি</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">অভিভাবকীয় নিয়ন্ত্রণ চালু থাকায় এই সেটিং বন্ধ আছে</translation>
 <translation id="3771694256347217732">Google পরিষেবার শর্তাবলী</translation>
 <translation id="3777796259512476958">বেশিরভাগ সাইট থেকে আপনাকে সাইন-আউট করিয়ে দেয়</translation>
+<translation id="3786379886124795923">Chrome-এ সাইন-ইন করার জন্য আপনি একটি QR কোড স্ক্যান করেছেন। কনফার্ম করুন যে আপনি এই প্রোফাইল থেকে পাসওয়ার্ড, বুকমার্ক ও আরও অনেক কিছু পেতে চান।</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{১টি ট্যাব}one{# টি ট্যাব}other{# টি ট্যাব}}</translation>
 <translation id="3792938779249970121">অ্যাকাউন্ট বেছে নিন</translation>
 <translation id="3795154175078851242">লিঙ্ক সহ ছবি কপি করুন</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">ফোল্ডার বেছে নিন</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> ট্যাব গ্রুপ শেয়ার করা হয়েছে</translation>
 <translation id="4537137366307982887">স্ক্রিনের নিচে অ্যাটাচ করা শিট সম্পূর্ণ খোলা অবস্থায়, সেখানে দেখানো পরামর্শের বিজ্ঞপ্তি অপ্ট-ইন করার স্ক্রিন</translation>
+<translation id="4537987892902330164">আপনি <ph name="NAME_OR_EMAIL" /> হিসেবে সাইন-ইন করে আছেন।</translation>
 <translation id="4543131175509360848">কোনও পাসকী শিট নেই</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ট্যাব}one{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_MANY" />টি ট্যাব, <ph name="TAB_COUNT_INCOGNITO" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="4558311620361989323">ওয়েবপৃষ্ঠার শর্টকাটগুলি</translation>
@@ -1282,6 +1288,7 @@
 <translation id="6411219469806822692">এর চেয়ে উপরে আর যেতে পারবেন না। পৃষ্ঠার উপর থেকে শুরু করার চেষ্টা করে দেখুন।</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া ট্যাব</translation>
 <translation id="641643625718530986">প্রিন্ট...</translation>
+<translation id="6427723330233512782">উচ্চতা অনুযায়ী</translation>
 <translation id="6433501201775827830">আপনার সার্চ ইঞ্জিন বেছে নিন</translation>
 <translation id="6434309073475700221">বাতিল</translation>
 <translation id="6435307030888827407">সাইন-আউট করে থাকুন</translation>
@@ -1435,6 +1442,7 @@
 <translation id="6937524809504266803">পছন্দমতো সাজিয়ে নেওয়া ও লিঙ্ক করা</translation>
 <translation id="6937876069006524083">ডাকনাম (ঐচ্ছিক)</translation>
 <translation id="6942665639005891494">সেটিংস মেনুর বিকল্পে গিয়ে যেকোনও সময় ডাউনলোডের ডিফল্ট লোকেশন পরিবর্তন করুন</translation>
+<translation id="6944854424004126054">উইন্ডো পুনরুদ্ধার করুন</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6955535239952325894">ম্যানেজ করা ব্রাউজারে এই সেটিং কাজ করে না</translation>
 <translation id="6963766334940102469">বুকমার্কগুলি মুছুন</translation>
@@ -1528,6 +1536,7 @@
 <translation id="7291910923717764901">এই পৃষ্ঠার জন্য ছবির বিবরণ যোগ করা হয়েছে</translation>
 <translation id="7293429513719260019">ভাষা বেছে নিন</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, বেছে নেওয়া পিন করা শেয়ারিং ট্যাব</translation>
+<translation id="7304003340539141201">আপনার ট্যাব ও টাস্কের ব্যাপারে সাহায্য পেতে Gemini-কে বলুন</translation>
 <translation id="7311244614769792472">কোনও ফলাফল পাওয়া যায়নি</translation>
 <translation id="7314734791127433392">পাসওয়ার্ড চেক করা যাচ্ছে না</translation>
 <translation id="7324354302972299151">“Do Not Track” অনুরোধ পাঠান</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8696297579102085705">আপনার ডিভাইসে পাঠান</translation>
 <translation id="8697753151306746444">এর পরিবর্তে উইন্ডো বা স্ক্রিন শেয়ার করুন</translation>
 <translation id="8699120352855309748">এইসব ভাষায় অনুবাদ হবে না</translation>
+<translation id="8700565880437506364">Chrome-এ Gemini চালু করা হচ্ছে</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8715286883001906001">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড শক্তিশালী করুন</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> বন্ধ করা হবে</translation>
@@ -1941,6 +1951,7 @@
 <translation id="8996847606757455498">অন্য একটি পরিষেবা প্রদানকারী বেছে নিন</translation>
 <translation id="8998837250940831980">ট্যাব ছোট করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="9001604755921395912">ছদ্মবেশী Chrome ট্যাবে খুলুন</translation>
+<translation id="9010094279589497751">প্রয়োজন হলেই দ্রুত Gemini খুলুন</translation>
 <translation id="9012585441087414258">বিপজ্জনক হতে পারে এমন সাইট, ডাউনলোড ও এক্সটেনশন থেকে সুরক্ষিত রাখে। কোনও পৃষ্ঠাতে সন্দেহজনক কিছু পাওয়া গেলে, URL ও পৃষ্ঠার কন্টেন্টের কিছু অংশ Google Safe Browsing-এ পাঠানো হয়।</translation>
 <translation id="9019199799064251516">গাড়ির প্রোফাইল লক ছাড়াই চালিয়ে যেতে চান?</translation>
 <translation id="9022774213089566801">আপনি প্রায়ই দেখেন</translation>
@@ -1998,6 +2009,7 @@
 <translation id="9190355771000652811">সার্চ ইঞ্জিন এবং সাইট সার্চের শর্টকাট চালু করতে অ্যাড্রেস বারে এই কীবোর্ড শর্টকাট ব্যবহার করুন।</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, পিন করা বেছে নেওয়া ছদ্মবেশী ট্যাব</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিট আগে চেক করা হয়েছে}one{# মিনিট আগে চেক করা হয়েছে}other{# মিনিট আগে চেক করা হয়েছে}}</translation>
+<translation id="9202894533863490414">এই সাইট থেকে ডাউনলোড করবেন?</translation>
 <translation id="9204836675896933765">১টি ফাইল বাকি</translation>
 <translation id="9205933215779845960">এই পৃষ্ঠাটি খুঁজে পাওয়া যাচ্ছে না। আপনার লেখা বানান চেক করুন বা <ph name="SEARCH_ENGINE" />-এ সার্চ করে দেখুন।</translation>
 <translation id="9206873250291191720">আ</translation>
@@ -2015,9 +2027,11 @@
 <translation id="939598580284253335">পাসফ্রেজ প্রবেশ করান</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, পিন করা ছবির-মধ্যে-ছবি ছদ্মবেশী ট্যাব</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
+<translation id="949667118776341807">ঘোরান</translation>
 <translation id="95817756606698420">Chrome, চীনে সার্চের জন্য <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> কে ব্যবহার করতে পারে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে এটি পরিবর্তন করতে পারেন।</translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>
 <translation id="963246339335003378">Task Manager খুলুন</translation>
+<translation id="966337994629449077">আপনি <ph name="FROM_EMAIL" /> হিসেবে সাইন-ইন করেছেন।\n\nআপনার কম্পিউটার থেকে চালিয়ে যেতে, <ph name="TO_EMAIL" />-এ সুইচ করুন। আপনি এই অ্যাকাউন্ট থেকে পাসওয়ার্ড, বুকমার্ক ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকি আছে</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>

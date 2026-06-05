@@ -70,6 +70,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1749104137266986751">Wakati kiendelezi cha HTTPS hakipatikani, Chromium itatumia muunganisho usio salama bila kukutahadharisha</translation>
 <translation id="1774152462503052664">Acha Chromium iendeshe katika mandharinyuma</translation>
 <translation id="1779356040007214683">Ili kufanya Chromium salama zaidi, tumezima baadhi ya viendelezi ambavyo havijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na ambavyo huendwa viliongezwa pasipo ridhaa yako.</translation>
+<translation id="1793486931176048546">Bofya <ph name="BEGIN_BOLD" />Ndiyo<ph name="END_BOLD" /> kwenye arifa ya Windows ili ubandike Chromium kwenye upauzana wako ili uifikie kwa haraka.</translation>
 <translation id="1808667845054772817">Sakinisha Chromium Upya</translation>
 <translation id="1820835682567584003">Chromium inajaribu <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Utakapofungua Chromium tena kwenye <ph name="DEVICE_TYPE" /> yako, utaona kidokezo cha kutumia Kidhibiti cha Manenosiri cha Google.</translation>
@@ -385,6 +386,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5346389065299425353">Boresha utafutaji wako kwa kuweka vichupo, faili na zana nyingi</translation>
 <translation id="5352264705793813212">Chromium imepata baadhi ya mapendekezo ya usalama unayopaswa kukagua</translation>
 <translation id="5352361688875342522">Wasifu Nyingine za Chromium</translation>
+<translation id="535243042947607642">ChromiumOS imeshindwa kuhifadhi data ya Chromium katika Akaunti yako ya Google kwa sababu maelezo yako ya kuingia katika akaunti yamepitwa na wakati</translation>
 <translation id="5358375970380395591">Unaingia katika akaunti inayodhibitiwa na kumpa msimamizi wa akaunti hiyo udhibiti wa wasifu wako kwenye Chromium. Data yako ya Chromium, kama vile programu zako, alamisho, historia, manenosiri, na mipangilio miingine itahusishwa na <ph name="USER_NAME" /> kabisa. Utaweza kufuta data hii kupitia Dashibodi ya Akaunti za Google, lakini hutaweza  kuunganisha data hii na akaunti nyingine. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Msimbo wa ziada: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Ili upate mapendeleo, jumuisha Chromium katika Historia ya Shughuli kwenye Wavuti na Programu</translation>
@@ -718,6 +720,7 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8852026904190808918">Lugha hii hutumika kuonyesha menyu, mipangilio, arifa na maandishi mengine katika Chromium</translation>
 <translation id="8862326446509486874">Huna haki zifaazo ili kufanya usakinishaji wa kiwango cha mfumo. Jaribu kutumia kisakinishi kama msimamiaji kompyuta.</translation>
 <translation id="8876044221123442390">Weka Wasifu wa Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS imeshindwa kuhifadhi data ya Chromium kwenye Akaunti yako ya Google kutokana na hitilafu wakati wa kuingia katika akaunti</translation>
 <translation id="8891709362986793894">Shirika lako linataka uingie katika akaunti ya Chromium</translation>
 <translation id="8907580949721785412">Chromium inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
 <translation id="8932992523185907506">Chromium haitumiki tena kama kivinjari chako chaguomsingi. Ungependa kuifanya Chromium kuwa kivinjari chaguomsingi?</translation>

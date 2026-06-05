@@ -356,6 +356,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="253498598929009420">यो साइटले तपाईंको स्क्रिनमा भएका सामग्री हेर्न सक्ने छ</translation>
 <translation id="2535807170289627159">सबै ट्याबहरू</translation>
 <translation id="2536728043171574184">यो पृष्ठको एक अफलाइन प्रतिलिपि हेर्दै</translation>
+<translation id="2537574774089209541">तपाईंलाई ब्राउज गर्ने क्रममा Gemini सजिलैसँग एक्सेस गर्न दिन केही टुलहरू सारिएका छन्</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ट्याब</translation>
@@ -404,6 +405,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2751271371269891762">आफ्ना सबै डिभाइसमा आफ्ना बुकमार्कलगायतका थप कुराहरू प्राप्त गर्न <ph name="EMAIL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="2760805590727089264">महिना / साल</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
+<translation id="276378135349383280">पुछारको टुलबारमा Gemini देखाउनुहोस्</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> को रूपमा साइन इन गरिएको।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> सेकेन्ड बाँकी छ</translation>
 <translation id="2779651927720337254">डाउनलोड गर्न सकिएन</translation>
@@ -603,6 +605,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3614126103057878858">मूल्यसम्बन्धी इनसाइटहरू</translation>
 <translation id="3616113530831147358">अडियो</translation>
+<translation id="3616798734782988169">तपाईंलाई <ph name="DOWNLOAD_DOMAIN" /> माथि विश्वास छ भनेर सुनिश्चित गर्नुहोस्</translation>
 <translation id="3619255692378312441">एक्सेस व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3622349720008044802">विन्डोहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ १ साइट}other{+ # वटा साइटहरू}}</translation>
@@ -633,6 +636,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3738139272394829648">खोज गर्न छुनुहोस्</translation>
 <translation id="3739455665973395693">तपाईंको Google खातामा सेभ गरिएको कुनै पनि पासवर्ड ह्याक वा चोरी भएको छैन</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
+<translation id="3740290940447881599">तपाईंलाई यो साइटमाथि विश्वास छ भनेर सुनिश्चित गर्नुहोस्</translation>
 <translation id="3740525748616366977">यो डिभाइसमा भ्वाइस सर्च उपलब्ध छैन</translation>
 <translation id="3763110477555836428">तपाईंको वास्तविक विवरण सुरक्षित राख्न तपाईंले यो कार्ड प्रयोग गरी चेकआउट गर्दा भर्चुअल कार्ड नम्बर हालिने छ। Google Wallet मा गई व्यवस्थापन गर्नुहोस्। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">अझै पनि केही डेटा सेभ गर्न बाँकी छ</translation>
@@ -1437,6 +1441,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6937524809504266803">पर्सनलाइज र लिंक गर्ने सुविधा</translation>
 <translation id="6937876069006524083">उपनाम (ऐच्छिक)</translation>
 <translation id="6942665639005891494">सेटिङहरू नामक मेनुको विकल्प प्रयोग गरी डिफल्ट डाउनलोड स्थान जुनसुकै बेला परिवर्तन गर्नुहोस्</translation>
+<translation id="6944854424004126054">विन्डो पुनः स्थापित गर्नु</translation>
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6955535239952325894">व्यवस्थापन गरिएका ब्राउजरहरूमा यो सेटिङ असक्षम पारिएको हुन्छ</translation>
 <translation id="6963766334940102469">बुकमार्कहरू मेट्नुहोस्</translation>
@@ -1530,6 +1535,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7291910923717764901">यो पेजमा फोटोसम्बन्धी विवरण हालिएको छ</translation>
 <translation id="7293429513719260019">भाषा चयन गर्नुहोस्</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको सेयरिङ ट्याब</translation>
+<translation id="7304003340539141201">आफ्ना ट्याब तथा कार्यहरूका सम्बन्धमा मद्दत गर्न Gemini लाई सोध्नुहोस्</translation>
 <translation id="7311244614769792472">कुनै पनि परिणाम भेटिएन</translation>
 <translation id="7314734791127433392">पासवर्डहरू जाँच्न सकिएन</translation>
 <translation id="7324354302972299151">“Do Not Track” अनुरोध पठाउनुहोस्</translation>
@@ -1876,6 +1882,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8696297579102085705">आफ्नो डिभाइसमा पठाउनुहोस्</translation>
 <translation id="8697753151306746444">यसको साटो विन्डो वा स्क्रिन सेयर गर्नुहोस्</translation>
 <translation id="8699120352855309748">यी भाषाहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
+<translation id="8700565880437506364">Chrome मा उपलब्ध Gemini प्रस्तुत गरिँदै छ</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8715286883001906001">तपाईंको Google खातामा सेभ गरिएका तपाईंका पासवर्डहरू अझ सुरक्षित बनाउनुहोस्</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> बन्द गरिने छ</translation>
@@ -1943,6 +1950,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8996847606757455498">अर्को सेवा प्रदायक छनौट गर्नुहोस्</translation>
 <translation id="8998837250940831980">ट्याब मिनिमाइज गर्न सकिएन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="9001604755921395912">Chrome को इन्कोग्निटो ट्याबमा खोल्नुहोस्</translation>
+<translation id="9010094279589497751">आफूलाई चाहिएको बेला तुरुन्तै Gemini खोल्नुहोस्</translation>
 <translation id="9012585441087414258">खतरनाक मानिने साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित राख्छ। कुनै पेजले केही शङ्कास्पद क्रियाकलाप गरेमा उक्त पेजको सामग्रीका URL र बिटहरू Google सुरक्षित ब्राउजिङमा पठाइन्छन्।</translation>
 <translation id="9019199799064251516">कार प्रोफाइल लकविनै जारी राख्ने हो?</translation>
 <translation id="9022774213089566801">बारम्बार हेरिएका</translation>
@@ -2000,6 +2008,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="9190355771000652811">एड्रेस बारमा सर्च इन्जिन र साइटमा खोज्ने विभिन्न सर्टकट समावेश भएको यो किबोर्ड सर्टकट प्रयोग गर्नुहोस्।</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, चयन गरिएको पिन गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{१ मिनेटअघि जाँच गरिएको}other{# मिनेटअघि जाँच गरिएको}}</translation>
+<translation id="9202894533863490414">यो साइटबाट डाउनलोड गर्ने हो?</translation>
 <translation id="9204836675896933765">१ फाइल बाँकी</translation>
 <translation id="9205933215779845960">उक्त पेज भेट्टाउन सकिएन। आफ्नो हिज्जे जाँच्नुहोस् वा <ph name="SEARCH_ENGINE" /> मा खोजी हेर्नुहोस्।</translation>
 <translation id="9206873250291191720">A</translation>

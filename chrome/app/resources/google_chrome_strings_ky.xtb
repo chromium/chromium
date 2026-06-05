@@ -160,6 +160,7 @@
 <translation id="2652691236519827073">Шилтемени жаңы Chrome &amp;өтмөгүндө ачуу</translation>
 <translation id="2665296953892887393">Google'га автоматтык түрдө каталар жана <ph name="UMA_LINK" /> жөнүндө кабар берип, Google Chrome'ду өркүндөткөнгө кол кабыш кылыңыз!</translation>
 <translation id="2668094785979141847">Google Lens'тен чыгуу үчүн чыкылдатыңыз</translation>
+<translation id="2674238339205910678">Аккаунтуңуздун кирүү маалыматы эскирип калгандыктан, ChromeOS Flex Google аккаунтуңузга Chrome маалыматын сактай алган жок</translation>
 <translation id="2681444469812712297"><ph name="URL" /> сайтын Google Chrome'догу жаңы өтмөктө ачыңыз.</translation>
 <translation id="2699790011615497488">Chrome Бетадагы Gemini'ды ачуу</translation>
 <translation id="2712141162840347885">Google Lens менен издөө үчүн каалаган нерсени тандаңыз же Google Lens кызматынан чыгуу үчүн Escape баскычын басыңыз.</translation>
@@ -538,6 +539,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6497147134301593682">Chrome автоматтык түрдө жабылды</translation>
 <translation id="6506909944137591434">Chrome'го айланаңыздын 3D картасын түзүү үчүн камераны колдонууга уруксат бериңиз</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520608191273161151">Кирүү катасынан улам, ChromeOS Flex Google аккаунтуңузга Chrome маалыматын сактай алган жок</translation>
 <translation id="6520670145826811516">Жүргөн жерди колдонуу үчүн Chrome'го <ph name="BEGIN_LINK" />системанын параметрлеринен<ph name="END_LINK" /> кирүүгө уруксат бериңиз</translation>
 <translation id="652948702951888897">Chrome таржымалы</translation>
 <translation id="6532945796722480006">Chrome Canary'деги Gemini'ды ачуу</translation>
@@ -585,6 +587,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7011190694940573312">Операциялык тутумдун бул версиясы колдоого алынбагандыктан, орнотулбай калды.</translation>
 <translation id="7024536598735240744">Топтомдон чыгаруу катасы: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Chrome профилдерин бул жерден которо аласыз</translation>
+<translation id="7026856149118332950">Ыкчам ачуу максатында Chrome'ду тапшырмалар тактасына кадоо үчүн Windows билдирмесиндеги <ph name="BEGIN_BOLD" />Ооба<ph name="END_BOLD" /> баскычын чыкылдатыңыз.</translation>
 <translation id="7047386856539490735">Бул табылган нерселер пайдалуу болдубу?</translation>
 <translation id="7051685429025310665">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү.</translation>
 <translation id="7059914902409643750">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
@@ -677,6 +680,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7890208801193284374">Компьютерди бөлүшсөңүз, жакындарыңыз өзүнчө серептеп, Chrome'ду өзүлөрүнө ылайыктап жөндөп алышат.</translation>
 <translation id="7896673875602241923">Буга чейин кимдир бирөө бул компьютерден Chrome'го <ph name="ACCOUNT_EMAIL_LAST" /> аккаунту менен кирген. Жеке маалыматыңызды өзүнчө сактоо үчүн жаңы Chrome колдонуучусун түзүңүз.</translation>
 <translation id="7904985524660297937">Google Chrome'догу Gemini'ды колдонуп көрүү</translation>
+<translation id="7905880575591690197">Кирүү катасынан улам, ChromeOS Google аккаунтуңузга Chrome маалыматын сактай алган жок</translation>
 <translation id="7917876797003313048">Кирип турган Google аккаунттарыңызды башкара аласыз. Google аккаунттарыңыз Chrome серепчисинде, Play Store'до, Gmail'де жана башка жерлерде колдонулат. Эгер кимдир бирөөнүн, мисалы, үй-бүлөлүк топтун мүчөсүнүн аккаунтун кошкуңуз келсе, жаңы адамды <ph name="DEVICE_TYPE" /> түзмөгүнө кошуп коюңуз. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Файл адаштыруучу болуп, түзмөгүңүзгө күтүлбөгөн өзгөртүүлөрдү киргизиши мүмкүн болгондуктан, Chrome бул жүктөп алууну бөгөттөдү</translation>
 <translation id="7951272445806340501">Жаңыртууну колдонуу үчүн ChromeOS Flex өчүрүлүп күйгүзүлүшү керек.</translation>
@@ -801,6 +805,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="93760716455950538">ChromeOS Flex'ти өчүрүп күйгүзүү</translation>
 <translation id="943390475793766444">Chrome бул файлды текшерүүнү сунуштайт. Ал кооптуу болушу мүмкүн.</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
+<translation id="973195869036269770">Аккаунтуңуздун кирүү маалыматы эскирип калгандыктан, ChromeOS Google аккаунтуңузга Chrome маалыматын сактай алган жок</translation>
 <translation id="983803489796659991">Орнотулган жок, анткени жаңыртуу серверинде колдонмонун хеш маалыматы жок.</translation>
 <translation id="989369509083708165">Google Chrome демейки серепчи катары колдонулат</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome профилдерин которо алат</translation>

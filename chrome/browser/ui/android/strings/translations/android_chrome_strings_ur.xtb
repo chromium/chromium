@@ -356,6 +356,7 @@
 <translation id="253498598929009420">سائٹ آپ کی اسکرین کے مواد کو دیکھ سکے گی</translation>
 <translation id="2535807170289627159">سبھی ٹیبز</translation>
 <translation id="2536728043171574184">اس صفحہ کی ایک آف لائن کاپی دیکھی جا رہی ہے</translation>
+<translation id="2537574774089209541">‏براؤز کرتے وقت آپ کو Gemini تک آسان رسائی فراہم کرنے کے لیے کچھ ٹولز کو منتقل کر دیا گیا ہے</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728">‫<ph name="TAB_TITLE" />، منتخب پن کردہ خاموش کردہ پوشیدگی ٹیب</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />، ٹیب</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">اپنے تمام آلات پر اپنے بُک مارکس اور مزید حاصل کرنے کے لیے، <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ابھی ابھی</translation>
+<translation id="276378135349383280">‏‫Gemini کو نیچے والے ٹول بار میں دکھائیں</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> سیکنڈ باقی</translation>
 <translation id="2779651927720337254">ناکام ہو گیا</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3614126103057878858">قیمت سے متعلق حقائق</translation>
 <translation id="3616113530831147358">آڈیو</translation>
+<translation id="3616798734782988169">یقینی بنائیں کہ آپ <ph name="DOWNLOAD_DOMAIN" /> پر بھروسہ کرتے ہیں</translation>
 <translation id="3619255692378312441">رسائی کا نظم کریں</translation>
 <translation id="3622349720008044802">ونڈوز کا نظم کریں</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 سائٹ}other{+ # سائٹس}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">تلاش کرنے کیلئے ٹچ کریں</translation>
 <translation id="3739455665973395693">‏آپ کے Google اکاؤنٹ میں کوئی متاثرہ پاس ورڈ نہیں ہے</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> میں بُک مارک کر دیا گیا</translation>
+<translation id="3740290940447881599">یقینی بنائیں کہ آپ اس سائٹ پر بھروسہ کرتے ہیں</translation>
 <translation id="3740525748616366977">اس آلہ پر صوتی تلاش دستیاب نہیں ہے</translation>
 <translation id="3763110477555836428">‏آپ کی اصل تفصیلات کی حفاظت کیلئے، آپ کے اس کارڈ سے چیک آؤٹ کرنے پر، ایک ورچوئل کارڈ نمبر پُر ہو جائے گا۔ ‫Google والٹ میں نظم کریں۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">کچھ ڈیٹا ابھی تک محفوظ نہیں ہوا ہے</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">یہ ترتیب غیر فعال ہے کیونکہ پیرنٹل کنٹرولز آن ہیں</translation>
 <translation id="3771694256347217732">‏Google کی سروس کی شرائط</translation>
 <translation id="3777796259512476958">اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے</translation>
+<translation id="3786379886124795923">‏آپ نے Chrome میں سائن ان کرنے کے لیے ایک QR کوڈ اسکین کیا۔ تصدیق کریں کہ آپ اس پروفائل سے پاس ورڈز، بُک مارکس وغیرہ حاصل کرنا چاہتے ہیں۔</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ٹیب}other{# ٹیبز}}</translation>
 <translation id="3792938779249970121">اکاؤنٹ منتخب کریں</translation>
 <translation id="3795154175078851242">لنک کے ساتھ تصویر کاپی کریں</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">فولڈر منتخب کریں</translation>
 <translation id="4535755320005483982">اشتراک کردہ <ph name="GROUP_TITLE" /> ٹیب گروپ</translation>
 <translation id="4537137366307982887">تجاویز کی اطلاعات کا آپٹ ان مکمل کھلا ہوا ہے</translation>
+<translation id="4537987892902330164">آپ <ph name="NAME_OR_EMAIL" /> کے بطور سائن ان رہے۔</translation>
 <translation id="4543131175509360848">کوئی پاسکیز شیٹ نہیں ہے</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز، <ph name="TAB_COUNT_INCOGNITO" /> پوشیدگی}}</translation>
 <translation id="4558311620361989323">ویب صفحہ شارٹ کٹس</translation>
@@ -1282,6 +1288,7 @@
 <translation id="6411219469806822692">زیادہ اوپر نہیں جا سکتے۔ صفحے کے مزید اوپر سے شروع کرنے کی کوشش کریں۔</translation>
 <translation id="6412215853589222273">‫<ph name="TAB_TITLE" />، متعدد منتخب ٹیب</translation>
 <translation id="641643625718530986">پرنٹ کریں…</translation>
+<translation id="6427723330233512782">لمبائی میں فٹ کریں</translation>
 <translation id="6433501201775827830">اپنے تلاش انجن کا انتخاب کریں</translation>
 <translation id="6434309073475700221">مسترد کریں</translation>
 <translation id="6435307030888827407">سائن آؤٹ رہیں</translation>
@@ -1435,6 +1442,7 @@
 <translation id="6937524809504266803">ذاتی نوعیت سازی اور لنک کرنا</translation>
 <translation id="6937876069006524083">عرفی نام (اختیاری)</translation>
 <translation id="6942665639005891494">ترتیبات کا مینیو اختیار استعمال کر کے ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
+<translation id="6944854424004126054">ونڈو بحال کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6955535239952325894">یہ ترتیب نظم کردہ براؤزرز پر غیر فعال ہے</translation>
 <translation id="6963766334940102469">بُک مارکس حذف کریں</translation>
@@ -1528,6 +1536,7 @@
 <translation id="7291910923717764901">اس صفحے کیلئے تصویر کی تفصیلات شامل کر دی گئیں</translation>
 <translation id="7293429513719260019">زبان منتخب کریں</translation>
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />، منتخب کردہ پن کردہ اشتراک کا ٹیب</translation>
+<translation id="7304003340539141201">‏اپنے ٹیبز اور ٹاسکس میں مدد کے لیے Gemini سے پوچھیں</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
 <translation id="7314734791127433392">پاس ورڈز کو چیک نہیں کر سکتے</translation>
 <translation id="7324354302972299151">‏"Do Not Track" درخواست بھیجیں</translation>
@@ -1874,6 +1883,7 @@
 <translation id="8696297579102085705">اپنے آلے پر بھیجیں</translation>
 <translation id="8697753151306746444">اس کے بجائے ونڈو یا اسکرین کا اشتراک کریں</translation>
 <translation id="8699120352855309748">ان زبانوں کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
+<translation id="8700565880437506364">‏‫Chrome میں Gemini کا تعارف</translation>
 <translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8715286883001906001">‏اپنے Google اکاؤنٹ میں اپنے پاس ورڈز کو مضبوط بنائیں</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> بند ہو جائے گا</translation>
@@ -1941,6 +1951,7 @@
 <translation id="8996847606757455498">کسی دوسرے فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="8998837250940831980">ٹیب کو چھوٹا نہیں کیا جا سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="9001604755921395912">‏پوشیدگی Chrome ٹیب میں کھولیں</translation>
+<translation id="9010094279589497751">‏ضرورت پڑنے پر Gemini کو جلدی سے کھولیں</translation>
 <translation id="9012585441087414258">‏خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے حفاظت کریں۔ صفحے میں کچھ مشکوک لگنے پر، صفحے کے مواد کے کچھ حصے اور URLs کو Google محفوظ براؤزنگ پر بھیجا جاتا ہے۔</translation>
 <translation id="9019199799064251516">کار پروفائل لاک کے بغیر جاری رکھیں؟</translation>
 <translation id="9022774213089566801">اکثر ملاحظہ کردہ</translation>
@@ -1998,6 +2009,7 @@
 <translation id="9190355771000652811">ایڈریس بار میں، سرچ انجنز اور سائٹ تلاش کے شارٹ کٹس کے ساتھ اس کی بورڈ شارٹ کٹ کا استعمال کریں۔</translation>
 <translation id="9197941237799589838">‫<ph name="TAB_TITLE" />، منتخب کردہ پوشیدگی ٹیب پن ہو گیا</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 منٹ پہلے چیک کیا گيا}other{# منٹ پہلے چیک کیا گیا}}</translation>
+<translation id="9202894533863490414">اس سائٹ سے ڈاؤن لوڈ کریں؟</translation>
 <translation id="9204836675896933765">1 فائل باقی ہے</translation>
 <translation id="9205933215779845960">وہ صفحہ نہیں مل سکا۔ اپنا املا چیک کریں یا <ph name="SEARCH_ENGINE" /> پر تلاش کرنے کی کوشش کریں۔</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2015,9 +2027,11 @@
 <translation id="939598580284253335">پاس فریز درج کریں</translation>
 <translation id="94161319503679839">‫<ph name="TAB_TITLE" />، پن کردہ تصویر میں تصویر پوشیدگی ٹیب</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
+<translation id="949667118776341807">گھمائیں</translation>
 <translation id="95817756606698420">‏Chrome چین میں تلاش کرنے کیلئے <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> کا استعمال کر سکتا ہے۔ آپ اسے <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>
 <translation id="963246339335003378">ٹاسک مینیجر کھولیں</translation>
+<translation id="966337994629449077">‏آپ <ph name="FROM_EMAIL" /> کے بطور سائن ان ہیں۔\n\nاپنے کمپیوٹر سے جاری رکھنے کے لیے، <ph name="TO_EMAIL" /> پر سوئچ کریں۔ آپ کو اس اکاؤنٹ سے پاس ورڈز، بُک مارکس اور بہت کچھ ملے گا۔</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> منٹ باقی</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>

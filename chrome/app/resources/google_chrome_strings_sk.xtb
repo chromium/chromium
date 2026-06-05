@@ -151,6 +151,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="2580411288591421699">Nie je možné nainštalovať rovnakú verziu prehliadača Google Chrome, ako je aktuálne spustená verzia. Zavrite Google Chrome a skúste znova.</translation>
 <translation id="2586406160782125153">Táto akcia odstráni zo zariadenia údaje prehliadania. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Stiahnutý inštalátor sa nepodarilo uložiť do vyrovnávacej pamäte. Chyba: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Získajte rýchly prehľad o tomto dokumente a klaďte otázky pomocou Gemini v Chrome</translation>
 <translation id="2620436844016719705">Systém</translation>
 <translation id="263447411082773721">Majte svoje heslá, záložky a históriu stále dokonale synchronizované v rôznych zariadeniach. Aktualizujte si predvolený prehliadač na Chrome, aby ste mali jednoduchý prístup k funkciám, ktoré poznáte a obľubujete. Chrome bude pripnutý na paneli aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -158,6 +159,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="2652691236519827073">Otvoriť odkaz na novej &amp;karte Chromu</translation>
 <translation id="2665296953892887393">Pomôcť zlepšiť prehliadač Google Chrome odosielaním správ o zlyhaní a <ph name="UMA_LINK" /> spoločnosti Google</translation>
 <translation id="2668094785979141847">Kliknutím ukončíte Google Lens</translation>
+<translation id="2674238339205910678">Systému ChromeOS Flex sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané</translation>
 <translation id="2681444469812712297">Otvorte <ph name="URL" /> na novej karte v prehliadači Google Chrome.</translation>
 <translation id="2699790011615497488">Otvoriť Gemini v Chrome Beta</translation>
 <translation id="2712141162840347885">Vyberte niečo na vyhľadávanie pomocou funkcie Google Lens alebo stlačením klávesa Escape Google Lens zavrite</translation>
@@ -535,6 +537,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6497147134301593682">Chrome bol automaticky zavretý</translation>
 <translation id="6506909944137591434">Chrome vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520608191273161151">Systému ChromeOS Flex sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="6520670145826811516">Ak chcete používať polohu, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">História Chromu</translation>
 <translation id="6532945796722480006">Otvoriť Gemini v Chrome Canary</translation>
@@ -582,6 +585,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7011190694940573312">Nepodarilo sa nainštalovať, pretože táto verzia operačného systému nie je podporovaná.</translation>
 <translation id="7024536598735240744">Chyba pri rozbalení: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Tu môžete prepínať profily Chromu</translation>
+<translation id="7026856149118332950">Kliknutím na <ph name="BEGIN_BOLD" />Áno<ph name="END_BOLD" /> v upozornení systému Windows pripnite Chrome na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="7047386856539490735">Sú tieto výsledky užitočné?</translation>
 <translation id="7051685429025310665">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Upravte Chrome podľa seba</translation>
@@ -674,6 +678,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7890208801193284374">Ak počítač zdieľate s rodinou a priateľmi, môžu v prehliadači Chrome prehliadať oddelene a tiež si ho nastaviť podľa vlastných požiadaviek.</translation>
 <translation id="7896673875602241923">Do Chromu sa už na tomto počítači niekto prihlásil pomocou účtu <ph name="ACCOUNT_EMAIL_LAST" />. Ak chcete ponechať svoje informácie oddelené, vytvorte v Chrome nového používateľa.</translation>
 <translation id="7904985524660297937">Vyskúšajte Gemini v prehliadači Google Chrome</translation>
+<translation id="7905880575591690197">Systému ChromeOS sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="7917876797003313048">Svoje prihlásené účty Google môžete spravovať. Účty Google sa používajú pre prehliadač Chrome, Obchod Play, Gmail a ďalšie služby. Ak chcete pridať účet inej osoby, napríklad člena rodiny, pridajte radšej novú osobu do svojho zariadenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome toto sťahovanie zablokoval, pretože daný súbor je klamlivý a môže vo vašom zariadení vykonať neočakávané zmeny</translation>
 <translation id="7951272445806340501">Ak chcete použiť aktualizáciu, musíte reštartovať Chrome OS Flex.</translation>
@@ -749,6 +754,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="8624541899164515475">Nastavenia (otvoria sa na novej karte)</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome sa reštartuje o 1 minútu}few{Chrome sa reštartuje o # minúty}many{Chrome sa reštartuje o # minúty}other{Chrome sa reštartuje o # minút}}</translation>
 <translation id="8637932705841171563">Ak chcete zdieľať okno, povoľte Chromu nahrávať obrazovku v nastaveniach systému</translation>
+<translation id="8642497536370021917">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek používať a ukladať údaje Chromu, overte svoju totožnosť</translation>
 <translation id="8656634243791296665">Otvoriť Gemini v Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chrome.</translation>
@@ -798,6 +804,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="93760716455950538">Reštartujte Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome odporúča skontrolovať tento súbor, pretože môže byť nebezpečný.</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
+<translation id="973195869036269770">Systému ChromeOS sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané</translation>
 <translation id="983803489796659991">Nepodarilo sa nainštalovať, pretože aktualizačný server nemá žiadne údaje o haši aplikácie.</translation>
 <translation id="989369509083708165">Google Chrome je vaším predvoleným prehliadačom</translation>
 <translation id="989816563149873169">Skratkou <ph name="SHORTCUT" /> môžete prepínať profily Chromu</translation>

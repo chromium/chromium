@@ -850,7 +850,6 @@
 <translation id="2316087952091171402">Менее <ph name="UPPER_ESTIMATE" />. Возможно, некоторые сайты будут загружаться медленнее, когда вы откроете их в следующий раз.</translation>
 <translation id="2316090909467242775">Попробуйте этот пароль для восстановления</translation>
 <translation id="2316159751672436664">Персонализировать инструменты специальных возможностей в настройках Chrome OS</translation>
-<translation id="2316887270356262533">Освободится менее 1 МБ пространства. При следующем вашем посещении некоторые сайты могут загружаться медленнее.</translation>
 <translation id="2317259163369394535">Для доступа к домену <ph name="DOMAIN" /> необходимо указать имя пользователя и пароль.</translation>
 <translation id="2318594867107319532">Последняя временная метка правила:</translation>
 <translation id="2320564945062300737">Товары для ухода за лицом</translation>
@@ -3402,7 +3401,6 @@
 <translation id="633348045801643466">Показывать <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />варианты рассрочки<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> при оформлении покупки</translation>
 <translation id="6335029926534404762">Спортивная обувь</translation>
 <translation id="6336948221660696475">Запрос на использование VR отклонен</translation>
-<translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. При следующем вашем посещении некоторые сайты могут загружаться медленнее.</translation>
 <translation id="6337534724793800597">Фильтровать по названию</translation>
 <translation id="633770708279464947">Значение строки <ph name="SECURE_DNS_SALT" /> недопустимо и не будет использовано.</translation>
 <translation id="6338645927051849741">Пароль • Google Менеджер паролей</translation>
@@ -3953,7 +3951,6 @@
 <translation id="718872491229180389">Чирлидинг</translation>
 <translation id="7188840756966467339">Перезапустить браузер и применить правила</translation>
 <translation id="7192188280913829296">Необходимо заполнить поле "vendor_id".</translation>
-<translation id="7192203810768312527">Освободится <ph name="SIZE" /> пространства. При следующем вашем посещении некоторые сайты могут загружаться медленнее.</translation>
 <translation id="7192537357091279678">Компьютерные устройства хранения данных</translation>
 <translation id="7193661028827781021">Справочные ресурсы</translation>
 <translation id="719464814642662924">Visa</translation>

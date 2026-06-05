@@ -356,6 +356,7 @@
 <translation id="253498598929009420">该网站将能看到您屏幕上的内容</translation>
 <translation id="2535807170289627159">所有标签页</translation>
 <translation id="2536728043171574184">正在查看此网页的离线副本</translation>
+<translation id="2537574774089209541">部分工具的位置有所调整，以便您在浏览时能够轻松访问 Gemini</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />，已选择的固定无痕式标签页，已设为静音</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，标签页</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">如需在您的所有设备上获取书签等信息，请以 <ph name="EMAIL" /> 的身份登录</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">刚刚</translation>
+<translation id="276378135349383280">在底部工具栏中显示 Gemini</translation>
 <translation id="276969039800130567">您已用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。</translation>
 <translation id="2777555524387840389">还剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失败</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3614126103057878858">价格分析</translation>
 <translation id="3616113530831147358">音频</translation>
+<translation id="3616798734782988169">请确保您信任 <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">管理访问权限</translation>
 <translation id="3622349720008044802">管理窗口</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 个网站}other{+ # 个网站}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">轻触搜索</translation>
 <translation id="3739455665973395693">您的 Google 账号没有密码泄露</translation>
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中添加书签</translation>
+<translation id="3740290940447881599">请确保您信任此网站</translation>
 <translation id="3740525748616366977">无法在此设备上使用语音搜索</translation>
 <translation id="3763110477555836428">使用此卡结账时，系统会填写虚拟卡号，以保护您的真实详细信息。在 Google 钱包中管理。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">部分数据尚未保存</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
 <translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
+<translation id="3786379886124795923">您已通过扫描二维码登录 Chrome。确认您要从此个人资料中获取密码、书签等信息。</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="3792938779249970121">选择账号</translation>
 <translation id="3795154175078851242">复制图片且含链接</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">选择文件夹</translation>
 <translation id="4535755320005483982">共享“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="4537137366307982887">提示通知选择启用底部动作条已以最大高度显示</translation>
+<translation id="4537987892902330164">您已以 <ph name="NAME_OR_EMAIL" /> 的身份保持登录状态。</translation>
 <translation id="4543131175509360848">无通行密钥表格</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 个标签页}other{<ph name="TAB_COUNT_MANY" /> 个标签页，<ph name="TAB_COUNT_INCOGNITO" /> 个无痕式标签页}}</translation>
 <translation id="4558311620361989323">网页快捷键</translation>
@@ -1282,6 +1288,7 @@
 <translation id="6411219469806822692">无法继续向上滚动屏幕了。请尝试从页面中更靠上的位置开始截屏。</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />，已多选的标签页</translation>
 <translation id="641643625718530986">打印…</translation>
+<translation id="6427723330233512782">适应高度</translation>
 <translation id="6433501201775827830">选择搜索引擎</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6435307030888827407">保持未登录状态</translation>
@@ -1435,6 +1442,7 @@
 <translation id="6937524809504266803">个性化和关联</translation>
 <translation id="6937876069006524083">昵称（可选）</translation>
 <translation id="6942665639005891494">使用“设置”菜单选项随时更改默认的下载内容保存位置</translation>
+<translation id="6944854424004126054">恢复窗口</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6955535239952325894">在受管理的浏览器上，此设置已被停用</translation>
 <translation id="6963766334940102469">删除书签</translation>
@@ -1526,6 +1534,7 @@
 <translation id="7291910923717764901">已为此网页添加图片说明</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，已选择的固定标签页，正在共享内容</translation>
+<translation id="7304003340539141201">让 Gemini 为您提供标签页和任务方面的帮助</translation>
 <translation id="7311244614769792472">找不到任何结果</translation>
 <translation id="7314734791127433392">无法检查密码</translation>
 <translation id="7324354302972299151">发送“Do Not Track”请求</translation>
@@ -1872,6 +1881,7 @@
 <translation id="8696297579102085705">发送到您的设备</translation>
 <translation id="8697753151306746444">改为共享窗口或屏幕</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
+<translation id="8700565880437506364">Chrome 中的 Gemini 闪亮登场</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715286883001906001">提升您 Google 账号的密码强度</translation>
 <translation id="8715300232952757586">“<ph name="TAB_TITLE" />”将被关闭</translation>
@@ -1939,6 +1949,7 @@
 <translation id="8996847606757455498">另选一个提供商</translation>
 <translation id="8998837250940831980">无法将标签页最小化。请稍后再试。</translation>
 <translation id="9001604755921395912">在 Chrome 无痕式标签页中打开</translation>
+<translation id="9010094279589497751">随时随需快速打开 Gemini</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
 <translation id="9019199799064251516">不设置车载设备个人资料锁定就继续吗？</translation>
 <translation id="9022774213089566801">经常访问</translation>
@@ -1996,6 +2007,7 @@
 <translation id="9190355771000652811">在地址栏中，将此键盘快捷键与用于搜索引擎和网站搜索的快捷字词结合使用。</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />，所选固定无痕式标签页</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
+<translation id="9202894533863490414">要从此网站下载吗？</translation>
 <translation id="9204836675896933765">还剩 1 个文件</translation>
 <translation id="9205933215779845960">找不到这个页面。请检查拼写，或尝试在 <ph name="SEARCH_ENGINE" /> 上进行搜索。</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2013,9 +2025,11 @@
 <translation id="939598580284253335">输入口令</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />，固定的画中画无痕式标签页</translation>
 <translation id="945522503751344254">发送反馈</translation>
+<translation id="949667118776341807">旋转</translation>
 <translation id="95817756606698420">在中国，Chrome 可以使用<ph name="BEGIN_BOLD" />搜狗<ph name="END_BOLD" />作为搜索引擎。如果需要，您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行更改。</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963246339335003378">打开任务管理器</translation>
+<translation id="966337994629449077">您目前登录的账号为 <ph name="FROM_EMAIL" />。\n\n如需在电脑上继续操作，请切换到 <ph name="TO_EMAIL" />。您将获得此账号的密码、书签等信息。</translation>
 <translation id="970715775301869095">还剩 <ph name="MINUTES" /> 分钟</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="983192555821071799">关闭所有标签页</translation>

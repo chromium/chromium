@@ -850,7 +850,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2316087952091171402">Mindre än <ph name="UPPER_ESTIMATE" /> Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="2316090909467242775">Testa det här återställningslösenordet</translation>
 <translation id="2316159751672436664">Anpassa tillgänglighetsverktygen i inställningarna för ChromeOS</translation>
-<translation id="2316887270356262533">Frigör mindre än 1 MB. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> kräver användarnamn och lösenord.</translation>
 <translation id="2318594867107319532">Senaste tidsstämpel för princip:</translation>
 <translation id="2320564945062300737">Produkter för ansiktsvård</translation>
@@ -3403,7 +3402,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="633348045801643466">Visa <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />alternativ för att betala senare<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> i kassan</translation>
 <translation id="6335029926534404762">Sportskor</translation>
 <translation id="6336948221660696475">VR tillåts inte</translation>
-<translation id="6337133576188860026">Frigör mindre än <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="6337534724793800597">Filtrera princip efter namn</translation>
 <translation id="633770708279464947">Värdet <ph name="SECURE_DNS_SALT" /> är ogiltigt och används inte.</translation>
 <translation id="6338645927051849741">Lösenord • Google Lösenordshantering</translation>
@@ -3954,7 +3952,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Starta om och tillämpa policyer</translation>
 <translation id="7192188280913829296">Attributet vendor_id måste också anges.</translation>
-<translation id="7192203810768312527">Frigör <ph name="SIZE" />. Vissa webbplatser kan läsas in långsammare nästa gång du besöker dem.</translation>
 <translation id="7192537357091279678">Datorenheter och lagring</translation>
 <translation id="7193661028827781021">Referens</translation>
 <translation id="719464814642662924">Visa</translation>

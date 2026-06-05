@@ -6176,7 +6176,6 @@
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> денес. <ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}one{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} ден.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}other{<ph name="MANAGER" /> бара да направите бекап на вашите податоци и да го вратите овој <ph name="DEVICE_TYPE" /> во рок од {NUM_DAYS} дена.<ph name="LINK_BEGIN" />Погледнете ги деталите<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Додај апликација</translation>
 <translation id="5485435764083510385">Претпочитан јазик на титловите</translation>
-<translation id="5485754497697573575">Обнови ги сите картички</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> може да бара понов или друг тип уред</translation>
 <translation id="5486261815000869482">Потврди лозинка</translation>
 <translation id="5486561344817861625">Симулирај рестартирање на прелистувач</translation>
@@ -7758,7 +7757,6 @@
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Брзина</translation>
 <translation id="6683022854667115063">Слушалки</translation>
-<translation id="6683087162435654533">&amp;Врати ги сите картички</translation>
 <translation id="6683433919380522900">Дозвола: <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Се презема најновото ажурирање</translation>
 <translation id="668599234725812620">Отвори Google Play</translation>
@@ -8132,6 +8130,7 @@
 <translation id="6943060957016121200">Овозможување инстант врзување</translation>
 <translation id="6943939122536910181">Не е поврзан со <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Профилов не може да се инсталира. За техничка поддршка, контактирајте со операторот.</translation>
+<translation id="6944854424004126054">Обнови прозорец</translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="694592694773692225">Пренасочувањето е блокирано на оваа страница.</translation>
 <translation id="6949089178006131285">да чита податоци за мрежа на ChromeOS Flex</translation>
@@ -9690,7 +9689,6 @@
 <translation id="8082390128630131497">Оневозможувањето на ADB ќе го ресетира <ph name="DEVICE_TYPE" /> на фабричките поставки. Сите кориснички сметки и локални податоци ќе бидат избришани.</translation>
 <translation id="8084114998886531721">Зачувана лозинка</translation>
 <translation id="8084429490152575036">Поставки за APN за мобилна мрежа</translation>
-<translation id="8084510406207562688">&amp;Врати ги сите картички</translation>
 <translation id="8084628902026812045">Сајтов не користи безбедна врска и датотеката може да е неовластено изменета</translation>
 <translation id="808488435221187916">Вашите податоци се достапни во Google Wallet на кој било најавен уред</translation>
 <translation id="8086015605808120405">Се конфигурира <ph name="PRINTER_NAME" />…</translation>
@@ -11226,7 +11224,6 @@
 <translation id="918352324374649435">{COUNT,plural, =1{Апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Администраторот може да го снима вашиот екран со <ph name="APP0_NAME" />. Нема да добиете известување кога ќе започне снимањето.}=2{Администраторот може да го снима вашиот екран со <ph name="APP0_NAME" /> и <ph name="APP1_NAME" />. Нема да добиете известување кога ќе започне снимањето.}=3{Администраторот може да го снима вашиот екран со <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> и уште 1 апликација. Нема да добиете известување кога ќе започне снимањето.}one{Администраторот може да го снима вашиот екран со <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> и уште # апликација. Нема да добиете известување кога ќе започне снимањето.}other{Администраторот може да го снима вашиот екран со <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> и уште # апликации. Нема да добиете известување кога ќе започне снимањето.}}</translation>
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Се споделува 1 картичка}one{Се споделуваат # картичка}other{Се споделуваат # картички}}</translation>
 <translation id="9187967020623675250">Клучевите не се совпаѓаат. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Овозможи ја Process Isolation</translation>
 <translation id="9192019773545828776">Слушајте говорни повратни информации за да може да го користите уредот без да гледате во екранот. Повратни информации со Брајово писмо се достапни со поврзан уред. Користете Ctrl + Alt + Z за да се вклучи или исклучи ChromeVox. Користете Search + стрелка налево или налево за да се движите. Користете Search + празно место за да изберете (активирате).</translation>

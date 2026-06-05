@@ -69,6 +69,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1749104137266986751">Keď HTTPS nie je k dispozícii, Chromium bude bez upozornenia používať nezabezpečené pripojenie</translation>
 <translation id="1774152462503052664">Povoliť prehliadaču Chromium spustenie na pozadí</translation>
 <translation id="1779356040007214683">Z dôvodu vyššej bezpečnosti prehliadača Chromium sme zakázali niektoré rozšírenia, ktoré nedodáva <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> a mohli byť pridané bez vášho vedomia.</translation>
+<translation id="1793486931176048546">Kliknutím na <ph name="BEGIN_BOLD" />Áno<ph name="END_BOLD" /> v upozornení systému Windows pripnite Chromium na panel aplikácií, aby ste k nemu mali rýchly prístup.</translation>
 <translation id="1808667845054772817">Preinštalovať prehliadač Chromium</translation>
 <translation id="1820835682567584003">Chromium sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Pri ďalšom otvorení prehliadača Chromium v zariadení <ph name="DEVICE_TYPE" /> sa zobrazí výzva na používanie Správcu hesiel Google.</translation>
@@ -382,8 +383,10 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5294316920224716406">Pri prehliadaní v režime inkognito vás bude Chromium pred načítaním webu používajúceho nezabezpečené pripojenie upozorňovať</translation>
 <translation id="5313228254328109263">Interná služba Chromium Updater</translation>
 <translation id="5346389065299425353">Pridajte viac kariet, súborov a nástrojov a spresnite si tak vyhľadávanie</translation>
+<translation id="5348677704241861105">Získajte rýchly prehľad o tomto dokumente a klaďte otázky pomocou Gemini v prehliadači Chromium</translation>
 <translation id="5352264705793813212">Prehliadač Chromium našiel niekoľko bezpečnostných odporúčaní, ktoré by ste si mali pozrieť</translation>
 <translation id="5352361688875342522">Ďalšie profily prehliadača Chromium</translation>
+<translation id="535243042947607642">Systému Chromium OS sa nepodarilo uložiť údaje prehliadača Chromium vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="5358375970380395591">Prihlasujete sa pomocou spravovaného účtu a jeho správcovi dávate kontrolu nad vaším profilom Chromium. Vaše údaje prehliadača Chromium, ako sú aplikácie, záložky, história, heslá a iné nastavenia, sa natrvalo priradia k účtu <ph name="USER_NAME" />. Tieto údaje budete môcť odstrániť len pomocou panela Dashboard v Účtoch Google, ale nebudete ich môcť priradiť k inému účtu. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Ďalší kód: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Ak chcete mať k dispozícii prispôsobenie, zahrňte Chromium do aktivity na internete a v aplikáciách</translation>
@@ -489,6 +492,7 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="6390800440335263989">Ak chcete pokračovať, prihláste sa do prehliadača Chromium účtom <ph name="EMAIL" />. Potvrdíte tým, že sa na vás vzťahujú pravidlá vašej organizácie.</translation>
 <translation id="6400112897226594999">Logo prehliadača Chromium na obrazovke počítača.</translation>
 <translation id="6403826409255603130">Chromium je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou svetla. Je rýchly, stabilný a ľahko sa používa. S ochranou proti škodlivému softvéru a phishingu, ktorá je zabudovaná do prehliadača Chromium, môžete prehliadať web bezpečnejšie.</translation>
+<translation id="6414624068245092115">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť</translation>
 <translation id="642132557830635295">Prehliadač Chromium je rýchlejší a funkcie využívajúce JavaScript by mali pracovať podľa očakávaní</translation>
 <translation id="6436260184216827876">Vyhľadávanie podľa obrázkov nie je k dispozícii. Skúste to neskôr.</translation>
 <translation id="6442900851116057561">Reštartovanie systému Chromium OS</translation>
@@ -717,6 +721,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8852026904190808918">V tomto jazyku sa zobrazujú ponuky, nastavenia, upozornenia a ďalší text v prehliadači Chromium</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
 <translation id="8876044221123442390">Pridať profil prehliadača Chromium</translation>
+<translation id="8890569919834781711">Systému Chromium OS sa nepodarilo uložiť údaje prehliadača Chromium vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="8891709362986793894">Vaša organizácia vyžaduje, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="8907580949721785412">Prehliadač Chromium sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="8932992523185907506">Chromium už nie je váš predvolený prehliadač. Chcete nastaviť Chromium ako svoj predvolený prehliadač?</translation>

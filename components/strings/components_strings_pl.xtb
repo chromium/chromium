@@ -850,7 +850,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2316087952091171402">Mniej niż <ph name="UPPER_ESTIMATE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="2316090909467242775">Wypróbuj to hasło przywracania</translation>
 <translation id="2316159751672436664">Spersonalizuj narzędzia ułatwień dostępu w ustawieniach Chrome OS</translation>
-<translation id="2316887270356262533">Zwolni się mniej niż 1 MB. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> wymaga nazwy użytkownika i hasła.</translation>
 <translation id="2318594867107319532">Ostatnia sygnatura czasowa zasad:</translation>
 <translation id="2320564945062300737">Produkty do pielęgnacji twarzy</translation>
@@ -3403,7 +3402,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="633348045801643466">W momencie płatności pokaż opcje <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />płatności odroczonej<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /></translation>
 <translation id="6335029926534404762">Obuwie sportowe</translation>
 <translation id="6336948221660696475">Nie przyznano dostępu do rzeczywistości wirtualnej</translation>
-<translation id="6337133576188860026">Zwolni się mniej niż <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="6337534724793800597">Filtruj zasady według nazwy</translation>
 <translation id="633770708279464947">Wartość <ph name="SECURE_DNS_SALT" /> jest nieprawidłowa i nie zostanie użyta.</translation>
 <translation id="6338645927051849741">Hasło • Menedżer haseł Google</translation>
@@ -3954,7 +3952,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Uruchom ponownie i zastosuj zasady</translation>
 <translation id="7192188280913829296">Musisz też określić atrybut „vendor_id”.</translation>
-<translation id="7192203810768312527">Zwolni się <ph name="SIZE" />. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
 <translation id="7192537357091279678">Dyski i urządzenia do przechowywania danych</translation>
 <translation id="7193661028827781021">Źródła wiedzy</translation>
 <translation id="719464814642662924">Visa</translation>

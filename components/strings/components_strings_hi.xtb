@@ -850,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> से कम. अगली बार जब आप कुछ साइटों पर जाएं, तो हो सकता है कि उन्हें लोड होने में थोड़ा ज़्यादा समय लगे.</translation>
 <translation id="2316090909467242775">यह रिकवरी पासवर्ड डालकर देखें</translation>
 <translation id="2316159751672436664">ChromeOS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाएं</translation>
-<translation id="2316887270356262533">1 MB से भी कम जगह खाली करता है. जब आप अगली बार विज़िट करेंगे तो, कुछ साइटें लोड होने में ज़्यादा समय ले सकती हैं.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> के लिए उपयोगकर्ता नाम और पासवर्ड आवश्यक है.</translation>
 <translation id="2318594867107319532">पिछली बार नीति को रीफ़्रेश करने का टाइमस्टैंप:</translation>
 <translation id="2320564945062300737">चेहरे की देखभाल के प्रॉडक्ट</translation>
@@ -3400,7 +3399,6 @@
 <translation id="633348045801643466">चेकआउट के समय, <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />बाद में पेमेंट करने<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> के विकल्प दिखाएं</translation>
 <translation id="6335029926534404762">ऐथलेटिक जूते</translation>
 <translation id="6336948221660696475">वीआर इस्तेमाल करने की अनुमति नहीं है</translation>
-<translation id="6337133576188860026"><ph name="SIZE" /> से कम जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें और भी धीमे लोड हो सकती हैं.</translation>
 <translation id="6337534724793800597">नाम के अनुसार नीतियां फ़िल्टर करें</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> की वैल्यू गलत है और इसका इस्तेमाल नहीं किया जाएगा.</translation>
 <translation id="6338645927051849741">पासवर्ड • Google Password Manager</translation>
@@ -3951,7 +3949,6 @@
 <translation id="718872491229180389">चीयरलीडिंग</translation>
 <translation id="7188840756966467339">रीस्टार्ट करें और नीतियां लागू करें</translation>
 <translation id="7192188280913829296">"vendor_id" एट्रिब्यूट की जानकारी भी दी जानी चाहिए.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> जगह खाली करता है. आपकी अगली विज़िट पर कुछ साइटें ज़्यादा धीमे लोड हो सकती हैं.</translation>
 <translation id="7192537357091279678">कंप्यूटर की ड्राइव और स्टोरेज</translation>
 <translation id="7193661028827781021">रेफ़रंस रिसॉर्स</translation>
 <translation id="719464814642662924">Visa</translation>

@@ -849,7 +849,6 @@
 <translation id="2316087952091171402">פחות מ-<ph name="UPPER_ESTIMATE" />. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
 <translation id="2316090909467242775">רוצה לנסות את סיסמת השחזור הזו?</translation>
 <translation id="2316159751672436664">‏התאמה אישית של כלי הנגישות בהגדרות ChromeOS</translation>
-<translation id="2316887270356262533">‏פינוי של פחות מ-‎1 MB‎ מהשטח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> דורש שם משתמש וסיסמה.</translation>
 <translation id="2318594867107319532">חותמת הזמן האחרונה של המדיניות:</translation>
 <translation id="2320564945062300737">מוצרי טיפוח לעור הפנים</translation>
@@ -3027,6 +3026,7 @@ Del</translation>
 <translation id="5728246486828755318">האתר יכול לבקש הרשאה להשתמש בתכונות המתקדמות של המדפסת</translation>
 <translation id="5729442113829771034">חינוך לגיל הרך</translation>
 <translation id="5730040223043577876">‏אם הזנת את הסיסמה שלך באתרים אחרים, ההמלצה של Chrome היא לאפס אותה.</translation>
+<translation id="5735174108294025227">כתובות האימייל המאומתות יופיעו כאן</translation>
 <translation id="573555826359077410">‏הכפתור ליצירת טופס, מפעילים אותו כדי ליצור במהירות טופס חדש ב-Google Forms</translation>
 <translation id="5738385766833540397">ניהול של אופן קבלת ההתראות על הנחות לגבי מוצרים במעקב</translation>
 <translation id="5739619009927381786">בשלב הבא, עליך לבטל את נעילת המסך, בדרך כלל באמצעות טביעת האצבע. אפשר גם <ph name="BEGIN_LINK" />לבצע אימות בדרך אחרת<ph name="END_LINK" />.</translation>
@@ -3405,7 +3405,6 @@ Del</translation>
 <translation id="633348045801643466">הצגת אפשרויות <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />לתשלום אחר כך<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> בשלב התשלום בקופה</translation>
 <translation id="6335029926534404762">נעלי ספורט</translation>
 <translation id="6336948221660696475">‏אין הרשאה לשימוש ב-VR</translation>
-<translation id="6337133576188860026">פינוי של פחות מ-<ph name="SIZE" /> מהנפח. ייתכן שחלק מהאתרים ייטענו לאט יותר בביקור הבא שלך.</translation>
 <translation id="6337534724793800597">סינון מדיניות לפי שם</translation>
 <translation id="633770708279464947">הערך של <ph name="SECURE_DNS_SALT" /> לא חוקי ולא ייעשה בו שימוש.</translation>
 <translation id="6338645927051849741">‏סיסמה • מנהל הסיסמאות של Google</translation>
@@ -3956,7 +3955,6 @@ Del</translation>
 <translation id="718872491229180389">עידוד בספורט</translation>
 <translation id="7188840756966467339">הפעלה מחדש והחלת כללי המדיניות</translation>
 <translation id="7192188280913829296">‏צריך לציין גם את המאפיין vendor_id.</translation>
-<translation id="7192203810768312527">פינוי של <ph name="SIZE" /> מהנפח. תיתכן טעינה איטית יותר של אתרים מסוימים בביקור הבא שלך.</translation>
 <translation id="7192537357091279678">כוננים ואחסון למחשב</translation>
 <translation id="7193661028827781021">חומרי עזר</translation>
 <translation id="719464814642662924">Visa</translation>

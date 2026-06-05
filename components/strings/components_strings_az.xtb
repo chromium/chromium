@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">Alt geyimləri</translation>
 <translation id="1458770162980644530">"İndi al, sonra ödə" xidmət şərtləri ekranı. Gizli klaviatura.</translation>
 <translation id="1459693405370120464">Hava</translation>
+<translation id="1460317464907341501">Bu e-poçt avtomatik doğrulansın?</translation>
 <translation id="1461041542809785877">Performans</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Yüksək dəqiqliyi olan məzmun yarada bilmək üçün kompüterinizdəki şriftlərdən istifadə edin</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> həcmindən az. Növbəti dəfə daxil olarkən bəzi saytlar yavaş yüklənə bilər.</translation>
 <translation id="2316090909467242775">Bu bərpa parolunu sınayın</translation>
 <translation id="2316159751672436664">ChromeOS ayarlarında əlçatımlılıq alətlərinizi fərdiləşdirin</translation>
-<translation id="2316887270356262533">Maksimum 1 MB boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> istifadəçi adı və parol tələb edir.</translation>
 <translation id="2318594867107319532">Son siyasət vaxt nişanı:</translation>
 <translation id="2320564945062300737">Üzə qulluq məhsulları</translation>
@@ -2001,6 +2001,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="412601465078863288">Yükləmə vaxtı bitdi</translation>
 <translation id="4127317221386336246">Geyim aksesuarları</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{digər 1}other{digər #}}</translation>
+<translation id="4129810348470013900">Xəta oldu. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="4129992181550680635">Təhsil Resursları</translation>
 <translation id="4130226655945681476">Şəbəkə kabelləri, modem və yönləndirici yoxlanılır</translation>
 <translation id="4132448310531350254">Tətbiq "<ph name="POLICY_IDS_LIST" />" tərəfindən istinad edilən "<ph name="FILE_EXTENSION" />" fayl artırması üçün dublikat emalçılar.</translation>
@@ -3018,6 +3019,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5728246486828755318">Təkmil printer xüsusiyyətlərindən istifadə etmək üçün icazə istəyə bilər</translation>
 <translation id="5729442113829771034">Erkən Uşaqlıq Təhsili</translation>
 <translation id="5730040223043577876">Parolunuzdan digər saytlarda təkrar istifadə etmisinizsə, Chrome onu sıfırlamağınızı tövsiyə edir.</translation>
+<translation id="5735174108294025227">Doğrulanmış e-poçt ünvanları burada görünəcək</translation>
 <translation id="573555826359077410">"Forma yaradın" düyməsi, aktivləşdirərək Google Formada cəld yeni forma yaradın</translation>
 <translation id="5738385766833540397">İzlədiyiniz məhsullar üçün qiymət endirimi xəbərdarlıqlarını necə alacağınızı idarə edin</translation>
 <translation id="5739619009927381786">Növbəti addımda tipik olaraq barmaq izinizdən istifadə etməklə ekran kilidini açın. Yaxud <ph name="BEGIN_LINK" />digər yolla doğrulaya<ph name="END_LINK" /> bilərsiniz.</translation>
@@ -3396,7 +3398,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="633348045801643466">Ödəmə zamanı <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />sonradan ödəniş<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> seçimlərini göstərin</translation>
 <translation id="6335029926534404762">Atletik ayaqqabılar</translation>
 <translation id="6336948221660696475">VR icazəsi verilmədi</translation>
-<translation id="6337133576188860026">Maksimum <ph name="SIZE" /> boşaldılır. Növbəti dəfə daxil olarkən bəzi saytlar daha yavaş yüklənə bilər.</translation>
 <translation id="6337534724793800597">Siyasətləri adlara əsasən filtrləyin</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> dəyəri yanlışdır və istifadə edilməyəcək.</translation>
 <translation id="6338645927051849741">Parol • Google Parol Meneceri</translation>
@@ -3946,7 +3947,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="718872491229180389">Çerlidinq</translation>
 <translation id="7188840756966467339">Yenidən başladın və siyasətləri tətbiq edin</translation>
 <translation id="7192188280913829296">"Təchizatçı ID'si" atributu da qeyd edilməlidir.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> yer boşaldır. Bəzi saytlar növbəti dəfə daxil olduğunuzda gec yüklənə bilər.</translation>
 <translation id="7192537357091279678">Kompüter diskləri və yaddaş</translation>
 <translation id="7193661028827781021">İstinad</translation>
 <translation id="719464814642662924">Viza</translation>

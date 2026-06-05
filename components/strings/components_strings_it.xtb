@@ -306,6 +306,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1458140305240870199">Biancheria intima</translation>
 <translation id="1458770162980644530">Schermata dei Termini di servizio di Buy now, pay later. Tastiera nascosta.</translation>
 <translation id="1459693405370120464">Meteo</translation>
+<translation id="1460317464907341501">Verificare automaticamente questa email?</translation>
 <translation id="1461041542809785877">Prestazioni</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usare i caratteri installati sul computer per consentirti di creare contenuti ad alta fedeltà</translation>
@@ -849,7 +850,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2316087952091171402">Meno di <ph name="UPPER_ESTIMATE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="2316090909467242775">Prova questa password di recupero</translation>
 <translation id="2316159751672436664">Personalizza i tuoi strumenti di accessibilità nelle impostazioni di ChromeOS</translation>
-<translation id="2316887270356262533">Consente di liberare meno di 1 MB. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> richiede un nome utente e una password.</translation>
 <translation id="2318594867107319532">Timestamp ultimo aggiornamento delle norme:</translation>
 <translation id="2320564945062300737">Prodotti per la cura del viso</translation>
@@ -2002,6 +2002,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="412601465078863288">Timeout del caricamento</translation>
 <translation id="4127317221386336246">Accessori di abbigliamento</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
+<translation id="4129810348470013900">Si è verificato un problema. Controlla la connessione a internet e riprova.</translation>
 <translation id="4129992181550680635">Risorse didattiche</translation>
 <translation id="4130226655945681476">Controllare i cavi di rete, il modem e il router</translation>
 <translation id="4132448310531350254">Gestori duplicati per file_extension "<ph name="FILE_EXTENSION" />" indicati dalle app "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3010,7 +3011,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5717509257172454543">Pattinaggio su ghiaccio</translation>
 <translation id="5718601519531438273">Include informazioni come passaporti e patenti di guida</translation>
 <translation id="5720705177508910913">Utente corrente</translation>
-<translation id="5720895412771013401">Computer desktop</translation>
+<translation id="5720895412771013401">Computer</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e 1 altro}other{{website_1}, {website_2} e altri {more_count}}}</translation>
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5723873695528696965">Controllare e riprogrammare i tuoi dispositivi MIDI</translation>
@@ -3396,7 +3397,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="633348045801643466">Mostra le opzioni di <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pagamento posticipato<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> in fase di pagamento</translation>
 <translation id="6335029926534404762">Scarpe da atletica</translation>
 <translation id="6336948221660696475">VR non consentita</translation>
-<translation id="6337133576188860026">Consente di liberare meno di <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="6337534724793800597">Filtra le policy per nome</translation>
 <translation id="633770708279464947">Il valore <ph name="SECURE_DNS_SALT" /> non è valido e non verrà utilizzato.</translation>
 <translation id="6338645927051849741">Password • Gestore delle password di Google</translation>
@@ -3947,7 +3947,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Riavvia e applica policy</translation>
 <translation id="7192188280913829296">È necessario specificare anche l'attributo "vendor_id".</translation>
-<translation id="7192203810768312527">Libera <ph name="SIZE" />. Alcuni siti potrebbero caricarsi più lentamente alla prossima visita.</translation>
 <translation id="7192537357091279678">Unità e dispositivi di archiviazione per computer</translation>
 <translation id="7193661028827781021">Consultazione</translation>
 <translation id="719464814642662924">Visa</translation>

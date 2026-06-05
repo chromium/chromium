@@ -153,6 +153,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="2580411288591421699">No se puede instalar la misma versión de Google Chrome que se está ejecutando. Cierra el navegador y vuelve a intentarlo.</translation>
 <translation id="2586406160782125153">Se eliminarán tus datos de navegación de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">No se ha podido guardar en caché el instalador descargado. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Obtén un resumen rápido de este documento y haz preguntas con Gemini en Chrome</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="263447411082773721">Mantén tus contraseñas, marcadores e historial perfectamente sincronizados en todos tus dispositivos. Accede fácilmente a las funciones que ya conoces y te encantan actualizando tu navegador predeterminado a Chrome. Chrome se fijará en la barra de tareas para que puedas acceder rápidamente.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="2652691236519827073">Abrir enlace en una pes&amp;taña nueva de Chrome</translation>
 <translation id="2665296953892887393">Ayudar a mejorar Google Chrome enviando informes sobre fallos y <ph name="UMA_LINK" /> a Google</translation>
 <translation id="2668094785979141847">Haz clic para salir de Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex no ha podido guardar los datos de Chrome en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="2681444469812712297">Abre <ph name="URL" /> en una pestaña nueva en Google Chrome.</translation>
 <translation id="2699790011615497488">Abrir Gemini en Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona cualquier cosa para buscarla con Google Lens o pulsa la tecla Esc para salir de Google Lens</translation>
@@ -538,6 +540,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6497147134301593682">Chrome se ha cerrado automáticamente</translation>
 <translation id="6506909944137591434">Chrome necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> ‑ Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex no ha podido guardar los datos de Chrome en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="6520670145826811516">Para usar tu ubicación, da acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532945796722480006">Abrir Gemini en Chrome Canary</translation>
@@ -585,6 +588,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7011190694940573312">No se ha podido realizar la instalación porque esta versión del sistema operativo no es compatible.</translation>
 <translation id="7024536598735240744">Error al descomprimir: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Puedes cambiar de un perfil de Chrome a otro aquí</translation>
+<translation id="7026856149118332950">Haz clic en <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> en la notificación de Windows para fijar Chrome a la barra de tareas y que puedas acceder rápidamente.</translation>
 <translation id="7047386856539490735">¿Te han resultado útiles estos resultados?</translation>
 <translation id="7051685429025310665">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu gusto</translation>
@@ -677,6 +681,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7890208801193284374">Si compartes un ordenador, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome a su gusto.</translation>
 <translation id="7896673875602241923">Otro usuario ha iniciado sesión anteriormente en Chrome con la cuenta <ph name="ACCOUNT_EMAIL_LAST" /> a través de este ordenador. Debes crear un usuario de Chrome para proteger tu información.</translation>
 <translation id="7904985524660297937">Prueba Gemini en Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS no ha podido guardar los datos de Chrome en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="7917876797003313048">Puedes gestionar las cuentas de Google con las que hayas iniciado sesión. Tus cuentas de Google se usan para el navegador Chrome, Play Store, Gmail y más. Si quieres añadir la cuenta de otra persona (por ejemplo, un miembro de tu familia), añade una persona nueva a tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ha bloqueado esta descarga porque el archivo es engañoso y podría hacer cambios inesperados en tu dispositivo</translation>
 <translation id="7951272445806340501">ChromeOS Flex debe reiniciarse para aplicar la actualización.</translation>
@@ -752,6 +757,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="8624541899164515475">Configuración, se abre en una pestaña nueva.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se reiniciará dentro de 1 minuto}other{Chrome se reiniciará dentro de # minutos}}</translation>
 <translation id="8637932705841171563">Para compartir tu ventana, permite la grabación de pantalla de Chrome en Ajustes del sistema</translation>
+<translation id="8642497536370021917">Para asegurarte de que siempre puedas usar y guardar los datos de Chrome en tu cuenta de Google, demuestra que eres tú.</translation>
 <translation id="8656634243791296665">Abrir Gemini en Chrome Dev</translation>
 <translation id="8669527147644353129">Ayudante de Google Chrome</translation>
 <translation id="8679801911857917785">También controla qué página se muestra al iniciar Chrome.</translation>
@@ -801,6 +807,7 @@ No podrás guardar marcadores nuevos en tu cuenta hasta que elimines algunos. Si
 <translation id="93760716455950538">Reiniciar ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome recomienda analizar este archivo porque puede que sea peligroso.</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
+<translation id="973195869036269770">ChromeOS no ha podido guardar los datos de Chrome en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="983803489796659991">No se ha podido realizar la instalación porque el servidor de actualizaciones no tiene datos hash de la aplicación.</translation>
 <translation id="989369509083708165">Google Chrome es tu navegador predeterminado</translation>
 <translation id="989816563149873169">Usa <ph name="SHORTCUT" /> para cambiar de un perfil de Chrome a otro</translation>

@@ -69,6 +69,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1749104137266986751">Kur HTTPS nuk ofrohet, Chromium do të përdorë një lidhje të pasigurt pa të të paralajmëruar</translation>
 <translation id="1774152462503052664">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="1779356040007214683">Për ta bërë më të sigurt Chromium, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
+<translation id="1793486931176048546">Kliko te <ph name="BEGIN_BOLD" />Po<ph name="END_BOLD" /> në njoftimin e Windows për të gozhduar Chromium te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="1808667845054772817">Instalo përsëri Chromium</translation>
 <translation id="1820835682567584003">Chromium po përpiqet <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Herën tjetër që të hapësh Chromium në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të përdorur "Menaxherin e fjalëkalimeve të Google".</translation>
@@ -382,8 +383,10 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5294316920224716406">Kur shfleton në "Modalitetin 'e fshehtë'", Chromium do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5346389065299425353">Thelloje kërkimin duke shtuar disa skeda, skedarë dhe vegla</translation>
+<translation id="5348677704241861105">Merr një përmbledhje të shpejtë të këtij dokumenti dhe bëj pyetje me Gemini në Chromium</translation>
 <translation id="5352264705793813212">Chromium gjeti disa rekomandime për sigurinë për t'u rishikuar nga ti</translation>
 <translation id="5352361688875342522">Profilet e tjera të Chromium</translation>
+<translation id="535243042947607642">ChromiumOS nuk mund t'i ruante të dhënat e Chromium në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="5358375970380395591">Po identifikohesh me një llogari të menaxhuar dhe po i jep administratorit të saj kontroll mbi profilin tënd të Chromium. Të dhënat e tua të Chromium, siç janë aplikacionet, faqeshënuesit, fjalëkalimet dhe cilësime të tjera do të lidhen në mënyrë të përhershme me <ph name="USER_NAME" />. Ti do të jesh në gjendje t'i fshish këto të dhëna përmes Panelit të llogarive të Google, por nuk do të jesh në gjendje t'i shoqërosh këto të dhëna me një llogari tjetër. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Kodi shtesë: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Për të marrë personalizimin, përfshi Chromium në "Aktivitetin e uebit dhe të aplikacioneve"</translation>
@@ -489,6 +492,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="6390800440335263989">Për të vazhduar, identifikohu në Chromium si <ph name="EMAIL" />. Kjo siguron që të kesh politikat e organizatës sate.</translation>
 <translation id="6400112897226594999">Logoja e Chromium brenda një ekrani kompjuteri.</translation>
 <translation id="6403826409255603130">Chromium është një shfletues uebi që ekzekuton faqe uebi dhe aplikacione me një shpejtësi jashtëzakonisht të lartë. Është i shpejtë, i qëndrueshëm dhe i lehtë në përdorim. Shfleto në ueb në mënyrë më të sigurt, me mbrojtje të integruar në Chromium kundër mashtrimeve dhe softuerëve keqdashës.</translation>
+<translation id="6414624068245092115">Për t'u siguruar që mund t'i përdorësh dhe t'i ruash gjithmonë të dhënat e Chromium në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="642132557830635295">Chromium funksionon më shpejt dhe veçoritë që përdorin JavaScript do të punojnë siç pritet</translation>
 <translation id="6436260184216827876">"Kërkimi nëpërmjet imazheve" nuk ofrohet. Provo përsëri më vonë.</translation>
 <translation id="6442900851116057561">Rinis ChromiumOS</translation>
@@ -715,6 +719,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8852026904190808918">Kjo gjuhë përdoret për të shfaqur menytë, cilësimet, sinjalizimet dhe tekste të tjera në Chromium</translation>
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si "Administrator".</translation>
 <translation id="8876044221123442390">Shto profilin e Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS nuk mund t'i ruante të dhënat e Chromium në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
 <translation id="8891709362986793894">Organizata jote kërkon që të identifikohesh në Chromium</translation>
 <translation id="8907580949721785412">Chromium po përpiqet të shfaqë fjalëkalime. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="8932992523185907506">Chromium nuk është më shfletuesi yt i parazgjedhur. Të bëhet Chromium shfletuesi yt i parazgjedhur?</translation>

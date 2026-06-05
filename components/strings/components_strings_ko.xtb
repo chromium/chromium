@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">속옷</translation>
 <translation id="1458770162980644530">선구매 후지불 서비스 약관 화면입니다. 키보드가 숨겨졌습니다.</translation>
 <translation id="1459693405370120464">날씨</translation>
+<translation id="1460317464907341501">이 이메일을 자동으로 인증하시겠습니까?</translation>
 <translation id="1461041542809785877">성능</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">고품질 콘텐츠를 만들기 위해 컴퓨터에 설치된 글꼴을 사용합니다.</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> 미만입니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="2316090909467242775">이 복구 비밀번호를 사용해 보세요.</translation>
 <translation id="2316159751672436664">ChromeOS 설정에서 접근성 도구 맞춤설정</translation>
-<translation id="2316887270356262533">1MB 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" />에 사용자 이름과 비밀번호를 입력해야 합니다.</translation>
 <translation id="2318594867107319532">마지막 정책 타임스탬프:</translation>
 <translation id="2320564945062300737">얼굴 관리 제품</translation>
@@ -2005,6 +2005,7 @@
 <translation id="412601465078863288">업로드 시간 초과</translation>
 <translation id="4127317221386336246">의류 액세서리</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
+<translation id="4129810348470013900">문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해 보세요</translation>
 <translation id="4129992181550680635">교육 자료</translation>
 <translation id="4130226655945681476">네트워크 케이블, 모뎀, 라우터 확인</translation>
 <translation id="4132448310531350254">앱 "<ph name="POLICY_IDS_LIST" />"에서 참조하는 파일 확장자(file_extension) "<ph name="FILE_EXTENSION" />"의 핸들러가 중복됩니다.</translation>
@@ -3022,6 +3023,7 @@
 <translation id="5728246486828755318">고급 프린터 기능 사용을 요청할 수 있음</translation>
 <translation id="5729442113829771034">조기교육</translation>
 <translation id="5730040223043577876">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
+<translation id="5735174108294025227">여기에 인증된 이메일 주소가 표시됩니다</translation>
 <translation id="573555826359077410">양식 만들기 버튼, Google Forms에서 새 양식을 빠르게 만들려면 활성화하세요.</translation>
 <translation id="5738385766833540397">추적 중인 제품의 가격 인하 알림을 받을 방법 관리</translation>
 <translation id="5739619009927381786">다음 단계에서는 일반적으로 지문을 사용하여 화면을 잠금 해제합니다. 또는 <ph name="BEGIN_LINK" />다른 방법으로 인증<ph name="END_LINK" />할 수도 있습니다.</translation>
@@ -3400,7 +3402,6 @@
 <translation id="633348045801643466">결제 시 <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />나중에 결제<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> 옵션 표시</translation>
 <translation id="6335029926534404762">운동화</translation>
 <translation id="6336948221660696475">VR 허용되지 않음</translation>
-<translation id="6337133576188860026"><ph name="SIZE" /> 미만의 저장용량을 확보합니다. 일부 사이트는 다음 방문 시 로드 속도가 느려질 수 있습니다.</translation>
 <translation id="6337534724793800597">이름별로 정책 필터링</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 값이 잘못되었으므로 사용되지 않습니다.</translation>
 <translation id="6338645927051849741">비밀번호 • Google 비밀번호 관리자</translation>
@@ -3951,7 +3952,6 @@
 <translation id="718872491229180389">치어리딩</translation>
 <translation id="7188840756966467339">정책 다시 시작 및 적용</translation>
 <translation id="7192188280913829296">'vendor_id' 속성도 지정해야 합니다.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" />의 저장용량을 확보합니다. 일부 사이트는 다음에 방문할 때 로드 속도가 느려질 수도 있습니다.</translation>
 <translation id="7192537357091279678">컴퓨터 드라이브 및 저장장치</translation>
 <translation id="7193661028827781021">참조 문헌</translation>
 <translation id="719464814642662924">Visa</translation>

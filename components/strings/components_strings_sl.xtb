@@ -849,7 +849,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2316087952091171402">Manj kot <ph name="UPPER_ESTIMATE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
 <translation id="2316090909467242775">Preizkusite to geslo za obnovitev</translation>
 <translation id="2316159751672436664">Osebno prilagajanje orodij za ljudi s posebnimi potrebami v nastavitvah sistema Chrome OS.</translation>
-<translation id="2316887270356262533">Sprosti manj kot 1 MB. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
 <translation id="2317259163369394535">Domena <ph name="DOMAIN" /> zahteva uporabniško ime in geslo.</translation>
 <translation id="2318594867107319532">Zadnji časovni žig pravilnika:</translation>
 <translation id="2320564945062300737">Izdelki za nego obraza</translation>
@@ -3401,7 +3400,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="633348045801643466">Pri zaključku nakupa prikaži <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />možnosti poznejšega plačila<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /></translation>
 <translation id="6335029926534404762">Športni copati</translation>
 <translation id="6336948221660696475">Navidezna resničnost ni dovoljena</translation>
-<translation id="6337133576188860026">Sprosti manj kot <ph name="SIZE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
 <translation id="6337534724793800597">Filtriraj pravilnike po imenu</translation>
 <translation id="633770708279464947">Vrednost <ph name="SECURE_DNS_SALT" /> ni veljavna in ne bo uporabljena.</translation>
 <translation id="6338645927051849741">Geslo • Googlov upravitelj gesel</translation>
@@ -3952,7 +3950,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="718872491229180389">Navijanje</translation>
 <translation id="7188840756966467339">Znova zaženi in uporabi pravilnike</translation>
 <translation id="7192188280913829296">Določiti je treba tudi atribut »vendor_id«.</translation>
-<translation id="7192203810768312527">Sprosti <ph name="SIZE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
 <translation id="7192537357091279678">Računalniški pogoni in pomnilnik</translation>
 <translation id="7193661028827781021">Sklic</translation>
 <translation id="719464814642662924">Visa</translation>

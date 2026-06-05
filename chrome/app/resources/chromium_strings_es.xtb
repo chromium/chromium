@@ -70,6 +70,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1749104137266986751">Si HTTPS no está disponible, Chromium usará una conexión no segura sin avisarte</translation>
 <translation id="1774152462503052664">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="1779356040007214683">Para aumentar la seguridad de Chromium, hemos inhabilitado algunas extensiones que no figuran en <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> y que se podrían haber añadido sin tu conocimiento.</translation>
+<translation id="1793486931176048546">Haz clic en <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> en la notificación de Windows para fijar Chromium a la barra de tareas y que puedas acceder rápidamente.</translation>
 <translation id="1808667845054772817">Reinstalar Chromium</translation>
 <translation id="1820835682567584003">Chromium está intentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">La próxima vez que abras Chromium en tu <ph name="DEVICE_TYPE" />, verás una petición para usar el Gestor de contraseñas de Google.</translation>
@@ -383,8 +384,10 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5294316920224716406">Cuando navegues en modo Incógnito, Chromium te avisará antes de cargar un sitio usando una conexión no segura</translation>
 <translation id="5313228254328109263">Servicio interno de la herramienta de actualización de Chromium</translation>
 <translation id="5346389065299425353">Profundiza en tu búsqueda añadiendo varias pestañas, archivos y herramientas</translation>
+<translation id="5348677704241861105">Obtén un resumen rápido de este documento y haz preguntas con Gemini en Chromium</translation>
 <translation id="5352264705793813212">Chromium ha encontrado algunas recomendaciones de seguridad para que las revises</translation>
 <translation id="5352361688875342522">Otros perfiles de Chromium</translation>
+<translation id="535243042947607642">ChromiumOS no ha podido guardar los datos de Chromium en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="5358375970380395591">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Chromium. Tus datos de Chromium como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociarlos a otra cuenta. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Para disfrutar de personalización, incluye Chromium en Actividad en la Web y en Aplicaciones</translation>
@@ -490,6 +493,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="6390800440335263989">Para continuar, inicia sesión en Chromium con <ph name="EMAIL" />. Así te aseguras de que se apliquen las políticas de tu organización.</translation>
 <translation id="6400112897226594999">Logotipo de Chromium dentro de una pantalla de ordenador.</translation>
 <translation id="6403826409255603130">Chromium es un navegador web que ejecuta páginas web y aplicaciones a gran velocidad. Es rápido, estable y fácil de utilizar. Chromium te permite navegar en la Web de forma más segura, ya que incluye protección contra malware y phishing.</translation>
+<translation id="6414624068245092115">Para asegurarte de que siempre puedas usar y guardar los datos de Chromium en tu cuenta de Google, demuestra que eres tú.</translation>
 <translation id="642132557830635295">Chromium se ejecuta más rápido y las funciones que usan JavaScript deberían funcionar según lo previsto</translation>
 <translation id="6436260184216827876">La búsqueda por imágenes no está disponible. Inténtalo de nuevo más tarde.</translation>
 <translation id="6442900851116057561">Reiniciar ChromiumOS</translation>
@@ -718,6 +722,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8852026904190808918">Los menús, ajustes, alertas y otros textos de Chromium se muestran en este idioma</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8876044221123442390">Añadir perfil de Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS no ha podido guardar los datos de Chromium en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="8891709362986793894">Tu organización requiere que inicies sesión en Chromium</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="8932992523185907506">Chromium ya no es tu navegador predeterminado. ¿Establecer Chromium como navegador predeterminado?</translation>

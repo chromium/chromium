@@ -153,6 +153,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Failed to cache the downloaded installer. Error: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Get a quick overview of this document and ask questions with Gemini in Chrome</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="263447411082773721">Keep your passwords, bookmarks and history perfectly synced across devices. Easily access the features that you know and love by updating your default browser to Chrome. Chrome will be pinned to your taskbar for quick access.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="2668094785979141847">Click to exit Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="2681444469812712297">Open <ph name="URL" /> in a new tab in Google Chrome.</translation>
 <translation id="2699790011615497488">Open Gemini in Chrome Beta</translation>
 <translation id="2712141162840347885">Select anything to search with Google Lens or press escape to exit Google Lens</translation>
@@ -538,6 +540,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6497147134301593682">Chrome was automatically closed</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="6520670145826811516">To use your location, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Chrome history</translation>
 <translation id="6532945796722480006">Open Gemini in Chrome Canary</translation>
@@ -585,6 +588,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
 <translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">You can switch between Chrome profiles here</translation>
+<translation id="7026856149118332950">Click <ph name="BEGIN_BOLD" />Yes<ph name="END_BOLD" /> in the Windows notification to pin Chrome to your taskbar for quick access.</translation>
 <translation id="7047386856539490735">Are these results useful?</translation>
 <translation id="7051685429025310665">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
@@ -677,6 +681,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7890208801193284374">If you share a computer, friends and family can browse separately and set up Chrome just the way they want.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
 <translation id="7904985524660297937">Try Gemini in Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="7917876797003313048">You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome Browser, Play Store, Gmail and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE" /> instead. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="7951272445806340501">Chrome OS Flex needs to be restarted to apply the update.</translation>
@@ -752,6 +757,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8624541899164515475">Settings, opens in new tab.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
 <translation id="8637932705841171563">To share your window, allow screen recording for Chrome in System Settings</translation>
+<translation id="8642497536370021917">To make sure that you can always use and save Chrome data in your Google Account, verify that it's you</translation>
 <translation id="8656634243791296665">Open Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
@@ -801,6 +807,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="93760716455950538">Restart Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome recommends scanning this file because it may be dangerous.</translation>
 <translation id="945522503751344254">Send feedback</translation>
+<translation id="973195869036269770">ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
 <translation id="989369509083708165">Google Chrome is your default browser</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> can switch between Chrome profiles</translation>

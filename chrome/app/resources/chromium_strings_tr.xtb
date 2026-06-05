@@ -378,6 +378,7 @@
 <translation id="5294316920224716406">Chromium, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
 <translation id="5313228254328109263">Chromium Güncelleyici Dahili Hizmeti</translation>
 <translation id="5346389065299425353">Birden fazla sekme, dosya ve araç ekleyerek aramanızı derinleştirin</translation>
+<translation id="5348677704241861105">Chromium'da Gemini ile bu belgenin kısa bir özetini alın ve soru sorun</translation>
 <translation id="5352264705793813212">Chromium, incelemeniz gereken bazı güvenlik önerileri tespit etti</translation>
 <translation id="5352361688875342522">Diğer Chromium Profilleri</translation>
 <translation id="5358375970380395591">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Chromium profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chromium verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. <ph name="LEARN_MORE" /></translation>
@@ -485,6 +486,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="6390800440335263989">Devam etmek için Chromium'da <ph name="EMAIL" /> hesabıyla oturum açın. Böylece kuruluşunuzun politikalarına uyabilirsiniz.</translation>
 <translation id="6400112897226594999">Bilgisayar ekranındaki Chromium logosu.</translation>
 <translation id="6403826409255603130">Chromium, Web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir Web tarayıcısıdır. Hızlı ve kararlı çalışır, kolay kullanılır. Chromium'da dahili olarak bulunan zararlı yazılım ve kimlik avı koruması sayesinde Web'de daha güvenli gezinin.</translation>
+<translation id="6414624068245092115">Google Hesabınızdaki Chromium verilerini her zaman kullanabildiğinizden ve kaydedebildiğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="642132557830635295">Chromium daha hızlı çalışır ve JavaScript kullanan özellikler tasarlandığı şekilde çalışır</translation>
 <translation id="6436260184216827876">Görsel Arama kullanılamıyor. Daha sonra tekrar deneyin.</translation>
 <translation id="6442900851116057561">ChromiumOS'i yeniden başlatın</translation>

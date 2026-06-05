@@ -356,6 +356,7 @@
 <translation id="253498598929009420">網站將能查看你的畫面內容</translation>
 <translation id="2535807170289627159">所有分頁</translation>
 <translation id="2536728043171574184">目前瀏覽的是這個網頁的離線複本</translation>
+<translation id="2537574774089209541">我們調整了部分工具的位置，方便你在瀏覽時使用 Gemini</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />，選取的固定無痕分頁，已設為靜音</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">如要在所有裝置上存取書籤和其他資料，請以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="2760805590727089264">MM/YY</translation>
 <translation id="2762000892062317888">剛剛</translation>
+<translation id="276378135349383280">在底部工具列顯示 Gemini</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
 <translation id="2777555524387840389">還剩 <ph name="SECONDS" /> 秒</translation>
 <translation id="2779651927720337254">失敗</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3614126103057878858">價格分析</translation>
 <translation id="3616113530831147358">音訊</translation>
+<translation id="3616798734782988169">請確認你信任 <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">管理存取權</translation>
 <translation id="3622349720008044802">管理視窗</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">輕觸搜尋</translation>
 <translation id="3739455665973395693">你的 Google 帳戶沒有密碼外洩</translation>
 <translation id="3739899004075612870">已加入 <ph name="PRODUCT_NAME" /> 書籤</translation>
+<translation id="3740290940447881599">請確認你信任這個網站</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
 <translation id="3763110477555836428">使用這張卡片結帳時，系統會填入虛擬卡號，保護你的實際卡片資料。你可以在 Google 錢包管理卡片。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">部分資料尚未儲存</translation>
@@ -1435,6 +1439,7 @@
 <translation id="6937524809504266803">個人化與連結</translation>
 <translation id="6937876069006524083">暱稱 (選填)</translation>
 <translation id="6942665639005891494">你隨時可以使用 [設定] 選單選項變更預設的下載位置</translation>
+<translation id="6944854424004126054">還原視窗</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6955535239952325894">受管理的瀏覽器已停用這項設定</translation>
 <translation id="6963766334940102469">刪除書籤</translation>
@@ -1528,6 +1533,7 @@
 <translation id="7291910923717764901">已新增這個頁面的圖片說明</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，選取的固定分頁，正在分享內容</translation>
+<translation id="7304003340539141201">讓 Gemini 協助處理分頁和工作</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
@@ -1874,6 +1880,7 @@
 <translation id="8696297579102085705">傳送到你的裝置</translation>
 <translation id="8697753151306746444">改為分享視窗或螢幕畫面</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
+<translation id="8700565880437506364">隆重推出 Chrome 內建 Gemini</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8715286883001906001">強化 Google 帳戶中的密碼</translation>
 <translation id="8715300232952757586">系統將關閉「<ph name="TAB_TITLE" />」</translation>
@@ -1941,6 +1948,7 @@
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998837250940831980">無法將分頁最小化，請稍後再試。</translation>
 <translation id="9001604755921395912">在 Chrome 無痕模式分頁中開啟</translation>
+<translation id="9010094279589497751">隨時都能快速開啟 Gemini</translation>
 <translation id="9012585441087414258">防範已知的不安全網站、下載內容和擴充功能。如果某個網頁含有可疑內容，系統會將網址和部分網頁內容傳送給「Google 安全瀏覽」功能。</translation>
 <translation id="9019199799064251516">不鎖定汽車設定檔就繼續嗎？</translation>
 <translation id="9022774213089566801">經常造訪</translation>
@@ -1998,6 +2006,7 @@
 <translation id="9190355771000652811">在網址列中，將此鍵盤快速鍵與搜尋引擎和搜尋捷徑搭配使用。</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />，選取的固定無痕分頁</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{已在 1 分鐘前檢查}other{已在 # 分鐘前檢查}}</translation>
+<translation id="9202894533863490414">要從這個網站下載內容嗎？</translation>
 <translation id="9204836675896933765">還剩 1 個檔案</translation>
 <translation id="9205933215779845960">找不到該頁面。請檢查錯別字或嘗試使用 <ph name="SEARCH_ENGINE" /> 搜尋。</translation>
 <translation id="9206873250291191720">A</translation>

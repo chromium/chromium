@@ -306,6 +306,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1458140305240870199">Alusasut</translation>
 <translation id="1458770162980644530">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö. Näppäimistö piilotettu.</translation>
 <translation id="1459693405370120464">Sää</translation>
+<translation id="1460317464907341501">Vahvistetaanko tämä sähköposti automaattisesti?</translation>
 <translation id="1461041542809785877">Suorituskyky</translation>
 <translation id="1462245070427461050">JIS B9 (45 mm x 64 mm)</translation>
 <translation id="1462951478840426066">käyttää tietokoneesi fontteja, jotta voit luoda tasokasta sisältöä</translation>
@@ -849,7 +850,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2316087952091171402">Alle <ph name="UPPER_ESTIMATE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="2316090909467242775">Kokeile tätä palautussalasanaa</translation>
 <translation id="2316159751672436664">Personoi saavutettavuustyökaluja Chrome-käyttöjärjestelmän asetuksista</translation>
-<translation id="2316887270356262533">Vapauttaa alle 1 Mt. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> pyytää käyttäjänimeä ja salasanaa.</translation>
 <translation id="2318594867107319532">Käytännön viimeisin aikaleima:</translation>
 <translation id="2320564945062300737">Kasvojenhoitotuotteet</translation>
@@ -2006,6 +2006,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="412601465078863288">Lataus aikakatkaistu</translation>
 <translation id="4127317221386336246">Asusteet</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
+<translation id="4129810348470013900">Jotain meni pieleen. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="4129992181550680635">Koulutusmateriaalit</translation>
 <translation id="4130226655945681476">Tarkista verkkojohdot, modeemi ja reititin.</translation>
 <translation id="4132448310531350254">Sovellukset (<ph name="POLICY_IDS_LIST" />) viittaavat päällekkäisiin tiedostotunnisteen "<ph name="FILE_EXTENSION" />" käsittelijöihin</translation>
@@ -3401,7 +3402,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="633348045801643466">Näytä <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />maksa myöhemmin <ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />-vaihtoehdot kassalla</translation>
 <translation id="6335029926534404762">Urheilukengät</translation>
 <translation id="6336948221660696475">VR ei sallittu</translation>
-<translation id="6337133576188860026">Vapauttaa alle <ph name="SIZE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="6337534724793800597">Suodata käytäntöjä nimen mukaan</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" />-arvo on virheellinen, eikä sitä käytetä.</translation>
 <translation id="6338645927051849741">Salasana • Google Salasanat</translation>
@@ -3952,7 +3952,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Käynnistä uudelleen ja ota käytännöt käyttöön</translation>
 <translation id="7192188280913829296">Määrite "vendor_id" on myös määritettävä.</translation>
-<translation id="7192203810768312527">Vapauttaa <ph name="SIZE" />. Jotkin sivustot saattavat latautua hitaammin seuraavalla käynnillä.</translation>
 <translation id="7192537357091279678">Tietokoneen levyt ja tallennuslaitteet</translation>
 <translation id="7193661028827781021">Tietolähteet</translation>
 <translation id="719464814642662924">Visa</translation>

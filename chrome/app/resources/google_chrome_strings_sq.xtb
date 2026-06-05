@@ -153,6 +153,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2580411288591421699">Nuk mund të instalohet i njëjti version i Google Chrome që po ekzekutohet aktualisht. Mbylle Google Chrome dhe provo përsëri.</translation>
 <translation id="2586406160782125153">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Instaluesi i shkarkuar nuk u ruajt te memoria specifike. Gabim: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Merr një përmbledhje të shpejtë të këtij dokumenti dhe bëj pyetje me Gemini në Chrome</translation>
 <translation id="2620436844016719705">Sistemi</translation>
 <translation id="263447411082773721">Mbaji fjalëkalimet, faqeshënuesit dhe historikun të sinkronizuar në mënyrë të përsosur në pajisje. Qasu me lehtësi te veçoritë që njeh dhe që të pëlqejnë duke e përditësuar shfletuesin tënd të parazgjedhur në Chrome. Chrome do të gozhdohet te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
 <translation id="2665296953892887393">Ndihmo në përmirësimin e Google Chrome duke dërguar te Google raportet e ndërprerjeve aksidentale dhe <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Kliko për të dalë nga "Lentja e Google"</translation>
+<translation id="2674238339205910678">ChromeOS Flex nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="2681444469812712297">Hap <ph name="URL" /> në një skedë të re në Google Chrome.</translation>
 <translation id="2699790011615497488">Hap Gemini në Chrome Beta</translation>
 <translation id="2712141162840347885">Zgjidh çdo gjë për të kërkuar me "Lenten e Google" ose shtyp butonin "Escape" për të dalë nga "Lentja e Google"</translation>
@@ -537,6 +539,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6497147134301593682">Chrome u mbyll automatikisht</translation>
 <translation id="6506909944137591434">Chrome ka nevojë për lejen e kamerës për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
 <translation id="6520670145826811516">Për të përdorur vendndodhjen tënde, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historiku i Chrome</translation>
 <translation id="6532945796722480006">Hap Gemini në Chrome Canary</translation>
@@ -584,6 +587,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7011190694940573312">Instalimi dështoi sepse ky version i sistemit operativ nuk mbështetet.</translation>
 <translation id="7024536598735240744">Gabim shpaketimi: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
+<translation id="7026856149118332950">Kliko te <ph name="BEGIN_BOLD" />Po<ph name="END_BOLD" /> në njoftimin e Windows për të gozhduar Chrome te shiriti i detyrave për qasje të shpejtë.</translation>
 <translation id="7047386856539490735">A janë të dobishme këto rezultate?</translation>
 <translation id="7051685429025310665">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />", "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Bëje Chrome tëndin</translation>
@@ -676,6 +680,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7890208801193284374">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="7896673875602241923">Dikush është identifikuar më parë në Chrome në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chrome për t'i mbajtur të ndara informacionet e tua.</translation>
 <translation id="7904985524660297937">Provo Gemini në Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
 <translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome e bllokoi këtë shkarkim sepse skedari është mashtrues dhe mund të bëjë ndryshime të papritura në pajisjen tënde</translation>
 <translation id="7951272445806340501">Chrome OS Flex ka nevojë të riniset për të zbatuar përditësimin.</translation>
@@ -749,6 +754,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="8624541899164515475">Cilësimet, hapet në një skedë të re.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
 <translation id="8637932705841171563">Për të ndarë dritaren tënde, lejo regjistrimin e ekranit për Chrome te "Cilësimet e sistemit"</translation>
+<translation id="8642497536370021917">Për t'u siguruar që mund t'i përdorësh dhe t'i ruash gjithmonë të dhënat e Chrome në "Llogarinë tënde të Google", verifiko që je ti</translation>
 <translation id="8656634243791296665">Hap Gemini në Chrome Dev</translation>
 <translation id="8669527147644353129">Ndihmësi i Google Chrome</translation>
 <translation id="8679801911857917785">Kontrollon gjithashtu se cila faqe shfaqet kur fillon Chrome.</translation>
@@ -798,6 +804,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="93760716455950538">Rinis Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome rekomandon ta skanosh këtë skedar, sepse ai mund të jetë i rrezikshëm.</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
+<translation id="973195869036269770">ChromeOS nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="983803489796659991">Instalimi dështoi sepse serveri i përditësimit nuk ka të dhëna të hash-it për aplikacionin.</translation>
 <translation id="989369509083708165">Google Chrome është shfletuesi yt i parazgjedhur</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> mund të kalojë nga një profil i Chrome te një tjetër</translation>

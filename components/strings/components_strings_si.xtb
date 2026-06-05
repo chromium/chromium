@@ -850,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />ට වඩා අඩු. සමහර අඩවි ඔබේ මීළඟ පිවිසීමෙහි වඩා සෙමින් පූරණය විය හැක.</translation>
 <translation id="2316090909467242775">මෙම ප්‍රතිසාධන මුරපදය උත්සාහ කරන්න</translation>
 <translation id="2316159751672436664">ChromeOS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කරන්න</translation>
-<translation id="2316887270356262533">1 MB ට වඩා අඩුවෙන් හිස් කරයි. ඔබේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> හට පරිශීලක නාමයක් සහ මුරපදයක් අවශ්‍යයි.</translation>
 <translation id="2318594867107319532">අවසන් ප්‍රතිපත්ති වේලා මුද්‍රාව:</translation>
 <translation id="2320564945062300737">මුහුණු ආරක්ෂණ නිෂ්පාදන</translation>
@@ -3403,7 +3402,6 @@
 <translation id="633348045801643466">ගෙවා පිටවීමේදී <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />පසුව ගෙවීමේ<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> විකල්ප පෙන්වන්න</translation>
 <translation id="6335029926534404762">මලල ක්‍රීඩා සපත්තු</translation>
 <translation id="6336948221660696475">VR ඉඩ දී නැත</translation>
-<translation id="6337133576188860026"><ph name="SIZE" />ට වඩා අඩුවෙන් හිස් කරයි. ඔබගේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="6337534724793800597">නම් වශයෙන් ප්‍රතිපත්ති පෙරන්න</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> අගය වලංගු නොවන අතර භාවිතා නොකරනු ඇත.</translation>
 <translation id="6338645927051849741">මුරපදය • Google මුරපද කළමනාකරු</translation>
@@ -3953,7 +3951,6 @@
 <translation id="718872491229180389">ඔල්වරසන් නැඟීම</translation>
 <translation id="7188840756966467339">නැවත ආරම්භ කර ප්‍රතිපත්ති යොදන්න</translation>
 <translation id="7192188280913829296">"vendor_id" යන උපලක්ෂණය ද සඳහන් කළ යුතුය.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> හිස් කරයි. ඔබේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="7192537357091279678">පරිගණක ධාවක සහ ආචයනය</translation>
 <translation id="7193661028827781021">යොමුව</translation>
 <translation id="719464814642662924">වීසා</translation>

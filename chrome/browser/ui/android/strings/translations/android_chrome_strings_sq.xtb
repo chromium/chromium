@@ -356,6 +356,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="253498598929009420">Sajti do të mund të shikojë përmbajtjet në ekranin tënd</translation>
 <translation id="2535807170289627159">Të gjitha skedat</translation>
 <translation id="2536728043171574184">Po shikon një kopje offline të kësaj faqeje</translation>
+<translation id="2537574774089209541">Disa vegla janë zhvendosur për të të dhënë qasje të lehtë te Gemini ndërkohë që shfleton</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur e gozhduar dhe e vendosur në heshtje</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, skedë</translation>
@@ -404,6 +405,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2751271371269891762">Për t'i marrë faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu si <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / VV</translation>
 <translation id="2762000892062317888">pikërisht tani</translation>
+<translation id="276378135349383280">Shfaq Gemini në shiritin e poshtëm të veglave</translation>
 <translation id="276969039800130567">I identifikuar si <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sekonda të mbetura</translation>
 <translation id="2779651927720337254">dështoi</translation>
@@ -603,6 +605,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3614126103057878858">Statistikat e çmimeve</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Sigurohu që i beson <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Menaxho qasjen</translation>
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
@@ -633,6 +636,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3738139272394829648">Prek për të kërkuar</translation>
 <translation id="3739455665973395693">Nuk ka fjalëkalime të komprometuara në "Llogarinë tënde të Google"</translation>
 <translation id="3739899004075612870">U shtua si faqeshënues në <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Sigurohu që i beson këtij sajti</translation>
 <translation id="3740525748616366977">Kërkimi zanor nuk mund të përdoret në këtë pajisje</translation>
 <translation id="3763110477555836428">Një numër karte virtuale do të plotësohet kur të përfundosh blerjen me këtë kartë për të mbrojtur detajet e tua aktuale. Menaxho te "Portofoli i Google". <ph name="BEGIN_LINK1" />Mëso më shumë rreth kartave virtuale<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Disa të dhëna nuk janë ruajtur ende</translation>
@@ -641,6 +645,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3771290962915251154">Ky cilësim është i çaktivizuar sepse kontrollet prindërore janë të aktivizuara</translation>
 <translation id="3771694256347217732">Kushtet e shërbimit të Google</translation>
 <translation id="3777796259512476958">Të nxjerr nga shumica e sajteve</translation>
+<translation id="3786379886124795923">Skanove një kod QR për t'u identifikuar në Chrome. Konfirmo që dëshiron të marrësh fjalëkalimet, faqeshënuesit dhe më shumë nga ky profil.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="3792938779249970121">Zgjidh llogarinë</translation>
 <translation id="3795154175078851242">Kopjo imazhin me lidhjen</translation>
@@ -825,6 +830,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4532845899244822526">Zgjidh dosjen</translation>
 <translation id="4535755320005483982">Grupi i ndarë i skedave "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">Regjistrimi për njoftimet e këshillave u hap në lartësi të plotë</translation>
+<translation id="4537987892902330164">Qëndrove i identifikuar si <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Asnjë fletë e çelësave të kalimit</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_COUNT_MANY" /> skeda, <ph name="TAB_COUNT_INCOGNITO" /> të fshehta}}</translation>
 <translation id="4558311620361989323">Shkurtoret e faqes së uebit</translation>
@@ -1282,6 +1288,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6411219469806822692">Nuk mund të shkosh më lart. Provo të fillosh më lart në faqe.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, skeda e zgjedhur me shumë të tjera</translation>
 <translation id="641643625718530986">Printo…</translation>
+<translation id="6427723330233512782">Përshtat me lartësinë</translation>
 <translation id="6433501201775827830">Zgjidh motorin e kërkimit</translation>
 <translation id="6434309073475700221">Hidhe</translation>
 <translation id="6435307030888827407">Qëndro i paidentifikuar</translation>
@@ -1435,6 +1442,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6937524809504266803">Personalizimi dhe lidhja</translation>
 <translation id="6937876069006524083">Pseudonimi (opsional)</translation>
 <translation id="6942665639005891494">Ndrysho në çdo moment vendndodhjen e parazgjedhur të shkarkimit duke përdorur opsionin e menysë "Cilësimet"</translation>
+<translation id="6944854424004126054">Restauro dritaren</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6955535239952325894">Ky cilësim është i çaktivizuar në shfletuesit e menaxhuar</translation>
 <translation id="6963766334940102469">Fshi faqeshënuesit</translation>
@@ -1528,6 +1536,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7291910923717764901">Përshkrimet e imazheve u shtuan për këtë faqe</translation>
 <translation id="7293429513719260019">Zgjidh gjuhën</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, skeda e zgjedhur e gozhduar duke ndarë përmbajtjen</translation>
+<translation id="7304003340539141201">Kërkoji Gemini të të ndihmojë me skedat dhe detyrat e tua</translation>
 <translation id="7311244614769792472">Nuk u gjet asnjë rezultat</translation>
 <translation id="7314734791127433392">Fjalëkalimet nuk mund të kontrollohen</translation>
 <translation id="7324354302972299151">Dërgo një kërkesë "Do Not Track"</translation>
@@ -1874,6 +1883,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8696297579102085705">Dërgo te pajisja jote</translation>
 <translation id="8697753151306746444">Ndaj dritaren ose ekranin më mirë</translation>
 <translation id="8699120352855309748">Mos ofro t'i përkthesh këto gjuhë</translation>
+<translation id="8700565880437506364">Prezantimi i Gemini në Chrome</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="8715286883001906001">Forco fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> do të mbyllet</translation>
@@ -1941,6 +1951,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8996847606757455498">Zgjidh një ofrues tjetër</translation>
 <translation id="8998837250940831980">Skeda nuk mund të minimizohej. Provo përsëri më vonë.</translation>
 <translation id="9001604755921395912">Hape në skedë "të fshehtë" në Chrome</translation>
+<translation id="9010094279589497751">Hap me shpejtësi Gemini kur të të nevojitet</translation>
 <translation id="9012585441087414258">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Nëse një faqe bën diçka të dyshimtë, URL-të dhe pjesët e përmbajtjes së faqes dërgohen te "Shfletimi i sigurt i Google".</translation>
 <translation id="9019199799064251516">Të vazhdohet pa një kyçje të profilit të makinës?</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>
@@ -1998,6 +2009,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9190355771000652811">Në shiritin e adresave, përdor këtë shkurtore të tastierës me shkurtoret për motorët e kërkimit dhe kërkimin e sajteve.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur e gozhduar</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrolluar 1 minutë më parë}other{Kontrolluar # minuta më parë}}</translation>
+<translation id="9202894533863490414">Të shkarkohet nga ky sajt?</translation>
 <translation id="9204836675896933765">1 skedar i mbetur</translation>
 <translation id="9205933215779845960">Faqja nuk mund të gjendet. Kontrollo drejtshkrimin ose provo të kërkosh në <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2015,9 +2027,11 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="939598580284253335">Fut frazën e kalimit</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, skeda "e fshehtë" e gozhduar e "Figurë brenda figurës"</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
+<translation id="949667118776341807">Rrotullo</translation>
 <translation id="95817756606698420">Chrome mund të përdorë <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> për kërkimin në Kinë. Mund ta ndryshosh këtë te <ph name="BEGIN_LINK" />Cilësimet<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Fshi të dhënat e shfletimit</translation>
 <translation id="963246339335003378">Hap "Menaxherin e detyrave"</translation>
+<translation id="966337994629449077">Je identifikuar si <ph name="FROM_EMAIL" />.\n\nPër të vazhduar nga kompjuteri yt, kalo te <ph name="TO_EMAIL" />. Do të marrësh fjalëkalimet, faqeshënuesit dhe më shumë nga kjo llogari.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuta të mbetura</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>

@@ -159,6 +159,7 @@
 <translation id="2652691236519827073">लिंक नवीन Chrome &amp;टॅबमध्ये उघडा</translation>
 <translation id="2665296953892887393">Google कडे क्रॅश अहवाल आणि <ph name="UMA_LINK" /> पाठवून Google Chrome ला अधिक चांगले बनवण्यात मदत करा</translation>
 <translation id="2668094785979141847">Google Lens मधून बाहेर पडण्यासाठी क्लिक करा</translation>
+<translation id="2674238339205910678">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromeOS Flex ला तुमच्या Google खात्यामध्ये Chrome डेटा सेव्ह करता आला नाही</translation>
 <translation id="2681444469812712297">Google Chrome मध्ये नवीन टॅबमध्ये <ph name="URL" /> उघडा.</translation>
 <translation id="2699790011615497488">Chrome बीटा मधील Gemini उघडा</translation>
 <translation id="2712141162840347885">Google Lens वापरून शोधण्यासाठी काहीही निवडा किंवा Google Lens मधून बाहेर पडण्यासाठी एस्केप प्रेस करा</translation>
@@ -189,6 +190,7 @@
 <translation id="2945997411976714835">इंस्टॉलसंबंधित एरर: इंस्टॉलर प्रक्रिया सुरू झाली नाही.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, सेटिंग्ज पेजमध्ये Chrome मधून साइन आउट करा</translation>
+<translation id="2976869732253036751">तुमच्या फोनवर Chrome सह किमतीचा माग ठेवण्याशी संबंधित अलर्ट मिळवा</translation>
 <translation id="2991167882679440829">तुम्ही तुमच्या Google खाते मध्ये सेव्ह केलेले तुमचे पासवर्ड आणि इतर Chrome डेटा या डिव्हाइसवरून काढून टाकला जाईल. त्या गोष्टी Chrome मध्ये पुन्हा वापरण्यासाठी, पुन्हा साइन इन करा.</translation>
 <translation id="2994465299455873643"><ph name="BROWSER_NAME" /> कालबाह्य झाल्यास, एन्क्रिप्शन सेवा आणि ते रिकव्‍हर करण्याचा सुरक्षित मार्ग पुरवते. ही सेवा बंद केलेली असल्यास, <ph name="BROWSER_NAME" /> एन्क्रिप्ट केलेल्या डेटाचा अ‍ॅक्सेस गमवू शकते आणि कदाचित <ph name="BROWSER_NAME" /> ला स्वतःला रिकव्‍हर करता येणार नाही.</translation>
 <translation id="3003694935412297923">सर्व टास्क</translation>
@@ -536,6 +538,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6497147134301593682">Chrome आपोआप बंद झाले</translation>
 <translation id="6506909944137591434">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करण्यासाठी Chrome ला तुमच्या कॅमेराची परवानगी आवश्यक आहे</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
+<translation id="6520608191273161151">साइन इन करताना आलेल्या एररमुळे, ChromeOS Flex ला तुमच्या Google खात्यामध्ये Chrome डेटा सेव्ह करता आला नाही</translation>
 <translation id="6520670145826811516">तुमचे स्थान वापरण्यासाठी, Chrome ला <ph name="BEGIN_LINK" />सिस्टीम सेटिंग्ज<ph name="END_LINK" /> मध्ये अ‍ॅक्सेस द्या</translation>
 <translation id="652948702951888897">Chrome इतिहास</translation>
 <translation id="6532945796722480006">Chrome कॅनरी मधील Gemini उघडा</translation>
@@ -583,6 +586,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7011190694940573312">इंस्टॉलेशन यशस्वी झाले नाही, कारण ऑपरेटिंग सिस्टीमच्या या आवृत्तीला सपोर्ट नाही.</translation>
 <translation id="7024536598735240744">उघडण्याशी संबंधित एरर: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">तुम्ही Chrome प्रोफाइलदरम्यान येथे स्विच करू शकता</translation>
+<translation id="7026856149118332950">झटपट अ‍ॅक्सेस करण्याकरिता Chrome तुमच्या टास्कबारवर पिन करण्यासाठी Windows नोटिफिकेशनमध्ये <ph name="BEGIN_BOLD" />होय<ph name="END_BOLD" /> वर क्लिक करा</translation>
 <translation id="7047386856539490735">हे परिणाम उपयुक्त आहेत का?</translation>
 <translation id="7051685429025310665">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> या परवानग्या काढून टाकल्या आहेत.</translation>
 <translation id="7059914902409643750">Chrome ला तुमचे हक्काचे ठिकाण बनवा</translation>
@@ -675,6 +679,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7890208801193284374">तुम्ही कॉंप्युटर शेअर केल्यास, मित्र आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना पाहिजे तसे Chrome सेट अप करू शकतात.</translation>
 <translation id="7896673875602241923">कोणीतरी यापूर्वी <ph name="ACCOUNT_EMAIL_LAST" /> म्हणून या संंगणकावरील Chrome मध्ये साइन इन केले आहे. कृपया तुमची माहिती स्वतंत्र ठेवण्यासाठी एक नवीन Chrome वापरकर्ता तयार करा.</translation>
 <translation id="7904985524660297937">Google Chrome मधील Gemini वापरून पहा</translation>
+<translation id="7905880575591690197">साइन इन करताना आलेल्या एररमुळे, ChromeOS ला तुमच्या Google खात्यामध्ये Chrome डेटा सेव्ह करता आला नाही</translation>
 <translation id="7917876797003313048">तुम्ही तुमची साइन इन केलेली Google खाती व्यवस्थापित करू शकता. तुमची Google खाती Chrome ब्राउझर, Play Store, Gmail आणि बर्‍याच गोष्टींसाठी वापरली जातात. तुम्हाला कुटुंब सदस्यासारख्या इतर कोणासाठी खाते जोडायचे असल्यास, त्याऐवजी तुमच्या <ph name="DEVICE_TYPE" /> वर नवीन व्यक्ती जोडा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">फाइल फसवी असल्याने Chrome ने हे डाउनलोड ब्लॉक केले आहे आणि ती तुमच्या डिव्हाइसमध्ये अनपेक्षित बदल करू शकते</translation>
 <translation id="7951272445806340501">अपडेट लागू करण्यासाठी ChromeOS Flex रीस्टार्ट करणे आवश्यक आहे.</translation>
@@ -800,6 +805,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="93760716455950538">ChromeOS Flex रीस्टार्ट करा</translation>
 <translation id="943390475793766444">Chrome हे ही फाइल स्कॅन करण्याची शिफारस करते, कारण ती धोकादायक असू शकते.</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
+<translation id="973195869036269770">तुमच्या खात्याचे साइन-इन तपशील कालबाह्य झाल्यामुळे, ChromeOS ला तुमच्या Google खात्यामध्ये Chrome डेटा सेव्ह करता आला नाही</translation>
 <translation id="983803489796659991">अपडेट सर्व्हरकडे अ‍ॅप्लिकेशनसाठी कोणताही हॅश डेटा नसल्यामुळे, इंस्टॉलेशन यशस्वी झाले नाही.</translation>
 <translation id="989369509083708165">Google Chrome तुमचा डीफॉल्ट ब्राउझर आहे</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome प्रोफाइलदरम्यान स्विच करू शकतात</translation>

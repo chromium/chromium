@@ -153,6 +153,7 @@
 <translation id="2580411288591421699">നിലവില്‍‌ പ്രവർത്തിക്കുന്ന Google Chrome പതിപ്പിന് സമാനമായത് ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യാന്‍‌ കഴിയില്ല. ദയവായി Google Chrome അടച്ചശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2586406160782125153">ഇത് ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ ബ്രൗസിംഗ് വിവരങ്ങൾ ഇല്ലാതാക്കും. പിന്നീട് വിവരങ്ങൾ വീണ്ടെടുക്കാൻ, <ph name="USER_EMAIL" /> എന്നയാളായി Chrome‌-ൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="259935314519650377">ഡൗൺലോഡ് ചെയ്ത ഇൻസ്റ്റാളർ കാഷെ ചെയ്യാനായില്ല. പിശക്: <ph name="UNPACK_CACHING_ERROR_CODE" /></translation>
+<translation id="2608461706055011366">Chrome-ലെ Gemini ഉപയോഗിച്ച് ഈ ഡോക്യുമെന്റിന്റെ ദ്രുത അവലോകനം നേടുക, ചോദ്യങ്ങൾ ചോദിക്കുക</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="263447411082773721">നിങ്ങളുടെ പാസ്‌വേഡുകളും ബുക്ക്‌മാർക്കുകളും ചരിത്രവും ഉപകരണങ്ങളിലുടനീളം കൃത്യമായി സമന്വയിപ്പിച്ച് നിലനിർത്തുക. നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ Chrome-ലേക്ക് അപ്ഡേറ്റ് ചെയ്ത് നിങ്ങൾക്ക് അറിയാവുന്നതും ഇഷ്ടമുള്ളതുമായ ഫീച്ചറുകൾ എളുപ്പത്തിൽ ആക്സസ് ചെയ്യുക. അതിവേഗ ആക്‌സസിനായി Chrome നിങ്ങളുടെ ടാസ്‌ക്‌ബാറിലേക്ക് പിൻ ചെയ്യും.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">പുതിയ Chrome &amp;ടാബിൽ ലിങ്ക് തുറക്കുക</translation>
 <translation id="2665296953892887393">Google-ലേക്ക് ക്രാഷ് റിപ്പോർട്ടുകളും <ph name="UMA_LINK" /> എന്നതും അയയ്‌ക്കുന്നതിലൂടെ Google Chrome മികച്ചതാക്കാൻ സഹായിക്കുക</translation>
 <translation id="2668094785979141847">Google Lens-ൽ നിന്ന് പുറത്തുകടക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
+<translation id="2674238339205910678">നിങ്ങളുടെ അക്കൗണ്ടിന്റെ സൈൻ ഇൻ വിശദാംശങ്ങൾ കാലഹരണപ്പെട്ടതിനാൽ ChromeOS Flex-ന് നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="2681444469812712297">Google Chrome-ൽ പുതിയ ടാബിൽ <ph name="URL" /> തുറക്കുക.</translation>
 <translation id="2699790011615497488">Chrome ബീറ്റയിലെ Gemini തുറക്കുക</translation>
 <translation id="2712141162840347885">Google Lens ഉപയോഗിച്ച് തിരയാൻ എന്തെങ്കിലും തിരഞ്ഞെടുക്കുക അല്ലെങ്കിൽ Google Lens-ൽ നിന്ന് പുറത്ത് കടക്കാൻ 'Escape' അമർത്തുക</translation>
@@ -538,6 +540,7 @@
 <translation id="6497147134301593682">Chrome സ്വയമേവ അടച്ചു</translation>
 <translation id="6506909944137591434">നിങ്ങളുടെ ചുറ്റുപാടുകളുടെ 3D മാപ്പ് സൃഷ്‌ടിക്കാൻ Chrome-ന് ക്യാമറാ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">സൈൻ ഇൻ ചെയ്യുന്നതിലെ പിശക് കാരണം ChromeOS Flex-ന് നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="6520670145826811516">നിങ്ങളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ, <ph name="BEGIN_LINK" />സിസ്റ്റം ക്രമീകരണം<ph name="END_LINK" /> എന്നതിൽ Chrome-ന് ആക്‌സസ് നൽകുക</translation>
 <translation id="652948702951888897">Chrome ചരിത്രം</translation>
 <translation id="6532945796722480006">Chrome Canary-യിലെ Gemini തുറക്കുക</translation>
@@ -585,6 +588,7 @@
 <translation id="7011190694940573312">ഓപ്പറേറ്റിംഗ് സിസ്റ്റത്തിന്റെ ഈ പതിപ്പ് പിന്തുണയ്ക്കാത്തതിനാൽ ഇൻസ്റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="7024536598735240744">അൺപാക്ക് ചെയ്യുന്നതിൽ പിശക്: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">നിങ്ങൾക്ക് ഇവിടെ Chrome പ്രൊഫൈലുകൾ തമ്മിൽ പരസ്‌പരം മാറ്റാനാകും</translation>
+<translation id="7026856149118332950">അതിവേഗ ആക്‌സസിനായി നിങ്ങളുടെ ടാസ്‌ക്‌ബാറിലേക്ക് Chrome പിൻ ചെയ്യാൻ Windows അറിയിപ്പിലെ <ph name="BEGIN_BOLD" />അതെ<ph name="END_BOLD" /> ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="7047386856539490735">ഈ ഫലങ്ങൾ ഉപയോഗപ്രദമാണോ?</translation>
 <translation id="7051685429025310665">നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ല. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> എന്നീ അനുമതികൾ Chrome നീക്കം ചെയ്തു.</translation>
 <translation id="7059914902409643750">Chrome-നെ നിങ്ങളുടേതാക്കുക</translation>
@@ -677,6 +681,7 @@
 <translation id="7890208801193284374">നിങ്ങളൊരു കമ്പ്യൂട്ടർ പങ്കിടുകയാണെങ്കിൽ, സുഹൃത്തുക്കൾക്കും കുടുബാംഗങ്ങൾക്കും വെവ്വേറെ ബ്രൗസ് ചെയ്യാനും അവർക്കാവശ്യമുള്ള രീതിയിൽ Chrome സജ്ജമാക്കാനുമാകും.</translation>
 <translation id="7896673875602241923">ഈ കമ്പ്യൂട്ടറിലെ Chrome-ൽ മുമ്പ് മറ്റാരോ <ph name="ACCOUNT_EMAIL_LAST" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു. നിങ്ങളുടെ വിവരങ്ങൾ പ്രത്യേകം വേർതിരിച്ച് സൂക്ഷിക്കാൻ പുതിയ Chrome ഉപയോക്താവിനെ സൃഷ്‌ടിക്കുക.</translation>
 <translation id="7904985524660297937">Google Chrome-ലെ Gemini പരീക്ഷിക്കുക</translation>
+<translation id="7905880575591690197">സൈൻ ഇൻ ചെയ്യുന്നതിലെ പിശക് കാരണം ChromeOS-ന് നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="7917876797003313048">സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന Google അക്കൗണ്ടുകൾ നിങ്ങൾക്ക് മാനേജ് ചെയ്യാം. Chrome ബ്രൗസർ, Play Store, Gmail എന്നിവയ്ക്കും മറ്റുമായി നിങ്ങളുടെ Google അക്കൗണ്ടുകൾ ഉപയോഗിക്കുന്നു. കുടുംബാംഗത്തെ പോലുള്ള മറ്റാർക്കെങ്കിലും വേണ്ടി ഒരു അക്കൗണ്ട് ചേർക്കണമെങ്കിൽ, പകരം നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിലേക്ക് പുതിയൊരു വ്യക്തിയെ ചേർക്കുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">ഫയൽ വഞ്ചനാപരമായതിനാലും നിങ്ങളുടെ ഉപകരണത്തിൽ അപ്രതീക്ഷിത മാറ്റങ്ങൾ വരുത്തിയേക്കാം എന്നതിനാലും Chrome ഈ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="7951272445806340501">അപ്ഡേറ്റ് ബാധകമാക്കാൻ ChromeOS Flex റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്.</translation>
@@ -751,6 +756,7 @@
 <translation id="8624541899164515475">ക്രമീകരണം, പുതിയ ടാബിൽ തുറക്കുന്നു.</translation>
 <translation id="8625237574518804553">{0,plural, =1{ഒരു മിനിറ്റിൽ Chrome വീണ്ടും സമാരംഭിക്കും}other{# മിനിറ്റിൽ Chrome വീണ്ടും സമാരംഭിക്കും}}</translation>
 <translation id="8637932705841171563">നിങ്ങളുടെ വിൻഡോ പങ്കിടാൻ, സിസ്റ്റം ക്രമീകരണത്തിൽ Chrome-നായി സ്‌ക്രീൻ റെക്കോർഡിംഗ് അനുവദിക്കുക</translation>
+<translation id="8642497536370021917">നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും കഴിയുമെന്ന് ഉറപ്പാക്കാൻ, ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="8656634243791296665">Chrome Dev-ലെ Gemini തുറക്കുക</translation>
 <translation id="8669527147644353129">Google Chrome സഹായി</translation>
 <translation id="8679801911857917785">നിങ്ങൾ Chrome ആരംഭിയ്ക്കുമ്പോൾ ഏത് പേജാണ് കാണിക്കേണ്ടതെന്നും അത് നിയന്ത്രിയ്ക്കുന്നു.</translation>
@@ -800,6 +806,7 @@
 <translation id="93760716455950538">ChromeOS Flex റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="943390475793766444">ഈ ഫയൽ അപകടകരമാകാൻ സാധ്യതയുള്ളതിനാൽ ഇത് സ്‌കാൻ ചെയ്യാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
+<translation id="973195869036269770">നിങ്ങളുടെ അക്കൗണ്ടിന്റെ സൈൻ ഇൻ വിശദാംശങ്ങൾ കാലഹരണപ്പെട്ടതിനാൽ ChromeOS-ന് നിങ്ങളുടെ Google Account-ൽ Chrome ഡാറ്റ സംരക്ഷിക്കാനായില്ല</translation>
 <translation id="983803489796659991">അപ്‌ഡേറ്റ് സെർവറിൽ ആപ്പിനായി ഹാഷ് ഡാറ്റയൊന്നും ഇല്ലാത്തതിനാൽ ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പരാജയപ്പെട്ടു.</translation>
 <translation id="989369509083708165">Google Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസറാണ്</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> എന്നതിന് Chrome പ്രൊഫൈലുകൾ തമ്മിൽ പരസ്‌പരം മാറ്റാനാകും</translation>

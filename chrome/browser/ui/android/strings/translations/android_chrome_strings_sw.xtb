@@ -641,6 +641,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3771290962915251154">Mipangilio hii imezimwa kwa sababu vidhibiti vya wazazi vimewashwa</translation>
 <translation id="3771694256347217732">Sheria na Masharti ya Google</translation>
 <translation id="3777796259512476958">Hukuondoa kwenye tovuti nyingi</translation>
+<translation id="3786379886124795923">Umechanganua msimbo wa QR ili uingie katika Chrome. Thibitisha kuwa ungependa kupata manenosiri, alamisho na zaidi kutoka kwenye wasifu huu.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{Kichupo kimoja}other{Vichupo #}}</translation>
 <translation id="3792938779249970121">Chagua akaunti</translation>
 <translation id="3795154175078851242">Nakili picha iliyo na kiungo</translation>
@@ -825,6 +826,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4532845899244822526">Chagua folda</translation>
 <translation id="4535755320005483982">Kikundi cha vichupo cha pamoja cha <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Umefungua dirisha la kuchagua kupokea arifa za vidokezo katika skrini nzima</translation>
+<translation id="4537987892902330164">Umesalia katika akaunti ukitumia <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Hakuna laha ya funguo za siri</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{Kichupo <ph name="TAB_COUNT_ONE" />}other{Vichupo <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> fiche}}</translation>
 <translation id="4558311620361989323">Njia za mikato za ukurasa wa wavuti</translation>
@@ -1282,6 +1284,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6411219469806822692">Huwezi kwenda juu zaidi ya hapo. Jaribu kuanzia sehemu ya juu zaidi ya ukurasa.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Kichupo Kilichochaguliwa Mara Nyingi</translation>
 <translation id="641643625718530986">Chapisha...</translation>
+<translation id="6427723330233512782">Sawazisha kulingana na urefu</translation>
 <translation id="6433501201775827830">Chagua mtambo wako wa kutafuta</translation>
 <translation id="6434309073475700221">Tupa</translation>
 <translation id="6435307030888827407">Usiingie katika akaunti</translation>
@@ -1435,6 +1438,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6937524809504266803">Kuweka Mapendeleo na Kuunganisha</translation>
 <translation id="6937876069006524083">Jina wakilishi (ni hiari)</translation>
 <translation id="6942665639005891494">Badilisha sehemu chaguomsingi ya kupakua wakati wowote ukitumia chaguo la menyu ya Mipangilio</translation>
+<translation id="6944854424004126054">Rejesha dirisha</translation>
 <translation id="6945221475159498467">Chagua</translation>
 <translation id="6955535239952325894">Mipangilio hii imezimwa kwenye vivinjari vinavyodhibitiwa</translation>
 <translation id="6963766334940102469">Futa alamisho</translation>
@@ -2015,9 +2019,11 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="939598580284253335">Ingiza kaulisiri</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, Kichupo cha Faragha Kilichobandikwa cha Kupachika Picha Ndani ya Picha Nyingine</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
+<translation id="949667118776341807">Zungusha</translation>
 <translation id="95817756606698420">Chrome inaweza kutumia <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> kutafuta nchini Uchina. Unaweza kuibadilisha katika <ph name="BEGIN_LINK" />MipangilioE<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Futa data ya kuvinjari</translation>
 <translation id="963246339335003378">Fungua Kidhibiti cha Shughuli kwenye Chrome</translation>
+<translation id="966337994629449077">Umeingia katika akaunti ukitumia <ph name="FROM_EMAIL" />.\n\nIli uendelee kwenye kompyuta yako, badilisha utumie <ph name="TO_EMAIL" />. Utapata manenosiri, alamisho na zaidi kwenye akaunti hii.</translation>
 <translation id="970715775301869095">Zimesalia dakika <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">Nje ya mtandao</translation>
 <translation id="983192555821071799">Funga vichupo vyote</translation>

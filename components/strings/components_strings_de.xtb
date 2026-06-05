@@ -850,7 +850,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2316087952091171402">Weniger als <ph name="UPPER_ESTIMATE" />. Einige Websites werden beim nächsten Besuch möglicherweise langsamer geladen.</translation>
 <translation id="2316090909467242775">Wiederherstellungspasswort probieren</translation>
 <translation id="2316159751672436664">Bedienungshilfen in den Chrome OS-Einstellungen personalisieren</translation>
-<translation id="2316887270356262533">Es werden weniger als 1 MB Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="2317259163369394535">Für <ph name="DOMAIN" /> sind ein Nutzername und ein Passwort erforderlich.</translation>
 <translation id="2318594867107319532">Letzter Richtlinien-Zeitstempel:</translation>
 <translation id="2320564945062300737">Gesichtspflegeprodukte</translation>
@@ -3400,7 +3399,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="633348045801643466">Optionen für <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />Später bezahlen<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> an der Kasse anzeigen</translation>
 <translation id="6335029926534404762">Sportschuhe</translation>
 <translation id="6336948221660696475">VR-Berechtigung nicht gewährt</translation>
-<translation id="6337133576188860026">Es werden weniger als <ph name="SIZE" /> Speicherplatz freigegeben. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="6337534724793800597">Richtlinien nach Name filtern</translation>
 <translation id="633770708279464947">Der <ph name="SECURE_DNS_SALT" />-Wert ist ungültig und wird nicht verwendet.</translation>
 <translation id="6338645927051849741">Passwort • Google Passwortmanager</translation>
@@ -3951,7 +3949,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Neu starten und Richtlinien anwenden</translation>
 <translation id="7192188280913829296">Das Attribut „vendor_id“ muss ebenfalls angegeben werden.</translation>
-<translation id="7192203810768312527">Freigabe von <ph name="SIZE" /> Speicherplatz. Manche Websites werden beim nächsten Öffnen eventuell langsamer geladen.</translation>
 <translation id="7192537357091279678">Computerlaufwerke und ‑speicher</translation>
 <translation id="7193661028827781021">Referenzmaterial</translation>
 <translation id="719464814642662924">Visa</translation>
@@ -4307,7 +4304,7 @@ Weitere Details:
 <translation id="7696107855583699585">Known Traveler Number bearbeiten</translation>
 <translation id="7697837508203274589">Live-Sportereignisse</translation>
 <translation id="7698864304447945242">Google Play-Dienste für AR aktualisieren?</translation>
-<translation id="7701040980221191251">Keine</translation>
+<translation id="7701040980221191251">Keine Einträge</translation>
 <translation id="7701486038694690341">Country-Musik</translation>
 <translation id="7701544340847569275">Update mit Fehlern abgeschlossen</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Weiter zu <ph name="SITE" /> (unsicher)<ph name="END_LINK" /></translation>

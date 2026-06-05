@@ -68,6 +68,7 @@
 <translation id="1749104137266986751">Når HTTPS ikke er tilgjengelig, bruker Chromium usikre tilkoblinger uten å advare deg</translation>
 <translation id="1774152462503052664">La Chromium kjøre i bakgrunnen</translation>
 <translation id="1779356040007214683">For å gjøre Chromium tryggere, har vi deaktivert noen utvidelser som ikke er oppført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, og som kan ha blitt lagt uten at du har vært klar over det.</translation>
+<translation id="1793486931176048546">Klikk på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-varselet for å feste Chromium til oppgavelinjen for rask tilgang</translation>
 <translation id="1808667845054772817">Installer Chromium på nytt</translation>
 <translation id="1820835682567584003">Chromium prøver å <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Neste gang du åpner Chromium på <ph name="DEVICE_TYPE" />, ser du en forespørsel om å bruke Google Passordlagring.</translation>
@@ -384,6 +385,7 @@
 <translation id="5348677704241861105">Få en rask oversikt over dette dokumentet, og still spørsmål med Gemini i Chromium</translation>
 <translation id="5352264705793813212">Chromium har noen sikkerhetsanbefalinger til deg</translation>
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
+<translation id="535243042947607642">ChromiumOS kunne ikke lagre Chromium-data i Google-kontoen din, fordi påloggingsopplysningene for kontoen din er utdaterte</translation>
 <translation id="5358375970380395591">Du logger deg på med en administrert konto og gir tilhørende administratorer kontroll over Chromium-profilen din. Chromium-dataene dine, slik som apper, bokmerker, loggen, passord og andre innstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse dataene via oversikten for Google-kontoer, men du kan ikke knytte disse dataene til en annen konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Ekstrakode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">For å få personlig tilpasning må du inkludere Chromium i Nett- og appaktivitet</translation>
@@ -718,6 +720,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8852026904190808918">Dette språket brukes når menyer, innstillinger, varsler og annen tekst vises i Chromium</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>
 <translation id="8876044221123442390">Legg til en Chromium-profil</translation>
+<translation id="8890569919834781711">ChromiumOS kunne ikke lagre Chromium-data i Google-kontoen din på grunn av en påloggingsfeil</translation>
 <translation id="8891709362986793894">Organisasjonen din krever at du logger på Chromium</translation>
 <translation id="8907580949721785412">Chromium forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8932992523185907506">Chromium er ikke lenger standardnettleseren din. Vil du gjøre Chromium til standardnettleseren?</translation>

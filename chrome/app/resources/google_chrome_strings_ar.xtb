@@ -159,6 +159,7 @@
 <translation id="2652691236519827073">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
 <translation id="2665296953892887393">‏يمكنك المساعدة في تحسين Google Chrome عن طريق إرسال تقارير الأعطال و<ph name="UMA_LINK" /> إلى Google</translation>
 <translation id="2668094785979141847">‏انقر للخروج من "عدسة Google"</translation>
+<translation id="2674238339205910678">‏تعذّر على ChromeOS Flex حفظ بيانات Chrome في حسابك على Google لأنّ تفاصيل تسجيل الدخول إلى حسابك قديمة</translation>
 <translation id="2681444469812712297">‏افتح <ph name="URL" /> في علامة تبويب جديدة في Google Chrome.</translation>
 <translation id="2699790011615497488">‏فتح Gemini في الإصدار التجريبي من Chrome</translation>
 <translation id="2712141162840347885">‏حدِّد أي محتوى للبحث عنه باستخدام "عدسة Google" أو اضغط على مفتاح Escape للخروج من "عدسة Google"</translation>
@@ -535,6 +536,7 @@
 <translation id="6497147134301593682">‏تم إغلاق متصفِّح Chrome تلقائيًا</translation>
 <translation id="6506909944137591434">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
+<translation id="6520608191273161151">‏تعذَّر على ChromeOS Flex حفظ بيانات Chrome في حسابك على Google بسبب حدوث خطأ أثناء تسجيل الدخول</translation>
 <translation id="6520670145826811516">‏لاستخدام الموقع الجغرافي، يجب منح Chrome إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">‏سجل Chrome</translation>
 <translation id="6532945796722480006">‏فتح Gemini في Chrome Canary</translation>
@@ -582,6 +584,7 @@
 <translation id="7011190694940573312">تعذّر تثبيت هذا الإصدار من نظام التشغيل لأنّه غير متوافق.</translation>
 <translation id="7024536598735240744">حدث خطأ في فك ضغط الحزمة: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
+<translation id="7026856149118332950">‏انقر على <ph name="BEGIN_BOLD" />نعم<ph name="END_BOLD" /> في إشعار Windows لتثبيت Chrome في شريط التطبيقات والوصول إليه بسرعة.</translation>
 <translation id="7047386856539490735">هل هذه النتائج مفيدة؟</translation>
 <translation id="7051685429025310665">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
@@ -674,6 +677,7 @@
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
 <translation id="7904985524660297937">‏يمكنك تجربة Gemini في Google Chrome الآن</translation>
+<translation id="7905880575591690197">‏تعذّر على ChromeOS حفظ بيانات Chrome في حسابك على Google بسبب حدوث خطأ أثناء تسجيل الدخول</translation>
 <translation id="7917876797003313048">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها. يتم استخدام حساباتك على Google في متصفّح Chrome و"متجر Play" وGmail والمزيد. إذا أردت إضافة حساب لمستخدم آخر، مثل أحد أفراد العائلة، أضِف شخصًا جديدًا إلى <ph name="DEVICE_TYPE" /> بدلاً من ذلك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">‏حَظَر Chrome عملية التنزيل هذه لأنّ الملف مخادع وقد يُجري تغييرات غير متوقعة على جهازك.</translation>
 <translation id="7951272445806340501">‏يجب إعادة تشغيل نظام التشغيل ChromeOS Flex لتثبيت التحديث.</translation>
@@ -799,6 +803,7 @@
 <translation id="93760716455950538">‏إعادة تشغيل نظام التشغيل ChromeOS Flex</translation>
 <translation id="943390475793766444">‏ينصح متصفِّح Chrome بفحص هذا الملف لأنّه قد يكون خطيرًا.</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
+<translation id="973195869036269770">‏تعذَّر على ChromeOS حفظ بيانات Chrome في حسابك على Google لأنّ تفاصيل تسجيل الدخول إلى حسابك قديمة</translation>
 <translation id="983803489796659991">تعذَّر تثبيت التطبيق لعدم وجود أي بيانات تجزئة للتطبيق في خادم التحديث.</translation>
 <translation id="989369509083708165">‏Google Chrome هو متصفحك التلقائي</translation>
 <translation id="989816563149873169">‏يعمل الاختصار <ph name="SHORTCUT" /> على التبديل بين الملفات الشخصية على Chrome.</translation>

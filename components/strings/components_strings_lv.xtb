@@ -306,6 +306,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1458140305240870199">Apakšveļa</translation>
 <translation id="1458770162980644530">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” pakalpojumu sniegšanas noteikumu ekrāns. Tastatūra ir paslēpta.</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
+<translation id="1460317464907341501">Vai automātiski verificēt šo e-pasta adresi?</translation>
 <translation id="1461041542809785877">Veiktspēja</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">izmantot jūsu datorā pieejamos fontus, lai jūs varētu veidot saturu ar augstu precizitāti</translation>
@@ -849,7 +850,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2316087952091171402">Mazāk nekā <ph name="UPPER_ESTIMATE" />. Dažas vietnes nākamā apmeklējuma laikā, iespējams, tiks ielādētas lēnāk.</translation>
 <translation id="2316090909467242775">Izmēģiniet šo atkopšanas paroli</translation>
 <translation id="2316159751672436664">Personalizēt pieejamības rīkus Chrome OS iestatījumos</translation>
-<translation id="2316887270356262533">Tiks atbrīvots mazāk nekā 1 MB. Dažas vietnes nākamajā apmeklējumā var ielādēt lēnāk.</translation>
 <translation id="2317259163369394535">Vietnē <ph name="DOMAIN" /> ir jāievada lietotājvārds un parole.</translation>
 <translation id="2318594867107319532">Pēdējais politikas laikspiedols:</translation>
 <translation id="2320564945062300737">Sejas kopšanas produkti</translation>
@@ -2003,6 +2003,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="412601465078863288">Augšupielādei iestājās noildze</translation>
 <translation id="4127317221386336246">Apģērbu piederumi</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{vēl 1}zero{vēl #}one{vēl #}other{vēl #}}</translation>
+<translation id="4129810348470013900">Radās kļūda. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="4129992181550680635">Izglītojoši materiāli</translation>
 <translation id="4130226655945681476">Pārbaudiet tīkla kabeļus, modemu un maršrutētāju</translation>
 <translation id="4132448310531350254">Faila paplašinājumam “<ph name="FILE_EXTENSION" />” ir dublēti apdarinātāji, kas norādīti lietotnēs: “<ph name="POLICY_IDS_LIST" />”.</translation>
@@ -3398,7 +3399,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="633348045801643466">Norēķināšanās brīdī rādīt <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />vēlākas maksāšanas iespējas<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /></translation>
 <translation id="6335029926534404762">Sporta apavi</translation>
 <translation id="6336948221660696475">Nav atļauts izmantot VR</translation>
-<translation id="6337133576188860026">Tiks atbrīvots mazāk nekā <ph name="SIZE" />. Dažas vietnes nākamajā apmeklējumā var ielādēt lēnāk.</translation>
 <translation id="6337534724793800597">Filtrēt politikas pēc nosaukuma</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> vērtība nav derīga un netiks izmantota.</translation>
 <translation id="6338645927051849741">Parole • Google paroļu pārvaldnieks</translation>
@@ -3949,7 +3949,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="718872491229180389">Karsējmeitenes</translation>
 <translation id="7188840756966467339">Restartēt un piemērot politikas</translation>
 <translation id="7192188280913829296">Ir jānorāda arī atribūts “vendor_id”.</translation>
-<translation id="7192203810768312527">Tiks atbrīvota vieta: <ph name="SIZE" />. Iespējams, nākamajā apmeklējuma reizē dažas vietnes tiks ielādētas lēnāk.</translation>
 <translation id="7192537357091279678">Datoru diski un informācijas nesēji</translation>
 <translation id="7193661028827781021">Uzziņu materiāli</translation>
 <translation id="719464814642662924">Visa</translation>

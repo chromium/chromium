@@ -67,6 +67,7 @@
 <translation id="1749104137266986751">Quando HTTPS non è disponibile, Chromium utilizza una connessione non sicura senza avvisarti</translation>
 <translation id="1774152462503052664">Lascia Chromium in esecuzione in background</translation>
 <translation id="1779356040007214683">Per rendere Chromium più sicuro, abbiamo disattivato alcune estensioni che non sono elencate nel <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> e potrebbero essere state aggiunte a tua insaputa.</translation>
+<translation id="1793486931176048546">Fai clic su <ph name="BEGIN_BOLD" />Sì<ph name="END_BOLD" /> nella notifica di Windows per fissare Chromium alla barra delle app per un accesso rapido.</translation>
 <translation id="1808667845054772817">Reinstalla Chromium</translation>
 <translation id="1820835682567584003">Chromium sta cercando di <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">La prossima volta che aprirai Chromium sul tuo <ph name="DEVICE_TYPE" />, ti verrà chiesto se vuoi utilizzare Gestore delle password di Google.</translation>
@@ -382,6 +383,7 @@
 <translation id="5346389065299425353">Approfondisci la ricerca aggiungendo più schede, file e strumenti</translation>
 <translation id="5352264705793813212">Chromium ha trovato alcuni consigli per la sicurezza da farti esaminare</translation>
 <translation id="5352361688875342522">Altri profili Chromium</translation>
+<translation id="535243042947607642">ChromiumOS non ha potuto salvare i dati di Chromium nel tuo Account Google perché i tuoi dati di accesso non sono aggiornati</translation>
 <translation id="5358375970380395591">Stai per accedere con un account gestito e per dare al relativo amministratore il controllo del tuo profilo Chromium. I tuoi dati di Chromium, come app, Preferiti, cronologia, password e altre impostazioni, verranno collegati definitivamente a <ph name="USER_NAME" />. Potrai eliminare questi dati tramite la Dashboard di Google Account, ma non potrai associare questi dati a un altro account. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Codice aggiuntivo: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Per accedere alla personalizzazione, includi Chromium in Attività web e app</translation>
@@ -714,6 +716,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8852026904190808918">Questa lingua è utilizzata per visualizzare menu, impostazioni, avvisi e altro testo in Chromium</translation>
 <translation id="8862326446509486874">Non disponi dei diritti appropriati per l'installazione a livello di sistema. Prova a eseguire nuovamente il programma di installazione come Amministratore.</translation>
 <translation id="8876044221123442390">Aggiungi profilo Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS non ha potuto salvare i dati di Chromium nel tuo Account Google a causa di un errore di accesso</translation>
 <translation id="8891709362986793894">La tua organizzazione richiede l'accesso a Chromium</translation>
 <translation id="8907580949721785412">Chromium sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="8932992523185907506">Chromium non è più il browser predefinito. Impostare Chromium come browser predefinito?</translation>

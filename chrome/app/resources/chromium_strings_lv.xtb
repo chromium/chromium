@@ -67,6 +67,7 @@
 <translation id="1749104137266986751">Ja HTTPS nav pieejams, pārlūkā Chromium bez brīdinājuma tiks izmantots nedrošs savienojums.</translation>
 <translation id="1774152462503052664">Ļaut Chromium darboties fonā</translation>
 <translation id="1779356040007214683">Lai uzlabotu Chromium drošību, mēs atspējojām dažus paplašinājumus, kas nav norādīti vietnē <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> un, iespējams, tika pievienoti, jums nezinot.</translation>
+<translation id="1793486931176048546">Windows paziņojumā noklikšķiniet uz <ph name="BEGIN_BOLD" />Jā<ph name="END_BOLD" />, lai piespraustu pārlūku Chromium uzdevumu joslai, tādējādi nodrošinot ātru piekļuvi.</translation>
 <translation id="1808667845054772817">Pārinstalēt Chromium</translation>
 <translation id="1820835682567584003">Chromium mēģina <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Kad nākamreiz savā ierīcē (<ph name="DEVICE_TYPE" />) atvērsiet pārlūku Chromium, tiks parādīts aicinājums izmantot Google paroļu pārvaldnieku.</translation>
@@ -382,6 +383,7 @@
 <translation id="5346389065299425353">Padziļiniet meklēšanu, pievienojot vairākas cilnes, failus un rīkus.</translation>
 <translation id="5352264705793813212">Pārlūkā Chromium tika atrasti daži drošības ieteikumi par jūsu atsauksmi</translation>
 <translation id="5352361688875342522">Citi Chromium profili</translation>
+<translation id="535243042947607642">ChromiumOS nevarēja saglabāt Chromium datus jūsu Google kontā, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="5358375970380395591">Jūs pierakstāties ar pārvaldītu kontu, kura administrators var kontrolēt jūsu profilu. Jūsu Chromium dati, piemēram, lietotnes, grāmatzīmes, vēsture, paroles un citi iestatījumi, tiks neatgriezeniski saistīti ar lietotāju <ph name="USER_NAME" />. Varēsiet dzēst šos datus, izmantojot Google kontu informācijas paneli, taču nevarēsiet šos datus saistīt ar citu kontu. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Papildu kods: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Lai izmantotu personalizēšanu, iekļaujiet pārlūku Chromium iestatījumā “Darbības tīmeklī un lietotnēs”</translation>
@@ -713,6 +715,7 @@ Jaunas grāmatzīmes nevar saglabāt jūsu kontā, kamēr neizdzēsīsiet dažas
 <translation id="8852026904190808918">Šī valoda tiek izmantota, lai rādītu izvēlnes, iestatījumus, brīdinājumus un citu tekstu pārlūkā Chromium.</translation>
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>
 <translation id="8876044221123442390">Pievienot Chromium profilu</translation>
+<translation id="8890569919834781711">ChromiumOS nevarēja saglabāt Chromium datus jūsu Google kontā pierakstīšanās kļūdas dēļ.</translation>
 <translation id="8891709362986793894">Saskaņā ar jūsu organizācijas politiku jums ir jāpierakstās pārlūkā Chromium.</translation>
 <translation id="8907580949721785412">Chromium mēģina rādīt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="8932992523185907506">Chromium vairs nav jūsu noklusējuma pārlūks. Vai iestatīt Chromium par noklusējuma pārlūku?</translation>

@@ -850,7 +850,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="2316090909467242775">Experimente esta palavra-passe de recuperação</translation>
 <translation id="2316159751672436664">Personalize as ferramentas de acessibilidade nas definições do ChromeOS</translation>
-<translation id="2316887270356262533">Liberta menos de 1 MB. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="2317259163369394535">O domínio <ph name="DOMAIN" /> requer um nome de utilizador e uma palavra-passe.</translation>
 <translation id="2318594867107319532">Última data/hora da política:</translation>
 <translation id="2320564945062300737">Produtos de cuidados do rosto</translation>
@@ -3403,7 +3402,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="633348045801643466">Apresente opções para <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pagar depois<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> no ato do pagamento</translation>
 <translation id="6335029926534404762">Calçado desportivo</translation>
 <translation id="6336948221660696475">RV não permitida</translation>
-<translation id="6337133576188860026">Liberta menos de <ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="6337534724793800597">Filtrar políticas pelo nome</translation>
 <translation id="633770708279464947">O valor de <ph name="SECURE_DNS_SALT" /> é inválido e não vai ser usado.</translation>
 <translation id="6338645927051849741">Palavra-passe • Gestor de Palavras-passe da Google</translation>
@@ -3954,7 +3952,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="718872491229180389">Claques</translation>
 <translation id="7188840756966467339">Reiniciar e aplicar políticas</translation>
 <translation id="7192188280913829296">O atributo "vendor_id" também tem de ser especificado.</translation>
-<translation id="7192203810768312527">Liberta <ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
 <translation id="7192537357091279678">Unidades e armazenamento do computador</translation>
 <translation id="7193661028827781021">Referência</translation>
 <translation id="719464814642662924">Visa</translation>

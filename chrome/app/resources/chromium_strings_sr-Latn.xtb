@@ -70,6 +70,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1749104137266986751">Kada HTTPS nije dostupan, Chromium će koristiti nebezbednu vezu bez upozorenja</translation>
 <translation id="1774152462503052664">Neka Chromium radi u pozadini</translation>
 <translation id="1779356040007214683">Da bismo učinili Chromium bezbednijim, onemogućili smo neke dodatke koje ne navodi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koji su možda dodati bez vašeg znanja.</translation>
+<translation id="1793486931176048546">Kliknite na <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> u Windows obaveštenju da biste zakačili Chromium na traku zadataka radi brzog pristupa.</translation>
 <translation id="1808667845054772817">Ponovo instaliraj Chromium</translation>
 <translation id="1820835682567584003">Chromium pokušava da <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Sledeći put kada otvorite Chromium na uređaju <ph name="DEVICE_TYPE" />, videćete upit da koristite Google menadžer lozinki.</translation>
@@ -385,6 +386,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5346389065299425353">Produbite pretragu dodavanjem više kartica, fajlova i alatki</translation>
 <translation id="5352264705793813212">Chromium je pronašao bezbednosne preporuke koje možete da pregledate</translation>
 <translation id="5352361688875342522">Drugi Chromium profili</translation>
+<translation id="535243042947607642">Chromium OS nije uspeo da sačuva Chromium podatke na Google nalogu zato što su podaci za prijavljivanje na nalog zastareli</translation>
 <translation id="5358375970380395591">Prijavljujete se pomoću naloga kojim se upravlja i dajete njegovom administratoru kontrolu nad Chromium profilom. Chromium podaci, kao što su aplikacije, obeleživači, istorija, lozinke i druga podešavanja, biće trajno povezani sa nalogom <ph name="USER_NAME" />. Moći ćete da izbrišete te podatke preko Kontrolne table Google naloga, ali nećete moći da ih povežete sa nekim drugim nalogom. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Dodatni kôd: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Da biste dobili personalizaciju, uvrstite Chromium u aktivnosti na vebu i u aplikacijama</translation>
@@ -718,6 +720,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8852026904190808918">Ovaj jezik se koristi za prikazivanje menija, podešavanja, upozorenja i drugog teksta u Chromium-u</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Probajte ponovo da pokrenete program za instalaciju, ovoga puta kao administrator.</translation>
 <translation id="8876044221123442390">Dodaj Chromium profil</translation>
+<translation id="8890569919834781711">Chromium OS nije uspeo da sačuva Chromium podatke na Google nalogu zbog greške pri prijavljivanju</translation>
 <translation id="8891709362986793894">Organizacija zahteva da se prijavite u Chromium</translation>
 <translation id="8907580949721785412">Chromium pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="8932992523185907506">Chromium više nije podrazumevani pregledač. Želite da podesite Chromium kao podrazumevani pregledač?</translation>

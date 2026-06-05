@@ -850,7 +850,6 @@
 <translation id="2316087952091171402">ໜ້ອຍກວ່າ <ph name="UPPER_ESTIMATE" />. ບາງເວັບໄຊອາດໂຫຼດຊ້າລົງໃນການເຂົ້າເບິ່ງເທື່ອຕໍ່ໄປຂອງທ່ານ.</translation>
 <translation id="2316090909467242775">ລອງໃຊ້ລະຫັດຜ່ານການກູ້ຄືນນີ້</translation>
 <translation id="2316159751672436664">ປັບແຕ່ງເຄື່ອງມືການຊ່ວຍເຂົ້າເຖິງຂອງທ່ານໃນການຕັ້ງຄ່າ ChromeOS ໃຫ້ເປັນສ່ວນຕົວ</translation>
-<translation id="2316887270356262533">ຂະຫຍາຍພື້ນທີ່ຫວ່າງໄດ້ໜ້ອຍກວ່າ 1 MB. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນການເຂົ້າເບິ່ງຄັ້ງຕໍ່ໄປຂອງທ່ານ.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ຈຳເປັນຕ້ອງມີຊື່ຜູ້ໃຊ້ ແລະລະຫັດຜ່ານ.</translation>
 <translation id="2318594867107319532">ເວລານະໂຍບາຍຫຼ້າສຸດ:</translation>
 <translation id="2320564945062300737">ຜະລິດຕະພັນເບິ່ງແຍງຜິວ</translation>
@@ -3402,7 +3401,6 @@
 <translation id="633348045801643466">ສະແດງຕົວເລືອກ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />ຈ່າຍພາຍຫຼັງ<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ໃນຕອນຈ່າຍເງິນ</translation>
 <translation id="6335029926534404762">ເກີບນັກກິລາ</translation>
 <translation id="6336948221660696475">ບໍ່ອະນຸຍາດ VR</translation>
-<translation id="6337133576188860026">ຂະຫຍາຍພື້ນທີ່ຫວ່າງໄດ້ໜ້ອຍກວ່າ <ph name="SIZE" />. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນການເຂົ້າເບິ່ງຄັ້ງຕໍ່ໄປຂອງທ່ານ.</translation>
 <translation id="6337534724793800597">ກັ່ນຕອງນະໂຍບາຍຕາມຊື່</translation>
 <translation id="633770708279464947">ຄ່າ <ph name="SECURE_DNS_SALT" /> ບໍ່ຖືກຕ້ອງ ແລະ ຈະບໍ່ຖືກນຳໃຊ້.</translation>
 <translation id="6338645927051849741">ລະຫັດຜ່ານ • ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
@@ -3952,7 +3950,6 @@
 <translation id="718872491229180389">ເຊຍລີດເດີ</translation>
 <translation id="7188840756966467339">ຣີສະຕາດ ແລະ ນຳໃຊ້ນະໂຍບາຍ</translation>
 <translation id="7192188280913829296">ຈະຕ້ອງລະບຸຄຸນສົມບັດ "vendor_id" ນຳ.</translation>
-<translation id="7192203810768312527">ຂະຫຍາຍ <ph name="SIZE" />. ບາງເວັບໄຊອາດຈະໂຫຼດຊ້າກວ່າໃນຄັ້ງຕໍ່ໄປທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
 <translation id="7192537357091279678">Drives ແລະ ບ່ອນຈັດເກັບຂໍ້ມູນຄອມພິວເຕີ</translation>
 <translation id="7193661028827781021">ການອ້າງອີງ</translation>
 <translation id="719464814642662924">ວີ​ຊາ</translation>

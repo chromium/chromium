@@ -356,6 +356,7 @@
 <translation id="253498598929009420">Tento web bude vidieť obsah vašej obrazovky</translation>
 <translation id="2535807170289627159">Všetky karty</translation>
 <translation id="2536728043171574184">Zobrazuje sa offline kópia tejto stránky</translation>
+<translation id="2537574774089209541">Niektoré nástroje boli presunuté, aby ste mali počas prehliadania jednoduchý prístup ku Gemini</translation>
 <translation id="2539002604555291451">Bezpätkové</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, vybraná pripnutá karta inkognito s vypnutým zvukom</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">Ak chcete mať záložky a ďalší obsah k dispozícii vo všetkých svojich zariadeniach, prihláste sa ako <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / RR</translation>
 <translation id="2762000892062317888">práve teraz</translation>
+<translation id="276378135349383280">Zobrazovať Gemini na dolnom paneli s nástrojmi</translation>
 <translation id="276969039800130567">Prihlásený účet <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Zostáva: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">neúspešné</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3614126103057878858">Cenové štatistiky</translation>
 <translation id="3616113530831147358">Zvuk</translation>
+<translation id="3616798734782988169">Uistite sa, že aplikácii <ph name="DOWNLOAD_DOMAIN" /> dôverujete</translation>
 <translation id="3619255692378312441">Správa prístupu</translation>
 <translation id="3622349720008044802">Správa okien</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 web}few{+ # weby}many{+ # sites}other{+ # webov}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">Vyhľadávanie klepnutím</translation>
 <translation id="3739455665973395693">Vo svojom účte Google nemáte žiadne odhalené heslá</translation>
 <translation id="3739899004075612870">Pridané do záložiek <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Uistite sa, že web je dôveryhodný</translation>
 <translation id="3740525748616366977">Hlasové vyhľadávanie nie je k dispozícii v tomto zariadení</translation>
 <translation id="3763110477555836428">Pri platbe touto kartou sa vyplní číslo virtuálnej karty, aby boli vaše skutočné údaje chránené. Môžete to spravovať v Peňaženke Google. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Niektoré údaje ešte nie sú uložené</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">Toto nastavenie je deaktivované, pretože je zapnutá rodičovská kontrola</translation>
 <translation id="3771694256347217732">Zmluvné podmienky spoločnosti Google</translation>
 <translation id="3777796259512476958">Odhlási vás z väčšiny webov</translation>
+<translation id="3786379886124795923">Naskenovali ste QR kód na prihlásenie do Chromu. Potvrďte, že z tohto profilu chcete získať heslá, záložky a ďalší obsah.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# tabs}other{# kariet}}</translation>
 <translation id="3792938779249970121">Výber účtu</translation>
 <translation id="3795154175078851242">Skopírovať obrázok s odkazom</translation>
@@ -825,6 +830,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4532845899244822526">Vyberte priečinok</translation>
 <translation id="4535755320005483982">Zdieľaná skupina kariet <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Prihlásenie na odber upozornení na tipy je otvorené na celú výšku</translation>
+<translation id="4537987892902330164">Zostali ste prihlásený/-á ako <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Hárok so žiadnymi prístupovými kľúčmi</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}many{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> kariet, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Skratky pre webové stránky</translation>
@@ -1282,6 +1288,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6411219469806822692">Vyššie to už nejde. Skúste začať vyššie na stránke.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, viackrát vybraná karta</translation>
 <translation id="641643625718530986">Tlačiť...</translation>
+<translation id="6427723330233512782">Prispôsobiť výške</translation>
 <translation id="6433501201775827830">Výber vyhľadávača</translation>
 <translation id="6434309073475700221">Zahodiť</translation>
 <translation id="6435307030888827407">Pokračovať bez prihlásenia</translation>
@@ -1435,6 +1442,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6937524809504266803">Prispôsobenie a prepojenie</translation>
 <translation id="6937876069006524083">Prezývka (nepovinné)</translation>
 <translation id="6942665639005891494">Kedykoľvek zmeniť predvolené umiestnenie stiahnutých súborov pomocou možnosti ponuky Nastavenia</translation>
+<translation id="6944854424004126054">Obnovenie okna</translation>
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6955535239952325894">Toto nastavenie je v spravovaných prehliadačoch deaktivované.</translation>
 <translation id="6963766334940102469">Odstrániť záložky</translation>
@@ -1528,6 +1536,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7291910923717764901">Pre túto stránku boli pridané popisy obrázkov</translation>
 <translation id="7293429513719260019">Vybrať jazyk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vybraná pripnutá karta na zdieľanie</translation>
+<translation id="7304003340539141201">Požiadajte Gemini o pomoc s kartami a úlohami</translation>
 <translation id="7311244614769792472">Neboli nájdené žiadne výsledky</translation>
 <translation id="7314734791127433392">Heslá sa nepodarilo skontrolovať</translation>
 <translation id="7324354302972299151">Odoslanie žiadosti Do Not Track</translation>
@@ -1874,6 +1883,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="8697753151306746444">Zdieľajte okno alebo obrazovku</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
+<translation id="8700565880437506364">Predstavujeme Gemini v Chrome</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8715286883001906001">Vytvorte si vo svojom účte Google silnejšie heslá</translation>
 <translation id="8715300232952757586">Karta <ph name="TAB_TITLE" /> bude zavretá</translation>
@@ -1941,6 +1951,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8996847606757455498">Vybrať iného poskytovateľa</translation>
 <translation id="8998837250940831980">Kartu sa nepodarilo minimalizovať. Skúste to neskôr.</translation>
 <translation id="9001604755921395912">Otvoriť na karte inkog. Chromu</translation>
+<translation id="9010094279589497751">Rýchlo otvorte Gemini, keď ho potrebujete</translation>
 <translation id="9012585441087414258">Chráni pred nebezpečnými webmi, stiahnutými súbormi a rozšíreniami. Ak stránka vykoná niečo podozrivé, webové adresy a časti jej obsahu budú odoslané do Bezpečného prehliadania Google.</translation>
 <translation id="9019199799064251516">Chcete pokračovať bez zámky profilu auta?</translation>
 <translation id="9022774213089566801">Často navštevované</translation>
@@ -1998,6 +2009,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="9190355771000652811">Túto klávesovú skratku používajte v paneli s adresou spolu so skratkami pre vyhľadávače a vyhľadávanie na weboch.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pripnutá vybraná karta inkognito</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrola prebehla pred minútou}few{Kontrola prebehla pred # minútami}many{Kontrola prebehla pred # minúty}other{Kontrola prebehla pred # minútami}}</translation>
+<translation id="9202894533863490414">Chcete sťahovať z tohto webu?</translation>
 <translation id="9204836675896933765">Zostáva 1 súbor</translation>
 <translation id="9205933215779845960">Danú stránku sa nepodarilo nájsť. Skontrolujte pravopis alebo skúste vyhľadať vo vyhľadávači <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2015,9 +2027,11 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="939598580284253335">Zadať prístupovú frázu</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, pripnutá karta inkognito s obrazom v obraze</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
+<translation id="949667118776341807">Otočiť</translation>
 <translation id="95817756606698420">Chrome môže použiť <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> na vyhľadávanie v Číne. Táto možnosť sa dá zmeniť v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>
 <translation id="963246339335003378">Otvoriť správcu úloh</translation>
+<translation id="966337994629449077">Prihlásili ste sa ako <ph name="FROM_EMAIL" />.\n\nAk chcete pokračovať v počítači, prepnite na účet <ph name="TO_EMAIL" />. Získate heslá, záložky a ďalší obsah z tohto účtu.</translation>
 <translation id="970715775301869095">Zostáva: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavrieť všetky karty</translation>

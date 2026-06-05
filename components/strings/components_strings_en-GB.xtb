@@ -306,6 +306,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1458140305240870199">Undergarments</translation>
 <translation id="1458770162980644530">Buy now, pay later Terms of Service screen. Keyboard hidden.</translation>
 <translation id="1459693405370120464">Weather</translation>
+<translation id="1460317464907341501">Verify this email automatically?</translation>
 <translation id="1461041542809785877">Performance</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Use the fonts on your computer so that you can create high-fidelity content</translation>
@@ -849,7 +850,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2316087952091171402">Less than <ph name="UPPER_ESTIMATE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="2316090909467242775">Try this recovery password</translation>
 <translation id="2316159751672436664">Personalise your accessibility tools in Chrome OS settings</translation>
-<translation id="2316887270356262533">Frees up less than 1 MB. Some sites may load more slowly on your next visit.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="2318594867107319532">Last policy timestamp:</translation>
 <translation id="2320564945062300737">Face Care Products</translation>
@@ -2005,6 +2005,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="412601465078863288">Uploading timed out</translation>
 <translation id="4127317221386336246">Clothing Accessories</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 other}other{# others}}</translation>
+<translation id="4129810348470013900">Something went wrong. Please check your Internet connection and try again.</translation>
 <translation id="4129992181550680635">Educational resources</translation>
 <translation id="4130226655945681476">Checking the network cables, modem and router</translation>
 <translation id="4132448310531350254">Duplicate handlers for file_extension <ph name="FILE_EXTENSION" />' referenced by apps '<ph name="POLICY_IDS_LIST" />'.</translation>
@@ -3022,6 +3023,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5728246486828755318">Can ask to use advanced printer features</translation>
 <translation id="5729442113829771034">Early childhood education</translation>
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
+<translation id="5735174108294025227">Verified email addresses will appear here</translation>
 <translation id="573555826359077410">Create form button, activate to quickly create a new form in Google Forms</translation>
 <translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
 <translation id="5739619009927381786">Unlock your screen in the next step, typically using your fingerprint. Or you can <ph name="BEGIN_LINK" />verify another way<ph name="END_LINK" />.</translation>
@@ -3400,7 +3402,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="633348045801643466">Show <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pay later<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> options at checkout</translation>
 <translation id="6335029926534404762">Trainers</translation>
 <translation id="6336948221660696475">VR not allowed</translation>
-<translation id="6337133576188860026">Frees up less than <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="6337534724793800597">Filter policies by name</translation>
 <translation id="633770708279464947">The <ph name="SECURE_DNS_SALT" /> value is invalid and will not be used.</translation>
 <translation id="6338645927051849741">Password • Google Password Manager</translation>
@@ -3951,7 +3952,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Restart and apply policies</translation>
 <translation id="7192188280913829296">The attribute 'vendor_id' must also be specified.</translation>
-<translation id="7192203810768312527">Frees up <ph name="SIZE" />. Some sites may load more slowly on your next visit.</translation>
 <translation id="7192537357091279678">Computer Drives and Storage</translation>
 <translation id="7193661028827781021">Reference</translation>
 <translation id="719464814642662924">Visa</translation>

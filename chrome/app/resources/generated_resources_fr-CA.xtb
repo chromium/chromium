@@ -6166,7 +6166,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> aujourd'hui. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}one{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}other{<ph name="MANAGER" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours. <ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Ajouter une application</translation>
 <translation id="5485435764083510385">Langue préférée des légendes</translation>
-<translation id="5485754497697573575">Restaurer tous les onglets</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> peut nécessiter un appareil plus récent ou d'un autre type</translation>
 <translation id="5486261815000869482">Confirmation du mot de passe</translation>
 <translation id="5486561344817861625">Simuler le redémarrage du navigateur</translation>
@@ -7750,7 +7749,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6680442031740878064">Disponible : <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Vitesse</translation>
 <translation id="6683022854667115063">Écouteurs</translation>
-<translation id="6683087162435654533">R&amp;estaurer tous les onglets</translation>
 <translation id="6683433919380522900">L'autorisation est <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Téléchargement de la dernière mise à jour en cours…</translation>
 <translation id="668599234725812620">Ouvrir Google Play</translation>
@@ -8124,6 +8122,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6943060957016121200">Activer le partage de connexion instantané</translation>
 <translation id="6943939122536910181">Déconnecté de <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Impossible d'installer ce profil. Pour obtenir de l'assistance technique, veuillez communiquer avec votre fournisseur de services.</translation>
+<translation id="6944854424004126054">Restaurer la fenêtre</translation>
 <translation id="6945221475159498467">Sélectionner</translation>
 <translation id="694592694773692225">Redirection bloquée sur cette page.</translation>
 <translation id="6949089178006131285">Lire les renseignements sur le réseau ChromeOS Flex</translation>
@@ -9683,7 +9682,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8082390128630131497">Le fait de désactiver le débogage PDA va réinitialiser cet appareil <ph name="DEVICE_TYPE" /> à ses paramètres par défaut. Tous les comptes d'utilisateur et toutes les données locales seront supprimés.</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
 <translation id="8084429490152575036">Paramètres du nom de point d'accès cellulaire</translation>
-<translation id="8084510406207562688">R&amp;estaurer tous les onglets</translation>
 <translation id="8084628902026812045">Ce site n'utilise pas de connexion sécurisée et le fichier a peut-être été altéré</translation>
 <translation id="808488435221187916">Vos informations sont accessibles dans Google Portefeuille sur n'importe quel appareil connecté</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" /> en cours</translation>
@@ -11218,7 +11216,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="918352324374649435">{COUNT,plural, =1{Application}one{# application}other{# applications}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}=2{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" /> et <ph name="APP1_NAME" />. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}=3{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et une autre appli. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}one{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et # autre appli. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}other{Votre administrateur peut enregistrer votre écran avec <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> et # autres applis. Vous ne recevrez aucune notification lorsque l'enregistrement commencera.}}</translation>
 <translation id="9186963452600581158">Se connecter avec un compte Google pour enfant</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Partage d'un onglet}one{Partage de # onglet}other{Partage de # onglets}}</translation>
 <translation id="9187967020623675250">Les touches ne correspondent pas. Appuyez sur n'importe quelle touche pour <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Activer l'isolation des processus</translation>
 <translation id="9192019773545828776">Écoutez la rétroaction vocale afin de pouvoir utiliser votre appareil sans regarder l'écran. Vous pouvez utiliser la rétroaction en braille avec les appareils connectés. Utilisez Ctrl+Alt+Z pour activer et désactiver ChromeVox. Utilisez Recherche+Flèche vers la gauche ou Flèche vers la droite pour naviguer. Utilisez Recherche+Espace pour sélectionner (activer).</translation>

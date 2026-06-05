@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">ਅੰਦਰੂਨੀ ਵਸਤਰ</translation>
 <translation id="1458770162980644530">'ਹੁਣੇ ਖਰੀਦੋ, ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ ਕਰੋ' ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਵਾਲੀ ਸਕ੍ਰੀਨ। ਕੀ-ਬੋਰਡ ਅਦਿੱਖ ਹੈ।</translation>
 <translation id="1459693405370120464">ਮੌਸਮ</translation>
+<translation id="1460317464907341501">ਕੀ ਇਸ ਈਮੇਲ ਦੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੁਸ਼ਟੀ ਕਰਨੀ ਹੈ?</translation>
 <translation id="1461041542809785877">ਪ੍ਰਦਰਸ਼ਨ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ਆਪਣੇ ਕੰਪਿਊਟਰ 'ਤੇ ਫ਼ੌਂਟਾਂ ਦੀ ਵਰਤੋਂ ਕਰੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਉੱਚ ਵਾਸਤਵਿਕਤਾ ਸਮੱਗਰੀ ਬਣਾ ਸਕੋ</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> ਤੋਂ ਘੱਟ। ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋਣ।</translation>
 <translation id="2316090909467242775">ਇਸ ਰਿਕਵਰੀ ਪਾਸਵਰਡ ਨੂੰ ਅਜ਼ਮਾਓ</translation>
 <translation id="2316159751672436664">ChromeOS ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਹੁੰਚਯੋਗਤਾ ਟੂਲਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
-<translation id="2316887270356262533">1 MB ਤੋਂ ਘੱਟ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> ਨੂੰ ਇੱਕ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="2318594867107319532">ਪਿਛਲੀ ਵਾਰ ਨੀਤੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਦਾ ਟਾਈਮਸਟੈਂਪ:</translation>
 <translation id="2320564945062300737">ਚਿਹਰੇ ਦੀ ਦੇਖਭਾਲ ਲਈ ਉਤਪਾਦ</translation>
@@ -2002,6 +2002,7 @@
 <translation id="412601465078863288">ਅੱਪਲੋਡ ਦਾ ਟਾਈਮ-ਆਊਟ ਹੋ ਗਿਆ ਹੈ</translation>
 <translation id="4127317221386336246">ਕੱਪੜਿਆਂ ਦੀਆਂ ਐਕਸੈਸਰੀਆਂ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ਹੋਰ}one{# ਹੋਰ}other{# ਹੋਰ}}</translation>
+<translation id="4129810348470013900">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4129992181550680635">ਸਿੱਖਿਆ ਸੰਬੰਧੀ ਸਰੋਤ</translation>
 <translation id="4130226655945681476">ਨੈੱਟਵਰਕ ਕੇਬਲਾਂ, ਮਾਡਮ, ਅਤੇ ਰਾਊਟਰ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="4132448310531350254">ਐਪਾਂ "<ph name="POLICY_IDS_LIST" />" ਵੱਲੋਂ ਰੈਫਰ ਕੀਤੀ ਗਈ file_extension "<ph name="FILE_EXTENSION" />" ਲਈ ਡੁਪਲੀਕੇਟ ਹੈਂਡਲਰ</translation>
@@ -3019,6 +3020,7 @@
 <translation id="5728246486828755318">ਸਾਈਟ, ਅਡਵਾਂਸ ਪ੍ਰਿੰਟਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਕਹਿ ਸਕਦੀ ਹੈ</translation>
 <translation id="5729442113829771034">ਬੱਚਿਆਂ ਲਈ ਸ਼ੁਰੂਆਤੀ ਸਿੱਖਿਆ</translation>
 <translation id="5730040223043577876">ਜੇਕਰ ਤੁਸੀਂ ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ ਹੋਰ ਸਾਈਟਾਂ 'ਤੇ ਮੁੜ ਵਰਤਿਆ ਹੈ, ਤਾਂ Chrome ਵੱਲੋਂ ਇਸਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕੀਤੀ ਜਾਂਦੀ ਹੈ।</translation>
+<translation id="5735174108294025227">ਪੁਸ਼ਟੀਕਿਰਤ ਈਮੇਲ ਪਤੇ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ</translation>
 <translation id="573555826359077410">'ਫ਼ਾਰਮ ਬਣਾਓ' ਬਟਨ, Google Forms ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਫ਼ਾਰਮ ਬਣਾਉਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="5738385766833540397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਟਰੈਕ ਕੀਤੇ ਜਾਣ ਵਾਲੇ ਉਤਪਾਦਾਂ ਵਾਸਤੇ ਕੀਮਤਾਂ ਘਟਣ ਸੰਬੰਧੀ ਅਲਰਟ ਪ੍ਰਾਪਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="5739619009927381786">ਆਮ ਤੌਰ 'ਤੇ ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਵਰਤ ਕੇ, ਅਗਲੇ ਪੜਾਅ ਵਿੱਚ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ। ਜਾਂ, ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਕਿਸੇ ਹੋਰ ਤਰੀਕੇ ਨਾਲ ਪੁਸ਼ਟੀ<ph name="END_LINK" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
@@ -3396,7 +3398,6 @@
 <translation id="633348045801643466">ਚੈੱਕ-ਆਊਟ ਸਮੇਂ <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />ਬਾਅਦ ਵਿੱਚ ਭੁਗਤਾਨ<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> ਕਰਨ ਦੇ ਵਿਕਲਪ ਦਿਖਾਓ</translation>
 <translation id="6335029926534404762">ਅਥਲੈਟਿਕ ਜੁੱਤੇ</translation>
 <translation id="6336948221660696475">VR ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
-<translation id="6337133576188860026"><ph name="SIZE" /> ਤੋਂ ਘੱਟ ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6337534724793800597">ਨਾਮ ਮੁਤਾਬਕ ਨੀਤੀਆਂ ਫਿਲਟਰ ਕਰੋ</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> ਮੁੱਲ ਅਵੈਧ ਹੈ ਅਤੇ ਇਸਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="6338645927051849741">ਪਾਸਵਰਡ • Google Password Manager</translation>
@@ -3946,7 +3947,6 @@
 <translation id="718872491229180389">ਚੀਅਰਲੀਡਿੰਗ</translation>
 <translation id="7188840756966467339">ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਨੀਤੀਆਂ ਲਾਗੂ ਕਰੋ</translation>
 <translation id="7192188280913829296">ਵਿਸ਼ੇਸ਼ਤਾ "vendor_id" ਵੀ ਨਿਰਧਾਰਿਤ ਕੀਤੀ ਜਾਣੀ ਲਾਜ਼ਮੀ ਹੈ।</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> ਜਗ੍ਹਾ ਖਾਲੀ ਕਰਦਾ ਹੈ। ਤੁਹਾਡੀ ਅਗਲੀ ਫੇਰੀ 'ਤੇ ਕੁਝ ਸਾਈਟਾਂ ਵਧੇਰੇ ਹੌਲੀ ਲੋਡ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="7192537357091279678">ਕੰਪਿਊਟਰ ਡਰਾਈਵਾਂ ਅਤੇ ਸਟੋਰੇਜ</translation>
 <translation id="7193661028827781021">ਹਵਾਲਾ</translation>
 <translation id="719464814642662924">Visa</translation>

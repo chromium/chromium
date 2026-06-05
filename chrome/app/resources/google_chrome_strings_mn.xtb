@@ -152,6 +152,7 @@
 <translation id="2580411288591421699">Одоо ажиллаж байгаа Google Chrome-ийн хувилбарыг суурьлуулах боломжгүй. Google Chrome-оо хаагаад, дахин оролдоно уу.</translation>
 <translation id="2586406160782125153">Энэ нь төхөөрөмжөөс таны хайлтын өгөгдлийг устгах болно. Өгөгдлөө дараа нь сэргээхийн тулд Chrome-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="259935314519650377">Татсан суулгагчийг завсрын санах ойд хадгалж чадсангүй. Алдаа: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Энэ баримт бичгийн шуурхай тоймыг авч, Chrome дахь Gemini-р асуулт асуугаарай</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="263447411082773721">Нууц үг, хавчуурга, түүхээ төхөөрөмжүүд дээр төгс синк хийсээр байгаарай. Та өгөгдмөл хөтчөө Chrome болгон шинэчилж мэддэг, дуртай онцлогууддаа хялбархан хандаарай. Chrome-г шуурхай хандахад зориулж таны ажлын хэсэгт бэхэлнэ.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -159,6 +160,7 @@
 <translation id="2652691236519827073">Холбоосыг шинэ Chrome-н табад нээх</translation>
 <translation id="2665296953892887393">Google рүү эвдрэлийн тайлан болон <ph name="UMA_LINK" />-ыг илгээх замаар Google Chrome-ыг сайжруулахад туслаач</translation>
 <translation id="2668094785979141847">Google Lens-с гарахын тулд товшино уу</translation>
+<translation id="2674238339205910678">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromeOS Flex таны Google Бүртгэлд Chrome-н өгөгдлийг хадгалж чадсангүй</translation>
 <translation id="2681444469812712297"><ph name="URL" />-г Google Chrome-д шинэ табд нээнэ үү.</translation>
 <translation id="2699790011615497488">Chrome Бета дахь Gemini-г нээх</translation>
 <translation id="2712141162840347885">Google Lens-р хайхыг хүссэн зүйлээ сонгох эсвэл Google Lens-с гарахын тулд escape дээр дарна уу</translation>
@@ -537,6 +539,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6497147134301593682">Chrome-г автоматаар хаасан</translation>
 <translation id="6506909944137591434">Таны эргэн тойрны 3D газрын зургийг үүсгэхийн тулд Chrome-д камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Дев</translation>
+<translation id="6520608191273161151">Нэвтрэх алдааны улмаас ChromeOS Flex таны Google Бүртгэлд Chrome-н өгөгдлийг хадгалж чадсангүй</translation>
 <translation id="6520670145826811516">Байршлаа ашиглахын тулд <ph name="BEGIN_LINK" />системийн тохиргоонд<ph name="END_LINK" /> Chrome-д хандах эрх өгнө үү</translation>
 <translation id="652948702951888897">Chrome-н түүх</translation>
 <translation id="6532945796722480006">Chrome Канар дахь Gemini-г нээх</translation>
@@ -584,6 +587,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7011190694940573312">Үйлдлийн системийн энэ хувилбарыг дэмждэггүй тул суулгалт амжилтгүй боллоо.</translation>
 <translation id="7024536598735240744">Задлахад алдаа гарлаа: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Та энд Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>
+<translation id="7026856149118332950">Chrome-г ажлын хэсэгтээ бэхэлж, шуурхай хандахын тулд Windows-н мэдэгдэл дэх <ph name="BEGIN_BOLD" />Тийм<ph name="END_BOLD" /> дээр товшино уу.</translation>
 <translation id="7047386856539490735">Эдгээр илэрц хэрэг болж байна уу?</translation>
 <translation id="7051685429025310665">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
 <translation id="7059914902409643750">Chrome-г өөрийн болгоорой</translation>
@@ -676,6 +680,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7890208801193284374">Нэг компьютерыг олон хэрэглэгч хуваан хэрэглэж байгаа тохиолдолд хэрэглэгч бүр өөрийн хүссэнээр Chrome-ыг тохируулж, хайлт хийх боломжтой.</translation>
 <translation id="7896673875602241923">Өмнө нь хэн нэгэн энэ компьютероос Chrome-д <ph name="ACCOUNT_EMAIL_LAST" /> бүртгэлээр нэвтэрсэн байна. Мэдээллээ тусaд нь байлгахын тулд Chrome-н шинэ хэрэглэгч үүсгэнэ үү.</translation>
 <translation id="7904985524660297937">Google Chrome дахь Gemini-г туршиж үзээрэй</translation>
+<translation id="7905880575591690197">Нэвтрэх алдааны улмаас ChromeOS таны Google Бүртгэлд Chrome-н өгөгдлийг хадгалж чадсангүй</translation>
 <translation id="7917876797003313048">Та нэвтэрсэн Google Бүртгэлүүдээ удирдах боломжтой. Таны Google Бүртгэлүүдийг Chrome хөтөч, Play Store, Gmail болон бусад дээр ашигладаг. Хэрэв та гэр бүлийн гишүүн зэрэг өөр хэн нэгний бүртгэлийг нэмэхийг хүсвэл оронд нь өөрийн <ph name="DEVICE_TYPE" />-д шинэ хүн нэмнэ үү. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Файл нь хуурамч бөгөөд таны төхөөрөмжид гэнэтийн өөрчлөлт хийж магадгүй тул Chrome энэ таталтыг блоклосон</translation>
 <translation id="7951272445806340501">Шинэчлэлтийг хэрэгжүүлэхийн тулд ChromeOS Flex-г дахин эхлүүлэх шаардлагатай.</translation>
@@ -749,6 +754,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8624541899164515475">Тохиргоо, шинэ табд нээгдэнэ.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome-г 1 минутын дотор дахин ажиллуулна}other{Chrome-г # минутын дотор дахин ажиллуулна}}</translation>
 <translation id="8637932705841171563">Цонхоо хуваалцахын тулд Системийн тохиргоонд Chrome-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү</translation>
+<translation id="8642497536370021917">Та Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлж ашиглах, хадгалах боломжтой болохоо нягтлахын тулд өөрийгөө мөн болохыг баталгаажуулна уу</translation>
 <translation id="8656634243791296665">Chrome Dev дэх Gemini-г нээх</translation>
 <translation id="8669527147644353129">Google Chrome Туслагч</translation>
 <translation id="8679801911857917785">Энэ нь мөн таныг Chrome-ыг эхлүүлэх үед гарч ирдэг хуудсыг хянадаг.</translation>
@@ -798,6 +804,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="93760716455950538">ChromeOS Flex-г дахин эхлүүлэх</translation>
 <translation id="943390475793766444">Энэ файл аюултай байж магадгүй тул Chrome үүнийг скан хийхийг зөвлөж байна.</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
+<translation id="973195869036269770">Таны бүртгэлийн нэвтрэх дэлгэрэнгүй мэдээлэл хуучирсан тул ChromiumOS таны Google Бүртгэлд Chrome-н өгөгдлийг хадгалж чадсангүй</translation>
 <translation id="983803489796659991">Шинэчлэлтийн серверт аппликэйшнд зориулсан ямар нэг хэш өгөгдөл байгаагүй тул суулгалт амжилтгүй болсон.</translation>
 <translation id="989369509083708165">Google Chrome таны өгөгдмөл хөтөч байна</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>

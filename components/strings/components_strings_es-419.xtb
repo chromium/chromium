@@ -849,7 +849,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Es posible que algunos sitios tarden más en cargar cuando vuelvas a visitarlos.</translation>
 <translation id="2316090909467242775">Prueba esta contraseña de recuperación</translation>
 <translation id="2316159751672436664">Personaliza tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
-<translation id="2316887270356262533">Esta acción libera menos de 1 MB. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
 <translation id="2318594867107319532">Marca de tiempo de la última política:</translation>
 <translation id="2320564945062300737">Productos para el cuidado facial</translation>
@@ -3401,7 +3400,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="633348045801643466">Muestra las opciones para <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pagar más tarde<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> en la confirmación de la compra</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">No se permite la RV</translation>
-<translation id="6337133576188860026">Esta acción libera menos de <ph name="SIZE" />. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nombre</translation>
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
 <translation id="6338645927051849741">Contraseña • Administrador de contraseñas de Google</translation>
@@ -3952,7 +3950,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="718872491229180389">Animación deportiva</translation>
 <translation id="7188840756966467339">Reiniciar y aplicar políticas</translation>
 <translation id="7192188280913829296">También se debe especificar el atributo "vendor_id".</translation>
-<translation id="7192203810768312527">Esta acción libera <ph name="SIZE" />. Es posible que algunos sitios carguen más lento en tu próxima visita.</translation>
 <translation id="7192537357091279678">Unidades y almacenamiento para computadoras</translation>
 <translation id="7193661028827781021">Referencia</translation>
 <translation id="719464814642662924">Visa</translation>

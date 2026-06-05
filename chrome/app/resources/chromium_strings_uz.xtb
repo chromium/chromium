@@ -67,6 +67,7 @@
 <translation id="1749104137266986751">HTTPS mavjud boʻlmasa, Chromium sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="1774152462503052664">Chromium fonda ishlashiga ruxsat</translation>
 <translation id="1779356040007214683">Ma’lumotlaringiz xavfsizligini ta’minlash maqsadida ayrim kengaytmalarni o‘chirib qo‘ydik, chunki <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />‘da ular haqida hech qanday ma’lumot yo‘q (ya’ni, ular sizning ruxsatingizsiz o‘rnatilgan bo‘lishi mumkin).</translation>
+<translation id="1793486931176048546">Tezkor kirish uchun Chromiumni vazifalar paneliga mahkamlash uchun Windows bildirishnomasida <ph name="BEGIN_BOLD" />Ha<ph name="END_BOLD" /> tugmasini bosing</translation>
 <translation id="1808667845054772817">Chromium brauzerini qayta o‘rnatish</translation>
 <translation id="1820835682567584003">Chromium buni bajarmoqchi: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Keyingi safar <ph name="DEVICE_TYPE" /> qurilmangizda Chromium ilovasini ochganingizda Google Parollar menejeridan foydalanish taklifi chiqadi.</translation>
@@ -378,8 +379,10 @@
 <translation id="5294316920224716406">Inkognito rejimida ishlayotganingizda, xavfsiz ulanishli saytga kirganingizda Chromium sizni ogohlantiradi.</translation>
 <translation id="5313228254328109263">Chromium Updater ichki xizmati</translation>
 <translation id="5346389065299425353">Bir nechta varaq, fayl va vositalar kiritish orqali qidiruvni chuqurlashtiring</translation>
+<translation id="5348677704241861105">Chromium ichida Gemini yordamida bu hujjat haqida tezkor axborot oling va unga oid savollar bering</translation>
 <translation id="5352264705793813212">Sizda Chromium bilan ishlashda xavfsizlikka oid bir nechta tavsiya bor</translation>
 <translation id="5352361688875342522">Boshqa Chromium profillari</translation>
+<translation id="535243042947607642">Hisobga kirish maʼlumotlar eskirgani sababli ChromiumOS tizimi Chromium maʼlumotlarini Google hisobingizga saqlay olmadi</translation>
 <translation id="5358375970380395591">Siz boshqaruvdagi hisobga kiryapsiz va uning administratoriga Chromium profilingizni boshqarishga ruxsat beryapsiz. Ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi barcha Chromium ma’lumotlaringiz <ph name="USER_NAME" /> hisobiga biriktiriladi. Siz bu ma’lumotlarni Google hisoblar shaxsiy kabinetidan o‘chirishingiz mumkin, lekin bu ma’lumotlarni boshqa hisob bilan bog‘lay olmaysiz. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Qoʻshimcha kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Moslashtirish uchun Veb va ilovalardagi faoliyat tarixiga Chromiumni kiriting</translation>
@@ -485,6 +488,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="6390800440335263989">Davom etish uchun Chromiumga <ph name="EMAIL" /> hisobidan kiring. Bunda tashkilot qoidalariga rioya etish taʼminlanadi.</translation>
 <translation id="6400112897226594999">Kompyuter ekranida Chromium logotipi aks etgan tasvir</translation>
 <translation id="6403826409255603130">Chromium - veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Chromium brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
+<translation id="6414624068245092115">Chromium maʼlumotlarini Google hisobida saqlash va ulardan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="642132557830635295">Chromium tezroq ishlaydi va JavaScript ishlatadigan funksiyalar bexato ishlaydi (tavsiya etiladi)</translation>
 <translation id="6436260184216827876">Rasm orqali qidiruv ishlamayapti. Keyinroq qayta urining.</translation>
 <translation id="6442900851116057561">ChromiumOS tizimini ishga tushirish</translation>
@@ -713,6 +717,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8852026904190808918">Bu tildan Chromiumda menyular, sozlamalar, ogohlantirishlar va boshqa matnlarni koʻrsatish uchun foydalaniladi</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>
 <translation id="8876044221123442390">Chromium profilini qoʻshish</translation>
+<translation id="8890569919834781711">Hisobga kirishdagi xatolik sababli ChromiumOS tizimi Chromium maʼlumotlarini Google hisobingizga saqlay olmadi.</translation>
 <translation id="8891709362986793894">Tashkilotingiz Chromium hisobiga kirishni talab qiladi</translation>
 <translation id="8907580949721785412">Chromium parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="8932992523185907506">Chromium endi birlamchi brauzeringiz emas. Chromium birlamchi brauzer etib tayinlansinmi?</translation>

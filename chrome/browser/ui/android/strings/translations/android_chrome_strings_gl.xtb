@@ -356,6 +356,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="253498598929009420">Este sitio poderá ver os contidos da túa pantalla</translation>
 <translation id="2535807170289627159">Todas as pestanas</translation>
 <translation id="2536728043171574184">Visualización dunha copia sen conexión desta páxina</translation>
+<translation id="2537574774089209541">Algunhas ferramentas cambiaron de lugar para que poidas acceder facilmente a Gemini mentres navegas</translation>
 <translation id="2539002604555291451">Sen serifas</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, pestana do modo de incógnito silenciada, fixada e seleccionada</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, pestana</translation>
@@ -404,6 +405,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2751271371269891762">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión como <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2762000892062317888">agora</translation>
+<translation id="276378135349383280">Mostrar Gemini na barra de ferramentas da parte inferior</translation>
 <translation id="276969039800130567">Sesión iniciada como <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Quedan <ph name="SECONDS" /> segundos</translation>
 <translation id="2779651927720337254">produciuse un erro</translation>
@@ -603,6 +605,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3614126103057878858">Estatísticas de prezos</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Faino só se sabes de certo que <ph name="DOWNLOAD_DOMAIN" /> é de confianza</translation>
 <translation id="3619255692378312441">Xestionar o acceso</translation>
 <translation id="3622349720008044802">Xestionar as ventás</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{e 1 sitio máis}other{e # sitios máis}}</translation>
@@ -633,6 +636,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3738139272394829648">Tocar para buscar</translation>
 <translation id="3739455665973395693">Non hai ningún contrasinal vulnerado na túa Conta de Google</translation>
 <translation id="3739899004075612870">Engadiuse aos marcadores en <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Faino só se sabes de certo que o sitio é de confianza</translation>
 <translation id="3740525748616366977">A busca por voz non está dispoñible neste dispositivo</translation>
 <translation id="3763110477555836428">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="BEGIN_LINK1" />Consulta máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Algúns datos aínda non se gardaron</translation>
@@ -1435,6 +1439,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6937524809504266803">Personalización e vinculación</translation>
 <translation id="6937876069006524083">Alcume (opcional)</translation>
 <translation id="6942665639005891494">Cambia a localización de descarga predeterminada en calquera momento usando a opción do menú Configuración</translation>
+<translation id="6944854424004126054">Restaurar ventá</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6955535239952325894">Esta opción de configuración está desactivada nos navegadores xestionados</translation>
 <translation id="6963766334940102469">Eliminar marcadores</translation>
@@ -1528,6 +1533,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7291910923717764901">Engadíronse descricións de imaxes para esta páxina</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, pestana de uso compartido fixada e seleccionada</translation>
+<translation id="7304003340539141201">Pídelle a Gemini que che axude coas pestanas e as tarefas</translation>
 <translation id="7311244614769792472">Non se encontraron resultados</translation>
 <translation id="7314734791127433392">Non se puideron comprobar os contrasinais</translation>
 <translation id="7324354302972299151">Enviar unha solicitude Do Not Track</translation>
@@ -1874,6 +1880,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="8697753151306746444">Comparte a ventá ou a pantalla no seu lugar</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
+<translation id="8700565880437506364">Presentámosche Gemini en Chrome</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8715286883001906001">Reforza os teus contrasinais na túa Conta de Google</translation>
 <translation id="8715300232952757586">Pecharase <ph name="TAB_TITLE" /></translation>
@@ -1941,6 +1948,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8996847606757455498">Escoller outro provedor</translation>
 <translation id="8998837250940831980">Non se puido minimizar a pestana. Téntao de novo máis tarde.</translation>
 <translation id="9001604755921395912">Abrir en incógnito en Chrome</translation>
+<translation id="9010094279589497751">Abre rapidamente Gemini cando o necesites</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
 <translation id="9019199799064251516">Queres continuar sen un bloqueo de perfil do coche?</translation>
 <translation id="9022774213089566801">Visitas frecuentes</translation>
@@ -1998,6 +2006,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9190355771000652811">Na barra de enderezos, utiliza esta combinación de teclas con atallos para motores de busca e a busca de sitios.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestana do modo de incógnito seleccionada e fixada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
+<translation id="9202894533863490414">Queres descargar un ficheiro deste sitio?</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
 <translation id="9205933215779845960">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar a busca en <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

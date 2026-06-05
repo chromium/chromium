@@ -306,6 +306,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1458140305240870199">Veshje të brendshme</translation>
 <translation id="1458770162980644530">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë". Tastiera është e fshehur.</translation>
 <translation id="1459693405370120464">Moti</translation>
+<translation id="1460317464907341501">Të verifikohet automatikisht ky email?</translation>
 <translation id="1461041542809785877">Cilësia e funksionimit</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Përdor fontet në kompjuterin tënd që të mund të krijosh përmbajtje me saktësi të lartë</translation>
@@ -849,7 +850,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2316087952091171402">Më pak se <ph name="UPPER_ESTIMATE" />. Disa sajte mund të ngarkohen më ngadalë në vizitën tënde të radhës.</translation>
 <translation id="2316090909467242775">Provo këtë fjalëkalim rikuperimi</translation>
 <translation id="2316159751672436664">Personalizo veglat e qasshmërisë te cilësimet e ChromeOS</translation>
-<translation id="2316887270356262533">Liron më pak se 1 MB. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
 <translation id="2318594867107319532">Vula kohore e politikës së fundit:</translation>
 <translation id="2320564945062300737">Produkte të kujdesit për fytyrën</translation>
@@ -2005,6 +2005,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="412601465078863288">Koha e ngarkimit skadoi</translation>
 <translation id="4127317221386336246">Aksesorë veshjesh</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 tjetër}other{# të tjerë}}</translation>
+<translation id="4129810348470013900">Ndodhi një gabim. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="4129992181550680635">Burime edukative</translation>
 <translation id="4130226655945681476">Të kontrollosh kabllot e rrjetit, modemin dhe router-in</translation>
 <translation id="4132448310531350254">Përpunues dublikatë për file_extension "<ph name="FILE_EXTENSION" />" që i referohen aplikacionet "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3023,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5728246486828755318">Mund të kërkojë të përdorë veçoritë e përparuara të printerit</translation>
 <translation id="5729442113829771034">Arsimi në fëmijërinë e hershme</translation>
 <translation id="5730040223043577876">Chrome rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
+<translation id="5735174108294025227">Adresat e verifikuara të email-it do të shfaqen këtu</translation>
 <translation id="573555826359077410">Butoni "Krijo formular". Aktivizoje për të krijuar me shpejtësi një formular të ri te "Formularët e Google"</translation>
 <translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
 <translation id="5739619009927381786">Shkyç ekranin në hapin tjetër, zakonisht duke përdorur gjurmën tënde të gishtit. Ndryshe, mund të <ph name="BEGIN_LINK" />verifikohesh në një mënyrë tjetër<ph name="END_LINK" />.</translation>
@@ -3399,7 +3401,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="633348045801643466">Shfaq opsionet <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />për të paguar më vonë<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> në përfundim të blerjes</translation>
 <translation id="6335029926534404762">Atlete</translation>
 <translation id="6336948221660696475">VR-ja nuk u lejua</translation>
-<translation id="6337133576188860026">Liron më pak se <ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="6337534724793800597">Filtro politikat sipas emrit</translation>
 <translation id="633770708279464947">Vlera <ph name="SECURE_DNS_SALT" /> është e pavlefshme dhe nuk do të përdoret.</translation>
 <translation id="6338645927051849741">Fjalëkalimi • Menaxheri i fjalëkalimeve i Google</translation>
@@ -3949,7 +3950,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="718872491229180389">Nxitja e tifozëve</translation>
 <translation id="7188840756966467339">Rinis dhe zbato politikat</translation>
 <translation id="7192188280913829296">Atributi "vendor_id" duhet të specifikohet po ashtu.</translation>
-<translation id="7192203810768312527">Liron <ph name="SIZE" />. Disa sajte mund të ngarkohen më ngadalë gjatë vizitës tënde të radhës.</translation>
 <translation id="7192537357091279678">Hapësira ruajtëse dhe disqe kompjuteri</translation>
 <translation id="7193661028827781021">Referencat</translation>
 <translation id="719464814642662924">Visa</translation>

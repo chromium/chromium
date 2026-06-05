@@ -149,6 +149,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2580411288591421699">Şu anda çalışmakta olan Google Chrome ile aynı sürüm yüklenemez. Lütfen Google Chrome'u kapatın ve tekrar deneyin.</translation>
 <translation id="2586406160782125153">Bu işlem, tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="259935314519650377">İndirilen yükleyici önbelleğe alınamadı. Hata: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Chrome'da Gemini ile bu belgenin kısa bir özetini alın ve soru sorun</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="263447411082773721">Şifreleriniz, yer işaretleriniz ve geçmişinizi cihazlar arasında mükemmel şekilde senkronize edin. Varsayılan tarayıcınızı Chrome'a güncelleyerek sevdiğiniz ve bildiğiniz özelliklere kolayca erişin. Chrome, hızlı erişim için görev çubuğunuza sabitlenir.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -745,6 +746,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8624541899164515475">Ayarlar, yeni sekmede açılır.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dakika içinde yeniden başlatılacak}other{Chrome # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="8637932705841171563">Pencerenizi paylaşmak için Sistem Ayarları'nda Chrome'un ekranı kaydetmesine izin verin.</translation>
+<translation id="8642497536370021917">Google Hesabınızdaki Chrome verilerini her zaman kullanabildiğinizden ve kaydedebildiğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="8656634243791296665">Chrome Dev'de Gemini'ı aç</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Ayrıca Chrome'u başlattığınızda gösterilecek sayfayı da denetler.</translation>

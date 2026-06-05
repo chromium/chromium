@@ -356,6 +356,7 @@
 <translation id="253498598929009420">సైట్ మీ స్క్రీన్ కంటెంట్‌లను చూడగలుగుతుంది</translation>
 <translation id="2535807170289627159">అన్ని ట్యాబ్‌లు</translation>
 <translation id="2536728043171574184">ఈ పేజీ ఆఫ్‌లైన్ కాపీని వీక్షిస్తున్నారు</translation>
+<translation id="2537574774089209541">మీరు బ్రౌజ్ చేస్తున్నప్పుడు Geminiకి సులభంగా యాక్సెస్ ఇవ్వడానికి కొన్ని టూల్స్ తరలించబడ్డాయి</translation>
 <translation id="2539002604555291451">సాన్స్ సెరిఫ్</translation>
 <translation id="2542094237868555728">ఎంచుకున్న <ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో మ్యూట్ అయ్యే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ట్యాబ్</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">మీ డివైజ్‌లన్నింటిలో మీ బుక్‌మార్క్‌లను, మరిన్నింటిని పొందడానికి, <ph name="EMAIL" />‌గా సైన్ ఇన్ చేయండి</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ఇప్పుడే</translation>
+<translation id="276378135349383280">దిగువున ఉన్న టూల్‌బార్‌లో Geminiని చూడండి</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" />గా సైన్ ఇన్ చేశారు.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> సెకన్లు మిగిలి ఉంది</translation>
 <translation id="2779651927720337254">విఫలమైంది</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3614126103057878858">ధరల గణాంకాలు</translation>
 <translation id="3616113530831147358">ఆడియో</translation>
+<translation id="3616798734782988169">మీరు <ph name="DOWNLOAD_DOMAIN" />‌ను విశ్వసిస్తున్నారని నిర్ధారించుకోండి</translation>
 <translation id="3619255692378312441">యాక్సెస్‌ను మేనేజ్ చేయండి</translation>
 <translation id="3622349720008044802">విండోలను మేనేజ్ చేయండి</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 సైట్}other{+ # సైట్‌లు}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">వెతకడానికి తాకండి</translation>
 <translation id="3739455665973395693">మీ Google ఖాతాలో చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />లో బుక్‌మార్క్ చేయబడింది</translation>
+<translation id="3740290940447881599">మీరు ఈ సైట్‌ను విశ్వసిస్తున్నారని నిర్ధారించుకోండి</translation>
 <translation id="3740525748616366977">ఈ పరికరంలో వాయిస్ సెర్చ్ అందుబాటులో లేదు</translation>
 <translation id="3763110477555836428">మీ అసలు వివరాలను రక్షించడానికి మీరు ఈ కార్డ్‌తో చెక్ అవుట్ చేసినప్పుడు వర్చువల్ కార్డ్ నంబర్ ఫిల్ అవుతుంది. Google Walletలో మేనేజ్ చేయండి. <ph name="BEGIN_LINK1" />వర్చువల్ కార్డ్‌ల గురించి మరింత తెలుసుకోండి<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">కొంత డేటా ఇంకా సేవ్ కాలేదు</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">తల్లిదండ్రుల నియంత్రణలు ఆన్‌లో ఉన్నందున ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది</translation>
 <translation id="3771694256347217732">Google సర్వీస్ నియమాలు</translation>
 <translation id="3777796259512476958">చాలా సైట్‌ల నుండి మిమ్మల్ని సైన్ అవుట్ చేస్తుంది</translation>
+<translation id="3786379886124795923">మీరు Chromeకు సైన్-ఇన్ చేయడానికి QR కోడ్‌ను స్కాన్ చేశారు. మీరు ఈ ప్రొఫైల్ నుండి పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని పొందాలనుకుంటున్నారని కన్‌ఫర్మ్ చేయండి.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ట్యాబ్}other{# ట్యాబ్‌లు}}</translation>
 <translation id="3792938779249970121">ఖాతాను ఎంచుకోండి</translation>
 <translation id="3795154175078851242">లింక్‌తో సహా కాపీ చేయండి</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> ట్యాబ్ గ్రూప్‌ను షేర్ చేశారు</translation>
 <translation id="4537137366307982887">చిట్కాల నోటిఫికేషన్‌ల సమ్మతి ఫుల్ స్క్రీన్‌లో తెరవబడింది</translation>
+<translation id="4537987892902330164">మీరు <ph name="NAME_OR_EMAIL" />‌గా సైన్-ఇన్ చేసి ఉన్నారు.</translation>
 <translation id="4543131175509360848">పాస్-కీల షీట్ ఏదీ లేదు</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ట్యాబ్}other{<ph name="TAB_COUNT_MANY" /> ట్యాబ్‌లు, <ph name="TAB_COUNT_INCOGNITO" /> అజ్ఞాత ట్యాబ్}}</translation>
 <translation id="4558311620361989323">వెబ్‌పేజీ షార్ట్‌క‌ట్‌లు</translation>
@@ -1280,6 +1286,7 @@
 <translation id="6411219469806822692">ఇంతకంటే పైకి వెళ్లడం సాధ్యపడదు. పేజీకి మరింత పైనుండి ప్రారంభించడానికి ట్రై చేయండి.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, మల్టీసెలెక్టెడ్ ట్యాబ్</translation>
 <translation id="641643625718530986">ప్రింట్ చేయండి…</translation>
+<translation id="6427723330233512782">హైట్‌కు తగ్గట్లు అమర్చు</translation>
 <translation id="6433501201775827830">మీ సెర్చ్ ఇంజిన్‌ను ఎంచుకోండి</translation>
 <translation id="6434309073475700221">తొలగించండి</translation>
 <translation id="6435307030888827407">సైన్ అవుట్ అయి ఉండండి</translation>
@@ -1433,6 +1440,7 @@
 <translation id="6937524809504266803">వ్యక్తిగతీకరణ &amp; లింక్ చేయడం</translation>
 <translation id="6937876069006524083">మారుపేరు (ఆప్షనల్)</translation>
 <translation id="6942665639005891494">సెట్టింగ్‌ల మెనూ ఎంపికను ఉపయోగించి డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని మార్చండి</translation>
+<translation id="6944854424004126054">విండోను పునరుద్ధరించండి</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6955535239952325894">మేనేజ్ అవుతోన్న బ్రౌజర్‌లలో ఈ సెట్టింగ్ డిజేబుల్ చేయబడింది.</translation>
 <translation id="6963766334940102469">బుక్‌మార్క్‌లను తొలగించండి</translation>
@@ -1526,6 +1534,7 @@
 <translation id="7291910923717764901">ఈ పేజీకి ఇమేజ్ వివరణలు జోడించబడ్డాయి.</translation>
 <translation id="7293429513719260019">భాషను ఎంచుకోండి</translation>
 <translation id="7298319215489933099">ఎంచుకున్న <ph name="TAB_TITLE" /> ట్యాబ్, దాని కంటెంట్‌ను షేర్ చేస్తుంది</translation>
+<translation id="7304003340539141201">మీ ట్యాబ్‌లు, టాస్క్‌ల విషయంలో సహాయం కోసం Geminiని అడగండి</translation>
 <translation id="7311244614769792472">ఫలితాలు ఏవీ కనుగొనబడలేదు</translation>
 <translation id="7314734791127433392">పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడదు</translation>
 <translation id="7324354302972299151">“Do Not Track” రిక్వెస్ట్‌ను పంపండి</translation>
@@ -1872,6 +1881,7 @@
 <translation id="8696297579102085705">మీ పరికరానికి పంపండి</translation>
 <translation id="8697753151306746444">బదులుగా విండోను లేదా స్క్రీన్‌ను షేర్ చేయండి</translation>
 <translation id="8699120352855309748">ఈ భాషలను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
+<translation id="8700565880437506364">Chromeలో Geminiని పరిచయం చేస్తున్నాము</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="8715286883001906001">మీ Google ఖాతాలో మీ పాస్‌వర్డ్‌లను బలోపేతం చేయండి</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" />‌ను మూసివేయడం జరిగింది</translation>
@@ -1939,6 +1949,7 @@
 <translation id="8996847606757455498">మరొక ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="8998837250940831980">ట్యాబ్‌ను కుదించడం సాధ్యం కాలేదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="9001604755921395912">అజ్ఞాత Chrome ట్యాబ్‌లో తెరువు</translation>
+<translation id="9010094279589497751">మీకు అవసరమైనప్పుడు Geminiని త్వరగా తెరవండి</translation>
 <translation id="9012585441087414258">ప్రమాదకరమని తెలిసిన సైట్‌లు, డౌన్‌లోడ్‌లు, అలాగే ఎక్స్‌టెన్షన్‌ల నుండి రక్షిస్తుంది. ఏదైనా పేజీ అనుమానాస్పదంగా ఉంటే, URLలు, పేజీ కంటెంట్‌‌కు సంబంధించిన బిట్‌లు Google సురక్షిత బ్రౌజింగ్‌కు పంపబడతాయి.</translation>
 <translation id="9019199799064251516">కారు ప్రొఫైల్ లాక్ తీయకుండానే కొనసాగించాలా?</translation>
 <translation id="9022774213089566801">తరచుగా సందర్శించినవి</translation>
@@ -1996,6 +2007,7 @@
 <translation id="9190355771000652811">అడ్రస్ బార్‌లో, సెర్చ్ ఇంజిన్‌లు, సైట్ సెర్చ్ షార్ట్‌కట్‌లతో ఈ కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, పిన్ చేసి ఎంపిక చేసిన అజ్ఞాత ట్యాబ్</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 నిమిషం క్రితం చెక్ చేసింది}other{# నిమిషాల క్రితం చెక్ చేసింది}}</translation>
+<translation id="9202894533863490414">ఈ సైట్ నుండి డౌన్‌లోడ్ చేయాలా?</translation>
 <translation id="9204836675896933765">1 ఫైల్ మిగిలి ఉంది</translation>
 <translation id="9205933215779845960">ఆ పేజీని కనుగొనడం సాధ్యపడలేదు. మీ స్పెల్లింగ్‌ను చెక్ చేయండి లేదా <ph name="SEARCH_ENGINE" />లో సెర్చ్ చేయడానికి ట్రై చేయండి.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2013,9 +2025,11 @@
 <translation id="939598580284253335">రహస్య పదబంధాన్ని నమోదు చేయండి</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, పిన్ చేసిన పిక్చర్-ఇన్-పిక్చర్ అజ్ఞాత ట్యాబ్</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
+<translation id="949667118776341807">రొటేట్</translation>
 <translation id="95817756606698420">చైనాలో వెతకడానికి <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ను Chrome ఉపయోగించవచ్చు. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో మార్చవచ్చు.</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="963246339335003378">టాస్క్ మేనేజర్‌ను తెరవండి</translation>
+<translation id="966337994629449077">మీరు <ph name="FROM_EMAIL" />‌గా సైన్-ఇన్ చేశారు.\n\nమీ కంప్యూటర్‌లో కొనసాగడానికి, <ph name="TO_EMAIL" />‌కు మారండి. మీరు ఈ ఖాతా నుండి పాస్‌వర్డ్‌లు, బుక్‌మార్క్‌లు, ఇంకా మరిన్నింటిని పొందుతారు.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="983192555821071799">అన్ని ట్యాబ్‌లను మూసివేయండి</translation>

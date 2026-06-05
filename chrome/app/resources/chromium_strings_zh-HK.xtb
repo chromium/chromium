@@ -69,6 +69,7 @@
 <translation id="1749104137266986751">無法使用 HTTPS 時，Chromium 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="1774152462503052664">讓 Chromium 在背景執行</translation>
 <translation id="1779356040007214683">為了讓 Chromium 的安全性更有保障，我們已將部分未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，它們可能在您不知情的情況下加入瀏覽器。</translation>
+<translation id="1793486931176048546">在 Windows 通知中點擊 [是]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />，即可將 Chromium 固定至工作列，以便快速存取</translation>
 <translation id="1808667845054772817">重新安裝 Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在嘗試<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你使用「Google 密碼管理工具」。</translation>
@@ -382,8 +383,10 @@
 <translation id="5294316920224716406">使用無痕模式瀏覽時，Chromium 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="5313228254328109263">Chromium 更新程式內部服務</translation>
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
+<translation id="5348677704241861105">讓 Chromium 內建 Gemini 快速歸納這份文件的摘要，並回答你的問題</translation>
 <translation id="5352264705793813212">Chromium 發現一些安全性建議需要你審核</translation>
 <translation id="5352361688875342522">其他 Chromium 設定檔</translation>
+<translation id="535243042947607642">你的帳戶登入詳細資料未更新，因此 ChromiumOS 無法將 Chromium 資料儲存至 Google 帳戶</translation>
 <translation id="5358375970380395591">您已登入受管理的帳戶，並將管理控制權授予您的 Chromium 設定檔。您的 Chromium 數據 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。您可以透過 Google 帳戶資訊主頁刪除這些數據，但您無法將這些數據與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">額外代碼：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5377622451696208284">如要取得個人化功能，請將 Chromium 加入「網絡和應用程式活動記錄」</translation>
@@ -487,6 +490,7 @@
 <translation id="6390800440335263989">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chromium，以確保套用你所屬機構的政策。</translation>
 <translation id="6400112897226594999">電腦畫面中的 Chromium 圖示。</translation>
 <translation id="6403826409255603130">Chromium 網絡瀏覽器可快速開啟網頁和執行應用程式。除了迅速、穩定和易於使用外，Chromium 的內置惡意軟件與網絡釣魚防護功能，可讓您安心瀏覽網絡。</translation>
+<translation id="6414624068245092115">請驗證身分，確保你隨時可以將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料</translation>
 <translation id="642132557830635295">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作</translation>
 <translation id="6436260184216827876">無法使用「圖片搜尋」，請稍後再試。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium 作業系統</translation>
@@ -715,6 +719,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8852026904190808918">此語言用於顯示 Chromium 中的選單、設定、快訊和其他文字</translation>
 <translation id="8862326446509486874">您沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝程式。</translation>
 <translation id="8876044221123442390">新增 Chromium 設定檔</translation>
+<translation id="8890569919834781711">登入時發生錯誤，因此 ChromiumOS 無法將 Chromium 資料儲存至 Google 帳戶</translation>
 <translation id="8891709362986793894">你的機構要求你登入 Chromium</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果您同意的話，請輸入您的 Windows 密碼。</translation>
 <translation id="8932992523185907506">Chromium 不再是你的預設瀏覽器。要將 Chromium 設為預設瀏覽器嗎？</translation>

@@ -306,6 +306,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1458140305240870199">Ropa interior</translation>
 <translation id="1458770162980644530">Pantalla de Términos del Servicio del pago aplazado. Teclado oculto.</translation>
 <translation id="1459693405370120464">Información meteorológica</translation>
+<translation id="1460317464907341501">¿Verificar este correo automáticamente?</translation>
 <translation id="1461041542809785877">Rendimiento</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar las fuentes del ordenador para que puedas crear contenido de alta fidelidad</translation>
@@ -849,7 +850,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2316087952091171402">Menos de <ph name="UPPER_ESTIMATE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que los visites.</translation>
 <translation id="2316090909467242775">Prueba esta contraseña de recuperación</translation>
 <translation id="2316159751672436664">Personaliza las herramientas de accesibilidad desde la configuración de ChromeOS</translation>
-<translation id="2316887270356262533">Libera menos de 1 MB. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> necesita un nombre de usuario y una contraseña.</translation>
 <translation id="2318594867107319532">Última marca de tiempo de la política:</translation>
 <translation id="2320564945062300737">Productos de cuidado facial</translation>
@@ -2005,6 +2005,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="412601465078863288">Tiempo de espera de subida agotado</translation>
 <translation id="4127317221386336246">Accesorios de vestir</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Uno más}other{# más}}</translation>
+<translation id="4129810348470013900">Se ha producido un error. Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="4129992181550680635">Recursos educativos</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4132448310531350254">Controladores duplicados de la extensión de archivo <ph name="FILE_EXTENSION" /> a los que hacen referencia las aplicaciones <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3022,6 +3023,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5728246486828755318">Puede solicitar permiso para usar funciones avanzadas de la impresora</translation>
 <translation id="5729442113829771034">Educación infantil</translation>
 <translation id="5730040223043577876">Chrome te recomienda que cambies tu contraseña si la has vuelto a utilizar en otros sitios.</translation>
+<translation id="5735174108294025227">Las direcciones de correo verificadas aparecerán aquí</translation>
 <translation id="573555826359077410">Botón Crear formulario: actívalo para crear un nuevo formulario en Formularios de Google rápidamente</translation>
 <translation id="5738385766833540397">Gestiona cómo recibes las alertas de bajadas de precio de los productos que sigues</translation>
 <translation id="5739619009927381786">Desbloquea la pantalla en el siguiente paso, normalmente con tu huella digital. También puedes hacer la <ph name="BEGIN_LINK" />verificación usando otro método<ph name="END_LINK" />.</translation>
@@ -3400,7 +3402,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="633348045801643466">Muestra las opciones de <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pago aplazado<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> al tramitar la compra</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">Realidad virtual no permitida</translation>
-<translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="6337534724793800597">Filtrar políticas por nombre</translation>
 <translation id="633770708279464947">El valor <ph name="SECURE_DNS_SALT" /> no es válido y no se usará.</translation>
 <translation id="6338645927051849741">Contraseña • Gestor de contraseñas de Google</translation>
@@ -3951,7 +3952,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="718872491229180389">Cheerleading</translation>
 <translation id="7188840756966467339">Reiniciar y aplicar políticas</translation>
 <translation id="7192188280913829296">También debe especificarse el atributo "vendor_id".</translation>
-<translation id="7192203810768312527">Libera <ph name="SIZE" />. Algunos sitios pueden tardar más en cargarse la próxima vez que accedas a ellos.</translation>
 <translation id="7192537357091279678">Almacenamiento informático</translation>
 <translation id="7193661028827781021">Referencia</translation>
 <translation id="719464814642662924">Visa</translation>

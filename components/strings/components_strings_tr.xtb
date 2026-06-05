@@ -849,7 +849,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" />'tan az. Sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="2316090909467242775">Bu kurtarma şifresini deneyin</translation>
 <translation id="2316159751672436664">ChromeOS ayarlarında erişilebilirlik araçlarınızı kişiselleştirin</translation>
-<translation id="2316887270356262533">1 MB'tan az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> için kullanıcı adı ve şifre gerekiyor.</translation>
 <translation id="2318594867107319532">Son politika zaman damgası:</translation>
 <translation id="2320564945062300737">Yüz Bakım Ürünleri</translation>
@@ -3022,6 +3021,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5728246486828755318">Gelişmiş yazıcı özelliklerini kullanmak için izin isteyebilir</translation>
 <translation id="5729442113829771034">Okul Öncesi Eğitim</translation>
 <translation id="5730040223043577876">Chrome, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
+<translation id="5735174108294025227">Doğrulanmış e-posta adresleri burada gösterilir</translation>
 <translation id="573555826359077410">Form oluştur düğmesi, Google Formlar'da hızlıca yeni bir form oluşturmak için etkinleştirin</translation>
 <translation id="5738385766833540397">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarılarını nasıl alacağınızı yönetin</translation>
 <translation id="5739619009927381786">Sonraki adımda ekranınızın kilidini açın (genellikle parmak iziniz kullanılır). <ph name="BEGIN_LINK" />Başka bir doğrulama yöntemini<ph name="END_LINK" /> de kullanabilirsiniz.</translation>
@@ -3400,7 +3400,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="633348045801643466">Ödeme sırasında <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />daha sonra ödeme<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> seçeneklerini göster</translation>
 <translation id="6335029926534404762">Spor Ayakkabıları</translation>
 <translation id="6336948221660696475">VR'ye izin verilmedi</translation>
-<translation id="6337133576188860026"><ph name="SIZE" /> boyutundan daha az yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="6337534724793800597">Politikaları ada göre filtrele</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> değeri geçersiz olduğundan kullanılmaz.</translation>
 <translation id="6338645927051849741">Şifre • Google Şifre Yöneticisi</translation>
@@ -3951,7 +3950,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="718872491229180389">Amigoluk</translation>
 <translation id="7188840756966467339">Yeniden başlat ve politikaları uygula</translation>
 <translation id="7192188280913829296">"vendor_id" özelliği de belirtilmelidir.</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> yer açar. Bir sonraki ziyaretinizde bazı siteler daha yavaş yüklenebilir.</translation>
 <translation id="7192537357091279678">Bilgisayar Sürücüleri ve Depolama</translation>
 <translation id="7193661028827781021">Referans</translation>
 <translation id="719464814642662924">Visa</translation>

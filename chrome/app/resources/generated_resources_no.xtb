@@ -416,6 +416,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1282311502488501110">Ikke logg på</translation>
 <translation id="1282436639288565079">Detaljer om fanegruppen</translation>
 <translation id="1282577885428483870">Nettsteder og kontoer</translation>
+<translation id="1282689009629709205">Ferdighetsgalleri</translation>
 <translation id="1284277788676816155">Ikke tillat lagring av data</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
 <translation id="1285484354230578868">lagre data i Google Disk-kontoen din</translation>
@@ -1391,6 +1392,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
 <translation id="1995916364271252349">Styrer hvilken informasjon nettsteder kan bruke og vise (posisjon, kamera, forgrunnsvinduer med mer)</translation>
 <translation id="199610894463449797">{0,plural, =1{Lukk denne profilen}other{Lukk denne profilen (# vinduer)}}</translation>
+<translation id="1996557034791506430">Vil du fjerne tillatelsen?</translation>
 <translation id="1997433994358798851">Chrome trenger tillatelse til å bruke Bluetooth for å koble til enheten din</translation>
 <translation id="1997616988432401742">Dine sertifikater</translation>
 <translation id="1998715278591719161">Nettsteder som har lov til å spore hendene dine</translation>
@@ -2368,6 +2370,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2692503699962701720">Endre tonehøyde ved opplesing av elementtyper og formatert tekst</translation>
 <translation id="2692901429679246677">Sjøgrønn</translation>
 <translation id="2693134906590795721">Ladelyder</translation>
+<translation id="2694330288297637442">Jobber med oppgaven. Spør Gemini</translation>
 <translation id="2695943520968279338">Oppdag utvidelser</translation>
 <translation id="2696675923413008404">Innhold fra dette nettstedet, inkludert nettadressen, sendes til Google og kan bli sett av menneskelige evaluerere som jobber med å gjøre denne funksjonen bedre</translation>
 <translation id="2698147581454716013">Dette er en pakkeenhet og kan ikke registreres med Kiosk og skilt-oppgradering.</translation>
@@ -3066,6 +3069,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3188257591659621405">Mine filer</translation>
 <translation id="3189187154924005138">Stor markør</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{1 passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}other{{PASSWORD_COUNT} passord og andre elementer er bare lagret på denne enheten. For å bruke dem på andre enheter, lagre dem i Google-kontoen din.}}</translation>
+<translation id="3190404390992636561">Ferdigheter er ikke tilgjengelige</translation>
 <translation id="319044078641740013">For komme enkelt tilbake til nettsteder du har besøkt, synkroniser loggen og fanene dine til <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">Passordet er lagret</translation>
 <translation id="3192586965067888278">Beskriv problemet i detalj. Tilbakemeldinger sendes til Google for menneskelig evaluering og kan brukes til å forbedre eller utvikle Googles produkter og tjenester.</translation>
@@ -4181,6 +4185,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3978732922947854545">Chrome gjør PDF-filer bedre</translation>
 <translation id="3979093622823535817">Bli med på møtet <ph name="MEETING_TITLE" /></translation>
 <translation id="3979395879372752341">Ny utvidelse lagt til (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="3980708588513986958">Se og administrer ferdighetene dine</translation>
 <translation id="398095528354975981">Skjul disse fanene</translation>
 <translation id="3981058120448670012">Vises som <ph name="DEVICE_NAME" /> for enheter i nærheten i <ph name="REMAINING_TIME" /> …</translation>
 <translation id="3981760180856053153">Ugyldig lagringstype angitt.</translation>
@@ -5746,6 +5751,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5149602533174716626">Kop&amp;ier videorammen</translation>
 <translation id="5150254825601720210">Navn på Netscape SSL-tjenersertifikat</translation>
 <translation id="5151354047782775295">Frigjør lagringsplass eller velg data som kan slettes automatisk</translation>
+<translation id="5152381187352661267">Ferdigheter i Chrome</translation>
 <translation id="5153074793829217329">Bruk tastaturet eller et talltastatur for å kontrollere musepekeren</translation>
 <translation id="5153234146675181447">Glem telefon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -6182,7 +6188,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> i dag. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}other{<ph name="MANAGER" /> krever at du sikkerhetskopierer dataene dine og leverer tilbake <ph name="DEVICE_TYPE" /> innen {NUM_DAYS} dager. <ph name="LINK_BEGIN" />Se informasjon<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Legg til appen</translation>
 <translation id="5485435764083510385">Foretrukket språk for teksting</translation>
-<translation id="5485754497697573575">Gjenopprett alle faner</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> krever kanskje en nyere eller en annen type enhet</translation>
 <translation id="5486261815000869482">Bekreft passordet</translation>
 <translation id="5486561344817861625">Simuler omstart av nettleseren</translation>
@@ -7003,6 +7008,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6112727384379533756">Legg til en sak</translation>
 <translation id="6113434369102685411">Angi standard søkemotor for Chrome-nettleseren og appoversikten på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">Appoversikt-tasten + klikk</translation>
+<translation id="6116004140911290070">Slå på ferdigheter i Chrome</translation>
 <translation id="6116921718742659598">Endre språk- og inndatainnstillinger</translation>
 <translation id="6119008366402292080">Ingen skriver er tilgjengelig</translation>
 <translation id="6119972796024789243">Fargekorrigering</translation>
@@ -7701,6 +7707,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="663569763553406962">Se hvilke utvidelser som kan lese eller endre nettsteder</translation>
 <translation id="6636258750460740634">Logg</translation>
 <translation id="6636623428211296678">Utforsk flere innstillinger nedenfor, eller fullfør nå</translation>
+<translation id="6639405694338292402">Ferdigheter-funksjonen er slått av for øyeblikket. Oppdater Chrome-innstillingene for å komme i gang.</translation>
 <translation id="6639554308659482635">SQLite-minne</translation>
 <translation id="6640268266988685324">Åpne fane</translation>
 <translation id="664271268954513498">Retningslinjeverdi</translation>
@@ -7766,7 +7773,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Hastighet</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
-<translation id="6683087162435654533">Gjenopprett alle faner</translation>
 <translation id="6683433919380522900">Tillatelsen er <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Laster ned den nyeste oppdateringen</translation>
 <translation id="668599234725812620">Åpne Google Play</translation>
@@ -8003,6 +8009,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6843264316370513305">Nettverksfeilsøking</translation>
 <translation id="6843404741389995311">Kjøp, oversett og identifiser det du ser med kameraet og bildegalleriet.</translation>
 <translation id="6843725295806269523">kutt lyd</translation>
+<translation id="6843919992766261684">Fra nå av slutter <ph name="ISSUER" /> å bekrefte denne e-postadressen automatisk</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">Maksimer ved åpning</translation>
 <translation id="6845231585063669905">A til Å</translation>
@@ -8140,6 +8147,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6943060957016121200">Slå på umiddelbar internettdeling</translation>
 <translation id="6943939122536910181">Koblet fra <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Kan ikke installere denne profilen. Kontakt operatøren din om du trenger teknisk støtte.</translation>
+<translation id="6944854424004126054">Gjenopprett vinduet</translation>
 <translation id="6945221475159498467">Velg</translation>
 <translation id="694592694773692225">Viderekobling er blokkert på denne siden.</translation>
 <translation id="6949089178006131285">lese ChromeOS Flex-nettverksinformasjon</translation>
@@ -9702,7 +9710,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8082390128630131497">Hvis du slår av ADB-feilsøking, blir denne <ph name="DEVICE_TYPE" />-enheten tilbakestilt til fabrikkstandard. Alle brukerkontoer og lokale data fjernes.</translation>
 <translation id="8084114998886531721">Lagret passord</translation>
 <translation id="8084429490152575036">Innstillinger for mobil-APN</translation>
-<translation id="8084510406207562688">Gjenopprett alle faner</translation>
 <translation id="8084628902026812045">Dette nettstedet bruker ikke en sikker tilkobling, og filen kan ha blitt tuklet med</translation>
 <translation id="808488435221187916">Informasjonen din er tilgjengelig i Google Wallet på alle enheter du er logget på</translation>
 <translation id="8086015605808120405">Konfigurerer <ph name="PRINTER_NAME" /> …</translation>
@@ -11243,7 +11250,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apper}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" />. Du varsles ikke når opptaket starter.}=2{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" /> og <ph name="APP1_NAME" />. Du varsles ikke når opptaket starter.}=3{Administratoren din gjøre opptak av skjermen din med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og 1 annen app. Du blir ikke varslet når opptaket starter.}other{Administratoren din kan gjøre opptak av skjermen din med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> og # andre apper. Du varsles ikke når opptaket starter.}}</translation>
 <translation id="9186963452600581158">Logg på med Google-kontoen til et barn</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Deler 1 fane}other{Deler # faner}}</translation>
 <translation id="9187967020623675250">Tastene stemmer ikke overens. Trykk på en tast for å <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Slå på prosessisolering</translation>
 <translation id="9192019773545828776">Hør taletilbakemeldinger, slik at du kan bruke enheten uten å se på skjermen. Tilbakemelding med punktskrift er tilgjengelig med en tilkoblet enhet. Bruk Ctrl + Alt + Z for å slå ChromeVox på og av. Bruk søketasten + venstrepil eller høyrepil for å navigere. Bruk Søk + mellomromstasten for å velge (aktivere).</translation>

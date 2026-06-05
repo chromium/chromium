@@ -306,6 +306,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1458140305240870199">Undirfatnaður</translation>
 <translation id="1458770162980644530">Skjár með þjónustuskilmálum „Kauptu núna, borgaðu síðar“. Lyklaborð er falið.</translation>
 <translation id="1459693405370120464">Veður</translation>
+<translation id="1460317464907341501">Staðfesta þetta netfang sjálfkrafa?</translation>
 <translation id="1461041542809785877">Afköst</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Notaðu leturgerðirnar í tölvunni svo þú getir búið til hágæðaefni.</translation>
@@ -849,7 +850,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2316087952091171402">Minna en <ph name="UPPER_ESTIMATE" />. Sum vefsvæði kunna að hlaðast hægar í næstu heimsókn.</translation>
 <translation id="2316090909467242775">Prófa þetta endurheimtaraðgangsorð</translation>
 <translation id="2316159751672436664">Þú getur sérsniðið aðgengisverkfærin þín í stillingum ChromeOS</translation>
-<translation id="2316887270356262533">Losar minna en 1 MB. Lengri tíma gæti tekið að sækja sum vefsvæði þegar þú heimsækir þau næst.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> þarf notandanafn og aðgangsorð.</translation>
 <translation id="2318594867107319532">Síðasti tímastimpill reglu:</translation>
 <translation id="2320564945062300737">Vörur til andlitsumhirðu</translation>
@@ -2005,6 +2005,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="412601465078863288">Upphleðsla rann út á tíma</translation>
 <translation id="4127317221386336246">Fylgihlutir fatnaðar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 í viðbót}one{# í viðbót}other{# í viðbót}}</translation>
+<translation id="4129810348470013900">Eitthvað fór úrskeiðis. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="4129992181550680635">Menntunarleiðir</translation>
 <translation id="4130226655945681476">Athugar netsnúrur, mótaldið og beininn</translation>
 <translation id="4132448310531350254">Afrita hjálparforrit fyrir skráarendinguna „<ph name="FILE_EXTENSION" />“ sem er tilgreind af forritunum „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3401,7 +3402,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="633348045801643466">Sýna valkosti fyrir <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />greiðslufrestun<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> við greiðslu</translation>
 <translation id="6335029926534404762">Íþróttaskór</translation>
 <translation id="6336948221660696475">Sýndarveruleiki ekki leyfður</translation>
-<translation id="6337133576188860026">Losar minna en <ph name="SIZE" />. Lengri tíma gæti tekið að sækja sum vefsvæði þegar þú heimsækir þau næst.</translation>
 <translation id="6337534724793800597">Sía reglur eftir heiti</translation>
 <translation id="633770708279464947">Gildið <ph name="SECURE_DNS_SALT" /> á ekki við og verður ekki notað.</translation>
 <translation id="6338645927051849741">Aðgangsorð • Google-aðgangsorðastjórnun</translation>
@@ -3951,7 +3951,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="718872491229180389">Klappstjórn</translation>
 <translation id="7188840756966467339">Endurræsa og virkja reglur</translation>
 <translation id="7192188280913829296">Einnig þarf að tilgreina eigindina „vendor_id“.</translation>
-<translation id="7192203810768312527">Losar <ph name="SIZE" />. Lengri tíma gæti tekið að sækja sum vefsvæði þegar þú heimsækir þau næst.</translation>
 <translation id="7192537357091279678">Tölvudiskar og geymslubúnaður</translation>
 <translation id="7193661028827781021">Heimildir</translation>
 <translation id="719464814642662924">Visa</translation>

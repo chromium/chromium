@@ -848,7 +848,6 @@
 <translation id="2316087952091171402">低於 <ph name="UPPER_ESTIMATE" />。下次造訪某些網站時，載入速度可能會變慢。</translation>
 <translation id="2316090909467242775">試試這組復原密碼</translation>
 <translation id="2316159751672436664">在 Chrome OS 設定中依個人需求調整無障礙工具</translation>
-<translation id="2316887270356262533">釋出不到 1 MB。下次造訪部分網站時，載入速度可能會變慢。</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> 要求提供使用者名稱和密碼。</translation>
 <translation id="2318594867107319532">上次政策時間戳記：</translation>
 <translation id="2320564945062300737">臉部護理產品</translation>
@@ -3020,6 +3019,7 @@
 <translation id="5728246486828755318">可以要求使用進階印表機功能</translation>
 <translation id="5729442113829771034">幼兒教育</translation>
 <translation id="5730040223043577876">如果你在其他網站上重複使用過你的密碼，Chrome 會建議你重設密碼。</translation>
+<translation id="5735174108294025227">已驗證的電子郵件地址會顯示在這裡</translation>
 <translation id="573555826359077410">「建立表單」按鈕，啟動後即可在 Google 表單中快速建立新表單</translation>
 <translation id="5738385766833540397">管理如何接收追蹤產品的降價快訊</translation>
 <translation id="5739619009927381786">在下一個步驟中解鎖螢幕，通常是使用指紋。或者，也可以<ph name="BEGIN_LINK" />改用其他驗證方式<ph name="END_LINK" />。</translation>
@@ -3398,7 +3398,6 @@
 <translation id="633348045801643466">結帳時顯示「<ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />先買後付<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" />」選項</translation>
 <translation id="6335029926534404762">運動鞋</translation>
 <translation id="6336948221660696475">不允許使用 VR</translation>
-<translation id="6337133576188860026">釋出不到 <ph name="SIZE" />。下次造訪部分網站時，載入速度可能會變慢。</translation>
 <translation id="6337534724793800597">依名稱篩選政策</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> 的值無效，系統不會使用這個值。</translation>
 <translation id="6338645927051849741">密碼 • Google 密碼管理工具</translation>
@@ -3949,7 +3948,6 @@
 <translation id="718872491229180389">啦啦隊</translation>
 <translation id="7188840756966467339">重新啟動並套用政策</translation>
 <translation id="7192188280913829296">必須一併指定「vendor_id」屬性。</translation>
-<translation id="7192203810768312527">釋出 <ph name="SIZE" />。下次造訪部分網站時，載入速度可能會變慢。</translation>
 <translation id="7192537357091279678">電腦磁碟機與儲存空間</translation>
 <translation id="7193661028827781021">參考資料</translation>
 <translation id="719464814642662924">Visa</translation>

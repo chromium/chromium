@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">زیر جامے</translation>
 <translation id="1458770162980644530">ابھی خریدیں، ادائیگی بعد میں کریں کی سروس کی شرائط کی اسکرین۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="1459693405370120464">موسم</translation>
+<translation id="1460317464907341501">اس ای میل کی خودکار طور پر توثیق کریں؟</translation>
 <translation id="1461041542809785877">کارکردگی</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">اپنے کمپیوٹر پر فونٹس کا استعمال کریں تاکہ آپ اعلی معیار کا مواد تخلیق کر سکیں</translation>
@@ -849,7 +850,6 @@
 <translation id="2316087952091171402"><ph name="UPPER_ESTIMATE" /> سے کم۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="2316090909467242775">اس بازیابی پاس ورڈ کو آزمائیں</translation>
 <translation id="2316159751672436664">‏ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنائیں</translation>
-<translation id="2316887270356262533">‏MB 1 سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> کو ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
 <translation id="2318594867107319532">پالیسی کی آخری ٹائم سٹیمپ:</translation>
 <translation id="2320564945062300737">چہرے کی دیکھ بھال سے متعلق پروڈکٹس</translation>
@@ -2006,6 +2006,7 @@
 <translation id="412601465078863288">اپ لوڈ کرنے کا وقت ختم ہو گیا</translation>
 <translation id="4127317221386336246">ملبوسات کے لوازمات</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 دیگر}other{# دیگر}}</translation>
+<translation id="4129810348470013900">کچھ غلط ہو گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="4129992181550680635">تعلیمی وسائل</translation>
 <translation id="4130226655945681476">نیٹ ورک کیبلز، موڈم اور راؤٹر کو چیک کیا جا رہا ہے</translation>
 <translation id="4132448310531350254">‏file_extension "<ph name="FILE_EXTENSION" />" کے لیے ڈپلیکیٹ ہینڈلرز جس کا حوالہ ایپس "<ph name="POLICY_IDS_LIST" />" کے ذریعے دیا گیا ہے۔</translation>
@@ -3023,6 +3024,7 @@
 <translation id="5728246486828755318">پرنٹر کی جدید ترین خصوصیات استعمال کرنے کیلئے پوچھ سکتا ہے</translation>
 <translation id="5729442113829771034">ابتدائے طفولیت کی تعلیم</translation>
 <translation id="5730040223043577876">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="5735174108294025227">توثیق شدہ ای میل پتے یہاں ظاہر ہوں گے</translation>
 <translation id="573555826359077410">‏فارم تخلیق کریں بٹن، Google Forms میں تیزی سے نیا فارم تخلیق کرنے کے لیے فعال کریں</translation>
 <translation id="5738385766833540397">اس بات کا نظم کریں کہ آپ کو ان پروڈکٹس کے لیے قیمتوں میں کمی کے الرٹس کیسے موصول ہوتے ہیں جنہیں آپ ٹریک کرتے ہیں</translation>
 <translation id="5739619009927381786">اگلے مرحلے میں، عام طور پر اپنے فنگر پرنٹ کا استعمال کر کے اپنی اسکرین کو غیر مقفل کریں۔ یا آپ <ph name="BEGIN_LINK" />دوسرے طریقے سے توثیق<ph name="END_LINK" /> کر سکتے ہیں۔</translation>
@@ -3402,7 +3404,6 @@
 <translation id="633348045801643466">چیک آؤٹ پر <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />بعد میں ادائیگی کریں<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> کے اختیارات دکھائیں</translation>
 <translation id="6335029926534404762">ایتھلیٹک جوتے</translation>
 <translation id="6336948221660696475">‏‫VR کی اجازت نہیں دی گئی</translation>
-<translation id="6337133576188860026"><ph name="SIZE" /> سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="6337534724793800597">نام کے لحاظ سے پالیسیاں فلٹر کریں</translation>
 <translation id="633770708279464947"><ph name="SECURE_DNS_SALT" /> قدر غلط ہے اور استعمال نہیں کی جائے گی۔</translation>
 <translation id="6338645927051849741">‏پاس ورڈ • Google پاس ورڈ مینیجر</translation>
@@ -3952,7 +3953,6 @@
 <translation id="718872491229180389">چیئر لیڈنگ</translation>
 <translation id="7188840756966467339">ری سٹارٹ کریں اور پالیسیاں لاگو کریں</translation>
 <translation id="7192188280913829296">‏انتساب "vendor_id" کا تعین بھی ضروری ہے۔</translation>
-<translation id="7192203810768312527"><ph name="SIZE" /> بچاتا ہے: آپ کے اگلے ملاحظہ پر مزید آہستہ سے کچھ سائٹس لوڈ کر سکتا ہے۔</translation>
 <translation id="7192537357091279678">کمپیوٹر ڈرائیوز اور اسٹوریج</translation>
 <translation id="7193661028827781021">حوالہ</translation>
 <translation id="719464814642662924">Visa</translation>

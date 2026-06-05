@@ -6173,7 +6173,6 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{A(z) <ph name="MANAGER" /> megköveteli, hogy készítsen biztonsági másolatot az adatairól, és küldje vissza ezt az eszközt (<ph name="DEVICE_TYPE" />) a mai napon. <ph name="LINK_BEGIN" />Részletek megtekintése<ph name="LINK_END" />.}other{A(z) <ph name="MANAGER" /> megköveteli, hogy biztonsági másolatot készítsen adatairól, és küldje vissza ezt az eszközt (<ph name="DEVICE_TYPE" />) {NUM_DAYS} napon belül. <ph name="LINK_BEGIN" />Részletek megtekintése<ph name="LINK_END" />.}}</translation>
 <translation id="5485102783864353244">Alkalmazás hozzáadása</translation>
 <translation id="5485435764083510385">Felirat előnyben részesített nyelve</translation>
-<translation id="5485754497697573575">Minden lap visszaállítása</translation>
 <translation id="5486071940327595306">A(z) <ph name="WEBSITE" /> újabb vagy másfajta eszközt igényelhet</translation>
 <translation id="5486261815000869482">Jelszó megerősítése</translation>
 <translation id="5486561344817861625">Böngésző újraindításának szimulálása</translation>
@@ -7754,7 +7753,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6680442031740878064">Rendelkezésre álló tárhely: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Értékelés</translation>
 <translation id="6683022854667115063">Fejhallgató</translation>
-<translation id="6683087162435654533">Az össz&amp;es lap helyreállítása</translation>
 <translation id="6683433919380522900">Az engedély: <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">A legutóbbi frissítés letöltése…</translation>
 <translation id="668599234725812620">A Google Play megnyitása</translation>
@@ -8128,6 +8126,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6943060957016121200">Azonnali internetmegosztás engedélyezése</translation>
 <translation id="6943939122536910181">Leválasztva a következőről: <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Nem sikerült telepíteni ezt a profilt. Műszaki segítségért forduljon a szolgáltatóhoz.</translation>
+<translation id="6944854424004126054">Ablak visszaállítása</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
 <translation id="694592694773692225">Átirányítás letiltva ezen az oldalon.</translation>
 <translation id="6949089178006131285">A ChromeOS Flex hálózati adatainak olvasása</translation>
@@ -9686,7 +9685,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8082390128630131497">Az ADB-hibakeresés letiltásával visszaállítja a gyári beállításokat ezen a(z) <ph name="DEVICE_TYPE" /> eszközön. Az összes felhasználói fiók és helyi adat törlődik.</translation>
 <translation id="8084114998886531721">Mentett jelszó</translation>
 <translation id="8084429490152575036">Mobilhálózati APN-beállítások</translation>
-<translation id="8084510406207562688">Az össz&amp;es lap helyreállítása</translation>
 <translation id="8084628902026812045">Ez a webhely nem biztonságos kapcsolatot használ, és előfordulhat, hogy a fájlt manipulálták</translation>
 <translation id="808488435221187916">Adatai bármely bejelentkezett eszközön rendelkezésre állnak a Google Walletben</translation>
 <translation id="8086015605808120405">A(z) <ph name="PRINTER_NAME" /> konfigurálása...</translation>
@@ -11222,7 +11220,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="918352324374649435">{COUNT,plural, =1{Alkalmazás}other{# alkalmazás}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Az adminisztrátor rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" /> segítségével. A rögzítés megkezdéséről nem kap értesítést.}=2{Az adminisztrátor rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" /> és a(z) <ph name="APP1_NAME" /> segítségével. A rögzítés megkezdéséről nem kap értesítést.}=3{A rendszergazda rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" />, a(z) <ph name="APP1_NAME" /> és 1 további alkalmazás segítségével. A rögzítés megkezdéséről nem kap értesítést.}other{Az adminisztrátor rögzítheti a képernyőjét a(z) <ph name="APP0_NAME" />, a(z) <ph name="APP1_NAME" /> és # további alkalmazás segítségével. A rögzítés megkezdéséről nem kap értesítést.}}</translation>
 <translation id="9186963452600581158">Bejelentkezés gyermek Google-fiókjával</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{1 lap megosztva}other{# lap megosztva}}</translation>
 <translation id="9187967020623675250">A billentyűk nem egyeznek. Nyomja le bármelyik billentyűt a következőhöz: <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Folyamatelszigetelés engedélyezése</translation>
 <translation id="9192019773545828776">Hangos visszajelzést kaphat, így anélkül használhatja eszközét, hogy a képernyőre kellene néznie. A Braille-visszajelzés csatlakoztatott eszközökön áll rendelkezésre. Használja a Ctrl + Alt + Z billentyűparancsot a ChromeVox be- vagy kikapcsolásához. A navigáláshoz használja a Keresés + balra vagy jobbra nyíl kombinációt. A kiválasztáshoz (aktiváláshoz) használja a Keresés + Szóköz billentyűparancsot.</translation>

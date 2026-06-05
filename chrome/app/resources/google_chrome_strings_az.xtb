@@ -147,6 +147,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="2580411288591421699">Hazırda istifadə olunan Google Chrome versiyasını quraşdıra bilməzsiniz. Lütfən, Google Chrome'u qapadın və yenidən cəhd edin.</translation>
 <translation id="2586406160782125153">Brauzinq datanız bu cihazdan silinəcək. Datanı sonradan bərpa etmək üçün Chrome'a <ph name="USER_EMAIL" /> kimi daxil olun.</translation>
 <translation id="259935314519650377">Endirilmiş quraşdırıcı keşlənmədi. Xəta: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Chrome-da Gemini ilə sənədə qısa nəzər salın və suallar verin</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="263447411082773721">Parollarınızı, əlfəcinlərinizi və tarixçənizi cihazlar arasında mükəmməl şəkildə sinxronlaşdırın. Defolt brauzerinizi Chrome-a güncəlləməklə bildiyiniz və sevdiyiniz funksiyalara asanlıqla daxil olun. Chrome sürətli giriş üçün tapşırıq panelinə bərkidiləcək.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -154,6 +155,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="2652691236519827073">Linki Yeni Chrome tabında açın</translation>
 <translation id="2665296953892887393">Qəza raportlarını və <ph name="UMA_LINK" /> linkini Google'a göndərməklə Google Chrome'un daha keyfiyyətli olmasına kömək edin</translation>
 <translation id="2668094785979141847">Klikləyərək Google Linzadan çıxın</translation>
+<translation id="2674238339205910678">ChromeOS Flex hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="2681444469812712297">Google Chrome-da yeni tabda <ph name="URL" /> açın.</translation>
 <translation id="2699790011615497488">Gemini-ı Chrome Beta-da açın</translation>
 <translation id="2712141162840347885">Google Linza ilə axtarış etmək üçün istədiyinizi seçin və ya Google Linzadan çıxmaq üçün "escape" düyməsinə basın</translation>
@@ -530,6 +532,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6497147134301593682">Chrome avtomatik bağlandı</translation>
 <translation id="6506909944137591434">Chrome ətrafınızın 3D xəritəsini yaratmaq üçün kameranıza giriş icazəsi tələb edir</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex hesaba giriş xətası səbəbindən Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="6520670145826811516">Məkandan istifadə etmək üçün Chrome-a <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> giriş imkanı verin</translation>
 <translation id="652948702951888897">Chrome tarixçəsi</translation>
 <translation id="6532945796722480006">Gemini-ı Chrome Canary-də açın</translation>
@@ -577,6 +580,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7011190694940573312">Əməliyyat sisteminin bu versiyası dəstəklənmədiyi üçün quraşdırma alınmadı.</translation>
 <translation id="7024536598735240744">Paketin açılması xətası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Burada Chrome profilləri arasında keçid edə bilərsiniz</translation>
+<translation id="7026856149118332950">Sürətli giriş üçün Chrome-u tapşırıqlar panelinizə bərkitmək məqsədilə Windows bildirişində <ph name="BEGIN_BOLD" />Bəli<ph name="END_BOLD" /> seçiminə klikləyin.</translation>
 <translation id="7047386856539490735">Bu nəticələr faydalıdır?</translation>
 <translation id="7051685429025310665">Bu yaxınlarda daxil olmamısınız. Chrome sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Chrome'u fərdiləşdirin</translation>
@@ -669,6 +673,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7890208801193284374">Kompüteri paylaşsanız dostlarınız və ailəniz ayrıca brauzer ilə Chrome'u istədikləri kimi ayarlaya bilər.</translation>
 <translation id="7896673875602241923">Kimsə bu kompüterdə <ph name="ACCOUNT_EMAIL_LAST" /> olaraq Chrome'a daxil olub. Məlumatınızı ayrı saxlamaq üçün yeni Chrome istifadəçisi yaradın.</translation>
 <translation id="7904985524660297937">Gemini-ı Google Chrome-da sınayın</translation>
+<translation id="7905880575591690197">ChromeOS hesaba giriş xətası səbəbindən Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="7917876797003313048">Daxil olunmuş Google Hesablarını idarə edə bilərsiniz. Google Hesablarınız Chrome brauzeri, Play Market, Gmail və digər xidmətlər üçün istifadə olunur. Ailə üzvü kimi başqası üçün bir hesab əlavə etmək istəyirsinizsə, əvəzində <ph name="DEVICE_TYPE" /> cihazınıza yeni bir şəxs əlavə edin. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Bu fayl aldadıcı olduğu və cihaza gözlənilməz dəyişikliklər edə biləcəyi üçün Chrome endirməni blokladı</translation>
 <translation id="7951272445806340501">ChromeOS Flex yenidən başlamalıdır ki, güncəlləşmə tətbiq olunsun.</translation>
@@ -744,6 +749,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8624541899164515475">Ayarlar, yeni tabda açılır.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dəqiqəyə yenidən başlayacaq}other{Chrome # dəqiqəyə yenidən başlayacaq}}</translation>
 <translation id="8637932705841171563">Pəncərəni paylaşmaq üçün Sistem Ayarlarında Chrome üçün ekranın qeydə alınmasına icazə verin</translation>
+<translation id="8642497536370021917">Google Hesabında Chrome datasını hər zaman istifadə edə və yadda saxlaya biləcəyinizə əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8656634243791296665">Gemini-ı Chrome Dev-də açın</translation>
 <translation id="8669527147644353129">Google Chrome Yardımçı</translation>
 <translation id="8679801911857917785">O, həmçinin, Chrome açılanda hansı səhifənin göstərildiyini idarə edir.</translation>
@@ -793,6 +799,7 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="93760716455950538">ChromeOS Flex'i yenidən başladın</translation>
 <translation id="943390475793766444">Chrome bu faylı skan etməyi tövsiyə edir, çünki o, təhlükəli ola bilər.</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
+<translation id="973195869036269770">ChromeOS hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="983803489796659991">Yeniləmə serverində tətbiq heş datası olmadığı üçün quraşdırma alınmadı.</translation>
 <translation id="989369509083708165">Google Chrome defolt brauzerinizdir</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome profilləri arasında keçid edə bilər</translation>

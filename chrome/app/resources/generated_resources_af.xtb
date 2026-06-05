@@ -2350,6 +2350,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2673848446870717676">Maak seker dat jou Bluetooth-toestel in saambindmodus en naby is. Bind net saam met toestelle wat jy vertrou. Saamgebinde toestelle is vir alle rekeninge op hierdie Chromebook sigbaar.</translation>
 <translation id="2673873887296220733">Kopieer 1 lêer na <ph name="CLOUD_PROVIDER" /> om oop te maak?</translation>
 <translation id="267442004702508783">herlaai</translation>
+<translation id="2674756932811577764">Onderbreek effekte</translation>
 <translation id="2675160405921703214">Ontmoet Gemini op Chrome</translation>
 <translation id="2676084251379299915">Hierdie uitbreiding is deur die ondernemingbeleid gedeaktiveer omdat dit nie meer in die Chrome Webwinkel beskikbaar is nie.</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
@@ -3480,6 +3481,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="351152300840026870">Vastebreedte-lettertipe</translation>
 <translation id="3511528412952710609">Kort</translation>
 <translation id="3512465804715993309">Aanpasbare merking</translation>
+<translation id="3512495006767217696">Ingebou in Chrome om jou te help om sterk wagwoorde te skep, te stoor en te outovul. Voeg die kortpad by vir maklike toegang</translation>
 <translation id="3513019849832307207">Sluit aan en maak oop</translation>
 <translation id="3513563267917474897">Kleurglyer vanaf <ph name="MIN_VALUE" /> tot <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Jy kry standaardsekuriteitbeskerming. Skakel Verbeterde Veiligblaai in Chrome-instellings aan om meer beskerming teen gevaarlike webwerwe, aflaaie en uitbreidings te kry.</translation>
@@ -4967,6 +4969,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4580127151758731432">Groter kopbewegings sal die skermpyltjie verder beweeg</translation>
 <translation id="4580389561674319558">Sigbaar vir alle kontakte</translation>
 <translation id="4580596421317071374">Wagwoorde word gestoor in <ph name="GOOGLE_PASSWORD_MANAGER" /> op hierdie toestel</translation>
+<translation id="4580939929828762295">Bly veilig met Google Wagwoordbestuurder</translation>
 <translation id="4582297591746054421">Werwe lees gewoonlik jou knipbord vir kenmerke soos behoud van die formatering van teks wat jy gekopieer het</translation>
 <translation id="4582563038311694664">Stel alle instellings terug</translation>
 <translation id="4584094413232466841">Verwyder hierdie inligting uit Chrome-outovul?</translation>
@@ -6176,7 +6179,6 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> vandag terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}other{<ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie <ph name="DEVICE_TYPE" /> binne {NUM_DAYS} dae terugstuur. <ph name="LINK_BEGIN" />Sien besonderhede<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Voeg app by</translation>
 <translation id="5485435764083510385">Voorkeuronderskriftaal</translation>
-<translation id="5485754497697573575">Stel alle oortjies terug</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> kan ’n nuwer of ander soort toestel vereis</translation>
 <translation id="5486261815000869482">Bevestig wagwoord</translation>
 <translation id="5486561344817861625">Simuleer blaaierherbegin</translation>
@@ -7263,6 +7265,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6307268917612054609">Apps en webwerwe met die kameratoestemming, sowel as stelseldienste, kan jou kamera gebruik</translation>
 <translation id="6307990684951724544">Stelsel besig</translation>
 <translation id="6308493641021088955">Aanmelding verskaf deur <ph name="EXTENSION_NAME" /></translation>
+<translation id="6308778163698400658">Voeg by nutsbalk</translation>
 <translation id="6308937455967653460">Stoor skakel as …</translation>
 <translation id="6309443618838462258">Jou administrateur laat nie hierdie invoermetode toe nie</translation>
 <translation id="6309510305002439352">Mikrofoon is afgeskakel</translation>
@@ -7475,6 +7478,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6470823736074966819">Demp kennisgewings</translation>
 <translation id="6472893788822429178">Wys tuisknoppie</translation>
 <translation id="6473315466413288899">Kies ’n opsie</translation>
+<translation id="6473659734176498825">’n Vereenvoudigde prent wat die Google Wagwoordbestuurder se toegangspunt in Chrome wys</translation>
 <translation id="6474498546677193336">Kon nie ontdeel nie want 'n app gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer Linux weer afgeskakel word.</translation>
 <translation id="6474884162850599008">Ontkoppel Google Drive-rekening</translation>
 <translation id="6476482583633999078">Spraakspoed</translation>
@@ -7757,7 +7761,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6680442031740878064">Beskikbaar: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Gradeer</translation>
 <translation id="6683022854667115063">Oorfone</translation>
-<translation id="6683087162435654533">Stel alle oortjies terug</translation>
 <translation id="6683433919380522900">Toestemming is <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Laai tans die jongste opdatering af</translation>
 <translation id="668599234725812620">Maak Google Play oop</translation>
@@ -8131,6 +8134,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6943060957016121200">Aktiveer kitsverbinding</translation>
 <translation id="6943939122536910181">Is ontkoppel van <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Kan nie hierdie profiel installeer nie. Kontak asseblief jou diensverskaffer vir tegniese steun.</translation>
+<translation id="6944854424004126054">Stel venster terug</translation>
 <translation id="6945221475159498467">Kies</translation>
 <translation id="694592694773692225">Herleiding is op hierdie bladsy geblokkeer.</translation>
 <translation id="6949089178006131285">Lees ChromeOS Flex-netwerkinligting</translation>
@@ -9004,6 +9008,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7605594153474022051">Sinkronisering werk nie</translation>
 <translation id="7606560865764296217">Onderbreek animasie</translation>
 <translation id="7606639338662398635">Oortjiegroepe</translation>
+<translation id="7606802863538485839">Speel effekte</translation>
 <translation id="7607002721634913082">Laat wag</translation>
 <translation id="7608810328871051088">Android-voorkeure</translation>
 <translation id="7610337976012700501">Om <ph name="FEATURE_NAME" /> met jou kontakte te gebruik, moet jy die e-posadres wat aan hul Google-rekening gekoppel is, by jou kontakte voeg.</translation>
@@ -9689,7 +9694,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8082390128630131497">As jy ADB-ontfouting deaktiveer, sal <ph name="DEVICE_TYPE" /> teruggestel word na fabriekinstellings. Alle gebruikerrekeninge en plaaslike data sal uitgevee word.</translation>
 <translation id="8084114998886531721">Gestoorde wagwoord</translation>
 <translation id="8084429490152575036">Sellulêre APN-instellings</translation>
-<translation id="8084510406207562688">Stel alle oortjies terug</translation>
 <translation id="8084628902026812045">Hierdie werf gebruik nie ’n veilige verbinding nie en daar is moontlik met die lêer gepeuter</translation>
 <translation id="808488435221187916">Jou inligting is in Google Wallet beskikbaar op enige aangemelde toestel</translation>
 <translation id="8086015605808120405">Stel <ph name="PRINTER_NAME" /> tans op …</translation>
@@ -11225,7 +11229,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=2{Jou administrateur kan jou skerm met <ph name="APP0_NAME" /> en <ph name="APP1_NAME" /> opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}=3{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en 1 ander app opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}other{Jou administrateur kan jou skerm met <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> en # ander apps opneem. Jy sal nie in kennis gestel word wanneer die opname begin nie.}}</translation>
 <translation id="9186963452600581158">Meld met jou kind se Google-rekening aan</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Deel tans 1 oortjie}other{Deel tans # oortjies}}</translation>
 <translation id="9187967020623675250">Sleutels stem nie ooreen nie. Druk enige sleutel en <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Aktiveer prosesisolasie</translation>
 <translation id="9192019773545828776">Hoor gesproke terugvoer sodat jy jou toestel kan gebruik sonder om na die skerm te kyk. Braille-terugvoer is beskikbaar met ’n gekoppelde toestel. Gebruik Ctrl + Alt + Z om ChromeVox aan en af te skakel. Gebruik Soek + linkspyl of regspyl om te navigeer. Gebruik Soek + spasiebalk om te kies (aktiveer).</translation>

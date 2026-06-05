@@ -641,6 +641,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3771290962915251154">Questa impostazione è disattivata perché il Controllo genitori è attivo</translation>
 <translation id="3771694256347217732">Termini di servizio di Google</translation>
 <translation id="3777796259512476958">Ti disconnette dalla maggior parte dei siti.</translation>
+<translation id="3786379886124795923">Hai effettuato l'accesso a Chrome tramite la scansione di un codice QR. Conferma di voler recuperare le password, i preferiti e altri dati da questo profilo.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="3792938779249970121">Seleziona account</translation>
 <translation id="3795154175078851242">Copia immagine con link</translation>
@@ -825,6 +826,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4532845899244822526">Scegli cartella</translation>
 <translation id="4535755320005483982">Gruppo di schede <ph name="GROUP_TITLE" /> condiviso</translation>
 <translation id="4537137366307982887">Attivazione delle notifiche di suggerimenti aperta a schermo intero</translation>
+<translation id="4537987892902330164">L'accesso come <ph name="NAME_OR_EMAIL" /> è stato mantenuto.</translation>
 <translation id="4543131175509360848">Nessun foglio di passkey</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede, <ph name="TAB_COUNT_INCOGNITO" /> in incognito}}</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
@@ -1282,6 +1284,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6411219469806822692">Non puoi scorrere più in alto di così. Prova a partire da un punto più in alto nella pagina.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, schede selezionate</translation>
 <translation id="641643625718530986">Stampa…</translation>
+<translation id="6427723330233512782">Adatta all'altezza</translation>
 <translation id="6433501201775827830">Scegli il motore di ricerca</translation>
 <translation id="6434309073475700221">Elimina</translation>
 <translation id="6435307030888827407">Continua senza eseguire l'accesso</translation>
@@ -1435,6 +1438,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6937524809504266803">Personalizzazione e collegamento</translation>
 <translation id="6937876069006524083">Nickname (facoltativo)</translation>
 <translation id="6942665639005891494">Modifica in qualsiasi momento il percorso di download predefinito utilizzando l'opzione del menu Impostazioni</translation>
+<translation id="6944854424004126054">Ripristina finestra</translation>
 <translation id="6945221475159498467">Seleziona</translation>
 <translation id="6955535239952325894">Questa impostazione è disattivata sui browser gestiti</translation>
 <translation id="6963766334940102469">Elimina Preferiti</translation>
@@ -2015,9 +2019,11 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="939598580284253335">Inserisci passphrase</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, scheda Incognito Picture in picture fissata</translation>
 <translation id="945522503751344254">Invia feedback</translation>
+<translation id="949667118776341807">Ruota</translation>
 <translation id="95817756606698420">Chrome può usare <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> per le ricerche in Cina. Puoi modificare questa preferenza nelle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Elimina dati navigazione</translation>
 <translation id="963246339335003378">Apri Task Manager</translation>
+<translation id="966337994629449077">Hai effettuato l'accesso come <ph name="FROM_EMAIL" />.\n\nPer continuare dal computer, passa a <ph name="TO_EMAIL" />. Potrai usare le password, i preferiti e altri dati di questo account.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>

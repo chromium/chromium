@@ -2334,6 +2334,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2673848446870717676">Asegúrate de que tu dispositivo Bluetooth esté cerca y tenga el modo de vinculación activado. Vincúlate solo con dispositivos de confianza. Todas las cuentas de esta Chromebook pueden ver los dispositivos vinculados.</translation>
 <translation id="2673873887296220733">¿Quieres copiar 1 archivo en <ph name="CLOUD_PROVIDER" /> para abrirlo?</translation>
 <translation id="267442004702508783">actualizar</translation>
+<translation id="2674756932811577764">Pausar efectos</translation>
 <translation id="2675160405921703214">Conoce Gemini en Chrome</translation>
 <translation id="2676084251379299915">La política empresarial inhabilitó esta extensión porque ya no está disponible en Chrome Web Store.</translation>
 <translation id="2677748264148917807">Abandonar</translation>
@@ -3464,6 +3465,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="351152300840026870">Fuente de ancho fijo</translation>
 <translation id="3511528412952710609">Breve</translation>
 <translation id="3512465804715993309">Destacado adaptable</translation>
+<translation id="3512495006767217696">Integrado en Chrome para ayudarte a crear, guardar y autocompletar contraseñas seguras. Agrega el acceso directo para ingresar fácilmente</translation>
 <translation id="3513019849832307207">Unirse y abrir</translation>
 <translation id="3513563267917474897">Control deslizante de tono de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Obtienes protección de seguridad estándar. Para obtener más protección contra descargas, extensiones y sitios web peligrosos, activa la Navegación segura mejorada en la configuración de Chrome.</translation>
@@ -4951,6 +4953,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4580127151758731432">Los movimientos más grandes de la cabeza desplazarán el cursor más lejos</translation>
 <translation id="4580389561674319558">Visible para todos los contactos</translation>
 <translation id="4580596421317071374">Las contraseñas se guardan en <ph name="GOOGLE_PASSWORD_MANAGER" /> en este dispositivo.</translation>
+<translation id="4580939929828762295">Mantén la seguridad con el Administrador de contraseñas de Google</translation>
 <translation id="4582297591746054421">Por lo general los sitios leen el portapapeles para habilitar funciones, como la de conservar el formato del texto que copias.</translation>
 <translation id="4582563038311694664">Restablecer toda la configuración</translation>
 <translation id="4584094413232466841">¿Quieres quitar esta información de la función Autocompletar de Chrome?</translation>
@@ -6160,7 +6163,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> hoy mismo. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> requiere que hagas una copia de seguridad de tus datos y devuelvas este dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Agregar app</translation>
 <translation id="5485435764083510385">Idioma preferido de subtítulos</translation>
-<translation id="5485754497697573575">Restablecer todas las pestañas</translation>
 <translation id="5486071940327595306">Es posible que <ph name="WEBSITE" /> solicite un tipo de dispositivo más nuevo o diferente</translation>
 <translation id="5486261815000869482">Confirmar contraseña</translation>
 <translation id="5486561344817861625">Simular reinicio de navegador</translation>
@@ -7246,6 +7248,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6307268917612054609">Pueden usar la cámara los servicios del sistema, además de las apps y los sitios web con el permiso correspondiente</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Acceso proporcionado por <ph name="EXTENSION_NAME" /></translation>
+<translation id="6308778163698400658">Agregar a la barra de herramientas</translation>
 <translation id="6308937455967653460">Guardar vínculo &amp;como…</translation>
 <translation id="6309443618838462258">Tu administrador no permite este método de entrada</translation>
 <translation id="6309510305002439352">Se apagó el micrófono</translation>
@@ -7458,6 +7461,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6470823736074966819">Silenciar notificaciones</translation>
 <translation id="6472893788822429178">Mostrar el botón de la Página principal</translation>
 <translation id="6473315466413288899">Selecciona una opción</translation>
+<translation id="6473659734176498825">Una imagen simplificada que muestra el punto de entrada del Administrador de contraseñas de Google en Chrome</translation>
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
 <translation id="6476482583633999078">Velocidad de habla</translation>
@@ -7740,7 +7744,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidad</translation>
 <translation id="6683022854667115063">Auriculares</translation>
-<translation id="6683087162435654533">R&amp;establecer todas las pestañas</translation>
 <translation id="6683433919380522900">Permiso: <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Se está descargando la actualización más reciente</translation>
 <translation id="668599234725812620">Abrir Google Play</translation>
@@ -8114,6 +8117,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6943060957016121200">Habilitar la Conexión instantánea mediante dispositivo móvil</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">No se puede instalar este perfil. Para obtener asistencia técnica, comunícate con tu operador.</translation>
+<translation id="6944854424004126054">Restaurar ventana</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="694592694773692225">Se bloqueó el redireccionamiento en esta página.</translation>
 <translation id="6949089178006131285">Leer la información de la red de ChromeOS Flex</translation>
@@ -8988,6 +8992,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7605594153474022051">La sincronización no funciona</translation>
 <translation id="7606560865764296217">Pausar animación</translation>
 <translation id="7606639338662398635">Grupos de pestañas</translation>
+<translation id="7606802863538485839">Reproducir efectos</translation>
 <translation id="7607002721634913082">Detenido</translation>
 <translation id="7608810328871051088">Preferencias de Android</translation>
 <translation id="7610337976012700501">Para usar <ph name="FEATURE_NAME" /> con estos contactos, agrega a tus contactos las direcciones de correo electrónico vinculadas a sus Cuentas de Google.</translation>
@@ -9673,7 +9678,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8082390128630131497">Si inhabilitas la depuración de adb, se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> a la configuración de fábrica. Se borrarán todas las cuentas de usuario y los datos locales.</translation>
 <translation id="8084114998886531721">Se guardó la contraseña</translation>
 <translation id="8084429490152575036">Configuración del APN de la red móvil</translation>
-<translation id="8084510406207562688">R&amp;establecer todas las pestañas</translation>
 <translation id="8084628902026812045">Este sitio no usa una conexión segura y es posible que el archivo se haya alterado</translation>
 <translation id="808488435221187916">Tu información está disponible en la Billetera de Google en cualquier dispositivo en el que accediste a tu cuenta</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />…</translation>
@@ -11209,7 +11213,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />. No recibirás una notificación cuando comience la grabación.}=2{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" /> y <ph name="APP1_NAME" />. No recibirás una notificación cuando comience la grabación.}=3{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y 1 app más. No recibirás una notificación cuando comience la grabación.}other{El administrador puede grabar tu pantalla con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> y # apps más. No recibirás una notificación cuando comience la grabación.}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Se está compartiendo 1 pestaña}other{Se están compartiendo # pestañas}}</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Habilitar el aislamiento de procesos</translation>
 <translation id="9192019773545828776">Escucha descripciones por voz para usar el dispositivo sin mirar la pantalla. Las descripciones en braille están disponibles con un dispositivo conectado. Usa Ctrl + Alt + Z para activar y desactivar ChromeVox. Usa Búsqueda + flecha hacia la izquierda o flecha hacia la derecha para navegar. Usa Búsqueda + barra espaciadora para seleccionar (activar).</translation>

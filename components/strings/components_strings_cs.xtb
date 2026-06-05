@@ -849,7 +849,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2316087952091171402">Méně než <ph name="UPPER_ESTIMATE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2316090909467242775">Zkuste toto heslo pro obnovení</translation>
 <translation id="2316159751672436664">Přizpůsobte si v nastavení ChromeOS nástroje pro usnadnění přístupu</translation>
-<translation id="2316887270356262533">Uvolní více než 1 MB. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="2317259163369394535">Doména <ph name="DOMAIN" /> vyžaduje zadání uživatelského jména a hesla.</translation>
 <translation id="2318594867107319532">Poslední časové razítko zásad:</translation>
 <translation id="2320564945062300737">Přípravky pro péči o obličej</translation>
@@ -3395,7 +3394,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="633348045801643466">Při placení zobrazovat <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />možnosti zaplacení později<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /></translation>
 <translation id="6335029926534404762">Sportovní obuv</translation>
 <translation id="6336948221660696475">VR není povolena</translation>
-<translation id="6337133576188860026">Uvolní méně než <ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="6337534724793800597">Filtrovat zásady podle názvu</translation>
 <translation id="633770708279464947">Hodnota <ph name="SECURE_DNS_SALT" /> není platná a nebude použita.</translation>
 <translation id="6338645927051849741">Heslo • Správce hesel Google</translation>
@@ -3946,7 +3944,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="718872491229180389">Roztleskávání</translation>
 <translation id="7188840756966467339">Restartovat a použít zásady</translation>
 <translation id="7192188280913829296">Musí být zadán také atribut „vendor_id“.</translation>
-<translation id="7192203810768312527">Uvolní <ph name="SIZE" />. Je možné, že se některé weby při příští návštěvě budou načítat pomaleji.</translation>
 <translation id="7192537357091279678">Paměťová a úložná zařízení pro počítače</translation>
 <translation id="7193661028827781021">Reference</translation>
 <translation id="719464814642662924">Visa</translation>

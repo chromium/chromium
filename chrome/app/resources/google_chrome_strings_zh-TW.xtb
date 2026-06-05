@@ -147,6 +147,7 @@
 <translation id="2580411288591421699">你無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome 然後再試一次。</translation>
 <translation id="2586406160782125153">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2608461706055011366">讓 Chrome 內建 Gemini 快速歸納這份文件的摘要，並回答你的問題</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="263447411082773721">在各裝置完美同步密碼、書籤和歷史記錄。將預設瀏覽器更新為 Chrome，輕鬆使用熟悉且喜愛的功能。Chrome 會釘選到工作列，方便你快速存取。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -743,6 +744,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8624541899164515475">設定，在新分頁中開啟。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將在 1 分鐘後重新啟動}other{Chrome 將在 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗內容，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
+<translation id="8642497536370021917">請驗證身分，確保你隨時可以將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料</translation>
 <translation id="8656634243791296665">開啟 Chrome 內建 Gemini (開發人員版)</translation>
 <translation id="8669527147644353129">Google Chrome 小幫手</translation>
 <translation id="8679801911857917785">這個擴充功能也會控管 Chrome 啟動時所顯示的網頁。</translation>

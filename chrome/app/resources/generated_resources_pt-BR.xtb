@@ -6199,7 +6199,6 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> hoje. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}one{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dia. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}other{<ph name="MANAGER" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" /> em até {NUM_DAYS} dias. <ph name="LINK_BEGIN" />Veja os detalhes<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Adicionar aplicativo</translation>
 <translation id="5485435764083510385">Idioma preferido para legendas</translation>
-<translation id="5485754497697573575">Restaurar todas as guias</translation>
 <translation id="5486071940327595306"><ph name="WEBSITE" /> pode exigir um tipo de dispositivo mais novo ou diferente</translation>
 <translation id="5486261815000869482">Confirmar senha</translation>
 <translation id="5486561344817861625">Simular reinicialização do navegador</translation>
@@ -7788,7 +7787,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6680442031740878064">Disponível: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Velocidade</translation>
 <translation id="6683022854667115063">Fones de ouvido</translation>
-<translation id="6683087162435654533">Restaurar todas as guias</translation>
 <translation id="6683433919380522900">A permissão está <ph name="PERMISSION_STATE" /></translation>
 <translation id="6684827949542560880">Baixando a atualização mais recente</translation>
 <translation id="668599234725812620">Abrir o Google Play</translation>
@@ -8163,6 +8161,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6943060957016121200">Ativar tethering instantâneo</translation>
 <translation id="6943939122536910181">Desconectado de <ph name="DEVICE" /></translation>
 <translation id="6944750221184785444">Não foi possível instalar esse perfil. Entre em contato com sua operadora para receber suporte técnico.</translation>
+<translation id="6944854424004126054">Restaurar janela</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">Redirecionamento bloqueado nesta página.</translation>
 <translation id="6949089178006131285">Ler informações de rede do ChromeOS Flex</translation>
@@ -9725,7 +9724,6 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8082390128630131497">Desativar a depuração do adb redefinirá este <ph name="DEVICE_TYPE" /> para a configuração original. Todas as contas de usuário e os dados locais serão apagados.</translation>
 <translation id="8084114998886531721">Senha salva</translation>
 <translation id="8084429490152575036">Configurações do APN da rede celular</translation>
-<translation id="8084510406207562688">Restaurar todas as guias</translation>
 <translation id="8084628902026812045">Este site não está usando uma conexão segura, e o arquivo pode ter sido adulterado</translation>
 <translation id="808488435221187916">Suas informações estão disponíveis na Carteira do Google em qualquer dispositivo conectado</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />…</translation>
@@ -11266,7 +11264,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{O administrador pode gravar sua tela com o app <ph name="APP0_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=2{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Você não vai receber uma notificação quando a gravação começar.}=3{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais 1. Você não vai receber uma notificação quando a gravação começar.}one{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}other{O administrador pode gravar sua tela com os apps <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e mais #. Você não vai receber uma notificação quando a gravação começar.}}</translation>
 <translation id="9186963452600581158">Fazer login com a Conta do Google de uma criança</translation>
-<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Compartilhando 1 guia}one{Compartilhando # guia}other{Compartilhando # guias}}</translation>
 <translation id="9187967020623675250">As teclas não correspondem. Pressione qualquer tecla para <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Ativar isolamento de processos</translation>
 <translation id="9192019773545828776">Ouça uma resposta falada para que você possa usar o dispositivo sem olhar para a tela. O feedback em braille está disponível quando há um dispositivo conectado. Use Ctrl + Alt + Z para ativar e desativar o ChromeVox. Use Pesquisa + seta para a esquerda ou direita para navegar. Use as teclas Pesquisa + espaço para selecionar (ativar).</translation>

@@ -68,6 +68,7 @@
 <translation id="1749104137266986751">Når HTTPS er utilgængelig, anvender Chromium en usikker forbindelse uden at advare dig</translation>
 <translation id="1774152462503052664">Lad Chromium køre i baggrunden</translation>
 <translation id="1779356040007214683">For at gøre Chromium sikrere har vi slået nogle udvidelser fra, som ikke er anført i <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og muligvis er blevet tilføjet, uden at du vidste det.</translation>
+<translation id="1793486931176048546">Klik på <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> i Windows-notifikationen for at fastgøre Chromium til proceslinjen og få hurtig adgang.</translation>
 <translation id="1808667845054772817">Geninstaller Chromium</translation>
 <translation id="1820835682567584003">Chromium forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Næste gang du åbner Chromium på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at bruge Google Adgangskodeadministrator.</translation>
@@ -381,8 +382,10 @@
 <translation id="5294316920224716406">Når du browser i inkognitotilstand, advarer Chromium dig, inden et website indlæses via en usikker forbindelse</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5346389065299425353">Gør din søgning mere dybdegående ved at tilføje flere faner, filer og værktøjer</translation>
+<translation id="5348677704241861105">Få en hurtig oversigt over dette dokument, og stil spørgsmål med Gemini i Chromium</translation>
 <translation id="5352264705793813212">Chromium har fundet nogle sikkerhedsanbefalinger, du kan gennemgå</translation>
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
+<translation id="535243042947607642">ChromiumOS kunne ikke gemme Chromium-data på din Google-konto, fordi loginoplysningerne til din konto er forældede</translation>
 <translation id="5358375970380395591">Du er ved at logge ind med en managerstyret konto og giver dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Ekstra kode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Medtag Chromium i Web- og appaktivitet for at få personlig tilpasning</translation>
@@ -488,6 +491,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6390800440335263989">Log ind i Chromium som <ph name="EMAIL" /> for at fortsætte. Dette sikrer, at du har din organisations politikker.</translation>
 <translation id="6400112897226594999">Chromium-logo på en computerskærm.</translation>
 <translation id="6403826409255603130">Chromium er en webbrowser, der kører websider og apps med lynets hast. Den er hurtig, stabil og brugervenlig. Beskyttelse mod malware og phishing er indbygget i Chromium, så du kan søge mere sikkert på internettet.</translation>
+<translation id="6414624068245092115">Verificer din identitet for at sikre, at du altid kan bruge og gemme Chromium-data på din Google-konto</translation>
 <translation id="642132557830635295">Chromium kører hurtigere, og funktioner, der bruger JavaScript, bør fungere som forventet</translation>
 <translation id="6436260184216827876">Billedsøgning er ikke tilgængelig. Prøv igen senere.</translation>
 <translation id="6442900851116057561">Genstart Chromium OS</translation>
@@ -716,6 +720,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8852026904190808918">Dette sprog bruges i menuer, indstillinger, underretninger og anden tekst i Chromium</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8876044221123442390">Tilføj Chromium-profil</translation>
+<translation id="8890569919834781711">ChromiumOS kunne ikke gemme Chromium-data på din Google-konto på grund af en loginfejl</translation>
 <translation id="8891709362986793894">Din organisation kræver, at du logger ind i Chromium</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8932992523185907506">Chromium er ikke længere din standardbrowser. Vil du gøre Chromium til din standardbrowser?</translation>

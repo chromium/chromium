@@ -441,6 +441,7 @@
 <translation id="2326112202058075478">عرض المزيد من رموز الإيموجي</translation>
 <translation id="2328561734797404498">يُرجى إعادة تشغيل الجهاز للتمكّن من استخدام <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">‏يتم حاليًا استخدام إصدار قديم من البلوتوث في جهاز Chromebook أو جهازك الذي يتضمّن بلوتوث. لتحسين جودة الصوت، عليك استخدام الميكروفون الداخلي.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{‏يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز اليوم، إما عبر شبكة Wi-Fi أو شبكة تفرض تكلفة استخدام (قد يتم تحصيل رسوم).}zero{‏يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، إما عبر شبكة Wi-Fi أو شبكة تفرض تكلفة استخدام (قد يتم تحصيل رسوم).}two{‏يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، إما عبر شبكة Wi-Fi أو شبكة تفرض تكلفة استخدام (قد يتم تحصيل رسوم).}few{‏يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، إما عبر شبكة Wi-Fi أو شبكة تفرض تكلفة استخدام (قد يتم تحصيل رسوم).}many{‏يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، إما عبر شبكة Wi-Fi أو شبكة تفرض تكلفة استخدام (قد يتم تحصيل رسوم).}other{‏يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، إما عبر شبكة Wi-Fi أو شبكة تفرض تكلفة استخدام (قد يتم تحصيل رسوم).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">انقر على زر قلم الشاشة على الرف لتدوين ملاحظة أو للحصول على لقطة شاشة أو لاستخدام مؤشر الليزر أو العدسة المكبرة.</translation>
 <translation id="2341729377289034582">تم القفل على الوضع العمودي</translation>
@@ -569,6 +570,7 @@
 <translation id="2687510499067466116">تم تغيير اختصار لوحة المفاتيح</translation>
 <translation id="2689613560355655046">سطح المكتب 8</translation>
 <translation id="2692092709110488417">‏يمكن الضغط على مفتاح Tab للتركيز على المنطقة المحدّدة وتحريكها</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{اليوم آخر مهلة لتحديث جهاز <ph name="DEVICE_TYPE" />}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}}</translation>
 <translation id="2695305337569143674">الويب</translation>
 <translation id="2697697418792422688">عرض إعدادات لوحة المفاتيح: تمّ اختيار "<ph name="KEYBOARD_NAME" />".</translation>
 <translation id="2699913284398121653">يمكنك استخدام تطبيق "نقل المحتوى" لنقل بيانات حسابك الذي تديره المؤسسة التعليمية إلى حسابك الشخصي</translation>
@@ -791,6 +793,7 @@
 <translation id="334927402682780278">اختيار النص من موضع المؤشر إلى نهاية السطر</translation>
 <translation id="3349345708646875009">فتح "إدارة المهام"</translation>
 <translation id="3353786022389205125">يُرجى تفعيل ميزة "عرض شاشة القفل عند الخروج من وضع السكون"، ثمّ إعادة المحاولة.</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوع واحد}zero{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}two{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال أسبوعَين ({NUM_WEEKS})}few{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسابيع}many{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوعًا}other{يجب تحديث جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}}</translation>
 <translation id="3364721542077212959">أدوات قلم الشاشة</translation>
 <translation id="3365281428003534650">ضبط موقّت ومَهمّة وموسيقى</translation>
 <translation id="3365977133351922112">‏هاتفك بعيد جدًا. ضَع هاتفك في مكان قريب من جهاز Chromebook.</translation>
@@ -951,6 +954,7 @@
 <translation id="3741482431277446954">زر الماوس الأيمن</translation>
 <translation id="3742055079367172538">تم التقاط لقطة الشاشة</translation>
 <translation id="3743775386021959186">"وضع التركيز" مفعَّل، ويتبقّى <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{يتطلّب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> اليوم.}zero{يتطلّب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}two{يتطلّب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}few{يتطلّب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}many{يتطلّب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}other{يتطلّب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}}</translation>
 <translation id="3750403286520637847">إخفاء اقتراح الطقس</translation>
 <translation id="3752253558646317685">اطلب من طفلك مواصلة رفع إصبعه لحفظ بصمة الإصبع.</translation>
 <translation id="3755239467337474637">‏<ph name="BEGIN_PARAGRAPH1" />يمكن أن تشمل بيانات التطبيق أي بيانات حفظها التطبيق (استنادًا إلى إعدادات المطوّر) مثل جهات الاتصال والرسائل والصور.<ph name="END_PARAGRAPH1" />
@@ -1075,6 +1079,13 @@
 <translation id="412298498316631026">نافذة</translation>
 <translation id="4123259114412175274">‏يجب تفعيل البلوتوث على هاتفك لفتح قفل جهاز Chromebook.</translation>
 <translation id="4123868835475902435">كانت هذه هي أهم أساسيات الاستخدام. يمكنك معرفة المزيد من خلال تطبيق "استكشاف"، وهو تطبيق مضمَّن لتزويدك بالنصائح حول بدء الاستخدام وإطلاعك على العروض الخاصة وأحدث الميزات على <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{سيتم قفل جهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد ثانية واحدة.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}zero{سيتم قفل جهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد # ثانية.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}two{سيتم قفل جهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد ثانيتَين.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}few{سيتم قفل جهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد # ثوانٍ.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}many{سيتم قفل جهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد # ثانية.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}other{سيتم قفل جهاز <ph name="DEVICE_TYPE" /> تلقائيًا بعد # ثانية.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}}</translation>
 <translation id="4125970834901680537">لا يمكن بث محتوى التطبيقات في وضع الجهاز اللوحي. يُرجى إعادة المحاولة في وضع الكمبيوتر المحمول.</translation>
 <translation id="4131973331381812765">درجة الحرارة: <ph name="TEMPERATURE" /> درجة مئوية - السرعة الحالية: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> غيغاهرتز</translation>
 <translation id="4136724716305260864">تفعيل الميزة حتى شروق الشمس</translation>
@@ -1383,6 +1394,7 @@
 <translation id="4964188651935955085">بعد إيقاف البلوتوث، سيتم إلغاء ربط هذا الجهاز الخارجي بجهاز <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">رفع مستوى الصوت</translation>
 <translation id="496999337731226334">‏الخطوة <ph name="STEP" /> من إجمالي <ph name="TOTAL_STEPS" />: في قائمة "الإعدادات السريعة"، ستظهر لك عناصر التحكّم الشائعة الاستخدام على جهازك، مثل Wi-Fi والبلوتوث ومستوى الصوت. يمكنك من خلال القائمة أيضًا أخذ لقطات شاشة. اضغط على Alt + Shift + S لفتح "الإعدادات السريعة".</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز اليوم، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}zero{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}two{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}few{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}many{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}other{يتطلّب <ph name="MANAGER" /> منك تنزيل تحديث للجهاز قبل الموعد النهائي، لذا سيتم تنزيله تلقائيًا عند الاتصال بالإنترنت.}}</translation>
 <translation id="4975771730019223894">وضع شارات على رمز التطبيق</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />،
@@ -1459,6 +1471,7 @@
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
 <translation id="5187627942836026988">يمكنك عرض تفاصيل نقطة الاتصال. حظَر مشرفك ميزة نقطة الاتصال.</translation>
 <translation id="5188648870018555788">‏استخدام الموقع الجغرافي: يمكنك أن تمنح إذن استخدام الموقع الجغرافي لجهازك لكلّ من تطبيقات ChromeOS وAndroid والمواقع الإلكترونية والخدمات المسموح لها بتحديد الموقع الجغرافي. يتيح الإعداد "دقة الموقع الجغرافي" تزويد تطبيقات وخدمات Android ببيانات موقعك الجغرافي بشكل أكثر دقة. ولإجراء ذلك، تعالج Google بشكل دوري معلومات أدوات الاستشعار والإشارات اللاسلكية التي يرسلها جهازك لجمع بيانات المواقع الجغرافية للإشارات اللاسلكية. وتُستخدَم هذه المعلومات بدون الكشف عن هويتك لتحسين دقة الموقع الجغرافي والخدمات المستنِدة إليه، وتحسين خدمات Google وتقديمها وصيانتها استنادًا إلى المصالح المشروعة للجهات الخارجية وGoogle من أجل تلبية احتياجات المستخدمين. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول استخدام الموقع الجغرافي<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال أسبوع واحد ({NUM_WEEKS})}zero{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}two{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال أسبوعَين ({NUM_WEEKS})}few{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسابيع}many{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوعًا}other{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_WEEKS} أسبوع}}</translation>
 <translation id="5198039720391525849">‏ملفات GIF المميّزة</translation>
 <translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> حدث</translation>
 <translation id="5198715732953550718">تم جمع <ph name="MOVED_APP_NAME" /> مع <ph name="IN_PLACE_APP" /> لإنشاء مجلد جديد.</translation>
@@ -1776,6 +1789,13 @@
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">عناصر التحكّم في مكالمات الفيديو</translation>
+<translation id="6070081109266557120">{0,plural, =1{سيتم تسجيل خروجك تلقائيًا بعد ثانية واحدة.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}zero{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}two{سيتم تسجيل خروجك تلقائيًا بعد ثانيتَين.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}few{سيتم تسجيل خروجك تلقائيًا بعد # ثوانٍ.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}many{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}other{سيتم تسجيل خروجك تلقائيًا بعد # ثانية.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.}}</translation>
 <translation id="6071576563962215370">تعذَّر على النظام إنشاء قفل سمات وقت تثبيت الجهاز.</translation>
 <translation id="6072442788591997866">لا يُسمح باستخدام <ph name="APP_NAME" /> على هذا الجهاز. يُرجى التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
@@ -2125,6 +2145,8 @@
 <translation id="7076878155205969899">كتم الصوت</translation>
 <translation id="7083848064787091821">وضع التركيز</translation>
 <translation id="7084678090004350185">نقطة الاتصال مفعَّلة، ومتصل بها <ph name="DEVICECOUNT" /> جهاز. يمكنك إيقافها.</translation>
+<translation id="7086438436964931440">سيتم تسجيل خروجك تلقائيًا الآن.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
 <translation id="7086931198345821656">‏يتطلَّب إتمام التحديث إجراء عملية Powerwash لجهاز <ph name="DEVICE_TYPE" />. سيتم حذف جميع البيانات. تعرّف على المزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">الوصول عبر مفتاح تبديل</translation>
 <translation id="709015856939120012">تكبير الصفحة</translation>
@@ -2528,6 +2550,7 @@
 <translation id="8220076512072059941">إضافة <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">إخفاء هذا الاقتراح</translation>
 <translation id="8230305195727960608">وضع "قلب الألوان"</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{يجب إرجاع الجهاز فورًا}zero{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}two{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال يومَين ({NUM_DAYS})}few{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} أيام}many{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يومًا}other{يجب إرجاع جهاز <ph name="DEVICE_TYPE" /> خلال {NUM_DAYS} يوم}}</translation>
 <translation id="8236042855478648955">حان وقت الراحة</translation>
 <translation id="8237964652943995219">سطح المكتب التالي: <ph name="DESK_NAME" />. سطح المكتب <ph name="DESK_INDEX" /> من <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">يمكنك التعرّف سريعًا على طريقة استخدام جهاز <ph name="PRODUCT_NAME" />. ابدأ استخدام جهازك باتّباع 5 خطوات.</translation>
@@ -2703,6 +2726,8 @@
 <translation id="8756799553341497810">يمكنك بدء تخصيص تنسيق التطبيق بعد الخروج من هذا العرض.</translation>
 <translation id="8759408218731716181">يتعذر إعداد الدخول المتعدد</translation>
 <translation id="8759753423332885148">معرفة المزيد.</translation>
+<translation id="8760172428247796445">سيتم قفل جهاز <ph name="DEVICE_TYPE" /> الآن.
+        يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
 <translation id="8763883995157866248">ضبط الجهاز على وضع السكون</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />، تطبيق مثبّت محظور</translation>
 <translation id="8782565991310229362">‏تم إلغاء تشغيل تطبيق Kiosk.</translation>

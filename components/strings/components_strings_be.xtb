@@ -850,7 +850,6 @@
 <translation id="2316087952091171402">Менш за <ph name="UPPER_ESTIMATE" />. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="2316090909467242775">Паспрабуйце гэты пароль для аднаўлення</translation>
 <translation id="2316159751672436664">Персаналізаваць інструменты даступнасці ў наладах Chrome OS</translation>
-<translation id="2316887270356262533">Вызваліцца да 1 МБ. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="2317259163369394535">Для <ph name="DOMAIN" /> патрабуецца імя карыстальніка і пароль.</translation>
 <translation id="2318594867107319532">Апошняя метка часу палітыкі:</translation>
 <translation id="2320564945062300737">Сродкі для догляду твару</translation>
@@ -3401,7 +3400,6 @@
 <translation id="633348045801643466">Паказваць варыянты <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />аплаты ў растэрміноўку<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> пры афармленні заказу</translation>
 <translation id="6335029926534404762">Спартыўны абутак</translation>
 <translation id="6336948221660696475">Доступ да VR не дазволены</translation>
-<translation id="6337133576188860026">Вызваліцца да <ph name="SIZE" />. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="6337534724793800597">Фільтр палітык па назве</translation>
 <translation id="633770708279464947">Значэнне <ph name="SECURE_DNS_SALT" /> з’яўляецца недапушчальным і не будзе выкарыстоўвацца.</translation>
 <translation id="6338645927051849741">Пароль • Менеджар пароляў Google</translation>
@@ -3951,7 +3949,6 @@
 <translation id="718872491229180389">Чэрлідынг</translation>
 <translation id="7188840756966467339">Перазапусціць і прымяніць палітыкі</translation>
 <translation id="7192188280913829296">Атрыбут "vendor_id" таксама павінен быць указаны.</translation>
-<translation id="7192203810768312527">Вызваліцца <ph name="SIZE" />. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
 <translation id="7192537357091279678">Камп’ютарныя прылады захоўвання даных</translation>
 <translation id="7193661028827781021">Даведачныя матэрыялы</translation>
 <translation id="719464814642662924">Visa</translation>

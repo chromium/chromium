@@ -356,6 +356,7 @@
 <translation id="253498598929009420">האתר יוכל לראות את תוכן המסך שלך</translation>
 <translation id="2535807170289627159">כל הכרטיסיות</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
+<translation id="2537574774089209541">‏כדי לאפשר לך להגיע ל-Gemini בקלות בזמן הגלישה, חלק מהכלים עברו למקום אחר</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שנבחרה והוצמדה, והתוכן בה מושתק</translation>
 <translation id="2542548955756682219">‫<ph name="TAB_TITLE" />, כרטיסייה</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">כדי לקבל גישה לסימניות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון עם <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/YY</translation>
 <translation id="2762000892062317888">ברגע זה</translation>
+<translation id="276378135349383280">‏הצגת Gemini בסרגל הכלים התחתון</translation>
 <translation id="276969039800130567">מחובר באמצעות חשבון <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">נותרו <ph name="SECONDS" /> שניות</translation>
 <translation id="2779651927720337254">נכשל</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3614126103057878858">מדדי מחירים</translation>
 <translation id="3616113530831147358">אודיו</translation>
+<translation id="3616798734782988169">חשוב לוודא שאפשר לסמוך על <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">ניהול הרשאות הגישה</translation>
 <translation id="3622349720008044802">ניהול החלונות</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{ועוד אתר אחד}one{ועוד # אתרים}two{ועוד # אתרים}other{ועוד # אתרים}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">חיפוש בנגיעה</translation>
 <translation id="3739455665973395693">‏אין סיסמאות שנחשפו בחשבון שלך ב-Google</translation>
 <translation id="3739899004075612870">נוסף לסימניות ב-<ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">חשוב לוודא שהאתר הזה מהימן</translation>
 <translation id="3740525748616366977">חיפוש קולי לא זמין במכשיר הזה</translation>
 <translation id="3763110477555836428">‏כדי להגן על הפרטים האמיתיים שלך במהלך התשלום בכרטיס הזה, המערכת תמלא אוטומטית מספר כרטיס וירטואלי. אפשר לערוך את ההגדרה הזו ב-Google Wallet. <ph name="BEGIN_LINK1" />מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">חלק מהנתונים עדיין לא נשמרו</translation>
@@ -1435,6 +1439,7 @@
 <translation id="6937524809504266803">התאמה אישית וקישור</translation>
 <translation id="6937876069006524083">כינוי (אופציונלי)</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
+<translation id="6944854424004126054">שחזור חלון</translation>
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6955535239952325894">ההגדרה הזו מושבתת בדפדפנים מנוהלים</translation>
 <translation id="6963766334940102469">מחיקת סימניות</translation>
@@ -1528,6 +1533,7 @@
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="7298319215489933099">‫<ph name="TAB_TITLE" />, כרטיסייה שנבחרה והוצמדה, והתוכן בה משותף</translation>
+<translation id="7304003340539141201">‏רוצה לבקש מ-Gemini עזרה עם הכרטיסיות והמשימות?</translation>
 <translation id="7311244614769792472">לא נמצאו תוצאות</translation>
 <translation id="7314734791127433392">לא ניתן לבדוק את הסיסמאות</translation>
 <translation id="7324354302972299151">‏שליחה של בקשת Do Not Track</translation>
@@ -1874,6 +1880,7 @@
 <translation id="8696297579102085705">שליחה למכשיר שלך</translation>
 <translation id="8697753151306746444">שיתוף של חלון או מסך במקום זאת</translation>
 <translation id="8699120352855309748">לא להציע לי לתרגם את השפות האלה</translation>
+<translation id="8700565880437506364">‏חדש: Gemini ב-Chrome</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="8715286883001906001">‏חיזוק הסיסמאות בחשבון Google</translation>
 <translation id="8715300232952757586">‫<ph name="TAB_TITLE" /> ייסגר</translation>
@@ -1941,6 +1948,7 @@
 <translation id="8996847606757455498">בחירת ספק אחר</translation>
 <translation id="8998837250940831980">לא ניתן למזער את הכרטיסייה. אפשר לנסות שוב אחר כך.</translation>
 <translation id="9001604755921395912">‏פתיחה בכרטיסייה פרטית ב-Chrome</translation>
+<translation id="9010094279589497751">‏פתיחה מהירה של Gemini ברגע הנכון</translation>
 <translation id="9012585441087414258">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. אם בדף כלשהו מתבצעת פעולה חשודה, כתובות URL וקטעים מהתוכן בדף נשלחים אל הגלישה הבטוחה של Google.</translation>
 <translation id="9019199799064251516">להמשיך בלי נעילת פרופיל במכונית?</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
@@ -1998,6 +2006,7 @@
 <translation id="9190355771000652811">בסרגל הכתובות, אפשר להשתמש במקש הקיצור הזה בשילוב עם קיצורי דרך למנועי חיפוש ולחיפוש באתרים.</translation>
 <translation id="9197941237799589838">‫<ph name="TAB_TITLE" />, הכרטיסייה הפרטית שנבחרה הוצמדה</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{התבצעה בדיקה לפני דקה אחת}one{התבצעה בדיקה לפני # דקות}two{התבצעה בדיקה לפני # דקות}other{התבצעה בדיקה לפני # דקות}}</translation>
+<translation id="9202894533863490414">להוריד מהאתר הזה?</translation>
 <translation id="9204836675896933765">נותר קובץ אחד</translation>
 <translation id="9205933215779845960">לא ניתן למצוא את הדף הזה. צריך לוודא שהאיות נכון או לנסות לחפש ב-<ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">א</translation>

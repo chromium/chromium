@@ -69,6 +69,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1749104137266986751">Als HTTPS niet beschikbaar is, gebruikt Chromium een niet-beveiligde verbinding zonder je te waarschuwen</translation>
 <translation id="1774152462503052664">Chromium laten uitvoeren op de achtergrond</translation>
 <translation id="1779356040007214683">Om Chromium veiliger te maken, hebben we een aantal extensies uitgezet die niet worden vermeld in de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> en mogelijk zonder je medeweten zijn geïnstalleerd.</translation>
+<translation id="1793486931176048546">Klik op <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> in de Windows-melding om Chromium vast te zetten op je taakbalk voor snelle toegang.</translation>
 <translation id="1808667845054772817">Chromium opnieuw installeren</translation>
 <translation id="1820835682567584003">Chromium probeert het volgende te doen: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">De volgende keer dat je Chromium op je <ph name="DEVICE_TYPE" /> opent, zie je een prompt om Google Wachtwoordmanager te gebruiken.</translation>
@@ -382,8 +383,10 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="5294316920224716406">Als je browst in de incognitomodus, waarschuwt Chromium je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="5313228254328109263">Interne Chromium Updater-service</translation>
 <translation id="5346389065299425353">Verfijn je zoekopdracht door meerdere tabbladen, bestanden en tools toe te voegen</translation>
+<translation id="5348677704241861105">Krijg een snel overzicht van dit document en stel vragen met Gemini in Chromium</translation>
 <translation id="5352264705793813212">Chromium heeft een aantal veiligheidsaanbevelingen gevonden die je moet controleren</translation>
 <translation id="5352361688875342522">Andere Chromium-profielen</translation>
+<translation id="535243042947607642">ChromiumOS kan Chromium-gegevens niet opslaan in je Google-account omdat de inloggegevens voor je account zijn verouderd</translation>
 <translation id="5358375970380395591">Je logt in op een beheerd account waarmee de eigenaar van dat account beheer krijgt over je Chromium-profiel. Je Chromium-gegevens zoals je apps, bookmarks, geschiedenis, wachtwoorden en andere instellingen worden permanent gekoppeld aan <ph name="USER_NAME" />. Je kunt deze gegevens verwijderen via het Google Accounts Dashboard, maar je kunt deze gegevens niet koppelen aan een ander account.<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Extra code: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Neem Chromium op in Web- en app-activiteit om personalisatie te krijgen</translation>
@@ -489,6 +492,7 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="6390800440335263989">Als je wilt doorgaan, log je in bij Chromium als <ph name="EMAIL" />. Zo weet je zeker dat het beleid van je organisatie wordt toegepast.</translation>
 <translation id="6400112897226594999">Chromium-logo in een computerscherm.</translation>
 <translation id="6403826409255603130">Chromium is een webbrowser die webpagina's en applicaties bliksemsnel uitvoert. Chromium is snel, stabiel en eenvoudig in gebruik. Surf veiliger op internet met de in Chromium ingebouwde beveiliging tegen malware en phishing.</translation>
+<translation id="6414624068245092115">Laat verifiëren dat jij het bent om Chromium-gegevens altijd te kunnen gebruiken en opslaan in je Google-account</translation>
 <translation id="642132557830635295">Chromium werkt sneller en functies die JavaScript gebruiken, zouden naar behoren moeten werken</translation>
 <translation id="6436260184216827876">Zoeken met afbeelding is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="6442900851116057561">Chromium OS opnieuw opstarten</translation>
@@ -717,6 +721,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8852026904190808918">Deze taal wordt gebruikt om menu's, instellingen, meldingen en andere tekst in Chromium weer te geven</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>
 <translation id="8876044221123442390">Chromium-profiel toevoegen</translation>
+<translation id="8890569919834781711">ChromiumOS kan Chromium-gegevens niet opslaan in je Google-account vanwege een fout tijdens het inloggen</translation>
 <translation id="8891709362986793894">Je organisatie vereist dat je inlogt bij Chromium</translation>
 <translation id="8907580949721785412">Chromium probeert wachtwoorden te bekijken. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="8932992523185907506">Chromium is niet meer je standaardbrowser. Chromium als standaardbrowser instellen?</translation>
