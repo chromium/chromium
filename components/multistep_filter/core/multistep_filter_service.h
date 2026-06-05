@@ -16,6 +16,7 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/sync/service/sync_service.h"
 
 class GURL;
 
@@ -62,6 +63,7 @@ class MultistepFilterService : public KeyedService,
         consent_helper;
     raw_ptr<MultistepFilterLogRouter> log_router;
     raw_ptr<history::HistoryService> history_service;
+    raw_ptr<syncer::SyncService> sync_service;
   };
 
   explicit MultistepFilterService(Params params);
@@ -106,12 +108,21 @@ class MultistepFilterService : public KeyedService,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback,
       std::optional<UrlFilterSuggestion> suggestion);
 
+  // Checks if `url` is eligible under the current sign-in, consent, and sync
+  // status, and logs the decision.
+  bool IsUrlAllowed(const GURL& url,
+                    int64_t navigation_id,
+                    std::string_view domain);
+
   // Returns true if the user is currently signed in. The Multistep Filter
   // feature is only available for signed-in users.
   bool IsUserSignedIn() const;
 
   // Returns true if the user has enabled URL-keyed data collection.
   bool IsUrlKeyedDataCollectionEnabled() const;
+
+  // Returns true if history sync is enabled.
+  bool IsHistorySyncEnabled() const;
 
   raw_ptr<ObserverForTest> observer_for_test_ = nullptr;
 
@@ -139,6 +150,9 @@ class MultistepFilterService : public KeyedService,
 
   // Log router for the internals page.
   raw_ptr<MultistepFilterLogRouter> log_router_;
+
+  // Sync service to check for history sync state.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // History service observer to listen for history deletions.
   base::ScopedObservation<history::HistoryService,

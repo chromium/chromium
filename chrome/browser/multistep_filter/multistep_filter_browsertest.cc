@@ -20,6 +20,7 @@
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller_test_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -42,6 +43,8 @@
 #include "components/multistep_filter/core/switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -118,11 +121,20 @@ class MultistepFilterBrowserTest
 
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
+    // TODO(crbug.com/519167729): Remove once kSync becomes unreachable or is
+    // deleted from the codebase.
     signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                        signin::ConsentLevel::kSignin);
+                                        signin::ConsentLevel::kSync);
 
     browser()->profile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+    auto* sync_service =
+        SyncServiceFactory::GetForProfile(browser()->profile());
+    std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker =
+        sync_service->GetSetupInProgressHandle();
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kHistory});
 
     service_ =
         MultistepFilterServiceFactory::GetForProfile(browser()->profile());

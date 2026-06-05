@@ -2,6 +2,8 @@ include_rules = [
   "+components/history/core/browser",
   "+components/keyed_service/core",
   "+components/signin/public/identity_manager",
+  "+components/sync/base",
+  "+components/sync/service",
   "+components/unified_consent",
   "+net/base",
   "+net/base/registry_controlled_domains",
@@ -10,5 +12,6 @@ include_rules = [
 specific_include_rules = {
   ".*_unittest\\.cc": [
     "+components/prefs",
+    "+components/sync/test",
   ],
 }

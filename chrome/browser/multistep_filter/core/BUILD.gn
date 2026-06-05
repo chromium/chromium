@@ -20,6 +20,7 @@ source_set("core") {
     "//chrome/browser:browser_process",
     "//chrome/browser/history",
     "//chrome/browser/signin",
+    "//chrome/browser/sync",
     "//chrome/common:channel_info",
     "//components/multistep_filter/core:features",
     "//components/signin/public/identity_manager",

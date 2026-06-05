@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/grit",
   "+components/favicon/core",
   "+components/vector_icons",
+  "+chrome/browser/sync",
   "+components/multistep_filter/content",
   "+components/multistep_filter/core",
   "+components/keyed_service/core",
