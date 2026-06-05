@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.ui.drawable.DirtyDotDrawableWrapper;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -119,9 +120,11 @@ public class GlicActionCoordinator {
         mDefaultDrawable = AppCompatResources.getDrawable(activity, glicIconResId);
         mFilledDrawable = AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
         mWorkingDrawable = GlicUiHelper.createWorkingDrawable(activity, mFilledDrawable);
-        Drawable dirtyDotFilledSpark =
-                AppCompatResources.getDrawable(
-                        activity, R.drawable.glic_dirty_dot_filled_spark_24dp);
+        Drawable sparkIcon =
+                AppCompatResources.getDrawable(activity, R.drawable.ic_spark_filled_24dp);
+        int dotColor = activity.getColor(R.color.default_icon_color_accent1_baseline);
+        int dotSize = activity.getResources().getDimensionPixelSize(R.dimen.glic_dirty_dot_size);
+        Drawable dirtyDotFilledSpark = new DirtyDotDrawableWrapper(sparkIcon, dotColor, dotSize);
         mReviewDrawable = dirtyDotFilledSpark;
         mDoneDrawable = dirtyDotFilledSpark;
     }

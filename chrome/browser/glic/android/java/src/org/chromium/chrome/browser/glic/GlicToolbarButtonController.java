@@ -36,6 +36,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.drawable.DirtyDotDrawableWrapper;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -94,7 +95,10 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         mRecomputeUiStateCallback = recomputeUiStateCallback;
         mDefaultSpec = mButtonData.getButtonSpec();
         Drawable collapsedDrawable =
-                AppCompatResources.getDrawable(activity, R.drawable.glic_dirty_dot_spark);
+                new DirtyDotDrawableWrapper(
+                        AppCompatResources.getDrawable(activity, R.drawable.ic_spark_24dp),
+                        activity.getColor(R.color.default_icon_color_accent1_baseline),
+                        activity.getResources().getDimensionPixelSize(R.dimen.glic_dirty_dot_size));
 
         mStateController =
                 new GlicButtonStateController(
