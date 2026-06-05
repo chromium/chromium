@@ -478,7 +478,7 @@ void UkmDatabaseBackend::RestartTransaction() {
   }
 
   // Forces the wal file to be in sync with the main database.
-  std::ignore = db_.Execute("PRAGMA wal_checkpoint(TRUNCATE)");
+  db_.CheckpointDatabase(/*truncate=*/true);
 }
 
 }  // namespace segmentation_platform
