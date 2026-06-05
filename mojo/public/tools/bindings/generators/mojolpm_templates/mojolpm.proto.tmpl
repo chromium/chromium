@@ -133,7 +133,7 @@ message {{struct_name}}_ProtoStruct {
 {%-           set original_field = pf.original_field %}
 {%-           set kind = original_field.kind %}
 {%-           set name = original_field.name|camel_to_under %}
-  {{kind|proto_field_type}} m_{{name}} = {{name|proto_id(kind)}};
+  {{kind|proto_field_type(field=original_field)}} m_{{name}} = {{name|proto_id(kind)}};
 {%-         endif %}
 {%-       else %}
 {%-         set name = pf.field.name|camel_to_under %}
@@ -143,7 +143,7 @@ message {{struct_name}}_ProtoStruct {
 {%-         elif kind|is_map_kind %}
   {{optional_or_required(kind)}} {{name|under_to_camel}}_Map m_{{name}} = {{name|proto_id(kind)}};
 {%-         else %}
-  {{kind|proto_field_type}} m_{{name}} = {{name|proto_id(kind)}};
+  {{kind|proto_field_type(field=pf.field)}} m_{{name}} = {{name|proto_id(kind)}};
 {%-         endif %}
 {%-       endif %}
 {%-     endfor %}

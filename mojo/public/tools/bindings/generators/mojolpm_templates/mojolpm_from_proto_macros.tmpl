@@ -240,11 +240,15 @@ bool FromProto(
   base::PickleIterator iter(data);
   return IPC::ReadParam(&data, &iter, &output);
 {%-   else %}
-{%-     for field in struct.fields %}
+{%-     for field in struct.fields -%}
 {%-       set name = field.name|camel_to_under %}
 {%-       set kind = field.kind %}
 {%-       set field_mojom_type = kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
+{% if field.default is none %}
   {{field_mojom_type}} local_{{name}}{ {{- kind|default_constructor_args -}} };
+{% else %}
+  {{field_mojom_type}} local_{{name}}{ {{- field|default_value(add_same_module_namespaces=true) -}} };
+{% endif %}
 {%-       if kind|is_nullable_kind %}
 {%-         set unnullable_kind = kind|to_unnullable_kind %}
 {%-         set field_maybe_mojom_type = unnullable_kind|cpp_wrapper_type(add_same_module_namespaces=true) %}
@@ -256,9 +260,18 @@ bool FromProto(
 {%-       set name = field.name|camel_to_under %}
 {%-       set kind = field.kind %}
 {%-       if not kind|is_nullable_kind %}
+// Non-nullable fields with default values are `optional` fields in proto.
+{%-         if field.default is none %}
   if (!FromProto(input.m_{{name}}(), local_{{name}})) {
     return false;
   }
+{%-         else %}
+  if (input.has_m_{{name}}()) {
+    if (!FromProto(input.m_{{name}}(), local_{{name}})) {
+      return false;
+    }
+  }
+{%-         endif %}
 {%-       else %}
   if (input.has_m_{{name}}() && FromProto(input.m_{{name}}(), local_maybe_{{name}})) {
     local_{{name}} = std::move(local_maybe_{{name}});

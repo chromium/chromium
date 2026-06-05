@@ -683,7 +683,7 @@ class Generator(generator.Generator):
     return generator.ToCamel(generator.ToLowerSnakeCase(value),
                              digits_split=digits_split)
 
-  def _DefaultValue(self, field):
+  def _DefaultValue(self, field, add_same_module_namespaces=False):
     if not field.default:
       if mojom.IsNullableKind(field.kind) or self._IsDefaultConstructible(
           field.kind):
@@ -694,13 +694,19 @@ class Generator(generator.Generator):
       assert field.default == "default"
       if self._IsTypemappedKind(field.kind):
         return ""
-      return "%s::New()" % self._GetNameForKind(field.kind)
+      return "%s::New()" % self._GetNameForKind(
+          field.kind, add_same_module_namespaces=add_same_module_namespaces)
 
-    expression = self._ExpressionToText(field.default, kind=field.kind)
+    expression = self._ExpressionToText(
+        field.default,
+        kind=field.kind,
+        add_same_module_namespaces=add_same_module_namespaces)
     if mojom.IsEnumKind(field.kind) and self._IsTypemappedKind(field.kind):
       expression = "mojo::internal::ConvertEnumValue<%s, %s>(%s)" % (
-          self._GetNameForKind(field.kind), self._GetCppWrapperType(field.kind),
-          expression)
+          self._GetNameForKind(
+              field.kind,
+              add_same_module_namespaces=add_same_module_namespaces),
+          self._GetCppWrapperType(field.kind), expression)
     return expression
 
   def _GetNameForKind(self, kind, internal=False, flatten_nested_kind=False,
@@ -1121,9 +1127,12 @@ class Generator(generator.Generator):
 
     return False
 
-  def _TranslateConstants(self, token, kind):
+  def _TranslateConstants(self, token, kind, add_same_module_namespaces=False):
     if isinstance(token, mojom.NamedValue):
-      return self._GetNameForKind(token, flatten_nested_kind=True)
+      return self._GetNameForKind(
+          token,
+          flatten_nested_kind=True,
+          add_same_module_namespaces=add_same_module_namespaces)
 
     if isinstance(token, mojom.BuiltinValue):
       if token.value == "double.INFINITY":
@@ -1144,8 +1153,12 @@ class Generator(generator.Generator):
 
     return "%s%s" % (token, _kind_to_cpp_literal_suffix.get(kind, ""))
 
-  def _ExpressionToText(self, value, kind=None):
-    return self._TranslateConstants(value, kind)
+  def _ExpressionToText(self,
+                        value,
+                        kind=None,
+                        add_same_module_namespaces=False):
+    return self._TranslateConstants(
+        value, kind, add_same_module_namespaces=add_same_module_namespaces)
 
   def _ContainsMoveOnlyMembers(self, struct):
     for field in struct.fields:
