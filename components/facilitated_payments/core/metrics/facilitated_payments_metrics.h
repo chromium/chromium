@@ -118,6 +118,17 @@ enum class EwalletFlowExitedReason {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletFlowExitedReason)
 
+// Reasons for why the eWallet New Account Linking (NAL) onboarding flow was
+// exited early. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(EwalletNewAccountLinkingFlowExitedReason)
+enum class EwalletNewAccountLinkingFlowExitedReason {
+  // The user has no supported eWallet creation options available.
+  kNoSupportedCreationOption = 0,
+  kMaxValue = kNoSupportedCreationOption
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/facilitated_payments/enums.xml:FacilitatedPayments.EwalletNewAccountLinkingFlowExitedReason)
+
 // Reasons for why the Pix payflow was exited early. These only include the
 // reasons after the renderer has detected a valid code and sent the signal to
 // the browser process.
@@ -267,6 +278,16 @@ void LogPixIframeIsSameOriginAsMainFrame(bool is_same_origin);
 // Log when a given payment link in a certain page for an eWallet push payment
 // flow is detected.
 void LogPaymentLinkDetected(ukm::SourceId ukm_source_id);
+
+// Log when a valid payment link is detected and the user is eligible for the
+// eWallet New Account Linking (NAL) onboarding flow (meaning they have no
+// linked eWallet accounts but have unlinked creation options available).
+void LogPaymentLinkDetectedAndEligibleForAccountLinking();
+
+// Log when the eWallet NAL onboarding flow was exited early.
+void LogEwalletNewAccountLinkingFlowExitedReason(
+    EwalletNewAccountLinkingFlowExitedReason reason,
+    PaymentLinkValidator::Scheme scheme);
 
 // Log when the eWallet FOP selector UI is shown.
 void LogEwalletFopSelectorShownUkm(ukm::SourceId ukm_source_id,

@@ -95,7 +95,8 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   client_->SetUiEventListener(base::BindRepeating(
       &PaymentLinkManager::OnUiScreenEvent, weak_ptr_factory_.GetWeakPtr()));
 
-  if (CanTriggerEwalletPaymentFlow(page_url)) {
+  bool is_ewallet_flow_eligible = CanTriggerEwalletPaymentFlow(page_url);
+  if (is_ewallet_flow_eligible) {
     RetrieveSupportedEwallets(payment_link_url);
   }
 
@@ -117,9 +118,42 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
     supported_apps.reset();
   }
 
-  ShowPaymentLinkPrompt(supported_ewallets_, std::move(supported_apps),
-                        base::BindOnce(&PaymentLinkManager::OnFopSelected,
-                                       weak_ptr_factory_.GetWeakPtr()));
+  // Cache availability before moving the unique_ptr resources
+  bool is_ewallet_available = !supported_ewallets_.empty();
+  bool is_payment_app_available =
+      (supported_apps != nullptr) && supported_apps->Size() > 0;
+
+  // Standard Payment Flow takes precedence
+  if (is_ewallet_available || is_payment_app_available) {
+    ShowPaymentLinkPrompt(supported_ewallets_, std::move(supported_apps),
+                          base::BindOnce(&PaymentLinkManager::OnFopSelected,
+                                         weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Standard payment flow exits due to no available instruments
+  if (is_ewallet_flow_eligible) {
+    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kNoSupportedEwallet,
+                               scheme_);
+  }
+
+  // New Account Linking Flow (only if payment option is empty but creation
+  // options exist)
+  if (base::FeatureList::IsEnabled(
+          payments::facilitated::kEnableEwalletNewAccountLinking)) {
+    LogPaymentLinkDetectedAndEligibleForAccountLinking();
+    if (supported_ewallet_creation_options_.empty()) {
+      LogEwalletNewAccountLinkingFlowExitedReason(
+          EwalletNewAccountLinkingFlowExitedReason::kNoSupportedCreationOption,
+          scheme_);
+    } else {
+      // TODO(crbug.com/517710197): Trigger NAL onboarding UI here once built.
+      DVLOG(1)
+          << "eWallet NAL: Matched creation options but standard linked "
+             "ewallets are empty. New Account Linking onboarding flow will "
+             "trigger in subsequent step.";
+    }
+  }
 }
 
 bool PaymentLinkManager::CanTriggerEwalletPaymentFlow(const GURL& page_url) {
@@ -183,10 +217,18 @@ void PaymentLinkManager::RetrieveSupportedEwallets(
         return ewallet.SupportsPaymentLink(payment_link_url.spec());
       });
 
-  if (supported_ewallets_.size() == 0) {
-    LogEwalletFlowExitedReason(EwalletFlowExitedReason::kNoSupportedEwallet,
-                               scheme_);
-    return;
+  if (base::FeatureList::IsEnabled(
+          payments::facilitated::kEnableEwalletNewAccountLinking)) {
+    base::span<const autofill::Ewallet> ewallet_creation_options =
+        client_->GetPaymentsDataManager()->GetEwalletCreationOptions();
+    supported_ewallet_creation_options_.reserve(
+        ewallet_creation_options.size());
+    std::ranges::copy_if(
+        ewallet_creation_options,
+        std::back_inserter(supported_ewallet_creation_options_),
+        [&payment_link_url](const autofill::Ewallet& ewallet) {
+          return ewallet.SupportsPaymentLink(payment_link_url.spec());
+        });
   }
 }
 
@@ -215,6 +257,7 @@ bool PaymentLinkManager::CanTriggerAppPaymentFlow(const GURL& page_url) {
 
 void PaymentLinkManager::Reset() {
   supported_ewallets_.clear();
+  supported_ewallet_creation_options_.clear();
   ukm_source_id_ = ukm::kInvalidSourceId;
   initiate_payment_request_details_.reset();
   ui_state_ = UiState::kHidden;
@@ -501,9 +544,6 @@ void PaymentLinkManager::ShowPaymentLinkPrompt(
   is_payment_app_available_ =
       (app_suggestions != nullptr) && app_suggestions->Size() > 0;
 
-  if (!is_ewallet_available_ && !is_payment_app_available_) {
-    return;
-  }
   if (is_payment_app_available_) {
     client_->GetPaymentsDataManager()->SetFacilitatedPaymentsA2ATriggeredOnce(
         true);

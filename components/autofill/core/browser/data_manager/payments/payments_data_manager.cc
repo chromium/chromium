@@ -2025,6 +2025,10 @@ void PaymentsDataManager::AddEwalletForTest(const Ewallet& ewallet) {
   ewallet_accounts_.push_back(ewallet);
 }
 
+void PaymentsDataManager::AddEwalletCreationOptionForTest(Ewallet ewallet) {
+  ewallet_creation_options_.push_back(std::move(ewallet));
+}
+
 void PaymentsDataManager::AddServerCreditCardForTest(
     std::unique_ptr<CreditCard> credit_card) {
   server_credit_cards_.push_back(std::move(credit_card));

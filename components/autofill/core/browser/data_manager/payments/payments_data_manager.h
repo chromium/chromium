@@ -517,6 +517,10 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // PaymentsDataManager.
   void AddEwalletForTest(const Ewallet& ewallet);
 
+  // Add an eWallet creation option to the cached list of creation options in
+  // `PaymentsDataManager`.
+  void AddEwalletCreationOptionForTest(Ewallet ewallet);
+
   // Sets a server credit card for test.
   //
   // TODO(crbug.com/330865438): This method currently sets `server_cards_`

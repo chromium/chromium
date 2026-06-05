@@ -119,6 +119,39 @@ TEST(FacilitatedPaymentsMetricsTest, LogEwalletPaymentLinkDetected) {
                                       /*expected_bucket_count=*/1);
 }
 
+TEST(FacilitatedPaymentsMetricsTest,
+     LogPaymentLinkDetectedAndEligibleForAccountLinking) {
+  base::HistogramTester histogram_tester;
+
+  LogPaymentLinkDetectedAndEligibleForAccountLinking();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.PaymentLinkDetected.EligibleForAccountLinking",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest,
+     LogEwalletNewAccountLinkingFlowExitedReason) {
+  base::HistogramTester histogram_tester;
+
+  LogEwalletNewAccountLinkingFlowExitedReason(
+      EwalletNewAccountLinkingFlowExitedReason::kNoSupportedCreationOption,
+      PaymentLinkValidator::Scheme::kShopeePay);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.NewAccountLinkingFlowExitedReason",
+      /*sample=*/
+      EwalletNewAccountLinkingFlowExitedReason::kNoSupportedCreationOption,
+      /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.NewAccountLinkingFlowExitedReason.ShopeePay",
+      /*sample=*/
+      EwalletNewAccountLinkingFlowExitedReason::kNoSupportedCreationOption,
+      /*expected_bucket_count=*/1);
+}
+
 TEST(FacilitatedPaymentsMetricsTest, LogPixFopSelectedAndLatency) {
   base::HistogramTester histogram_tester;
 

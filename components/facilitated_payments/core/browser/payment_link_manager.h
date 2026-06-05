@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
@@ -200,6 +201,11 @@ class PaymentLinkManager {
   //  unsupported payment link.
   //  * After a call to Reset().
   std::vector<autofill::Ewallet> supported_ewallets_;
+
+  // A list of unlinked eWallet creation options that support the payment link.
+  // Populated in RetrieveSupportedEwallets() by filtering the available
+  // creation options based on their support for the given payment link.
+  std::vector<autofill::Ewallet> supported_ewallet_creation_options_;
 
   // Indirect owner. `FacilitatedPaymentsClient` owns
   // `FacilitatedPaymentsDriver` which owns `this`.

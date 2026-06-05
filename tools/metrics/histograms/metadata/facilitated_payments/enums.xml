@@ -67,6 +67,14 @@ reviewer.
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletFlowExitedReason) -->
 
+<!-- LINT.IfChange(FacilitatedPayments.EwalletNewAccountLinkingFlowExitedReason) -->
+
+<enum name="FacilitatedPayments.EwalletNewAccountLinkingFlowExitedReason">
+  <int value="0" label="No supported eWallet creation option"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletNewAccountLinkingFlowExitedReason) -->
+
 <enum name="FacilitatedPayments.EwalletScheme">
   <int value="0" label="Invalid merchant paymnet link"/>
   <int value="1" label="DuitNow"/>

@@ -116,6 +116,15 @@ class PaymentLinkManagerTestApi {
     payment_link_manager_->OnTransactionResult(start_time, result);
   }
 
+  const std::vector<autofill::Ewallet>& supported_ewallet_creation_options()
+      const {
+    return payment_link_manager_->supported_ewallet_creation_options_;
+  }
+
+  const std::vector<autofill::Ewallet>& supported_ewallets() const {
+    return payment_link_manager_->supported_ewallets_;
+  }
+
  private:
   const raw_ref<PaymentLinkManager> payment_link_manager_;
 };

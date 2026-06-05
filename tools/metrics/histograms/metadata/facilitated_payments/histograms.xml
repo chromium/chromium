@@ -348,6 +348,36 @@ reviewer.
   <token key="Scheme" variants="PaymentLinkScheme"/>
 </histogram>
 
+<histogram name="FacilitatedPayments.Ewallet.NewAccountLinkingFlowExitedReason"
+    enum="FacilitatedPayments.EwalletNewAccountLinkingFlowExitedReason"
+    expires_after="2027-04-30">
+  <owner>nicluo@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the reason why the eWallet New Account Linking onboarding flow was
+    exited early. [Trigger] The onboarding flow terminates early. [Frequency]
+    Logged at most once per onboarding flow.
+  </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.Ewallet.NewAccountLinkingFlowExitedReason.{Scheme}"
+    enum="FacilitatedPayments.EwalletNewAccountLinkingFlowExitedReason"
+    expires_after="2027-04-30">
+  <owner>nicluo@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs the reason why the eWallet New Account Linking onboarding flow was
+    exited early for {Scheme}. [Trigger] The onboarding flow terminates early.
+    [Frequency] Logged at most once per onboarding flow.
+  </summary>
+  <token key="Scheme" variants="PaymentLinkScheme"/>
+</histogram>
+
 <histogram name="FacilitatedPayments.Ewallet.PayflowExitedReason"
     enum="FacilitatedPayments.EwalletFlowExitedReason"
     expires_after="2027-04-30">
@@ -399,6 +429,23 @@ reviewer.
     Logs true when a payment link is detected on a merchant webpage. [Trigger] A
     payment link on a merchant page has triggered the payment link push payment
     flow. [Frequency] Logged once per page load.
+  </summary>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.PaymentLinkDetected.EligibleForAccountLinking"
+    enum="Boolean" expires_after="2027-04-30">
+  <owner>nicluo@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>hfizt@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a payment link is detected on a merchant webpage and the user
+    is eligible for the eWallet New Account Linking (NAL) onboarding flow
+    (meaning they have no linked eWallet accounts but have unlinked creation
+    options available). [Trigger] A payment link is detected and the user has no
+    standard linked eWallet accounts but has matching eWallet creation options.
+    [Frequency] Logged once per page load.
   </summary>
 </histogram>
 

@@ -146,6 +146,24 @@ void LogPaymentLinkDetected(ukm::SourceId ukm_source_id) {
       .Record(ukm::UkmRecorder::Get());
 }
 
+void LogPaymentLinkDetectedAndEligibleForAccountLinking() {
+  base::UmaHistogramBoolean(
+      "FacilitatedPayments.PaymentLinkDetected.EligibleForAccountLinking",
+      /*sample=*/true);
+}
+
+void LogEwalletNewAccountLinkingFlowExitedReason(
+    EwalletNewAccountLinkingFlowExitedReason reason,
+    PaymentLinkValidator::Scheme scheme) {
+  base::UmaHistogramEnumeration(
+      "FacilitatedPayments.Ewallet.NewAccountLinkingFlowExitedReason", reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"FacilitatedPayments.Ewallet.NewAccountLinkingFlowExitedReason.",
+           SchemeToString(scheme)}),
+      reason);
+}
+
 void LogEwalletFopSelectorShownUkm(ukm::SourceId ukm_source_id,
                                    PaymentLinkValidator::Scheme scheme) {
   ukm::builders::FacilitatedPayments_Ewallet_FopSelectorShown(ukm_source_id)
