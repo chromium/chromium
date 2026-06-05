@@ -1234,16 +1234,12 @@ public class UrlBar extends AutocompleteEditText {
 
     @Override
     public @Nullable InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        // This check is part of a mitigation to to avoid an InputConnection remaining connected to
-        // the UrlBar without it being focused. This can happen the InputMethod framework is
-        // slow/lazy about cleaning up connections. For soft keyboards this is typically harmless,
-        // as hiding the keyboard prevents late input. But with a hardware keyboard attached, the
-        // results can be quite confusing, e.g. inline edits to the current url. To avoid this, we
-        // call restartInput when losing focus which then triggers a call to
-        // onCreateInputConnection; the null return value prevents further keyboard input.
-        if (!mFocused) {
-            return null;
-        }
+        // CAUTION: Avoid returning `null` from this method.
+        // IMF lifecycle is different from android focus. IMF keeps an InputConnection alive
+        // even after the View it is connected to loses focus.
+        // Returning `null` from here will force IMF to bind a "Dummy" input connection
+        // (see https://crbug.com/512199013), which may result in users in select locales
+        // be unable to work with locale-appropriate keyboards.
 
         InputConnection connection = super.onCreateInputConnection(outAttrs);
         if (mUrlBarDelegate == null || !mUrlBarDelegate.allowKeyboardLearning()) {
