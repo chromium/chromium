@@ -307,7 +307,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
     EXPECT_CALL(*mock_dsp_, ReadFromCombinedUrlQueue(
                                 SingleSegmentQueue(url, std::nullopt), _))
         .Times(1)
-        .WillOnce(RunOnceCallback<1>(T::CreateStream(value, taint_origin)));
+        .WillOnce(RunOnceCallback<1>(T::CreateStream(
+            value, hls::SecurityMetadata::CreateForTesting(taint_origin))));
   }
 
   template <typename T>
@@ -322,7 +323,10 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
                       HlsDataSourceProvider::SegmentQueue,
                       HlsDataSourceProvider::ReadCb cb) {
           pending_url_fetch_ = base::BindOnce(
-              std::move(cb), T::CreateStream(std::move(value), taint_origin));
+              std::move(cb),
+              T::CreateStream(
+                  std::move(value),
+                  hls::SecurityMetadata::CreateForTesting(taint_origin)));
         });
   }
 

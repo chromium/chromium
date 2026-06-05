@@ -183,7 +183,7 @@ void HlsDataSourceProviderImpl::OnDataSourceCreated(
     stream->set_requires_range_request();
   }
 
-  if (stream->HasIncompatibleRangeAndOrigin()) {
+  if (stream->SecurityInfo().HasIncompatibleRangeAndOrigin()) {
     std::move(callback).Run(
         {ReadStatus::Codes::kError,
          "Range requests are not allowed for cross-origin content"});
@@ -226,7 +226,7 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
     }
   }
 
-  if (stream->HasIncompatibleRangeAndOrigin()) {
+  if (stream->SecurityInfo().HasIncompatibleRangeAndOrigin()) {
     std::move(callback).Run(
         {ReadStatus::Codes::kError,
          "Range requests are not allowed for cross-origin content"});

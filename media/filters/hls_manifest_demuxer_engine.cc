@@ -628,7 +628,7 @@ void HlsManifestDemuxerEngine::UpdateHlsDataSourceStats(
     return;
   }
   auto stream = std::move(result).value();
-  origin_tainted_ |= stream->would_taint_origin();
+  origin_tainted_ |= stream->SecurityInfo().would_taint_origin;
   total_stream_memory_ = stream->memory_usage();
   std::move(cb).Run(std::move(stream));
 }

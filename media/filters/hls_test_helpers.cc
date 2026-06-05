@@ -45,8 +45,9 @@ const GURL& MockHlsRendition::MediaPlaylistUri() const {
 
 // static
 std::unique_ptr<HlsDataSourceStream>
-StringHlsDataSourceStreamFactory::CreateStream(std::string content,
-                                               bool taint_origin) {
+StringHlsDataSourceStreamFactory::CreateStream(
+    std::string content,
+    std::optional<hls::SecurityMetadata> info) {
   HlsDataSourceProvider::SegmentQueue segments;
   auto stream = std::make_unique<HlsDataSourceStream>(
       HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
@@ -54,16 +55,17 @@ StringHlsDataSourceStreamFactory::CreateStream(std::string content,
   base::span<uint8_t> buffer = stream->LockStreamForWriting(content.length());
   buffer.copy_from(base::as_byte_span(content));
   stream->UnlockStreamPostWrite(content.length(), true);
-  if (taint_origin) {
-    stream->set_would_taint_origin();
+  if (info.has_value()) {
+    stream->SetSecurityInfoForTesting(*info);
   }
   return stream;
 }
 
 // static
 std::unique_ptr<HlsDataSourceStream>
-FileHlsDataSourceStreamFactory::CreateStream(std::string filename,
-                                             bool taint_origin) {
+FileHlsDataSourceStreamFactory::CreateStream(
+    std::string filename,
+    std::optional<hls::SecurityMetadata> info) {
   base::FilePath file_path = GetTestDataFilePath(filename);
   std::optional<int64_t> file_size = base::GetFileSize(file_path);
   CHECK(file_size.has_value())
@@ -77,8 +79,9 @@ FileHlsDataSourceStreamFactory::CreateStream(std::string filename,
   CHECK_EQ(buffer.size(), base::ReadFile(file_path, buffer).value_or(0));
   stream->UnlockStreamPostWrite(base::checked_cast<size_t>(file_size.value()),
                                 true);
-  if (taint_origin) {
-    stream->set_would_taint_origin();
+
+  if (info.has_value()) {
+    stream->SetSecurityInfoForTesting(*info);
   }
   return stream;
 }

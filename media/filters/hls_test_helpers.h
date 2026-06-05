@@ -184,14 +184,14 @@ class StringHlsDataSourceStreamFactory {
  public:
   static std::unique_ptr<HlsDataSourceStream> CreateStream(
       std::string content,
-      bool taint_origin = false);
+      std::optional<hls::SecurityMetadata> info = std::nullopt);
 };
 
 class FileHlsDataSourceStreamFactory {
  public:
   static std::unique_ptr<HlsDataSourceStream> CreateStream(
       std::string file,
-      bool taint_origin = false);
+      std::optional<hls::SecurityMetadata> info = std::nullopt);
 };
 
 class MockDataSourceFactory : public DataSource::Factory {

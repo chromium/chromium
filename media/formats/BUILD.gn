@@ -232,6 +232,8 @@ source_set("formats") {
     "hls/rendition_group.h",
     "hls/rendition_manager.cc",
     "hls/rendition_manager.h",
+    "hls/security_metadata.cc",
+    "hls/security_metadata.h",
     "hls/segment_stream.cc",
     "hls/segment_stream.h",
     "hls/source_string.cc",
