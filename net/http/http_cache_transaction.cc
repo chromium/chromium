@@ -2060,6 +2060,11 @@ int HttpCache::Transaction::DoSendRequestComplete(int result) {
     response_.cert_request_info = response->cert_request_info;
   } else if (result == ERR_INCONSISTENT_IP_ADDRESS_SPACE) {
     DoomInconsistentEntry();
+  } else if (entry_ && partial_ && truncated_) {
+    // Doom explicitly: `DoneWithEntry(false)` does not doom a partial
+    // transaction past the headers phase (see `DoomInconsistentEntry`).
+    cache_->DoomActiveEntry(cache_key_);
+    DoneWithEntry(/*entry_is_complete=*/false);
   } else if (response_.was_cached) {
     DoneWithEntry(/*entry_is_complete=*/true);
   }

@@ -70,6 +70,8 @@ using MockTransactionHandler =
                                  std::string* response_status,
                                  std::string* response_headers,
                                  std::string* response_data)>;
+using MockTransactionStartHandler =
+    base::RepeatingCallback<Error(const HttpRequestInfo* request)>;
 
 // Default TransportInfo suitable for most MockTransactions.
 // Describes a direct connection to (127.0.0.1, 80).
@@ -109,6 +111,7 @@ struct MockTransaction {
   Error read_return_code;
   bool is_shared_resource = false;
   bool did_use_shared_dictionary = false;
+  MockTransactionStartHandler start_handler;
 };
 
 extern const MockTransaction kSimpleGET_Transaction;

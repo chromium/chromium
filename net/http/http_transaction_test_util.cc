@@ -523,11 +523,17 @@ int MockNetworkTransaction::StartInternal(HttpRequestInfo request,
   test_mode_ = t->test_mode;
 
   // Return immediately if we're returning an error.
-  if (OK != t->start_return_code) {
+  Error start_return_code = t->start_return_code;
+  if (t->start_handler) {
+    DCHECK_EQ(start_return_code, OK)
+        << "set either start_return_code or start_handler, not both";
+    start_return_code = t->start_handler.Run(&current_request_);
+  }
+  if (OK != start_return_code) {
     if (test_mode_ & TEST_MODE_SYNC_NET_START) {
-      return t->start_return_code;
+      return start_return_code;
     }
-    CallbackLater(std::move(callback), t->start_return_code);
+    CallbackLater(std::move(callback), start_return_code);
     return ERR_IO_PENDING;
   }
 

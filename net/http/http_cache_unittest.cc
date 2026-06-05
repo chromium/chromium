@@ -2065,8 +2065,9 @@ TEST_F(HttpCacheSimpleGetTest, UnusedSincePrefetchWriteError) {
       NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
 }
 
-// Make sure that if a prefetch entry is truncated, then an attempt to re-use it
-// gets aborted in connected handler that truncated bit is not lost.
+// Make sure that if a prefetch entry is truncated, then an attempt to reuse
+// it that gets aborted in the connected handler dooms the truncated entry, so
+// the next request fetches a fresh complete response.
 TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
   MockHttpCache cache;
 
@@ -2126,8 +2127,8 @@ TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
     c.trans.reset();
     base::RunLoop().RunUntilIdle();
 
-    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/true,
-                        /*data_size=*/10);
+    disk_cache::Entry* entry = nullptr;
+    EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
   }
 
   // Now try again without abort.
@@ -2223,8 +2224,8 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncated) {
 }
 
 // Make sure that if a stale-while-revalidate entry is truncated, then an
-// attempt to re-use it gets aborted in connected handler that truncated bit is
-// not lost.
+// attempt to reuse it that gets aborted in the connected handler dooms the
+// truncated entry, so the next request fetches a fresh complete response.
 TEST_F(HttpCacheTest, StaleWhileRevalidateTruncateCancelInConnectedCallback) {
   MockHttpCache cache;
 
@@ -2283,8 +2284,8 @@ TEST_F(HttpCacheTest, StaleWhileRevalidateTruncateCancelInConnectedCallback) {
     c.trans.reset();
     base::RunLoop().RunUntilIdle();
 
-    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/true,
-                        /*data_size=*/10);
+    disk_cache::Entry* entry = nullptr;
+    EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
   }
 
   // Now try again without abort.
@@ -10733,6 +10734,119 @@ TEST_F(HttpCacheGetTest, IncompleteResource3) {
   EXPECT_EQ(1, cache.network_layer()->transaction_count());
   EXPECT_EQ(1, cache.disk_cache()->open_count());
   EXPECT_EQ(1, cache.disk_cache()->create_count());
+}
+
+// Tests that a failed network resume of a truncated entry dooms the entry,
+// so the partial body cannot be reused as a complete response.
+TEST_F(HttpCacheGetTest, IncompleteResourceFailedResumeDoomsEntry) {
+  MockHttpCache cache;
+  ScopedMockTransaction transaction(kRangeGET_TransactionOK);
+  bool fail_bulk_range = true;
+  std::vector<std::string> requested_ranges;
+
+  // This entry is fresh, so the partial body would be reusable without
+  // revalidation if the failed resume did not doom the entry.
+  std::string raw_headers(
+      "HTTP/1.1 200 OK\n"
+      "Last-Modified: Sat, 18 Apr 2009 01:10:43 GMT\n"
+      "ETag: \"foo\"\n"
+      "Cache-Control: max-age=36000\n"
+      "Accept-Ranges: bytes\n"
+      "Content-Length: 80\n");
+  CreateTruncatedEntry(raw_headers, &cache);
+
+  transaction.request_headers = EXTRA_HEADER;
+  transaction.start_handler =
+      base::BindLambdaForTesting([&](const HttpRequestInfo* request) -> Error {
+        std::optional<std::string_view> range_header =
+            request->extra_headers.GetHeaderView(HttpRequestHeaders::kRange);
+        if (!range_header) {
+          return OK;
+        }
+        requested_ranges.emplace_back(*range_header);
+        return fail_bulk_range && *range_header != "bytes=20-20"
+                   ? ERR_CONNECTION_CLOSED
+                   : OK;
+      });
+  transaction.handler = base::BindLambdaForTesting(
+      [&](const HttpRequestInfo* request, std::string* response_status,
+          std::string* response_headers, std::string* response_data) {
+        EXPECT_TRUE(request->extra_headers.HasHeader(kExtraHeaderKey));
+
+        std::optional<std::string_view> range_header =
+            request->extra_headers.GetHeaderView(HttpRequestHeaders::kRange);
+        const size_t total_size = std::string_view(kFullRangeData).size();
+        if (!range_header) {
+          // Post-doom retry: respond as a fresh full 200 OK.
+          *response_status = "HTTP/1.1 200 OK";
+          *response_headers = base::StringPrintf(
+              "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+              "ETag: \"foo\"\n"
+              "Accept-Ranges: bytes\n"
+              "Cache-Control: max-age=36000\n"
+              "Content-Length: %zu\n",
+              total_size);
+          *response_data = std::string(kFullRangeData);
+          return;
+        }
+
+        std::vector<HttpByteRange> ranges;
+        ASSERT_TRUE(HttpUtil::ParseRangeHeader(*range_header, &ranges));
+        ASSERT_EQ(1u, ranges.size());
+        ASSERT_TRUE(ranges[0].ComputeBounds(static_cast<int64_t>(total_size)));
+
+        int64_t start = ranges[0].first_byte_position();
+        int64_t end = ranges[0].last_byte_position();
+        int64_t length = end - start + 1;
+        *response_status = "HTTP/1.1 206 Partial Content";
+        *response_headers = base::StringPrintf(
+            "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+            "ETag: \"foo\"\n"
+            "Accept-Ranges: bytes\n"
+            "Content-Range: bytes %" PRId64 "-%" PRId64
+            "/%zu\n"
+            "Content-Length: %" PRId64 "\n",
+            start, end, total_size, length);
+        *response_data = std::string(kFullRangeData)
+                             .substr(static_cast<size_t>(start),
+                                     static_cast<size_t>(length));
+      });
+
+  auto failed_context = std::make_unique<Context>();
+  failed_context->trans = cache.CreateTransaction();
+  ASSERT_TRUE(failed_context->trans);
+
+  MockHttpRequest request(transaction);
+  int rv = failed_context->trans->Start(
+      &request, failed_context->callback.callback(), NetLogWithSource());
+  EXPECT_THAT(failed_context->callback.GetResult(rv), IsOk());
+
+  std::string content;
+  EXPECT_THAT(ReadTransaction(failed_context->trans.get(), &content),
+              IsError(ERR_CONNECTION_CLOSED));
+  failed_context.reset();
+
+  EXPECT_THAT(requested_ranges, ElementsAre("bytes=20-20", "bytes=20-79"));
+  EXPECT_EQ(2, cache.network_layer()->transaction_count());
+  disk_cache::Entry* entry = nullptr;
+  EXPECT_FALSE(cache.OpenBackendEntry(request.CacheKey(), &entry));
+
+  fail_bulk_range = false;
+  transaction.data = kFullRangeData;
+
+  std::string headers;
+  RunTransactionTestWithResponse(cache.http_cache(), transaction, &headers);
+
+  std::string expected_headers(
+      "HTTP/1.1 200 OK\n"
+      "Last-Modified: Sat, 18 Apr 2007 01:10:43 GMT\n"
+      "ETag: \"foo\"\n"
+      "Accept-Ranges: bytes\n"
+      "Cache-Control: max-age=36000\n"
+      "Content-Length: 80\n");
+  EXPECT_EQ(expected_headers, headers);
+  EXPECT_LT(1, cache.network_layer()->transaction_count());
+  VerifyTruncatedFlag(&cache, request.CacheKey(), false, 80);
 }
 
 // Tests that we handle 401s for truncated resources.
