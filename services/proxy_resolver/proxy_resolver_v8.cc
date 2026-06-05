@@ -455,7 +455,24 @@ class ProxyResolverV8::Context {
           v8::ContextDependants::kNoDependants);
     }
 
-    v8_this_.Reset();
+    // ContextDisposedNotification only prunes dirty FinalizationRegistries; it
+    // does not cancel queued ResolveAsyncWaiterPromisesTask foreground tasks
+    // or flush the isolate's shared default MicrotaskQueue, both of which can
+    // still strongly root this v8::Context (and the v8::Functions whose
+    // v8::External data points at the holder). Neutralize the indirection while
+    // holding the v8::Locker so any later callback observes a null Context*
+    // instead of a dangling one.
+    if (holder_) {
+      holder_->context = nullptr;
+      if (!holder_->v8_this.IsEmpty()) {
+        // The v8::External is still alive, so release it. The V8 weak callback
+        // will delete it when the v8::External is garbage collected. If
+        // `v8_this` is empty, the v8::External was already garbage collected,
+        // so we can delete the holder.
+        holder_.release();
+      }
+    }
+
     v8_context_.Reset();
   }
 
@@ -525,11 +542,13 @@ class ProxyResolverV8::Context {
     v8::Isolate::Scope isolate_scope(isolate_);
     v8::HandleScope scope(isolate_);
 
-    v8_this_.Reset(
-        isolate_,
-        v8::External::New(isolate_, this, gin::kProxyResolverV8ContextTag));
-    v8::Local<v8::External> v8_this =
-        v8::Local<v8::External>::New(isolate_, v8_this_);
+    holder_ = std::make_unique<ContextHolder>();
+    holder_->context = this;
+    v8::Local<v8::External> v8_holder = v8::External::New(
+        isolate_, holder_.get(), gin::kProxyResolverV8ContextTag);
+    holder_->v8_this.Reset(isolate_, v8_holder);
+    holder_->v8_this.SetWeak(holder_.get(), OnExternalGC,
+                             v8::WeakCallbackType::kParameter);
 
     v8_context_.Reset(isolate_, v8::Context::New(isolate_));
 
@@ -541,25 +560,25 @@ class ProxyResolverV8::Context {
     // Attach the javascript bindings.
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "alert"),
-              v8::Function::New(context, &AlertCallback, v8_this, 0,
+              v8::Function::New(context, &AlertCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "myIpAddress"),
-              v8::Function::New(context, &MyIpAddressCallback, v8_this, 0,
+              v8::Function::New(context, &MyIpAddressCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "dnsResolve"),
-              v8::Function::New(context, &DnsResolveCallback, v8_this, 0,
+              v8::Function::New(context, &DnsResolveCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "isPlainHostName"),
-              v8::Function::New(context, &IsPlainHostNameCallback, v8_this, 0,
+              v8::Function::New(context, &IsPlainHostNameCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
@@ -567,26 +586,26 @@ class ProxyResolverV8::Context {
     // Microsoft's PAC extensions:
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "dnsResolveEx"),
-              v8::Function::New(context, &DnsResolveExCallback, v8_this, 0,
+              v8::Function::New(context, &DnsResolveExCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "myIpAddressEx"),
-              v8::Function::New(context, &MyIpAddressExCallback, v8_this, 0,
+              v8::Function::New(context, &MyIpAddressExCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
 
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "sortIpAddressList"),
-              v8::Function::New(context, &SortIpAddressListCallback, v8_this, 0,
-                                v8::ConstructorBehavior::kThrow)
+              v8::Function::New(context, &SortIpAddressListCallback, v8_holder,
+                                0, v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
     global
         ->Set(context, ASCIILiteralToV8String(isolate_, "isInNetEx"),
-              v8::Function::New(context, &IsInNetExCallback, v8_this, 0,
+              v8::Function::New(context, &IsInNetExCallback, v8_holder, 0,
                                 v8::ConstructorBehavior::kThrow)
                   .ToLocalChecked())
         .Check();
@@ -695,9 +714,10 @@ class ProxyResolverV8::Context {
 
   // V8 callback for when "alert()" is invoked by the PAC script.
   static void AlertCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
-    Context* context =
-        static_cast<Context*>(v8::External::Cast(*args.Data())
-                                  ->Value(gin::kProxyResolverV8ContextTag));
+    Context* context = ContextFromArgs(args);
+    if (!context || !context->js_bindings()) {
+      return;
+    }
 
     // Like firefox we assume "undefined" if no argument was specified, and
     // disregard any arguments beyond the first.
@@ -744,9 +764,26 @@ class ProxyResolverV8::Context {
   static void DnsResolveCallbackHelper(
       const v8::FunctionCallbackInfo<v8::Value>& args,
       net::ProxyResolveDnsOperation op) {
-    Context* context =
-        static_cast<Context*>(v8::External::Cast(*args.Data())
-                                  ->Value(gin::kProxyResolverV8ContextTag));
+    Context* context = ContextFromArgs(args);
+    if (!context || !context->js_bindings()) {
+      // Each function handles resolution errors differently.
+      switch (op) {
+        case net::ProxyResolveDnsOperation::DNS_RESOLVE:
+          args.GetReturnValue().SetNull();
+          return;
+        case net::ProxyResolveDnsOperation::DNS_RESOLVE_EX:
+          args.GetReturnValue().SetEmptyString();
+          return;
+        case net::ProxyResolveDnsOperation::MY_IP_ADDRESS:
+          args.GetReturnValue().Set(
+              ASCIILiteralToV8String(args.GetIsolate(), "127.0.0.1"));
+          return;
+        case net::ProxyResolveDnsOperation::MY_IP_ADDRESS_EX:
+          args.GetReturnValue().SetEmptyString();
+          return;
+      }
+      NOTREACHED();
+    }
 
     std::string hostname;
 
@@ -862,10 +899,40 @@ class ProxyResolverV8::Context {
     args.GetReturnValue().Set(IsPlainHostName(hostname_utf8));
   }
 
+  // Indirection for the v8::External bound to the JS callback v8::Functions.
+  // The v8::External's value is immutable and the v8::Functions can outlive
+  // |this| (e.g. via Atomics.waitAsync reactions queued in the shared isolate
+  // MicrotaskQueue), so callbacks must go through a holder that ~Context()
+  // nulls under the v8::Locker. The holder is managed via a V8 weak persistent
+  // handle and is deleted in OnExternalGC once V8 has garbage-collected it.
+  struct ContextHolder {
+    // Nulled in ~Context(), so the raw_ptr never dangles.
+    raw_ptr<Context> context = nullptr;
+
+    // This is actually a weak persistent.
+    v8::Persistent<v8::External> v8_this;
+  };
+
+  static Context* ContextFromArgs(
+      const v8::FunctionCallbackInfo<v8::Value>& args) {
+    auto* holder = static_cast<ContextHolder*>(
+        v8::External::Cast(*args.Data())
+            ->Value(gin::kProxyResolverV8ContextTag));
+    return holder ? holder->context : nullptr;
+  }
+
+  static void OnExternalGC(const v8::WeakCallbackInfo<ContextHolder>& data) {
+    ContextHolder* holder = data.GetParameter();
+    holder->v8_this.Reset();
+    if (!holder->context) {
+      delete holder;
+    }
+  }
+
   mutable base::Lock lock_;
   raw_ptr<ProxyResolverV8::JSBindings> js_bindings_ = nullptr;
   raw_ptr<v8::Isolate> isolate_;
-  v8::Persistent<v8::External> v8_this_;
+  std::unique_ptr<ContextHolder> holder_;
   v8::Persistent<v8::Context> v8_context_;
 };
 
