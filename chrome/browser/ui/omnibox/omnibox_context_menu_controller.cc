@@ -90,7 +90,8 @@ const gfx::FontList* TabSimpleMenuModel::GetLabelFontListAt(
   if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
     return ui::SimpleMenuModel::GetLabelFontListAt(index);
   }
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
     return &ui::ResourceBundle::GetSharedInstance().GetFontList(
         ui::ResourceBundle::SmallFont);
   }
