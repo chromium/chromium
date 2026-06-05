@@ -29,7 +29,7 @@ config("fuzztest_internal_config") {
   cflags = [
     "-Wno-unused-result",  #crbug.com/500385597
     "-Wno-unused-private-field",
-    "-Wno-unreachable-code-return",
+    "-Wno-unreachable-code-aggressive",
     "-Wno-unused-but-set-variable",
     "-Wno-shadow",
     "-Wno-unused-const-variable",
