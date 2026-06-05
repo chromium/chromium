@@ -248,4 +248,62 @@ TEST_F(HistogramBaseTest, AddTimeMicrosecondsGranularityOverflow) {
   EXPECT_EQ(add_count, samples->GetCount(0));
 }
 
+TEST_F(HistogramBaseTest, DeserializeTypeMismatch) {
+  // Create a LinearHistogram and register it in the StatisticsRecorder.
+  HistogramBase* histogram = LinearHistogram::FactoryGet(
+      "TestMismatchedHistogram", 1, 1000, 10, HistogramBase::kNoFlags);
+  Pickle real_pickle;
+  histogram->SerializeInfo(&real_pickle);
+
+  // Read the serialized fields using a PickleIterator.
+  int type;
+  std::string name;
+  int flags;
+  int declared_min;
+  int declared_max;
+  uint32_t bucket_count;
+  uint32_t range_checksum;
+
+  PickleIterator iter(real_pickle);
+  ASSERT_TRUE(iter.ReadInt(&type));
+  ASSERT_TRUE(iter.ReadString(&name));
+  ASSERT_TRUE(iter.ReadInt(&flags));
+  ASSERT_TRUE(iter.ReadInt(&declared_min));
+  ASSERT_TRUE(iter.ReadInt(&declared_max));
+  ASSERT_TRUE(iter.ReadUInt32(&bucket_count));
+  ASSERT_TRUE(iter.ReadUInt32(&range_checksum));
+
+  EXPECT_EQ(LINEAR_HISTOGRAM, type);
+
+  // Verify that deserializing the unmodified base pickle succeeds.
+  PickleIterator real_iter(real_pickle);
+  HistogramBase* deserialized_real =
+      HistogramBase::DeserializeInfo(&real_iter, base::NullCallback());
+  EXPECT_EQ(histogram, deserialized_real);
+  // And that it succeeds a second time too.
+  PickleIterator real_iter2(real_pickle);
+  HistogramBase* deserialized_real2 =
+      HistogramBase::DeserializeInfo(&real_iter2, base::NullCallback());
+  EXPECT_EQ(histogram, deserialized_real2);
+
+  // Construct a modified pickle claiming the type is HISTOGRAM instead of
+  // LINEAR_HISTOGRAM.
+  Pickle mismatched_pickle;
+  mismatched_pickle.WriteInt(HISTOGRAM);  // Mismatched type!
+  mismatched_pickle.WriteString(name);
+  mismatched_pickle.WriteInt(flags);
+  mismatched_pickle.WriteInt(declared_min);
+  mismatched_pickle.WriteInt(declared_max);
+  mismatched_pickle.WriteUInt32(bucket_count);
+  mismatched_pickle.WriteUInt32(range_checksum);
+
+  // Deserialize the mismatched pickle. Because "TestMismatchedHistogram"
+  // is already registered as a LINEAR_HISTOGRAM, looking it up as a
+  // HISTOGRAM should detect the type mismatch and return nullptr.
+  PickleIterator mismatched_iter(mismatched_pickle);
+  HistogramBase* deserialized =
+      HistogramBase::DeserializeInfo(&mismatched_iter, base::NullCallback());
+  EXPECT_FALSE(deserialized);
+}
+
 }  // namespace base
