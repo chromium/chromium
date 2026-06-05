@@ -408,7 +408,7 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   private clearTimer_() {
-    if (this.timerId_) {
+    if (this.timerId_ !== null) {
       WindowProxy.getInstance().clearTimeout(this.timerId_);
       this.timerId_ = null;
     }

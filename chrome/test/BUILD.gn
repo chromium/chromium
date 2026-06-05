@@ -5428,6 +5428,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/commerce",
         "//chrome/browser/ui/views/commerce:browser_tests",
         "//chrome/browser/ui/views/infobars",
+        "//chrome/browser/ui/views/permissions:embedded_permission_prompt_observer",
         "//chrome/browser/ui/views/permissions/chip",
         "//chrome/browser/ui/views/send_tab_to_self",
         "//chrome/browser/ui/webui_browser:browser_tests",

@@ -867,6 +867,158 @@ suite('ComposeboxVoiceSearch', () => {
     await microtasksFinished();
   });
 
+  test(
+      'Permission prompt with zero size keeps voice search open' +
+          ' and does not resize parent',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+
+        // Configure setTimeout to return unique, incrementing non-zero IDs
+        // to verify that the correct timers are cleared.
+        let timerCounter = 1;
+        windowProxy.setResultMapperFor('setTimeout', () => {
+          return timerCounter++;
+        });
+        windowProxy.getArgs('setTimeout').length = 0;
+        windowProxy.getArgs('clearTimeout').length = 0;
+
+        const voiceSearchElement =
+            getVoiceSearchElement(composeboxElement) as any;
+        const hidePromise =
+            getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        assertTrue(!!voiceSearchButton);
+        voiceSearchButton.click();
+        await microtasksFinished();
+        await hidePromise;
+
+        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
+
+        // Track custom resize events fired on composeboxElement.
+        let resizeEventFired = false;
+        composeboxElement.addEventListener(
+            'embedded-voice-permission-prompt-changed', () => {
+              resizeEventFired = true;
+            });
+
+        // Track voice-permission-changed events fired on voiceSearchElement.
+        let voicePermissionEventFired = false;
+        let voicePermissionEventDetail: any = null;
+        voiceSearchElement.addEventListener(
+            'voice-permission-changed', (e: Event) => {
+              voicePermissionEventFired = true;
+              voicePermissionEventDetail = (e as CustomEvent).detail;
+            });
+
+        // Grab and execute the setTimeout callback to attach listeners.
+        // It is the second setTimeout call after clicking (index 1, ID 2).
+        const setTimeoutCalls = windowProxy.getArgs('setTimeout');
+        const listenersCallback = setTimeoutCalls[1][0];
+        listenersCallback();
+        await microtasksFinished();
+
+        // The speech idle timer ID is 1 (index 0, ID 1).
+        const idleTimerId = 1;
+
+        // Simulate the window losing focus (blur) BEFORE the permission prompt
+        // shows.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+
+        // Verify: it scheduled the stop callback (delay 100).
+        const setTimeoutCallsAfterBlur = windowProxy.getArgs('setTimeout');
+        const blurTimerCallIndex =
+            setTimeoutCallsAfterBlur.findIndex((args: any) => args[1] === 100);
+        assertTrue(blurTimerCallIndex !== -1, 'Should schedule blur timeout');
+        const blurTimerId = blurTimerCallIndex + 1;
+
+        const clearTimeoutCountBefore =
+            windowProxy.getCallCount('clearTimeout');
+
+        // Simulate Mojo notification: prompt is showing with size 0,0
+        const pageCallbackRouter =
+            composeboxElement['searchboxCallbackRouter_'];
+        assertTrue(!!pageCallbackRouter);
+        const pageRemote = pageCallbackRouter.$.bindNewPipeAndPassRemote();
+        pageRemote.onEmbeddedPermissionPromptChanged(
+            true, {width: 0, height: 0});
+        await pageRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Verify: voiceSearchElement property updated.
+        assertTrue(voiceSearchElement.isPermissionPromptOpen_);
+
+        // Verify: clearTimeout was called for both blurTimerId and idleTimerId.
+        const clearTimeoutCalls = windowProxy.getArgs('clearTimeout');
+        const clearedIds = clearTimeoutCalls.slice(clearTimeoutCountBefore);
+        assertTrue(
+            clearedIds.includes(blurTimerId), 'Should clear blur timeout');
+        assertTrue(
+            clearedIds.includes(idleTimerId), 'Should clear speech idle timer');
+
+        // Verify: voice-permission-changed event was fired.
+        assertTrue(voicePermissionEventFired);
+        assertTrue(voicePermissionEventDetail.isOpened);
+        assertEquals(0, voicePermissionEventDetail.width);
+        assertEquals(0, voicePermissionEventDetail.height);
+
+        // Verify: resize was NOT fired to the parent.
+        assertFalse(
+            resizeEventFired,
+            'Resize event should not fire for zero size prompt');
+
+
+        // Verify: classes were added to elements.
+        assertTrue(voiceSearchElement.classList.contains(
+            'embedded-permission-prompt-showing'));
+
+        // Verify: voice search remains open because permission prompt is open.
+        assertTrue(
+            mockSpeechRecognition.voiceSearchInProgress,
+            'Voice search should remain active');
+
+        // Simulate Mojo notification: prompt is closed
+        pageRemote.onEmbeddedPermissionPromptChanged(
+            false, {width: 0, height: 0});
+        await pageRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(voiceSearchElement.isPermissionPromptOpen_);
+        assertFalse(voiceSearchElement.classList.contains(
+            'embedded-permission-prompt-showing'));
+
+        // Simulate blur event again.
+        window.dispatchEvent(new Event('blur'));
+        await microtasksFinished();
+
+        // Retrieve scheduled blur timeout and trigger it.
+        const setTimeoutCallsFinal = windowProxy.getArgs('setTimeout');
+        const finalBlurTimeoutCall =
+            setTimeoutCallsFinal.reverse().find((args: any) => args[1] === 100);
+        assertTrue(!!finalBlurTimeoutCall, 'Should schedule blur timeout');
+        const blurCallback = finalBlurTimeoutCall[0];
+        blurCallback();
+        await microtasksFinished();
+
+        assertFalse(
+            mockSpeechRecognition.voiceSearchInProgress,
+            'Voice search should now stop');
+
+        // Cleanup.
+        const mockVoiceSearch =
+            voiceSearchElement as unknown as MockComposeboxVoiceSearch;
+        mockVoiceSearch.state_ = -1;
+        mockVoiceSearch.voiceRecognition_.abort();
+        await microtasksFinished();
+      });
+
   test('Emits clean transcript without duplicates on stop click', async () => {
     // Enable flag and recreate component.
     loadTimeData.overrideValues({

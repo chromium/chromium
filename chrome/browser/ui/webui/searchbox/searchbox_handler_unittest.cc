@@ -168,6 +168,69 @@ TEST_F(RealboxHandlerTest, RealboxLensVariationsContainsVariations) {
   EXPECT_EQ("CGQ", *strings.FindString("searchboxLensVariations"));
 }
 
+namespace {
+class MockSearchboxHandlerDelegate : public SearchboxHandler::Delegate {
+ public:
+  MOCK_METHOD(void,
+              OnEmbeddedPermissionDialogChanged,
+              (bool is_showing, const gfx::Size& prompt_size),
+              (override));
+};
+}  // namespace
+
+TEST_F(RealboxHandlerTest, OnEmbeddedPermissionPromptChanged) {
+  MockSearchboxHandlerDelegate delegate;
+  handler_->set_delegate(&delegate);
+
+  // Case: is_showing=true, non-zero size (adds buffer)
+  {
+    EXPECT_CALL(page_, OnEmbeddedPermissionPromptChanged(
+                           true, gfx::Size(100 + 40, 200 + 40)));
+    EXPECT_CALL(delegate, OnEmbeddedPermissionDialogChanged(
+                              true, gfx::Size(100 + 40, 200 + 40)));
+    handler_->OnEmbeddedPermissionPromptChanged(true, gfx::Size(100, 200));
+    page_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&page_);
+    testing::Mock::VerifyAndClearExpectations(&delegate);
+  }
+
+  // Case: is_showing=true, zero size (does not add buffer)
+  {
+    EXPECT_CALL(page_,
+                OnEmbeddedPermissionPromptChanged(true, gfx::Size(0, 0)));
+    EXPECT_CALL(delegate,
+                OnEmbeddedPermissionDialogChanged(true, gfx::Size(0, 0)));
+    handler_->OnEmbeddedPermissionPromptChanged(true, gfx::Size(0, 0));
+    page_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&page_);
+    testing::Mock::VerifyAndClearExpectations(&delegate);
+  }
+
+  // Case: is_showing=false, non-zero size (does not add buffer, size is 0, 0)
+  {
+    EXPECT_CALL(page_,
+                OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0)));
+    EXPECT_CALL(delegate,
+                OnEmbeddedPermissionDialogChanged(false, gfx::Size(0, 0)));
+    handler_->OnEmbeddedPermissionPromptChanged(false, gfx::Size(100, 200));
+    page_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&page_);
+    testing::Mock::VerifyAndClearExpectations(&delegate);
+  }
+
+  // Case: is_showing=false, zero size (does not add buffer, size is 0, 0)
+  {
+    EXPECT_CALL(page_,
+                OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0)));
+    EXPECT_CALL(delegate,
+                OnEmbeddedPermissionDialogChanged(false, gfx::Size(0, 0)));
+    handler_->OnEmbeddedPermissionPromptChanged(false, gfx::Size(0, 0));
+    page_.FlushForTesting();
+    testing::Mock::VerifyAndClearExpectations(&page_);
+    testing::Mock::VerifyAndClearExpectations(&delegate);
+  }
+}
+
 TEST_F(RealboxHandlerTest, ShouldShowDriveDisclaimer) {
   base::test::TestFuture<bool> future;
   handler_->ShouldShowDriveDisclaimer(future.GetCallback());
