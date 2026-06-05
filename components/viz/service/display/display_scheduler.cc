@@ -702,8 +702,9 @@ void DisplayScheduler::DidSwapBuffers() {
     begin_frame_source_->SetIsGpuBusy(true);
 
   uint32_t swap_id = next_swap_id_++;
-  TRACE_EVENT_BEGIN("viz", "DisplayScheduler:pending_swaps",
-                    perfetto::Track(swap_id));
+  TRACE_EVENT_BEGIN(
+      "viz", "DisplayScheduler:pending_swaps",
+      perfetto::NamedTrack("DisplayScheduler:pending_swaps", swap_id));
 }
 
 void DisplayScheduler::DidReceiveSwapBuffersAck() {
@@ -715,7 +716,7 @@ void DisplayScheduler::DidReceiveSwapBuffersAck() {
   // throttled state.
   begin_frame_source_->SetIsGpuBusy(false);
   TRACE_EVENT_END(
-      "viz", /* DisplayScheduler:pending_swaps */ perfetto::Track(swap_id));
+      "viz", perfetto::NamedTrack("DisplayScheduler:pending_swaps", swap_id));
   ScheduleBeginFrameDeadline();
 }
 

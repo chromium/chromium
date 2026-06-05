@@ -208,7 +208,8 @@ void GpuChannelManager::GpuPeakMemoryMonitor::StartGpuMemoryTracking(
   sequence_trackers_.emplace(
       sequence_num,
       SequenceTracker(current_memory_, current_memory_per_source_));
-  TRACE_EVENT_BEGIN("gpu", "PeakMemoryTracking", perfetto::Track(sequence_num),
+  TRACE_EVENT_BEGIN("gpu", "PeakMemoryTracking",
+                    perfetto::NamedTrack("PeakMemoryTracking", sequence_num),
                     "start", current_memory_, "start_sources",
                     StartTrackingTracedValue());
 }
@@ -219,8 +220,9 @@ void GpuChannelManager::GpuPeakMemoryMonitor::StopGpuMemoryTracking(
   base::AutoLock auto_lock(peak_mem_lock_);
   auto sequence = sequence_trackers_.find(sequence_num);
   if (sequence != sequence_trackers_.end()) {
-    TRACE_EVENT_END("gpu", perfetto::Track(sequence_num), "peak",
-                    sequence->second.total_memory_, "end_sources",
+    TRACE_EVENT_END("gpu",
+                    perfetto::NamedTrack("PeakMemoryTracking", sequence_num),
+                    "peak", sequence->second.total_memory_, "end_sources",
                     StopTrackingTracedValue(sequence->second));
     sequence_trackers_.erase(sequence);
   }
@@ -316,11 +318,10 @@ void GpuChannelManager::GpuPeakMemoryMonitor::OnMemoryAllocatedChange(
     for (auto& seq : sequence_trackers_) {
       if (current_memory_ > seq.second.total_memory_) {
         seq.second.total_memory_ = current_memory_;
-        for (auto& sequence : sequence_trackers_) {
-          TRACE_EVENT_INSTANT("gpu", "PeakMemoryTracking",
-                              perfetto::Track(sequence.first), "peak",
-                              current_memory_);
-        }
+        TRACE_EVENT_INSTANT(
+            "gpu", "PeakMemoryTracking",
+            perfetto::NamedTrack("PeakMemoryTracking", seq.first), "peak",
+            current_memory_);
         for (auto& memory_per_source : current_memory_per_source_) {
           seq.second.peak_memory_per_source_[memory_per_source.first] =
               memory_per_source.second;
