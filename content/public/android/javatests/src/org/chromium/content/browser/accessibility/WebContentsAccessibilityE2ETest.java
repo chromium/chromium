@@ -651,6 +651,78 @@ WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
                 treeDump.contains("contentInvalid"));
     }
 
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // API Level 19
+    public void fireGeneratedEvent_ariaLabelChange_firesTextChangeType() throws Throwable {
+        // Create an HTML document where there is a div tag with aria-label attribute set
+        String html =
+                """
+                <html><body>
+                <div id="target" aria-label="old_name"></div>
+                </body></html>
+                """;
+
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
+
+        // Wait for the page to load and for the service to receive a content change.
+        waitForPageLoadAndInitialContentChange();
+
+        mActivityTestRule.executeJSAndGetResult(
+                "document.getElementById('target').setAttribute('aria-label', 'new_name');");
+
+        // Wait for TWCC event with ContentChangeType TEXT to be fired as a result of
+        // aria-label changing.
+        boolean eventReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                new WaitForEventParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                                        .setContentChangeTypes(
+                                                AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT)
+                                        .setClassName("android.widget.TextView")
+                                        .build());
+        Assert.assertTrue("Service did not receive TEXT event", eventReceived);
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT) // API Level 19
+    public void fireGeneratedEvent_alertDisplayStyleChange_firesSubtreeChangeType()
+            throws Throwable {
+        // Create an HTML document where there is an alert node with display style set to none
+        String html =
+                """
+                <html><body>
+                <div id="target" role="alert" style="display:none">This is an alert</div>
+                </body></html>
+                """;
+
+        mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri(html));
+
+        // Wait for the page to load and for the service to receive a content change.
+        waitForPageLoadAndInitialContentChange();
+
+        // Change display style of alert to trigger SUBTREE event
+        mActivityTestRule.executeJSAndGetResult(
+                "document.getElementById('target').style.display = 'block';");
+
+        // Wait for TWCC event with ContentChangeType SUBTREE to be fired as a result of
+        // changing alert display style.
+        boolean eventReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                new WaitForEventParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED)
+                                        .setContentChangeTypes(
+                                                AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE)
+                                        .setClassName("android.view.View")
+                                        .build());
+        Assert.assertTrue("Service did not receive SUBTREE event", eventReceived);
+    }
+
     private void assertNodeLineExpectation(
             String treeDump, String nodeSelector, String nodeLineExpectation) {
         for (String line : treeDump.split("\\n")) {
