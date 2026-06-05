@@ -80,6 +80,7 @@ public class ContextualTasksBridgeUnitTest {
                         TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR,
                         /* isVisible= */ true,
                         new Rect(),
+                        new Rect(),
                         Display.DEFAULT_DISPLAY));
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockHelpAndFeedbackLauncher);

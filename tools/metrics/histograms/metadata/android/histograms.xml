@@ -9929,6 +9929,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WindowWidth" units="dp" expires_after="2027-05-27">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the window width in density-independent pixels (dp) when a Chrome
+    window is first opened or resized.
+  </summary>
+</histogram>
+
 <histogram name="ChromiumAndroidLinker.RelroAvailableImmediately"
     enum="BooleanRelroAvailableImmediately" expires_after="2023-12-29">
   <owner>lizeb@chromium.org</owner>

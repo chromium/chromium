@@ -1880,11 +1880,13 @@ final class ChromeAndroidTaskImpl
                             nativeBrowserWindowPtr,
                             isTaskVisible,
                             mWindowStateManager.getCurrentBoundsInPx(),
+                            mWindowStateManager.getCurrentBoundsInDp(),
                             displayId);
                 },
                 new InitInfo(
                         nativeBrowserWindowPtr,
                         /* isVisible= */ false,
+                        new Rect(),
                         new Rect(),
                         Display.DEFAULT_DISPLAY));
     }

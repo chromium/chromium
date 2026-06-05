@@ -44,6 +44,7 @@ final class ExtensionWindowControllerBridgeNativeUnitTestSupport {
                         nativeBrowserWindowPtr,
                         /* isVisible= */ true,
                         new Rect(),
+                        new Rect(),
                         Display.DEFAULT_DISPLAY));
     }
 

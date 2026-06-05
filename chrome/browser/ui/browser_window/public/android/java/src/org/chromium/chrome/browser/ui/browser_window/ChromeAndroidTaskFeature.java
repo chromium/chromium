@@ -39,6 +39,9 @@ public interface ChromeAndroidTaskFeature {
         /** The Task bounds, in px. */
         public final Rect boundsInPx;
 
+        /** The Task bounds, in dp. */
+        public final Rect boundsInDp;
+
         /**
          * The logical display ID of the display in which the Task is running. See {@code
          * DisplayAndroid#getDisplayId()}.
@@ -46,10 +49,15 @@ public interface ChromeAndroidTaskFeature {
         public final int displayId;
 
         public InitInfo(
-                long nativeBrowserWindowPtr, boolean isVisible, Rect boundsInPx, int displayId) {
+                long nativeBrowserWindowPtr,
+                boolean isVisible,
+                Rect boundsInPx,
+                Rect boundsInDp,
+                int displayId) {
             this.nativeBrowserWindowPtr = nativeBrowserWindowPtr;
             this.isVisible = isVisible;
             this.boundsInPx = boundsInPx;
+            this.boundsInDp = boundsInDp;
             this.displayId = displayId;
         }
     }
