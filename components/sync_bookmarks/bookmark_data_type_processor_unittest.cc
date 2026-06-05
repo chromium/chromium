@@ -149,10 +149,12 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
     const std::string& server_id,
     const syncer::UniquePosition& unique_position =
         syncer::UniquePosition::InitialPosition(
-            syncer::UniquePosition::RandomSuffix())) {
+            syncer::UniquePosition::RandomSuffix()),
+    int64_t server_version = 0) {
   sync_pb::BookmarkMetadata bookmark_metadata;
   bookmark_metadata.set_id(node->id());
   bookmark_metadata.mutable_metadata()->set_server_id(server_id);
+  bookmark_metadata.mutable_metadata()->set_server_version(server_version);
   bookmark_metadata.mutable_metadata()->set_client_tag_hash(
       syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
                                           node->uuid().AsLowercaseString())
@@ -734,6 +736,50 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldApplyGcDirective) {
   ASSERT_THAT(
       unsynced_entities,
       UnorderedElementsAre(TrackedEntityCorrespondsToBookmarkNode(node4)));
+}
+
+TEST_F(BookmarkDataTypeProcessorTest, ShouldApplyGcDirectiveWithLocalDeletion) {
+  const std::string kTitle = "title";
+  const GURL kUrl("https://www.url.com");
+
+  const bookmarks::BookmarkNode* bookmark_bar =
+      bookmark_model()->bookmark_bar_node();
+
+  // Create a synced node.
+  const bookmarks::BookmarkNode* node = bookmark_model()->AddURL(
+      bookmark_bar, /*index=*/0, base::UTF8ToUTF16(kTitle), kUrl);
+
+  SimulateModelReadyToSyncWithInitialSyncDone();
+  SimulateOnSyncStarting();
+  SimulateConnectSync();
+
+  const SyncedBookmarkTrackerEntity* entity =
+      processor()->GetTrackerForTest()->GetEntityForBookmarkNode(node);
+  ASSERT_THAT(entity, NotNull());
+  ASSERT_FALSE(entity->IsUnsynced());
+
+  // Delete the node locally. It becomes a tombstone in the tracker.
+  bookmark_model()->underlying_model()->Remove(
+      node, bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  const std::string server_id = entity->metadata().server_id();
+  ASSERT_TRUE(entity->metadata().is_deleted());
+  ASSERT_EQ(entity->bookmark_node(), nullptr);
+  ASSERT_TRUE(entity->IsUnsynced());
+
+  // Process an update with a GC directive (version watermark).
+  // The update list is empty.
+  syncer::UpdateResponseDataList updates;
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+
+  // This should NOT crash (specifically it should not dereference null node).
+  processor()->OnUpdateReceived(CreateDataTypeState(), std::move(updates),
+                                garbage_collection_directive);
+
+  // The tombstone should be removed from tracker because it is also deleted on
+  // the server (not present in updates during GC directive).
+  EXPECT_EQ(processor()->GetTrackerForTest()->GetEntityForSyncId(server_id),
+            nullptr);
 }
 
 TEST_F(
