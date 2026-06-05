@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -62,6 +63,9 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private final Thread mThread = Thread.currentThread();
     private boolean mStopCreatingViews;
     private final List<ViewHolder> mPrewarmedViews = new ArrayList<>(22);
+    private long mCumulativePrewarmWallTimeMs;
+    private long mCumulativePrewarmThreadTimeMs;
+    private int mExpectedViewCount;
 
     PreWarmingRecycledViewPool(OmniboxViewHolderFactory factory, Context context) {
         mViewHolderFactory = factory;
@@ -116,6 +120,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         try (TraceEvent t = TraceEvent.scoped("PreWarmingRecycledViewPool.startCreatingViews")) {
             if (mStopCreatingViews || !OmniboxCapabilities.shouldPreWarmRecyclerViewPool()) return;
             for (var viewTypeAndCount : mViewsToCreate) {
+                mExpectedViewCount += viewTypeAndCount.count;
                 for (int index = 0; index < viewTypeAndCount.count; ++index) {
                     if (mHandler != null) {
                         Runnable createViewRunnable =
@@ -143,16 +148,33 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     void stopCreatingViews() {
         if (mStopCreatingViews) return;
         mStopCreatingViews = true;
-        if (mHandler != null) mHandler.removeCallbacksAndMessages(null);
+        if (mHandler != null) {
+            mHandler.removeCallbacksAndMessages(null);
+            OmniboxMetrics.recordPreWarmingViewsThreadTime(mCumulativePrewarmThreadTimeMs);
+            OmniboxMetrics.recordPreWarmingViewsWallTime(mCumulativePrewarmWallTimeMs);
+            OmniboxMetrics.recordPreWarmedViewsCount(mPrewarmedViews.size());
+        }
+
         putViewsIntoPool();
     }
 
     private void createViewHolder(@OmniboxSuggestionUiType int viewType) {
         if (mStopCreatingViews) return;
+        TimeUtils.UptimeMillisTimer wallTimer = new TimeUtils.UptimeMillisTimer();
+        TimeUtils.CurrentThreadTimeMillisTimer threadTimer =
+                new TimeUtils.CurrentThreadTimeMillisTimer();
 
         try (TraceEvent t = TraceEvent.scoped("PreWarmingRecycledViewPool.createNextViewHolder")) {
             mPrewarmedViews.add(
                     mViewHolderFactory.createViewHolderForPool(mPlaceholderParent, viewType));
+        }
+
+        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            mCumulativePrewarmWallTimeMs += wallTimer.getElapsedMillis();
+            mCumulativePrewarmThreadTimeMs += threadTimer.getElapsedMillis();
+            if (mPrewarmedViews.size() == mExpectedViewCount) {
+                stopCreatingViews();
+            }
         }
     }
 

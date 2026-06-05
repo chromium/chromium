@@ -4429,6 +4429,74 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.Omnibox.SuggestionsDropdown.ContainerInflationThreadTime"
+    units="ms" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records thread time spent inflating the Omnibox suggestions container view
+    hierarchy in a background thread via AsyncViewStub.
+
+    Recorded at most once per activity start when AsyncViewStub inflates the
+    container.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.Omnibox.SuggestionsDropdown.ContainerInflationWallTime"
+    units="ms" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records wall time spent inflating the Omnibox suggestions container view
+    hierarchy in a background thread via AsyncViewStub.
+
+    Recorded at most once per activity start when AsyncViewStub inflates the
+    container.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmedViewsCount"
+    units="count" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the number of ViewHolders successfully created during synchronous
+    pre-warming of the Omnibox RecycledViewPool when async view inflation is
+    disabled.
+
+    Recorded once per activity start when pre-warming finishes or gets cut off
+    by user interaction.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmingViewsThreadTime"
+    units="ms" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the cumulative CPU thread time spent actively inflating ViewHolders
+    during synchronous pre-warming of the Omnibox RecycledViewPool.
+
+    Recorded once per activity start when pre-warming finishes or gets cut off
+    by user interaction.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionsDropdown.PreWarmingViewsWallTime"
+    units="ms" expires_after="2026-11-01">
+  <owner>peterkang@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the cumulative wall time spent actively inflating ViewHolders during
+    synchronous pre-warming of the Omnibox RecycledViewPool.
+
+    Recorded once per activity start when pre-warming finishes or gets cut off
+    by user interaction.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
     enum="Boolean" expires_after="2026-11-29">
   <owner>ender@google.com</owner>

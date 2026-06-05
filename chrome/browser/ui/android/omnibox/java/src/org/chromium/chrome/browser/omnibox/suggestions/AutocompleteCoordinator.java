@@ -21,6 +21,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -278,7 +279,12 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             @IdRes int inflatedId = mLocationBarEmbedder.getSuggestionsContainerInflatedViewId();
             AsyncViewProvider<ViewGroup> asyncProvider = AsyncViewProvider.of(stub, inflatedId);
             asyncProvider.whenLoaded(this::onAsyncInflationComplete);
-            asyncProvider.inflate();
+            try (TimingMetric metric =
+                            OmniboxMetrics.recordSuggestionsContainerInflationThreadTime();
+                    TimingMetric metric2 =
+                            OmniboxMetrics.recordSuggestionsContainerInflationWallTime()) {
+                asyncProvider.inflate();
+            }
         }
 
         void setForceSyncInflate(boolean forceSyncInflate) {
