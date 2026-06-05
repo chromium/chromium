@@ -5233,6 +5233,7 @@ enum WebFeature {
   kEmailVerificationProtocol = 5916,
   kWebTransportDatagramDuplexStreamIncomingHighWaterMark = 5917,
   kWebTransportDatagramDuplexStreamOutgoingHighWaterMark = 5918,
+  kHistoryGoBackWouldSkipSameOriginAd = 5919,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

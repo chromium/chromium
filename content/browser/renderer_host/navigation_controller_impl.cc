@@ -1313,6 +1313,67 @@ std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
     }
   }
 
+  // Helper to securely get the origin, falling back to Origin::Create() if
+  // needed.
+  //
+  // We will only execute the skip if it takes the user to a cross-origin page
+  // relative to the page where the navigation started.
+  //
+  // Rationale for this 'same-origin exception': We limit the scope of the
+  // intervention to a known abuse (i.e., showing an ad on back-button press
+  // when the user tries to leave the origin). Regarding potential back-to-ad
+  // abuse when the user navigates within the same origin, we remain lenient
+  // for now. If same-origin back-button abuse arises in the future, we can
+  // revisit or remove this exception.
+  auto get_origin_for_intervention = [](NavigationEntryImpl* entry) {
+    FrameNavigationEntry* frame_entry = entry->root_node()->frame_entry.get();
+    if (frame_entry && frame_entry->committed_origin().has_value()) {
+      return frame_entry->committed_origin().value();
+    }
+
+    // Fallback to Origin::Create().
+    // Note: This is generally an unsafe pattern because Origin::Create() is
+    // lossy (e.g., two cross-origin about:blank documents would get treated
+    // as same-origin). It is acceptable not to be perfect here for the
+    // back-to-ad intervention because the worst-case scenario is a bypassed
+    // intervention, which is a safe failure mode.
+    return url::Origin::Create(entry->GetURL());
+  };
+
+  // Note: We use name `start_entry` (based on `from_index`) rather than
+  // `current_entry`, because this function can be called iteratively during
+  // multi-step navigations (`GoToOffsetWithSkipping`), where the `from_index`
+  // is not necessarily the page the user is currently on.
+  NavigationEntryImpl* start_entry = GetEntryAtIndex(from_index);
+  url::Origin start_origin = get_origin_for_intervention(start_entry);
+
+  // Check if the first skipped ad is same-origin with the starting page to
+  // enable actionable manual verification via metrics. Same-origin skipped ads
+  // can usually be reproduced by simply browsing the site, whereas cross-origin
+  // ads rarely can be reproduced from the starting URL alone. Thus, proactive
+  // validation is scoped to same-origin cases. Cross-origin intervention side
+  // effects will be monitored via user bug reports.
+  //
+  // Cost/benefit trade-off: While more information could theoretically be
+  // recorded for cross-origin ad skips to aid reproduction, strict privacy
+  // requirements (e.g., UKM anonymity thresholds) would cause many records to
+  // be dropped. Given the low yield of cross-origin telemetry, manual
+  // validation is scoped entirely to same-origin cases.
+  bool is_first_skipped_ad_same_origin = false;
+  for (int index = from_index + step; is_in_bounds(index); index += step) {
+    if (result_index_with_ad_skipping.has_value() &&
+        index == result_index_with_ad_skipping.value()) {
+      break;
+    }
+    if (GetEntryAtIndex(index)->is_possibly_skippable_ad_entry()) {
+      url::Origin first_skipped_ad_origin =
+          get_origin_for_intervention(GetEntryAtIndex(index));
+      is_first_skipped_ad_same_origin =
+          start_origin.IsSameOriginWith(first_skipped_ad_origin);
+      break;
+    }
+  }
+
   // Helper to conditionally report DevTools issues or record metrics for the
   // back-to-ad intervention. The `is_cross_origin_skip` parameter indicates if
   // the ad-skipping logic attempts to land on a cross-origin page relative to
@@ -1377,6 +1438,13 @@ std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
         browser_client->LogWebFeatureForCurrentPage(
             main_frame_rfh_for_reporting,
             is_cross_origin_skip ? feature_skipped : feature_excluded);
+
+        if (is_cross_origin_skip && is_first_skipped_ad_same_origin &&
+            direction == Direction::kBack) {
+          browser_client->LogWebFeatureForCurrentPage(
+              main_frame_rfh_for_reporting,
+              blink::mojom::WebFeature::kHistoryGoBackWouldSkipSameOriginAd);
+        }
       }
     }
   };
@@ -1398,45 +1466,12 @@ std::optional<int> NavigationControllerImpl::GetIndexWithSkipping(
   // logic (including no target scenario), we evaluate whether to apply the
   // intervention.
   if (result_index_with_ad_skipping != result_index) {
-    // We use name `start_entry` (based on `from_index`) rather than
-    // `current_entry`, because this function can be called iteratively during
-    // multi-step navigations (`GoToOffsetWithSkipping`), where the `from_index`
-    // is not necessarily the page the user is currently on. By performing the
-    // cross-origin check iteratively at each step, we ensure that multi-step
-    // navigations are treated consistently as a series of single back/forward
-    // steps.
-    NavigationEntryImpl* start_entry = GetEntryAtIndex(from_index);
+    // By performing the cross-origin check iteratively at each step, we ensure
+    // that multi-step navigations are treated consistently as a series of
+    // single back/forward steps.
     NavigationEntryImpl* target_entry =
         GetEntryAtIndex(result_index_with_ad_skipping.value());
 
-    // Helper to securely get the origin, falling back to Origin::Create() if
-    // needed.
-    //
-    // We will only execute the skip if it takes the user to a cross-origin page
-    // relative to the page where the navigation started.
-    //
-    // Rationale for this 'same-origin exception': We limit the scope of the
-    // intervention to a known abuse (i.e., showing an ad on back-button press
-    // when the user tries to leave the origin). Regarding potential back-to-ad
-    // abuse when the user navigates within the same origin, we remain lenient
-    // for now. If same-origin back-button abuse arises in the future, we can
-    // revisit or remove this exception.
-    auto get_origin_for_intervention = [](NavigationEntryImpl* entry) {
-      FrameNavigationEntry* frame_entry = entry->root_node()->frame_entry.get();
-      if (frame_entry && frame_entry->committed_origin().has_value()) {
-        return frame_entry->committed_origin().value();
-      }
-
-      // Fallback to Origin::Create().
-      // Note: This is generally an unsafe pattern because Origin::Create() is
-      // lossy (e.g., two cross-origin about:blank documents would get treated
-      // as same-origin). It is acceptable not to be perfect here for the
-      // back-to-ad intervention because the worst-case scenario is a bypassed
-      // intervention, which is a safe failure mode.
-      return url::Origin::Create(entry->GetURL());
-    };
-
-    url::Origin start_origin = get_origin_for_intervention(start_entry);
     url::Origin target_origin = get_origin_for_intervention(target_entry);
 
     bool is_cross_origin_skip = !start_origin.IsSameOriginWith(target_origin);

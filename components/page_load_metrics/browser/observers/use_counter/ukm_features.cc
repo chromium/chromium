@@ -467,6 +467,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebRTCLocalNetworkAccessLocalToLoopback,
           WebFeature::kWebSocketStreamConstructor,
           WebFeature::kHistoryGoBackWouldSkipAd,
+          WebFeature::kHistoryGoBackWouldSkipSameOriginAd,
           WebFeature::kHistoryGoForwardWouldSkipAd,
           WebFeature::kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion,
           WebFeature::kHistoryGoForwardWouldNotSkipAdDueToSameOriginExclusion,

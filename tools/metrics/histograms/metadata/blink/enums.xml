@@ -6660,6 +6660,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="WebTransportDatagramDuplexStreamIncomingHighWaterMark"/>
   <int value="5918"
       label="WebTransportDatagramDuplexStreamOutgoingHighWaterMark"/>
+  <int value="5919" label="HistoryGoBackWouldSkipSameOriginAd"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

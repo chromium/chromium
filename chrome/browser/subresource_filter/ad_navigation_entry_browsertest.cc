@@ -849,6 +849,50 @@ IN_PROC_BROWSER_TEST_F(BackToAdInterventionDisabledBrowserTest,
   ASSERT_TRUE(
       RecordedUkmUseCounter(blink::mojom::WebFeature::kHistoryGoBackWouldSkipAd,
                             GetURL("frame_factory.html")));
+  ASSERT_TRUE(RecordedUkmUseCounter(
+      blink::mojom::WebFeature::kHistoryGoBackWouldSkipSameOriginAd,
+      GetURL("frame_factory.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(BackToAdInterventionDisabledBrowserTest,
+                       BackNavigationSkipsCrossOriginAd) {
+  // Ad script replaces state and then pushes state. This tags 'replaced_state'
+  // as a skippable ad entry.
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+
+  EXPECT_THAT(
+      GetNavigationUrls(),
+      ::testing::ElementsAre(GURL(url::kAboutBlankURL),
+                             GetURL("replaced_state"), GetURL("new_state")));
+
+  // Go back first time to land on the back-button ad ('replaced_state').
+  GoBack();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), GetURL("replaced_state"));
+
+  // Navigate to a cross-origin page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURL("b.com", "frame_factory.html")));
+
+  // Go back again. The previous entry 'replaced_state' is a skippable ad entry.
+  GoBack();
+
+  // Close browser to trigger metric recording.
+  CloseBrowserSynchronously(browser());
+
+  // UKM metrics are attributed to the initial URL (`frame_factory.html` under
+  // `b.com`) of the page where the back navigation started.
+  ASSERT_TRUE(
+      RecordedUkmUseCounter(blink::mojom::WebFeature::kHistoryGoBackWouldSkipAd,
+                            GetURL("b.com", "frame_factory.html")));
+
+  // Since the skipped ad entry is cross-origin to the initial URL, the
+  // same-origin metric should NOT be recorded.
+  ASSERT_FALSE(RecordedUkmUseCounter(
+      blink::mojom::WebFeature::kHistoryGoBackWouldSkipSameOriginAd,
+      GetURL("b.com", "frame_factory.html")));
 }
 
 IN_PROC_BROWSER_TEST_F(BackToAdInterventionDisabledBrowserTest,
