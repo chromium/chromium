@@ -214,7 +214,10 @@ void PaymentManifestDownloader::OnURLLoaderRedirect(
             /*url_before_redirects=*/download->url_before_redirects,
             /*did_follow_redirect=*/true, Download::Type::LINK_HEADER,
             --download->allowed_number_of_redirects,
-            /*use_url_loader_factory_rfh=*/true, std::move(download->callback));
+            // Use the SharedURLLoaderFactory for redirects as the RFH one
+            // strips the headers. See crbug.com/520035382 for details.
+            /*use_url_loader_factory_rfh=*/false,
+            std::move(download->callback));
         return;
       }
       error_message = base::ReplaceStringPlaceholders(

@@ -209,10 +209,13 @@ class PaymentManifestDownloader {
   std::unique_ptr<ErrorLogger> log_;
   base::WeakPtr<CSPChecker> csp_checker_;
   // URL loader factory for the browser process. Used for downloading the
-  // manifest from a redirect. This is needed because after a redirect, the
-  // initiator origin may change and the URL loader factory associated with the
-  // RenderFrameHost will not be able to make the request due to the difference
-  // in origins (between the initiator of the request and the renderer).
+  // manifest after the initial download. This is needed because after a
+  // redirect, the initiator origin may change and the URL loader factory
+  // associated with the RenderFrameHost will not be able to make the request
+  // due to the difference in origins (between the initiator of the request and
+  // the renderer). In addition, the RFH's URL loader strips the link header
+  // because the resource request is not in CORs mode. An investigation into
+  // turning on CORs can be tracked here crbug.com/520035382.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // URL loader factory associated with the RenderFrameHost. Used for initial
   // cross-origin manifest downloads.
