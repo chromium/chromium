@@ -6,13 +6,8 @@
 
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
-// TODO(crbug.com/40158212): After finishing copying //base files to PA library,
-// remove defined(BASE_CHECK_H_) from here.
-#if defined(                                                                                 \
-    BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_CHECK_H_) || \
-    defined(BASE_CHECK_H_) ||                                                                \
-    defined(                                                                                 \
-        BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_)
+#if defined(PARTITION_ALLOC_PARTITION_ALLOC_BASE_CHECK_H_) || \
+    defined(PARTITION_ALLOC_PARTITION_ALLOC_CHECK_H_)
 #error "log_message.h should not include check.h"
 #endif
 
