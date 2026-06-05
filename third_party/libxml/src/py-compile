@@ -1,9 +1,9 @@
 #!/bin/sh
 # py-compile - Compile a Python program
 
-scriptversion=2024-06-19.01; # UTC
+scriptversion=2025-06-18.21; # UTC
 
-# Copyright (C) 2000-2024 Free Software Foundation, Inc.
+# Copyright (C) 2000-2025 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,6 +33,23 @@ fi
 
 me=py-compile
 
+# People apparently set PYTHON=: and expect the result to be true.
+# For the same reason, we output to stdout instead of stderr. Bizarre.
+if $PYTHON -V 2>/dev/null | grep -i python >/dev/null; then :; else
+  echo "$me: Invalid python executable (according to -V): $PYTHON"
+  echo "$me: Python support disabled"
+  if test x"$PYTHON" = xfalse; then
+    # But, as a special case, make PYTHON=false exit unsuccessfully,
+    # since that was the traditional behavior.
+    exit 1
+    # In the past, setting PYTHON to any command that exited unsuccessfully
+    # caused py-compile to exit unsuccessfully. Let's not try to
+    # replicate that unless and until needed.
+  else
+   exit 0
+  fi
+fi
+  
 usage_error ()
 {
   echo "$me: $*" >&2
@@ -64,7 +81,7 @@ while test $# -ne 0; do
       cat <<\EOF
 Usage: py-compile [options] FILES...
 
-Byte compile some python scripts FILES.  Use --destdir to specify any
+Byte compile FILES as Python scripts.  Use --destdir to specify a
 leading directory path to the FILES that you don't want to include in the
 byte compiled file.  Specify --basedir for any additional path information you
 do want to be shown in the byte compiled file.
@@ -77,6 +94,14 @@ Options:
 
 Example:
   py-compile --destdir /tmp/pkg-root --basedir /usr/share/test test.py test2.py
+
+The Python interpreter to use is taken from the environment variable
+PYTHON, or "python" by default.
+
+For compatibility: as a special case, if PYTHON=false (that is, the
+command named "false"), this script will exit unsuccessfully. Otherwise,
+if $PYTHON -V does not include the string "Python", this script will
+emit a message to standard output and exit successfully.
 
 Report bugs to <bug-automake@gnu.org>.
 GNU Automake home page: <https://www.gnu.org/software/automake/>.
@@ -236,9 +261,9 @@ esac
 # Local Variables:
 # mode: shell-script
 # sh-indentation: 2
-# eval: (add-hook 'before-save-hook 'time-stamp)
+# eval: (add-hook 'before-save-hook 'time-stamp nil t)
 # time-stamp-start: "scriptversion="
-# time-stamp-format: "%:y-%02m-%02d.%02H"
+# time-stamp-format: "%Y-%02m-%02d.%02H"
 # time-stamp-time-zone: "UTC0"
 # time-stamp-end: "; # UTC"
 # End:

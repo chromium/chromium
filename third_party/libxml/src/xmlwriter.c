@@ -1014,7 +1014,7 @@ xmlTextWriterStartElementNS(xmlTextWriter *writer,
     int sum;
     xmlChar *buf;
 
-    if ((writer == NULL) || (name == NULL) || (*name == '\0'))
+    if ((writer == NULL) || (writer->nsstack == NULL) || (name == NULL) || (*name == '\0'))
         return -1;
 
     buf = NULL;
@@ -1051,6 +1051,7 @@ xmlTextWriterStartElementNS(xmlTextWriter *writer,
         if (p->uri == 0) {
             xmlWriterErrMsg(writer, XML_ERR_NO_MEMORY,
                             "xmlTextWriterStartElementNS : out of memory!\n");
+            xmlFree(p->prefix);
             xmlFree(p);
             return -1;
         }
@@ -1551,6 +1552,11 @@ xmlOutputBufferWriteBase64(xmlOutputBufferPtr out, int len,
  * @param start  the position within the data of the first byte to encode
  * @param len  the number of bytes to encode
  * @returns the bytes written (may be 0 because of buffering) or -1 in case of error
+ *
+ * NOTE: No safety check is done on the length of data. This check is 
+ *       something that should happen outside of this call, the caller 
+ *       should know better the actual data and if it's reaching the end 
+ *       of the buffer or not.
  */
 int
 xmlTextWriterWriteBase64(xmlTextWriter *writer, const char *data,
@@ -1758,7 +1764,7 @@ xmlTextWriterStartAttributeNS(xmlTextWriter *writer,
     xmlChar *buf;
     xmlTextWriterNsStackEntry *p;
 
-    if ((writer == NULL) || (name == NULL) || (*name == '\0'))
+    if ((writer == NULL) || (writer->nsstack == NULL) || (name == NULL) || (*name == '\0'))
         return -1;
 
     /* Handle namespace first in case of error */
@@ -1795,6 +1801,7 @@ xmlTextWriterStartAttributeNS(xmlTextWriter *writer,
             if (p == 0) {
                 xmlWriterErrMsg(writer, XML_ERR_NO_MEMORY,
 								        "xmlTextWriterStartAttributeNS : out of memory!\n");
+                xmlFree(buf);
                 return -1;
             }
 
@@ -1803,12 +1810,20 @@ xmlTextWriterStartAttributeNS(xmlTextWriter *writer,
             if (p->uri == 0) {
                 xmlWriterErrMsg(writer, XML_ERR_NO_MEMORY,
                         "xmlTextWriterStartAttributeNS : out of memory!\n");
+                xmlFree(p->prefix);
                 xmlFree(p);
                 return -1;
             }
             p->elem = xmlListFront(writer->nodes);
 
-            xmlListPushFront(writer->nsstack, p);
+            if (xmlListPushFront(writer->nsstack, p) == 0) {
+                xmlWriterErrMsg(writer, XML_ERR_NO_MEMORY,
+                        "xmlTextWriterStartAttributeNS : out of memory!\n");
+                xmlFree(p->uri);
+                xmlFree(p->prefix);
+                xmlFree(p);
+                return -1;
+            }
         }
     }
 
@@ -4166,6 +4181,9 @@ xmlTextWriterOutputNSDecl(xmlTextWriterPtr writer)
     int count;
     int sum;
 
+    if ((writer == NULL) || (writer->nsstack == NULL))
+        return -1;
+
     sum = 0;
     while (!xmlListEmpty(writer->nsstack)) {
         xmlChar *namespaceURI = NULL;
@@ -4326,9 +4344,14 @@ xmlTextWriterVSprintf(const char *format, va_list argptr)
 
     va_copy(locarg, argptr);
     while (((count = vsnprintf((char *) buf, size, format, locarg)) < 0)
-           || (count == size - 1) || (count == size) || (count > size)) {
+           || (count >= size - 1)) {
 	va_end(locarg);
         xmlFree(buf);
+        if (size > INT_MAX - BUFSIZ) {
+           xmlWriterErrMsg(NULL, XML_ERR_ARGUMENT,
+                           "xmlTextWriterVSprintf : invalid format / argument!\n");
+           return NULL;
+        }
         size += BUFSIZ;
         buf = (xmlChar *) xmlMalloc(size);
         if (buf == NULL) {

@@ -141,6 +141,13 @@
 #define LIBXML_SGML_CATALOG_ENABLED
 #endif
 
+#if 0
+/**
+ * Whether the Windows path support is configured in
+ */
+#define LIBXML_WINPATH_ENABLED
+#endif
+
 #if 1
 /**
  * Whether XPath is configured in

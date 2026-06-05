@@ -23,6 +23,7 @@ check_PROGRAMS = \
 	runxmlconf \
 	testModule \
 	testapi \
+	testcatalog \
 	testchar \
 	testdict \
 	testlimits \
@@ -110,7 +111,7 @@ LDADDS = libxml2.la
 
 runtest_SOURCES=runtest.c
 runtest_DEPENDENCIES = $(DEPS)
-runtest_LDADD= $(THREAD_LIBS) $(LDADDS)
+runtest_LDADD= $(THREAD_LIBS) $(Z_LIBS) $(LDADDS)
 
 testrecurse_SOURCES=testrecurse.c
 testrecurse_DEPENDENCIES = $(DEPS)
@@ -119,6 +120,10 @@ testrecurse_LDADD= $(LDADDS)
 testlimits_SOURCES=testlimits.c
 testlimits_DEPENDENCIES = $(DEPS)
 testlimits_LDADD= $(LDADDS)
+
+testcatalog_SOURCES=testcatalog.c
+testcatalog_DEPENDENCIES = $(DEPS)
+testcatalog_LDADD= $(LDADDS)
 
 testchar_SOURCES=testchar.c
 testchar_DEPENDENCIES = $(DEPS)
@@ -137,9 +142,9 @@ runsuite_DEPENDENCIES = $(DEPS)
 runsuite_LDADD= $(LDADDS)
 
 xmllint_SOURCES = xmllint.c shell.c lintmain.c
-xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS)
+xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(Z_CFLAGS)
 xmllint_DEPENDENCIES = $(DEPS)
-xmllint_LDADD=  $(RDL_LIBS) $(LDADDS)
+xmllint_LDADD = $(RDL_LIBS) $(Z_LIBS) $(LDADDS)
 
 testModule_SOURCES=testModule.c
 testModule_DEPENDENCIES = $(DEPS)
@@ -167,6 +172,7 @@ check-local:
 	$(CHECKER) ./runtest$(EXEEXT)
 	$(CHECKER) ./testrecurse$(EXEEXT)
 	$(CHECKER) ./testapi$(EXEEXT)
+	$(CHECKER) ./testcatalog$(EXEEXT)
 	$(CHECKER) ./testchar$(EXEEXT)
 	$(CHECKER) ./testdict$(EXEEXT)
 	$(CHECKER) ./testparser$(EXEEXT)
@@ -186,10 +192,12 @@ endif
 # Compatibility name of the check target
 runtests: check
 
+VALGRIND = valgrind -q --leak-check=full --error-exitcode=1
+
 check-valgrind valgrind:
 	@echo '## Running the regression tests under Valgrind'
 	@echo '## Go get a cup of coffee it is gonna take a while ...'
-	$(MAKE) CHECKER='valgrind -q' check
+	$(MAKE) check CHECKER="$(LIBTOOL) --mode=execute $(VALGRIND)"
 
 dist-hook:
 	(cd $(srcdir) ; tar -cf - --exclude .git win32 test result) | (cd $(distdir); tar xf -)

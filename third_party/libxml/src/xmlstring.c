@@ -426,14 +426,21 @@ xmlStrncat(xmlChar *cur, const xmlChar *add, int len) {
 
     if ((add == NULL) || (len == 0))
         return(cur);
-    if (len < 0)
-	return(NULL);
+
+    if (len < 0) {
+        if (cur != NULL)
+            xmlFree(cur);
+        return(NULL);
+    }
+
     if (cur == NULL)
         return(xmlStrndup(add, len));
 
     size = xmlStrlen(cur);
-    if ((size < 0) || (size > INT_MAX - len))
+    if ((size < 0) || (size > INT_MAX - len)) {
+        xmlFree(cur);
         return(NULL);
+    }
     ret = (xmlChar *) xmlRealloc(cur, (size_t) size + len + 1);
     if (ret == NULL) {
         xmlFree(cur);
@@ -517,7 +524,7 @@ xmlStrPrintf(xmlChar *buf, int len, const char *msg, ...) {
     va_list args;
     int ret;
 
-    if((buf == NULL) || (msg == NULL)) {
+    if((buf == NULL) || (msg == NULL) || (len <= 0)) {
         return(-1);
     }
 
@@ -542,7 +549,7 @@ int
 xmlStrVPrintf(xmlChar *buf, int len, const char *msg, va_list ap) {
     int ret;
 
-    if((buf == NULL) || (msg == NULL)) {
+    if((buf == NULL) || (msg == NULL) || (len <= 0)) {
         return(-1);
     }
 

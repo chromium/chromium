@@ -400,6 +400,28 @@ void xmlCleanupGlobalsInternal(void) {
 #elif defined(HAVE_WIN32_THREADS)
 #if defined(USE_WAIT_DTOR) && !defined(USE_TLS)
     if (globalkey != TLS_OUT_OF_INDEXES) {
+        xmlGlobalState* gs = (xmlGlobalState*)TlsGetValue(globalkey);
+        if (gs) {
+            /* Unregister the waiter for the thread to terminate, then go ahead
+               and free the global state. This avoids false positive reports of
+               memory leaks in applications where the main thread created the
+               global state; if the registered callback is waiting for the main
+               thread to terminate to free the global state, it won't get a
+               chance to run.
+            */
+            if (gs->waitHandle != NULL) {
+                UnregisterWait(gs->waitHandle);
+                gs->waitHandle = NULL;
+            }
+           
+            if (gs->threadHandle != NULL) {
+                CloseHandle(gs->threadHandle);
+                gs->threadHandle = NULL;
+            }
+            
+            xmlFreeGlobalState(gs);
+            TlsSetValue(globalkey, NULL);
+        }
         TlsFree(globalkey);
         globalkey = TLS_OUT_OF_INDEXES;
     }

@@ -2445,11 +2445,11 @@ xmlRemoveEntity(xmlEntityPtr ent) {
                (ent->etype == XML_EXTERNAL_PARAMETER_ENTITY)) {
         if (intSubset != NULL) {
             if (xmlHashLookup(intSubset->pentities, ent->name) == ent)
-                xmlHashRemoveEntry(intSubset->entities, ent->name, NULL);
+                xmlHashRemoveEntry(intSubset->pentities, ent->name, NULL);
         }
         if (extSubset != NULL) {
             if (xmlHashLookup(extSubset->pentities, ent->name) == ent)
-                xmlHashRemoveEntry(extSubset->entities, ent->name, NULL);
+                xmlHashRemoveEntry(extSubset->pentities, ent->name, NULL);
         }
     }
 }
@@ -3110,6 +3110,7 @@ xmlAddChild(xmlNode *parent, xmlNode *cur) {
     if (parent->type == XML_TEXT_NODE) {
         if (xmlTextAddContent(parent, cur->content, -1) < 0)
             return(NULL);
+        xmlUnlinkNodeInternal(cur);
         xmlFreeNode(cur);
         return(parent);
     }
@@ -3876,7 +3877,8 @@ xmlStaticCopyNode(xmlNode *node, xmlDoc *doc, xmlNode *parent,
 		return((xmlNodePtr) xmlCopyPropInternal(doc, parent, (xmlAttrPtr) node));
         case XML_NAMESPACE_DECL:
 	    return((xmlNodePtr) xmlCopyNamespaceList((xmlNsPtr) node));
-
+        case XML_DTD_NODE:
+            return((xmlNodePtr) xmlCopyDtd((xmlDtdPtr) node));
         case XML_DOCUMENT_NODE:
         case XML_HTML_DOCUMENT_NODE:
 	    return((xmlNodePtr) xmlCopyDoc((xmlDocPtr) node, extended));

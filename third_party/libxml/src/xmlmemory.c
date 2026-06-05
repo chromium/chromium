@@ -346,6 +346,44 @@ xmlMemoryDump(void)
 
 /****************************************************************
  *								*
+ *		Array growth helper				*
+ *								*
+ ****************************************************************/
+
+/**
+ * Grow an array, combining overflow-checked capacity growth with
+ * reallocation.
+ *
+ * @param array  pointer to the array (may be NULL for first allocation)
+ * @param elemSize  size of each element in bytes
+ * @param capacity  pointer to current capacity (updated on success)
+ * @param min  initial allocation size
+ * @param max  maximum number of elements
+ * @returns the new pointer on success, or NULL on failure with the
+ *          original array and capacity preserved.
+ */
+void *
+xmlGrowArray(void *array, size_t elemSize, int *capacity, int min, int max) {
+    void *tmp;
+    int newSize;
+
+    if (capacity == NULL)
+        return(NULL);
+
+    newSize = xmlGrowCapacity(*capacity, elemSize, min, max);
+    if (newSize < 0)
+        return(NULL);
+
+    tmp = xmlRealloc(array, (size_t) newSize * elemSize);
+    if (tmp == NULL)
+        return(NULL);
+
+    *capacity = newSize;
+    return(tmp);
+}
+
+/****************************************************************
+ *								*
  *		Initialization Routines				*
  *								*
  ****************************************************************/

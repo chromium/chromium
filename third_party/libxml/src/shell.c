@@ -1138,8 +1138,11 @@ xmllintShell(xmlDoc *doc, const char *filename, FILE * output)
             command[i++] = *cur++;
         }
         command[i] = 0;
-        if (i == 0)
+        if (i == 0) {
+            free(cmdline);
+            cmdline = NULL;
             continue;
+        }
 
         /*
          * Parse the argument

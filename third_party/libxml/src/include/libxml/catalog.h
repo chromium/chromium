@@ -138,6 +138,8 @@ XMLPUBFUN void
 #ifdef LIBXML_OUTPUT_ENABLED
 XMLPUBFUN void
 		xmlCatalogDump		(FILE *out);
+XMLPUBFUN xmlDocPtr
+		xmlCatalogDumpDoc	(void);
 #endif /* LIBXML_OUTPUT_ENABLED */
 XMLPUBFUN xmlChar *
 		xmlCatalogResolve	(const xmlChar *pubID,

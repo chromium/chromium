@@ -7261,10 +7261,10 @@ xmlParseReference(xmlParserCtxt *ctxt) {
             if ((cur->type == XML_TEXT_NODE) ||
                 (ctxt->options & XML_PARSE_NOCDATA)) {
                 if (ctxt->sax->characters != NULL)
-                    ctxt->sax->characters(ctxt, cur->content, len);
+                    ctxt->sax->characters(ctxt->userData, cur->content, len);
             } else {
                 if (ctxt->sax->cdataBlock != NULL)
-                    ctxt->sax->cdataBlock(ctxt, cur->content, len);
+                    ctxt->sax->cdataBlock(ctxt->userData, cur->content, len);
             }
 
             cur = cur->next;
@@ -7284,10 +7284,12 @@ xmlParseReference(xmlParserCtxt *ctxt) {
                 if ((cur->type == XML_TEXT_NODE) ||
                     (ctxt->options & XML_PARSE_NOCDATA)) {
                     if (ctxt->sax->characters != NULL)
-                        ctxt->sax->characters(ctxt, cur->content, len);
+                        ctxt->sax->characters(ctxt->userData, cur->content,
+                                              len);
                 } else {
                     if (ctxt->sax->cdataBlock != NULL)
-                        ctxt->sax->cdataBlock(ctxt, cur->content, len);
+                        ctxt->sax->cdataBlock(ctxt->userData, cur->content,
+                                              len);
                 }
 
                 break;
@@ -11566,7 +11568,6 @@ xmlIOParseDTD(xmlSAXHandler *sax, xmlParserInputBuffer *input,
 
     pinput = xmlNewIOInputStream(ctxt, input, XML_CHAR_ENCODING_NONE);
     if (pinput == NULL) {
-        xmlFreeParserInputBuffer(input);
 	xmlFreeParserCtxt(ctxt);
 	return(NULL);
     }
@@ -12033,7 +12034,7 @@ xmlCtxtParseContent(xmlParserCtxt *ctxt, xmlParserInput *input,
         case XML_ENTITY_REF_NODE:
         case XML_PI_NODE:
         case XML_COMMENT_NODE:
-            for (cur = node->parent; cur != NULL; cur = node->parent) {
+            for (cur = node->parent; cur != NULL; cur = cur->parent) {
                 if ((cur->type == XML_ELEMENT_NODE) ||
                     (cur->type == XML_DOCUMENT_NODE) ||
                     (cur->type == XML_HTML_DOCUMENT_NODE)) {

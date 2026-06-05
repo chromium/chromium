@@ -75,7 +75,6 @@ PATCHES = [
     'remove-getentropy.patch',
     'xml-attr-extra.patch',
     'widen-extra-field-in-_xmlNode-to-an-int.patch',
-    'fix-xmlEscapeText-integer-overflow.patch',
 ]
 
 

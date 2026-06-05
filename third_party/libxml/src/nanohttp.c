@@ -294,6 +294,7 @@ xmlIOHTTPClose (void *context ATTRIBUTE_UNUSED) {
     return 0;
 }
 
+#ifdef LIBXML_OUTPUT_ENABLED
 /**
  * @deprecated HTTP support was removed in 2.15.
  */
@@ -301,5 +302,6 @@ void
 xmlRegisterHTTPPostCallbacks(void) {
     xmlRegisterDefaultOutputCallbacks();
 }
+#endif
 
 #endif /* LIBXML_HTTP_STUBS_ENABLED */

@@ -681,23 +681,31 @@ static int
 xmlConvertUriToPath(const char *uri, char **out) {
     const char *escaped;
     char *unescaped;
+#ifdef LIBXML_WINPATH_ENABLED
+    xmlChar ch;
+#endif
 
     *out = NULL;
 
     if (!xmlStrncasecmp(BAD_CAST uri, BAD_CAST "file://localhost/", 17)) {
-	escaped = &uri[16];
+        escaped = &uri[16];
     } else if (!xmlStrncasecmp(BAD_CAST uri, BAD_CAST "file:///", 8)) {
-	escaped = &uri[7];
+        escaped = &uri[7];
     } else if (!xmlStrncasecmp(BAD_CAST uri, BAD_CAST "file:/", 6)) {
         /* lots of generators seems to lazy to read RFC 1738 */
-	escaped = &uri[5];
+        escaped = &uri[5];
     } else {
         return(1);
     }
 
-#ifdef _WIN32
+#ifdef LIBXML_WINPATH_ENABLED
     /* Ignore slash like in file:///C:/file.txt */
-    escaped += 1;
+    if (escaped[0] == '/') {
+        ch = escaped[1];
+        if (((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z'))
+            && escaped[2] == ':')
+            escaped += 1;
+    }
 #endif
 
     unescaped = xmlURIUnescapeString(escaped, 0, NULL);
@@ -1824,8 +1832,11 @@ xmlOutputBufferCreateBuffer(xmlBuffer *buffer,
  */
 const xmlChar *
 xmlOutputBufferGetContent(xmlOutputBuffer *out) {
-    if ((out == NULL) || (out->buffer == NULL) || (out->error != 0))
+    if ((out == NULL) || (out->buffer == NULL) || ((out->encoder != NULL) && (out->conv == NULL)) || (out->error != 0))
         return(NULL);
+
+    if (out->encoder != NULL)
+        return(xmlBufContent(out->conv));
 
     return(xmlBufContent(out->buffer));
 }
@@ -1838,8 +1849,11 @@ xmlOutputBufferGetContent(xmlOutputBuffer *out) {
  */
 size_t
 xmlOutputBufferGetSize(xmlOutputBuffer *out) {
-    if ((out == NULL) || (out->buffer == NULL) || (out->error != 0))
+    if ((out == NULL) || (out->buffer == NULL) || ((out->encoder != NULL) && (out->conv == NULL)) || (out->error != 0))
         return(0);
+
+    if (out->encoder != NULL)
+        return(xmlBufUse(out->conv));
 
     return(xmlBufUse(out->buffer));
 }
@@ -2449,6 +2463,11 @@ xmlOutputBufferWrite(xmlOutputBuffer *out, int len, const char *data) {
             if (nbchars < MINLEN)
                 break;
 
+            if (nbchars >= INT_MAX) {
+                out->error = XML_ERR_INTERNAL_ERROR;
+                return(-1);
+            }
+
             ret = out->writecallback(out->context,
                        (const char *)xmlBufContent(buf), nbchars);
             if (ret < 0) {
@@ -2656,15 +2675,25 @@ xmlOutputBufferFlush(xmlOutputBuffer *out) {
      */
     if ((out->conv != NULL) && (out->encoder != NULL) &&
 	(out->writecallback != NULL)) {
+        size_t bufsize = xmlBufUse(out->conv);
+        if (bufsize >= INT_MAX) {
+            out->error = XML_ERR_INTERNAL_ERROR;
+            return(-1);
+        }
 	ret = out->writecallback(out->context,
                                  (const char *)xmlBufContent(out->conv),
-                                 xmlBufUse(out->conv));
+                                 bufsize);
 	if (ret >= 0)
 	    xmlBufShrink(out->conv, ret);
     } else if (out->writecallback != NULL) {
+        size_t bufsize = xmlBufUse(out->buffer);
+        if (bufsize >= INT_MAX) {
+            out->error = XML_ERR_INTERNAL_ERROR;
+            return(-1);
+        }
 	ret = out->writecallback(out->context,
                                  (const char *)xmlBufContent(out->buffer),
-                                 xmlBufUse(out->buffer));
+                                 bufsize);
 	if (ret >= 0)
 	    xmlBufShrink(out->buffer, ret);
     }
@@ -2695,7 +2724,7 @@ xmlParserGetDirectory(const char *filename) {
 
     if (filename == NULL) return(NULL);
 
-#if defined(_WIN32)
+#if defined(LIBXML_WINPATH_ENABLED)
 #   define IS_XMLPGD_SEP(ch) ((ch=='/')||(ch=='\\'))
 #else
 #   define IS_XMLPGD_SEP(ch) (ch=='/')

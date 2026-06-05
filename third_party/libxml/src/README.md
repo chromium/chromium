@@ -21,11 +21,29 @@ This code is released under the MIT License, see the Copyright file.
 
 ## Security
 
-This is open-source software written by hobbyists, maintained by a single
-volunteer, badly tested, written in a memory-unsafe language and full of
-security bugs. It is foolish to use this software to process untrusted data.
-As such, we treat security issues like any other bug. Each security report
-we receive will be made public immediately and won't be prioritized.
+This is open-source software written by hobbyists and maintained by
+volunteers.
+
+It's NOT recommended to use this software to process **untrusted data**.
+There is a lot of ways that a malicious crafted xml could exploit a
+hidden vulnerability in the software.
+
+The software is provided "as is", without warranty of any kind,
+express or implied. Use this software at your own risk.
+
+To **report security bugs**, you can create a confidential issue with
+the "security" label. We will review and work on it as a best effort.
+But remember that this is a community project, maintained by volunteer
+developers, so if you are concern about any important security bug
+that's critical for you, feel free to collaborate and provide a patch.
+
+The main rule is to be kind. Do not pressure developers to fix a CVE
+or to work on a functionality that you need, because that won't work.
+This is a community project, developers will work in the issues that
+they consider interesting and when they want. All contributions are
+welcome, so if something is important for you, you can always get
+involved, implement it yourself and be part of the open source
+community.
 
 ## Build instructions
 
@@ -75,6 +93,7 @@ The following options disable or enable code modules and relevant symbols:
     --with-threads          multithreading support (on)
     --with-thread-alloc     per-thread malloc hooks (off)
     --with-valid            DTD validation support (on)
+    --with-winpath          Windows path support (on for Windows)
     --with-writer           xmlWriter serialization interface (on)
     --with-xinclude         XInclude 1.0 support (on)
     --with-xpath            XPath 1.0 support (on)
@@ -170,6 +189,18 @@ is by creating issues and merge requests on GitLab.
 
 All code must conform to C89 and pass the GitLab CI tests. Add regression
 tests if possible.
+
+### Strict No LLM / No AI Policy
+
+No LLMs for issues.
+
+No LLMs for patches / pull requests.
+
+No LLMs for comments on the bug tracker, including translation.
+
+English is encouraged, but not required. You are welcome to post in
+your native language and rely on others to have their own translation
+tools of choice to interpret your words.
 
 ## Authors
 

@@ -35,9 +35,10 @@ static int tests_quiet = 0;
  *									*
  ************************************************************************/
 
-/* maximum time for one parsing before declaring a timeout */
-#define MAX_TIME 2 /* seconds */
+/* default maximum time for one parsing before declaring a timeout */
+#define DEFAULT_MAX_TIME 2 /* seconds */
 
+static clock_t max_time = DEFAULT_MAX_TIME;
 static clock_t t0;
 static int timeout = 0;
 
@@ -48,7 +49,7 @@ static void reset_timout(void) {
 
 static int check_time(void) {
     clock_t tnow = clock();
-    if (((tnow - t0) / CLOCKS_PER_SEC) > MAX_TIME) {
+    if (((tnow - t0) / CLOCKS_PER_SEC) > max_time) {
         timeout = 1;
         return(0);
     }
@@ -1228,22 +1229,40 @@ runcrazy(void) {
     return(ret);
 }
 
-
 int
 main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     int i, a, ret = 0;
     int subset = 0;
+    char *endptr;
+    long val;
 
     fillFilling();
     initializeLibxml2();
 
     for (a = 1; a < argc;a++) {
         if (!strcmp(argv[a], "-v"))
-	    verbose = 1;
+            verbose = 1;
         else if (!strcmp(argv[a], "-quiet"))
-	    tests_quiet = 1;
+            tests_quiet = 1;
         else if (!strcmp(argv[a], "-crazy"))
-	    subset = 1;
+            subset = 1;
+        else if (!strcmp(argv[a], "-timeout")) {
+            if (a + 1 >= argc) {
+                fprintf(stderr, "Error: -timeout requires a value in seconds\n");
+                return 1;
+            }
+            val = strtol(argv[a + 1], &endptr, 10);
+            if (endptr == argv[a + 1] || *endptr != '\0') {
+                fprintf(stderr, "Error: -timeout value '%s' is not a valid number\n", argv[a + 1]);
+                return 1;
+            }
+            if (val <= 0 || val > INT_MAX) {
+                fprintf(stderr, "Error: -timeout must be a positive integer (got %s)\n", argv[a + 1]);
+                return 1;
+            }
+            max_time = (int)val;
+            a++;
+        }
     }
     if (subset == 0) {
 	for (i = 0; testDescriptions[i].func != NULL; i++) {

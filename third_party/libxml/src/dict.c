@@ -218,10 +218,21 @@ xmlDictAddQString(xmlDictPtr dict, const xmlChar *prefix, unsigned int plen,
             return(NULL);
         }
 
-        if (size == 0) size = 1000;
-	else size *= 4; /* exponential growth */
-        if (size < 4 * (namelen + plen + 1))
-	    size = 4 * (namelen + plen + 1); /* just in case ! */
+        if (size == 0) {
+            size = 1000;
+        } else {
+            if (size < (SIZE_MAX - sizeof(xmlDictStrings)) / 4)
+                size *= 4; /* exponential growth */
+            else
+                size = SIZE_MAX - sizeof(xmlDictStrings);
+        }
+        if (size / 4 < namelen + plen + 1) {
+            if ((size_t) namelen + plen + 1 <
+                    (SIZE_MAX - sizeof(xmlDictStrings)) / 4)
+                size = 4 * ((size_t) namelen + plen + 1); /* just in case ! */
+            else
+                return(NULL);
+        }
 	pool = (xmlDictStringsPtr) xmlMalloc(sizeof(xmlDictStrings) + size);
 	if (pool == NULL)
 	    return(NULL);

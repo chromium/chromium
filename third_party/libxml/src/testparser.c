@@ -15,6 +15,7 @@
 #include <libxml/xmlwriter.h>
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
+#include <libxml/xmlschemas.h>
 
 #include <string.h>
 
@@ -394,6 +395,49 @@ testCtxtParseContent(void) {
     }
 
     xmlFreeParserCtxt(ctxt);
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
+/*
+ * Test that xmlParseInNodeContext doesn't hang when called on a node
+ * whose parent is an entity reference (not an element).
+ * Regression test for infinite loop bug in xmlCtxtParseContent.
+ */
+static int
+testParseInNodeContextEntityParent(void) {
+    xmlDocPtr doc;
+    xmlNodePtr root, entRef, textNode, result = NULL;
+    int err = 0;
+
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    root = xmlNewNode(NULL, BAD_CAST "root");
+    xmlDocSetRootElement(doc, root);
+
+    /* Create an entity reference node */
+    entRef = xmlNewReference(doc, BAD_CAST "testentity");
+    xmlAddChild(root, entRef);
+
+    /* Create a text node as child of the entity reference */
+    textNode = xmlNewText(BAD_CAST "content");
+    xmlAddChild(entRef, textNode);
+
+    /*
+     * This used to hang in an infinite loop because the code walked
+     * up parents with "cur = node->parent" instead of "cur = cur->parent".
+     */
+    xmlParseInNodeContext(textNode, "<x/>", 4, 0, &result);
+
+    if (result != NULL)
+        xmlFreeNodeList(result);
+
+    /*
+     * Entity reference children aren't freed automatically by xmlFreeDoc,
+     * so we need to unlink and free the text node manually.
+     */
+    xmlUnlinkNode(textNode);
+    xmlFreeNode(textNode);
     xmlFreeDoc(doc);
 
     return err;
@@ -1003,6 +1047,202 @@ testReader(void) {
     return err;
 }
 
+#if defined(LIBXML_SCHEMAS_ENABLED) || defined(LIBXML_RELAXNG_ENABLED)
+typedef struct {
+    int sawRemote;
+} testReaderResourceLoaderCtxt;
+#endif
+
+#ifdef LIBXML_SCHEMAS_ENABLED
+static xmlParserErrors
+testReaderResourceLoader(void *ctxt, const char *url,
+                         const char *publicId ATTRIBUTE_UNUSED,
+                         xmlResourceType type ATTRIBUTE_UNUSED,
+                         xmlParserInputFlags flags,
+                         xmlParserInputPtr *out) {
+    testReaderResourceLoaderCtxt *loaderCtxt = ctxt;
+    static const char importedXsd[] =
+        "<?xml version='1.0'?>\n"
+        "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'\n"
+        "           targetNamespace='urn:remote'\n"
+        "           xmlns='urn:remote'\n"
+        "           elementFormDefault='qualified'>\n"
+        "  <xs:simpleType name='RemoteType'>\n"
+        "    <xs:restriction base='xs:string'/>\n"
+        "  </xs:simpleType>\n"
+        "</xs:schema>\n";
+
+    if ((url == NULL) ||
+        (strcmp(url, "http://example.invalid/imported.xsd") != 0)) {
+        return xmlNewInputFromUrl(url, flags, out);
+    }
+
+    loaderCtxt->sawRemote = 1;
+    *out = xmlNewInputFromString(url, importedXsd, flags);
+    if (*out == NULL)
+        return XML_ERR_NO_MEMORY;
+
+    return XML_ERR_OK;
+}
+
+static int
+testReaderSchemaResourceLoader(void) {
+    const char *doc = "<doc>ok</doc>";
+    const char *xsd = "test/schemas/v012-reader-schema-main.xsd";
+    testReaderResourceLoaderCtxt loaderCtxt;
+    xmlTextReader *reader;
+    int err = 0;
+    int ret;
+
+    reader = xmlReaderForDoc(BAD_CAST doc, "test://doc.xml", NULL, 0);
+    if (reader == NULL) {
+        fprintf(stderr, "xmlReaderForDoc failed without resource loader\n");
+        return 1;
+    }
+    ret = xmlTextReaderSchemaValidate(reader, xsd);
+    if (ret == 0) {
+        fprintf(stderr, "xmlTextReaderSchemaValidate unexpectedly succeeded\n");
+        err = 1;
+    }
+    xmlFreeTextReader(reader);
+
+    loaderCtxt.sawRemote = 0;
+    reader = xmlReaderForDoc(BAD_CAST doc, "test://doc.xml", NULL, 0);
+    if (reader == NULL) {
+        fprintf(stderr, "xmlReaderForDoc failed with resource loader\n");
+        return 1;
+    }
+    xmlTextReaderSetResourceLoader(reader, testReaderResourceLoader,
+                                   &loaderCtxt);
+    ret = xmlTextReaderSchemaValidate(reader, xsd);
+    if (ret != 0 || loaderCtxt.sawRemote == 0) {
+        fprintf(stderr,
+                "xmlTextReaderSetResourceLoader was not used for schema imports\n");
+        err = 1;
+    }
+    xmlFreeTextReader(reader);
+
+    return err;
+}
+
+/*
+ * Regression test for a type confusion in xmlParseReference that crashed
+ * a schema-validating xmlTextReader whenever the document expanded an
+ * internal entity.
+ */
+static int
+testReaderSchemaEntityExpansion(void) {
+    static const char xsd[] =
+        "<?xml version='1.0'?>\n"
+        "<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema'>\n"
+        "  <xs:element name='e' type='xs:integer'/>\n"
+        "</xs:schema>\n";
+    static const char xml[] =
+        "<!DOCTYPE e [<!ENTITY n \"not-an-int\">]>\n"
+        "<e>&n;</e>";
+    xmlSchemaParserCtxtPtr spc;
+    xmlSchemaPtr schema;
+    xmlTextReaderPtr reader;
+    int err = 0;
+    int ret;
+
+    spc = xmlSchemaNewMemParserCtxt(xsd, (int) sizeof(xsd) - 1);
+    schema = xmlSchemaParse(spc);
+    xmlSchemaFreeParserCtxt(spc);
+    if (schema == NULL) {
+        fprintf(stderr, "xmlSchemaParse failed\n");
+        return 1;
+    }
+
+    reader = xmlReaderForMemory(xml, (int) sizeof(xml) - 1, "doc.xml", NULL,
+                                XML_PARSE_NOENT | XML_PARSE_DTDLOAD);
+    xmlTextReaderSetSchema(reader, schema);
+
+    while ((ret = xmlTextReaderRead(reader)) == 1)
+        ;
+    if (ret != 0) {
+        fprintf(stderr, "reader failed on entity-expanded document\n");
+        err = 1;
+    }
+    if (xmlTextReaderIsValid(reader) != 0) {
+        fprintf(stderr, "schema missed invalid entity-expanded text\n");
+        err = 1;
+    }
+
+    xmlFreeTextReader(reader);
+    xmlSchemaFree(schema);
+    return err;
+}
+#endif
+
+#ifdef LIBXML_RELAXNG_ENABLED
+static xmlParserErrors
+testReaderRelaxNGResourceLoader(void *ctxt, const char *url,
+                                const char *publicId ATTRIBUTE_UNUSED,
+                                xmlResourceType type ATTRIBUTE_UNUSED,
+                                xmlParserInputFlags flags,
+                                xmlParserInputPtr *out) {
+    testReaderResourceLoaderCtxt *loaderCtxt = ctxt;
+    static const char importedRng[] =
+        "<grammar xmlns='http://relaxng.org/ns/structure/1.0'>\n"
+        "  <define name='docdef'>\n"
+        "    <element name='doc'><text/></element>\n"
+        "  </define>\n"
+        "</grammar>\n";
+
+    if ((url != NULL) &&
+        (strcmp(url, "http://example.invalid/imported.rng") == 0)) {
+        loaderCtxt->sawRemote = 1;
+        *out = xmlNewInputFromString(url, importedRng, flags);
+        if (*out == NULL)
+            return XML_ERR_NO_MEMORY;
+        return XML_ERR_OK;
+    }
+
+    return xmlNewInputFromUrl(url, flags, out);
+}
+
+static int
+testReaderRelaxNGResourceLoaderCtxt(void) {
+    const char *doc = "<doc>ok</doc>";
+    const char *rng = "test/relaxng/v012-reader-main.rng";
+    testReaderResourceLoaderCtxt loaderCtxt;
+    xmlTextReader *reader;
+    int err = 0;
+    int ret;
+
+    reader = xmlReaderForDoc(BAD_CAST doc, "test://doc.xml", NULL, 0);
+    if (reader == NULL) {
+        fprintf(stderr, "xmlReaderForDoc failed without Relax NG loader\n");
+        return 1;
+    }
+    ret = xmlTextReaderRelaxNGValidate(reader, rng);
+    if (ret == 0) {
+        fprintf(stderr, "xmlTextReaderRelaxNGValidate unexpectedly succeeded\n");
+        err = 1;
+    }
+    xmlFreeTextReader(reader);
+
+    loaderCtxt.sawRemote = 0;
+    reader = xmlReaderForDoc(BAD_CAST doc, "test://doc.xml", NULL, 0);
+    if (reader == NULL) {
+        fprintf(stderr, "xmlReaderForDoc failed with Relax NG loader\n");
+        return 1;
+    }
+    xmlTextReaderSetResourceLoader(reader, testReaderRelaxNGResourceLoader,
+                                   &loaderCtxt);
+    ret = xmlTextReaderRelaxNGValidate(reader, rng);
+    if (ret != 0 || loaderCtxt.sawRemote == 0) {
+        fprintf(stderr,
+                "xmlTextReaderSetResourceLoader was not used for Relax NG includes\n");
+        err = 1;
+    }
+    xmlFreeTextReader(reader);
+
+    return err;
+}
+#endif
+
 #ifdef LIBXML_XINCLUDE_ENABLED
 typedef struct {
     char *message;
@@ -1188,7 +1428,7 @@ testBuildRelativeUri(void) {
             "/b2/c2",
             "with%20space/x%20x/y%20y"
         }
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
         , {
             "\\a\\b1\\c1",
             "\\a\\b2\\c2",
@@ -1255,7 +1495,7 @@ testBuildRelativeUri(void) {
     return err;
 }
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
 static int
 testWindowsUri(void) {
     const char *url = "c:/a%20b/file.txt";
@@ -1328,7 +1568,7 @@ testWindowsUri(void) {
 
     return err;
 }
-#endif /* WIN32 */
+#endif /* LIBXML_WINPATH_ENABLED */
 
 #if defined(LIBXML_ICONV_ENABLED) || defined(LIBXML_ICU_ENABLED)
 static int
@@ -1487,6 +1727,68 @@ testCharEncConvImpl(void) {
     return err;
 }
 
+static int
+testRemoveParamEntityIntSubset(void) {
+    xmlDocPtr doc;
+    xmlEntityPtr ent;
+    int err = 0;
+
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    xmlCreateIntSubset(doc, BAD_CAST "doc", NULL, NULL);
+
+    xmlAddDocEntity(doc, BAD_CAST "param1", XML_INTERNAL_PARAMETER_ENTITY,
+                    NULL, NULL, BAD_CAST "value");
+    ent = xmlGetParameterEntity(doc, BAD_CAST "param1");
+    if (ent == NULL) {
+        fprintf(stderr, "testRemoveParamEntityIntSubset: "
+                "entity not found after add\n");
+        xmlFreeDoc(doc);
+        return 1;
+    }
+    xmlUnlinkNode((xmlNodePtr) ent);
+    if (xmlGetParameterEntity(doc, BAD_CAST "param1") != NULL) {
+        fprintf(stderr, "testRemoveParamEntityIntSubset: "
+                "parameter entity still in pentities after unlink\n");
+        err = 1;
+    } else {
+        xmlFreeNode((xmlNodePtr) ent);
+    }
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
+static int
+testRemoveParamEntityExtSubset(void) {
+    xmlDocPtr doc;
+    xmlEntityPtr ent;
+    int err = 0;
+
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    xmlNewDtd(doc, BAD_CAST "doc", NULL, BAD_CAST "doc.dtd");
+
+    xmlAddDtdEntity(doc, BAD_CAST "param2", XML_EXTERNAL_PARAMETER_ENTITY,
+                    NULL, NULL, BAD_CAST "value");
+    ent = xmlGetParameterEntity(doc, BAD_CAST "param2");
+    if (ent == NULL) {
+        fprintf(stderr, "testRemoveParamEntityExtSubset: "
+                "entity not found after add\n");
+        xmlFreeDoc(doc);
+        return 1;
+    }
+    xmlUnlinkNode((xmlNodePtr) ent);
+    if (xmlGetParameterEntity(doc, BAD_CAST "param2") != NULL) {
+        fprintf(stderr, "testRemoveParamEntityExtSubset: "
+                "parameter entity still in pentities after unlink\n");
+        err = 1;
+    } else {
+        xmlFreeNode((xmlNodePtr) ent);
+    }
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
 int
 main(void) {
     int err = 0;
@@ -1504,6 +1806,7 @@ main(void) {
 #endif
 #ifdef LIBXML_OUTPUT_ENABLED
     err |= testCtxtParseContent();
+    err |= testParseInNodeContextEntityParent();
     err |= testNoBlanks();
     err |= testSaveNullEnc();
     err |= testDocDumpFormatMemoryEnc();
@@ -1532,6 +1835,13 @@ main(void) {
     err |= testReaderContent();
 #endif
     err |= testReader();
+#ifdef LIBXML_SCHEMAS_ENABLED
+    err |= testReaderSchemaResourceLoader();
+    err |= testReaderSchemaEntityExpansion();
+#endif
+#ifdef LIBXML_RELAXNG_ENABLED
+    err |= testReaderRelaxNGResourceLoaderCtxt();
+#endif
 #ifdef LIBXML_XINCLUDE_ENABLED
     err |= testReaderXIncludeError();
 #endif
@@ -1540,14 +1850,15 @@ main(void) {
     err |= testWriterClose();
 #endif
     err |= testBuildRelativeUri();
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     err |= testWindowsUri();
 #endif
 #if defined(LIBXML_ICONV_ENABLED) || defined(LIBXML_ICU_ENABLED)
     err |= testTruncatedMultiByte();
 #endif
     err |= testCharEncConvImpl();
+    err |= testRemoveParamEntityIntSubset();
+    err |= testRemoveParamEntityExtSubset();
 
     return err;
 }
-

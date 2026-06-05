@@ -29,6 +29,7 @@
 #include "private/entities.h"
 #include "private/error.h"
 #include "private/io.h"
+#include "private/tree.h"
 
 #ifndef SIZE_MAX
   #define SIZE_MAX ((size_t) -1)
@@ -637,6 +638,14 @@ xmlCopyEntity(void *payload, const xmlChar *name ATTRIBUTE_UNUSED) {
         if (cur->URI == NULL)
             goto error;
     }
+    /* Handle XML_TEXT_NODE children for XML_ENTITY_DECL */
+    if (ent->children != NULL) {
+        cur->children = xmlStaticCopyNodeList(ent->children, cur->doc, (xmlNodePtr)cur);
+        /* Update last pointers */
+        cur->last = cur->children;
+        while (cur->last && cur->last->next) cur->last = cur->last->next;
+    }
+
     return(cur);
 
 error:

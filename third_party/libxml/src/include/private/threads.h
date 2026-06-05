@@ -7,9 +7,16 @@
   #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #ifdef _WIN32_WINNT
-      #undef _WIN32_WINNT
+      #if _WIN32_WINNT < 0x0600
+        #undef _WIN32_WINNT
+      #endif
+    #else
+      /* get the default version of the SDK */
+      #include <sdkddkver.h>
     #endif
-    #define _WIN32_WINNT 0x0600
+    #ifndef _WIN32_WINNT
+      #define _WIN32_WINNT 0x0600
+    #endif
     #include <windows.h>
     #define HAVE_WIN32_THREADS
   #else

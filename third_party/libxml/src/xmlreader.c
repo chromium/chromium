@@ -1617,8 +1617,7 @@ xmlTextReaderNext(xmlTextReader *reader) {
 static void
 xmlTextReaderDumpCopy(xmlTextReaderPtr reader, xmlOutputBufferPtr output,
                       xmlNodePtr node) {
-    if ((node->type == XML_DTD_NODE) ||
-        (node->type == XML_ELEMENT_DECL) ||
+    if ((node->type == XML_ELEMENT_DECL) ||
         (node->type == XML_ATTRIBUTE_DECL) ||
         (node->type == XML_ENTITY_DECL))
         return;
@@ -4149,6 +4148,9 @@ xmlTextReaderRelaxNGValidateInternal(xmlTextReaderPtr reader,
 	if ((reader->errorFunc != NULL) || (reader->sErrorFunc != NULL))
 	    xmlRelaxNGSetParserStructuredErrors(pctxt,
                     xmlTextReaderStructuredRelay, reader);
+        if (reader->resourceLoader != NULL)
+            xmlRelaxNGSetResourceLoader(pctxt, reader->resourceLoader,
+                                        reader->resourceCtxt);
 	reader->rngSchemas = xmlRelaxNGParse(pctxt);
 	xmlRelaxNGFreeParserCtxt(pctxt);
 	if (reader->rngSchemas == NULL)
@@ -4239,6 +4241,9 @@ xmlTextReaderSchemaValidateInternal(xmlTextReaderPtr reader,
 	if ((reader->errorFunc != NULL) || (reader->sErrorFunc != NULL))
 	    xmlSchemaSetParserStructuredErrors(pctxt,
                     xmlTextReaderStructuredRelay, reader);
+        if (reader->resourceLoader != NULL)
+            xmlSchemaSetResourceLoader(pctxt, reader->resourceLoader,
+                                       reader->resourceCtxt);
 	reader->xsdSchemas = xmlSchemaParse(pctxt);
 	xmlSchemaFreeParserCtxt(pctxt);
 	if (reader->xsdSchemas == NULL)
@@ -5096,8 +5101,6 @@ xmlReaderForFd(int fd, const char *URL, const char *encoding, int options)
         xmlTextReaderErr(code, "failed to open fd");
         return(NULL);
     }
-    input->closecallback = NULL;
-
     reader = xmlNewTextReader(input, URL);
     if (reader == NULL) {
         xmlTextReaderErrMemory(NULL);
@@ -5353,8 +5356,6 @@ xmlReaderNewFd(xmlTextReader *reader, int fd,
         xmlTextReaderErr(code, "failed to open fd");
         return(-1);
     }
-    input->closecallback = NULL;
-
     if (xmlTextReaderSetup(reader, input, URL, encoding, options) < 0) {
         xmlTextReaderErrMemory(NULL);
         return(-1);

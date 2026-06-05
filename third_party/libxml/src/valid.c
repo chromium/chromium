@@ -4625,7 +4625,15 @@ xmlSnprintfElements(char *buf, int size, xmlNodePtr node, int glob) {
     int len;
 
     if (node == NULL) return;
-    if (glob) strcat(buf, "(");
+    len = strlen(buf);
+    if (glob) {
+        if (size - len < 50) {
+            if ((size - len > 4) && (buf[len - 1] != '.'))
+                strcat(buf, " ...");
+            return;
+        }
+        strcat(buf, "(");
+    }
     cur = node;
     while (cur != NULL) {
 	len = strlen(buf);
@@ -4689,7 +4697,11 @@ xmlSnprintfElements(char *buf, int size, xmlNodePtr node, int glob) {
 	}
 	cur = cur->next;
     }
-    if (glob) strcat(buf, ")");
+    if (glob) {
+        len = strlen(buf);
+        if (size - len > 1)
+            strcat(buf, ")");
+    }
 }
 
 /**

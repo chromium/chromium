@@ -114,6 +114,8 @@ AC_ARG_WITH(thread-alloc,
 [  --with-thread-alloc     per-thread malloc hooks (off)])
 AC_ARG_WITH(valid,
 [  --with-valid            DTD validation support (on)])
+AC_ARG_WITH(winpath,
+[  --with-winpath          Windows-styled path support (auto)])
 AC_ARG_WITH(writer,
 [  --with-writer           xmlWriter serialization interface (on)])
 AC_ARG_WITH(xinclude,
@@ -399,6 +401,24 @@ else
 fi
 AC_SUBST(WITH_READER)
 AM_CONDITIONAL(WITH_READER_SOURCES, test "$WITH_READER" = "1")
+
+if test "$with_winpath" = "yes" ; then
+    echo Enabling Windows path support
+    WITH_WINPATH=1
+elif test "$with_winpath" = "no" ; then
+    WITH_WINPATH=0
+else
+    case "$host" in
+        *-*-mingw* | *-*-cygwin* | *-*-msys* )
+            echo "Enabling Windows path support (default for Windows)"
+            WITH_WINPATH=1
+            ;;
+        *)
+            WITH_WINPATH=0
+            ;;
+    esac
+fi
+AC_SUBST(WITH_WINPATH)
 
 if test "$with_writer" = "no" ; then
     echo Disabling the xmlWriter saving interface
@@ -838,6 +858,8 @@ if test "$with_zlib" != "no" && test "$with_zlib" != ""; then
     XML_PRIVATE_LIBS="${XML_PRIVATE_LIBS} ${Z_LIBS}"
 fi
 AC_SUBST(WITH_ZLIB)
+AC_SUBST(Z_CFLAGS)
+AC_SUBST(Z_LIBS)
 
 dnl
 dnl Checks for iconv library.

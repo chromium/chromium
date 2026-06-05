@@ -229,7 +229,7 @@ xmlParse3986Scheme(xmlURIPtr uri, const char **str) {
 	return(1);
     cur++;
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     /*
      * Don't treat Windows drive letters as scheme.
      */
@@ -580,7 +580,7 @@ xmlParse3986Segment(xmlURIPtr uri, const char **str, char forbid, int empty)
     }
     NEXT(cur);
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     /*
      * Allow Windows drive letters.
      */
@@ -1437,7 +1437,7 @@ xmlIsPathSeparator(int c, int isFile) {
     if (c == '/')
         return(1);
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     if (isFile && (c == '\\'))
         return(1);
 #endif
@@ -1477,7 +1477,7 @@ xmlNormalizePath(char *path, int isFile) {
          * Collapse multiple separators first.
          */
         while (xmlIsPathSeparator(*cur, isFile)) {
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
             /* Allow two separators at start of path */
             if ((isFile) && (out == path + 1))
                 *out++ = '/';
@@ -1644,6 +1644,8 @@ xmlURIEscapeStr(const xmlChar *str, const xmlChar *list) {
     if (str[0] == 0)
 	return(xmlStrdup(str));
     len = xmlStrlen(str);
+    if (len == 0)
+        return(NULL);
 
     len += 20;
     ret = xmlMalloc(len);
@@ -1838,7 +1840,7 @@ xmlIsAbsolutePath(const xmlChar *path) {
     if (xmlIsPathSeparator(c, 1))
         return(1);
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     if ((((c >= 'A') && (c <= 'Z')) ||
          ((c >= 'a') && (c <= 'z'))) &&
         (path[1] == ':'))
@@ -2022,7 +2024,7 @@ xmlBuildURISafe(const xmlChar *URI, const xmlChar *base, xmlChar **valPtr) {
         return(xmlResolvePath(URI, base, valPtr));
     }
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     /*
      * Resolve paths with a Windows drive letter as filesystem path
      * even if base has a scheme.
@@ -2368,12 +2370,12 @@ xmlParseUriOrPath(const char *str, xmlURIPtr *out, int *drive) {
         path = buf;
 
         if (xmlIsAbsolutePath(BAD_CAST buf)) {
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
             const char *server = NULL;
             int isFileScheme = 0;
 #endif
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
             if (strncmp(buf, "//?/UNC/", 8) == 0) {
                 server = buf + 8;
                 isFileScheme = 1;
@@ -2442,7 +2444,7 @@ xmlParseUriOrPath(const char *str, xmlURIPtr *out, int *drive) {
         xmlNormalizePath(uri->path, /* isFile */ 0);
     }
 
-#if defined(_WIN32) || defined(__CYGWIN__)
+#if defined(LIBXML_WINPATH_ENABLED)
     if ((uri->path[0] == '/') &&
         (((uri->path[1] >= 'A') && (uri->path[1] <= 'Z')) ||
          ((uri->path[1] >= 'a') && (uri->path[1] <= 'z'))) &&
@@ -2491,9 +2493,9 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
 {
     xmlChar *val = NULL;
     int ret = 0;
-    int ix;
-    int nbslash = 0;
-    int len;
+    size_t ix = 0;
+    size_t nbslash = 0;
+    size_t len = 0;
     xmlURIPtr ref = NULL;
     xmlURIPtr bas = NULL;
     const xmlChar *bptr, *uptr, *rptr;
@@ -2574,7 +2576,7 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
      * At this point we can compare the two paths
      */
     {
-        int pos = 0;
+        size_t pos = 0;
 
         /*
          * Next we compare the two strings and find where they first differ
@@ -2618,7 +2620,7 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
 	    goto done;
 	}
 
-	len = xmlStrlen (uptr) + 1;
+	len = (size_t) xmlStrlen (uptr) + 1;
     }
 
     if (nbslash == 0) {
@@ -2636,6 +2638,10 @@ xmlBuildRelativeURISafe(const xmlChar * URI, const xmlChar * base,
      * length of the remainder of the URI, plus enough space
      * for the "../" groups, plus one for the terminator
      */
+    if (len + 3 * nbslash > SIZE_MAX) {
+        ret = -1;
+        goto done;
+    }
     val = (xmlChar *) xmlMalloc (len + 3 * nbslash);
     if (val == NULL) {
         ret = -1;
