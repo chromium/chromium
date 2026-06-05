@@ -261,6 +261,7 @@ test("crypto_unittests") {
   deps = [
     ":crypto",
     ":test_support",
+    ":tpm",
     ":tpm_unittests",
     "//base",
     "//base/test:run_all_unittests",

@@ -4,16 +4,26 @@
 
 #include "crypto/unexportable_key.h"
 
+#include <limits>
 #include <optional>
 #include <tuple>
 
+#include "base/check.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_rust.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/sign.h"
+#include "crypto/tpm.rs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -29,6 +39,24 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::Return;
+
+// Small helper to create a seriailzed TPM2_Certify response. This allows us to
+// use tpm.rs in the test expectations.
+std::vector<uint8_t> ConstructFakeTpmResponse(
+    base::span<const uint8_t> statement,
+    base::span<const uint8_t> signature) {
+  size_t size = 2 + 4 + 4 + 2 + statement.size() + signature.size();
+  std::vector<uint8_t> resp(size);
+  base::SpanWriter<uint8_t> writer(resp);
+  writer.WriteU16BigEndian(0x8001);  // TPM_ST_NO_SESSIONS
+  writer.WriteU32BigEndian(size);
+  writer.WriteU32BigEndian(0);  // responseCode = TPM_RC_SUCCESS
+  writer.WriteU16BigEndian(statement.size());
+  writer.Write(statement);
+  writer.Write(signature);
+  CHECK_EQ(writer.remaining(), 0u);
+  return resp;
+}
 
 enum class Provider {
   kTPM,
@@ -453,6 +481,51 @@ TEST_P(UnexportableKeyTest, AttestationKeyMock) {
   EXPECT_EQ(statement->format, crypto::AttestationStatement::kTpm);
   EXPECT_THAT(statement->statement, ElementsAre(1, 2, 3));
   EXPECT_THAT(statement->signature, ElementsAre(4, 5, 6));
+}
+
+TEST_P(UnexportableKeyTest, FakeAttestationWorkflows) {
+  if (provider_type() != Provider::kFake) {
+    GTEST_SKIP() << "Test is only for fake provider.";
+  }
+  crypto::ScopedFakeUnexportableKeyProvider fake;
+  auto provider = CreateProvider();
+  ASSERT_TRUE(provider);
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  ASSERT_TRUE(attestation_key);
+
+  auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
+  ASSERT_TRUE(signing_key);
+
+  static constexpr auto kChallenge = std::to_array<uint8_t>({1, 2, 3, 4});
+  ASSERT_OK_AND_ASSIGN(
+      crypto::AttestationStatement statement,
+      attestation_key->CertifySlowly(*signing_key, kChallenge));
+  EXPECT_EQ(statement.format, crypto::AttestationStatement::kTpm);
+
+  std::vector<uint8_t> fake_resp =
+      ConstructFakeTpmResponse(statement.statement, statement.signature);
+  crypto::tpm::CertifyResponse parsed = crypto::tpm::parse_certify_response(
+      base::SpanToRustSlice(fake_resp), base::SpanToRustSlice(kChallenge));
+  EXPECT_EQ(parsed.result, crypto::tpm::ParseResult::Ok);
+  EXPECT_EQ(parsed.tpm_response_code, 0u);
+  EXPECT_EQ(base::span(parsed.statement), base::span(statement.statement));
+  EXPECT_EQ(base::span(parsed.signature), base::span(statement.signature));
+
+  crypto::tpm::VerificationResult verified = crypto::tpm::verify_signature(
+      base::SpanToRustSlice(parsed.statement),
+      base::SpanToRustSlice(parsed.signature),
+      base::SpanToRustSlice(attestation_key->GetSubjectPublicKeyInfo()));
+  EXPECT_EQ(verified, crypto::tpm::VerificationResult::Ok);
+
+  std::vector<uint8_t> wrapped_attestation = attestation_key->GetWrappedKey();
+  auto loaded_attestation_key =
+      provider->FromWrappedAttestationKeySlowly(wrapped_attestation);
+  ASSERT_TRUE(loaded_attestation_key);
+  EXPECT_EQ(loaded_attestation_key->Algorithm(), algorithm());
 }
 
 }  // namespace
