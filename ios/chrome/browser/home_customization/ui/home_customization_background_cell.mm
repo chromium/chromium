@@ -322,11 +322,8 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   BOOL hasImageBackground =
       [self.traitCollection boolForNewTabPageImageBackgroundTrait];
 
-  UIView* logoView = _searchEngineLogoMediator.view;
-
   if (hasImageBackground) {
-    _searchEngineLogoMediator.usesMonochromeLogo = YES;
-    logoView.tintColor = [UIColor whiteColor];
+    [_searchEngineLogoMediator setLogoTintColor:[UIColor whiteColor]];
     _omniboxView.backgroundColor =
         [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor];
     _magicStackView.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
@@ -337,8 +334,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   }
 
   if (colorPalette) {
-    _searchEngineLogoMediator.usesMonochromeLogo = YES;
-    logoView.tintColor = colorPalette.tintColor;
+    [_searchEngineLogoMediator setLogoTintColor:colorPalette.tintColor];
     self.innerContentView.backgroundColor = colorPalette.primaryColor;
     _omniboxView.backgroundColor = colorPalette.omniboxColor;
     _magicStackView.backgroundColor = colorPalette.secondaryCellColor;
@@ -346,8 +342,7 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     return;
   }
 
-  _searchEngineLogoMediator.usesMonochromeLogo = NO;
-  logoView.tintColor = nil;
+  [_searchEngineLogoMediator setLogoTintColor:nil];
   self.innerContentView.backgroundColor =
       [UIColor colorNamed:@"ntp_background_color"];
   _omniboxView.backgroundColor =

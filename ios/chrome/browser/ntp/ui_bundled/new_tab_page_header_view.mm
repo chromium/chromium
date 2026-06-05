@@ -883,7 +883,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   CGFloat maxTopMarginDiff = fakeOmniboxHeight - locationBarHeight -
                              kAdaptiveLocationBarVerticalMargin;
   topMarginConstraint.constant =
-      -content_suggestions::SearchFieldTopMargin(self.logoState) -
+      -content_suggestions::SearchFieldTopMargin(self.searchEngineLogoState) -
       maxTopMarginDiff * progress;
   heightConstraint.constant =
       ntp_header::kFakeLocationBarTopConstraint -
@@ -1237,24 +1237,22 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self updatePlaceholderText];
 }
 
-- (void)setSearchEngineLogoMediator:
-    (SearchEngineLogoMediator*)searchEngineLogoMediator {
-  if (_searchEngineLogoMediator) {
-    [_searchEngineLogoMediator.view removeFromSuperview];
+- (void)setSearchEngineLogoView:(UIView*)searchEngineLogoView {
+  if (_searchEngineLogoView == searchEngineLogoView) {
+    return;
   }
-  _searchEngineLogoMediator = searchEngineLogoMediator;
-  if (_searchEngineLogoMediator) {
-    _searchEngineLogoMediator.consumer = self;
-    [self insertSubview:_searchEngineLogoMediator.view
-           belowSubview:self.toolBarView];
-    _searchEngineLogoMediator.view.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    _searchEngineLogoMediator.view.accessibilityIdentifier =
+  if (_searchEngineLogoView) {
+    [_searchEngineLogoView removeFromSuperview];
+  }
+  _searchEngineLogoView = searchEngineLogoView;
+  if (_searchEngineLogoView) {
+    [self insertSubview:_searchEngineLogoView belowSubview:self.toolBarView];
+    _searchEngineLogoView.translatesAutoresizingMaskIntoConstraints = NO;
+    _searchEngineLogoView.accessibilityIdentifier =
         ntp_home::NTPLogoAccessibilityID();
-    [self addConstraintsForLogoView:_searchEngineLogoMediator.view
+    [self addConstraintsForLogoView:_searchEngineLogoView
                         fakeOmnibox:self.fakeOmniboxContainer
                       andHeaderView:self];
-    [self applyBackgroundTheme];
   }
 }
 
@@ -1428,28 +1426,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Fakebox coloring looks at image/color/default to determine correct colors.
   [self setFakeboxColorsWithProgress:_lastAnimationPercent];
 
-  BOOL hasBlurredBackground =
-      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
-
-  if (IsNTPBackgroundCustomizationEnabled()) {
-    if (hasBlurredBackground) {
-      self.searchEngineLogoMediator.usesMonochromeLogo = YES;
-      self.searchEngineLogoMediator.view.tintColor = UIColor.whiteColor;
-    } else {
-      NewTabPageColorPalette* colorPalette =
-          [self.traitCollection objectForNewTabPageTrait];
-      if (colorPalette) {
-        self.searchEngineLogoMediator.usesMonochromeLogo = YES;
-        self.searchEngineLogoMediator.view.tintColor = colorPalette.tintColor;
-      } else {
-        self.searchEngineLogoMediator.usesMonochromeLogo = NO;
-        self.searchEngineLogoMediator.view.tintColor = nil;
-      }
-    }
-  } else {
-    self.searchEngineLogoMediator.usesMonochromeLogo = NO;
-    self.searchEngineLogoMediator.view.tintColor = nil;
-  }
 
   [self.fakeLocationBar applyBackgroundTheme];
 }
@@ -1603,7 +1579,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     if (canShowTabStrip || !isSplitToolbarMode) {
       offset += content_suggestions::FakeOmniboxHeight();
       if (canShowTabStrip) {
-        offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
+        offset -= content_suggestions::SearchFieldTopMargin(
+            self.searchEngineLogoState);
       }
     }
     return offset;
@@ -1631,7 +1608,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
             content_suggestions::FakeOmniboxHeight();
 
   if (canShowTabStrip) {
-    offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
+    offset -=
+        content_suggestions::SearchFieldTopMargin(self.searchEngineLogoState);
   } else {
     offset -= self.safeAreaInsets.top + topToolbarHeight;
   }
@@ -2173,7 +2151,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)updateLogoForOffset:(CGFloat)offset {
-  self.searchEngineLogoMediator.view.alpha =
+  self.searchEngineLogoView.alpha =
       std::max(1 - [self searchFieldProgressForOffset:offset], 0.0);
 }
 

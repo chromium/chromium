@@ -762,7 +762,8 @@
   headerView.toolbarDelegate = self.toolbarDelegate;
   headerView.mutator = self.NTPMediator;
   [headerView setupSubviews];
-  [headerView setSearchEngineLogoMediator:_searchEngineLogoMediator];
+  headerView.searchEngineLogoView = _searchEngineLogoMediator.view;
+  _searchEngineLogoMediator.consumer = headerView;
 }
 
 // Configures `self.contentSuggestionsCoordinator`.
@@ -789,6 +790,7 @@
       ios::PlaceholderServiceFactory::GetForProfile(self.profile);
   NTPMediator.placeholderService = placeholderService;
   NTPMediator.imageUpdater = self.headerView;
+  NTPMediator.logoMediator = _searchEngineLogoMediator;
 
   [NTPMediator setUp];
 }

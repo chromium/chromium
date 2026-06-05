@@ -8,17 +8,9 @@
 #import <UIKit/UIKit.h>
 
 @class NewTabPageColorPalette;
-@class SearchEngineLogoMediator;
 
 // Handles updates to the NTP header.
 @protocol NewTabPageHeaderConsumer <NSObject>
-
-// Exposes view and methods to drive the doodle.
-// TODO(crbug.com/436228514): The mediator should not be passed to the
-// consumer.
-- (void)setSearchEngineLogoMediator:
-    (SearchEngineLogoMediator*)searchEngineLogoMediator;
-
 // Sets whether voice search is currently enabled.
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled;
 

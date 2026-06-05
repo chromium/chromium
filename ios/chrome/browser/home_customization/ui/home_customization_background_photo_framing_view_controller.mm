@@ -200,9 +200,7 @@ const CGFloat kGradientSpacingAboveInstructions = 150;
   UIView* logoView = searchEngineLogoMediator.view;
   logoView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  searchEngineLogoMediator.usesMonochromeLogo = YES;
-  // Real logo is always white, even in dark mode.
-  logoView.tintColor = UIColor.whiteColor;
+  [searchEngineLogoMediator setLogoTintColor:UIColor.whiteColor];
   [topSection addArrangedSubview:logoView];
 
   [NSLayoutConstraint activateConstraints:@[

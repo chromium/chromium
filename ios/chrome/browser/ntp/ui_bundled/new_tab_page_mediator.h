@@ -44,6 +44,7 @@ class HomeBackgroundCustomizationService;
 class NTPBackgroundImageCacheService;
 class PlaceholderService;
 class PrefService;
+@class SearchEngineLogoMediator;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 class UserUploadedImageManager;
@@ -115,6 +116,9 @@ class UserUploadedImageManager;
 // The screen size of the scene displaying this NTP, used for downsampling
 // user-uploaded background images. Set by the coordinator.
 @property(nonatomic, assign) CGSize screenSize;
+
+// Mediator for the search engine logo.
+@property(nonatomic, weak) SearchEngineLogoMediator* logoMediator;
 
 // Indicates whether the feed header should be visible.
 - (BOOL)isFeedHeaderVisible;

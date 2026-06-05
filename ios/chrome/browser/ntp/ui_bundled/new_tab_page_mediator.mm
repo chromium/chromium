@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/ntp/model/ntp_background_image_cache_service.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
@@ -771,6 +772,11 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [traitAccessor setBoolForNewTabPageImageBackgroundTrait:(image != nil)];
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
 
+  UIColor* tintColor = (IsNTPBackgroundCustomizationEnabled() && image)
+                           ? UIColor.whiteColor
+                           : nil;
+  [self.logoMediator setLogoTintColor:tintColor];
+
   if (self.webState) {
     CleanupImageFetcherCacheIfNeeded(
         _prefService, self.webState->GetBrowserState(), self, customBackground);
@@ -976,6 +982,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 
     [traitAccessor setObjectForNewTabPageTrait:colorPalette];
     [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
+    UIColor* tintColor =
+        IsNTPBackgroundCustomizationEnabled() ? colorPalette.tintColor : nil;
+    [self.logoMediator setLogoTintColor:tintColor];
     if (initialLoad) {
       base::UmaHistogramEnumeration(
           "IOS.HomeCustomization.Background.Ntp.Loaded",
@@ -988,6 +997,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   // reverting to the default colors defined by the trait.
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
   [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
+  [self.logoMediator setLogoTintColor:nil];
   base::UmaHistogramEnumeration("IOS.HomeCustomization.Background.Ntp.Loaded",
                                 HomeCustomizationBackgroundStyle::kDefault);
 }

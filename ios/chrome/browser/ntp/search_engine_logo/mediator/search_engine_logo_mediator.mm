@@ -227,6 +227,10 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   _usesMonochromeLogo = usesMonochromeLogo;
   [self setContainerLogoIfAllowed];
 }
+- (void)setLogoTintColor:(UIColor*)tintColor {
+  self.usesMonochromeLogo = (tintColor != nil);
+  self.view.tintColor = tintColor;
+}
 
 #pragma mark - Accessors
 

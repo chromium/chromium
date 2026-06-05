@@ -24,7 +24,6 @@
 @protocol HelpCommands;
 @protocol FakeboxFocuser;
 @class OmniboxContainerView;
-@class SearchEngineLogoMediator;
 enum class SearchEngineLogoState;
 @class TabGroupIndicatorView;
 
@@ -86,11 +85,8 @@ enum class SearchEngineLogoState;
 // Whether the NTP is currently showing.
 @property(nonatomic, assign, getter=isShowing) BOOL showing;
 
-// The mediator for the search engine logo.
-@property(nonatomic, strong) SearchEngineLogoMediator* searchEngineLogoMediator;
-
-// The logo state.
-@property(nonatomic, assign) SearchEngineLogoState logoState;
+// The search engine logo view.
+@property(nonatomic, weak) UIView* searchEngineLogoView;
 
 // Initializes the view with the Lens and customization menu badge status.
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton

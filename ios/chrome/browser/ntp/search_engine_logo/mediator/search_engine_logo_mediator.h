@@ -45,6 +45,10 @@ class WebState;
                     offTheRecord:(BOOL)offTheRecord NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Sets the tint color for the logo. If `tintColor` is not nil, the logo will be
+// monochrome with the specified tint color. Otherwise, it will be multicolor.
+- (void)setLogoTintColor:(UIColor*)tintColor;
+
 // Disconnect the instance.
 - (void)disconnect;
 
