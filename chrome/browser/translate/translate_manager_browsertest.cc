@@ -1293,8 +1293,16 @@ class TranslateManagerBackForwardCacheBrowserTest
   logging::ScopedVmoduleSwitches vmodule_switches_;
 };
 
+// TODO(crbug.com/520500034): Re-enable once consistent failures are fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_RestorePageTranslatorAfterBackForwardCache \
+  DISABLED_RestorePageTranslatorAfterBackForwardCache
+#else
+#define MAYBE_RestorePageTranslatorAfterBackForwardCache \
+  RestorePageTranslatorAfterBackForwardCache
+#endif
 IN_PROC_BROWSER_TEST_F(TranslateManagerBackForwardCacheBrowserTest,
-                       RestorePageTranslatorAfterBackForwardCache) {
+                       MAYBE_RestorePageTranslatorAfterBackForwardCache) {
   SetTranslateScript(kTestValidScript);
 
   EXPECT_TRUE(content::NavigateToURL(web_contents(), GetURL("a.com")));
