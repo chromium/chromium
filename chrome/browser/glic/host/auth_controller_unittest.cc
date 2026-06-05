@@ -237,4 +237,125 @@ TEST_F(AuthControllerTest,
   EXPECT_EQ(future2.Get(), mojom::PrepareForClientResult::kSuccess);
 }
 
+TEST_F(AuthControllerTest, CookieSyncOnError_Disabled) {
+  // If kGlicCookieSyncOnError is disabled (but kGlicCookieSyncOnTokenChange is
+  // enabled), OnClientError should NOT trigger a sync immediately.
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicCookieSyncOnTokenChange},
+      /*disabled_features=*/{features::kGlicCookieSyncOnError});
+
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 0);
+
+  // However, calling CheckAuthBeforeLoad should attempt a sync.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  synchronizer_->WaitForSyncToComplete();
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+}
+
+TEST_F(AuthControllerTest, CookieSyncOnError_Enabled) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kGlicCookieSyncOnError, {{"min_interval", "5m"}}},
+       {features::kGlicCookieSyncOnTokenChange, {}}},
+      {});
+
+  // OnClientError should trigger sync immediately.
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  synchronizer_->WaitForSyncToComplete();
+
+  // Subsequent CheckAuthBeforeLoad should NOT attempt sync because sync is
+  // already complete.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+}
+
+TEST_F(AuthControllerTest, CookieSyncOnError_Tolerance) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kGlicCookieSyncOnError, {{"min_interval", "5m"}}},
+       {features::kGlicCookieSyncOnTokenChange, {}}},
+      {});
+
+  // First error should trigger sync immediately.
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  synchronizer_->WaitForSyncToComplete();
+
+  // Second error immediately after should NOT trigger immediate sync.
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  // Fast forward 4 minutes (less than the 5 minute minimum interval).
+  task_environment_.FastForwardBy(base::Minutes(4));
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+
+  // But calling CheckAuthBeforeLoad should still trigger sync because sync is
+  // needed.
+  {
+    base::test::TestFuture<mojom::PrepareForClientResult> future;
+    auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+    EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
+    synchronizer_->WaitForSyncToComplete();
+    EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+  }
+
+  // Clear interval by fast forwarding 6 minutes.
+  task_environment_.FastForwardBy(base::Minutes(6));
+
+  // Trigger error again.
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 3);
+  synchronizer_->WaitForSyncToComplete();
+
+  // Fast forward another 5 minutes and 1 second (exceeds the 5 minute
+  // interval).
+  task_environment_.FastForwardBy(base::Seconds(301));
+  auth_controller_->OnClientError();
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 4);
+  synchronizer_->WaitForSyncToComplete();
+}
+
+TEST_F(AuthControllerTest, CookieSyncOnError_TransientError) {
+  feature_list_.InitWithFeaturesAndParameters(
+      {{features::kGlicCookieSyncOnError, {{"min_interval", "5m"}}},
+       {features::kGlicCookieSyncOnTokenChange, {}}},
+      {});
+
+  // kUnauthenticated transient error should trigger sync immediately.
+  auth_controller_->OnClientTransientError(
+      mojo_base::mojom::AbslStatusCode::kUnauthenticated);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 1);
+  synchronizer_->WaitForSyncToComplete();
+
+  // Fast forward 6 minutes to clear the interval.
+  task_environment_.FastForwardBy(base::Minutes(6));
+
+  // kInternal transient error should trigger sync.
+  auth_controller_->OnClientTransientError(
+      mojo_base::mojom::AbslStatusCode::kInternal);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
+  synchronizer_->WaitForSyncToComplete();
+
+  // Fast forward 6 minutes to clear the interval.
+  task_environment_.FastForwardBy(base::Minutes(6));
+
+  // kNotFound transient error should NOT trigger sync.
+  auth_controller_->OnClientTransientError(
+      mojo_base::mojom::AbslStatusCode::kNotFound);
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
+
+  // And CheckAuthBeforeLoad should not trigger sync after kNotFound since
+  // kNotFound does not need sync.
+  base::test::TestFuture<mojom::PrepareForClientResult> future;
+  auth_controller_->CheckAuthBeforeLoad(future.GetCallback());
+  EXPECT_EQ(synchronizer_->copy_cookies_called_count(), 2);
+  EXPECT_EQ(future.Get(), mojom::PrepareForClientResult::kSuccess);
+}
+
 }  // namespace glic

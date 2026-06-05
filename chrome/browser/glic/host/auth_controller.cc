@@ -188,6 +188,7 @@ void AuthController::ForceSyncCookies(
 
 void AuthController::OnClientError() {
   profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync, true);
+  MaybeSyncCookiesOnError();
 }
 
 void AuthController::OnClientTransientError(
@@ -197,6 +198,7 @@ void AuthController::OnClientTransientError(
     case mojo_base::mojom::AbslStatusCode::kInternal:
       profile_->GetPrefs()->SetBoolean(prefs::kGlicPartitionNeedsCookieSync,
                                        true);
+      MaybeSyncCookiesOnError();
       break;
     default:
       break;
@@ -246,6 +248,21 @@ void AuthController::CookieSyncBeforeLoadDone(
 void AuthController::SetCookieSynchronizerForTesting(
     std::unique_ptr<GlicCookieSynchronizer> synchronizer) {
   cookie_synchronizer_ = std::move(synchronizer);
+}
+
+void AuthController::MaybeSyncCookiesOnError() {
+  if (!base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) ||
+      !base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
+    return;
+  }
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta min_interval =
+      features::kGlicCookieSyncOnErrorMinInterval.Get();
+  if (last_sync_on_error_time_.is_null() ||
+      now - last_sync_on_error_time_ >= min_interval) {
+    last_sync_on_error_time_ = now;
+    ForceSyncCookies(base::DoNothing());
+  }
 }
 
 }  // namespace glic

@@ -100,6 +100,7 @@ class AuthController : public signin::IdentityManager::Observer {
   void CookieSyncBeforeLoadDone(
       base::OnceCallback<void(mojom::PrepareForClientResult)> callback,
       bool sync_success);
+  void MaybeSyncCookiesOnError();
 
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -107,6 +108,7 @@ class AuthController : public signin::IdentityManager::Observer {
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       observation_;
+  base::TimeTicks last_sync_on_error_time_;
   base::WeakPtrFactory<AuthController> weak_ptr_factory_{this};
 };
 
