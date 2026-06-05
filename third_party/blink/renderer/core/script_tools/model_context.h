@@ -197,6 +197,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
 
+  bool IsOriginIsolatedOrFileUrl() const;
+
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      const base::UnguessableToken& invocation_id,
                      const String& name,

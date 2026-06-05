@@ -133,6 +133,23 @@ bool SimNetwork::FillNavigationParamsResponse(WebNavigationParams* params) {
   for (const auto& http_header : request->response_http_headers_)
     params->response.AddHttpHeaderField(http_header.key, http_header.value);
 
+  // SimTest mock navigations default to being origin-keyed unless the
+  // "Origin-Agent-Cluster: ?0" HTTP header is explicitly provided.
+  bool origin_keyed = true;
+  auto it_oac = request->response_http_headers_.find("Origin-Agent-Cluster");
+  if (it_oac != request->response_http_headers_.end() &&
+      it_oac->value == "?0") {
+    origin_keyed = false;
+  }
+
+  if (origin_keyed) {
+    WebOriginKeyedAgentClusterKey origin_key;
+    origin_key.origin = WebSecurityOrigin::Create(params->url);
+    params->agent_cluster_key = WebAgentClusterKey(origin_key);
+  } else {
+    params->agent_cluster_key = WebAgentClusterKey(params->url);
+  }
+
   auto body_loader = std::make_unique<StaticDataNavigationBodyLoader>();
   request->UsedForNavigation(body_loader.get());
   params->body_loader = std::move(body_loader);

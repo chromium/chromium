@@ -60,6 +60,8 @@ namespace {
 const char kPermissionPolicyNotEnabledError[] =
     "Access to the feature \"tools\" is disallowed by permissions policy.";
 const char kInactiveDocumentError[] = "The document is not active.";
+const char kDocumentDomainEnabledError[] =
+    "document.modelContext cannot be used when document.domain is enabled.";
 
 String ValidateAndStringifyObject(ScriptState* script_state,
                                   ExceptionState& exception_state,
@@ -268,6 +270,11 @@ void ModelContext::registerTool(ScriptState* script_state,
   if (!document_->IsActive()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kInactiveDocumentError);
+    return;
+  }
+
+  if (!IsOriginIsolatedOrFileUrl()) {
+    exception_state.ThrowSecurityError(kDocumentDomainEnabledError);
     return;
   }
 
@@ -655,6 +662,10 @@ void ModelContext::RegisterDeclarativeTool(
     return;
   }
 
+  if (!IsOriginIsolatedOrFileUrl()) {
+    return;
+  }
+
   // TODO(https://crbug.com/509983792): Surface an error if the tool's name is
   // not valid.
   UseCounter::Count(document_,
@@ -783,6 +794,12 @@ const AtomicString& ModelContext::InterfaceName() const {
   return name;
 }
 
+bool ModelContext::IsOriginIsolatedOrFileUrl() const {
+  return document_->domWindow()->originAgentCluster() ||
+         document_->GetExecutionContext()->GetSecurityOrigin()->Protocol() ==
+             "file";
+}
+
 ScriptPromise<IDLSequence<RegisteredTool>> ModelContext::getTools(
     ScriptState* script_state,
     const ModelContextGetToolOptions* options) {
@@ -791,6 +808,13 @@ ScriptPromise<IDLSequence<RegisteredTool>> ModelContext::getTools(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                            kInactiveDocumentError));
+  }
+
+  if (!IsOriginIsolatedOrFileUrl()) {
+    return ScriptPromise<IDLSequence<RegisteredTool>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kSecurityError,
+                                           kDocumentDomainEnabledError));
   }
 
   if (!ExecutionContext::From(script_state)
@@ -885,6 +909,13 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
         script_state,
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kInvalidStateError,
                                            kInactiveDocumentError));
+  }
+
+  if (!IsOriginIsolatedOrFileUrl()) {
+    return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
+        script_state,
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kSecurityError,
+                                           kDocumentDomainEnabledError));
   }
 
   if (!ExecutionContext::From(script_state)

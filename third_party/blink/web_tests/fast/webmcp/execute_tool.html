@@ -43,11 +43,18 @@ function print(message) {
     document.getElementById("console").appendChild(document.createTextNode(message + "\n"));
 }
 
-async function runTests() {
+function onloadInit() {
     if (window.testRunner) {
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
     }
+    // Declarative tool registration is scheduled asynchronously on the DOM manipulation
+    // task runner, so we yield execution to the next event loop turn to ensure the tool
+    // has completed registration.
+    requestAnimationFrame(runTests);
+}
+
+async function runTests() {
 
     if (!window.document.modelContext) {
         print("FAIL: modelContext API disabled");
@@ -136,7 +143,7 @@ async function runTests() {
 
 </script>
 </head>
-<body onload="runTests();">
+<body onload="onloadInit();">
 This tests that document.navigator.modelContextTesting works correctly.
 <pre id="console">
 </pre>
