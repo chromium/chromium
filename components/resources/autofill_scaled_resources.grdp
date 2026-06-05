@@ -69,7 +69,9 @@
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="google_chrome/autofill/googlepay_dark.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK" file="google_chrome/autofill/googlepay_with_gradient_dark.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_SMALL" file="google_chrome/autofill/googlepay_28.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL" file="google_chrome/autofill/googlepay_with_gradient_small.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL" file="google_chrome/autofill/googlepay_28_dark.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK_SMALL" file="google_chrome/autofill/googlepay_with_gradient_dark_small.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_PILL" file="google_chrome/autofill/googlepay_pill.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_PILL_WITH_GRADIENT" file="google_chrome/autofill/googlepay_pill_with_gradient.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_AFFIRM" file="google_chrome/autofill/googlepay_affirm.png" />
@@ -121,7 +123,9 @@
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_SMALL" file="autofill/cc-generic.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_SMALL" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_DARK_SMALL" file="autofill/cc-generic.png" />
+      <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK_SMALL" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_PILL" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_PILL_WITH_GRADIENT" file="autofill/cc-generic.png" />
       <structure type="chrome_scaled_image" name="IDR_AUTOFILL_GOOGLE_PAY_AFFIRM" file="autofill/pay_over_time.png" />
