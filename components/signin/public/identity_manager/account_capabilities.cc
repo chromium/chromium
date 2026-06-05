@@ -35,13 +35,26 @@ AccountCapabilities& AccountCapabilities::operator=(
 AccountCapabilities& AccountCapabilities::operator=(
     AccountCapabilities&& other) noexcept = default;
 
+namespace {
+std::optional<std::vector<std::string_view>>& GetSupportedCapabilitiesCache() {
+  static base::NoDestructor<std::optional<std::vector<std::string_view>>> cache;
+  return *cache;
+}
+}  // namespace
+
 // static
 base::span<const std::string_view>
 AccountCapabilities::GetSupportedAccountCapabilityNames() {
-  static const base::NoDestructor<std::vector<std::string_view>>
-      supported_capabilities(GetSupportedAccountCapabilityNamesInternal());
+  auto& cache = GetSupportedCapabilitiesCache();
+  if (!cache.has_value()) {
+    cache = GetSupportedAccountCapabilityNamesInternal();
+  }
+  return *cache;
+}
 
-  return *supported_capabilities;
+// static
+void AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting() {
+  GetSupportedCapabilitiesCache().reset();
 }
 
 // static

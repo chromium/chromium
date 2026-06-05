@@ -33,6 +33,7 @@
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
@@ -190,6 +191,7 @@ void IdentityTestEnvironment::Initialize() {
       std::make_unique<TestIdentityManagerObserver>(identity_manager());
   diagnostics_observation_.Observe(identity_manager());
   identity_manager_observation_.Observe(identity_manager());
+  AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting();
 }
 
 IdentityTestEnvironment::IdentityTestEnvironment(
@@ -388,6 +390,7 @@ IdentityTestEnvironment::~IdentityTestEnvironment() {
   if (owned_identity_manager_) {
     owned_identity_manager_->Shutdown();
   }
+  AccountCapabilities::ResetSupportedAccountCapabilityNamesForTesting();
 }
 
 IdentityManager* IdentityTestEnvironment::identity_manager() {

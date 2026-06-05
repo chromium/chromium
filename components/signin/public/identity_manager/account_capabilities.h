@@ -55,6 +55,10 @@ class AccountCapabilities {
   const base::flat_map<std::string, bool>& ConvertToAccountCapabilitiesIOS();
 #endif
 
+  // Resets the cached list of supported account capability names.
+  // Useful for testing scenarios where feature flags change between tests.
+  static void ResetSupportedAccountCapabilityNamesForTesting();
+
   // clang-format off
   // keep-sorted start newline_separated=yes sticky_prefixes=#if,BUILDFLAG group_prefixes=#endif,can,has,is,must
   // clang-format on

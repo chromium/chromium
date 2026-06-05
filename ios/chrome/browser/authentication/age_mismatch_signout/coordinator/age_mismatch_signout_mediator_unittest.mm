@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_constants.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_consumer.h"
@@ -41,6 +42,7 @@ class AgeMismatchSignoutMediatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
+  signin::IdentityTestEnvironment identity_test_environment_;
   FakeSystemIdentity* identity_;
   id consumer_mock_;
 };
