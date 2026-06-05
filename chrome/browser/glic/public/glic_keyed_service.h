@@ -88,6 +88,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // GlicKeyedService.
   static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
       GlicKeyedService* glic_keyed_service);
+  bool IsGlicShortcutActive();
+  bool IsBottomBarEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Convenience method, may return nullptr.

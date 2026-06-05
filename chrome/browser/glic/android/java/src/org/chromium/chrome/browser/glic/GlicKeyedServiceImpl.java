@@ -9,11 +9,16 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -80,6 +85,30 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     public void setUserEnabledActuationOnWeb(boolean enabled) {
         if (mNativePtr == 0) return;
         GlicKeyedServiceImplJni.get().setUserEnabledActuationOnWeb(mNativePtr, enabled);
+    }
+
+    @Override
+    @CalledByNative
+    public boolean isGlicShortcutActive(Profile profile) {
+        if (BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext())) {
+            return false;
+        }
+        int setting = AdaptiveToolbarPrefs.getCustomizationSetting();
+        if (setting == AdaptiveToolbarButtonVariant.GLIC) {
+            return true;
+        }
+        if (setting == AdaptiveToolbarButtonVariant.AUTO) {
+            return AdaptiveToolbarFeatures.getDefaultButtonVariant(
+                            ContextUtils.getApplicationContext(), profile)
+                    == AdaptiveToolbarButtonVariant.GLIC;
+        }
+        return false;
+    }
+
+    @Override
+    @CalledByNative
+    public boolean isBottomBarEnabled() {
+        return BottomBarConfigUtils.isBottomBarEnabled(ContextUtils.getApplicationContext());
     }
 
     @CalledByNative
