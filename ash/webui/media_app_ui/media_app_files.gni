@@ -28,7 +28,8 @@ media_app_mojom_sources = [
   "chromeos/services/machine_learning/public/mojom/text_classifier.mojom-webui.ts",
 ]
 
-# Contains only the file name (with extension) part of `media_app_mojom_sources`.
+# Contains only the file name (with extension) part of
+# `media_app_mojom_sources`.
 media_app_mojom_files = []
 foreach(path, media_app_mojom_sources) {
   media_app_mojom_files += [ get_path_info(path, "file") ]
