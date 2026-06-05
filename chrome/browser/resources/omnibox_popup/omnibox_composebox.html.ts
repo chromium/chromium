@@ -31,7 +31,12 @@ export function getHtml(this: OmniboxComposeboxElement) {
         @dismiss-error-scrim="${this.onDismissErrorScrim}">
     </ntp-error-scrim>
     <div id="composebox" part="composebox" ?inert="${!!this.errorMessage}"
-      @keydown="${this.onKeydown}">
+        @keydown="${this.onKeydown}"
+        @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
+        @dragover="${this.dragAndDropHandler_.handleDragOver}"
+        @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
+        @drop="${this.dragAndDropHandler_.handleDrop}"
+        @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
@@ -39,6 +44,7 @@ export function getHtml(this: OmniboxComposeboxElement) {
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
             .input="${this.input}"
+            .smartComposeEnabled="${this.smartComposeEnabled}"
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .submitEnabled="${this.submitEnabled}"
             .entrypointName="${this.entrypointName}"
