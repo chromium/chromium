@@ -55,7 +55,10 @@ import java.io.IOException;
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxAttachmentDetailsFetcherUnitTest {
     private static final long FILE_SIZE_SMALL = 1L;
+    private static final String SAMPLE_TITLE = "file.txt";
     private static final byte[] SAMPLE_DATA = new byte[] {1, 2, 3};
+    private static final Uri SAMPLE_URI = Uri.parse("content://media/external/1");
+    private static final Uri SAMPLE_URI_NO_FINAL_PATH_SEGMENT = Uri.parse("content://media");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -89,13 +92,13 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
      * load those arguments into an attachment.
      */
     private void setupFetcherWithAttachment(
-            String title,
-            String mimeType,
-            byte[] data,
+            Uri attachmentUri,
+            @Nullable String title,
+            @Nullable String mimeType,
+            byte @Nullable [] data,
             @Nullable Bitmap thumbnail,
-            long sizeBytes,
+            @Nullable Long sizeBytes,
             @FuseboxAttachmentButtonType int buttonType) {
-        Uri attachmentUri = Uri.parse("content://media/external/1");
         MatrixCursor cursor =
                 new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
         cursor.addRow(new Object[] {title, sizeBytes});
@@ -104,7 +107,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         try {
             lenient()
                     .when(mContentResolver.openInputStream(attachmentUri))
-                    .thenReturn(new ByteArrayInputStream(data));
+                    .thenReturn(data == null ? null : new ByteArrayInputStream(data));
             if (thumbnail != null) {
                 when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
             } else {
@@ -125,12 +128,24 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     }
 
     private void setupFetcherWithAttachment(
-            String title,
-            String mimeType,
-            byte[] data,
+            @Nullable String title,
+            @Nullable String mimeType,
+            byte @Nullable [] data,
+            @Nullable Bitmap thumbnail,
+            @Nullable Long sizeBytes,
+            @FuseboxAttachmentButtonType int buttonType) {
+        setupFetcherWithAttachment(
+                SAMPLE_URI, title, mimeType, data, thumbnail, sizeBytes, buttonType);
+    }
+
+    private void setupFetcherWithAttachment(
+            @Nullable String title,
+            @Nullable String mimeType,
+            byte @Nullable [] data,
             @Nullable Bitmap thumbnail,
             @FuseboxAttachmentButtonType int buttonType) {
-        setupFetcherWithAttachment(title, mimeType, data, thumbnail, FILE_SIZE_SMALL, buttonType);
+        setupFetcherWithAttachment(
+                SAMPLE_URI, title, mimeType, data, thumbnail, FILE_SIZE_SMALL, buttonType);
     }
 
     private void setupFetcherWithTxtFileAttachment(long sizeBytes) {
@@ -306,5 +321,119 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 thumbnail,
                 FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
                 buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_imageLargeOnUnmeteredNetwork_passes() {
+        setIsNetworkMetered(false);
+        String title = "large_image.png";
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] data = new byte[] {};
+        Bitmap thumbnail = null;
+        long size = FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES + 1;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, size, buttonType);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                data,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
+                buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_imageLargeOnMeteredNetwork_passes() {
+        setIsNetworkMetered(true);
+        String title = "large_image.png";
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] data = new byte[] {};
+        Bitmap thumbnail = null;
+        long size =
+                FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK + 1;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, size, buttonType);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                data,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
+                buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_nullMimeType_fails() {
+        setupFetcherWithAttachment(
+                SAMPLE_TITLE,
+                /* mimeType= */ null,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                FuseboxAttachmentButtonType.FILES);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_nullTitle_fails() {
+        setupFetcherWithAttachment(
+                SAMPLE_URI_NO_FINAL_PATH_SEGMENT,
+                /* title= */ null,
+                MimeTypeUtils.TEXT_PLAIN_MIME_TYPE,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                FILE_SIZE_SMALL,
+                FuseboxAttachmentButtonType.FILES);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_nullSizeForNonImage_fails() {
+        setupFetcherWithAttachment(
+                SAMPLE_TITLE,
+                MimeTypeUtils.TEXT_PLAIN_MIME_TYPE,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                /* sizeBytes= */ null,
+                FuseboxAttachmentButtonType.FILES);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_nullData_fails() {
+        setupFetcherWithAttachment(
+                SAMPLE_TITLE,
+                MimeTypeUtils.TEXT_PLAIN_MIME_TYPE,
+                /* data= */ null,
+                /* thumbnail= */ null,
+                FuseboxAttachmentButtonType.FILES);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
     }
 }
