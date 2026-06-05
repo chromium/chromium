@@ -31,6 +31,7 @@ class ActorTaskListBubbleRowButton : public views::Button {
 
   std::u16string_view GetTitleText() const;
   std::u16string_view GetSubtitleText() const;
+  views::ImageButton* GetRedirectIconForTesting() { return redirect_icon_; }
 
  private:
   // Update row to reflect an unclickable state.
