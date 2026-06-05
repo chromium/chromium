@@ -137,6 +137,14 @@ struct BuildLstmAttributes {
   std::vector<mojom::RecurrentNetworkActivation> activations;
 };
 
+struct BuildLstmCellAttributes {
+  std::optional<OperandId> bias_operand_id;
+  std::optional<OperandId> recurrent_bias_operand_id;
+  std::optional<OperandId> peephole_weight_operand_id;
+  mojom::LstmWeightLayout layout;
+  std::vector<mojom::RecurrentNetworkActivation> activations;
+};
+
 struct BuildPool2dAttributes {
   std::vector<uint32_t> window_dimensions;
   std::vector<uint32_t> padding;
@@ -277,6 +285,23 @@ struct LstmParams {
   bool is_input_constant;
   bool is_weight_constant;
   bool is_recurrent_weight_constant;
+  std::array<mojom::RecurrentNetworkActivation, 3> activations;
+};
+
+struct LstmCellParams {
+  OperandDataType data_type;
+  uint32_t batch_size;
+  uint32_t input_size;
+  uint32_t hidden_size;
+  mojom::LstmWeightLayout layout;
+  OptionalOperandKind bias_kind;
+  OptionalOperandKind recurrent_bias_kind;
+  OptionalOperandKind peephole_weight_kind;
+  bool is_input_constant;
+  bool is_weight_constant;
+  bool is_recurrent_weight_constant;
+  bool is_hidden_state_constant;
+  bool is_cell_state_constant;
   std::array<mojom::RecurrentNetworkActivation, 3> activations;
 };
 
@@ -828,6 +853,26 @@ auto AnyLstmParams() {
   );
 }
 
+auto AnyLstmCellParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<LstmCellParams>(
+      AnyOperandDataTypeFor(limits.lstm_cell_input.data_types),
+      AnyDimSize(),                 // batch_size
+      AnyDimSize(),                 // input_size
+      AnyDimSize(),                 // hidden_size
+      AnyLstmWeightLayout(),        // layout
+      AnyOptionalOperandKind(),     // bias_kind
+      AnyOptionalOperandKind(),     // recurrent_bias_kind
+      AnyOptionalOperandKind(),     // peephole_weight_kind
+      fuzztest::Arbitrary<bool>(),  // is_input_constant
+      fuzztest::Arbitrary<bool>(),  // is_weight_constant
+      fuzztest::Arbitrary<bool>(),  // is_recurrent_weight_constant
+      fuzztest::Arbitrary<bool>(),  // is_hidden_state_constant
+      fuzztest::Arbitrary<bool>(),  // is_cell_state_constant
+      fuzztest::ArrayOf<3>(AnyRecurrentNetworkActivation())  // activations
+  );
+}
+
 auto AnyMatmulParams() {
   const auto& limits = GetContextPropertiesForTesting().data_type_limits;
   // Bias input dims toward 1 which is broadcastable.
@@ -1046,6 +1091,26 @@ OperandId BuildInputOrConstant(
   OperandId id = builder.BuildInput(name, desc.shape(), desc.data_type());
   named_inputs.insert({std::move(name), data});
   return id;
+}
+
+// Build an optional operand as either absent, a constant, or a named input
+// depending on `state`. When building an input, the data buffer is stored in
+// `optional_operand_data` to keep it alive.
+std::optional<OperandId> BuildOptionalOperand(
+    GraphInfoBuilder& builder,
+    const std::optional<OperandDescriptor>& desc,
+    OptionalOperandKind state,
+    std::string name,
+    uint8_t seed_for_data,
+    std::vector<std::vector<uint8_t>>& optional_operand_data,
+    base::flat_map<std::string, base::span<const uint8_t>>& named_inputs) {
+  if (state == OptionalOperandKind::kNone) {
+    return std::nullopt;
+  }
+  optional_operand_data.emplace_back(desc->PackedByteLength(), seed_for_data);
+  return BuildInputOrConstant(builder, state == OptionalOperandKind::kConstant,
+                              std::move(name), *desc,
+                              optional_operand_data.back(), named_inputs);
 }
 
 struct ConcatDescriptors {
@@ -1875,6 +1940,7 @@ class WebNNGraphImplFuzzerImpl
   void GatherND(GatherNDParams params, uint8_t seed_for_data);
   void Gemm(GemmParams params, uint8_t seed_for_data);
   void Lstm(LstmParams params, uint8_t seed_for_data);
+  void LstmCell(LstmCellParams params, uint8_t seed_for_data);
   void Matmul(MatmulParams params, uint8_t seed_for_data);
   void Pad(PadParams params, uint8_t seed_for_data);
   void Pool2d(Pool2dParams params, uint8_t seed_for_data);
@@ -2427,42 +2493,22 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Lstm(LstmParams params,
   std::vector<std::vector<uint8_t>> optional_operand_data;
   optional_operand_data.reserve(5);
 
-  auto build_optional_operand =
-      [&](const std::optional<OperandDescriptor>& desc,
-          OptionalOperandKind state,
-          std::string name) -> std::optional<OperandId> {
-    switch (state) {
-      case OptionalOperandKind::kNone: {
-        return std::nullopt;
-      }
-      case OptionalOperandKind::kConstant: {
-        // `BuildConstant()` copies the data internally.
-        std::vector<uint8_t> data(desc->PackedByteLength(), seed_for_data);
-        return builder.BuildConstant(desc->shape(), desc->data_type(), data);
-      }
-      case OptionalOperandKind::kInput: {
-        optional_operand_data.emplace_back(desc->PackedByteLength(),
-                                           seed_for_data);
-        OperandId id =
-            builder.BuildInput(name, desc->shape(), desc->data_type());
-        named_inputs.insert({std::move(name), optional_operand_data.back()});
-        return id;
-      }
-    }
-  };
-
   lstm_attr.bias_operand_id =
-      build_optional_operand(bias_desc, params.bias_kind, "bias");
-  lstm_attr.recurrent_bias_operand_id = build_optional_operand(
-      recurrent_bias_desc, params.recurrent_bias_kind, "recurrent_bias");
-  lstm_attr.peephole_weight_operand_id = build_optional_operand(
-      peephole_weight_desc, params.peephole_weight_kind, "peephole_weight");
-  lstm_attr.initial_hidden_state_operand_id = build_optional_operand(
-      initial_hidden_state_desc, params.initial_hidden_state_kind,
-      "initial_hidden_state");
-  lstm_attr.initial_cell_state_operand_id = build_optional_operand(
-      initial_cell_state_desc, params.initial_cell_state_kind,
-      "initial_cell_state");
+      BuildOptionalOperand(builder, bias_desc, params.bias_kind, "bias",
+                           seed_for_data, optional_operand_data, named_inputs);
+  lstm_attr.recurrent_bias_operand_id = BuildOptionalOperand(
+      builder, recurrent_bias_desc, params.recurrent_bias_kind,
+      "recurrent_bias", seed_for_data, optional_operand_data, named_inputs);
+  lstm_attr.peephole_weight_operand_id = BuildOptionalOperand(
+      builder, peephole_weight_desc, params.peephole_weight_kind,
+      "peephole_weight", seed_for_data, optional_operand_data, named_inputs);
+  lstm_attr.initial_hidden_state_operand_id = BuildOptionalOperand(
+      builder, initial_hidden_state_desc, params.initial_hidden_state_kind,
+      "initial_hidden_state", seed_for_data, optional_operand_data,
+      named_inputs);
+  lstm_attr.initial_cell_state_operand_id = BuildOptionalOperand(
+      builder, initial_cell_state_desc, params.initial_cell_state_kind,
+      "initial_cell_state", seed_for_data, optional_operand_data, named_inputs);
 
   std::vector<OperandId> output_operand_ids;
   OperandId output_hidden_state_id =
@@ -2486,6 +2532,165 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Lstm(LstmParams params,
   builder.BuildLstm(input_id, weight_id, recurrent_weight_id,
                     std::move(output_operand_ids), params.steps,
                     params.hidden_size, lstm_attr);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::LstmCell(LstmCellParams params,
+                                                     uint8_t seed_for_data) {
+  if (params.hidden_size > std::numeric_limits<uint32_t>::max() / 4) {
+    return;
+  }
+  const uint32_t four_hidden_size = params.hidden_size * 4;
+
+  // input: [batch_size, input_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto input_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{params.batch_size, params.input_size}, ""));
+
+  // weight: [4 * hidden_size, input_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto weight_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{four_hidden_size, params.input_size}, ""));
+
+  // recurrent_weight: [4 * hidden_size, hidden_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto recurrent_weight_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{four_hidden_size, params.hidden_size}, ""));
+
+  // hidden_state: [batch_size, hidden_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto hidden_state_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{params.batch_size, params.hidden_size}, ""));
+
+  // cell_state: [batch_size, hidden_size]
+  ASSIGN_OR_RETURN_VOID(
+      auto cell_state_desc,
+      OperandDescriptor::Create(
+          this->context_properties(), params.data_type,
+          std::vector<uint32_t>{params.batch_size, params.hidden_size}, ""));
+
+  LstmCellAttributes attributes;
+  attributes.activation_count = 3;
+
+  // Optional: bias [4 * hidden_size]
+  std::optional<OperandDescriptor> bias_desc;
+  if (params.bias_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        bias_desc,
+        OperandDescriptor::Create(this->context_properties(), params.data_type,
+                                  std::vector<uint32_t>{four_hidden_size}, ""));
+    attributes.bias = bias_desc;
+  }
+
+  // Optional: recurrent_bias [4 * hidden_size]
+  std::optional<OperandDescriptor> recurrent_bias_desc;
+  if (params.recurrent_bias_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        recurrent_bias_desc,
+        OperandDescriptor::Create(this->context_properties(), params.data_type,
+                                  std::vector<uint32_t>{four_hidden_size}, ""));
+    attributes.recurrent_bias = recurrent_bias_desc;
+  }
+
+  // Optional: peephole_weight [3 * hidden_size]
+  std::optional<OperandDescriptor> peephole_weight_desc;
+  if (params.peephole_weight_kind != OptionalOperandKind::kNone) {
+    ASSIGN_OR_RETURN_VOID(
+        peephole_weight_desc,
+        OperandDescriptor::Create(this->context_properties(), params.data_type,
+                                  std::vector<uint32_t>{3 * params.hidden_size},
+                                  ""));
+    attributes.peephole_weight = peephole_weight_desc;
+  }
+
+  ASSIGN_OR_RETURN_VOID(auto output_descs,
+                        ValidateLstmCellAndInferOutput(
+                            this->context_properties(), input_desc, weight_desc,
+                            recurrent_weight_desc, hidden_state_desc,
+                            cell_state_desc, params.hidden_size, attributes));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+
+  std::vector<uint8_t> input_data(input_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> weight_data(weight_desc.PackedByteLength(),
+                                   seed_for_data);
+  std::vector<uint8_t> recurrent_weight_data(
+      recurrent_weight_desc.PackedByteLength(), seed_for_data);
+  std::vector<uint8_t> hidden_state_data(hidden_state_desc.PackedByteLength(),
+                                         seed_for_data);
+  std::vector<uint8_t> cell_state_data(cell_state_desc.PackedByteLength(),
+                                       seed_for_data);
+
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+
+  OperandId input_id =
+      BuildInputOrConstant(builder, params.is_input_constant, "input",
+                           input_desc, input_data, named_inputs);
+  OperandId weight_id =
+      BuildInputOrConstant(builder, params.is_weight_constant, "weight",
+                           weight_desc, weight_data, named_inputs);
+  OperandId recurrent_weight_id = BuildInputOrConstant(
+      builder, params.is_recurrent_weight_constant, "recurrent_weight",
+      recurrent_weight_desc, recurrent_weight_data, named_inputs);
+  OperandId hidden_state_id = BuildInputOrConstant(
+      builder, params.is_hidden_state_constant, "hidden_state",
+      hidden_state_desc, hidden_state_data, named_inputs);
+  OperandId cell_state_id =
+      BuildInputOrConstant(builder, params.is_cell_state_constant, "cell_state",
+                           cell_state_desc, cell_state_data, named_inputs);
+
+  BuildLstmCellAttributes lstm_cell_attr;
+  lstm_cell_attr.layout = params.layout;
+  lstm_cell_attr.activations.assign(params.activations.begin(),
+                                    params.activations.end());
+
+  // Owns data buffers for optional operands built as inputs.
+  std::vector<std::vector<uint8_t>> optional_operand_data;
+  optional_operand_data.reserve(3);
+
+  lstm_cell_attr.bias_operand_id =
+      BuildOptionalOperand(builder, bias_desc, params.bias_kind, "bias",
+                           seed_for_data, optional_operand_data, named_inputs);
+  lstm_cell_attr.recurrent_bias_operand_id = BuildOptionalOperand(
+      builder, recurrent_bias_desc, params.recurrent_bias_kind,
+      "recurrent_bias", seed_for_data, optional_operand_data, named_inputs);
+  lstm_cell_attr.peephole_weight_operand_id = BuildOptionalOperand(
+      builder, peephole_weight_desc, params.peephole_weight_kind,
+      "peephole_weight", seed_for_data, optional_operand_data, named_inputs);
+
+  std::vector<OperandId> output_operand_ids;
+  ASSERT_EQ(output_descs.size(), 2u);
+  OperandId output_hidden_state_id =
+      builder.BuildOutput("output_hidden_state", output_descs[0].shape(),
+                          output_descs[0].data_type());
+  output_operand_ids.push_back(output_hidden_state_id);
+
+  OperandId output_cell_state_id =
+      builder.BuildOutput("output_cell_state", output_descs[1].shape(),
+                          output_descs[1].data_type());
+  output_operand_ids.push_back(output_cell_state_id);
+
+  builder.BuildLstmCell(
+      input_id, weight_id, recurrent_weight_id, hidden_state_id, cell_state_id,
+      std::move(output_operand_ids), params.hidden_size, lstm_cell_attr);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -2539,24 +2744,14 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Matmul(MatmulParams params,
       this->BindNewGraphBuilderRemote();
   GraphInfoBuilder builder(remote);
 
-  OperandId a_id;
-  OperandId b_id;
   std::vector<uint8_t> a_data(a_desc.PackedByteLength(), seed_for_data);
   std::vector<uint8_t> b_data(b_desc.PackedByteLength(), seed_for_data);
 
   base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
-  if (params.is_a_constant) {
-    a_id = builder.BuildConstant(a_desc.shape(), a_desc.data_type(), a_data);
-  } else {
-    a_id = builder.BuildInput("a", a_desc.shape(), a_desc.data_type());
-    named_inputs.insert({"a", a_data});
-  }
-  if (params.is_b_constant) {
-    b_id = builder.BuildConstant(b_desc.shape(), b_desc.data_type(), b_data);
-  } else {
-    b_id = builder.BuildInput("b", b_desc.shape(), b_desc.data_type());
-    named_inputs.insert({"b", b_data});
-  }
+  OperandId a_id = BuildInputOrConstant(builder, params.is_a_constant, "a",
+                                        a_desc, a_data, named_inputs);
+  OperandId b_id = BuildInputOrConstant(builder, params.is_b_constant, "b",
+                                        b_desc, b_data, named_inputs);
 
   OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
                                             output_desc.data_type());
@@ -4362,6 +4557,30 @@ WEBNN_FUZZ_TEST_F(
                    mojom::RecurrentNetworkActivation::kTanh},
               },
               /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(
+    LstmCell,
+    .WithDomains(AnyLstmCellParams(), fuzztest::Arbitrary<uint8_t>())
+        .WithSeeds({{LstmCellParams{
+                         /*data_type=*/OperandDataType::kFloat32,
+                         /*batch_size=*/1,
+                         /*input_size=*/3,
+                         /*hidden_size=*/4,
+                         /*layout=*/mojom::LstmWeightLayout::kIofg,
+                         /*bias_kind=*/OptionalOperandKind::kInput,
+                         /*recurrent_bias_kind=*/OptionalOperandKind::kConstant,
+                         /*peephole_weight_kind=*/OptionalOperandKind::kNone,
+                         /*is_input_constant=*/false,
+                         /*is_weight_constant=*/true,
+                         /*is_recurrent_weight_constant=*/true,
+                         /*is_hidden_state_constant=*/false,
+                         /*is_cell_state_constant=*/false,
+                         /*activations=*/
+                         {mojom::RecurrentNetworkActivation::kSigmoid,
+                          mojom::RecurrentNetworkActivation::kTanh,
+                          mojom::RecurrentNetworkActivation::kTanh},
+                     },
+                     /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(Matmul,
                   .WithDomains(AnyMatmulParams(),
