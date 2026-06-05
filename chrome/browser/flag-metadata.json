@@ -1316,7 +1316,7 @@
   {
     "name": "browser-initiated-automatic-picture-in-picture",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 165
   },
   {
     "name": "browser-launch-metadata-reporting",
