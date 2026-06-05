@@ -23,7 +23,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "gpu/config/gpu_info.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -353,7 +352,6 @@ class RecommendAppsFetcherImplTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
   std::unique_ptr<base::RunLoop> request_waiter_;
 };

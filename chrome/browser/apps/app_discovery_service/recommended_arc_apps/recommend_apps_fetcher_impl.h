@@ -21,7 +21,6 @@
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"
 #include "extensions/browser/api/system_display/display_info_provider.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace ash {
 class CrosDisplayConfig;
@@ -125,8 +124,6 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher,
 
   // Callback function called when SimpleURLLoader completes.
   void OnDownloaded(std::optional<std::string> response_body);
-
-  void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
 
   device_configuration::DeviceConfigurationProto device_config_;
 

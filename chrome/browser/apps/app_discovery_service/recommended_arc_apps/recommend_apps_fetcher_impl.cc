@@ -14,6 +14,7 @@
 #include "base/base64url.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -499,10 +500,14 @@ void RecommendAppsFetcherImpl::OnDownloaded(
         response_body_json.substr(json_xss_prevention_prefix.length());
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      response_body_json,
-      base::BindOnce(&RecommendAppsFetcherImpl::OnJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
+  std::optional<base::Value> result =
+      base::JSONReader::Read(response_body_json, base::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    delegate_->OnParseResponseError();
+    return;
+  }
+
+  delegate_->OnLoadSuccess(std::move(*result));
 }
 
 void RecommendAppsFetcherImpl::Start() {
@@ -514,15 +519,6 @@ void RecommendAppsFetcherImpl::Start() {
 
 void RecommendAppsFetcherImpl::Retry() {
   StartDownload();
-}
-
-void RecommendAppsFetcherImpl::OnJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    delegate_->OnParseResponseError();
-    return;
-  }
-  delegate_->OnLoadSuccess(std::move(*result));
 }
 
 }  // namespace apps
