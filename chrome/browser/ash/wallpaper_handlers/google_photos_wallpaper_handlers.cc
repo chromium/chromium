@@ -13,6 +13,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -30,7 +31,6 @@
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -326,24 +326,20 @@ void GooglePhotosFetcher<T>::OnJsonReceived(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response_body,
-      base::BindOnce(
-          [](const GURL& service_url,
-             data_decoder::DataDecoder::ValueOrError result)
-              -> std::optional<base::Value> {
-            if (!result.has_value()) {
-              LOG(ERROR) << "Failed to parse JSON response from Google Photos "
-                            "API request to "
-                         << service_url.spec()
-                         << ". Error message: " << result.error();
-              return std::nullopt;
-            }
-            return std::move(*result);
-          },
-          service_url)
-          .Then(base::BindOnce(&GooglePhotosFetcher::OnResponseReady,
-                               weak_factory_.GetWeakPtr(), service_url)));
+  // JSONReader is now safe for rule of 2.
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(*response_body,
+                                                    base::JSON_PARSE_RFC);
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to parse JSON response from Google Photos "
+                  "API request to "
+               << service_url.spec()
+               << ". Error message: " << result.error().message;
+    OnResponseReady(service_url, std::nullopt);
+    return;
+  }
+
+  OnResponseReady(service_url, std::move(*result));
 }
 
 template <typename T>
