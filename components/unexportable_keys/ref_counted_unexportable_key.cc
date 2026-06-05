@@ -12,9 +12,8 @@
 namespace unexportable_keys {
 
 RefCountedUnexportableSigningKey::RefCountedUnexportableSigningKey(
-    std::unique_ptr<crypto::UnexportableSigningKey> key,
-    UnexportableSigningKeyId key_id)
-    : key_(std::move(key)), id_(key_id) {
+    std::unique_ptr<crypto::UnexportableSigningKey> key)
+    : key_(std::move(key)) {
   CHECK(key_);
 }
 
@@ -29,9 +28,8 @@ const UnexportableSigningKeyId& RefCountedUnexportableSigningKey::id() const {
 }
 
 RefCountedUnexportableAttestationKey::RefCountedUnexportableAttestationKey(
-    std::unique_ptr<crypto::UnexportableAttestationKey> key,
-    UnexportableAttestationKeyId key_id)
-    : key_(std::move(key)), id_(key_id) {
+    std::unique_ptr<crypto::UnexportableAttestationKey> key)
+    : key_(std::move(key)) {
   CHECK(key_);
 }
 

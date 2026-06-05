@@ -41,8 +41,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
  public:
   // `key` must be non-null.
   explicit RefCountedUnexportableSigningKey(
-      std::unique_ptr<crypto::UnexportableSigningKey> key,
-      UnexportableSigningKeyId key_id);
+      std::unique_ptr<crypto::UnexportableSigningKey> key);
 
   // Use covariance to return more specific types for `key` and `id`.
   crypto::UnexportableSigningKey& key() const override;
@@ -66,8 +65,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableAttestationKey
  public:
   // `key` must be non-null.
   explicit RefCountedUnexportableAttestationKey(
-      std::unique_ptr<crypto::UnexportableAttestationKey> key,
-      UnexportableAttestationKeyId key_id);
+      std::unique_ptr<crypto::UnexportableAttestationKey> key);
 
   // Use covariance to return more specific types for `key` and `id`.
   crypto::UnexportableAttestationKey& key() const override;

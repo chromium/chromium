@@ -2003,8 +2003,7 @@ class EnclaveManager::StateMachine {
 
     manager_->identity_key_ = base::MakeRefCounted<
         unexportable_keys::RefCountedUnexportableSigningKey>(
-        std::move(std::get_if<KeyReady>(&event)->value().second),
-        unexportable_keys::UnexportableSigningKeyId());
+        std::move(std::get_if<KeyReady>(&event)->value().second));
 
     if (manager_->user_verifying_key_) {
       const std::vector<uint8_t> uv_public_key =
@@ -3472,7 +3471,7 @@ void EnclaveManager::GetIdentityKeyForSignature(
         }
         enclave_manager->identity_key_ = base::MakeRefCounted<
             unexportable_keys::RefCountedUnexportableSigningKey>(
-            std::move(key), unexportable_keys::UnexportableSigningKeyId());
+            std::move(key));
         std::move(callback).Run(enclave_manager->identity_key_);
       },
       weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id,

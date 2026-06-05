@@ -30,8 +30,7 @@ MakeSigningKeyRefCounted(std::unique_ptr<crypto::UnexportableSigningKey> key) {
     return base::unexpected(ServiceError::kCryptoApiFailed);
   }
 
-  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(key), UnexportableSigningKeyId());
+  return base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key));
 }
 
 ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>
@@ -42,7 +41,7 @@ MakeAttestationKeyRefCounted(
   }
 
   return base::MakeRefCounted<RefCountedUnexportableAttestationKey>(
-      std::move(key), UnexportableAttestationKeyId());
+      std::move(key));
 }
 
 ServiceErrorOr<std::vector<scoped_refptr<RefCountedUnexportableKey>>>

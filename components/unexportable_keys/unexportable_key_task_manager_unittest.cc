@@ -70,7 +70,7 @@ scoped_refptr<RefCountedUnexportableSigningKey> MakeRefCountedKey(
   ON_CALL(*mock_key, GetWrappedKey)
       .WillByDefault(Return(base::ToVector(wrapped_key)));
   return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(mock_key), UnexportableSigningKeyId());
+      std::move(mock_key));
 }
 
 }  // namespace
@@ -397,7 +397,7 @@ TEST_P(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
       .WillOnce(
           Invoke(&key->key(), &crypto::UnexportableSigningKey::SignSlowly));
   auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(mocked_key), UnexportableSigningKeyId());
+      std::move(mocked_key));
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
@@ -419,8 +419,8 @@ TEST_P(UnexportableKeyTaskManagerTest, RetrySignAsyncWithFailure) {
   EXPECT_CALL(*key, SignSlowly(ElementsAreArray(data)))
       .Times(4)
       .WillRepeatedly(Return(std::nullopt));
-  auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(key), UnexportableSigningKeyId());
+  auto ref_counted_key =
+      base::MakeRefCounted<RefCountedUnexportableSigningKey>(std::move(key));
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
@@ -466,7 +466,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
   base::HistogramTester histogram_tester;
 
   auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(mocked_key), UnexportableSigningKeyId());
+      std::move(mocked_key));
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   task_manager().SignSlowlyAsync(GetParam().origin, ref_counted_key, data,
                                  BackgroundTaskPriority::kBestEffort,
@@ -496,7 +496,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
   base::HistogramTester histogram_tester;
 
   auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(mocked_key), UnexportableSigningKeyId());
+      std::move(mocked_key));
   base::test::TestFuture<ServiceErrorOr<std::vector<uint8_t>>> sign_future;
   task_manager().SignSlowlyAsync(GetParam().origin, ref_counted_key, data,
                                  BackgroundTaskPriority::kBestEffort,
@@ -948,7 +948,7 @@ TEST_P(UnexportableKeyTaskManagerTest, CertifyAsync) {
   auto mock_signing_key =
       std::make_unique<crypto::MockUnexportableSigningKey>();
   auto signing_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(mock_signing_key), UnexportableSigningKeyId());
+      std::move(mock_signing_key));
 
   auto mock_attestation_key =
       std::make_unique<crypto::MockUnexportableAttestationKey>();
@@ -964,7 +964,7 @@ TEST_P(UnexportableKeyTaskManagerTest, CertifyAsync) {
 
   auto attestation_key =
       base::MakeRefCounted<RefCountedUnexportableAttestationKey>(
-          std::move(mock_attestation_key), UnexportableAttestationKeyId());
+          std::move(mock_attestation_key));
 
   base::HistogramTester histogram_tester;
   base::test::TestFuture<ServiceErrorOr<crypto::AttestationStatement>>

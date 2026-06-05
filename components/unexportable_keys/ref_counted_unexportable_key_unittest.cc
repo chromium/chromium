@@ -15,26 +15,22 @@ namespace unexportable_keys {
 TEST(RefCountedUnexportableKeyTest, RefCountedUnexportableSigningKey) {
   auto mock_key = std::make_unique<crypto::MockUnexportableSigningKey>();
   crypto::UnexportableSigningKey* mock_key_ptr = mock_key.get();
-  UnexportableSigningKeyId id;
-
   auto ref_counted_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
-      std::move(mock_key), id);
+      std::move(mock_key));
 
   EXPECT_EQ(&ref_counted_key->key(), mock_key_ptr);
-  EXPECT_EQ(ref_counted_key->id(), id);
+  EXPECT_FALSE(ref_counted_key->id()->is_empty());
 }
 
 TEST(RefCountedUnexportableKeyTest, RefCountedUnexportableAttestationKey) {
   auto mock_key = std::make_unique<crypto::MockUnexportableAttestationKey>();
   crypto::UnexportableAttestationKey* mock_key_ptr = mock_key.get();
-  UnexportableAttestationKeyId id;
-
   auto ref_counted_key =
       base::MakeRefCounted<RefCountedUnexportableAttestationKey>(
-          std::move(mock_key), id);
+          std::move(mock_key));
 
   EXPECT_EQ(&ref_counted_key->key(), mock_key_ptr);
-  EXPECT_EQ(ref_counted_key->id(), id);
+  EXPECT_FALSE(ref_counted_key->id()->is_empty());
 }
 
 }  // namespace unexportable_keys
