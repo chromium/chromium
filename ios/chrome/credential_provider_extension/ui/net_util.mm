@@ -17,6 +17,11 @@ BOOL SecureHostsMatch(NSString* requestedHost, NSString* credentialHost) {
     return YES;
   }
 
+  NSString* suffix = [@"." stringByAppendingString:credentialHost];
+  if (![requestedHost hasSuffix:suffix]) {
+    return NO;
+  }
+
   std::string reqDomain =
       net::registry_controlled_domains::GetDomainAndRegistry(
           base::SysNSStringToUTF8(requestedHost),
