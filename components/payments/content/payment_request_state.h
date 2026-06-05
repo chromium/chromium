@@ -177,9 +177,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
   // Resets pending MethodsSupportedCallback after abort.
   void OnAbort();
 
-  // Returns authenticated user email, or empty string.
-  std::string GetAuthenticatedEmail() const;
-
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

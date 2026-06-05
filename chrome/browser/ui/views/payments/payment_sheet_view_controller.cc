@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -29,6 +30,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
@@ -36,8 +38,10 @@
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/strings_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -68,6 +72,25 @@
 
 namespace payments {
 namespace {
+
+std::string GetAuthenticatedEmail(content::RenderFrameHost* rfh) {
+  if (!rfh) {
+    return std::string();
+  }
+
+  // Check if the profile is signed in. Guest profiles or incognito windows may
+  // not have an IdentityManager, and are considered not signed in.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(rfh->GetBrowserContext()));
+  if (!identity_manager) {
+    return std::string();
+  }
+  // If there's no primary account, `GetPrimaryAccountInfo()` will return an
+  // empty result.
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+      .email;
+}
 
 // A class that ensures proper elision of labels in the form
 // "[preview] and N more" where preview might be elided to allow "and N more" to
@@ -862,7 +885,8 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
     data_source =
         l10n_util::GetStringUTF16(IDS_PAYMENTS_CARD_AND_ADDRESS_SETTINGS);
   } else {
-    std::string user_email = state()->GetAuthenticatedEmail();
+    std::string user_email = GetAuthenticatedEmail(
+        state()->GetPaymentRequestDelegate()->GetRenderFrameHost());
     if (!user_email.empty()) {
       // Insert the user's email into the format string.
       data_source = l10n_util::GetStringFUTF16(

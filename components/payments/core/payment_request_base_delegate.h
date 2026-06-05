@@ -45,10 +45,6 @@ class PaymentRequestBaseDelegate {
   // Creates a new region data loader that will self delete, or a test mock.
   virtual autofill::RegionDataLoader* GetRegionDataLoader() = 0;
 
-  // Returns the user's signed-in email address, or empty string if not signed
-  // in.
-  virtual std::string GetAuthenticatedEmail() const = 0;
-
   // Gets the pref service for the browser context associated with this
   // PaymentRequest.
   virtual PrefService* GetPrefService() = 0;

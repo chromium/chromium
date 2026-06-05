@@ -106,10 +106,6 @@ TestContentPaymentRequestDelegate::GetRegionDataLoader() {
   return core_delegate_.GetRegionDataLoader();
 }
 
-std::string TestContentPaymentRequestDelegate::GetAuthenticatedEmail() const {
-  return core_delegate_.GetAuthenticatedEmail();
-}
-
 PrefService* TestContentPaymentRequestDelegate::GetPrefService() {
   return core_delegate_.GetPrefService();
 }

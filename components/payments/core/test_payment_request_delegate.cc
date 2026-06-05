@@ -70,10 +70,6 @@ void TestPaymentRequestDelegate::CompleteFullCardRequest() {
       full_card_request_, full_card_request_card_, u"123");
 }
 
-std::string TestPaymentRequestDelegate::GetAuthenticatedEmail() const {
-  return "";
-}
-
 PrefService* TestPaymentRequestDelegate::GetPrefService() {
   return nullptr;
 }

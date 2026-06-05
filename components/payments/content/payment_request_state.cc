@@ -353,12 +353,6 @@ void PaymentRequestState::CheckRequestedMethodsSupported(
                           get_all_payment_apps_error_reason_);
 }
 
-std::string PaymentRequestState::GetAuthenticatedEmail() const {
-  return payment_request_delegate_
-             ? payment_request_delegate_->GetAuthenticatedEmail()
-             : std::string();
-}
-
 void PaymentRequestState::AddObserver(Observer* observer) {
   CHECK(observer);
   observers_.AddObserver(observer);
