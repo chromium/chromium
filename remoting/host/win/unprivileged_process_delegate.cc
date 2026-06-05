@@ -403,8 +403,8 @@ void UnprivilegedProcessDelegate::KillProcess() {
 
   if (worker_process_.is_valid()) {
     TerminateProcess(worker_process_.Get(), CONTROL_C_EXIT);
-    worker_process_.Close();
   }
+  StopWatching();
 }
 
 void UnprivilegedProcessDelegate::OnChannelConnected(int32_t peer_pid) {
@@ -454,9 +454,10 @@ void UnprivilegedProcessDelegate::ReportProcessLaunched(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Report a handle that can be used to wait for the worker process completion,
-  // query information about the process and duplicate handles.
-  DWORD desired_access =
-      SYNCHRONIZE | PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION;
+  // query information about the process, duplicate handles, and terminate the
+  // process.
+  DWORD desired_access = SYNCHRONIZE | PROCESS_DUP_HANDLE |
+                         PROCESS_QUERY_INFORMATION | PROCESS_TERMINATE;
   HANDLE temp_handle;
   if (!DuplicateHandle(GetCurrentProcess(), worker_process.Get(),
                        GetCurrentProcess(), &temp_handle, desired_access, FALSE,

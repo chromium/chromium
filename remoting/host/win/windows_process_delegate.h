@@ -27,6 +27,9 @@ class WindowsProcessDelegate : public WorkerProcessLauncher::Delegate,
   // called.
   void WatchProcess(base::win::ScopedHandle worker_process);
 
+  // Stops watching the worker process.
+  void StopWatching();
+
   // Subclass should set `event_handler_` in LaunchProcess().
   raw_ptr<WorkerProcessLauncher> event_handler_;
 

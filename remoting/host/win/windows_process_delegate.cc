@@ -29,6 +29,11 @@ void WindowsProcessDelegate::WatchProcess(
   worker_process_ = std::move(worker_process);
 }
 
+void WindowsProcessDelegate::StopWatching() {
+  process_watcher_.StopWatching();
+  worker_process_.Close();
+}
+
 void WindowsProcessDelegate::OnObjectSignaled(HANDLE object) {
   DCHECK(worker_process_.Get() == object);
   DCHECK(event_handler_);
@@ -39,8 +44,7 @@ void WindowsProcessDelegate::OnObjectSignaled(HANDLE object) {
     exit_code = CONTROL_C_EXIT;
   }
 
-  worker_process_.Close();
-  process_watcher_.StopWatching();
+  StopWatching();
 
   event_handler_->OnProcessExited(exit_code);
 }
