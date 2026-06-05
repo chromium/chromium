@@ -551,28 +551,16 @@ ContextImplOrt::CreateTensorFromSharedImageImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     WebNNTensorImpl::RepresentationPtr representation) {
-  ComPtr<ID3D12Resource> d3d12_buffer;
-  // Shared image is thread-safe, directly get the backend representation.
-  if (representation->is_thread_safe()) {
-    d3d12_buffer = representation->GetD3D12Buffer();
-  } else {
-    // Shared image representation must be retrieved on the main thread. If
-    // WebNN runs on its own thread, a task is posted to the main thread and
-    // waits to retrieve the backend representation. Otherwise, if WebNN is
-    // already running on the main thread, it directly gets the backend
-    // representation.
-    WebNNTensorImpl::RunOrPostTaskAndWaitOnSequence(
-        main_task_runner(),
-        base::BindOnce(
-            [](gpu::WebNNTensorRepresentation* representation,
-               ComPtr<ID3D12Resource>* out_buffer) {
-              *out_buffer = representation->GetD3D12Buffer();
-            },
-            // Safe to use base::Unretained because we must run or wait for the
-            // post task to complete and `representation` cannot destruct while
-            // the task is running.
-            base::Unretained(representation.get()), &d3d12_buffer));
+  // ORT requires a thread-safe shared image representation because it accesses
+  // shared image data on the WebNN sequence.
+  DCHECK(representation->is_thread_safe());
+  if (!representation->is_thread_safe()) {
+    return base::unexpected(
+        mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                          "WebGPU interop is not supported."));
   }
+
+  ComPtr<ID3D12Resource> d3d12_buffer = representation->GetD3D12Buffer();
 
   CHECK(d3d12_buffer)
       << "[WebNN] Failed to get D3D12 buffer from shared image.";
