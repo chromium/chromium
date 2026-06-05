@@ -187,17 +187,6 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
     ScriptState* script_state,
     const HeapVector<ScriptObject>& raw_permissions,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<IDLSequence<PermissionStatus>>>(
-      script_state, exception_state.GetContext());
-  auto promise = resolver->Promise();
-
-  if (raw_permissions.empty()) {
-    HeapVector<Member<PermissionStatus>> result;
-    resolver->Resolve(result);
-    return promise;
-  }
-
   Vector<PermissionDescriptorPtr> internal_permissions;
   Vector<int> caller_index_to_internal_index;
   caller_index_to_internal_index.resize(raw_permissions.size());
@@ -227,6 +216,11 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
     }
     caller_index_to_internal_index[i] = internal_index;
   }
+
+  auto* resolver = MakeGarbageCollected<
+      ScriptPromiseResolver<IDLSequence<PermissionStatus>>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   Vector<PermissionDescriptorPtr> internal_permissions_copy;
   internal_permissions_copy.reserve(internal_permissions.size());
@@ -307,13 +301,16 @@ void Permissions::VerifyPermissionsAndReturnStatus(
     int last_verified_permission_index,
     bool is_bulk_request,
     Vector<mojom::blink::PermissionStatusWithDetailsPtr> results) {
+  DCHECK(caller_index_to_internal_index.size() == 1u || is_bulk_request);
+  DCHECK_EQ(descriptors.size(), caller_index_to_internal_index.size());
+
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
 
-  // `descriptors` and `results` use indexes from the deduplicated permission
-  // list. `caller_index_to_internal_index` has one entry per caller-supplied
-  // permission, including duplicates.
+  // Create the response vector by finding the status for each index by
+  // using the caller to internal index mapping and looking up the status
+  // using the internal index obtained.
   HeapVector<Member<PermissionStatus>> result;
   result.ReserveInitialCapacity(caller_index_to_internal_index.size());
   for (int internal_index : caller_index_to_internal_index) {
@@ -341,11 +338,9 @@ void Permissions::VerifyPermissionsAndReturnStatus(
     if (internal_index == last_verified_permission_index)
       last_verified_permission_index = -1;
 
-    // The same internal permission can be used for multiple caller entries when
-    // the request contains duplicates, so clone the descriptor and result for
-    // each listener.
     PermissionStatusListener* listener = GetOrCreatePermissionStatusListener(
-        results[internal_index]->Clone(), descriptors[internal_index]->Clone());
+        std::move(results[internal_index]),
+        descriptors[internal_index]->Clone());
     if (listener) {
       // If it's not a bulk request, return the first (and only) result.
       if (!is_bulk_request) {
