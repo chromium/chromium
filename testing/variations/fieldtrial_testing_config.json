@@ -22511,7 +22511,21 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260413",
+                    "name": "Enabled_20260515",
+                    "enable_features": [
+                        "TranslateSimplifiedHindi"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260603",
                     "enable_features": [
                         "TranslateSimplifiedHindi"
                     ]
