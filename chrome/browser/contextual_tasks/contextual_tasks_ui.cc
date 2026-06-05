@@ -520,7 +520,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isSidePanelPinned",
       contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() &&
-          profile->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
+          contextual_tasks::GetEffectivePinState(profile));
   source->AddBoolean(
       "showOnboardingTooltip",
       base::FeatureList::IsEnabled(

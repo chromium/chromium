@@ -218,7 +218,6 @@ void PinnedToolbarActionsModel::ResetToDefault() {
   pref_service_->ClearPref(prefs::kShowHomeButton);
   pref_service_->ClearPref(prefs::kShowForwardButton);
   pref_service_->ClearPref(prefs::kPinSplitTabButton);
-  pref_service_->ClearPref(prefs::kPinContextualTaskButton);
   pref_service_->ClearPref(prefs::kPinnedActions);
 }
 
@@ -231,8 +230,7 @@ bool PinnedToolbarActionsModel::IsDefault() const {
   return std::ranges::all_of(
       std::initializer_list{prefs::kPinnedActions, prefs::kShowHomeButton,
                             prefs::kShowForwardButton,
-                            prefs::kPinSplitTabButton,
-                            prefs::kPinContextualTaskButton},
+                            prefs::kPinSplitTabButton},
       is_default_pref_value);
 }
 

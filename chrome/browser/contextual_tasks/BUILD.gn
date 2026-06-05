@@ -628,15 +628,19 @@ source_set("unit_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/ui/actions:actions",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs:test_support",
+      "//chrome/browser/ui/toolbar/pinned_toolbar",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//components/omnibox/browser:test_support",
       "//components/passage_embeddings/core",
       "//services/network/public/cpp",
+      "//ui/actions:actions_headers",
     ]
   }
 }
