@@ -435,4 +435,17 @@
   <message name="IDS_SETTINGS_HTTPS_FIRST_MODE_DISABLED_SUBLABEL" desc="Sublabel for radio button to disable HTTPS-First Mode">
     When HTTPS isn't available, Chromium will use an insecure connection without warning you
   </message>
+  <!-- Skills Settings Page -->
+  <message name="IDS_SETTINGS_SKILLS_SETTING_LABEL" desc="Label for the Skills setting entry point in Settings > AI page.">
+    Skills in Chromium
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_TOGGLE_LABEL" desc="Label for the toggle button on the Skills settings subpage.">
+    Enable Skills in Chromium
+  </message>
+  <message name="IDS_SETTINGS_SYNC_SKILLS_SEPARATE_INFORMATION" desc="Info text on the Sync page explaining that skills are managed separately from sync.">
+    AI innovations like skills are saved to your Google Account and managed separately from Chromium sync
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_TWO" desc="Second bullet point under the 'When on' column in the Skills settings page.">
+    Use them alongside other Gemini features in Chromium
+  </message>
 </grit-part>

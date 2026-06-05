@@ -464,20 +464,4 @@
       Invalid password
     </message>
   </if>
-  <!-- Skills Settings Page -->
-  <message name="IDS_SETTINGS_SKILLS_SETTING_LABEL" desc="Label for the Skills setting entry point in Settings > AI page.">
-    Skills in Chrome
-  </message>
-  <message name="IDS_SETTINGS_SKILLS_SETTING_SUBLABEL" desc="Sublabel for the Skills setting entry point in Settings > AI page.">
-    Skills allow you to easily reuse prompts for repetitive tasks
-  </message>
-  <message name="IDS_SETTINGS_SKILLS_TOGGLE_LABEL" desc="Label for the toggle button on the Skills settings subpage.">
-    Enable Skills in Chrome
-  </message>
-  <message name="IDS_SETTINGS_SKILLS_GALLERY_HEADER" desc="Header for the Skills Gallery link section.">
-    Skills Gallery
-  </message>
-  <message name="IDS_SETTINGS_SKILLS_GALLERY_LABEL" desc="Label for the link row that opens the Skills Gallery.">
-    View and manage your skills
-  </message>
 </grit-part>

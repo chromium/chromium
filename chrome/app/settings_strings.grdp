@@ -4588,4 +4588,26 @@
   <message name="IDS_SETTINGS_CPU_PERFORMANCE_TIER_ULTRA" desc="Label for the 'Ultra' CPU performance tier.">
     Tier 4: ULTRA
   </message>
+  <!-- Skills Settings Page -->
+  <message name="IDS_SETTINGS_SKILLS_SETTING_SUBLABEL" desc="Sublabel for the Skills setting entry point in Settings > AI page.">
+    Skills allow you to easily reuse prompts for repetitive tasks
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_GALLERY_HEADER" desc="Header for the Skills Gallery link section.">
+    Skills Gallery
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_GALLERY_LABEL" desc="Label for the link row that opens the Skills Gallery.">
+    View and manage your skills
+  </message>
+  <message name="IDS_SETTINGS_SYNC_GO_TO_SKILLS_BUTTON" desc="Label for the button on the Sync page that redirects the user to the Skills settings page.">
+    Go to AI Innovations
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_ONE" desc="First bullet point under the 'When on' column in the Skills settings page.">
+    Build your own or add from the skills library
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_THINGS_TO_CONSIDER_BULLET_ONE" desc="First bullet point under the 'Things to consider' column in the Skills settings page.">
+    Tab titles and URLs are sent to Google when you use skill
+  </message>
+  <message name="IDS_SETTINGS_SKILLS_THINGS_TO_CONSIDER_BULLET_TWO" desc="Second bullet point under the 'Things to consider' column in the Skills settings page.">
+    Skills are saved to your Google Account
+  </message>
 </grit-part>

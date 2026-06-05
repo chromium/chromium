@@ -465,6 +465,12 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"skillsSettingLabel", IDS_SETTINGS_SKILLS_SETTING_LABEL},
       {"skillsSettingSublabel", IDS_SETTINGS_SKILLS_SETTING_SUBLABEL},
       {"skillsToggleLabel", IDS_SETTINGS_SKILLS_TOGGLE_LABEL},
+      {"skillsWhenOnBulletOne", IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_ONE},
+      {"skillsWhenOnBulletTwo", IDS_SETTINGS_SKILLS_WHEN_ON_BULLET_TWO},
+      {"skillsThingsToConsiderBulletOne",
+       IDS_SETTINGS_SKILLS_THINGS_TO_CONSIDER_BULLET_ONE},
+      {"skillsThingsToConsiderBulletTwo",
+       IDS_SETTINGS_SKILLS_THINGS_TO_CONSIDER_BULLET_TWO},
 
       // Indigo strings.
       {"indigoLabel", IDS_INDIGO_SETTINGS_LABEL},
