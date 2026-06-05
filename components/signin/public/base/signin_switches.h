@@ -355,6 +355,8 @@ extern const base::FeatureParam<base::TimeDelta>
     kSearchAIModePromoPageLoadDelay;
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const base::FeatureParam<base::TimeDelta> kSearchAIModePromoFrequency;
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchAIModeSignInPromoSelfDismissal);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

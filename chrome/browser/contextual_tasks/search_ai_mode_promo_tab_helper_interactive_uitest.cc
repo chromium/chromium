@@ -320,10 +320,16 @@ class SearchAiModePromoTabHelperInteractiveBubbleDismissalUiTest
  public:
   SearchAiModePromoTabHelperInteractiveBubbleDismissalUiTest()
       : SearchAiModePromoTabHelperInteractiveUiTestBase(
-            /*load_original_aim_search=*/false) {}
+            /*load_original_aim_search=*/false) {
+    self_dismissal_feature_list_.InitAndEnableFeature(
+        switches::kSearchAIModeSignInPromoSelfDismissal);
+  }
 
   ~SearchAiModePromoTabHelperInteractiveBubbleDismissalUiTest() override =
       default;
+
+ private:
+  base::test::ScopedFeatureList self_dismissal_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -397,4 +403,47 @@ IN_PROC_BROWSER_TEST_F(
           },
           "Wait for tab helper destruction")));
 }
+
+class SearchAiModePromoTabHelperInteractiveBubbleNoSelfDismissalUiTest
+    : public SearchAiModePromoTabHelperInteractiveUiTestBase {
+ public:
+  SearchAiModePromoTabHelperInteractiveBubbleNoSelfDismissalUiTest()
+      : SearchAiModePromoTabHelperInteractiveUiTestBase(
+            /*load_original_aim_search=*/true) {
+    feature_list_.InitAndDisableFeature(
+        switches::kSearchAIModeSignInPromoSelfDismissal);
+  }
+
+  ~SearchAiModePromoTabHelperInteractiveBubbleNoSelfDismissalUiTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SearchAiModePromoTabHelperInteractiveBubbleNoSelfDismissalUiTest,
+    SigninPromoNoSelfDismissed) {
+  const GURL ai_url =
+      embedded_test_server()->GetURL(kGoogleHost, kSearchAimPath);
+  const GURL result_url =
+      embedded_test_server()->GetURL(kGoogleHost, kSearchResultRelativeUrl);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSourceTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
+
+  RunTestSequence(InAnyContext(
+      InstrumentTab(kSourceTabId), NavigateWebContents(kSourceTabId, ai_url),
+      WaitForElementVisible(kSourceTabId, DeepQuery{"#link"}),
+      InstrumentNextTab(kNewTabId),
+      ClickElement(kSourceTabId, DeepQuery{"#link"}),
+      WaitForWebContentsNavigation(kNewTabId, result_url),
+      // Promo should be visible for a non-signed-in user initially.
+      WaitForShow(kSearchAIModeSignInPromoFrameViewId),
+      EnsurePresent(kSearchAIModeSignInPromoViewId),
+      WithView(kSearchAIModeSignInPromoViewId,
+               [](SearchAIModeSignInPromoView* view) {
+                 EXPECT_FALSE(view->IsTimerRunningForTesting());
+               })));
+}
+
 }  // namespace contextual_tasks

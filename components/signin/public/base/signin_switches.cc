@@ -449,6 +449,8 @@ const base::FeatureParam<base::TimeDelta> kSearchAIModePromoPageLoadDelay{
 const base::FeatureParam<base::TimeDelta> kSearchAIModePromoFrequency{
     &kEnableSearchAIModeSigninPromo, "SearchAIModePromoFrequency",
     base::Days(14)};
+BASE_FEATURE(kSearchAIModeSignInPromoSelfDismissal,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID)

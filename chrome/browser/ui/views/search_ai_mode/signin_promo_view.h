@@ -28,6 +28,7 @@ class SearchAIModeSignInPromoView : public LocationBarBubbleDelegateView {
   ~SearchAIModeSignInPromoView() override;
 
   void FireTimerForTesting();
+  bool IsTimerRunningForTesting() const;
 
  private:
   // views::WidgetDelegate:

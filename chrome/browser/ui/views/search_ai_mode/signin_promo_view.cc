@@ -70,6 +70,11 @@ void SearchAIModeSignInPromoView::FireTimerForTesting() {
   self_dismissal_timer_.FireNow();
 }
 
+bool SearchAIModeSignInPromoView::IsTimerRunningForTesting() const {
+  CHECK_IS_TEST();
+  return self_dismissal_timer_.IsRunning();
+}
+
 void SearchAIModeSignInPromoView::WindowClosing() {
   if (controller_) {
     controller_->HandlePromoClosing(GetWidget()->closed_reason());
@@ -87,11 +92,15 @@ void SearchAIModeSignInPromoView::AddedToWidget() {
 
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 
-  self_dismissal_timer_.Start(
-      FROM_HERE, kPromoSelfDismissalTimeout,
-      base::BindOnce(&SearchAIModeSignInPromoView::Close,
-                     // Unretained is fine because the timer is owned by this object.
-                     base::Unretained(this)));
+  if (base::FeatureList::IsEnabled(
+          switches::kSearchAIModeSignInPromoSelfDismissal)) {
+    self_dismissal_timer_.Start(
+        FROM_HERE, kPromoSelfDismissalTimeout,
+        base::BindOnce(&SearchAIModeSignInPromoView::Close,
+                       // Unretained is fine because the timer is owned by this
+                       // object.
+                       base::Unretained(this)));
+  }
 }
 
 void SearchAIModeSignInPromoView::Close() {
