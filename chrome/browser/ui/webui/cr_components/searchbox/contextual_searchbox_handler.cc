@@ -963,6 +963,12 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
     drive_picker_controller_ =
         std::make_unique<DrivePickerHostController>(browser_window_interface);
   }
+  // Binds the controller's close callback to OnCancel to ensure that if the
+  // user closes the widget (e.g. by pressing Escape), the entire session
+  // is cleanly reset and all C++ and WebUI state is torn down.
+  drive_picker_controller_->set_on_close_callback(
+      base::BindOnce(&ContextualSearchboxHandler::OnCancel,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   drive_picker_result_handler_receiver_.reset();
 

@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
@@ -78,6 +79,8 @@ void DrivePickerHostController::ShowDrivePickerHost(
   picker_widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
   picker_widget_->Show();
 
+  picker_widget_observation_.Observe(picker_widget_.get());
+
   // Observe the browser window's widget for resize events to keep the picker
   // overlay perfectly synchronized with the browser's local bounds.
   views::Widget* host_widget = browser_view->GetWidget();
@@ -123,6 +126,7 @@ void DrivePickerHostController::SendErrorToRequest(
 }
 
 void DrivePickerHostController::ResetControllerState() {
+  picker_widget_observation_.Reset();
   if (picker_widget_) {
     picker_widget_->Close();
     picker_widget_.reset();
@@ -140,8 +144,32 @@ void DrivePickerHostController::OnWidgetBoundsChanged(
 }
 
 void DrivePickerHostController::OnWidgetDestroyed(views::Widget* widget) {
-  browser_window_observation_.Reset();
-  ResetControllerState();
+  if (widget == picker_widget_.get()) {
+    picker_widget_observation_.Reset();
+
+    // SingleThreadTaskRunner is used here to asynchronously post both the
+    // close callback and ResetControllerState().
+    //
+    // This is because the execution is currently inside the native widget's destruction
+    // and notification loop. If ResetControllerState() is synchronously called, it
+    // will call picker_widget_.reset(), which immediately deletes the views::Widget
+    // C++ object (since CLIENT_OWNS_WIDGET is used). Synchronously deleting the
+    // widget object while it is still executing its own destruction callback is
+    // unsafe and leads to a Use-After-Free (UAF) or deadlock, freezing the
+    // browser. Deferring this to the next event loop tick allows the widget's
+    // native destruction sequence to finish safely first.
+    if (on_close_callback_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(on_close_callback_));
+    }
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DrivePickerHostController::ResetControllerState,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    browser_window_observation_.Reset();
+    ResetControllerState();
+  }
 }
 
 void DrivePickerHostController::UpdatePickerViewBounds() {

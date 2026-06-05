@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
@@ -38,8 +39,8 @@ class BrowserWindowInterface;
 // floating views::Widget.
 //
 // While floating popups usually present coordinates and bounds management
-// complexities, we enforce this custom widget's Z-order to kFloatingWindow and
-// manually synchronize the widget's screen bounds to the BrowserView's screen
+// complexities, this custom widget's Z-order is enforced to kFloatingWindow and
+// the widget's screen bounds are manually synchronized to the BrowserView's screen
 // space to perfectly align and overlay it across all platforms.
 //
 // Ownership and Lifetime:
@@ -60,6 +61,13 @@ class DrivePickerHostController : public content::WebContentsObserver,
   // UI), and relays results to the provided result handler in the request.
   virtual void ShowDrivePickerHost(
       std::unique_ptr<drive_picker_host::DrivePickerHostRequest> request);
+
+  // Sets a callback to be executed asynchronously when the hosted picker widget
+  // is closed or destroyed. Callers are expected to use this
+  // to cleanly tear down and reset the controller and the Mojo result receiver.
+  void set_on_close_callback(base::OnceClosure callback) {
+    on_close_callback_ = std::move(callback);
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostControllerTest,
@@ -101,6 +109,11 @@ class DrivePickerHostController : public content::WebContentsObserver,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_window_observation_{this};
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      picker_widget_observation_{this};
+
+  base::OnceClosure on_close_callback_;
 
   // Stores the request if the picker document is not yet loaded when
   // ShowDrivePickerHost is called.

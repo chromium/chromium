@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_request.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -65,6 +66,7 @@ class DrivePickerHostView : public views::View {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void RequestFocus() override;
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, Initialization);
