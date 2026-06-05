@@ -139,14 +139,8 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
                          "foo=bar;SameSite=None;Secure;Max-Age=2147483647"));
 }
 
-// TODO(crbug.com/376799234): Re-enable this.
-#if (BUILDFLAG(IS_LINUX) && defined(UNDEFINED_SANITIZER)) || BUILDFLAG(IS_WIN)
-#define MAYBE_CookieDeleted DISABLED_CookieDeleted
-#else
-#define MAYBE_CookieDeleted CookieDeleted
-#endif
 IN_PROC_BROWSER_TEST_F(FirstPartySetsBrowserTestWithSiteLeavingSet,
-                       MAYBE_CookieDeleted) {
+                       CookieDeleted) {
   WaitForFirstPartySetsInit();
   // After restart, check the cookies of b.test. Since b.test moved out of the
   // Related Website Sets, its cookies are going to be deleted.
