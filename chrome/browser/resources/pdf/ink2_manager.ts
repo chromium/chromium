@@ -108,13 +108,7 @@ export function convertRotatedCoordinates(
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
   private stack_ = new UndoRedoStack(this);
-
-  constructor() {
-    super();
-    this.pluginController_.getEventTarget().addEventListener(
-        PluginControllerEventType.FINISH_INK_STROKE,
-        this.handleFinishInkStroke_.bind(this));
-  }
+  private listener_: EventListener;
 
   // Map from page numbers to annotations on that page.
   // The annotations on each page are stored in a map from id to TextAnnotation.
@@ -150,6 +144,18 @@ export class Ink2Manager extends EventTarget {
   // is only serialized and loaded once.
   private knownFontIds_: number[] = [];
 
+  constructor() {
+    super();
+    this.listener_ = this.handleFinishInkStroke_.bind(this);
+    this.pluginController_.getEventTarget().addEventListener(
+        PluginControllerEventType.FINISH_INK_STROKE, this.listener_);
+  }
+
+  destroy() {
+    this.pluginController_.getEventTarget().removeEventListener(
+        PluginControllerEventType.FINISH_INK_STROKE, this.listener_);
+  }
+
   setViewport(viewport: Viewport) {
     this.viewport_ = viewport;
   }
@@ -161,10 +167,6 @@ export class Ink2Manager extends EventTarget {
 
   getAnnotationsForTesting(): Map<number, Map<number, TextAnnotation>> {
     return this.annotations_;
-  }
-
-  resetTextResolverForTesting() {
-    this.textResolver_ = null;
   }
 
   resetStackForTesting() {
@@ -756,7 +758,10 @@ export class Ink2Manager extends EventTarget {
     return instance || (instance = new Ink2Manager());
   }
 
-  static setInstance(obj: Ink2Manager) {
+  static setInstance(obj: Ink2Manager|null) {
+    if (instance) {
+      instance.destroy();
+    }
     instance = obj;
   }
 }

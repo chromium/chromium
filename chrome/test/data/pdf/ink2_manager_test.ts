@@ -2,15 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotationBrush, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxInit, UndoRedoStateChangedDetail, ViewportParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxInit, UndoRedoStateChangedDetail, Viewport, ViewportParams} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, DEFAULT_TEXTBOX_WIDTH, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TextAlignment, TextAnnotationSource, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {assertAnnotationBrush, assertDeepEquals, MockDocumentDimensions, setGetAnnotationBrushReply, setUpInkTestContext} from './test_util.js';
+import type {MockPdfPluginElement} from './test_util.js';
 
-const {viewport, mockPlugin} = setUpInkTestContext();
-const manager = Ink2Manager.getInstance();
+let viewport: Viewport;
+let mockPlugin: MockPdfPluginElement;
+
+function setUpInk2Manager(): Ink2Manager {
+  Ink2Manager.setInstance(null);
+  const context = setUpInkTestContext();
+  viewport = context.viewport;
+  mockPlugin = context.mockPlugin;
+  return Ink2Manager.getInstance();
+}
+
+async function setUpDrawMode(): Promise<Ink2Manager> {
+  const manager = setUpInk2Manager();
+  await manager.initializeBrush();
+  return manager;
+}
+
+async function setUpTextMode(): Promise<Ink2Manager> {
+  const manager = setUpInk2Manager();
+  const textAttributes = getTestAnnotation(0).textAttributes;
+  manager.setTextTypeface(textAttributes.typeface);
+  manager.setTextSize(textAttributes.size);
+  manager.setTextAlignment(textAttributes.alignment);
+  manager.setTextColor(textAttributes.color);
+  manager.setTextStyles(textAttributes.styles);
+  await manager.initializeTextAnnotations();
+  return manager;
+}
 
 // Calls initializeTextAnnotation() with `point` as the location and mocks out
 // behavior implemented by `ink-text-box` in production as follows:
@@ -23,7 +50,8 @@ const manager = Ink2Manager.getInstance();
 // - After receiving initialize-text-box, calls setTextBoxActive(true).
 // Returns the initialize-text-box event.
 async function changeActiveAnnotation(
-    point: {x: number, y: number}|null, expectDeactivate: boolean,
+    manager: Ink2Manager, point: {x: number, y: number}|null,
+    expectDeactivate: boolean,
     annotationToCommit?: TextAnnotation): Promise<CustomEvent<TextBoxInit>> {
   const whenInitEvent =
       eventToPromise<CustomEvent<TextBoxInit>>('initialize-text-box', manager);
@@ -87,15 +115,6 @@ function getTestAnnotationMessageData(id: number): TextAnnotationMessageData {
   };
 }
 
-function resetFontProperties() {
-  const textAttributes = getTestAnnotation(0).textAttributes;
-  manager.setTextTypeface(textAttributes.typeface);
-  manager.setTextSize(textAttributes.size);
-  manager.setTextAlignment(textAttributes.alignment);
-  manager.setTextColor(textAttributes.color);
-  manager.setTextStyles(textAttributes.styles);
-}
-
 // Verifies that the plugin received a editTextAnnotation message for annotation
 // with id 0.
 function verifyEditTextAnnotationMessage(expected: boolean, id: number = 0) {
@@ -142,6 +161,7 @@ function rotateViewport(orientation: number) {
 
 chrome.test.runTests([
   async function testInitializeBrush() {
+    const manager = setUpInk2Manager();
     chrome.test.assertFalse(manager.isInitializationStarted());
     chrome.test.assertFalse(manager.isInitializationComplete());
 
@@ -172,6 +192,7 @@ chrome.test.runTests([
   },
 
   async function testSetBrushProperties() {
+    const manager = await setUpDrawMode();
     const brushUpdates: AnnotationBrush[] = [];
     manager.addEventListener('brush-changed', e => {
       brushUpdates.push((e as CustomEvent<AnnotationBrush>).detail);
@@ -225,6 +246,7 @@ chrome.test.runTests([
   },
 
   async function testInitializeText() {
+    const manager = setUpInk2Manager();
     chrome.test.assertFalse(manager.isTextInitializationComplete());
 
     // Initialize text annotation mode.
@@ -243,8 +265,7 @@ chrome.test.runTests([
   },
 
   async function testInitializeTextNonEmpty() {
-    manager.clearAnnotationsForTesting();
-    manager.resetTextResolverForTesting();
+    const manager = setUpInk2Manager();
 
     // Set the reply to getAllTextAnnotations to return non-empty.
     const testAnnotation1 = getTestAnnotation(0);
@@ -313,7 +334,7 @@ chrome.test.runTests([
 
     mockPlugin.clearMessages();
     initEvent = await changeActiveAnnotation(
-        {x: 120, y: 70}, true, testAnnotation1ScreenCoords);
+        manager, {x: 120, y: 70}, true, testAnnotation1ScreenCoords);
 
     // Confirm that the finish annotation message is sent with the correct
     // parameters.
@@ -348,7 +369,7 @@ chrome.test.runTests([
     // Check that initializing a new annotation in a different location sets
     // a different id, and uses the default settings.
     mockPlugin.clearMessages();
-    initEvent = await changeActiveAnnotation({x: 200, y: 200}, true);
+    initEvent = await changeActiveAnnotation(manager, {x: 200, y: 200}, true);
     chrome.test.assertEq(2, initEvent.detail.annotation.id);
     chrome.test.assertEq('', initEvent.detail.annotation.text);
     assertDeepEquals(
@@ -359,14 +380,11 @@ chrome.test.runTests([
     chrome.test.assertEq(12, initEvent.detail.annotation.textAttributes.size);
     verifyEditTextAnnotationMessage(false);
 
-    manager.setTextBoxActive(false);
-    mockPlugin.clearMessages();
     chrome.test.succeed();
   },
 
   async function testInitializeTextSingleLoadedAnnotation() {
-    manager.clearAnnotationsForTesting();
-    manager.resetTextResolverForTesting();
+    const manager = setUpInk2Manager();
 
     // Set the reply to getAllTextAnnotations to return a single loaded
     // annotation with ID 0.
@@ -396,6 +414,7 @@ chrome.test.runTests([
   },
 
   function testSetFontProperties() {
+    const manager = setUpInk2Manager();
     const fontUpdates: TextAttributes[] = [];
     manager.addEventListener('attributes-changed', e => {
       fontUpdates.push((e as CustomEvent<TextAttributes>).detail);
@@ -447,13 +466,11 @@ chrome.test.runTests([
     expectedAttributes.styles = boldItalic;
     assertTextUpdate(4, expectedAttributes);
 
-    // Reset for subsequent tests.
-    resetFontProperties();
-
     chrome.test.succeed();
   },
 
   async function testNoInitializeOutsidePage() {
+    const manager = await setUpTextMode();
     let initEvents = 0;
     manager.addEventListener('initialize-text-box', () => {
       initEvents++;
@@ -462,15 +479,13 @@ chrome.test.runTests([
     // x offset is (viewportWidth - documentWidth) / 2 + shadow = 55. A click
     // anywhere to the left of that should not initialize an annotation and
     // should return false.
-    const created1 = await Ink2Manager.getInstance().initializeTextAnnotation(
-        {x: 40, y: 20});
+    const created1 = await manager.initializeTextAnnotation({x: 40, y: 20});
     chrome.test.assertFalse(created1);
     chrome.test.assertEq(0, initEvents);
 
     // Similarly, we have 55px of margin on the right side where a click should
     // return false.
-    const created2 = await Ink2Manager.getInstance().initializeTextAnnotation(
-        {x: 480, y: 400});
+    const created2 = await manager.initializeTextAnnotation({x: 480, y: 400});
     chrome.test.assertFalse(created2);
     chrome.test.assertEq(0, initEvents);
 
@@ -478,6 +493,7 @@ chrome.test.runTests([
   },
 
   async function testInitializeTextboxNoLocation() {
+    const manager = await setUpTextMode();
     // Use the same values as testSetFontProperties, since this test was
     // originally written with those values accidentally leaking into this test.
     manager.setTextTypeface(TextTypeface.SERIF);
@@ -529,7 +545,7 @@ chrome.test.runTests([
     viewport.setZoom(2.0);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
-    initEvent = await changeActiveAnnotation(null, true);
+    initEvent = await changeActiveAnnotation(manager, null, true);
 
     chrome.test.assertEq(
         MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
@@ -561,7 +577,7 @@ chrome.test.runTests([
     viewport.setZoom(0.5);
     // Initialize without a location. This is what happens when the user creates
     // a textbox by using "Enter" on the plugin, instead of with the mouse.
-    initEvent = await changeActiveAnnotation(null, true);
+    initEvent = await changeActiveAnnotation(manager, null, true);
 
     chrome.test.assertEq(
         MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
@@ -587,18 +603,11 @@ chrome.test.runTests([
     chrome.test.assertEq(195, initEvent.detail.pageDimensions.width);
     chrome.test.assertEq(245, initEvent.detail.pageDimensions.height);
 
-    // Reset zoom and annotation id for next test.
-    viewport.setZoom(1.0);
-    manager.clearAnnotationsForTesting();
-    manager.setTextBoxActive(false);
-
-    // Reset for subsequent tests.
-    resetFontProperties();
-
     chrome.test.succeed();
   },
 
   async function testInitializeTextboxClampToPage() {
+    const manager = await setUpTextMode();
     const whenInitEvent = eventToPromise<CustomEvent<TextBoxInit>>(
         'initialize-text-box', manager);
 
@@ -629,7 +638,7 @@ chrome.test.runTests([
 
     // Now test initializing very close to the bottom of the page. This should
     // instead initialize far enough from bottom to fit the box.
-    initEvent = await changeActiveAnnotation({x: 200, y: 490}, true);
+    initEvent = await changeActiveAnnotation(manager, {x: 200, y: 490}, true);
 
     chrome.test.assertEq(
         MIN_TEXTBOX_SIZE_PX, initEvent.detail.annotation.textBoxRect.height);
@@ -641,14 +650,11 @@ chrome.test.runTests([
     chrome.test.assertEq(
         DEFAULT_TEXTBOX_WIDTH, initEvent.detail.annotation.textBoxRect.width);
 
-    // Reset annotation id for next test.
-    manager.clearAnnotationsForTesting();
-    manager.setTextBoxActive(false);
-
     chrome.test.succeed();
   },
 
   async function testInitializeTextBox() {
+    const manager = await setUpTextMode();
     // Add listeners for the expected events that fire in response to an
     // initializeTextAnnotation call. We only need to collect attributes-changed
     // events here, as initialize-text-box is handled by the helper.
@@ -660,7 +666,7 @@ chrome.test.runTests([
     const attributes = manager.getCurrentTextAttributes();
     async function verifyTextboxInit(
         x: number, y: number, rotation: number, id: number) {
-      const initEvent = await changeActiveAnnotation({x, y}, id > 0);
+      const initEvent = await changeActiveAnnotation(manager, {x, y}, id > 0);
 
       const initData = initEvent.detail;
       chrome.test.assertEq('', initData.annotation.text);
@@ -711,12 +717,11 @@ chrome.test.runTests([
     await verifyTextboxInit(/* x= */ 200, /* y= */ 23, /* rotations= */ 0,
                             /* id= */ 3);
 
-    // Clean up active textbox.
-    manager.setTextBoxActive(false);
     chrome.test.succeed();
   },
 
   function testCommitTextAnnotation() {
+    const manager = setUpInk2Manager();
     function testCommitAnnotation(
         annotationScreenCoords: TextAnnotation,
         annotationPageCoords: TextAnnotationMessageData) {
@@ -805,12 +810,15 @@ chrome.test.runTests([
       locationY: 22,
     };
     testCommitAnnotation(annotationScreenCoords, annotationPageCoords);
-    // Note: not deleting since we re-activate this annotation in the next
-    // test.
     chrome.test.succeed();
   },
 
   async function testInitializeExistingAnnotation() {
+    const manager = await setUpTextMode();
+    const testAnnotation = getTestAnnotation(0);
+    manager.commitTextAnnotation(structuredClone(testAnnotation), true, []);
+    mockPlugin.clearMessages();
+
     // Add listeners for the expected events that fire in response to an
     // initializeTextAnnotation message.
     const eventsDispatched:
@@ -824,14 +832,12 @@ chrome.test.runTests([
 
     const whenUpdateEvent = eventToPromise<CustomEvent<TextBoxInit>>(
         'initialize-text-box', manager);
-    const created = await Ink2Manager.getInstance().initializeTextAnnotation(
-        {x: 80, y: 40});
+    const created = await manager.initializeTextAnnotation({x: 80, y: 40});
     chrome.test.assertTrue(created);
     await whenUpdateEvent;
     chrome.test.assertEq(2, eventsDispatched.length);
     chrome.test.assertEq('initialize-text-box', eventsDispatched[0]!.name);
     const initData = eventsDispatched[0]!.detail as TextBoxInit;
-    const testAnnotation = getTestAnnotation(0);
     assertDeepEquals(testAnnotation, initData.annotation);
     // Still using the 400x500 page from the previous test.
     chrome.test.assertEq(55, initData.pageDimensions.x);
@@ -850,6 +856,11 @@ chrome.test.runTests([
   },
 
   async function testViewport() {
+    const manager = await setUpTextMode();
+    const testAnnotation = getTestAnnotation(0);
+    manager.commitTextAnnotation(structuredClone(testAnnotation), true, []);
+    mockPlugin.clearMessages();
+
     const initialParams = manager.getViewportParams();
     chrome.test.assertEq(1.0, initialParams.zoom);
     // pageMarginY * zoom = 3 * 1
@@ -874,7 +885,7 @@ chrome.test.runTests([
     manager.setTextBoxActive(true);
 
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 59, y: 24}, true);
+    await changeActiveAnnotation(manager, {x: 59, y: 24}, true);
     verifyEditTextAnnotationMessage(false);
 
     // Zoom out should fire an event.
@@ -895,11 +906,11 @@ chrome.test.runTests([
     // In this new layout, the existing 50x35 annotation at page coordinate
     // 5, 22 has its top left corner at 155, 12.5 in screen coordinates.
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 155, y: 13}, true);
+    await changeActiveAnnotation(manager, {x: 155, y: 13}, true);
     verifyEditTextAnnotationMessage(true);
 
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 154, y: 12}, true);
+    await changeActiveAnnotation(manager, {x: 154, y: 12}, true);
     verifyEditTextAnnotationMessage(false);
 
     // Zoom in should fire an event.
@@ -919,11 +930,11 @@ chrome.test.runTests([
     // In this new layout, the existing 50x35 annotation at page coordinate
     // 5, 22 has its top left corner at 25, 50 in screen coordinates.
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 25, y: 50}, true);
+    await changeActiveAnnotation(manager, {x: 25, y: 50}, true);
     verifyEditTextAnnotationMessage(true);
 
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 24, y: 49}, true);
+    await changeActiveAnnotation(manager, {x: 24, y: 49}, true);
     verifyEditTextAnnotationMessage(false);
 
     // Translation.
@@ -945,11 +956,11 @@ chrome.test.runTests([
     // It has width 100 and height 70 so (0, 81) should be just outside the box
     // and (0, 80) just inside.
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 0, y: 80}, true);
+    await changeActiveAnnotation(manager, {x: 0, y: 80}, true);
     verifyEditTextAnnotationMessage(true);
 
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 0, y: 81}, true);
+    await changeActiveAnnotation(manager, {x: 0, y: 81}, true);
     verifyEditTextAnnotationMessage(false);
 
     // Rotation
@@ -973,24 +984,18 @@ chrome.test.runTests([
     // activated.
     viewport.goToPageAndXy(0, 20, 120);
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 84, y: 436}, true);
+    await changeActiveAnnotation(manager, {x: 84, y: 436}, true);
     verifyEditTextAnnotationMessage(true);
 
     mockPlugin.clearMessages();
-    await changeActiveAnnotation({x: 85, y: 436}, true);
+    await changeActiveAnnotation(manager, {x: 85, y: 436}, true);
     verifyEditTextAnnotationMessage(false);
-
-    // Reset state for next test.
-    manager.setTextBoxActive(false);
-    manager.clearAnnotationsForTesting();
-    viewport.setZoom(1.0);
-    rotateViewport(/* clockwiseRotations= */ 0);  // 0 rotation.
-    viewport.goToPageAndXy(0, 0, 0);
 
     chrome.test.succeed();
   },
 
   async function testTextboxFocused() {
+    const manager = await setUpTextMode();
     // Simulate creating a textbox at (255, 250) (near center of the viewport).
     const created = await manager.initializeTextAnnotation({x: 255, y: 250});
     chrome.test.assertTrue(created);
@@ -1061,14 +1066,11 @@ chrome.test.runTests([
     chrome.test.assertEq(235, syncScrollMessage.x);
     chrome.test.assertEq(390, syncScrollMessage.y);
 
-    // Reset zoom and annotation id for next test.
-    viewport.setZoom(1.0);
-    manager.clearAnnotationsForTesting();
-
     chrome.test.succeed();
   },
 
   function testFontCaching() {
+    const manager = setUpInk2Manager();
     assertDeepEquals([], manager.getKnownFontIds());
 
     manager.addKnownFontId(1);
@@ -1085,13 +1087,12 @@ chrome.test.runTests([
   },
 
   function testUndoRedoStack() {
-    manager.resetStackForTesting();
+    const manager = setUpInk2Manager();
 
     let lastState: UndoRedoStateChangedDetail|null = null;
-    Ink2Manager.getInstance().addEventListener(
-        'undo-redo-state-changed', (e: Event) => {
-          lastState = (e as CustomEvent<UndoRedoStateChangedDetail>).detail;
-        });
+    manager.addEventListener('undo-redo-state-changed', (e: Event) => {
+      lastState = (e as CustomEvent<UndoRedoStateChangedDetail>).detail;
+    });
 
     // Helper to assert stack state
     function assertStackState(
@@ -1172,16 +1173,11 @@ chrome.test.runTests([
     manager.redo();
     assertStackState(true, true, false);  // Clean again
 
-    // Reset state for next test.
-    manager.setTextBoxActive(false);
-    manager.resetStackForTesting();
-    manager.clearAnnotationsForTesting();
-    mockPlugin.clearMessages();
-
     chrome.test.succeed();
   },
 
   async function testUndoRedoTextAnnotationContent() {
+    const manager = await setUpTextMode();
     // Helper to check if annotation exists in manager
     function assertAnnotationExists(
         id: number, exists: boolean, expectedText?: string) {
@@ -1313,17 +1309,14 @@ chrome.test.runTests([
     verifyFinishTextAnnotationMessage(expectedMessage);
     mockPlugin.clearMessages();
 
-    // Reset state for next test.
-    manager.setTextBoxActive(false);
-    manager.resetStackForTesting();
-    manager.clearAnnotationsForTesting();
-
     chrome.test.succeed();
   },
 
   async function testUndoRedoWithZoomChange() {
+    const manager = await setUpTextMode();
     // Draw a text box (id 0) at zoom 1.0
-    const initEvent = await changeActiveAnnotation({x: 100, y: 100}, false);
+    const initEvent =
+        await changeActiveAnnotation(manager, {x: 100, y: 100}, false);
     const annot = initEvent.detail.annotation;
     annot.text = 'Zoom';
 
@@ -1355,12 +1348,6 @@ chrome.test.runTests([
     expectedMessage.text = 'Zoom';
     expectedMessage.source = TextAnnotationSource.REDO;
     verifyFinishTextAnnotationMessage(expectedMessage);
-    mockPlugin.clearMessages();
-
-    // Reset state for next test.
-    manager.setTextBoxActive(false);
-    manager.resetStackForTesting();
-    manager.clearAnnotationsForTesting();
 
     chrome.test.succeed();
   },
