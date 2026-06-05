@@ -246,20 +246,7 @@ public class VoiceRecognitionHandler {
             }
         }
 
-        if (profile == null) return;
-
-        AutocompleteMatch match = AutocompleteCoordinator.classify(profile, topResultQuery);
-
-        GURL url;
-        if (match == null || match.isSearchSuggestion()) {
-            url =
-                    TemplateUrlServiceFactory.getForProfile(profile)
-                            .getUrlForVoiceSearchQuery(topResultQuery);
-        } else {
-            url = match.getUrl();
-        }
-
-        mOmniboxStub.loadUrlFromVoice(url);
+        mOmniboxStub.loadUrlFromVoice(topResultQuery);
     }
 
     private void beginInputWithVerbatimText(

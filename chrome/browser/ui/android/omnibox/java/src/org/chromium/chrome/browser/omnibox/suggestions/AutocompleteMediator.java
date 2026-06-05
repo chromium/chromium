@@ -1584,6 +1584,32 @@ class AutocompleteMediator
     }
 
     /**
+     * Uses the provided voice search query to generate a URL, and then loads that URL.
+     *
+     * @param query The voice search query used to generate the URL to load.
+     */
+    /* package */ void loadUrlFromVoice(String query) {
+        if (!isInInputSession()) return;
+
+        Profile profile = mSessionState.getProfile();
+        if (profile == null) return;
+
+        AutocompleteMatch match = mAutocomplete != null ? mAutocomplete.classify(query) : null;
+
+        GURL url;
+        if (match == null || match.isSearchSuggestion()) {
+            url = TemplateUrlServiceFactory.getForProfile(profile).getUrlForVoiceSearchQuery(query);
+        } else {
+            url = match.getUrl();
+        }
+
+        mDelegate.loadUrl(
+                new OmniboxLoadUrlParams.Builder(url.getSpec(), PageTransition.TYPED)
+                        .setOpenInNewTab(false)
+                        .build());
+    }
+
+    /**
      * Sends a zero suggest request to the server in order to pre-populate the result cache.
      *
      * @param webContents The WebContents for the current tab.

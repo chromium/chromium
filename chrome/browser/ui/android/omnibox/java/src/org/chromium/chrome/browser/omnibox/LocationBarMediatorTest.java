@@ -812,22 +812,10 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testLoadUrlFromVoice_clearsFocus() {
-        mMediator.onFinishNativeInitialization();
-        mProfileSupplier.set(mProfile);
-        doReturn(mTab).when(mLocationBarDataProvider).getTab();
-        doReturn(true).when(mLocationBarDataProvider).hasTab();
-        doReturn(mView).when(mTab).getView();
-
-        mMediator.onUrlFocusChange(true);
-        assertTrue(mMediator.isUrlBarFocused());
-
-        mMediator.loadUrlFromVoice(new GURL(TEST_URL));
-
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-
-        verify(mView).requestFocus();
-        verify(mAutocompleteCoordinator).endInput();
+    public void testLoadUrlFromVoice_delegatesToAutocompleteCoordinator() {
+        String sampleVoiceQuery = "sample voice query";
+        mMediator.loadUrlFromVoice(sampleVoiceQuery);
+        verify(mAutocompleteCoordinator).loadUrlFromVoice(sampleVoiceQuery);
     }
 
     @Test

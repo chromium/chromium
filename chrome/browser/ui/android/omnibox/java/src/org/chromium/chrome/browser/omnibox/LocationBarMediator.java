@@ -2569,13 +2569,11 @@ class LocationBarMediator
                 && mAutocompleteCoordinator.hasAutocompleteController();
     }
 
-    /** {@see OmniboxStub#loadUrlFromVoice(GURL)} */
+    /** {@see OmniboxStub#loadUrlFromVoice(String)} */
     @Override
-    public void loadUrlFromVoice(GURL url) {
-        loadUrl(
-                new OmniboxLoadUrlParams.Builder(url.getSpec(), PageTransition.TYPED)
-                        .setOpenInNewTab(false)
-                        .build());
+    public void loadUrlFromVoice(String query) {
+        if (mAutocompleteCoordinator == null) return;
+        mAutocompleteCoordinator.loadUrlFromVoice(query);
     }
 
     @Override

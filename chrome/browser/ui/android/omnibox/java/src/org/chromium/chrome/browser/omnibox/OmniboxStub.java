@@ -9,7 +9,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.url.GURL;
 
 /**
  * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP
@@ -72,10 +71,12 @@ public interface OmniboxStub {
     // Methods migrated from VoiceRecognitionHandler.Delegate
 
     /**
-     * Loads the provided URL, assumes the PageTransition type is TYPED.
+     * Uses the provided voice search query to generate a URL, and then loads that URL assuming the
+     * PageTransition type is TYPED.
      *
-     * @param url The URL to load.
+     * @param query The voice search query used to generate the URL to load.
      */
-    // TODO(crbug.com/477922724): migrate to loadUrl()
-    void loadUrlFromVoice(GURL url);
+    // TODO(b/519232041): Expand loadUrl() to take the "ActivationType" param to differentiate
+    // various ways of resolving user input and migrate this call to loadUrl().
+    void loadUrlFromVoice(String query);
 }
