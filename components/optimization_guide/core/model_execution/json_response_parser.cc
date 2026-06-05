@@ -7,19 +7,19 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace optimization_guide {
 
 namespace {
 
 ResponseParser::Result ExtractProto(
-    std::string type_name,
-    base::expected<base::Value, std::string> parse_result) {
+    const std::string& type_name,
+    const std::optional<base::Value>& parse_result) {
   if (!parse_result.has_value()) {
     return base::unexpected(ResponseParsingError::kFailed);
   }
@@ -37,9 +37,9 @@ JsonResponseParser::JsonResponseParser(std::string_view proto_type)
 
 void JsonResponseParser::ParseAsync(const std::string& redacted_output,
                                     ResultCallback callback) const {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      redacted_output,
-      base::BindOnce(&ExtractProto, proto_type_).Then(std::move(callback)));
+  std::move(callback).Run(ExtractProto(
+      proto_type_,
+      base::JSONReader::Read(redacted_output, base::JSON_PARSE_RFC)));
 }
 
 bool JsonResponseParser::SuppressParsingIncompleteResponse() const {

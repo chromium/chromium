@@ -14,7 +14,6 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/optimization_guide/proto/parser_kind.pb.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +50,6 @@ TEST(CreateResponseParserTest, SimpleResponseParser) {
 // Check that the JSON parser is appropriately selected.
 TEST(CreateResponseParserTest, JsonResponseParser) {
   base::test::TaskEnvironment task_environment;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   proto::OnDeviceModelExecutionOutputConfig config;
   config.set_parser_kind(proto::PARSER_KIND_JSON);

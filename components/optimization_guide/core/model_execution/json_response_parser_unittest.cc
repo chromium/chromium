@@ -12,8 +12,6 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,7 +20,6 @@ namespace optimization_guide {
 class JsonResponseParserTest : public testing::Test {
  public:
    base::test::TaskEnvironment task_environment_;
-   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(JsonResponseParserTest, Parse) {
