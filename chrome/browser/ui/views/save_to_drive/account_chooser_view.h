@@ -27,8 +27,9 @@ class AccountChooserView : public views::FlexLayoutView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveButtonId);
 
   AccountChooserView(AccountChooserViewDelegate* parent_dialog,
-                              const std::vector<AccountInfo>& accounts,
-                              std::optional<CoreAccountId> primary_account_id);
+                     const std::vector<AccountInfo>& accounts,
+                     std::optional<CoreAccountId> primary_account_id,
+                     const std::u16string& upload_title);
   ~AccountChooserView() override;
   // Updates the view with the new accounts and primary account id.
   void UpdateView(const std::vector<AccountInfo>& accounts,
@@ -77,6 +78,8 @@ class AccountChooserView : public views::FlexLayoutView {
   void UpdateHeaderView(const std::vector<AccountInfo>& accounts);
 
   bool is_single_account_ = true;
+
+  std::u16string upload_title_;
 
   raw_ptr<AccountChooserViewDelegate> parent_dialog_ = nullptr;
 

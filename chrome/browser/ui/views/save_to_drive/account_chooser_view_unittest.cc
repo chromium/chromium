@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_radio_group_view.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_test_util.h"
@@ -28,6 +29,7 @@ namespace save_to_drive {
 namespace {
 
 const char kTestDomain[] = "test.com";
+const char16_t kTestUploadTitle[] = u"test_file.pdf";
 
 using ::save_to_drive::testing::GetTestAccounts;
 using ::save_to_drive::testing::VerifyAccountChooserRow;
@@ -42,6 +44,8 @@ void VerifyAccountChooserViewHeader(views::View* header_view,
       static_cast<views::StyledLabel*>(header_view->children().back());
   // Verify the subtitle label.
   ASSERT_TRUE(subtitle_label);
+  EXPECT_THAT(base::UTF16ToUTF8(subtitle_label->GetText()),
+              ::testing::HasSubstr(base::UTF16ToUTF8(kTestUploadTitle)));
 }
 
 void VerifyAccountChooserViewFooter(views::View* footer_view) {
@@ -135,7 +139,8 @@ TEST_F(AccountChooserViewTest, SingleAccount) {
   std::vector<AccountInfo> accounts = GetTestAccounts({"pothos"}, kTestDomain);
   AccountChooserView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserView>(
-          &mock_account_chooser_view_delegate_, accounts, std::nullopt));
+          &mock_account_chooser_view_delegate_, accounts, std::nullopt,
+          kTestUploadTitle));
   TestSingleAccount(account_chooser_view, accounts.front());
 }
 
@@ -144,7 +149,8 @@ TEST_F(AccountChooserViewTest, MultiAccount) {
       GetTestAccounts({"pothos", "fern"}, kTestDomain);
   AccountChooserView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserView>(
-          &mock_account_chooser_view_delegate_, accounts, std::nullopt));
+          &mock_account_chooser_view_delegate_, accounts, std::nullopt,
+          kTestUploadTitle));
   TestMultiAccount(account_chooser_view, accounts);
 }
 
@@ -152,7 +158,8 @@ TEST_F(AccountChooserViewTest, SingleToMultiAccountViewUpdate) {
   std::vector<AccountInfo> accounts = GetTestAccounts({"pothos"}, kTestDomain);
   AccountChooserView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserView>(
-          &mock_account_chooser_view_delegate_, accounts, std::nullopt));
+          &mock_account_chooser_view_delegate_, accounts, std::nullopt,
+          kTestUploadTitle));
   TestSingleAccount(account_chooser_view, accounts.front());
   std::vector<AccountInfo> new_accounts =
       GetTestAccounts({"pothos", "fern"}, kTestDomain);
@@ -165,7 +172,8 @@ TEST_F(AccountChooserViewTest, MultiToSingleAccountViewUpdate) {
       GetTestAccounts({"pothos", "fern"}, kTestDomain);
   AccountChooserView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserView>(
-          &mock_account_chooser_view_delegate_, accounts, std::nullopt));
+          &mock_account_chooser_view_delegate_, accounts, std::nullopt,
+          kTestUploadTitle));
   TestMultiAccount(account_chooser_view, accounts);
   std::vector<AccountInfo> new_accounts =
       GetTestAccounts({"pothos"}, kTestDomain);

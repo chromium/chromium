@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SAVE_TO_DRIVE_ACCOUNT_CHOOSER_CONTROLLER_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -37,7 +38,8 @@ class AccountChooserController : public signin::IdentityManager::Observer,
                                  public AccountChooserViewDelegate {
  public:
   AccountChooserController(content::WebContents* web_contents,
-                           signin::IdentityManager* identity_manager);
+                           signin::IdentityManager* identity_manager,
+                           const std::u16string& upload_title);
   AccountChooserController(const AccountChooserController&) = delete;
   AccountChooserController& operator=(const AccountChooserController&) = delete;
   ~AccountChooserController() override;
@@ -118,6 +120,7 @@ class AccountChooserController : public signin::IdentityManager::Observer,
   std::unique_ptr<views::DialogDelegate> account_chooser_dialog_delegate_;
   std::unique_ptr<views::Widget> account_chooser_widget_;
   std::optional<AccountInfo> selected_account_;
+  std::u16string upload_title_;
 
   // Add account popup related fields.
   raw_ptr<content::WebContents> add_account_popup_;

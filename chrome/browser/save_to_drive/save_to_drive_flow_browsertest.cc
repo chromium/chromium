@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -65,6 +66,7 @@ class MockAccountChooser : public AccountChooser {
   MOCK_METHOD(void,
               GetAccount,
               (content::WebContents * web_contents,
+               const std::u16string& upload_title,
                base::OnceCallback<void(std::optional<AccountInfo>)>
                    on_account_selected_callback),
               (override));
@@ -171,7 +173,9 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
         .WillOnce(
             [account_info = std::move(account_info), this](
                 content::WebContents* web_contents,
+                const std::u16string& upload_title,
                 base::OnceCallback<void(std::optional<AccountInfo>)> callback) {
+              EXPECT_EQ(upload_title, web_contents->GetTitle());
               // The callback could kill the flow, which would destroy the
               // account chooser. It needs to be reset to avoid a dangling
               // pointer.

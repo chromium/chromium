@@ -19540,7 +19540,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Choose your account
     </message>
     <message name="IDS_ACCOUNT_CHOOSER_SUBTITLE" desc="Text description for saving files to Drive via Chrome PDF viewer.">
-      Find your file in the <ph name="FEATURE_NAME">$1<ex>Saved from Chrome</ex></ph> folder
+      Find your <ph name="FILENAME">$1<ex>document.pdf</ex></ph> in the <ph name="FEATURE_NAME">$2<ex>Saved from Chrome</ex></ph> folder
     </message>
     <message name="IDS_SAVE_TO_DRIVE_FOLDER_NAME" desc="Name of the folder in Drive where files saved from Chrome are stored." meaning="Name of the folder in Drive where files saved from Chrome are stored. Please use the short version of the branded term for Google Chrome i.e. Chrome">
       Saved from Chrome

@@ -90,9 +90,11 @@ class AccountChooserController::AddAccountPopupObserver
 
 AccountChooserController::AccountChooserController(
     content::WebContents* web_contents,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    const std::u16string& upload_title)
     : tab_(tabs::TabInterface::MaybeGetFromContents(web_contents)),
       identity_manager_(identity_manager),
+      upload_title_(upload_title),
       add_account_popup_observer_(
           std::make_unique<AddAccountPopupObserver>(this)) {
   CHECK(identity_manager_);
@@ -170,7 +172,8 @@ void AccountChooserController::ShowAccountChooserDialog(
   }
   std::unique_ptr<AccountChooserView> account_chooser_view =
       std::make_unique<AccountChooserView>(this, profile_info.accounts,
-                                           profile_info.primary_account_id);
+                                           profile_info.primary_account_id,
+                                           upload_title_);
   account_chooser_view_ = account_chooser_view.get();
 
   account_chooser_dialog_delegate_ =

@@ -18,12 +18,14 @@ AccountChooser::~AccountChooser() = default;
 
 void AccountChooser::GetAccount(
     content::WebContents* web_contents,
+    const std::u16string& upload_title,
     base::OnceCallback<void(std::optional<AccountInfo>)>
         on_account_chosen_callback) {
   account_chooser_controller_ = std::make_unique<AccountChooserController>(
       web_contents,
       IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())),
+      upload_title);
   account_chooser_controller_->GetAccount(
       std::move(on_account_chosen_callback));
 }

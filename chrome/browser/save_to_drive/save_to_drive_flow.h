@@ -130,6 +130,8 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
 
   // This is set when an account is chosen.
   std::optional<SaveToDriveAccountInfo> save_to_drive_account_info_;
+  // This is the title of the document that is being saved to Drive.
+  std::string upload_title_;
   // This is set after the upload starts.
   std::optional<extensions::api::pdf_viewer_private::SaveToDriveProgress>
       upload_progress_;

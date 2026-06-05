@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 
@@ -30,6 +31,7 @@ class AccountChooser {
   // account has been chosen. If the account chooser is canceled, the callback
   // will be called with a `std::nullopt`.
   virtual void GetAccount(content::WebContents* web_contents,
+                          const std::u16string& upload_title,
                           base::OnceCallback<void(std::optional<AccountInfo>)>
                               on_account_chosen_callback);
 
