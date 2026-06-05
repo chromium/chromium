@@ -176,4 +176,15 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_DPAD_LEFT);
         confirmAutocompletionBypassed(KeyEvent.KEYCODE_FORWARD_DEL);
     }
+
+    @Test
+    public void dispatchKeyEvent_handleDel() {
+        mCurrentState.setUserText("goo");
+        mCurrentState.setAutocompleteText("gle.com");
+        assertEquals("google.com", mCurrentState.getText());
+
+        clearInvocations(mConnection, mDelegate);
+        mModel.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+        assertEquals("goo", mCurrentState.getText());
+    }
 }

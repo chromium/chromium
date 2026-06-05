@@ -263,8 +263,11 @@ public class SpannableAutocompleteEditTextModel
         boolean retVal;
         mInputConnection.onBeginImeCommand();
         if (hasAutocomplete() && event.getAction() == KeyEvent.ACTION_DOWN) {
-            if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL) {
-                // The editor doesn't see the selected text so won't handle forward delete.
+            if (event.getKeyCode() == KeyEvent.KEYCODE_FORWARD_DEL
+                    || event.getKeyCode() == KeyEvent.KEYCODE_DEL) {
+                // The editor doesn't see the selected text so won't handle forward delete. Normal
+                // delete doesn't always work on the last character on hard keyboards, so handle it
+                // similarly.
                 clearAutocompleteText();
                 mLastEditWasTyping = false;
 

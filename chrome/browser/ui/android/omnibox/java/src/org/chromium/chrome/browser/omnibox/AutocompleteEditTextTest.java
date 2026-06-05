@@ -1520,4 +1520,16 @@ public class AutocompleteEditTextTest {
         assertEquals("", mAutocomplete.getText().toString());
         assertTexts(/* userText= */ "", /* autocompleteText= */ "", /* additionalText= */ "");
     }
+
+    @Test
+    public void testBackspace_DispatchKeyEvent() {
+        mAutocomplete.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_W));
+        mAutocomplete.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_W));
+        mAutocomplete.setAutocompleteText("w", "ww.example.com", null, null);
+        assertTexts("w", "ww.example.com", "");
+
+        mAutocomplete.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
+        mAutocomplete.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
+        assertTexts("w", "", "");
+    }
 }
