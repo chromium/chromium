@@ -19,6 +19,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -77,6 +78,23 @@ class FirstRunFinishOrContinuePixelTest
         finish_or_continue_url, content::Referrer(),
         ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
     observer.Wait();
+
+    // Wait for all cr-lotties to initialize to prevent flakiness.
+    EXPECT_EQ(true, content::EvalJs(view->GetPickerContents(), R"(
+      Promise.all(
+        Array.from(document.querySelector('finish-or-continue-app')
+            .shadowRoot.querySelectorAll('cr-lottie')).map(
+          anim => new Promise(resolve => {
+            if (anim.hasAttribute('is-animation-loaded')) {
+              resolve(true);
+            } else {
+              anim.addEventListener('cr-lottie-initialized',
+                                    () => resolve(true));
+            }
+          })
+        )
+      ).then(() => true);
+    )"));
   }
 
   bool VerifyUi() override {
@@ -107,9 +125,7 @@ class FirstRunFinishOrContinuePixelTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Flaky: crbug.com/520054743
-IN_PROC_BROWSER_TEST_P(FirstRunFinishOrContinuePixelTest,
-                       DISABLED_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(FirstRunFinishOrContinuePixelTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
