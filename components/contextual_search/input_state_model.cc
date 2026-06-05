@@ -180,6 +180,15 @@ bool AreItemsAllowed(const T& items, const U& allowed_items) {
                      });
 }
 
+std::optional<std::string> GetThreadId(const GURL& url) {
+  std::string value;
+  if (url.is_valid() && url.has_query() &&
+      net::GetValueForKeyInQuery(url, "mtid", &value)) {
+    return value;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 InputStateModel::InputStateModel(
@@ -191,7 +200,8 @@ InputStateModel::InputStateModel(
     : session_handle_(session_handle.AsWeakPtr()),
       is_off_the_record_(is_off_the_record),
       browser_identity_matches_aim_identity_(
-          browser_identity_matches_aim_identity) {
+          browser_identity_matches_aim_identity),
+      current_url_(active_url) {
   SearchboxConfig mutable_config = config;
   MaybePopulateBrowserTabInputTypeRule(&mutable_config);
 
@@ -307,7 +317,8 @@ InputStateModel::InputStateModel(
     : session_handle_(new_session_handle.AsWeakPtr()),
       is_off_the_record_(new_input_state_model.is_off_the_record_),
       browser_identity_matches_aim_identity_(
-          new_input_state_model.browser_identity_matches_aim_identity_) {
+          new_input_state_model.browser_identity_matches_aim_identity_),
+      current_url_(new_input_state_model.current_url_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
   pref_service_ = new_input_state_model.pref_service_;
@@ -376,9 +387,15 @@ void InputStateModel::setActiveModel(ModelMode model) {
 void InputStateModel::UpdateStateFromUrl(const GURL& url) {
   auto matched_tool =
       GetActiveToolFromUrl(url, state_.tool_configs, state_.allowed_tools);
-  ToolMode new_tool = matched_tool.value_or(state_.active_tool);
 
-  bool new_canvas_submitted = state_.is_canvas_query_submitted;
+  bool thread_changed = GetThreadId(url) != GetThreadId(current_url_);
+  current_url_ = url;
+
+  ToolMode new_tool = matched_tool.value_or(
+      thread_changed ? ToolMode::TOOL_MODE_UNSPECIFIED : state_.active_tool);
+
+  bool new_canvas_submitted =
+      thread_changed ? false : state_.is_canvas_query_submitted;
   if (matched_tool.has_value()) {
     new_canvas_submitted = (*matched_tool == ToolMode::TOOL_MODE_CANVAS);
   }
