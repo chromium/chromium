@@ -143,7 +143,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) = 0;
 
-  void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
+  virtual void SetDelegate(Delegate* delegate) = 0;
+  virtual Delegate* GetDelegate() const { return nullptr; }
 
   MemoryManagedPaintCanvas& GetCanvasForTesting();
   std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
@@ -184,9 +185,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual void SetRecorder(
       std::unique_ptr<MemoryManagedPaintRecorder> recorder) = 0;
 
-  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
-
-  bool IsPrinting() { return delegate_ && delegate_->IsPrinting(); }
+  virtual bool IsPrinting() const = 0;
 
   static void NotifyWillTransfer(cc::PaintImage::ContentId content_id);
 
@@ -207,8 +206,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
       ImageOrientation);
 
-  CanvasResourceProvider(const ResourceProviderType&,
-                         Delegate* delegate);
+  explicit CanvasResourceProvider(const ResourceProviderType&);
 
   virtual void RasterRecord(cc::PaintRecord) = 0;
 
@@ -248,7 +246,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  raw_ptr<Delegate> delegate_ = nullptr;
 
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
@@ -273,6 +270,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const override { return false; }
   bool IsGpuContextLost() const override { return true; }
+  void SetDelegate(Delegate* delegate) override { delegate_ = delegate; }
+  Delegate* GetDelegate() const override { return delegate_; }
+  bool IsPrinting() const override {
+    return delegate_ && delegate_->IsPrinting();
+  }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
@@ -306,6 +308,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override;
   void SetRecorder(
       std::unique_ptr<MemoryManagedPaintRecorder> recorder) override;
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
  private:
   friend class CanvasRenderingContext2D;
@@ -345,6 +348,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
@@ -440,6 +444,11 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool IsAccelerated() const override { return is_accelerated_; }
   bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const override;
+  void SetDelegate(Delegate* delegate) override { delegate_ = delegate; }
+  Delegate* GetDelegate() const override { return delegate_; }
+  bool IsPrinting() const override {
+    return delegate_ && delegate_->IsPrinting();
+  }
 
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
@@ -491,6 +500,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder() override;
   void SetRecorder(
       std::unique_ptr<MemoryManagedPaintRecorder> recorder) override;
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
 
   void SetResourceRecyclingEnabled(bool value);
 
@@ -586,6 +596,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
       this};

@@ -181,15 +181,23 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProvider::Delegate* delegate)
-    : CanvasResourceProvider(kBitmap, delegate),
+    : CanvasResourceProvider(kBitmap),
       size_(size),
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
-      hdr_metadata_(hdr_metadata) {
+      hdr_metadata_(hdr_metadata),
+      delegate_(delegate) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+}
+
+void Canvas2DResourceProviderBitmap::InitializeForRecording(
+    cc::PaintCanvas* canvas) const {
+  if (delegate_) {
+    delegate_->InitializeForRecording(canvas);
+  }
 }
 
 std::unique_ptr<MemoryManagedPaintRecorder>
@@ -1794,12 +1802,8 @@ bool CanvasImageProvider::IsHardwareDecodeCache() const {
   return raster_mode_ != cc::PlaybackImageProvider::RasterMode::kSoftware;
 }
 
-CanvasResourceProvider::CanvasResourceProvider(
-    const ResourceProviderType& type,
-    CanvasResourceProvider::Delegate* delegate)
-    : type_(type),
-      delegate_(delegate),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+CanvasResourceProvider::CanvasResourceProvider(const ResourceProviderType& type)
+    : type_(type), snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
@@ -1840,16 +1844,9 @@ CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
       cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
       cc::PlaybackImageProvider::RasterMode::kSoftware,
-      delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
+      GetDelegate() ? GetDelegate()->GetAnimatedImageFrameIndexes() : nullptr);
 
   return canvas_image_provider_.get();
-}
-
-void CanvasResourceProvider::InitializeForRecording(
-    cc::PaintCanvas* canvas) const {
-  if (delegate_) {
-    delegate_->InitializeForRecording(canvas);
-  }
 }
 
 void CanvasResourceProvider::RecordingCleared() {
@@ -2024,9 +2021,9 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   clear_frame_ = false;
   cc::PaintRecord recording;
   recording = Recorder().ReleaseMainRecording();
-  if (canvas_image_provider_ && delegate_) {
+  if (canvas_image_provider_ && GetDelegate()) {
     canvas_image_provider_->SetAnimatedImageFrameIndexes(
-        delegate_->GetAnimatedImageFrameIndexes());
+        GetDelegate()->GetAnimatedImageFrameIndexes());
   }
   RasterRecord(recording);
   // Images are locked for the duration of the rasterization, in case they get
@@ -2071,7 +2068,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     CanvasResourceProvider::Delegate* delegate)
-    : CanvasResourceProvider(kSharedImage, delegate),
+    : CanvasResourceProvider(kSharedImage),
       is_accelerated_(is_accelerated),
       is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
@@ -2079,7 +2076,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
-      hdr_metadata_(hdr_metadata) {
+      hdr_metadata_(hdr_metadata),
+      delegate_(delegate) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
@@ -2164,6 +2162,13 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
   }
 }
 
+void Canvas2DResourceProviderSharedImage::InitializeForRecording(
+    cc::PaintCanvas* canvas) const {
+  if (delegate_) {
+    delegate_->InitializeForRecording(canvas);
+  }
+}
+
 Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -2172,7 +2177,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     const gfx::HDRMetadata& hdr_metadata,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     CanvasResourceProvider::Delegate* delegate)
-    : CanvasResourceProvider(kSharedImage, delegate),
+    : CanvasResourceProvider(kSharedImage),
       is_accelerated_(false),
       is_software_(true),
       shared_image_interface_provider_(
@@ -2183,7 +2188,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       format_(format),
       alpha_type_(alpha_type),
       color_space_(color_space),
-      hdr_metadata_(hdr_metadata) {
+      hdr_metadata_(hdr_metadata),
+      delegate_(delegate) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
