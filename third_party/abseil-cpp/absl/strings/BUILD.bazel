@@ -435,6 +435,7 @@ cc_library(
     visibility = [
         "//absl:friends",
         "//absl/status:__pkg__",
+        "//visibility:private",
     ],
     deps = [
         ":string_view",

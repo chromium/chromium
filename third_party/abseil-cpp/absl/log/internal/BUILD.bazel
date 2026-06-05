@@ -111,7 +111,10 @@ cc_library(
         "//absl:friends",
         "//absl/log:__pkg__",
     ],
-    deps = ["//absl/base:config"],
+    deps = [
+        "//absl/base:config",
+        "//absl/base:core_headers",
+    ],
 )
 
 cc_library(

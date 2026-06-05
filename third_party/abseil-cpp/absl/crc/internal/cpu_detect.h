@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ABSL_BASE_INTERNAL_CPU_DETECT_H_
-#define ABSL_BASE_INTERNAL_CPU_DETECT_H_
+#ifndef ABSL_CRC_INTERNAL_CPU_DETECT_H_
+#define ABSL_CRC_INTERNAL_CPU_DETECT_H_
 
 #include "absl/base/config.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-namespace base_internal {
+namespace crc_internal {
 
 // Enumeration of architectures that we have special-case tuning parameters for.
 // This set may change over time.
@@ -38,7 +38,7 @@ enum class CpuType {
   kIntelIcelake,
   kIntelSapphirerapids,
   kIntelEmeraldrapids,
-  kIntelGraniterapids,
+  kIntelGraniterapidsap,
   kIntelSkylake,
   kIntelIvybridge,
   kIntelSandybridge,
@@ -49,7 +49,6 @@ enum class CpuType {
   kArmNeoverseN2,
   kArmNeoverseV2,
   kArmNeoverseN3,
-  kNvidiaGrace,
 };
 
 // Returns the type of host CPU this code is running on.  Returns kUnknown if
@@ -63,15 +62,8 @@ CpuType GetCpuType();
 // tuning.
 bool SupportsArmCRC32PMULL();
 
-// Returns whether the host CPU supports simultaneous multithreading (SMT) and
-// if it is enabled.
-bool IsSMTEnabled();
-
-// Returns how many hardware contexts per CPU exist.
-int NumContextsPerCPU();
-
-}  // namespace base_internal
+}  // namespace crc_internal
 ABSL_NAMESPACE_END
 }  // namespace absl
 
-#endif  // ABSL_BASE_INTERNAL_CPU_DETECT_H_
+#endif  // ABSL_CRC_INTERNAL_CPU_DETECT_H_

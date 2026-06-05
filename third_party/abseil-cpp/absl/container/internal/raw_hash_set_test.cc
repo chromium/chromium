@@ -1117,116 +1117,6 @@ TEST(Table, InsertCollisionAndFindAfterDelete) {
   EXPECT_TRUE(t.empty());
 }
 
-TEST(Table, ReservedTableWithTombstonesDestructWell) {
-  constexpr int64_t kCoef = 17;
-  for (size_t capacity = Group::kWidth * 2 - 1; capacity < 256;
-       capacity = NextCapacity(capacity)) {
-    int64_t reserve_size =
-        static_cast<int64_t>(CapacityToGrowth(capacity) - capacity / 16);
-    IntTable t;
-    t.reserve(static_cast<size_t>(reserve_size));
-    for (int64_t i = 0; i < reserve_size; ++i) {
-      ASSERT_TRUE(t.insert(i * kCoef).second);
-    }
-    ASSERT_EQ(t.size(), reserve_size);
-    ASSERT_EQ(t.capacity(), capacity);
-    // Erase and insert values until we get a tombstone.
-    for (int64_t i = reserve_size; i < static_cast<int64_t>(capacity) * 1000;
-         ++i) {
-      ASSERT_EQ(t.erase((i - reserve_size) * kCoef), 1);
-      if (RawHashSetTestOnlyAccess::CountTombstones(t) > 0) {
-        break;
-      }
-      ASSERT_TRUE(t.insert(i * kCoef).second);
-    }
-    ASSERT_GT(RawHashSetTestOnlyAccess::CountTombstones(t), 0);
-  }
-}
-
-struct BadTwoValuesHash {
-  explicit BadTwoValuesHash(size_t other_value) : other_value(other_value) {}
-  size_t operator()(int64_t x) const { return x >= 0 ? 0 : other_value; }
-  size_t other_value;
-};
-
-struct BadTwoValuesHashTable
-    : raw_hash_set<IntPolicy, BadTwoValuesHash, std::equal_to<int64_t>,
-                   std::allocator<int>> {
-  using Base = typename BadTwoValuesHashTable::raw_hash_set;
-  BadTwoValuesHashTable() = default;
-  using Base::Base;
-};
-
-TEST(Table, ReservedTableRehashWithoutGrowthWorksWell) {
-  if (SwisstableGenerationsEnabled()) {
-    GTEST_SKIP() << "Generations enabled, so rehash happening earlier.";
-  }
-  constexpr int64_t kCoef = 17;
-  int retries = 0;
-  for (size_t capacity = 31; capacity < 256;
-       capacity = NextCapacity(capacity)) {
-    SCOPED_TRACE(absl::StrCat("capacity: ", capacity));
-    // Number of elements we keep empty in order to force a rehash without
-    // growth. RehashOrGrowToNextCapacityAndPrepareInsert grow if number of full
-    // slots is greater than 25/32 of capacity, so we leave 7/32 + 5 empty to
-    // have extra margin.
-    size_t empty_till_full = (capacity + 1) / 32 * 7 + 5;
-    int64_t reserve_size =
-        static_cast<int64_t>(CapacityToGrowth(capacity) - empty_till_full);
-
-    BadTwoValuesHashTable t(
-        0,
-        // Negative number goes to the end of the table.
-        // Positive numbers hash is 0, so the first Group::kWidth * 2 elements
-        // will be placed at the beginning of the table.
-        BadTwoValuesHash(static_cast<size_t>(reserve_size)));
-    // Remove seed to make table layout deterministic.
-    RawHashSetTestOnlyAccess::GetCommon(t).set_no_seed_for_testing();
-
-    t.reserve(static_cast<size_t>(reserve_size));
-    for (int64_t i = 1; i <= reserve_size; ++i) {
-      ASSERT_TRUE(t.insert(i * kCoef).second);
-    }
-    ASSERT_EQ(t.size(), reserve_size);
-    ASSERT_EQ(t.capacity(), capacity);
-    bool rehashed = false;
-    int64_t last_erased = 0;
-    // We erase and insert until we get a lot of tombstones to force a rehash
-    // without growth. It happens relatively quickly because of the
-    // intentionally bad hash function that place numbers to the same slot
-    // depending on the sign.
-    for (int64_t i = 1; i <= reserve_size; ++i) {
-      SCOPED_TRACE(absl::StrCat("i: ", i));
-      ASSERT_EQ(t.erase(i * kCoef), 1);
-      size_t tombstones_before = RawHashSetTestOnlyAccess::CountTombstones(t);
-      ASSERT_TRUE(t.insert(-i * kCoef).second);
-      size_t tombstones_after = RawHashSetTestOnlyAccess::CountTombstones(t);
-      if (tombstones_before > 1 && tombstones_after == 0) {
-        ASSERT_EQ(t.capacity(), capacity) << "capacity must be preserved";
-        rehashed = true;
-        last_erased = i;
-        break;
-      }
-    }
-    if (!rehashed) {
-      // In debug mode rehashing may happen earlier with some probability.
-      // See ShouldRehashForBugDetection for details.
-      capacity = PreviousCapacity(capacity);
-      ++retries;
-      ASSERT_LT(retries, 50) << "Too many retries";
-      continue;
-    }
-    // Verify that all elements are still in the table after rehash.
-    for (int64_t i = 1; i <= reserve_size; ++i) {
-      if (i <= last_erased) {
-        ASSERT_TRUE(t.contains(-i * kCoef)) << i;
-      } else {
-        ASSERT_TRUE(t.contains(i * kCoef)) << i;
-      }
-    }
-  }
-}
-
 TYPED_TEST(SooTest, EraseInSmallTables) {
   for (int64_t size = 0; size < 64; ++size) {
     TypeParam t;
@@ -1303,51 +1193,46 @@ TYPED_TEST(SooTest, ClearDifferentSizes) {
 }
 
 TYPED_TEST(SooTest, ReserveTwice) {
-  for (int reserve_size = 0; reserve_size < 32; ++reserve_size) {
-    for (int reserve_size2 = reserve_size; reserve_size2 < 32;
+  for (size_t reserve_size = 0; reserve_size < 32; ++reserve_size) {
+    for (size_t reserve_size2 = reserve_size; reserve_size2 < 32;
          ++reserve_size2) {
       SCOPED_TRACE(absl::StrCat("reserve_size: ", reserve_size,
                                 ", reserve_size2: ", reserve_size2));
       TypeParam t;
-      t.reserve(static_cast<size_t>(reserve_size));
+      t.reserve(reserve_size);
       {  // Insert first batch of elements.
         size_t cap = t.capacity();
-        for (int i = 1; i <= reserve_size; ++i) {
-          ASSERT_TRUE(t.insert(i).second) << i;
+        for (size_t i = 0; i < reserve_size; ++i) {
+          ASSERT_TRUE(t.insert(static_cast<int>(i)).second) << i;
         }
         ASSERT_EQ(t.capacity(), cap);
       }
-      t.reserve(static_cast<size_t>(reserve_size2));
+      t.reserve(reserve_size2);
       {  // Insert second batch of elements.
         size_t cap = t.capacity();
-        for (int i = reserve_size + 1; i <= reserve_size2; ++i) {
-          ASSERT_TRUE(t.insert(i).second) << i;
+        for (size_t i = reserve_size; i < reserve_size2; ++i) {
+          ASSERT_TRUE(t.insert(static_cast<int>(i)).second) << i;
         }
         ASSERT_EQ(t.capacity(), cap);
       }
-      for (int i = 1; i <= reserve_size2; ++i) {
-        ASSERT_TRUE(t.contains(i)) << i;
-        // Testing missing value to verify that we correctly have empty slots.
-        ASSERT_FALSE(t.contains(-i)) << i;
+      for (size_t i = 0; i < reserve_size2; ++i) {
+        ASSERT_TRUE(t.contains(static_cast<int>(i))) << i;
       }
     }
   }
 }
 
 TYPED_TEST(SooTest, GrowAfterReserve) {
-  for (int reserve_size = 1; reserve_size <= 150; ++reserve_size) {
+  for (size_t reserve_size = 1; reserve_size <= 150; ++reserve_size) {
+    size_t size = reserve_size + 1;
     TypeParam s;
-    s.reserve(static_cast<size_t>(reserve_size));
-    int size = reserve_size + 1;
-    for (int i = 1; i <= size; ++i) {
-      ASSERT_TRUE(s.insert(i).second) << i;
-      // Testing missing value to verify that we correctly have empty slots.
-      ASSERT_FALSE(s.contains(-i)) << i;
+    s.reserve(reserve_size);
+    for (size_t i = 0; i < size; ++i) {
+      ASSERT_TRUE(s.insert(static_cast<int>(i)).second) << i;
     }
     EXPECT_EQ(s.size(), size);
-    for (int i = 1; i <= size; ++i) {
-      ASSERT_TRUE(s.contains(i)) << i;
-      ASSERT_FALSE(s.contains(-i)) << i;
+    for (size_t i = 0; i < size; ++i) {
+      ASSERT_TRUE(s.contains(static_cast<int>(i))) << i;
     }
   }
 }
@@ -1428,23 +1313,23 @@ TYPED_TEST(SmallTableResizeTest, InsertIntoSmallTable) {
 }
 
 TYPED_TEST(SmallTableResizeTest, ResizeGrowSmallTables) {
-  for (int source_size = 0; source_size < 32; ++source_size) {
-    for (int target_size = source_size; target_size < 32; ++target_size) {
+  for (size_t source_size = 0; source_size < 32; ++source_size) {
+    for (size_t target_size = source_size; target_size < 32; ++target_size) {
       for (bool rehash : {false, true}) {
         SCOPED_TRACE(absl::StrCat("source_size: ", source_size,
                                   ", target_size: ", target_size,
                                   ", rehash: ", rehash));
         TypeParam t;
-        for (int i = 0; i < source_size; ++i) {
-          t.insert(i);
+        for (size_t i = 0; i < source_size; ++i) {
+          t.insert(static_cast<int>(i));
         }
         if (rehash) {
-          t.rehash(static_cast<size_t>(target_size));
+          t.rehash(target_size);
         } else {
-          t.reserve(static_cast<size_t>(target_size));
+          t.reserve(target_size);
         }
-        for (int i = 0; i < source_size; ++i) {
-          ASSERT_TRUE(t.contains(i));
+        for (size_t i = 0; i < source_size; ++i) {
+          ASSERT_TRUE(t.find(static_cast<int>(i)) != t.end());
           EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));
         }
       }

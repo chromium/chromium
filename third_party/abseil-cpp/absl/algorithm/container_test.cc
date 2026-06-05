@@ -2536,15 +2536,15 @@ template <typename Container, typename Output, typename = void>
 struct CanCopy : std::false_type {};
 template <typename Container, typename Output>
 struct CanCopy<Container, Output,
-               std::void_t<decltype(absl::c_copy(std::declval<Container>(),
-                                                 std::declval<Output>()))>>
+               absl::void_t<decltype(absl::c_copy(std::declval<Container>(),
+                                                  std::declval<Output>()))>>
     : std::true_type {};
 
 template <typename Container, typename Output, typename = void>
 struct CanCopyN : std::false_type {};
 template <typename Container, typename Output>
 struct CanCopyN<Container, Output,
-                std::void_t<decltype(absl::c_copy_n(
+                absl::void_t<decltype(absl::c_copy_n(
                     std::declval<Container>(), std::declval<ptrdiff_t>(),
                     std::declval<Output>()))>> : std::true_type {};
 
@@ -2552,8 +2552,8 @@ template <typename Container, typename Output, typename = void>
 struct CanMove : std::false_type {};
 template <typename Container, typename Output>
 struct CanMove<Container, Output,
-               std::void_t<decltype(absl::c_move(std::declval<Container>(),
-                                                 std::declval<Output>()))>>
+               absl::void_t<decltype(absl::c_move(std::declval<Container>(),
+                                                  std::declval<Output>()))>>
     : std::true_type {};
 
 TEST(CanCopyTest, CopyToMultiDimArray) {

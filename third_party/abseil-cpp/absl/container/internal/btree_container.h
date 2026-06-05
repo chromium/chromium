@@ -501,7 +501,7 @@ class btree_map_container : public btree_set_container<Tree> {
                                           IfRRef<int KQual>::AddPtr<K>,      \
                                           IfRRef<int MQual>::AddPtr<M>>>()), \
           ABSL_INTERNAL_SINGLE_ARG(                                          \
-              int&...,                                                       \
+              int &...,                                                      \
               decltype(EnableIf<LifetimeBoundKV<K, KValue, M, MValue>>()) =  \
                   0))>                                                       \
   decltype(auto) Func(                                                       \
@@ -515,7 +515,7 @@ class btree_map_container : public btree_set_container<Tree> {
         __VA_ARGS__ std::forward<decltype(k)>(k),                            \
         std::forward<decltype(obj)>(obj));                                   \
   }                                                                          \
-  static_assert(true, "this assertion forces a semicolon")
+  friend struct std::enable_if<false> /* just to force a semicolon */
   // Insertion routines.
   // Note: the nullptr template arguments and extra `const M&` overloads allow
   // for supporting bitfield arguments.
@@ -609,12 +609,12 @@ class btree_map_container : public btree_set_container<Tree> {
   decltype(auto) Func(                                                         \
       __VA_ARGS__ key_arg<K> KQual k ABSL_INTERNAL_IF_##KValue(                \
           ABSL_INTERNAL_ATTRIBUTE_CAPTURED_BY(this)),                          \
-      Args&&... args) ABSL_ATTRIBUTE_LIFETIME_BOUND {                          \
+      Args &&...args) ABSL_ATTRIBUTE_LIFETIME_BOUND {                          \
     return ABSL_INTERNAL_IF_##KValue((this->template Func<K, 0>), Callee)(     \
         __VA_ARGS__ std::forward<decltype(k)>(k),                              \
         std::forward<decltype(args)>(args)...);                                \
   }                                                                            \
-  static_assert(true, "this assertion forces a semicolon")
+  friend struct std::enable_if<false> /* just to force a semicolon */
   ABSL_INTERNAL_X(try_emplace, try_emplace_impl, const &, false);
   ABSL_INTERNAL_X(try_emplace, try_emplace_impl, const &, true);
   ABSL_INTERNAL_X(try_emplace, try_emplace_impl, &&, false);
