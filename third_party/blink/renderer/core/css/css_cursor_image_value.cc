@@ -35,7 +35,8 @@ CSSCursorImageValue::CSSCursorImageValue(const CSSValue& image_value,
       image_value_(&image_value),
       hot_spot_(hot_spot),
       hot_spot_specified_(hot_spot_specified) {
-  DCHECK(image_value.IsImageValue() || image_value.IsImageSetValue());
+  DCHECK(image_value.IsImageValue() || image_value.IsImageSetValue() ||
+         image_value.IsLightDarkValuePair());
 }
 
 String CSSCursorImageValue::CustomCSSText() const {

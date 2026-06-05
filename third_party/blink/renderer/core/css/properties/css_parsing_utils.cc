@@ -886,12 +886,10 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
 }
 
 template <typename Func>
-CSSLightDarkValuePair* ConsumeLightDark(
-    Func consume_value,
-    CSSParserTokenStream& stream,
-    const CSSParserContext& context,
-    CSSParserLocalContext& local_context,
-    const ColorParserContext& color_parser_context) {
+CSSLightDarkValuePair* ConsumeLightDark(Func consume_value,
+                                        CSSParserTokenStream& stream,
+                                        const CSSParserContext& context,
+                                        CSSParserLocalContext& local_context) {
   if (stream.Peek().FunctionId() != CSSValueID::kLightDark) {
     return nullptr;
   }
@@ -904,13 +902,11 @@ CSSLightDarkValuePair* ConsumeLightDark(
   {
     CSSParserTokenStream::RestoringBlockGuard guard(stream);
     stream.ConsumeWhitespace();
-    light_value =
-        consume_value(stream, context, local_context, color_parser_context);
+    light_value = consume_value(stream, context, local_context);
     if (!light_value || !ConsumeCommaIncludingWhitespace(stream)) {
       return nullptr;
     }
-    dark_value =
-        consume_value(stream, context, local_context, color_parser_context);
+    dark_value = consume_value(stream, context, local_context);
     if (!dark_value || !stream.AtEnd()) {
       return nullptr;
     }
@@ -2499,8 +2495,14 @@ CSSValue* ConsumeColorInternal(CSSParserTokenStream& stream,
   }
 
   if (!color_parser_context.OnlyAbsoluteColorsAllowed()) {
-    return ConsumeLightDark(ConsumeColor, stream, context, local_context,
-                            color_parser_context);
+    return ConsumeLightDark(
+        [&color_parser_context](CSSParserTokenStream& stream,
+                                const CSSParserContext& context,
+                                CSSParserLocalContext& local_context) {
+          return ConsumeColor(stream, context, local_context,
+                              color_parser_context);
+        },
+        stream, context, local_context);
   }
   return nullptr;
 }
@@ -3928,12 +3930,22 @@ CSSValue* ConsumeImage(
     }
     if (IsUASheetBehavior(context.Mode()) ||
         RuntimeEnabledFeatures::CSSLightDarkImageEnabled()) {
+      // Resolve the two branches of light-dark() with the same generated-image
+      // policy as the outer context. In particular, the 'cursor' property
+      // forbids generated images, and light-dark() must not be allowed to
+      // smuggle them in (crbug.com/518872187).
+      auto consume_image_or_none =
+          [generated_image_policy](
+              CSSParserTokenStream& stream, const CSSParserContext& context,
+              CSSParserLocalContext& local_context) -> CSSValue* {
+        if (stream.Peek().Id() == CSSValueID::kNone) {
+          return ConsumeIdent(stream);
+        }
+        return ConsumeImage(stream, context, local_context,
+                            generated_image_policy);
+      };
       if (CSSLightDarkValuePair* value = ConsumeLightDark(
-              static_cast<
-                  CSSValue* (*)(CSSParserTokenStream&, const CSSParserContext&,
-                                CSSParserLocalContext&,
-                                const ColorParserContext&)>(ConsumeImageOrNone),
-              stream, context, local_context, ColorParserContext())) {
+              consume_image_or_none, stream, context, local_context)) {
         if (!IsUASheetBehavior(context.Mode())) {
           context.Count(WebFeature::kCSSLightDarkImage);
         }
