@@ -47,9 +47,6 @@ class GeminiService;
 // Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
-// Whether the toolbar is being shown in incognito or not.
-@property(nonatomic, assign, getter=isIncognito) BOOL incognito;
-
 // Commands handler for fullscreen.
 @property(nonatomic, weak) id<FullscreenCommands> fullscreenCommands;
 
@@ -66,17 +63,17 @@ class GeminiService;
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
 
 // Initializer.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                       actionFactory:(BrowserActionFactory*)actionFactory
-                         prefService:(PrefService*)prefService
-                fullscreenController:(FullscreenController*)fullscreenController
-                         topPosition:(BOOL)topPosition
-        defaultBrowserBannerAppAgent:
-            (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
-               authenticationService:
-                   (AuthenticationService*)authenticationService
-                       geminiService:(GeminiService*)geminiService
-                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
+- (instancetype)initWithIncognito:(BOOL)incognito
+                     webStateList:(WebStateList*)webStateList
+                    actionFactory:(BrowserActionFactory*)actionFactory
+                      prefService:(PrefService*)prefService
+             fullscreenController:(FullscreenController*)fullscreenController
+                      topPosition:(BOOL)topPosition
+     defaultBrowserBannerAppAgent:
+         (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
+            authenticationService:(AuthenticationService*)authenticationService
+                    geminiService:(GeminiService*)geminiService
+               geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

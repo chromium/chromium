@@ -91,7 +91,8 @@ class ToolbarMediatorTest : public PlatformTest,
         [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
                                              scenario:kTestMenuScenario];
     mediator_ = [[ToolbarMediator alloc]
-                initWithWebStateList:browser_->GetWebStateList()
+                   initWithIncognito:NO
+                        webStateList:browser_->GetWebStateList()
                        actionFactory:action_factory_
                          prefService:profile_->GetTestingPrefService()
                 fullscreenController:TestFullscreenController::FromBrowser(
@@ -389,7 +390,8 @@ TEST_P(ToolbarMediatorTest, TestDisplayPromo) {
                                            scenario:kTestMenuScenario];
 
   ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
-              initWithWebStateList:browser_->GetWebStateList()
+                 initWithIncognito:NO
+                      webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
@@ -425,7 +427,8 @@ TEST_P(ToolbarMediatorTest, TestHidePromo) {
                                            scenario:kTestMenuScenario];
 
   ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
-              initWithWebStateList:browser_->GetWebStateList()
+                 initWithIncognito:NO
+                      webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
@@ -526,7 +529,8 @@ TEST_P(ToolbarMediatorTest, TestTabGridMenu_IncognitoDisabled) {
       [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
                                            scenario:kTestMenuScenario];
   ToolbarMediator* local_mediator = [[ToolbarMediator alloc]
-              initWithWebStateList:browser_->GetWebStateList()
+                 initWithIncognito:NO
+                      webStateList:browser_->GetWebStateList()
                      actionFactory:action_factory
                        prefService:profile_->GetTestingPrefService()
               fullscreenController:TestFullscreenController::FromBrowser(
