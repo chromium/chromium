@@ -63,6 +63,8 @@ export class WebClientImpl implements WebClientInterface {
 
     // The web client is ready to show, ensure the webview is
     // displayed.
+    const canUserResize = result.openPanelInfo?.canUserResize ?? true;
+    this.embedder.enableDragResize(canUserResize);
     this.embedder.webClientReady();
 
     const openPanelInfoMojo: OpenPanelInfoMojo = {

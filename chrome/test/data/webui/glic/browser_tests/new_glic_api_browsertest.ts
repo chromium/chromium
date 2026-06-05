@@ -1029,11 +1029,6 @@ class SkillsApiTests extends ApiTests {
     this.host.showManageSkillsUi();
   }
 
-  async testEnableDragResize() {
-    assertDefined(this.host.enableDragResize);
-    await this.host.enableDragResize(true);
-  }
-
   async testDisableDragResize() {
     assertDefined(this.host.enableDragResize);
     await this.host.enableDragResize(false);
@@ -1156,6 +1151,11 @@ class InitiallyNotResizableTest extends ApiTestFixtureBase {
 
   async testInitiallyNotResizable() {
     await sleep(100);
+  }
+
+  async testEnableDragResize() {
+    assertDefined(this.host.enableDragResize);
+    await this.host.enableDragResize(true);
   }
 }
 

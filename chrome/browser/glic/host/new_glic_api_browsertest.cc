@@ -874,15 +874,15 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testEnableDragResize) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ASSERT_OK(WaitForGlicClient());
+  ASSERT_OK(WaitUntilCanResize(false));
   ExecuteJsTest();
   ASSERT_OK(WaitUntilCanResize(true));
 }
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/520306661): Flaky, sometimes WaitUntilCanResize(true) times
-// out.
-IN_PROC_BROWSER_TEST_P(NewGlicApiTest, DISABLED_testDisableDragResize) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDisableDragResize) {
   ASSERT_OK(OpenGlicForActiveTabAndDetach());
   ASSERT_OK(WaitUntilCanResize(true));
   ExecuteJsTest();

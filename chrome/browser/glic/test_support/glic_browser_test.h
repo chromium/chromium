@@ -611,7 +611,8 @@ class GlicBrowserTestMixin : public T {
     glic_test_environment_.SetGlicFreUrlOverride(url);
   }
 
-  [[nodiscard]] TestResult<void> WaitForGlicClient(GlicInstance* instance) {
+  [[nodiscard]] TestResult<void> WaitForGlicClient(
+      GlicInstance* instance = nullptr) {
     auto* instance_impl = GetInstanceImpl(instance);
     return RunUntilEqual(
         [&]() { return instance_impl->host().IsWebClientConnected(); }, true,
