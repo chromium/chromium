@@ -25,7 +25,7 @@ class TestWebUIDataSource {
 
   virtual ~TestWebUIDataSource() = default;
 
-  virtual const base::DictValue* GetLocalizedStrings() = 0;
+  virtual const base::DictValue& GetLocalizedStrings() = 0;
 
   virtual const ui::TemplateReplacements* GetReplacements() = 0;
 

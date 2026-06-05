@@ -100,7 +100,7 @@ TEST_F(PersonalizationSectionTest, MenuItemDescriptionString) {
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(std::string("Dark theme, screen saver"),
-            *html_source->GetLocalizedStrings()->FindString(
+            *html_source->GetLocalizedStrings().FindString(
                 "personalizationMenuItemDescription"));
 }
 
@@ -113,7 +113,7 @@ TEST_F(PersonalizationSectionTest, MenuItemDescriptionStringGuestMode) {
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(std::string("Dark theme"),
-            *html_source->GetLocalizedStrings()->FindString(
+            *html_source->GetLocalizedStrings().FindString(
                 "personalizationMenuItemDescription"));
 }
 
@@ -126,7 +126,7 @@ TEST_F(PersonalizationSectionTest, RowDescriptionString) {
 
   EXPECT_EQ(
       std::string("Personalize wallpaper, screen saver, dark theme, and more"),
-      *html_source->GetLocalizedStrings()->FindString(
+      *html_source->GetLocalizedStrings().FindString(
           "personalizationHubSubtitle"));
 }
 
@@ -139,7 +139,7 @@ TEST_F(PersonalizationSectionTest, RowDescriptionStringGuestMode) {
   section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_EQ(std::string("Personalize wallpaper, dark theme, and more"),
-            *html_source->GetLocalizedStrings()->FindString(
+            *html_source->GetLocalizedStrings().FindString(
                 "personalizationHubSubtitle"));
 }
 

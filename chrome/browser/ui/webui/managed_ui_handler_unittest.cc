@@ -62,8 +62,8 @@ class ManagedUIHandlerTest : public testing::Test {
   }
 
   bool IsSourceManaged() {
-    const auto* local_strings = source_->GetLocalizedStrings();
-    std::optional<bool> managed = local_strings->FindBool("isManaged");
+    const auto& local_strings = source_->GetLocalizedStrings();
+    std::optional<bool> managed = local_strings.FindBool("isManaged");
     if (!managed.has_value()) {
       ADD_FAILURE();
       return false;

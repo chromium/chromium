@@ -536,8 +536,9 @@ void WebUIDataSourceImpl::SendLocalizedStringsAsJSON(
       base::MakeRefCounted<base::RefCountedString>(std::move(template_data)));
 }
 
-const base::DictValue* WebUIDataSourceImpl::GetLocalizedStrings() const {
-  return &localized_strings_;
+const base::DictValue& WebUIDataSourceImpl::GetLocalizedStringsForTesting()
+    const {
+  return localized_strings_;
 }
 
 bool WebUIDataSourceImpl::ShouldReplaceI18nInJS() const {

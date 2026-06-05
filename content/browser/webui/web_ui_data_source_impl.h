@@ -95,7 +95,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
                                   bool from_js_module);
 
   // Protected for testing.
-  virtual const base::DictValue* GetLocalizedStrings() const;
+  const base::DictValue& GetLocalizedStringsForTesting() const;
 
   // Protected for testing.
   int URLToIdrOrDefault(const GURL& url) const;

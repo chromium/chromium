@@ -96,7 +96,7 @@ TEST_F(SearchSectionTest,
   search_section_->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_FALSE(html_source->GetLocalizedStrings()
-                   ->FindBool("isLobsterSettingsToggleVisible")
+                   .FindBool("isLobsterSettingsToggleVisible")
                    .value());
 }
 
@@ -198,7 +198,7 @@ TEST_F(SearchSectionTestWithLobsterEnabled,
 
   EXPECT_FALSE(html_source()
                    ->GetLocalizedStrings()
-                   ->FindBool("isLobsterSettingsToggleVisible")
+                   .FindBool("isLobsterSettingsToggleVisible")
                    .value());
 }
 
@@ -212,7 +212,7 @@ TEST_F(SearchSectionTestWithLobsterEnabled,
 
   EXPECT_TRUE(html_source()
                   ->GetLocalizedStrings()
-                  ->FindBool("isLobsterSettingsToggleVisible")
+                  .FindBool("isLobsterSettingsToggleVisible")
                   .value());
 }
 
@@ -264,7 +264,7 @@ TEST_F(SearchSectionTestWithScannerEnabled,
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_FALSE(html_source->GetLocalizedStrings()
-                   ->FindBool("isScannerSettingsToggleVisible")
+                   .FindBool("isScannerSettingsToggleVisible")
                    .value());
 }
 
@@ -289,7 +289,7 @@ TEST_F(
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_TRUE(html_source->GetLocalizedStrings()
-                  ->FindBool("isScannerSettingsToggleVisible")
+                  .FindBool("isScannerSettingsToggleVisible")
                   .value());
 }
 
@@ -310,7 +310,7 @@ TEST_F(SearchSectionTestWithScannerEnabled,
   search_section->AddLoadTimeData(html_source->GetWebUIDataSource());
 
   EXPECT_TRUE(html_source->GetLocalizedStrings()
-                  ->FindBool("isScannerSettingsToggleVisible")
+                  .FindBool("isScannerSettingsToggleVisible")
                   .value());
 }
 

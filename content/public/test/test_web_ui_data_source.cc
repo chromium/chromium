@@ -22,7 +22,7 @@ class WebUIDataSourceImplWithPublicData : public WebUIDataSourceImpl {
   WebUIDataSourceImplWithPublicData& operator=(
       const WebUIDataSourceImplWithPublicData&) = delete;
 
-  using WebUIDataSourceImpl::GetLocalizedStrings;
+  using WebUIDataSourceImpl::GetLocalizedStringsForTesting;
   using WebUIDataSourceImpl::URLToIdrOrDefault;
 
  protected:
@@ -41,8 +41,8 @@ class TestWebUIDataSourceImpl : public TestWebUIDataSource {
 
   ~TestWebUIDataSourceImpl() override {}
 
-  const base::DictValue* GetLocalizedStrings() override {
-    return source_->GetLocalizedStrings();
+  const base::DictValue& GetLocalizedStrings() override {
+    return source_->GetLocalizedStringsForTesting();
   }
 
   const ui::TemplateReplacements* GetReplacements() override {
