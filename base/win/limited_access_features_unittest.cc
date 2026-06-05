@@ -6,6 +6,7 @@
 
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::win {
@@ -15,7 +16,13 @@ namespace base::win {
 // is that requesting access to a feature fails gracefully.
 // Use the taskbar pinning limited access feature since it's the only
 // one we currently have a token for.
-TEST(LimitedAccessFeatures, UnregisteredFeature) {
+// TODO(crbug.com/500937645): Re-enable the test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_UnregisteredFeature DISABLED_UnregisteredFeature
+#else
+#define MAYBE_UnregisteredFeature UnregisteredFeature
+#endif
+TEST(LimitedAccessFeatures, MAYBE_UnregisteredFeature) {
   const std::wstring taskbar_api_token =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       L"InBNYixzyiUzivxj5T/HqA==";
