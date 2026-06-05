@@ -57,7 +57,16 @@ ModelBrokerState::ModelBrokerState(
           usage_tracker_,
           base::BindRepeating(&ModelBrokerState::EnsureInitialization,
                               base::Unretained(this)),
-          download_progress_manager_.GetAddObserverCallback()),
+          base::BindRepeating(
+              [](base::RepeatingCallback<void(
+                     mojo::PendingRemote<
+                         on_device_model::mojom::DownloadObserver>)> callback,
+                 const std::string& /* use_case */,
+                 mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
+                     observer_remote) {
+                callback.Run(std::move(observer_remote));
+              },
+              download_progress_manager_.GetAddObserverCallback())),
       performance_classifier_(&local_state, service_client_.GetSafeRef()),
       component_state_manager_(&local_state,
                                performance_classifier_.GetSafeRef(),

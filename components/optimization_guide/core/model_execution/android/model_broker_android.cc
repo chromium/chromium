@@ -677,6 +677,7 @@ void ModelBrokerAndroid::OnModelDisconnected(
 }
 
 void ModelBrokerAndroid::AddModelDownloadProgressObserver(
+    const std::string& use_case,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
   auto id = download_observers_.Add(std::move(observer));
   // Blink's CreateMonitor CHECKs that the first progress update has

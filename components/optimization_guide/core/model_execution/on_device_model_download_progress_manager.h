@@ -64,7 +64,9 @@ class OnDeviceModelDownloadProgressManager
   void AddObserver(mojo::PendingRemote<on_device_model::mojom::DownloadObserver>
                        observer_remote);
 
-  AddDownloadProgressObserverCallback GetAddObserverCallback();
+  base::RepeatingCallback<
+      void(mojo::PendingRemote<on_device_model::mojom::DownloadObserver>)>
+  GetAddObserverCallback();
 
  private:
   // Observes progress updates from `components`, filters and processes them,

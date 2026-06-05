@@ -85,6 +85,7 @@ class ModelBrokerAndroid final : public OnDeviceCapability,
       base::WeakPtr<on_device_model::mojom::OnDeviceModel> model);
 
   void AddModelDownloadProgressObserver(
+      const std::string& use_case,
       mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
   void OnDownloadProgressUpdated(int64_t downloaded_bytes, int64_t total_bytes);

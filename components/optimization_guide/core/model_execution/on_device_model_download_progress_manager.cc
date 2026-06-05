@@ -99,7 +99,8 @@ OnDeviceModelDownloadProgressManager::~OnDeviceModelDownloadProgressManager() {
   component_updater_observation_.Reset();
 }
 
-AddDownloadProgressObserverCallback
+base::RepeatingCallback<
+    void(mojo::PendingRemote<on_device_model::mojom::DownloadObserver>)>
 OnDeviceModelDownloadProgressManager::GetAddObserverCallback() {
   return base::BindRepeating(&OnDeviceModelDownloadProgressManager::AddObserver,
                              weak_ptr_factory_.GetWeakPtr());

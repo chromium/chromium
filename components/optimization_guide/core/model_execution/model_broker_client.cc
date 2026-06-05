@@ -320,7 +320,8 @@ void ModelBrokerClient::GetConfig(mojom::OnDeviceFeature feature,
 }
 
 void ModelBrokerClient::AddModelDownloadProgressObserver(
+    const std::string& use_case,
     mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer) {
-  remote_->AddModelDownloadProgressObserver(std::move(observer));
+  remote_->AddModelDownloadProgressObserver(use_case, std::move(observer));
 }
 }  // namespace optimization_guide

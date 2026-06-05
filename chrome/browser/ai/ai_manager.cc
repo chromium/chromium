@@ -49,6 +49,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -1726,6 +1727,8 @@ void AIManager::AddModelDownloadProgressObserver(
         observer_remote) {
   if (model_broker_client_) {
     model_broker_client_->AddModelDownloadProgressObserver(
+        optimization_guide::ToUseCaseName(
+            optimization_guide::mojom::OnDeviceFeature::kPromptApi),
         std::move(observer_remote));
   }
 }
