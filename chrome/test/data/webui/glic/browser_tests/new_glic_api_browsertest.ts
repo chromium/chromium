@@ -1028,6 +1028,49 @@ class SkillsApiTests extends ApiTests {
     assertDefined(this.host.showManageSkillsUi);
     this.host.showManageSkillsUi();
   }
+
+  async testEnableDragResize() {
+    assertDefined(this.host.enableDragResize);
+    await this.host.enableDragResize(true);
+  }
+
+  async testDisableDragResize() {
+    assertDefined(this.host.enableDragResize);
+    await this.host.enableDragResize(false);
+  }
+
+  async testSetMinimumWidgetSize() {
+    assertDefined(this.host.setMinimumWidgetSize);
+    const minSize = {width: 200, height: 100};
+    await this.host.setMinimumWidgetSize(minSize.width, minSize.height);
+    await this.advanceToNextStep(minSize);
+  }
+
+  async testManualResizeChanged() {
+    assertDefined(this.host.isManuallyResizing);
+    const seq = observeSequence(this.host.isManuallyResizing());
+    await seq.waitForValue(true);
+
+    await this.advanceToNextStep();
+    await seq.waitForValue(false);
+    seq.unsubscribe();
+  }
+
+  async testResizeWindowTooSmall() {
+    assertDefined(this.host.resizeWindow);
+    await this.host.resizeWindow(0, 0);
+  }
+
+  async testResizeWindowTooLarge() {
+    assertDefined(this.host.resizeWindow);
+    await this.host.resizeWindow(20000, 20000);
+  }
+
+  async testResizeWindowWithinBounds() {
+    assertDefined(this.host.resizeWindow);
+    assertDefined(this.testParams);
+    await this.host.resizeWindow(this.testParams.width, this.testParams.height);
+  }
 }
 
 class ContextCapturingClient extends WebClient {
@@ -1087,7 +1130,24 @@ class ApiTestCreateTabInInvoke extends ApiTestFixtureBase {
   }
 }
 
-const TEST_FIXTURES = [
+class InitiallyNotResizableWebClient extends WebClient {
+  override async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
+      Promise<OpenPanelInfo> {
+    return {startingMode: WebClientMode.TEXT, canUserResize: false};
+  }
+}
+
+class InitiallyNotResizableTest extends ApiTestFixtureBase {
+  override createWebClient(): WebClient {
+    return new InitiallyNotResizableWebClient();
+  }
+
+  async testInitiallyNotResizable() {
+    await sleep(100);
+  }
+}
+
+const TEST_FIXTURES: Array<typeof ApiTestFixtureBase> = [
   ApiTests,
   AdditionalContextQueuedTest,
   FaviconTest,
@@ -1100,7 +1160,7 @@ const TEST_FIXTURES = [
 
 
 if (!navigator.userAgent.includes('Android')) {
-  TEST_FIXTURES.push(SkillsApiTests);
+  TEST_FIXTURES.push(SkillsApiTests, InitiallyNotResizableTest);
 }
 
 testMain(TEST_FIXTURES);

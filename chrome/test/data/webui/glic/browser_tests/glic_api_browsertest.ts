@@ -399,18 +399,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!await isBrowserOpen.next());
   }
 
-  async testEnableDragResize() {
-    assertDefined(this.host.enableDragResize);
-
-    await this.host.enableDragResize(true);
-  }
-
-  async testDisableDragResize() {
-    assertDefined(this.host.enableDragResize);
-
-    await this.host.enableDragResize(false);
-  }
-
 
 
   async testIsOnboardingCompleted() {
@@ -1070,38 +1058,6 @@ class ApiTests extends ApiTestFixtureBase {
     this.host.setSyntheticExperimentState('TestTrial', 'Group2');
   }
 
-  async testSetMinimumWidgetSize() {
-    assertDefined(this.host.setMinimumWidgetSize);
-    const minSize = {width: 200, height: 100};
-    await this.host.setMinimumWidgetSize(minSize.width, minSize.height);
-    await this.advanceToNextStep(minSize);
-  }
-
-  async testManualResizeChanged() {
-    assertDefined(this.host.isManuallyResizing);
-    const seq = observeSequence(this.host.isManuallyResizing());
-    await seq.waitForValue(true);
-
-    await this.advanceToNextStep();
-    await seq.waitForValue(false);
-    seq.unsubscribe();
-  }
-
-  async testResizeWindowTooSmall() {
-    assertDefined(this.host.resizeWindow);
-    await this.host.resizeWindow(0, 0);
-  }
-
-  async testResizeWindowTooLarge() {
-    assertDefined(this.host.resizeWindow);
-    await this.host.resizeWindow(20000, 20000);
-  }
-
-  async testResizeWindowWithinBounds() {
-    assertDefined(this.host.resizeWindow);
-    assertDefined(this.testParams);
-    await this.host.resizeWindow(this.testParams.width, this.testParams.height);
-  }
 
   async testOpenOsMediaPermissionSettings() {
     assertDefined(this.host.openOsPermissionSettingsMenu);
@@ -2540,22 +2496,6 @@ class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
   }
 }
 
-class InitiallyNotResizableWebClient extends WebClient {
-  override async notifyPanelWillOpen(_panelOpeningData: PanelOpeningData):
-      Promise<OpenPanelInfo> {
-    return {startingMode: WebClientMode.TEXT, canUserResize: false};
-  }
-}
-
-class InitiallyNotResizableTest extends ApiTestFixtureBase {
-  override createWebClient(): WebClient {
-    return new InitiallyNotResizableWebClient();
-  }
-
-  async testInitiallyNotResizable() {
-    await sleep(100);
-  }
-}
 
 class WebClientWithInvoke extends WebClient {
   invokePromise = Promise.withResolvers<InvokeOptions>();
@@ -2582,7 +2522,6 @@ const TEST_FIXTURES = [
   ApiTests,
   DaisyChainApiTests,
   NotifyPanelWillOpenTest,
-  InitiallyNotResizableTest,
   ApiTestWithoutOpen,
   ApiTestWithInvoke,
 ];

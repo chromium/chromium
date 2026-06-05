@@ -1379,31 +1379,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetFormFactor) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testEnableDragResize) {
-  // TODO: resize is not yet implemented for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
-  RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/true));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testDisableDragResize) {
-  // TODO: resize is not yet implemented for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  // Check the default resize setting here.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  WaitForCanResizeEnabled(/*enabled=*/true));
-  ExecuteJsTest();
-  RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitiallyNotResizable) {
-  // TODO: resize is not yet implemented for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest();
-  RunTestSequence(WaitForCanResizeEnabled(/*enabled=*/false));
-}
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterEnabled,
                        testGetModelQualityClientIdFeatureEnabled) {
@@ -2048,82 +2023,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetOsHotkeyState) {
   ContinueJsTest();
   g_browser_process->local_state()->SetString(prefs::kGlicLauncherHotkey, "");
   ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSetMinimumWidgetSize) {
-  NavigateTabAndOpenGlicFloating();
-  ExecuteJsTest();
-  ASSERT_TRUE(step_data()->is_dict());
-  const auto& min_size = step_data()->GetDict();
-  const int width = min_size.FindInt("width").value();
-  const int height = min_size.FindInt("height").value();
-
-  auto expected_size = glic::GlicWidget::GetInitialSize();
-  expected_size.SetToMax(gfx::Size(width, height));
-  EXPECT_EQ(GetGlicWidget()->GetMinimumSize(), expected_size);
-
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testManualResizeChanged) {
-  NavigateTabAndOpenGlicFloating();
-  GetGlicWidget()->OnNativeWidgetUserResizeStarted();
-
-  // Check that the web client is notified of the beginning of the user
-  // initiated resizing event.
-  ExecuteJsTest();
-
-  GetGlicWidget()->OnNativeWidgetUserResizeEnded();
-
-  // Check that the web client is notified of the ending of the user
-  // initiated resizing event.
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowTooSmall) {
-  NavigateTabAndOpenGlicFloating();
-  // Web client requests the window to be resized to 0x0, bellow the minimum
-  // dimensions, so it gets discarded in favor of the initial size.
-  gfx::Size expected_size = GlicWidget::GetInitialSize();
-  GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
-  ASSERT_TRUE(glic_widget);
-
-  ExecuteJsTest();
-
-  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
-  ASSERT_EQ(expected_size,
-            glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowTooLarge) {
-  NavigateTabAndOpenGlicFloating();
-  // Web client requests the window to be resized to 20000x20000, above the
-  // maximum dimensions, so it gets discarded in favor of the max size. This max
-  // size is still larger than the display work area so we clamp the dimensions
-  // down to fit on screen.
-  ExecuteJsTest();
-  gfx::Rect display_bounds =
-      display::Screen::Get()->GetPrimaryDisplay().work_area();
-  GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
-  ASSERT_TRUE(glic_widget);
-  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
-
-  ASSERT_TRUE(display_bounds.Contains(final_widget_bounds));
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testResizeWindowWithinBounds) {
-  NavigateTabAndOpenGlicFloating();
-  // Web client requests the window to be resized to 800x700, which are valid
-  // dimensions.
-  gfx::Size expected_size = gfx::Size(800, 700);
-  ExecuteJsTest(
-      {.params = base::Value(base::DictValue()
-                                 .Set("width", expected_size.width())
-                                 .Set("height", expected_size.height()))});
-  GlicWidget* glic_widget = static_cast<GlicWidget*>(GetGlicWidget());
-  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
-  ASSERT_EQ(expected_size,
-            glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,

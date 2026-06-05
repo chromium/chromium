@@ -70,11 +70,13 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "ui/display/screen.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -282,6 +284,30 @@ class NewGlicApiTest : public GlicApiBrowserTest,
   void CloseMainBrowserWithIncognitoKeepAlive() {
     PlatformBrowserTest::CreateIncognitoBrowser();
     CloseBrowserAsynchronously(GetBrowserWindowInterface());
+  }
+
+  GlicWidget* GetGlicWidget() {
+    GlicInstanceImpl* instance = GetOnlyGlicInstance();
+    if (!instance) {
+      return nullptr;
+    }
+    views::View* view = instance->GetActiveEmbedderGlicViewForTesting();
+    if (!view) {
+      return nullptr;
+    }
+    return static_cast<GlicWidget*>(view->GetWidget());
+  }
+
+  TestResult<> WaitUntilCanResize(bool can_resize) {
+    return RunUntilEqual(
+        [&]() {
+          auto* widget = GetGlicWidget();
+          return widget
+                     ? (widget->widget_delegate()->CanResize() ? "CanResize"
+                                                               : "CannotResize")
+                     : "NoWidget";
+        },
+        can_resize ? std::string("CanResize") : std::string("CannotResize"));
   }
 #endif
 
@@ -840,6 +866,122 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithNewTabDaisyChain,
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
 
   ExecuteJsTest();
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testEnableDragResize) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+  ASSERT_OK(WaitUntilCanResize(true));
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDisableDragResize) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ASSERT_OK(WaitUntilCanResize(true));
+  ExecuteJsTest();
+  ASSERT_OK(WaitUntilCanResize(false));
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testInitiallyNotResizable) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+  ASSERT_OK(WaitUntilCanResize(false));
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testSetMinimumWidgetSize) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  ExecuteJsTest();
+  ASSERT_TRUE(step_data().has_value() && step_data()->is_dict());
+  const auto& min_size = step_data()->GetDict();
+  const int width = min_size.FindInt("width").value();
+  const int height = min_size.FindInt("height").value();
+
+  auto expected_size = glic::GlicWidget::GetInitialSize();
+  expected_size.SetToMax(gfx::Size(width, height));
+  GlicWidget* glic_widget = GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+  EXPECT_EQ(glic_widget->GetMinimumSize(), expected_size);
+
+  ContinueJsTest();
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testManualResizeChanged) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  GlicWidget* glic_widget = GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+  glic_widget->OnNativeWidgetUserResizeStarted();
+
+  // Check that the web client is notified of the beginning of the user
+  // initiated resizing event.
+  ExecuteJsTest();
+
+  glic_widget->OnNativeWidgetUserResizeEnded();
+
+  // Check that the web client is notified of the ending of the user
+  // initiated resizing event.
+  ContinueJsTest();
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testResizeWindowTooSmall) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  // Web client requests the window to be resized to 0x0, below the minimum
+  // dimensions, so it gets discarded in favor of the initial size.
+  gfx::Size expected_size = GlicWidget::GetInitialSize();
+  GlicWidget* glic_widget = GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+
+  ExecuteJsTest();
+
+  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
+  ASSERT_EQ(expected_size,
+            glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testResizeWindowTooLarge) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  // Web client requests the window to be resized to 20000x20000, above the
+  // maximum dimensions, so it gets discarded in favor of the max size. This max
+  // size is still larger than the display work area so we clamp the dimensions
+  // down to fit on screen.
+  ExecuteJsTest();
+  gfx::Rect display_bounds =
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
+  GlicWidget* glic_widget = GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
+
+  ASSERT_TRUE(display_bounds.Contains(final_widget_bounds));
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testResizeWindowWithinBounds) {
+  ASSERT_OK(OpenGlicForActiveTabAndDetach());
+  // Web client requests the window to be resized to 800x700, which are valid
+  // dimensions.
+  gfx::Size expected_size = gfx::Size(800, 700);
+  ExecuteJsTest(
+      {.params = base::Value(base::DictValue()
+                                 .Set("width", expected_size.width())
+                                 .Set("height", expected_size.height()))});
+  GlicWidget* glic_widget = GetGlicWidget();
+  ASSERT_TRUE(glic_widget);
+  gfx::Rect final_widget_bounds = glic_widget->GetWindowBoundsInScreen();
+  ASSERT_EQ(expected_size,
+            glic_widget->WidgetToVisibleBounds(final_widget_bounds).size());
 }
 #endif
 
