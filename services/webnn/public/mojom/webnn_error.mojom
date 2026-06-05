@@ -15,6 +15,9 @@ struct Error {
     // The configuration (e.g. platform, parameters, methods, etc.) is not
     // supported.
     kNotSupportedError,
+    // The renderer retry the request via the in-process backend. This code is
+    // never surfaced to JavaScript.
+    kFallbackToInProcess,
   };
 
   Code code;

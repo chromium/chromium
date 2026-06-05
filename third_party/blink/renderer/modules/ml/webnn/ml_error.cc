@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 #define DEFINE_WEBNN_ERROR_CODE_MAPPING(error_code)    \
@@ -16,6 +18,10 @@ DOMExceptionCode WebNNErrorCodeToDOMExceptionCode(
   switch (error_code) {
     DEFINE_WEBNN_ERROR_CODE_MAPPING(kUnknownError)
     DEFINE_WEBNN_ERROR_CODE_MAPPING(kNotSupportedError)
+    case webnn::mojom::blink::Error::Code::kFallbackToInProcess:
+      // This is an internal signal between the GPU-process and renderer
+      // and must be intercepted by the renderer before reaching here.
+      NOTREACHED();
   }
 }
 

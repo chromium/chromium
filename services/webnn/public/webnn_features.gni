@@ -11,6 +11,3 @@ declare_args() {
   webnn_enable_graph_dump =
       (is_win || is_linux || is_mac) && !is_official_build && dcheck_always_on
 }
-
-# This flag enables TFLite/LiteRT WebNN backend in the renderer process.
-webnn_tflite_in_renderer = webnn_use_tflite || webnn_use_litert

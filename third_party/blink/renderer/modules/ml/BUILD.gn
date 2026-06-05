@@ -51,16 +51,11 @@ blink_modules_sources("ml") {
   deps = [
     "//services/webnn/public/cpp",
     "//services/webnn/public/cpp:buildflags",
+    "//services/webnn/public/cpp:in_process_context_provider",
     "//services/webnn/public/mojom:mojom_blink",
     "//third_party/blink/public/mojom/webnn:webnn_blink",
     "//third_party/blink/renderer/modules/webgpu",
   ]
-
-  if (webnn_tflite_in_renderer) {
-    # Factory for the in-process TFLite/LiteRT WebNNContextProvider used by
-    # the renderer-process CPU backend.
-    deps += [ "//services/webnn/public/cpp:in_process_context_provider" ]
-  }
 
   if (webnn_enable_graph_dump) {
     sources += [

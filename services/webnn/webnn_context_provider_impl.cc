@@ -128,6 +128,13 @@ bool ShouldUseInProcessTflite(const mojom::CreateContextOptions& options) {
 #endif
   return true;
 }
+
+void FallbackInProcessTFLite(
+    WebNNContextProvider::CreateWebNNContextCallback callback) {
+  std::move(callback).Run(ToError<mojom::CreateContextResult>(
+      mojom::Error::Code::kFallbackToInProcess,
+      "Falling back to in-process TFLite/LiteRT backend."));
+}
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if defined(ADDRESS_SANITIZER)
@@ -559,6 +566,15 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // No GPU-process backend was selected and the request should be served by
+  // the renderer-process in-process TFLite backend.
+  if (!context_impl && should_use_in_process_tflite) {
+    FallbackInProcessTFLite(std::move(callback));
+    return;
+  }
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
   OnCreateWebNNContextImpl(std::move(callback), std::move(remote),
                            std::move(write_tensor_producer),
                            std::move(read_tensor_consumer), sequence_id,
@@ -836,16 +852,11 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
              << env_creation_results.error();
 
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
-  // If the request would be served by the renderer-process TFLite/LiteRT
-  // backend, skip the GPU-process TFLite/LiteRT fallbacks and return a
-  // `kNotSupportedError` so the renderer's `ML::createContext` fallback path
-  // creates the in-process TFLite context instead.
+  // If the request would be served by the renderer-process TFLite backend,
+  // skip the GPU-process TFLite/LiteRT fallbacks and instruct the renderer to
+  // create the in-process TFLite context instead.
   if (ShouldUseInProcessTflite(*options)) {
-    WebNNContextImplPtr context_impl(nullptr, OnTaskRunnerDeleter(task_runner));
-    OnCreateWebNNContextImpl(std::move(callback), std::move(remote),
-                             std::move(write_tensor_producer),
-                             std::move(read_tensor_consumer), sequence_id,
-                             command_buffer_id, std::move(context_impl));
+    FallbackInProcessTFLite(std::move(callback));
     return;
   }
 #endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)

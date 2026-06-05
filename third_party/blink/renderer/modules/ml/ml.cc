@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
+#include "services/webnn/public/cpp/in_process_context_provider.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
@@ -17,10 +18,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-
-#if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-#include "services/webnn/public/cpp/in_process_context_provider.h"
-#endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
 
 namespace blink {
 
@@ -58,18 +55,14 @@ ConvertBlinkPowerPreferenceToMojo(
 
 ML::ML(ExecutionContext* execution_context)
     : ExecutionContextClient(execution_context),
-#if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
       in_process_context_provider_(execution_context),
-#endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
       webnn_context_provider_(execution_context) {
 }
 
 void ML::Trace(Visitor* visitor) const {
   visitor->Trace(webnn_context_provider_);
-#if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
   visitor->Trace(in_process_context_provider_);
   visitor->Trace(in_process_pending_resolvers_);
-#endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
   visitor->Trace(pending_resolvers_);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
@@ -111,20 +104,20 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
             }
 
             if (result->is_error()) {
-#if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
-              // Fallback to the in-renderer CPU backend when the GPU
-              // process WebNN backend fails.
-              ml->CreateInProcessContext(resolver, options,
-                                         std::move(scoped_trace));
-              return;
-#else
               const webnn::mojom::blink::Error& create_context_error =
                   *result->get_error();
+              if (create_context_error.code ==
+                  webnn::mojom::blink::Error::Code::kFallbackToInProcess) {
+                // The GPU-process backend has signaled that the request
+                // should be served by the in-renderer backend.
+                ml->CreateInProcessContext(resolver, options,
+                                           std::move(scoped_trace));
+                return;
+              }
               resolver->RejectWithDOMException(
                   WebNNErrorCodeToDOMExceptionCode(create_context_error.code),
                   create_context_error.message);
               return;
-#endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
             }
 
             resolver->Resolve(MakeGarbageCollected<MLContext>(
@@ -161,7 +154,6 @@ void ML::EnsureWebNNServiceConnection() {
       BindOnce(&ML::OnWebNNServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-#if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
 void ML::CreateInProcessContext(ScriptPromiseResolver<MLContext>* resolver,
                                 MLContextOptions* options,
                                 webnn::ScopedTrace scoped_trace) {
@@ -247,6 +239,5 @@ void ML::OnInProcessServiceConnectionError() {
   }
   in_process_pending_resolvers_.clear();
 }
-#endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
 
 }  // namespace blink

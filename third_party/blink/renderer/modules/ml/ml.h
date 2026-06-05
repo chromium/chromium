@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_ML_H_
 
-#include "services/webnn/public/cpp/webnn_buildflags.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -52,7 +51,6 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   // mojo interface.
   void EnsureWebNNServiceConnection();
 
-#if BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
   // Creates an in-renderer WebNN context provider for CPU inference that
   // bypasses the GPU process entirely. The provider is created in the renderer
   // process and bound to a local Mojo self-pipe.
@@ -62,9 +60,9 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   // remote is cut off from its receiver.
   void OnInProcessServiceConnectionError();
 
-  // Creates a WebNN context using the in-renderer backend. Called directly
-  // for CPU device requests and as a fallback when the GPU process backend
-  // fails.
+  // Creates a WebNN context using the in-renderer backend. Called as a
+  // fallback when the GPU-process backend signals via
+  // `Error::Code::kFallbackToInProcess`.
   void CreateInProcessContext(ScriptPromiseResolver<MLContext>* resolver,
                               MLContextOptions* options,
                               webnn::ScopedTrace scoped_trace);
@@ -81,7 +79,6 @@ class MODULES_EXPORT ML final : public ScriptWrappable,
   // does not incorrectly reject in-renderer requests (and vice-versa).
   HeapHashSet<Member<ScriptPromiseResolver<MLContext>>>
       in_process_pending_resolvers_;
-#endif  // BUILDFLAG(WEBNN_TFLITE_IN_RENDERER)
 
   // WebNN support multiple types of neural network inference hardware
   // acceleration such as CPU, GPU and ML specialized accelerator, the context

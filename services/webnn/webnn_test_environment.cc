@@ -20,7 +20,7 @@
 
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 #include "services/webnn/host/weights_file_creator_impl.h"
-#include "services/webnn/public/cpp/in_process_context_provider.h"
+#include "services/webnn/public/cpp/in_process_context_provider.h"  // nogncheck
 #endif
 
 namespace webnn::test {
