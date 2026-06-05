@@ -13,11 +13,21 @@
 
 namespace drive_picker {
 
+// Manages the verification of the Google Drive disclaimer status.
+// It queries the Footprints Access Control Service (FACS) backend via
+// `FpopService` to check whether the user has accepted the disclaimer.
 class DriveDisclaimerController {
  public:
   enum class DisclaimerStatus {
     kAccepted,
     kNotAccepted,
+
+    // The setting is restricted by the FACS backend. This occurs when the
+    // setting cannot be enabled due to account policy or restrictions (e.g.,
+    // parental control / supervised accounts, minor / under-age restrictions,
+    // managed Enterprise/EDU accounts, geographic/location limits, or other
+    // backend configurations). Callers should handle this by avoiding prompting
+    // the user, as they cannot modify this setting.
     kRestricted,
   };
 
