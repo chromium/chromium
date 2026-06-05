@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_quick_actions_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
+#import "ios/chrome/browser/ntp/ui_bundled/ntp_identity_disc_button.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -117,7 +118,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 @property(nonatomic, strong) NSMutableArray<id>* objectsAboveFeed;
 
 // Identity disc shown in the NTP.
-@property(nonatomic, weak) UIButton* identityDiscButton;
+@property(nonatomic, weak) NTPIdentityDiscButton* identityDiscButton;
 
 // Tap gesture recognizer when the omnibox is focused.
 @property(nonatomic, strong) UITapGestureRecognizer* tapGestureRecognizer;
