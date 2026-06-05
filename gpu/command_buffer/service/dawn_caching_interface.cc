@@ -28,6 +28,58 @@ DawnCachingInterface::DawnCachingInterface(scoped_refptr<MemoryCache> backend,
 
 DawnCachingInterface::~DawnCachingInterface() = default;
 
+size_t DawnCachingInterface::FindKey(std::span<const std::byte> key) {
+  if (memory_cache() == nullptr) {
+    return 0u;
+  }
+  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
+                           key.size());
+  auto entry = memory_cache()->Find(key_str);
+  if (!entry) {
+    return 0u;
+  }
+  return entry->DataSize();
+}
+
+size_t DawnCachingInterface::LoadData(std::span<const std::byte> key,
+                                      std::span<std::byte> dest) {
+  if (memory_cache() == nullptr) {
+    return 0u;
+  }
+  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
+                           key.size());
+  auto entry = memory_cache()->Find(key_str);
+  if (!entry) {
+    return 0u;
+  }
+
+  // Verify that the size being copied out is identical.
+  DCHECK(dest.size() == entry->DataSize());
+
+  auto src = entry->Data();
+  std::ranges::copy(std::as_bytes(std::span(src)), dest.begin());
+  return entry->DataSize();
+}
+
+void DawnCachingInterface::StoreData(std::span<const std::byte> key,
+                                     std::span<const std::byte> src) {
+  if (memory_cache() == nullptr || src.empty()) {
+    return;
+  }
+  std::string_view key_str(reinterpret_cast<const char*>(key.data()),
+                           key.size());
+  base::span<const uint8_t> src_span = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const uint8_t*>(src.data()), src.size()));
+  memory_cache()->Store(key_str, src_span);
+
+  // Send the cache entry to be stored on the host-side if applicable.
+  if (cache_blob_callback_) {
+    std::string key_str_copy(key_str);
+    std::string src_str(reinterpret_cast<const char*>(src.data()), src.size());
+    cache_blob_callback_.Run(key_str_copy, src_str);
+  }
+}
+
 size_t DawnCachingInterface::LoadData(const void* key,
                                       size_t key_size,
                                       void* value_out,

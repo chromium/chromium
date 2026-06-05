@@ -116,6 +116,13 @@ class GPU_GLES2_EXPORT GpuPersistentCache :
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
   // dawn::platform::CachingInterface implementation.
+  size_t FindKey(std::span<const std::byte> key) override;
+  size_t LoadData(std::span<const std::byte> key,
+                  std::span<std::byte> dest) override;
+  void StoreData(std::span<const std::byte> key,
+                 std::span<const std::byte> src) override;
+  // TODO(503801946): Remove these outdated non-spanified implementations once
+  // we have migrated to use the one's above.
   size_t LoadData(const void* key,
                   size_t key_size,
                   void* value,
