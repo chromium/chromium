@@ -2504,6 +2504,8 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
 
   // If the toggle is not visible, we can assume that Window Controls Overlay
   // is not enabled.
+  // TODO(crbug.com/515812858): Rename
+  // `should_show_window_controls_overlay_toggle_`.
   auto* const app_controller = web_app::AppBrowserController::From(browser());
   bool enabled = should_show_window_controls_overlay_toggle_ &&
                  app_controller &&

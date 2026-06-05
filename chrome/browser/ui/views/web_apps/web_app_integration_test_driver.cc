@@ -3990,9 +3990,13 @@ void WebAppIntegrationTestDriver::CheckWindowControlsOverlayToggle(
   ASSERT_TRUE(app_browser());
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(),
                                                 GetAppIdBySiteMode(site)));
-  EXPECT_EQ(web_app::AppBrowserController::From(app_browser())
-                ->AppUsesWindowControlsOverlay(),
-            is_shown == IsShown::kShown);
+
+  bool expected_toggle_shown =
+      web_app::AppBrowserController::From(app_browser())
+          ->AppUsesWindowControlsOverlay() &&
+      !base::FeatureList::IsEnabled(
+          features::kDesktopPWAsWindowControlsOverlayWithNoToggle);
+  EXPECT_EQ(expected_toggle_shown, is_shown == IsShown::kShown);
   WebAppFrameToolbarView* toolbar =
       BrowserView::GetBrowserViewForBrowser(app_browser())
           ->web_app_frame_toolbar_for_testing();
@@ -5068,6 +5072,7 @@ WebAppIntegrationTestDriver::GetTestAppHomePageHandler(
 
 WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   enabled_features.push_back(blink::features::kSubApps);
   enabled_features.push_back(blink::features::kDesktopPWAsTabStrip);
   enabled_features.push_back(features::kDesktopPWAsTabStripSettings);
@@ -5080,9 +5085,11 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   enabled_features.push_back(blink::features::kWebAppMigrationApi);
+  disabled_features.push_back(
+      features::kDesktopPWAsWindowControlsOverlayWithNoToggle);
+  disabled_features.push_back(features::kWebAppInstallDialog);
 
-  scoped_feature_list_.InitWithFeatures(enabled_features,
-                                        {features::kWebAppInstallDialog});
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
 WebAppIntegrationTest::~WebAppIntegrationTest() = default;

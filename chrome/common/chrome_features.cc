@@ -156,6 +156,15 @@ BASE_FEATURE(kDesktopPWAsPreventClose,
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Removes the Window Controls Overlay toggle button from the PWA toolbar
+// and auto-enables WCO when the app developer specifies it in the manifest.
+// When disabled, the toggle button is shown and WCO must be enabled by the
+// user. This feature only affects apps that have "window-controls-overlay" in
+// their PWA manifest's display_override field, apps without manifest support
+// are unaffected.
+BASE_FEATURE(kDesktopPWAsWindowControlsOverlayWithNoToggle,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the standalone Document Picture-in-Picture window path, replacing
 // the Browser-backed implementation with a dedicated host.
 BASE_FEATURE(kDocumentPipStandaloneWindow, base::FEATURE_DISABLED_BY_DEFAULT);

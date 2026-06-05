@@ -442,8 +442,10 @@ void WebAppFrameToolbarView::UpdateUnframedModeEnabled() {
 
 void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(
     bool visible) {
-  right_container_->window_controls_overlay_toggle_button()->SetVisible(
-      visible);
+  if (auto* button =
+          right_container_->window_controls_overlay_toggle_button()) {
+    button->SetVisible(visible);
+  }
 }
 
 PageActionIconController*

@@ -179,7 +179,9 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (app_controller->AppUsesWindowControlsOverlay()) {
+  if (app_controller->AppUsesWindowControlsOverlay() &&
+      !base::FeatureList::IsEnabled(
+          features::kDesktopPWAsWindowControlsOverlayWithNoToggle)) {
     window_controls_overlay_toggle_button_ = AddChildView(
         std::make_unique<WindowControlsOverlayToggleButton>(browser_view_));
     views::SetHitTestComponent(window_controls_overlay_toggle_button_,
