@@ -579,7 +579,7 @@ void EmailVerificationRequest::CompleteIsVerifiableRequest(
     blink::mojom::EmailVerificationRequestResult status) {
   base::UmaHistogramEnumeration("Blink.Evp.Status.IsVerifiable", status);
   if (status != EmailVerificationRequestResult::kSuccess) {
-    AddDevToolsIssue(status);
+    MaybeAddDevToolsIssue(status);
   }
   std::move(callback).Run(std::move(response));
 }
@@ -590,17 +590,92 @@ void EmailVerificationRequest::CompleteVerifyRequest(
     blink::mojom::EmailVerificationRequestResult status) {
   base::UmaHistogramEnumeration("Blink.Evp.Status.Verify", status);
   if (status != EmailVerificationRequestResult::kSuccess) {
-    AddDevToolsIssue(status);
+    MaybeAddDevToolsIssue(status);
   }
   std::move(callback).Run(std::move(response));
 }
 
-void EmailVerificationRequest::AddDevToolsIssue(
+void EmailVerificationRequest::MaybeAddDevToolsIssue(
     EmailVerificationRequestResult status) {
   DCHECK_NE(status, EmailVerificationRequestResult::kSuccess);
 
   if (!render_frame_host_) {
     return;
+  }
+
+  switch (status) {
+    case EmailVerificationRequestResult::kSuccess:
+      NOTREACHED();
+
+    // Do not report DNS fetch failures to DevTools. This prevents spamming the
+    // DevTools console with issues when the user autofills an email from a
+    // non-EVP-compatible provider (which is currently the common case and
+    // fails the DNS check).
+    case EmailVerificationRequestResult::kDnsFetchFailed:
+      return;
+
+    case EmailVerificationRequestResult::kRpOriginIsOpaque:
+    case EmailVerificationRequestResult::kInvalidEmail:
+    case EmailVerificationRequestResult::kDnsInvalidRecord:
+    case EmailVerificationRequestResult::kWellKnownHttpNotFound:
+    case EmailVerificationRequestResult::kWellKnownNoResponse:
+    case EmailVerificationRequestResult::kWellKnownInvalidResponse:
+    case EmailVerificationRequestResult::kWellKnownListEmpty:
+    case EmailVerificationRequestResult::kWellKnownInvalidContentType:
+    case EmailVerificationRequestResult::kWellKnownMissingIssuanceEndpoint:
+    case EmailVerificationRequestResult::kWellKnownIssuanceEndpointCrossOrigin:
+    case EmailVerificationRequestResult::kWellKnownUnsupportedSigningAlgorithm:
+    case EmailVerificationRequestResult::kTokenHttpNotFound:
+    case EmailVerificationRequestResult::kTokenNoResponse:
+    case EmailVerificationRequestResult::kTokenInvalidResponse:
+    case EmailVerificationRequestResult::kTokenInvalidContentType:
+    case EmailVerificationRequestResult::kTokenMalformedSdJwt:
+    case EmailVerificationRequestResult::kTokenInvalidSdJwt:
+    case EmailVerificationRequestResult::kKeyBindingSigningFailed:
+    case EmailVerificationRequestResult::kWellKnownMissingAccountsEndpoint:
+    case EmailVerificationRequestResult::kUserLoggedOut:
+    case EmailVerificationRequestResult::kWellKnownAccountsEndpointCrossOrigin:
+    case EmailVerificationRequestResult::kAccountsHttpNotFound:
+    case EmailVerificationRequestResult::kAccountsNoResponse:
+    case EmailVerificationRequestResult::kAccountsInvalidResponse:
+    case EmailVerificationRequestResult::kAccountsInvalidContentType:
+    case EmailVerificationRequestResult::kAccountsEmptyList:
+    case EmailVerificationRequestResult::
+        kEmailVerificationWellKnownHttpNotFound:
+    case EmailVerificationRequestResult::kEmailVerificationWellKnownNoResponse:
+    case EmailVerificationRequestResult::
+        kEmailVerificationWellKnownInvalidResponse:
+    case EmailVerificationRequestResult::
+        kEmailVerificationWellKnownInvalidContentType:
+    case EmailVerificationRequestResult::kJwksHttpNotFound:
+    case EmailVerificationRequestResult::kJwksInvalidResponse:
+    case EmailVerificationRequestResult::
+        kTokenVerificationSdJwtUnsupportedHeaderAlg:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingIss:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingIat:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingCnf:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtMissingEmail:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtInvalidIssuedAt:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtInvalidIssuer:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtJwksMissingKeys:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtSignatureFailed:
+    case EmailVerificationRequestResult::
+        kTokenVerificationSdJwtInvalidEmailVerified:
+    case EmailVerificationRequestResult::kTokenVerificationSdJwtInvalidEmail:
+    case EmailVerificationRequestResult::
+        kTokenVerificationSdJwtInvalidHolderKey:
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidTyp:
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingAud:
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingNonce:
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingIat:
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingSdHash:
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidIssuedAt:
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidAudience:
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidNonce:
+    case EmailVerificationRequestResult::kTokenVerificationKbInvalidSdHash:
+    case EmailVerificationRequestResult::kTokenVerificationKbMissingCnf:
+    case EmailVerificationRequestResult::kTokenVerificationKbSignatureFailed:
+      break;
   }
 
   auto details = blink::mojom::InspectorIssueDetails::New();

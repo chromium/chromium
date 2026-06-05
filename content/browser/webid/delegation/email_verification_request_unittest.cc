@@ -934,9 +934,8 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.IsVerifiable",
       EmailVerificationRequestResult::kDnsFetchFailed, 1);
-  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
-                   ->GetEmailVerificationRequestIssueCount(
-                       EmailVerificationRequestResult::kDnsFetchFailed));
+  EXPECT_EQ(0, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(std::nullopt));
 }
 
 TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
