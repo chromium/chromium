@@ -6,12 +6,14 @@
 #define CONTENT_BROWSER_RENDERER_HOST_DIRECT_MANIPULATION_HELPER_WIN_H_
 
 #include <windows.h>
+
 #include <directmanipulation.h>
 #include <wrl.h>
 
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/direct_manipulation_event_handler_win.h"
@@ -39,6 +41,13 @@ class DirectManipulationUnitTest;
 //    when DM_POINTERHITTEST.
 // 3. OnViewportStatusChanged will be called when the gesture phase change.
 //    OnContentUpdated will be called when the gesture update.
+//
+// IMPORTANT: Almost every function in this class can spin a nested message
+// loop, because they call into DirectManipulation COM objects. The nested
+// message loop can process WM_DESTROY messages that can delete the calling
+// class. So it's vital that the caller of every method take a WeakPtr to any
+// object that could be destroyed, and check if it's still valid after the
+// method returns.
 class CONTENT_EXPORT DirectManipulationHelper
     : public ui::CompositorAnimationObserver {
  public:
@@ -90,9 +99,13 @@ class CONTENT_EXPORT DirectManipulationHelper
   // Unregister this as an AnimationObserver of ui::Compositor.
   void RemoveAnimationObserver();
 
+  bool HasEventHandlerForTesting() { return event_handler_ != nullptr; }
+
  private:
   friend class DirectManipulationBrowserTestBase;
   friend class DirectManipulationUnitTest;
+  FRIEND_TEST_ALL_PREFIXES(DirectManipulationUnitTest,
+                           DestroyDuringOnPointerHitTest);
 
   template <typename T>
   using ComPtr = Microsoft::WRL::ComPtr<T>;
@@ -113,6 +126,10 @@ class CONTENT_EXPORT DirectManipulationHelper
   void SetDeviceScaleFactorForTesting(float factor);
 
   void Destroy();
+
+  // Implementation of OnPointerHitTest, with the `pointer_id` and
+  // `pointer_type` precalculated.
+  void OnPointerHitTest(UINT32 pointer_id, POINTER_INPUT_TYPE pointer_type);
 
   ComPtr<IDirectManipulationManager> manager_;
   ComPtr<IDirectManipulationUpdateManager> update_manager_;

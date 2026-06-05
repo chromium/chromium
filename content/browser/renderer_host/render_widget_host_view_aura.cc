@@ -768,7 +768,13 @@ void RenderWidgetHostViewAura::HideImpl() {
       if (host && legacy_render_widget_host_HWND_) {
         // We reparent the legacy Chrome_RenderWidgetHostHWND window to the
         // global hidden window on the same lines as Windowed plugin windows.
+        // This can spin a nested event loop that could potentially delete this.
+        base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+            weak_ptr_factory_.GetWeakPtr());
         legacy_render_widget_host_HWND_->UpdateParent(ui::GetHiddenWindow());
+        if (!weak_this) {
+          return;
+        }
       }
 #endif
   }
@@ -3261,10 +3267,12 @@ void RenderWidgetHostViewAura::RemovingFromRootWindow() {
   delegated_frame_host_->DetachFromCompositor();
 
 #if BUILDFLAG(IS_WIN)
-    // Update the legacy window's parent temporarily to the hidden window. It
-    // will eventually get reparented to the right root.
-    if (legacy_render_widget_host_HWND_)
-      legacy_render_widget_host_HWND_->UpdateParent(ui::GetHiddenWindow());
+  // Update the legacy window's parent temporarily to the hidden window. It
+  // will eventually get reparented to the right root. This can spin a nested
+  // event loop that can delete `this`, so do it last.
+  if (legacy_render_widget_host_HWND_) {
+    legacy_render_widget_host_HWND_->UpdateParent(ui::GetHiddenWindow());
+  }
 #endif
 }
 

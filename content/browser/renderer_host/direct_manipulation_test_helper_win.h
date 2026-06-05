@@ -11,6 +11,9 @@
 #include <wrl.h>
 
 #include <array>
+#include <utility>
+
+#include "base/functional/callback.h"
 
 namespace content {
 class PrecisionTouchpadBrowserTest;
@@ -43,6 +46,10 @@ class MockDirectManipulationContent
   ~MockDirectManipulationContent() override;
 
   void SetContentTransform(float scale, float scroll_x, float scroll_y);
+
+  void set_get_content_transform_callback(base::OnceClosure callback) {
+    get_content_transform_callback_ = std::move(callback);
+  }
 
   // IDirectManipulationContent:
   HRESULT STDMETHODCALLTYPE GetContentTransform(float* transforms,
@@ -80,6 +87,8 @@ class MockDirectManipulationContent
   // (3,1) - x offset
   // (3,2) - y offset.
   std::array<float, kTransformMatrixSize> transforms_;
+
+  base::OnceClosure get_content_transform_callback_;
 };
 
 }  // namespace content

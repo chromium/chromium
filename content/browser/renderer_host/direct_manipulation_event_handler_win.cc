@@ -125,6 +125,8 @@ HRESULT DirectManipulationEventHandler::OnViewportStatusChanged(
     IDirectManipulationViewport* viewport,
     DIRECTMANIPULATION_STATUS current,
     DIRECTMANIPULATION_STATUS previous) {
+  Microsoft::WRL::ComPtr<DirectManipulationEventHandler> keep_alive(this);
+
   // MSDN never mention |viewport| are nullable and we never saw it is null when
   // testing.
   DCHECK(viewport);
@@ -199,6 +201,8 @@ HRESULT DirectManipulationEventHandler::OnViewportUpdated(
 HRESULT DirectManipulationEventHandler::OnContentUpdated(
     IDirectManipulationViewport* viewport,
     IDirectManipulationContent* content) {
+  Microsoft::WRL::ComPtr<DirectManipulationEventHandler> keep_alive(this);
+
   // MSDN never mention these params are nullable and we never saw they are null
   // when testing.
   DCHECK(viewport);
