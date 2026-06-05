@@ -1187,15 +1187,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Notifications.Tips.OptInPromo.EventType"
+<histogram name="Notifications.Tips.OptInPromo.EventType2"
     enum="TipsNotificationsOptInPromoEventType" expires_after="2026-10-11">
   <owner>wylieb@google.com</owner>
   <owner>bjfong@google.com</owner>
   <summary>
     Records the event type for user actions on the Tips Opt In Promo. This is
-    recorded on show, on promo acceptance, and on promo ignore. Ignoring the
-    promo includes dismissal by scrim touch, backpress and swipe away and
-    includes the close button on the promo. This is for Android only.
+    recorded on show, on promo acceptance, on promo decline, and on promo
+    ignore. Declining the promo includes clicking the negative button. Ignoring
+    the promo includes dismissal by scrim touch, backpress, and swipe away. This
+    is for Android only.
   </summary>
 </histogram>
 

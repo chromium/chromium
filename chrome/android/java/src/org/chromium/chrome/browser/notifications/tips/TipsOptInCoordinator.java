@@ -51,6 +51,7 @@ public class TipsOptInCoordinator {
         OptInPromoEventType.SHOWN,
         OptInPromoEventType.ACCEPTED,
         OptInPromoEventType.IGNORED,
+        OptInPromoEventType.DECLINED,
         OptInPromoEventType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -58,9 +59,10 @@ public class TipsOptInCoordinator {
         int SHOWN = 0;
         int ACCEPTED = 1;
         int IGNORED = 2;
+        int DECLINED = 3;
 
         // Be sure to also update enums.xml when updating these values.
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/notifications/enums.xml:TipsNotificationsOptInPromoEventType)
@@ -158,7 +160,7 @@ public class TipsOptInCoordinator {
 
     private void recordOptInPromoEventType(@OptInPromoEventType int type) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Notifications.Tips.OptInPromo.EventType", type, OptInPromoEventType.NUM_ENTRIES);
+                "Notifications.Tips.OptInPromo.EventType2", type, OptInPromoEventType.NUM_ENTRIES);
     }
 
     private void showOptInSnackbar() {
@@ -219,7 +221,7 @@ public class TipsOptInCoordinator {
                         mContext.getResources())
                 .ensureInitializedAndDisabled(ChannelId.TIPS_V2);
 
-        recordOptInPromoEventType(OptInPromoEventType.IGNORED);
+        recordOptInPromoEventType(OptInPromoEventType.DECLINED);
         dismiss();
     }
 

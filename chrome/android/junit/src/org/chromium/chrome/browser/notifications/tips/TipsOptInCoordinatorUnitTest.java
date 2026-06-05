@@ -104,7 +104,7 @@ public class TipsOptInCoordinatorUnitTest {
     public void testShowBottomSheet() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType",
+                        "Notifications.Tips.OptInPromo.EventType2",
                         TipsOptInCoordinator.OptInPromoEventType.SHOWN);
 
         assertEquals(
@@ -151,7 +151,7 @@ public class TipsOptInCoordinatorUnitTest {
     public void testSheetContent_onBackPressed() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType",
+                        "Notifications.Tips.OptInPromo.EventType2",
                         TipsOptInCoordinator.OptInPromoEventType.IGNORED);
 
         mBottomSheetContent.onBackPressed();
@@ -165,7 +165,7 @@ public class TipsOptInCoordinatorUnitTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecordTimes(
-                                "Notifications.Tips.OptInPromo.EventType",
+                                "Notifications.Tips.OptInPromo.EventType2",
                                 TipsOptInCoordinator.OptInPromoEventType.IGNORED,
                                 2)
                         .build();
@@ -188,7 +188,7 @@ public class TipsOptInCoordinatorUnitTest {
     public void testOnOptInAccepted() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType",
+                        "Notifications.Tips.OptInPromo.EventType2",
                         TipsOptInCoordinator.OptInPromoEventType.ACCEPTED);
 
         mTipsOptInCoordinator.onOptInAccepted();
@@ -223,8 +223,8 @@ public class TipsOptInCoordinatorUnitTest {
     public void testOnOptInDeclined() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "Notifications.Tips.OptInPromo.EventType",
-                        TipsOptInCoordinator.OptInPromoEventType.IGNORED);
+                        "Notifications.Tips.OptInPromo.EventType2",
+                        TipsOptInCoordinator.OptInPromoEventType.DECLINED);
 
         mTipsOptInCoordinator.onOptInDeclined();
         Shadows.shadowOf(Looper.getMainLooper()).idle();
