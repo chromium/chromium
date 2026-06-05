@@ -193,9 +193,6 @@ inline constexpr char kGroupPromoPrototypeCpaName[] =
 inline constexpr char kGroupPromoPrototypeCpaDescription[] =
     "Enables contextual toolbar button for group promo prototype.";
 
-inline constexpr char kTaskManagerClankName[] = "Task Manager on Clank";
-inline constexpr char kTaskManagerClankDescription[] =
-    "Enables the Task Manager for Clank (Chrome on Android).";
 
 inline constexpr char kNewTabPageCustomizationV2Name[] =
     "Customize the new tab page V2";

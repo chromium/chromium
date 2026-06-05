@@ -10346,11 +10346,6 @@ const FeatureEntry kFeatureEntries[] = {
          kPermissionsGestureGatedPromptsVariations,
          "PermissionsGestureGatedPrompts")},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-task-manager-clank", flag_descriptions::kTaskManagerClankName,
-     flag_descriptions::kTaskManagerClankDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kTaskManagerClank)},
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-translate-button",
