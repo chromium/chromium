@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
@@ -144,6 +146,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
 
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.CHROME_COLOR);
+
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
@@ -159,6 +164,31 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         // Highlighted index should be 1 (the local history item)
         assertEquals(
                 1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
+
+    @Test
+    public void testPrepareToShow_WithLocalHistory_DefaultTheme() {
+        // Save some local history.
+        NtpBackgroundDataColor localColor =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID_LOCAL,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
+
+        // Current theme is default.
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.DEFAULT);
+
+        mCoordinator.prepareToShow();
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        assertEquals(2, dataList.size());
+
+        // Highlighted index should be 0 (the default item)
+        assertEquals(
+                0, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -189,6 +219,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         NtpThemeColorId.NTP_COLORS_BLUE,
                         /* isChromeColorDailyRefreshEnabled= */ false);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteDuplicateColor);
+
+        when(mNtpCustomizationConfigManager.getBackgroundType())
+                .thenReturn(NtpBackgroundType.CHROME_COLOR);
 
         mCoordinator.prepareToShow();
 

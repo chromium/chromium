@@ -302,7 +302,11 @@ public class NtpCustomizationConfigManager {
     public void onBackgroundDataChanged(Context context, NtpBackgroundDataBase backgroundData) {
         // TODO(https://crbug.com/488439751): handles the rest background data types.
         if (backgroundData instanceof NtpBackgroundDataColor ntpBackgroundDataColor) {
-            onBackgroundColorChanged(context, ntpBackgroundDataColor.getNtpThemeColorInfo());
+            if (ntpBackgroundDataColor.getThemeColorId() == NtpThemeColorId.DEFAULT) {
+                onBackgroundReset();
+            } else {
+                onBackgroundColorChanged(context, ntpBackgroundDataColor.getNtpThemeColorInfo());
+            }
         } else if (backgroundData
                 instanceof NtpBackgroundDataCustomizedColor ntpBackgroundDataCustomizedColor) {
             onBackgroundColorChanged(

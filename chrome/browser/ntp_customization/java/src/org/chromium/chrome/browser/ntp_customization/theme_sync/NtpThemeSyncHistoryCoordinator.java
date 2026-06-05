@@ -16,6 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
@@ -79,6 +80,9 @@ public class NtpThemeSyncHistoryCoordinator {
         // The default option is placed at the first.
         mDataShowingList.add(mDefaultNtpBackgroundData);
         int lastSelectedIndex = 0;
+        boolean isDefaultTheme =
+                NtpCustomizationConfigManager.getInstance().getBackgroundType()
+                        == NtpCustomizationUtils.NtpBackgroundType.DEFAULT;
 
         // Adds all history data to the list.
         NtpBackgroundDataGroup[] groups =
@@ -86,9 +90,11 @@ public class NtpThemeSyncHistoryCoordinator {
         NtpBackgroundDataGroup localGroup = groups[PlatformType.ANDROID_LOCAL];
         assumeNonNull(localGroup);
         if (!localGroup.isEmpty()) {
-            // The last selected index is set to the first item from local selected history if it
-            // isn't empty.
-            lastSelectedIndex = 1;
+            // The last selected index is set to the first item from local selected history if the
+            // current selected theme isn't the default one, and the local group list isn't empty.
+            if (!isDefaultTheme) {
+                lastSelectedIndex = 1;
+            }
             mDataShowingList.addAll(localGroup.getList());
         }
 

@@ -163,6 +163,58 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
+    })
+    public void testOnBackgroundDataChanged_Color() {
+        mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
+        mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
+        clearInvocations(mListener);
+
+        // 1. Test non-default color.
+        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        NtpBackgroundDataColor dataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        colorInfo);
+
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, dataColor);
+
+        // Verify it triggers color change.
+        verify(mListener)
+                .onBackgroundColorChanged(
+                        eq(colorInfo),
+                        anyInt(),
+                        eq(false),
+                        eq(NtpBackgroundType.DEFAULT),
+                        eq(NtpBackgroundType.CHROME_COLOR));
+        assertEquals(
+                NtpBackgroundType.CHROME_COLOR, mNtpCustomizationConfigManager.getBackgroundType());
+
+        clearInvocations(mListener);
+
+        // 2. Test default color.
+        NtpThemeColorInfo defaultColorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.DEFAULT);
+        NtpBackgroundDataColor defaultDataColor =
+                new NtpBackgroundDataColor(
+                        NtpBackgroundDataBase.PlatformType.ANDROID_LOCAL,
+                        /* isChromeColorDailyRefreshEnabled= */ false,
+                        defaultColorInfo);
+
+        mNtpCustomizationConfigManager.onBackgroundDataChanged(mContext, defaultDataColor);
+
+        // Verify it triggers reset.
+        verify(mListener).onBackgroundReset(eq(NtpBackgroundType.CHROME_COLOR));
+        assertEquals(NtpBackgroundType.DEFAULT, mNtpCustomizationConfigManager.getBackgroundType());
+    }
+
+    @Test
     public void testOnUploadedImageSelected_persistsStateAndNotifiesListener() {
         int initialBackgroundType = mNtpCustomizationConfigManager.getBackgroundType();
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
