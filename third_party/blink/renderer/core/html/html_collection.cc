@@ -207,14 +207,6 @@ void HTMLCollection::InvalidateCache(Document* old_document) const {
   InvalidateIdNameCacheMaps(old_document);
 }
 
-unsigned HTMLCollection::length() const {
-  return collection_items_cache_.NodeCount(*this);
-}
-
-Element* HTMLCollection::item(unsigned offset) const {
-  return collection_items_cache_.NodeAt(*this, offset);
-}
-
 static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
                                          const HTMLElement& element) {
   switch (html_collection.GetType()) {

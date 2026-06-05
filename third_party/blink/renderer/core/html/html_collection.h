@@ -88,8 +88,14 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
   void InvalidateCacheForAttribute(const QualifiedName*) const;
 
   // DOM API
-  unsigned length() const;
-  Element* item(unsigned offset) const;
+  // Inline so the V8 binding callbacks can inline the cache-hit
+  // fast path (flag check + load).
+  unsigned length() const {
+    return collection_items_cache_.NodeCount(*this);
+  }
+  Element* item(unsigned offset) const {
+    return collection_items_cache_.NodeAt(*this, offset);
+  }
   virtual Element* namedItem(const AtomicString& name) const;
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&);
   void NamedPropertyEnumerator(Vector<String>& names, ExceptionState&);
