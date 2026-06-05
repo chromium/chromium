@@ -235,7 +235,11 @@ sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
 
 void Canvas2DResourceProviderBitmap::RasterRecord(
     cc::PaintRecord last_recording) {
-  return UnacceleratedRasterRecord(last_recording);
+  if (!skia_canvas_) {
+    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+  }
+  skia_canvas_->drawPicture(std::move(last_recording));
 }
 
 bool Canvas2DResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
@@ -1202,7 +1206,11 @@ void Canvas2DResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    UnacceleratedRasterRecord(std::move(last_recording));
+    if (!skia_canvas_) {
+      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+          GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+    }
+    skia_canvas_->drawPicture(std::move(last_recording));
     return;
   }
 
@@ -2031,17 +2039,6 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
       preserve_recording ? std::optional(recording) : std::nullopt;
 
   return recording;
-}
-
-void CanvasResourceProvider::UnacceleratedRasterRecord(
-    cc::PaintRecord last_recording) {
-  CHECK(!IsAccelerated());
-
-  if (!skia_canvas_) {
-    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
-  }
-  skia_canvas_->drawPicture(std::move(last_recording));
 }
 
 void Canvas2DResourceProviderSharedImage::NotifyGpuContextLostTask(
