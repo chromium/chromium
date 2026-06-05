@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "actor_form_filling_service_unittest.cc",
     "actor_form_section_splitter_unittest.cc",
     "actor_key_metrics_recorder_unittest.cc",
+    "one_time_tokens/actor_one_time_token_filling_service_impl_unittest.cc",
   ]
 
   deps = [
@@ -52,8 +53,10 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/actor",
+    "//chrome/browser/autofill",
     "//chrome/test:test_support",
     "//components/autofill/content/browser:test_support",
+    "//components/one_time_tokens/core/browser",
     "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",

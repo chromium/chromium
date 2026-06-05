@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,6 +45,40 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     return;
   }
 
+  // Note: OneTimeTokenService caches tokens for 3 minutes. It does not clear
+  // them upon use. If a user triggers a "Resend OTP" flow within those 3
+  // minutes, this will return the originally cached token rather than waiting
+  // for the new one. This relies on the assumption that previously sent tokens
+  // typically remain valid for the duration of the cache.
+  std::optional<one_time_tokens::OneTimeToken> most_recent_token;
+  for (const auto& token : service->GetCachedOneTimeTokens()) {
+    if (token.type() == one_time_tokens::OneTimeTokenType::kGmail) {
+      if (!most_recent_token ||
+          token.on_device_arrival_time() >
+              most_recent_token->on_device_arrival_time()) {
+        most_recent_token = token;
+      }
+    }
+  }
+
+  if (most_recent_token) {
+    subscription_ = {};
+    // If there is a pending request, its callback is superseded. We run the
+    // previous callback with an empty string so the old caller can gracefully
+    // time out rather than hanging indefinitely.
+    if (retrieve_otp_callback_) {
+      std::move(retrieve_otp_callback_).Run("");
+    }
+    std::move(callback).Run(most_recent_token->value());
+    return;
+  }
+
+  // If there is a pending request, its callback is superseded. We run the
+  // previous callback with an empty string so the old caller can gracefully
+  // time out rather than hanging indefinitely.
+  if (retrieve_otp_callback_) {
+    std::move(retrieve_otp_callback_).Run("");
+  }
   retrieve_otp_callback_ = std::move(callback);
 
   // Subscribe to OneTimeTokenService with 1-minute timeout.
