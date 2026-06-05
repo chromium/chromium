@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/api/context_menus.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/context_menu_params.h"
@@ -445,72 +446,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
   EXPECT_FALSE(top_level_model_->GetSubmenuModelAt(top_level_index()));
 }
 
-// Tests hiding a parent menu item, when it is hidden and so are all of its
-// children.
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
-                       HideTopLevelSubmenuItemIfHiddenAndChildrenHidden) {
-  SetUpTestExtension();
-  CallAPI("create({id: 'id', title: 'parent', visible: false});");
-  CallAPI("create({title: 'child1', parentId: 'id', visible: false});");
-  CallAPI("create({title: 'child2', parentId: 'id', visible: false});");
-
-  ASSERT_TRUE(SetupTopLevelMenuModel());
-
-  VerifyNumContextMenuItems(3);
-
-  VerifyMenuItem("parent", top_level_model_, top_level_index(),
-                 ui::MenuModel::TYPE_SUBMENU, false);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Since the extension submenu is hidden, the previous separator should not be
-  // in the model. On Android top_level_index() is 0 so we don't test this.
-  EXPECT_NE(ui::MenuModel::TYPE_SEPARATOR,
-            top_level_model_->GetTypeAt(top_level_index() - 1));
-#endif
-
-  ui::MenuModel* submodel =
-      top_level_model_->GetSubmenuModelAt(top_level_index());
-  ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
-
-  VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
-  VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
-}
-
-// Tests hiding a parent menu item, when it is hidden and some of its children
-// are visible.
-IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
-                       HideTopLevelSubmenuItemIfHiddenAndSomeChildrenVisible) {
-  SetUpTestExtension();
-  CallAPI("create({id: 'id', title: 'parent', visible: false});");
-  CallAPI("create({title: 'child1', parentId: 'id', visible: false});");
-  CallAPI("create({title: 'child2', parentId: 'id', visible: true});");
-
-  ASSERT_TRUE(SetupTopLevelMenuModel());
-
-  VerifyNumContextMenuItems(3);
-
-  VerifyMenuItem("parent", top_level_model_, top_level_index(),
-                 ui::MenuModel::TYPE_SUBMENU, false);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Since the extension submenu is hidden, the previous separator should not be
-  // in the model. On Android top_level_index() is 0 so we don't test this.
-  EXPECT_NE(ui::MenuModel::TYPE_SEPARATOR,
-            top_level_model_->GetTypeAt(top_level_index() - 1));
-#endif
-
-  ui::MenuModel* submodel =
-      top_level_model_->GetSubmenuModelAt(top_level_index());
-  ASSERT_TRUE(submodel);
-  EXPECT_EQ(2u, submodel->GetItemCount());
-
-  // Though the children's internal visibility state remains unchanged, the ui
-  // code will hide the children if the parent is hidden.
-  VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
-  VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, true);
-}
-
 // Tests showing a single top-level parent menu item, when it is visible, but
 // all of its child items are hidden. The child items' hidden states are tested
 // too. Recall that a top-level item can be either a parent item specified by
@@ -756,6 +691,99 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuVisibilityApiTest,
                  ui::MenuModel::TYPE_SUBMENU, true);
   VerifyMenuItem(e2->name(), top_level_model_, top_level_index() + 1,
                  ui::MenuModel::TYPE_SUBMENU, true);
+}
+
+class ExtensionContextMenuVisibilityApiMenuSimplificationTest
+    : public ExtensionContextMenuVisibilityApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionContextMenuVisibilityApiMenuSimplificationTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kMenuSimplification);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kMenuSimplification);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExtensionContextMenuVisibilityApiMenuSimplificationTest,
+    testing::Bool());
+
+// Tests hiding a parent menu item, when it is hidden and some of its children
+// are visible.
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuVisibilityApiMenuSimplificationTest,
+                       HideTopLevelSubmenuItemIfHiddenAndSomeChildrenVisible) {
+  SetUpTestExtension();
+  CallAPI("create({id: 'id', title: 'parent', visible: false});");
+  CallAPI("create({title: 'child1', parentId: 'id', visible: false});");
+  CallAPI("create({title: 'child2', parentId: 'id', visible: true});");
+
+  ASSERT_TRUE(SetupTopLevelMenuModel());
+
+  VerifyNumContextMenuItems(3);
+
+  VerifyMenuItem("parent", top_level_model_, top_level_index(),
+                 ui::MenuModel::TYPE_SUBMENU, false);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Since the extension submenu is hidden, the previous separator should not be
+  // in the model. On Android top_level_index() is 0 so we don't test this.
+  // With kMenuSimplification enabled, there is a separator from the end of the
+  // page items group before the hidden extension submenu item.
+  if (!GetParam()) {
+    EXPECT_NE(ui::MenuModel::TYPE_SEPARATOR,
+              top_level_model_->GetTypeAt(top_level_index() - 1));
+  }
+#endif
+
+  ui::MenuModel* submodel =
+      top_level_model_->GetSubmenuModelAt(top_level_index());
+  ASSERT_TRUE(submodel);
+  EXPECT_EQ(2u, submodel->GetItemCount());
+
+  // Though the children's internal visibility state remains unchanged, the ui
+  // code will hide the children if the parent is hidden.
+  VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
+  VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, true);
+}
+
+// Tests hiding a parent menu item, when it is hidden and so are all of its
+// children.
+IN_PROC_BROWSER_TEST_P(ExtensionContextMenuVisibilityApiMenuSimplificationTest,
+                       HideTopLevelSubmenuItemIfHiddenAndChildrenHidden) {
+  SetUpTestExtension();
+  CallAPI("create({id: 'id', title: 'parent', visible: false});");
+  CallAPI("create({title: 'child1', parentId: 'id', visible: false});");
+  CallAPI("create({title: 'child2', parentId: 'id', visible: false});");
+
+  ASSERT_TRUE(SetupTopLevelMenuModel());
+
+  VerifyNumContextMenuItems(3);
+
+  VerifyMenuItem("parent", top_level_model_, top_level_index(),
+                 ui::MenuModel::TYPE_SUBMENU, false);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Since the extension submenu is hidden, the previous separator should not be
+  // in the model. On Android top_level_index() is 0 so we don't test this.
+  if (!GetParam()) {
+    EXPECT_NE(ui::MenuModel::TYPE_SEPARATOR,
+              top_level_model_->GetTypeAt(top_level_index() - 1));
+  }
+#endif
+
+  ui::MenuModel* submodel =
+      top_level_model_->GetSubmenuModelAt(top_level_index());
+  ASSERT_TRUE(submodel);
+  EXPECT_EQ(2u, submodel->GetItemCount());
+
+  VerifyMenuItem("child1", submodel, 0, ui::MenuModel::TYPE_COMMAND, false);
+  VerifyMenuItem("child2", submodel, 1, ui::MenuModel::TYPE_COMMAND, false);
 }
 
 }  // namespace extensions
