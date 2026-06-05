@@ -139,7 +139,7 @@ const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
     "max_recorded_op_graphite_kb",
     6 * 1024);
 
-class CanvasResourceProvider::CanvasImageProvider : public cc::ImageProvider {
+class CanvasImageProvider : public cc::ImageProvider {
  public:
   CanvasImageProvider(cc::ImageDecodeCache* cache_n32,
                       cc::ImageDecodeCache* cache_f16,
@@ -1130,7 +1130,7 @@ CanvasNon2DResourceProviderSharedImage::Snapshot(ImageOrientation orientation) {
   return cached_snapshot_;
 }
 
-CanvasResourceProvider::CanvasImageProvider*
+CanvasImageProvider*
 Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
   if (!IsAccelerated()) {
     return GetOrCreateSWCanvasImageProvider();
@@ -1633,7 +1633,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
       shared_image_interface_provider);
 }
 
-CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
+CanvasImageProvider::CanvasImageProvider(
     cc::ImageDecodeCache* cache_n32,
     cc::ImageDecodeCache* cache_f16,
     const gfx::ColorSpace& target_color_space,
@@ -1663,7 +1663,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
   }
 }
 
-void CanvasResourceProvider::CanvasImageProvider::SetAnimatedImageFrameIndexes(
+void CanvasImageProvider::SetAnimatedImageFrameIndexes(
     scoped_refptr<const cc::AnimatedImageFrameIndexMap> indexes) {
   if (playback_image_provider_n32_) {
     playback_image_provider_n32_->SetAnimatedImageFrameIndexes(indexes);
@@ -1673,8 +1673,7 @@ void CanvasResourceProvider::CanvasImageProvider::SetAnimatedImageFrameIndexes(
   }
 }
 
-cc::ImageProvider::ScopedResult
-CanvasResourceProvider::CanvasImageProvider::GetRasterContent(
+cc::ImageProvider::ScopedResult CanvasImageProvider::GetRasterContent(
     const cc::DrawImage& draw_image) {
   cc::PaintImage paint_image = draw_image.paint_image();
   if (paint_image.IsDeferredPaintRecord()) {
@@ -1727,8 +1726,7 @@ CanvasResourceProvider::CanvasImageProvider::GetRasterContent(
                                      std::move(scoped_decoded_image)));
 }
 
-void CanvasResourceProvider::CanvasImageProvider::CanUnlockImage(
-    ScopedResult image) {
+void CanvasImageProvider::CanUnlockImage(ScopedResult image) {
   // We should early out and avoid calling this function for software decodes.
   DCHECK(IsHardwareDecodeCache());
 
@@ -1745,13 +1743,12 @@ void CanvasResourceProvider::CanvasImageProvider::CanUnlockImage(
   locked_images_.push_back(std::move(image));
 }
 
-void CanvasResourceProvider::CanvasImageProvider::CleanupLockedImages() {
+void CanvasImageProvider::CleanupLockedImages() {
   cleanup_task_pending_ = false;
   ReleaseLockedImages();
 }
 
-bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
-    const {
+bool CanvasImageProvider::IsHardwareDecodeCache() const {
   return raster_mode_ != cc::PlaybackImageProvider::RasterMode::kSoftware;
 }
 
@@ -1782,7 +1779,7 @@ void CanvasResourceProvider::NotifyWillTransfer(
   GetFlushForImageListener()->NotifyFlushForImage(content_id);
 }
 
-CanvasResourceProvider::CanvasImageProvider*
+CanvasImageProvider*
 CanvasResourceProvider::GetOrCreateSWCanvasImageProvider() {
   if (canvas_image_provider_) {
     return canvas_image_provider_.get();
@@ -1886,12 +1883,10 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
         cc::ImageDecodeCache* cache_rgba8 =
             &Image::SharedCCDecodeCache(kN32_SkColorType);
 
-        canvas_image_provider_ =
-            std::make_unique<CanvasResourceProvider::CanvasImageProvider>(
-                cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-                cc::PlaybackImageProvider::RasterMode::kSoftware,
-                delegate_ ? delegate_->GetAnimatedImageFrameIndexes()
-                          : nullptr);
+        canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+            cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+            cc::PlaybackImageProvider::RasterMode::kSoftware,
+            delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
       }
       skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
           GetSkSurface()->getCanvas(), canvas_image_provider_.get());
@@ -1949,11 +1944,10 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
           context_provider_wrapper_->ContextProvider().ImageDecodeCache(
               kN32_SkColorType);
 
-      canvas_image_provider_ =
-          std::make_unique<CanvasResourceProvider::CanvasImageProvider>(
-              cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-              cc::PlaybackImageProvider::RasterMode::kGpu,
-              delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
+      canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
+          cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+          cc::PlaybackImageProvider::RasterMode::kGpu,
+          delegate_ ? delegate_->GetAnimatedImageFrameIndexes() : nullptr);
     }
 
     ri->RasterCHROMIUM(

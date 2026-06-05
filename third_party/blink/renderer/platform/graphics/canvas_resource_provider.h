@@ -62,6 +62,7 @@ class CanvasResourceSharedImage;
 class Canvas2DResourceProviderBitmap;
 class CanvasNon2DResourceProviderSharedImage;
 class Canvas2DResourceProviderSharedImage;
+class CanvasImageProvider;
 class MemoryManagedPaintCanvas;
 class OffscreenCanvasRenderingContext2D;
 class StaticBitmapImage;
@@ -199,8 +200,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   const std::optional<cc::PaintRecord>& LastRecording() {
     return last_recording_;
   }
-
-  class CanvasImageProvider;
 
  protected:
   SkSurface* GetSkSurface() const;
@@ -863,8 +862,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
 
-  std::unique_ptr<CanvasResourceProvider::CanvasImageProvider>
-      canvas_image_provider_;
+  std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_external_draws_;
 
