@@ -16,8 +16,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
-// Android uses messages instead of infobars.
-static_assert(!BUILDFLAG(IS_ANDROID));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GlobalConfirmInfoBar;
 

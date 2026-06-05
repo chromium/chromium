@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
+#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -67,15 +68,6 @@
 #include "pdf/buildflags.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "ui/base/base_window.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/messages/android/message_enums.h"
-#include "components/messages/android/message_wrapper.h"
-#include "components/messages/android/mock_message_dispatcher_bridge.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#else
-#include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
-#endif
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/test/scoped_feature_list.h"
@@ -549,87 +541,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunAttachFunction(web_contents, "Cannot attach to this target."));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Android uses messages for warnings instead of infobars.
-IN_PROC_BROWSER_TEST_F(DebuggerApiTest, Messages) {
-  int tab_id =
-      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
-  scoped_refptr<DebuggerAttachFunction> attach_function;
-  scoped_refptr<DebuggerDetachFunction> detach_function;
-
-  messages::MockMessageDispatcherBridge mock_bridge;
-  mock_bridge.SetMessagesEnabledForEmbedder(true);
-  messages::MessageDispatcherBridge::SetInstanceForTesting(&mock_bridge);
-
-  // Set up mocks to capture the message and handle cleanup.
-  messages::MessageWrapper* captured_message = nullptr;
-  EXPECT_CALL(mock_bridge,
-              EnqueueWindowScopedMessage(testing::_, testing::_,
-                                         messages::MessagePriority::kUrgent))
-      .WillRepeatedly([&captured_message](messages::MessageWrapper* message,
-                                          ui::WindowAndroid* window,
-                                          messages::MessagePriority priority) {
-        captured_message = message;
-        message->SetMessageEnqueued(window->GetJavaObject());
-        return true;
-      });
-  EXPECT_CALL(
-      mock_bridge,
-      DismissMessage(testing::_, messages::DismissReason::DISMISSED_BY_FEATURE))
-      .WillRepeatedly([&captured_message](
-                          messages::MessageWrapper* message,
-                          messages::DismissReason dismiss_reason) {
-        JNIEnv* env = base::android::AttachCurrentThread();
-        message->HandleDismissCallback(env, static_cast<int>(dismiss_reason));
-        captured_message = nullptr;
-      });
-
-  // Attaching should create a message.
-  attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
-  attach_function->set_extension(extension());
-  ASSERT_TRUE(api_test_utils::RunFunction(
-      attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  ASSERT_NE(nullptr, captured_message);
-  EXPECT_TRUE(captured_message->is_in_queue());
-
-  // Detaching removes the message.
-  detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
-  detach_function->set_extension(extension());
-  ASSERT_TRUE(api_test_utils::RunFunction(
-      detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      profile()));
-  EXPECT_FALSE(captured_message);
-
-  // Attach again; should create another message.
-  attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
-  attach_function->set_extension(extension());
-  ASSERT_TRUE(api_test_utils::RunFunction(
-      attach_function.get(),
-      base::StringPrintf("[{\"tabId\": %d}, \"1.1\"]", tab_id), profile()));
-  EXPECT_TRUE(captured_message->is_in_queue());
-
-  // Simulating what happens when the user clicks the cancel button. The
-  // extension is detached.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  captured_message->HandleActionClick(env);
-
-  // The message is closed.
-  EXPECT_FALSE(captured_message);
-
-  // Trying to detach again will fail because the extension is already detached.
-  detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
-  detach_function->set_extension(extension());
-  ASSERT_FALSE(api_test_utils::RunFunction(
-      detach_function.get(), base::StringPrintf("[{\"tabId\": %d}]", tab_id),
-      profile()));
-
-  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
-}
-
-#else  // BUILDFLAG(IS_ANDROID)
-
-// Win/Mac/Linux/Chrome OS use infobars for warnings.
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest, InfoBar) {
   int tab_id =
       sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
@@ -882,6 +793,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_EQ(0u, manager->infobars().size());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Android does not support multiple profiles in Chrome. User switching is
 // handled at the OS level.
 class CrossProfileDebuggerApiTest : public DebuggerApiTest {
@@ -992,6 +904,7 @@ IN_PROC_BROWSER_TEST_F(CrossProfileDebuggerApiTest, Attach) {
         profile(), api_test_utils::FunctionMode::kIncognito));
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
                        InfoBarIsNotRemovedIfAttachAgainBeforeFiveSeconds) {
@@ -1035,7 +948,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
 
   EXPECT_EQ(1u, manager->infobars().size());
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Tests that policy blocked hosts supersede the `debugger`
 // permission. Regression test for crbug.com/40053634.

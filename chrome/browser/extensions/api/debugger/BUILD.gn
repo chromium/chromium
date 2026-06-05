@@ -11,19 +11,9 @@ source_set("debugger") {
   sources = [
     "debugger_api.cc",
     "debugger_api.h",
+    "extension_dev_tools_infobar_delegate.cc",
+    "extension_dev_tools_infobar_delegate.h",
   ]
-
-  if (is_android) {
-    sources += [
-      "extension_dev_tools_message_delegate.cc",
-      "extension_dev_tools_message_delegate.h",
-    ]
-  } else {
-    sources += [
-      "extension_dev_tools_infobar_delegate.cc",
-      "extension_dev_tools_infobar_delegate.h",
-    ]
-  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 

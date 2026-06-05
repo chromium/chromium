@@ -1419,7 +1419,6 @@ chromium-metrics-reviews@google.com.
   <int value="70" label="KnownInterceptionDisclosure"/>
   <int value="71" label="SendTabToSelf"/>
   <int value="72" label="GlicWindowResized"/>
-  <int value="73" label="ExtensionDevTools"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier) -->
