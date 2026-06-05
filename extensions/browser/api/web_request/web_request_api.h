@@ -29,6 +29,7 @@
 #include "content/public/common/child_process_id.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/api/web_request/web_request_permissions.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -408,6 +409,23 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   bool may_have_proxies_;
 
   base::WeakPtrFactory<WebRequestAPI> weak_factory_{this};
+};
+
+template <>
+struct BrowserContextFactoryDependencies<WebRequestAPI> {
+  static void DeclareFactoryDependencies(
+      BrowserContextKeyedAPIFactory<WebRequestAPI>* factory) {
+    // Restore the default dependency on the ExtensionSystemFactory that is
+    // otherwise lost when explicitly specializing this template.
+    if (ExtensionsBrowserClient::Get()) {
+      factory->DependsOn(
+          ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+    }
+
+    // Ensure the EventRouter outlives the WebRequestAPI so that proxies can
+    // safely broadcast network errors during profile teardown.
+    factory->DependsOn(WebRequestEventRouterFactory::GetInstance());
+  }
 };
 
 class WebRequestInternalFunction : public ExtensionFunction {

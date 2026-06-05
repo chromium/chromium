@@ -31,7 +31,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
-#include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -40,7 +39,6 @@
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -96,6 +94,7 @@
 #include "content/public/test/web_transport_simple_test_server.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
+#include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/blocked_action_type.h"
@@ -125,6 +124,8 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_util.h"
+#include "net/log/net_log_source.h"
+#include "net/socket/udp_server_socket.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -161,6 +162,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/login/login_handler.h"                 // nogncheck
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/search/ntp_test_utils.h"
@@ -9163,6 +9165,116 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiCoverageTest,
                        MAYBE_RequestInterceptionCoverage) {
   ASSERT_TRUE(StartWebSocketServer());
   ASSERT_TRUE(RunTest("test_interception_coverage.html")) << message_;
+}
+
+class WebRequestProxyingWebTransportCrashTest : public ExtensionApiTest {
+ public:
+  WebRequestProxyingWebTransportCrashTest() = default;
+  ~WebRequestProxyingWebTransportCrashTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebRequestProxyingWebTransportCrashTest,
+                       IncognitoProfileDestructionCrash) {
+  // Create a UDP sink to guarantee a hanging connection.
+  net::IPEndPoint bind_address(net::IPAddress::IPv4Localhost(), 0);
+  auto udp_sink =
+      std::make_unique<net::UDPServerSocket>(nullptr, net::NetLogSource());
+  udp_sink->AllowAddressReuse();
+  ASSERT_EQ(udp_sink->Listen(bind_address), net::OK);
+  net::IPEndPoint local_address;
+  ASSERT_EQ(udp_sink->GetLocalAddress(&local_address), net::OK);
+  std::string hanging_port = base::NumberToString(local_address.port());
+
+  // Setup the MV3 Extension to universally intercept and proxy everything.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "WebTransport Interceptor",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["<all_urls>"],
+    "permissions": ["webRequest"],
+    "background": {"service_worker": "background.js"}
+  })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    let requestsSeen = 0;
+    const requestsExpected = 4;
+    chrome.webRequest.onBeforeRequest.addListener(
+      function(details) {
+        // Filter for test endpoints to ignore background noise.
+        if (
+          details.url.includes("127.0.0.1") ||
+          details.url.includes("198.51.100.1")
+        ) {
+          requestsSeen++;
+          if (requestsSeen === requestsExpected) {
+            chrome.test.sendMessage("requests proxied");
+          }
+        }
+      },
+      {urls: ["<all_urls>"]}
+    );
+  )");
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  // Open Incognito and navigate.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, embedded_test_server()->GetURL("/empty.html")));
+  content::WebContents* web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+
+  // This utilizes a mix of fast-failing, hanging, and asynchronous network
+  // rejections to blanket the teardown timeline, guaranteeing the IPC
+  // collision.
+  std::string script = base::StringPrintf(
+      R"(
+    const endpoints = [
+      'https://127.0.0.1:0/',                 // OS-level instant refusal
+      'https://198.51.100.1:443/',            // Network-level timeout
+      'https://127.0.0.1:%s/',                // UDP sink
+      '%s'                                    // QUIC to TCP port rejection
+    ];
+
+    for (const endpoint of endpoints) {
+      try {
+        let wt = new WebTransport(endpoint);
+        wt.ready.catch(() => {});
+        wt.closed.catch(() => {});
+      } catch(e) {}
+    }
+  )",
+      hanging_port.c_str(), embedded_test_server()->GetURL("/").spec().c_str());
+
+  // Setup the listener before executing the JS.
+  ExtensionTestMessageListener proxy_listener("requests proxied");
+
+  EXPECT_TRUE(content::ExecJs(web_contents, script));
+
+  // Wait for the extension to confirm all 4 requests have successfully
+  // reached the Browser process and hit the WebRequest proxy.
+  ASSERT_TRUE(proxy_listener.WaitUntilSatisfied());
+
+  // Asynchronous teardown.
+  // Initiate profile shutdown asynchronously to ensure the message loop remains
+  // unblocked and capable of processing the incoming Mojo network errors.
+  incognito_browser->window()->Close();
+
+  // Force the message loop collision.
+  // Pump the loop to race the network errors against the profile shutdown
+  // tasks. Explicitly declare the loop and use QuitWhenIdle() to satisfy
+  // presubmit checks while achieving the same timing as RunUntilIdle().
+  base::RunLoop teardown_loop;
+  teardown_loop.QuitWhenIdle();
+  teardown_loop.Run();
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

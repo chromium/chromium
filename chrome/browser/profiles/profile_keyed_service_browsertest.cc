@@ -290,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PluginInfoHostImpl",
     "TurnSyncOnHelperShutdownNotifier",
+    "WebRequestProxyingWebTransport",
 
     // This service is needed to handle navigations in the Profile Picker.
     "ChromePolicyBlocklistService",
@@ -344,6 +345,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PermissionsUpdaterShutdownFactory",
     "PluginInfoHostImpl",
     "TurnSyncOnHelperShutdownNotifier",
+    "WebRequestProxyingWebTransport",
 
     // Those services are needed to be able to display IPHs in the Profile
     // Picker.
