@@ -824,7 +824,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
             window->window_id.id());
 
 #if BUILDFLAG(IS_CHROMEOS)
-        aura::Window* browser_window = browser->window()->GetNativeWindow();
+        aura::Window* browser_window = browser->GetWindow()->GetNativeWindow();
         if (occlusion_helper) {
           occlusion_helper->DisableWindowAnimation(browser_window);
         }

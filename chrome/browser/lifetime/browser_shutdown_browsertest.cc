@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(BrowserShutdownBrowserTest, ShutdownConfirmation) {
   const int modifiers = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
 
   ui::test::EventGenerator generator(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
   // Press the accelerator for quitting.
   generator.PressKey(ui::VKEY_Q, modifiers);

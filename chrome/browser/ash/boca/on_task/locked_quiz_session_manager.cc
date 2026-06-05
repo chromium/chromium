@@ -145,7 +145,7 @@ void LockedQuizSessionManager::SetLockedFullscreenState(Browser* browser,
 
   // TODO(crbug.com/438540029): Clean up after migrating locked quizzes to use
   // the Boca SWA.
-  aura::Window* const window = browser->window()->GetNativeWindow();
+  aura::Window* const window = browser->GetWindow()->GetNativeWindow();
   DCHECK(window);
 
   CHECK_NE(GetWindowPinType(window), chromeos::WindowPinType::kPinned)

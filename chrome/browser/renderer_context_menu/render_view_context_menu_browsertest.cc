@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
   }
 
   // Set locked fullscreen state.
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
 
   // Verify aforementioned commands are disabled in locked fullscreen.
   for (int command_id : kCommandsToTest) {
@@ -1174,7 +1174,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuForLockedFullscreenBrowserTest,
       true);
 
   // Set locked fullscreen state.
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
 
   // Verify page navigation commands and some contextual content commands remain
   // enabled.
@@ -2666,7 +2666,7 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
 
   // Sets the event generator to the current Browser window
   void CreateAndSetEventGenerator() {
-    gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+    gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
 #if defined(USE_AURA)
     // When using aura, we need to get the root window in order to send events
     // properly.

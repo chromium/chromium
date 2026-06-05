@@ -119,7 +119,7 @@ class AXMediaAppUntrustedServiceTest : public InProcessBrowserTest {
         pageReceiver = pageRemote.InitWithNewPipeAndPassReceiver();
 
     service_ = std::make_unique<TestAXMediaAppUntrustedService>(
-        *browser()->profile(), browser()->window()->GetNativeWindow(),
+        *browser()->profile(), browser()->GetWindow()->GetNativeWindow(),
         std::move(pageRemote));
     ASSERT_NE(nullptr, service_.get());
     service_->SetMediaAppForTesting(&fake_media_app_);

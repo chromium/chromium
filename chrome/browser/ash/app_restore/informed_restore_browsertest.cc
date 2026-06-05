@@ -245,17 +245,17 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_LaunchBrowsersToDesks) {
   ASSERT_EQ(3u, desks_controller->desks().size());
   for (Browser* browser : {browser1, browser2, browser3}) {
     ASSERT_TRUE(desks_controller->BelongsToActiveDesk(
-        browser->window()->GetNativeWindow()));
+        browser->GetWindow()->GetNativeWindow()));
   }
 
   // Move some windows so there is one window on each desk.
   aura::Window* primary_root = Shell::GetPrimaryRootWindow();
   desks_controller->MoveWindowFromActiveDeskTo(
-      browser2->window()->GetNativeWindow(),
+      browser2->GetWindow()->GetNativeWindow(),
       desks_controller->GetDeskAtIndex(1), primary_root,
       DesksMoveWindowFromActiveDeskSource::kShortcut);
   desks_controller->MoveWindowFromActiveDeskTo(
-      browser3->window()->GetNativeWindow(),
+      browser3->GetWindow()->GetNativeWindow(),
       desks_controller->GetDeskAtIndex(2), primary_root,
       DesksMoveWindowFromActiveDeskSource::kShortcut);
 
@@ -308,25 +308,28 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_DISABLED_WindowStates) {
   Browser* browser_snapped = CreateBrowser(profile);
   EXPECT_EQ(5u, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  WindowState::Get(browser_maximized->window()->GetNativeWindow())->Maximize();
+  WindowState::Get(browser_maximized->GetWindow()->GetNativeWindow())
+      ->Maximize();
 
   // Also maximize `browser_minimized` before minimizing so we can test the
   // pre-minimized state as well.
-  WindowState::Get(browser_minimized->window()->GetNativeWindow())->Maximize();
-  WindowState::Get(browser_minimized->window()->GetNativeWindow())->Minimize();
+  WindowState::Get(browser_minimized->GetWindow()->GetNativeWindow())
+      ->Maximize();
+  WindowState::Get(browser_minimized->GetWindow()->GetNativeWindow())
+      ->Minimize();
 
   // Fullscreen a window. This should not be restored as full restore does not
   // support restoring fullscreen state.
   const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
-  WindowState::Get(browser_fullscreened->window()->GetNativeWindow())
+  WindowState::Get(browser_fullscreened->GetWindow()->GetNativeWindow())
       ->OnWMEvent(&fullscreen_event);
 
   const WMEvent float_event(WM_EVENT_FLOAT);
-  WindowState::Get(browser_floated->window()->GetNativeWindow())
+  WindowState::Get(browser_floated->GetWindow()->GetNativeWindow())
       ->OnWMEvent(&float_event);
 
   const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
-  WindowState::Get(browser_snapped->window()->GetNativeWindow())
+  WindowState::Get(browser_snapped->GetWindow()->GetNativeWindow())
       ->OnWMEvent(&snap_event);
 
   // Immediate save to full restore file to bypass the 2.5 second throttle.

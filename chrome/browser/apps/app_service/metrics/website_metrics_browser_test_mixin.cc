@@ -70,7 +70,7 @@ Browser* WebsiteMetricsBrowserTestMixin::CreateBrowser() {
   // created as part of this instantiation will own the browser instance.
   Browser* const browser = Browser::Create(params);
   browser->window()->Show();
-  auto* const window = browser->window()->GetNativeWindow();
+  auto* const window = browser->GetWindow()->GetNativeWindow();
   wm::GetActivationClient(window->GetRootWindow())->ActivateWindow(window);
   return browser;
 }

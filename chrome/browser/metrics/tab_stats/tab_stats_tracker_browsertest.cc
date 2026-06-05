@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   // Make sure that the 2 windows don't overlap to avoid some unexpected
   // visibility change events because one tab occludes the other.
   // This resizes the two windows so they're right next to each other.
-  const gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  const gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
   gfx::Rect work_area =
       display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   const gfx::Size size(work_area.width() / 3, work_area.height() / 2);

@@ -863,7 +863,7 @@ class DragInteractiveUiTest : public InteractiveBrowserTest {
         views::Widget::InitParams::CLIENT_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     params.bounds = gfx::Rect(0, 0, 1000, 1000);
-    params.context = browser()->window()->GetNativeWindow();
+    params.context = browser()->GetWindow()->GetNativeWindow();
     test_widget_ = std::make_unique<views::Widget>();
     test_widget_->Init(std::move(params));
     draggable_view_ =

@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   ExtensionInstallPrompt prompt(profile(),
-                                browser()->window()->GetNativeWindow());
+                                browser()->GetWindow()->GetNativeWindow());
   browser()->window()->Close();
   content::RunAllPendingInMessageLoop();
 

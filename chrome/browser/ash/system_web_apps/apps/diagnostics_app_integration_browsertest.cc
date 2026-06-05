@@ -226,7 +226,7 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
   EXPECT_TRUE(IsDiagnosticsDialogVisible());
 
   // Enter locked fullscreen.
-  ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return !IsDiagnosticsDialogVisible(); }));
 }

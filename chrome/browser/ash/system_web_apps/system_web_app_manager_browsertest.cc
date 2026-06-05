@@ -1802,7 +1802,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppAccessibilityTest,
 
   chromevox_test_utils.sm()->Call([&]() {
     LaunchApp(GetAppType(), &app_browser);
-    app_window = app_browser->window()->GetNativeWindow();
+    app_window = app_browser->GetWindow()->GetNativeWindow();
     // F6 to switch pane.
     ui::test::EventGenerator generator(app_window->GetRootWindow(), app_window);
     generator.PressAndReleaseKey(ui::VKEY_F6, ui::EF_FINAL);

@@ -967,7 +967,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLockedFullscreenTest,
   ash::boca::OnTaskLockedController::From(browser())->set_locked_for_on_task(
       IsLockedForOnTask());
   if (IsLockedFullscreen()) {
-    ash::PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+    ash::PinWindow(browser()->GetWindow()->GetNativeWindow(), /*trusted=*/true);
   }
 
   // Load test extension and wait for js test code to create context menu with

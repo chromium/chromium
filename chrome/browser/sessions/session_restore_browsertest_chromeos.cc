@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTestChromeOS,
   Browser* browser_desk1 =
       CreateBrowserWithParams(Browser::CreateParams(profile(), true));
   browser_desk1->SetWindowUserTitle("1");
-  browser_desk1->window()->GetNativeWindow()->SetProperty(
+  browser_desk1->GetWindow()->GetNativeWindow()->SetProperty(
       aura::client::kWindowWorkspaceKey, 1);
 
   // Create a third normal browser window in the third desk

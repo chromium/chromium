@@ -90,7 +90,7 @@ class DlpScopedFileAccessDelegateInteractiveUITest
 
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
     ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
-        browser()->window()->GetNativeWindow()));
+        browser()->GetWindow()->GetNativeWindow()));
   }
 
   void TearDownOnMainThread() override {

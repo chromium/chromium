@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
       OnTaskLockedController::From(boca_app_browser)->is_locked_for_on_task());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
-      boca_app_browser->window()->GetNativeWindow()));
+      boca_app_browser->GetWindow()->GetNativeWindow()));
 
   auto* const tab_strip_model = boca_app_browser->tab_strip_model();
   ASSERT_EQ(tab_strip_model->count(), 1);
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(LockedQuizSessionManagerBrowserTest,
                   ->is_locked_for_on_task());
   ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser_2));
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
-      boca_app_browser_2->window()->GetNativeWindow()));
+      boca_app_browser_2->GetWindow()->GetNativeWindow()));
 
   auto* const tab_strip_model = boca_app_browser_2->tab_strip_model();
   ASSERT_EQ(tab_strip_model->count(), 1);

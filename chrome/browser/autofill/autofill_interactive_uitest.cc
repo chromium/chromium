@@ -3280,7 +3280,7 @@ IN_PROC_BROWSER_TEST_P(AutofillInteractiveTestChromeVox,
   sm()->Call([this] {
     test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData});
     ASSERT_TRUE(
-        ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(),
+        ui_controls::SendKeyPress(browser()->GetWindow()->GetNativeWindow(),
                                   ui::VKEY_DOWN, false, false, false, false));
   });
   sm()->ExpectSpeechPattern("Autofill menu opened");

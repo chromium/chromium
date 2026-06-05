@@ -14,7 +14,7 @@ using ExtensionInstallPromptShowParamsTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptShowParamsTest,
                        WasParentDestroyedOutsideOfRoot) {
-  aura::Window* context_window = browser()->window()->GetNativeWindow();
+  aura::Window* context_window = browser()->GetWindow()->GetNativeWindow();
 
   ExtensionInstallPromptShowParams params(GetProfile(), context_window);
   ASSERT_TRUE(context_window->GetRootWindow());

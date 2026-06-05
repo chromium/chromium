@@ -163,7 +163,7 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   // unpinning it. This fixes a bug on tablets that results in no content being
   // rendered on pinning.
   browser->window()->Show();
-  aura::Window* const native_window = browser->window()->GetNativeWindow();
+  aura::Window* const native_window = browser->GetWindow()->GetNativeWindow();
   if (pinned) {
     PinWindow(native_window, /*trusted=*/true);
     browser->command_controller()->LockedFullscreenStateChanged();
@@ -402,7 +402,7 @@ void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
   UnloadController::From(browser)->set_force_skip_warning_user_on_close(true);
 
   // Remove the floating button on the browser window for OnTask.
-  aura::Window* const native_window = browser->window()->GetNativeWindow();
+  aura::Window* const native_window = browser->GetWindow()->GetNativeWindow();
   native_window->SetProperty(chromeos::kSupportsFloatedStateKey, false);
 
   // Remove all tabs with pre-existing content if specified. This is to normally

@@ -460,8 +460,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowResize) {
 
 #if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, FocusWindowDoesNotUnmaximize) {
-  HWND window =
-      browser()->window()->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  HWND window = browser()
+                    ->GetWindow()
+                    ->GetNativeWindow()
+                    ->GetHost()
+                    ->GetAcceleratedWidget();
   ::SendMessage(window, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
   ASSERT_TRUE(RunExtensionTest("window_update/focus")) << message_;
   ASSERT_TRUE(::IsZoomed(window));

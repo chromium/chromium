@@ -60,7 +60,7 @@ ui::PlatformWindow* GetPlatformWindow(Browser* browser) {
   DCHECK(browser);
   auto* window_tree_host_platform =
       aura::WindowTreeHostPlatform::GetHostForWindow(
-          browser->window()->GetNativeWindow());
+          browser->GetWindow()->GetNativeWindow());
   return window_tree_host_platform->platform_window();
 }
 

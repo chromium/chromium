@@ -22,7 +22,7 @@ IN_PROC_BROWSER_TEST_F(WindowsBoundsChangedEventTest, Move) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   ui::test::EventGenerator generator(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
   // Simulates a user drag to move the browser window.
   const gfx::Rect rect = browser()->window()->GetBounds();
@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(WindowsBoundsChangedEventTest, Resize) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   ui::test::EventGenerator generator(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
 
   // Simulates a user drag to resize the browser window.
   const gfx::Rect rect = browser()->window()->GetBounds();

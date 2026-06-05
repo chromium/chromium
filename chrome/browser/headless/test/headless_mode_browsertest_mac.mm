@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
   // The Native Window NSWindow exists and pretends to be visible using the
   // method swizzling magic that overrides the relevant NSWindow methods, see
   // components/remote_cocoa/app_shim/native_widget_mac_nswindow_headless.mm.
-  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
   NSWindow* ns_window = native_window.GetNativeNSWindow();
   EXPECT_TRUE([ns_window isVisible]);
 
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
                        ToggleFullscreenWindowVisibility) {
-  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
   NSWindow* ns_window = native_window.GetNativeNSWindow();
 
   // Verify initial state.
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
                        MinimizedRestoredWindowVisibility) {
-  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
   NSWindow* ns_window = native_window.GetNativeNSWindow();
 
   // Verify initial state.
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
                        MaximizedRestoredWindowVisibility) {
-  gfx::NativeWindow native_window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow native_window = browser()->GetWindow()->GetNativeWindow();
   NSWindow* ns_window = native_window.GetNativeNSWindow();
 
   // Verify initial state.

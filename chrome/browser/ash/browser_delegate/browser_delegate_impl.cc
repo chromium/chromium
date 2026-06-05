@@ -96,7 +96,7 @@ ui::BaseWindow* BrowserDelegateImpl::GetWindow() const {
 }
 
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
-  return browser_->window()->GetNativeWindow();
+  return browser_->GetWindow()->GetNativeWindow();
 }
 
 std::optional<webapps::AppId> BrowserDelegateImpl::GetAppId() const {

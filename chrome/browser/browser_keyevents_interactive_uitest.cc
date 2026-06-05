@@ -923,7 +923,7 @@ IN_PROC_BROWSER_TEST_F(BrowserKeyEventsTest, FocusAfterHideAndShow) {
   EXPECT_NO_FATAL_FAILURE(TestKeyEvent(tab_index, kTestKeystrokes));
 
   // Hide the window.
-  gfx::NativeWindow window = browser()->window()->GetNativeWindow();
+  gfx::NativeWindow window = browser()->GetWindow()->GetNativeWindow();
   ui_test_utils::HideNativeWindow(window);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()

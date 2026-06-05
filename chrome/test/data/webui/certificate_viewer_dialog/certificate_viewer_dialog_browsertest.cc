@@ -94,11 +94,11 @@ class CertificateViewerUITest : public WebUIMochaBrowserTest {
           std::move(cert), std::move(*cert_metadata),
           GetModificationsCallback(),
           browser()->tab_strip_model()->GetActiveWebContents(),
-          browser()->window()->GetNativeWindow());
+          browser()->GetWindow()->GetNativeWindow());
     } else {
       dialog = CertificateViewerDialog::ShowConstrained(
           std::move(cert), browser()->tab_strip_model()->GetActiveWebContents(),
-          browser()->window()->GetNativeWindow());
+          browser()->GetWindow()->GetNativeWindow());
     }
 
     content::WebContents* webui_webcontents =

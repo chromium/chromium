@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeBrowserTestWithStartWindowMode,
 
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
+          browser()->GetWindow()->GetNativeWindow()->GetHost());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_tree_host->GetHWND()));
 }
 
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
                        ToggleFullscreenWindowVisibility) {
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
+          browser()->GetWindow()->GetNativeWindow()->GetHost());
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   // Verify initial state.
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
                        MinimizedRestoredWindowVisibility) {
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
+          browser()->GetWindow()->GetNativeWindow()->GetHost());
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   // Verify initial state.
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
                        MaximizedRestoredWindowVisibility) {
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
+          browser()->GetWindow()->GetNativeWindow()->GetHost());
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   // Verify initial state.
@@ -370,7 +370,7 @@ HEADLESS_MODE_BROWSER_TEST_WITH_SCREEN_INFO(GetFrameThicknessFromWindow,
 
   DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
       static_cast<DesktopWindowTreeHostWinWrapper*>(
-          browser()->window()->GetNativeWindow()->GetHost());
+          browser()->GetWindow()->GetNativeWindow()->GetHost());
   HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
 
   const int kSystemFrameThickness = test::GetSystemFrameThickness();

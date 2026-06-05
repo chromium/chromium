@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
       ->RegisterIntegerPref(kRestoreIdPrefName, 0);
   local_state->SetInteger(kRestoreIdPrefName, browser->session_id().id());
   AddBlankTabAndShow(browser);
-  aura::Window* window = browser->window()->GetNativeWindow();
+  aura::Window* window = browser->GetWindow()->GetNativeWindow();
   ASSERT_NE(kCurrentBounds, window->bounds());
 
   // Ensure that |browser| is in a normal show state.
@@ -996,7 +996,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
   Browser* non_restored_browser = Browser::Create(non_restored_params);
   AddBlankTabAndShow(non_restored_browser);
   aura::Window* non_restored_window =
-      non_restored_browser->window()->GetNativeWindow();
+      non_restored_browser->GetWindow()->GetNativeWindow();
 
   // Read from the restore data.
   auto app_launch_handler =

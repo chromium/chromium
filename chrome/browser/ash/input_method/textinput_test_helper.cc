@@ -30,7 +30,7 @@ TextInputTestBase::TextInputTestBase() = default;
 TextInputTestBase::~TextInputTestBase() = default;
 
 ui::InputMethod* TextInputTestBase::GetInputMethod() const {
-  return browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod();
+  return browser()->GetWindow()->GetNativeWindow()->GetHost()->GetInputMethod();
 }
 
 TextInputTestHelper::TextInputTestHelper(ui::InputMethod* input_method)

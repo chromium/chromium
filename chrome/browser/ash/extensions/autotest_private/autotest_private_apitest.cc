@@ -395,7 +395,7 @@ class AutotestPrivateApiOverviewTest
   }
 
   gfx::NativeWindow GetRootWindow() const {
-    return browser()->window()->GetNativeWindow()->GetRootWindow();
+    return browser()->GetWindow()->GetNativeWindow()->GetRootWindow();
   }
 };
 
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateSearchTest,
   }
 
   ui::test::EventGenerator generator(
-      browser()->window()->GetNativeWindow()->GetRootWindow());
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow());
   generator.GestureTapAt(
       ash::GetSearchBoxView()->GetBoundsInScreen().CenterPoint());
 

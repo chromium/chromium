@@ -1190,7 +1190,7 @@ class InteractiveBrowserTestDialog : public views::DialogDelegateView {
     switch (modal_type) {
       case ui::mojom::ModalType::kWindow:
         widget = constrained_window::CreateBrowserModalDialogViews(
-            std::move(dialog), parent->window()->GetNativeWindow());
+            std::move(dialog), parent->GetWindow()->GetNativeWindow());
         break;
       case ui::mojom::ModalType::kChild:
         widget = constrained_window::CreateWebModalDialogViews(

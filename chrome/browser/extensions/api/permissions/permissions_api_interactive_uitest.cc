@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiInteractiveTest,
   // callback is our actual test, which validates the dialog's parent window.
   base::RunLoop run_loop;
   auto show_dialog_callback = [&](gfx::NativeWindow parent_window) {
-    EXPECT_EQ(parent_window, first_browser->window()->GetNativeWindow());
+    EXPECT_EQ(parent_window, first_browser->GetWindow()->GetNativeWindow());
     run_loop.Quit();
   };
 

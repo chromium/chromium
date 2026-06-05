@@ -646,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayFullscreen) {
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
-      browser()->window()->GetNativeWindow()));
+      browser()->GetWindow()->GetNativeWindow()));
 
   ASSERT_TRUE(browser()->window()->IsActive());
 
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestShouldDisplayPopupNotification) {
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
 
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
-      browser()->window()->GetNativeWindow()));
+      browser()->GetWindow()->GetNativeWindow()));
 
   std::string result = CreateSimpleNotification(browser(), true);
   EXPECT_NE("-1", result);

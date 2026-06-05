@@ -201,7 +201,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
     ASSERT_TRUE(found);
   }
 
-  aura::Window* window() { return browser()->window()->GetNativeWindow(); }
+  aura::Window* window() { return browser()->GetWindow()->GetNativeWindow(); }
 
   void CreateInputEvent(InputEventSource event_source,
                         aura::Window* target_window) {

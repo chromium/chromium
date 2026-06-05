@@ -1526,7 +1526,7 @@ IN_PROC_BROWSER_TEST_P(GetContextsWithDeveloperToolsOpened,
   content::WebContents* devtools_web_contents =
       DevToolsWindowTesting::Get(devtools_window)->main_web_contents();
   bool is_docked = devtools_web_contents->GetTopLevelNativeWindow() ==
-                   browser()->window()->GetNativeWindow();
+                   browser()->GetWindow()->GetNativeWindow();
   ASSERT_EQ(open_docked, is_docked);
 
   // Extract the extension host from the devtools web contents.

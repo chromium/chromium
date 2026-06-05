@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(AppControllerPlatformAppBrowserTest,
                              ->GetNativeWindow()
                              .GetNativeNSWindow();
   NSWindow* browser_window =
-      browser()->window()->GetNativeWindow().GetNativeNSWindow();
+      browser()->GetWindow()->GetNativeWindow().GetNativeNSWindow();
 
   chrome::testing::NSRunLoopRunAllPending();
   EXPECT_LE([NSApp.orderedWindows indexOfObject:app_window],

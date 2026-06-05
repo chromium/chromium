@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, DISABLED_APIArgumentTest) {
     ExtensionTestMessageListener button_listener(
         "undo button in undo window clicked");
 
-    aura::Window* window = browser()->window()->GetNativeWindow();
+    aura::Window* window = browser()->GetWindow()->GetNativeWindow();
     ui::test::EventGenerator event_generator(window->GetRootWindow());
     views::Button* undo_button = undo_window->GetUndoButtonForTesting();
     event_generator.MoveMouseTo(undo_button->GetBoundsInScreen().CenterPoint());
@@ -1465,7 +1465,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
       kAPIArgumentIMEID, false /* show_message */);
 
   ui::InputMethod* im =
-      browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod();
+      browser()->GetWindow()->GetNativeWindow()->GetHost()->GetInputMethod();
   TestTextInputClient tic(ui::TEXT_INPUT_TYPE_TEXT);
 
   {

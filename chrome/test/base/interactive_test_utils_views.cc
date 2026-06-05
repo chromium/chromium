@@ -136,7 +136,7 @@ gfx::Point GetCenterInScreenCoordinates(const views::View* view) {
 
 void WaitForViewFocus(Browser* browser, ViewID vid, bool focused) {
   views::View* view = views::Widget::GetWidgetForNativeWindow(
-                          browser->window()->GetNativeWindow())
+                          browser->GetWindow()->GetNativeWindow())
                           ->GetContentsView()
                           ->GetViewByID(vid);
   WaitForViewFocus(browser, view, focused);

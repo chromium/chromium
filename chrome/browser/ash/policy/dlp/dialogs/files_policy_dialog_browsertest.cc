@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
   ASSERT_EQ(files_app, FindFilesApp());
 
   auto* widget = FilesPolicyDialog::CreateWarnDialog(
-      cb_.Get(), action, files_app->window()->GetNativeWindow(),
+      cb_.Get(), action, files_app->GetWindow()->GetNativeWindow(),
       FilesPolicyDialog::Info::Warn(FilesPolicyDialog::BlockReason::kDlp,
                                     warning_paths_));
   ASSERT_TRUE(widget);
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
 
   EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kWindow);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
-            files_app->window()->GetNativeWindow());
+            files_app->GetWindow()->GetNativeWindow());
   // Cancel.
   EXPECT_CALL(cb_, Run(/*user_justification=*/std::optional<std::u16string>(),
                        /*should_proceed=*/false))
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
   ASSERT_EQ(files_app, FindFilesApp());
 
   auto* widget = FilesPolicyDialog::CreateErrorDialog(
-      dialog_info_map_, action, files_app->window()->GetNativeWindow());
+      dialog_info_map_, action, files_app->GetWindow()->GetNativeWindow());
   ASSERT_TRUE(widget);
 
   FilesPolicyErrorDialog* dialog = static_cast<FilesPolicyErrorDialog*>(
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest, WithParent) {
 
   EXPECT_EQ(dialog->GetModalType(), ui::mojom::ModalType::kWindow);
   EXPECT_EQ(widget->parent()->GetNativeWindow(),
-            files_app->window()->GetNativeWindow());
+            files_app->GetWindow()->GetNativeWindow());
   // Accept -> dismiss.
   dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());

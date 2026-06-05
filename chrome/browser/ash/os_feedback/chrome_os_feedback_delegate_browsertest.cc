@@ -754,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, OpenMetricsDialog) {
   Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
 
   gfx::NativeWindow feedback_window =
-      feedback_browser->window()->GetNativeWindow();
+      feedback_browser->GetWindow()->GetNativeWindow();
 
   views::Widget::Widgets owned_widgets_pre_dialog =
       views::Widget::GetAllOwnedWidgets(feedback_window);
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
 
   gfx::NativeWindow feedback_window =
-      feedback_browser->window()->GetNativeWindow();
+      feedback_browser->GetWindow()->GetNativeWindow();
 
   views::Widget::Widgets owned_widgets_pre_dialog =
       views::Widget::GetAllOwnedWidgets(feedback_window);
@@ -1010,7 +1010,8 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        DontRestoreUnresizableSystemWebApp) {
   Browser* feedback_browser = LaunchFeedbackAppAndGetBrowser();
-  aura::Window* feedback_window = feedback_browser->window()->GetNativeWindow();
+  aura::Window* feedback_window =
+      feedback_browser->GetWindow()->GetNativeWindow();
 
   // Launch the feedback app and set it to an arbitrary size.
   const gfx::Rect default_bounds(feedback_window->GetBoundsInScreen());
@@ -1020,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 
   // Launch the app again. Test that it resets to default bounds.
   feedback_browser = LaunchFeedbackAppAndGetBrowser();
-  feedback_window = feedback_browser->window()->GetNativeWindow();
+  feedback_window = feedback_browser->GetWindow()->GetNativeWindow();
   ASSERT_EQ(default_bounds, feedback_window->GetBoundsInScreen());
 }
 }  // namespace ash

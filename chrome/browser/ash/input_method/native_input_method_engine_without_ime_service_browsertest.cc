@@ -192,7 +192,11 @@ class NativeInputMethodEngineWithoutImeServiceTest
   }
 
   ui::InputMethod* GetBrowserInputMethod() {
-    return browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod();
+    return browser()
+        ->GetWindow()
+        ->GetNativeWindow()
+        ->GetHost()
+        ->GetInputMethod();
   }
 
   std::unique_ptr<NativeInputMethodEngine> engine_;
