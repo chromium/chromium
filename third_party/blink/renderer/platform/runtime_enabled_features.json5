@@ -6842,6 +6842,14 @@
       name: "WebRtcSctpSnap",
       status: "test",
     },
+    {
+      // Restricts the sharing of SerialPort instances across different V8
+      // worlds (e.g., main world and isolated worlds) to prevent cross-world
+      // leaks.
+      name: "WebSerialWorldIsolatedCache",
+      status: "stable",
+      base_feature: "none",
+    },
     // WebShare is enabled by default on Android (non-WebView), Win, ChromeOS, and Mac.
     // This is done in chrome/renderer/chrome_content_renderer_client.cc to prevent
     // making the API available to Linux and WebView. Ideally we would set the status
