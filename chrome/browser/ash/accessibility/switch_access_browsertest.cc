@@ -276,7 +276,9 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_NavigateButtonsInTextFieldMenu) {
 //
 // A separate bug (crbug.com/431933537) is filed to specifically track the
 // blink::CSSParserImpl::ParseStyleSheet issue.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/520519497): Re-enable on linux once consistent failures are
+// fixed.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TypeIntoVirtualKeyboard DISABLED_TypeIntoVirtualKeyboard
 #else
 #define MAYBE_TypeIntoVirtualKeyboard TypeIntoVirtualKeyboard
