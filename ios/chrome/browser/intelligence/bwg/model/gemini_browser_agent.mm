@@ -259,7 +259,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       bwg_gateway_.tabPickerHandler = gemini_tab_picker_handler_;
     }
 
-    if (IsGeminiActorEnabled() && IsActorEnabled()) {
+    if (IsGeminiActorEnabled()) {
       gemini_actuation_handler_ = [[GeminiActuationHandler alloc]
           initWithActorService:actor::ActorServiceFactory::GetForProfile(
                                    browser_->GetProfile())
@@ -989,7 +989,7 @@ void GeminiBrowserAgent::DismissFloaty() {
 
   // TODO(crbug.com/517583120): Remove when the temporary actuation prototype is
   // cleaned up.
-  if (IsGeminiActorEnabled() && IsActorEnabled()) {
+  if (IsGeminiActorEnabled()) {
     if (actor::ActorService* actor_service =
             actor::ActorServiceFactory::GetForProfile(browser_->GetProfile())) {
       actor_service->StopAllTasks();
@@ -1640,7 +1640,7 @@ void GeminiBrowserAgent::OnViewStateChanged(
   } else if (view_state == ios::provider::GeminiViewState::kHidden) {
     // TODO(crbug.com/517583120): Remove when the temporary actuation prototype
     // is cleaned up.
-    if (IsGeminiActorEnabled() && IsActorEnabled()) {
+    if (IsGeminiActorEnabled()) {
       if (actor::ActorService* actor_service =
               actor::ActorServiceFactory::GetForProfile(
                   browser_->GetProfile())) {

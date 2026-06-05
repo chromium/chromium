@@ -724,7 +724,8 @@ bool IsGeminiBackendMigrationEnabled() {
 BASE_FEATURE(kGeminiActor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiActorEnabled() {
-  if (!IsPageActionMenuEnabled()) {
+  if (!IsPageActionMenuEnabled() || !IsActorEnabled() ||
+      !IsGeminiClientMigrationEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiActor);
@@ -806,6 +807,9 @@ bool IsPageContextIPCOptimizationActionableEnabled() {
 BASE_FEATURE(kGeminiClientMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiClientMigrationEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
   return base::FeatureList::IsEnabled(kGeminiClientMigration);
 }
 
