@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<title></title>
+<title>Wheel operations for input type=number</title>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
-<div>
-  <input type="number" id="test" value="0">
+<body style="height: 200vh; margin: 0;">
+<div style="position: sticky; top: 0;">
+  <input type="number" id="test" value="0" min="0" max="2">
   <input id="another">
 </div>
 <script>
   // Positive deltaX or deltaY means scroll right or down.
   async function dispatchWheelEvent(element, deltaX, deltaY)
   {
-      element_center = elementCenter(element);
+      const element_center = elementCenter(element);
       await wheelTick(deltaX, deltaY, element_center);
   }
 
@@ -19,9 +20,12 @@
     const input = document.getElementById('test');
     input.focus();
 
+    assert_equals(window.scrollY, 0, "Initial scrollY is 0");
+
     // Initial value is 0. We'll wheel up by 1
     await dispatchWheelEvent(input, 0, -1);
     assert_equals(input.value, "1", "Wheel up increments value to 1.");
+    assert_equals(window.scrollY, 0);
 
     // We change the selected value in ScrollBegin and the three wheel ticks
     // are treated as a single stream with one ScrollBegin, so we increase or
@@ -29,30 +33,50 @@
     // Wheel up by 3:
     await dispatchWheelEvent(input, 0, -3);
     assert_equals(input.value, "2", "Larger delta still increments by 1.");
+    assert_equals(window.scrollY, 0);
+
+    // Now at max=2. Wheel up by 1 again should leave value at 2 and still prevent page scroll.
+    await dispatchWheelEvent(input, 0, -1);
+    assert_equals(input.value, "2", "Value stays at max 2.");
+    assert_equals(window.scrollY, 0);
 
     // Wheel down by 1
     await dispatchWheelEvent(input, 0, 1);
     assert_equals(input.value, "1", "Wheel down decrements value by 1.");
+    assert_equals(window.scrollY, 0);
 
     // Wheel down by 3
     await dispatchWheelEvent(input, 0, 3);
     assert_equals(input.value, "0", "Larger delta still decrements by 1.");
+    assert_equals(window.scrollY, 0);
+
+    // Now at min=0. Wheel down by 1 again should leave value at 0 and still prevent page scroll.
+    await dispatchWheelEvent(input, 0, 1);
+    assert_equals(input.value, "0", "Value stays at min 0.");
+    assert_equals(window.scrollY, 0);
 
     // Disabled input element
     input.disabled = true;
-    await dispatchWheelEvent(input, 0, -1);
+    let lastScrollY = window.scrollY;
+    await dispatchWheelEvent(input, 0, 1);
     assert_equals(input.value, "0", "Disabled element isn't changed.");
+    assert_greater_than(window.scrollY, lastScrollY, "Page scrolls when wheeling over disabled input");
     input.removeAttribute('disabled');
 
     // Read-only input element
     input.readOnly = true;
-    await dispatchWheelEvent(input, 0, -1);
+    lastScrollY = window.scrollY;
+    await dispatchWheelEvent(input, 0, 1);
     assert_equals(input.value, "0", "Read only element isn't changed.");
+    assert_greater_than(window.scrollY, lastScrollY, "Page scrolls when wheeling over read-only input");
     input.readOnly = false;
 
     // No focus
     document.getElementById('another').focus();
-    await dispatchWheelEvent(input, 0, -1);
+    lastScrollY = window.scrollY;
+    await dispatchWheelEvent(input, 0, 1);
     assert_equals(input.value, "0", "Unfocused element isn't changed.");
+    assert_greater_than(window.scrollY, lastScrollY, "Page scrolls when wheeling over unfocused input");
   }, "Wheel operations for <input type='number'>");
 </script>
+</body>

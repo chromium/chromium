@@ -10,10 +10,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
+#include "third_party/blink/renderer/core/frame/event_handler_registry.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -21,8 +24,10 @@
 #include "third_party/blink/renderer/core/html/forms/file_input_type.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/spin_button_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -613,6 +618,73 @@ TEST_F(HTMLInputElementTest,
   input.setType(input_type_names::kText);
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(input.GetTrackedElementSubRect(tracking_feature));
+}
+
+TEST_F(HTMLInputElementTest, SpinButtonWheelBlocks) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<input id=test type=number min=0 max=2 value=1>");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  auto& input = TestElement();
+  input.Focus();
+  auto* shadow_root = input.UserAgentShadowRoot();
+  ASSERT_TRUE(shadow_root);
+  auto* spin_button = DynamicTo<SpinButtonElement>(
+      shadow_root->getElementById(shadow_element_names::kIdSpinButton));
+  ASSERT_TRUE(spin_button);
+
+  EventHandlerRegistry& registry =
+      GetDocument().GetFrame()->GetEventHandlerRegistry();
+  const auto* targets =
+      registry.EventHandlerTargets(EventHandlerRegistry::kWheelEventBlocking);
+  EXPECT_TRUE(targets->Contains(&input));
+
+  // Wheel event to step up (value goes from 1 to 2).
+  WheelEventInit* init = WheelEventInit::Create();
+  init->setWheelDeltaY(120);
+  WheelEvent* event = WheelEvent::Create(event_type_names::kWheel, init);
+  spin_button->ForwardEvent(*event);
+  EXPECT_TRUE(event->DefaultHandled());
+  EXPECT_EQ("2", input.Value());
+
+  // Wheel event to step up again (value cannot change, already at max 2).
+  WheelEvent* event2 = WheelEvent::Create(event_type_names::kWheel, init);
+  spin_button->ForwardEvent(*event2);
+  EXPECT_TRUE(event2->DefaultHandled());
+  EXPECT_EQ("2", input.Value());
+
+  // Changing input type to 'text' should unregister it from
+  // kWheelEventBlocking.
+  input.setType(input_type_names::kText);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_FALSE(targets->Contains(&input));
+
+  // Changing input type back to 'number' should re-register it (since it is
+  // still focused).
+  input.setType(input_type_names::kNumber);
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(targets->Contains(&input));
+
+  // Blurring the input should unregister it.
+  input.blur();
+  EXPECT_FALSE(targets->Contains(&input));
+
+  // Focusing the input should re-register it.
+  input.Focus();
+  EXPECT_TRUE(targets->Contains(&input));
+
+  // Making the input read-only should unregister it.
+  input.SetBooleanAttribute(html_names::kReadonlyAttr, true);
+  EXPECT_FALSE(targets->Contains(&input));
+
+  // Making the input read-write should re-register it.
+  input.SetBooleanAttribute(html_names::kReadonlyAttr, false);
+  EXPECT_TRUE(targets->Contains(&input));
+
+  // Removing the input from the DOM (triggering DetachLayoutTree) should
+  // unregister it.
+  input.remove();
+  EXPECT_FALSE(targets->Contains(&input));
 }
 
 }  // namespace blink

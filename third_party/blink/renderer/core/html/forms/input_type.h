@@ -303,6 +303,8 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
   virtual void CopyNonAttributeProperties(const HTMLInputElement&);
   virtual void OnAttachWithLayoutObject();
+  virtual void OnDetachWithLayoutObject();
+  virtual void UpdateWheelEventRegistration(bool is_detaching);
   virtual bool SupportsBaseAppearance(Element::BaseAppearanceValue value) const;
 
   // Parses the specified string for the type, and return

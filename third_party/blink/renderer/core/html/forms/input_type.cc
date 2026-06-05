@@ -990,6 +990,10 @@ void InputType::CopyNonAttributeProperties(const HTMLInputElement&) {}
 
 void InputType::OnAttachWithLayoutObject() {}
 
+void InputType::OnDetachWithLayoutObject() {}
+
+void InputType::UpdateWheelEventRegistration(bool is_detaching) {}
+
 bool InputType::ShouldAppearIndeterminate() const {
   return false;
 }

@@ -193,8 +193,6 @@ enum class BlockingEventHandlerType {
 bool HasBlockingEventHandlerHelper(const LocalFrame& frame,
                                    EventTarget& target,
                                    BlockingEventHandlerType event_type) {
-  if (!target.HasEventListeners())
-    return false;
   const auto& registry = frame.GetEventHandlerRegistry();
   if (BlockingEventHandlerType::kTouchStartOrMoveBlockingEventHandler ==
       event_type) {

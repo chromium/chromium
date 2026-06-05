@@ -1057,6 +1057,9 @@ void HTMLInputElement::AttachLayoutTree(AttachContext& context) {
 }
 
 void HTMLInputElement::DetachLayoutTree(bool performing_reattach) {
+  if (GetLayoutObject()) {
+    input_type_->OnDetachWithLayoutObject();
+  }
   TextControlElement::DetachLayoutTree(performing_reattach);
   needs_to_update_view_value_ = true;
   input_type_view_->ClosePopupView();
@@ -2619,6 +2622,9 @@ bool HTMLInputElement::HandleCommandInternal(HTMLElement& invoker,
 void HTMLInputElement::SetFocused(bool is_focused,
                                   mojom::blink::FocusType focus_type) {
   TextControlElement::SetFocused(is_focused, focus_type);
+  if (input_type_) {
+    input_type_->UpdateWheelEventRegistration(/*is_detaching=*/false);
+  }
   // Multifield inputs will call SetFocused when switching between the
   // individual parts, but we don't want to start matching
   // :user-valid/:user-invalid at that time. However, for other inputs, we want

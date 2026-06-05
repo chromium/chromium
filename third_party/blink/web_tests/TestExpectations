@@ -5564,9 +5564,6 @@ crbug.com/1104910 fast/peerconnection/RTCPeerConnection-reload-interesting-usage
 
 crbug.com/1105271 [ Mac ] scrollbars/custom-scrollbar-adjust-on-inactive-pseudo.html [ Failure Pass ]
 
-# This test fails due to the linked bug since input is now routed through the compositor.
-crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
-
 # Sheriff 2020-08-05
 crbug.com/1113050 fast/borders/border-radius-mask-video-ratio.html [ Failure Pass ]
 
