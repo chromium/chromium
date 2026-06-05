@@ -9,10 +9,6 @@
             }
         },
         "crossbench": {
-            "blink-ai.crossbench": {
-                "crossbench_name": "blink-ai",
-                "arguments": []
-            },
             "devtools_frontend.crossbench": {
                 "crossbench_name": "devtools_frontend",
                 "arguments": [
@@ -53,11 +49,11 @@
         }
     },
     "extra_infos": {
-        "num_stories": 9,
-        "predicted_min_shard_time": 1340,
+        "num_stories": 8,
+        "predicted_min_shard_time": 1040,
         "predicted_min_shard_index": 0,
-        "predicted_max_shard_time": 1340,
+        "predicted_max_shard_time": 1040,
         "predicted_max_shard_index": 0,
-        "shard #0": 1340
+        "shard #0": 1040
     }
 }
