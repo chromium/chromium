@@ -13128,6 +13128,12 @@ interface XRLightProbe : EventTarget
     getter probeSpace
     method constructor
     setter onreflectionchange
+interface XRMediaBinding
+    attribute @@toStringTag
+    method constructor
+    method createCylinderLayer
+    method createEquirectLayer
+    method createQuadLayer
 interface XRMesh
     attribute @@toStringTag
     getter indices

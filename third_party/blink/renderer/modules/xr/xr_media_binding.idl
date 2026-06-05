@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    SecureContext,
+    RuntimeEnabled=WebXRMediaBinding
+] interface XRMediaBinding {
+    [CallWith=ScriptState, RaisesException] constructor(XRSession session);
+
+    [RaisesException] XRQuadLayer createQuadLayer(HTMLVideoElement video, XRMediaQuadLayerInit init);
+    [RaisesException] XRCylinderLayer createCylinderLayer(HTMLVideoElement video, XRMediaCylinderLayerInit init);
+    [RaisesException] XREquirectLayer createEquirectLayer(HTMLVideoElement video, XRMediaEquirectLayerInit init);
+};

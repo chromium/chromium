@@ -1,0 +1,11 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary XRMediaEquirectLayerInit : XRMediaLayerInit {
+    XRRigidTransform? transform;
+    float radius = 0.0;
+    float centralHorizontalAngle = 6.28318;
+    float upperVerticalAngle = 1.570795;
+    float lowerVerticalAngle = -1.570795;
+};

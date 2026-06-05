@@ -98,6 +98,8 @@ blink_modules_sources("xr") {
     "xr_light_estimate.h",
     "xr_light_probe.cc",
     "xr_light_probe.h",
+    "xr_media_binding.cc",
+    "xr_media_binding.h",
     "xr_mesh.cc",
     "xr_mesh.h",
     "xr_mesh_manager.cc",

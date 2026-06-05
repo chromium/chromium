@@ -7034,6 +7034,12 @@
       base_feature: "none",
     },
     {
+      name: "WebXRMediaBinding",
+      depends_on: ["WebXRLayers"],
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "WebXRMeshDetection",
       depends_on: ["WebXR"],
       public: true,
