@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_view_util.h"
 #include "chrome/common/extensions/api/tabs.h"
@@ -45,6 +46,14 @@ bool ValidatePdfMagic(const mojo_base::BigBuffer& buffer) {
   static constexpr std::string_view kPdfMagic = "%PDF-";
   std::string_view content = base::as_string_view(buffer);
   return content.starts_with(kPdfMagic);
+}
+
+std::u16string EnsurePdfExtension(const std::u16string& title) {
+  static constexpr base::FilePath::StringViewType kPdfExtensionFilePath =
+      FILE_PATH_LITERAL(".pdf");
+  base::FilePath file_path = base::FilePath::FromUTF16Unsafe(title);
+  file_path = file_path.RemoveExtension().AddExtension(kPdfExtensionFilePath);
+  return file_path.AsUTF16Unsafe();
 }
 
 }  // namespace save_to_drive

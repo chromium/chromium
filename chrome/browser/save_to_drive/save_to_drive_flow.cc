@@ -126,7 +126,7 @@ void SaveToDriveFlow::Run() {
 
   WebContents* contents = GetTabWebContents(&render_frame_host());
   CHECK(contents);
-  std::u16string title = contents->GetTitle();
+  std::u16string title = EnsurePdfExtension(contents->GetTitle());
   upload_title_ = base::UTF16ToUTF8(title);
   account_chooser_->GetAccount(contents, title,
                                base::BindOnce(&SaveToDriveFlow::OnAccountChosen,

@@ -24,6 +24,7 @@
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_recorder.h"
+#include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -175,7 +176,8 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
                 content::WebContents* web_contents,
                 const std::u16string& upload_title,
                 base::OnceCallback<void(std::optional<AccountInfo>)> callback) {
-              EXPECT_EQ(upload_title, web_contents->GetTitle());
+              EXPECT_EQ(upload_title,
+                        EnsurePdfExtension(web_contents->GetTitle()));
               // The callback could kill the flow, which would destroy the
               // account chooser. It needs to be reset to avoid a dangling
               // pointer.
