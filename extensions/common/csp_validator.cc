@@ -71,9 +71,6 @@ const char* const kHashSourcePrefixes[] = {
   "'sha512-"
 };
 
-// https://infra.spec.whatwg.org/#ascii-whitespace.
-const char kWhitespaceDelimiters[] = " \t\r\n\f";
-
 constexpr char kChromeResourcesUrl[] = "chrome://resources";
 constexpr const char* const kExtensionsAllowedToUseChromeResources[] = {
     extension_misc::kChromeVoxExtensionId,
@@ -575,7 +572,7 @@ void CSPParser::Parse() {
            policy_, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     // Get whitespace separated tokens.
     std::vector<std::string_view> tokens = base::SplitStringPiece(
-        directive_str, kWhitespaceDelimiters, base::TRIM_WHITESPACE,
+        directive_str, base::kWhitespaceASCII, base::TRIM_WHITESPACE,
         base::SPLIT_WANT_NONEMPTY);
 
     // |directive_str| is non-empty and has had whitespace trimmed. Hence, it
