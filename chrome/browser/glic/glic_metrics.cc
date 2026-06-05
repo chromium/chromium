@@ -298,7 +298,6 @@ void GlicMetrics::RecordGlicProfilePreferences() {
 void GlicMetrics::OnTrustFirstOnboardingAccept() {
   OnFreAccepted();
   OnOptInAccepted(OptInFlow::kGlicFre);
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept.Onboarding"));
   base::UmaHistogramEnumeration("Glic.Fre.Accept.InvocationSource",
                                 invocation_source_);
 
@@ -317,7 +316,6 @@ void GlicMetrics::OnInstanceOpened() {
 
   if (!enabling_->HasConsented()) {
     OnOptInShown(OptInFlow::kGlicFre);
-    base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown.Onboarding"));
     base::UmaHistogramEnumeration("Glic.Fre.Shown.InvocationSource",
                                   invocation_source_);
     onboarding_shown_time_ = base::TimeTicks::Now();
@@ -330,7 +328,6 @@ void GlicMetrics::OnInstanceClosed() {
   }
 
   OnOptInDismissed(OptInFlow::kGlicFre);
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Dismissed.Onboarding"));
   base::UmaHistogramEnumeration("Glic.Fre.Dismissed.InvocationSource",
                                 invocation_source_);
   base::UmaHistogramLongTimes("Glic.Fre.TotalTime.Dismissed.Onboarding",
@@ -357,7 +354,11 @@ void GlicMetrics::OnOptInImpression(OptInFlow flow) {
 }
 
 void GlicMetrics::OnOptInAccepted(OptInFlow flow) {
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+  if (base::FeatureList::IsEnabled(features::kGlicOnboardingMetricsMigration)) {
+    base::RecordAction(base::UserMetricsAction("Glic.Onboarding.OptInAccept"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
+  }
   base::UmaHistogramEnumeration("Glic.Fre.Accept.FlowSource", flow);
 }
 

@@ -490,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
   EXPECT_TRUE(service()->enabling().GetExperimentalTriggeringEnabled());
 
   // Verify Accept metrics
-  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Accept"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Onboarding.OptInAccept"),
+            1);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "Glic.ExperimentalTriggering.OptIn.Glic.Accepted"),
             1);

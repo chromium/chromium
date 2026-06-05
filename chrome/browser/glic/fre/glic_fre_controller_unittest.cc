@@ -99,7 +99,7 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
   EXPECT_EQ(
       glic::GlicKeyedService::Get(profile())->enabling().GetCompletedFre(),
       prefs::FreStatus::kCompleted);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 1);
+  EXPECT_EQ(tester.GetActionCount("Glic.Onboarding.OptInAccept"), 1);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
   histogram_tester.ExpectUniqueSample("Glic.Fre.Accept.FlowSource",
                                       OptInFlow::kGlicFre, 1);
@@ -115,7 +115,7 @@ TEST_F(GlicFreControllerTest, RejectFre) {
       glic::GlicKeyedService::Get(profile())->enabling().GetCompletedFre(),
       prefs::FreStatus::kNotStarted);
   EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
-  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Onboarding.OptInAccept"), 0);
   histogram_tester.ExpectUniqueSample("Glic.Fre.NoThanks.FlowSource",
                                       OptInFlow::kGlicFre, 1);
 }

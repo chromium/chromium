@@ -162,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
       ->ToggleUI(browser(), /*prevent_close=*/false,
                  mojom::InvocationSource::kOsButton);
 
-  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Dismissed.Onboarding"),
-            1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Dismissed"), 1);
 }
 
 // Test with message first FRE disabled.

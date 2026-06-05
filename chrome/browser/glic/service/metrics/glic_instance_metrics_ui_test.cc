@@ -151,9 +151,9 @@ IN_PROC_BROWSER_TEST_F(GlicFreMetricsTest, FreShownAndDismissed) {
       WaitForHide(test::kGlicHostElementId));
 
   EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Shown"), 1);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Accept"), 0);
-  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Dismissed.Onboarding"),
-            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Onboarding.OptInAccept"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Dismissed"), 1);
 }
 
 }  // namespace glic

@@ -15141,6 +15141,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.Accept.Onboarding">
+  <obsolete>Stopped recording in June 2026.</obsolete>
   <owner>tommasin@chromium.org</owner>
   <owner>zalmashni@google.com</owner>
   <description>
@@ -15222,6 +15223,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.Dismissed.Onboarding">
+  <obsolete>Stopped recording in June 2026.</obsolete>
   <owner>tommasin@chromium.org</owner>
   <owner>zalmashni@google.com</owner>
   <description>
@@ -15335,6 +15337,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.Shown.Onboarding">
+  <obsolete>Stopped recording in June 2026.</obsolete>
   <owner>tommasin@chromium.org</owner>
   <owner>zalmashni@google.com</owner>
   <description>
@@ -15770,6 +15773,15 @@ should be able to be added at any place in this file.
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <description>The Glic instance WebUI is warmed.</description>
+</action>
+
+<action name="Glic.Onboarding.OptInAccept">
+  <owner>basiaz@google.com</owner>
+  <owner>dewittj@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <description>
+    Logged when the opt-in is accepted after being shown.
+  </description>
 </action>
 
 <action name="Glic.Onboarding.OptInImpression">
