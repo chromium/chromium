@@ -40,3 +40,6 @@
 # Test APK targets do not include the XR bundle code, but do include XrModule.java,
 # which references XrModuleProvider via an @IdentifierNameString.
 -dontwarn org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl
+
+# JetBrains annotations are not included in the build.
+-dontwarn org.jetbrains.annotations.VisibleForTesting

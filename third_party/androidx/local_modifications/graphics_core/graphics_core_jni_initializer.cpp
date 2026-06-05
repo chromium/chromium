@@ -6,7 +6,7 @@
 
 #include "third_party/androidx/local_modifications/graphics_core/graphics_core_jni_headers/GraphicsCoreJniLoader_jni.h"
 
-jint GraphicsCore_JNI_OnLoad(JNIEnv* env);
+extern "C" jint GraphicsCore_JNI_OnLoad(JNIEnv* env);
 
 static void JNI_GraphicsCoreJniLoader_Init(JNIEnv* env) {
     GraphicsCore_JNI_OnLoad(env);

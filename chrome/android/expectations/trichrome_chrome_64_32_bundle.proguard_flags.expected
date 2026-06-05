@@ -332,6 +332,9 @@
 # which references XrModuleProvider via an @IdentifierNameString.
 -dontwarn org.chromium.chrome.browser.xr.scenecore.XrModuleProviderImpl
 
+# JetBrains annotations are not included in the build.
+-dontwarn org.jetbrains.annotations.VisibleForTesting
+
 # File: ../../third_party/android_deps/material_design.flags
 # Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -869,10 +872,90 @@
     public <init>();
 }
 
+# File: obj/third_party/androidx/androidx_graphics_graphics_core_java/proguard.txt
+# Keep class names of kotlin classes refered to by JNI code.
+# Each class requires 2 proguard rules, one to match on the class and
+# the other to match on each method referenced by native code.
+-if class androidx.graphics.surface.SurfaceControlCompat
+-keep @androidx.graphics.utils.JniVisible public class *
+
+-if class androidx.graphics.surface.SurfaceControlCompat
+-keepclasseswithmembers class * {
+    @androidx.graphics.utils.JniVisible *;
+}
+
+-if class androidx.hardware.SyncFenceCompat
+-keep @androidx.graphics.utils.JniVisible public class *
+
+-if class androidx.hardware.SyncFenceCompat
+-keepclasseswithmembers class * {
+    @androidx.graphics.utils.JniVisible *;
+}
+
+-if class androidx.graphics.lowlatency.CanvasFrontBufferedRenderer
+-keep @androidx.graphics.utils.JniVisible public class *
+
+-if class androidx.graphics.lowlatency.CanvasFrontBufferedRenderer
+-keepclasseswithmembers class * {
+    @androidx.graphics.utils.JniVisible *;
+}
+
+-if class androidx.graphics.lowlatency.GLFrontBufferedRenderer
+-keep @androidx.graphics.utils.JniVisible public class *
+
+-if class androidx.graphics.lowlatency.GLFrontBufferedRenderer
+-keepclasseswithmembers class * {
+    @androidx.graphics.utils.JniVisible *;
+}
+
+-if class androidx.opengl.EGLExt
+-keep @androidx.graphics.utils.JniVisible public class *
+
+-if class androidx.opengl.EGLExt
+-keepclasseswithmembers class * {
+    @androidx.graphics.utils.JniVisible *;
+}
+
 # File: obj/third_party/androidx/androidx_graphics_graphics_path_java/proguard.txt
 -keepclasseswithmembers class androidx.graphics.path.** {
     native <methods>;
 }
+
+# File: obj/third_party/androidx/androidx_ink_ink_nativeloader_android_java/proguard.txt
+# Keep the attributes that contain annotations.
+-keepattributes RuntimeVisible*Annotation*
+
+# @UsedByNative should be used to annotate things referenced from name by JNI.
+# This includes external methods in the Kotlin code and classes whose type
+# is referenced by name in JNI C++ code, as well as any method that is looked
+# up by name.
+-if class androidx.ink.nativeloader.NativeLoader
+-keep class androidx.ink.nativeloader.UsedByNative
+
+# Keep annotated classes unconditionally.
+-if class androidx.ink.nativeloader.NativeLoader
+-keep @androidx.ink.nativeloader.UsedByNative class * {
+  <init>();
+}
+
+# Keep annotated class members if the class is kept. This is preserved not only
+# from renaming but also from pruning, since some of the annotated methods may
+# only be used as callbacks from native code.
+-if class androidx.ink.nativeloader.NativeLoader
+-keepclassmembers class * {
+    @androidx.ink.nativeloader.UsedByNative *;
+}
+
+# Proguard configuration to retain stuff outside of Ink that is called
+# from JNI code via reflection (e.g. Get[Static]MethodID (including in method
+# signatures), Get[Static]FieldID, FindClass). Stuff in Ink that's
+# called this way should be annotated with Ink's @UsedByNative instead.
+# (This includes methods referenced in GetMethodID and classes in those methods'
+# signatures.)
+
+# Used in interfaces for platform-specific implementation:
+-if class androidx.ink.brush.TextureBufferedImageStore
+-keep class java.awt.image.BufferedImage
 
 # File: obj/third_party/androidx/androidx_lifecycle_lifecycle_runtime_android_java/proguard.txt
 -keepattributes AnnotationDefault,
