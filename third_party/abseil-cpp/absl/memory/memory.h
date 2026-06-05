@@ -96,6 +96,11 @@ std::unique_ptr<T> WrapUnique(T* ptr) {
 // should use `std::make_unique`.
 using std::make_unique;
 
+#if defined(__cpp_lib_smart_ptr_for_overwrite) && \
+    __cpp_lib_smart_ptr_for_overwrite >= 202002L
+using std::make_unique_for_overwrite;
+#else
+
 namespace memory_internal {
 
 // Traits to select proper overload and return type for
@@ -142,6 +147,8 @@ typename memory_internal::MakeUniqueResult<T>::array make_unique_for_overwrite(
 template <typename T, typename... Args>
 typename memory_internal::MakeUniqueResult<T>::invalid
 make_unique_for_overwrite(Args&&... /* args */) = delete;
+
+#endif  // __cpp_lib_smart_ptr_for_overwrite
 
 // -----------------------------------------------------------------------------
 // Function Template: RawPtr()

@@ -502,6 +502,7 @@ cc_test(
         "//absl/log/internal:test_matchers",
         "//absl/strings",
         "//absl/strings:str_format",
+        "//absl/types:source_location",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

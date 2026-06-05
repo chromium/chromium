@@ -135,7 +135,15 @@ ABSL_NAMESPACE_END
 // aborts the program in release mode (when NDEBUG is defined). The
 // implementation should abort the program as quickly as possible and ideally it
 // should not be possible to ignore the abort request.
+#if defined(__CUDACC__) || defined(__CUDA_ARCH__) || defined(__CUDA__)
+#define ABSL_INTERNAL_HARDENING_ABORT()   \
+  do {                                    \
+    ABSL_INTERNAL_IMMEDIATE_ABORT_IMPL(); \
+    ABSL_INTERNAL_UNREACHABLE_IMPL();     \
+  } while (false)
+#else
 #define ABSL_INTERNAL_HARDENING_ABORT() ::absl::base_internal::HardeningAbort()
+#endif
 
 // ABSL_HARDENING_ASSERT()
 //
@@ -149,9 +157,12 @@ ABSL_NAMESPACE_END
 // See `ABSL_OPTION_HARDENED` in `absl/base/options.h` for more information on
 // hardened mode.
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
-#define ABSL_HARDENING_ASSERT(expr)                 \
-  (ABSL_PREDICT_TRUE((expr)) ? static_cast<void>(0) \
-                             : ABSL_INTERNAL_HARDENING_ABORT())
+#define ABSL_HARDENING_ASSERT(expr)    \
+  do {                                 \
+    if (!ABSL_PREDICT_TRUE((expr))) {  \
+      ABSL_INTERNAL_HARDENING_ABORT(); \
+    }                                  \
+  } while (false)
 #else
 #define ABSL_HARDENING_ASSERT(expr) ABSL_ASSERT(expr)
 #endif
@@ -168,9 +179,7 @@ ABSL_NAMESPACE_END
 // See `ABSL_OPTION_HARDENED` in `absl/base/options.h` for more information on
 // hardened mode.
 #if ABSL_OPTION_HARDENED == 1 && defined(NDEBUG)
-#define ABSL_HARDENING_ASSERT_SLOW(expr)            \
-  (ABSL_PREDICT_TRUE((expr)) ? static_cast<void>(0) \
-                             : ABSL_INTERNAL_HARDENING_ABORT())
+#define ABSL_HARDENING_ASSERT_SLOW(expr) ABSL_HARDENING_ASSERT(expr)
 #else
 #define ABSL_HARDENING_ASSERT_SLOW(expr) ABSL_ASSERT(expr)
 #endif

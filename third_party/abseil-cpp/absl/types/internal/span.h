@@ -86,13 +86,13 @@ using EnableIfMutable =
     typename std::enable_if<!std::is_const<T>::value, int>::type;
 
 template <template <typename> class SpanT, typename T>
-ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 bool EqualImpl(SpanT<T> a, SpanT<T> b) {
+constexpr bool EqualImpl(SpanT<T> a, SpanT<T> b) {
   static_assert(std::is_const<T>::value, "");
   return std::equal(a.begin(), a.end(), b.begin(), b.end());
 }
 
 template <template <typename> class SpanT, typename T>
-ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 bool LessThanImpl(SpanT<T> a, SpanT<T> b) {
+constexpr bool LessThanImpl(SpanT<T> a, SpanT<T> b) {
   // We can't use value_type since that is remove_cv_t<T>, so we go the long way
   // around.
   static_assert(std::is_const<T>::value, "");

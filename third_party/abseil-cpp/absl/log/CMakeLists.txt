@@ -1017,6 +1017,7 @@ absl_cc_test(
     absl::log
     absl::log_internal_test_matchers
     absl::scoped_mock_log
+    absl::source_location
     absl::str_format
     absl::strings
     GTest::gmock_main

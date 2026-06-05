@@ -19,6 +19,15 @@ absl_source_set("errno_saver") {
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
 
+absl_source_set("cpu_detect") {
+  public = [ "internal/cpu_detect.h" ]
+  sources = [ "internal/cpu_detect.cc" ]
+  deps = [
+    ":config",
+  ]
+  visibility = [ "//third_party/abseil-cpp/absl/*" ]
+}
+
 absl_source_set("hardening") {
   public = [ "internal/hardening.h" ]
   deps = [

@@ -14,6 +14,8 @@
 #ifndef ABSL_STATUS_INTERNAL_STATUS_INTERNAL_H_
 #define ABSL_STATUS_INTERNAL_STATUS_INTERNAL_H_
 
+// IWYU pragma: private, include "absl/status/status.h"
+
 #include <atomic>
 #include <cstdint>
 #include <memory>

@@ -179,6 +179,13 @@ class LogMessage {
   LogMessage& operator<<(wchar_t* absl_nullable v);
   LogMessage& operator<<(wchar_t v);
 
+  // Overload for absl::SourceLocation or the std::source_location alias.
+  LogMessage& operator<<(const absl::SourceLocation& loc) {
+    OstreamView view(*data_);
+    view.stream() << loc.file_name() << ':' << loc.line();
+    return *this;
+  }
+
   // Handle stream manipulators e.g. std::endl.
   LogMessage& operator<<(std::ostream& (*absl_nonnull m)(std::ostream& os));
   LogMessage& operator<<(std::ios_base& (*absl_nonnull m)(std::ios_base& os));

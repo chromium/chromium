@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "absl/crc/internal/cpu_detect.h"
+#include "absl/base/internal/cpu_detect.h"
 
 #include <cstdint>
 #include <optional>  // IWYU pragma: keep
@@ -42,6 +42,7 @@
 // MSVC-equivalent __cpuid intrinsic declaration for clang-like compilers
 // for non-Windows build environments.
 extern void __cpuid(int[4], int);
+extern void __cpuidex(int[4], int, int);
 #elif !defined(_WIN32) && !defined(_WIN64)
 // MSVC defines this function for us.
 // https://learn.microsoft.com/en-us/cpp/intrinsics/cpuid-cpuidex
@@ -51,12 +52,18 @@ static void __cpuid(int cpu_info[4], int info_type) {
                      "=d"(cpu_info[3])
                    : "a"(info_type), "c"(0));
 }
+static void __cpuidex(int cpu_info[4], int info_type, int ecx) {
+  __asm__ volatile("cpuid \n\t"
+                   : "=a"(cpu_info[0]), "=b"(cpu_info[1]), "=c"(cpu_info[2]),
+                     "=d"(cpu_info[3])
+                   : "a"(info_type), "c"(ecx));
+}
 #endif  // !defined(_WIN32) && !defined(_WIN64)
 #endif  // defined(__x86_64__) || defined(_M_X64)
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-namespace crc_internal {
+namespace base_internal {
 
 #if defined(__x86_64__) || defined(_M_X64)
 
@@ -137,7 +144,7 @@ CpuType GetIntelCpuType() {
             case 0x4f:  // Broadwell
             case 0x56:  // BroadwellDE
               return CpuType::kIntelBroadwell;
-            case 0x55:                 // Skylake Xeon
+            case 0x55:                         // Skylake Xeon
               if ((cpu_info[0] & 0x0f) < 5) {  // stepping < 5 is skylake
                 return CpuType::kIntelSkylakeXeon;
               } else {  // stepping >= 5 is cascadelake
@@ -152,7 +159,7 @@ CpuType GetIntelCpuType() {
             case 0xcf:  // Emerald Rapids
               return CpuType::kIntelEmeraldrapids;
             case 0xad:  // Granite Rapids
-              return CpuType::kIntelGraniterapidsap;
+              return CpuType::kIntelGraniterapids;
             default:
               return CpuType::kUnknown;
           }
@@ -271,18 +278,30 @@ CpuType GetCpuType() {
     switch (implementer) {
       case 0x41:
         switch (part_number) {
-          case 0xd0c: return CpuType::kArmNeoverseN1;
-          case 0xd40: return CpuType::kArmNeoverseV1;
-          case 0xd49: return CpuType::kArmNeoverseN2;
-          case 0xd4f: return CpuType::kArmNeoverseV2;
-          case 0xd8e: return CpuType::kArmNeoverseN3;
+          case 0xd0c:
+            return CpuType::kArmNeoverseN1;
+          case 0xd40:
+            return CpuType::kArmNeoverseV1;
+          case 0xd49:
+            return CpuType::kArmNeoverseN2;
+          case 0xd4f: {
+            uint64_t isar0 = 0;
+            ABSL_INTERNAL_AARCH64_ID_REG_READ(ID_AA64ISAR0_EL1, isar0);
+            if (((isar0 >> 60) & 0xf) == 0x0) {
+              return CpuType::kNvidiaGrace;
+            }
+            return CpuType::kArmNeoverseV2;
+          }
+          case 0xd8e:
+            return CpuType::kArmNeoverseN3;
           default:
             return CpuType::kUnknown;
         }
         break;
       case 0xc0:
         switch (part_number) {
-          case 0xac3: return CpuType::kAmpereSiryn;
+          case 0xac3:
+            return CpuType::kAmpereSiryn;
           default:
             return CpuType::kUnknown;
         }
@@ -354,6 +373,47 @@ bool SupportsArmCRC32PMULL() { return false; }
 
 #endif
 
-}  // namespace crc_internal
+// Returns how many hardware contexts per CPU exist. Note: AMD CPUs prior to Zen
+// 2 (Rome, 2019) do not support CPUID leaf 0xb. We intentionally avoid falling
+// back to leaf 1 ebx[23:16] because it reports total logical processors per
+// package (not threads per core), which risks false positives on older
+// multi-core non-SMT chips. Pre-Zen 2 AMD safely defaults to 1.
+int NumContextsPerCPU() {
+#if defined(__x86_64__) || defined(_M_X64)
+  int info[4];
+  __cpuid(info, 0);
+  if (info[0] < 0xb) {
+    return 1;
+  }
+
+  __cpuid(info, 1);
+  bool has_ht = (info[3] & (1 << 28)) != 0;
+  if (!has_ht) {
+    return 1;
+  }
+
+  for (int sub_leaf = 0; sub_leaf < 4; ++sub_leaf) {
+    __cpuidex(info, 0xb, sub_leaf);
+    int level_type = (info[2] >> 8) & 0xff;
+    if (level_type == 0) {
+      break;
+    }
+    if (level_type == 1) {
+      int num_threads = info[1] & 0x0ffff;
+      if (num_threads >= 1) {
+        return num_threads;
+      }
+    }
+  }
+
+  return 1;
+#else
+  return 1;
+#endif
+}
+
+bool IsSMTEnabled() { return NumContextsPerCPU() > 1; }
+
+}  // namespace base_internal
 ABSL_NAMESPACE_END
 }  // namespace absl

@@ -21,9 +21,9 @@
 
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
+#include "absl/base/internal/cpu_detect.h"
 #include "absl/base/internal/endian.h"
 #include "absl/base/prefetch.h"
-#include "absl/crc/internal/cpu_detect.h"
 #include "absl/crc/internal/crc32_x86_arm_combined_simd.h"
 #include "absl/crc/internal/crc_internal.h"
 #include "absl/memory/memory.h"
@@ -37,6 +37,10 @@
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace crc_internal {
+
+using ::absl::base_internal::CpuType;
+using ::absl::base_internal::GetCpuType;
+using ::absl::base_internal::SupportsArmCRC32PMULL;
 
 #if defined(ABSL_INTERNAL_CAN_USE_SIMD_CRC32C)
 
@@ -772,7 +776,7 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kIntelIcelake:
     case CpuType::kIntelSapphirerapids:
     case CpuType::kIntelEmeraldrapids:
-    case CpuType::kIntelGraniterapidsap:
+    case CpuType::kIntelGraniterapids:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           3, 2, 0, CutoffStrategy::Fold3>();
     // PCLMULQDQ is slow, don't use it.
@@ -785,6 +789,7 @@ CRCImpl* TryNewCRC32AcceleratedX86ARMCombined() {
     case CpuType::kArmNeoverseN2:
     case CpuType::kArmNeoverseV1:
     case CpuType::kArmNeoverseN3:
+    case CpuType::kNvidiaGrace:
       return new CRC32AcceleratedX86ARMCombinedMultipleStreams<
           1, 1, 0, CutoffStrategy::Unroll64CRC>();
     case CpuType::kAmpereSiryn:

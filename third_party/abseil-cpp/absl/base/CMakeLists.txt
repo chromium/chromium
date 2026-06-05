@@ -32,6 +32,21 @@ absl_cc_library(
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
+    base_cpu_detect
+  HDRS
+    "internal/cpu_detect.h"
+  SRCS
+    "internal/cpu_detect.cc"
+  DEPS
+    absl::base
+    absl::config
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+)
+
+# Internal-only target, do not depend on directly.
+absl_cc_library(
+  NAME
     errno_saver
   HDRS
     "internal/errno_saver.h"

@@ -41,6 +41,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_format.h"
 #include "absl/strings/string_view.h"
+#include "absl/types/source_location.h"
 
 namespace {
 using ::absl::log_internal::AsString;
@@ -289,6 +290,21 @@ TYPED_TEST(SignedIntLogFormatTest, BitfieldNegative) {
 
   test_sink.StartCapturingLogs();
   LOG(INFO) << value.bits;
+}
+
+TEST(SourceLocationTest, Format) {
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+  EXPECT_CALL(test_sink, Send).Times(0);
+
+  absl::SourceLocation loc = absl::SourceLocation::current();
+  std::string expected = absl::StrCat(__FILE__, ":", __LINE__ - 1);
+
+  EXPECT_CALL(test_sink, Send(AllOf(TextMessage(Eq(expected)),
+                                    ENCODED_MESSAGE(HasValues(ElementsAre(
+                                        ValueWithStr(Eq(expected))))))));
+
+  test_sink.StartCapturingLogs();
+  LOG(INFO) << loc;
 }
 
 // Ignore these test cases on GCC due to "is too small to hold all values ..."

@@ -45,7 +45,7 @@ constexpr void HardeningAssert(bool cond) {
   ABSL_ASSERT(cond);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(!cond)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -59,7 +59,7 @@ constexpr void HardeningAssertSlow(bool cond) {
   ABSL_ASSERT(cond);
 #if (ABSL_OPTION_HARDENED == 1) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(!cond)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -69,7 +69,7 @@ constexpr void HardeningAssertGT(T val1, T val2) {
   ABSL_ASSERT(val1 > val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 > val2)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -79,7 +79,7 @@ constexpr void HardeningAssertGE(T val1, T val2) {
   ABSL_ASSERT(val1 >= val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 >= val2)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -89,7 +89,7 @@ constexpr void HardeningAssertLT(T val1, T val2) {
   ABSL_ASSERT(val1 < val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 < val2)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -99,7 +99,7 @@ constexpr void HardeningAssertLE(T val1, T val2) {
   ABSL_ASSERT(val1 <= val2);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (!ABSL_PREDICT_TRUE(val1 <= val2)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -113,7 +113,7 @@ constexpr void HardeningAssertNonEmpty(const T& container) {
   ABSL_ASSERT(!container.empty());
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(container.empty())) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }
@@ -123,7 +123,7 @@ constexpr void HardeningAssertNonNull(T ptr) {
   ABSL_ASSERT(ptr != nullptr);
 #if (ABSL_OPTION_HARDENED == 1 || ABSL_OPTION_HARDENED == 2) && defined(NDEBUG)
   if (ABSL_PREDICT_FALSE(ptr == nullptr)) {
-    base_internal::HardeningAbort();
+    ABSL_INTERNAL_HARDENING_ABORT();
   }
 #endif
 }

@@ -47,11 +47,6 @@ cc_library(
 )
 
 cc_library(
-    name = "bad_any_cast",
-    deprecation = "bad_any_cast dependency is empty can be removed",
-)
-
-cc_library(
     name = "source_location",
     srcs = ["source_location.cc"],
     hdrs = ["source_location.h"],
@@ -193,11 +188,6 @@ cc_library(
 )
 
 cc_library(
-    name = "bad_optional_access",
-    deprecation = "bad_optional_access dependency is empty can be removed",
-)
-
-cc_library(
     name = "variant",
     hdrs = ["variant.h"],
     copts = ABSL_DEFAULT_COPTS,
@@ -207,11 +197,6 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/utility",
     ],
-)
-
-cc_library(
-    name = "bad_variant_access",
-    deprecation = "bad_variant_access dependency is empty can be removed",
 )
 
 cc_test(

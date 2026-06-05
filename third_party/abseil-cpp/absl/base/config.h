@@ -493,34 +493,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #error "absl endian detection needs to be set up for your compiler"
 #endif
 
-// macOS < 10.13 and iOS < 12 don't support <any>, <optional>, or <variant>
-// because the libc++ shared library shipped on the system doesn't have the
-// requisite exported symbols.  See
-// https://github.com/abseil/abseil-cpp/issues/207 and
-// https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes
-//
-// libc++ spells out the availability requirements in the file
-// llvm-project/libcxx/include/__config via the #define
-// _LIBCPP_AVAILABILITY_BAD_OPTIONAL_ACCESS. The set of versions has been
-// modified a few times, via
-// https://github.com/llvm/llvm-project/commit/7fb40e1569dd66292b647f4501b85517e9247953
-// and
-// https://github.com/llvm/llvm-project/commit/0bc451e7e137c4ccadcd3377250874f641ca514a
-// The second has the actually correct versions, thus, is what we copy here.
-#if defined(__APPLE__) &&                                         \
-    ((defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) &&   \
-      __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 101300) ||  \
-     (defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) &&  \
-      __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__ < 120000) || \
-     (defined(__ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__) &&   \
-      __ENVIRONMENT_WATCH_OS_VERSION_MIN_REQUIRED__ < 50000) ||   \
-     (defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__) &&      \
-      __ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__ < 120000))
-#define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 1
-#else
-#define ABSL_INTERNAL_APPLE_CXX17_TYPES_UNAVAILABLE 0
-#endif
-
 // Deprecated macros for polyfill detection.
 #define ABSL_HAVE_STD_ANY 1
 #define ABSL_USES_STD_ANY 1
@@ -852,27 +824,6 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_HAVE_CONSTANT_EVALUATED 1
 #elif ABSL_HAVE_BUILTIN(__builtin_is_constant_evaluated)
 #define ABSL_HAVE_CONSTANT_EVALUATED 1
-#endif
-
-// ABSL_INTERNAL_CONSTEXPR_SINCE_CXXYY is used to conditionally define constexpr
-// for different C++ versions.
-//
-// These macros are an implementation detail and will be unconditionally removed
-// once the minimum supported C++ version catches up to a given version.
-//
-// For this reason, this symbol is considered INTERNAL and code outside of
-// Abseil must not use it.
-#if defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
-    ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
-#define ABSL_INTERNAL_CONSTEXPR_SINCE_CXX17 constexpr
-#else
-#define ABSL_INTERNAL_CONSTEXPR_SINCE_CXX17
-#endif
-#if defined(ABSL_INTERNAL_CPLUSPLUS_LANG) && \
-    ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
-#define ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 constexpr
-#else
-#define ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20
 #endif
 
 // ABSL_INTERNAL_EMSCRIPTEN_VERSION combines Emscripten's three version macros

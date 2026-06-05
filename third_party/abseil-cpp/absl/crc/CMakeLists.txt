@@ -15,21 +15,6 @@
 # Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
-    crc_cpu_detect
-  HDRS
-    "internal/cpu_detect.h"
-  SRCS
-    "internal/cpu_detect.cc"
-  COPTS
-    ${ABSL_DEFAULT_COPTS}
-  DEPS
-    absl::base
-    absl::config
-)
-
-# Internal-only target, do not depend on directly.
-absl_cc_library(
-  NAME
     crc_internal
   HDRS
     "internal/crc.h"
@@ -41,7 +26,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::crc_cpu_detect
+    absl::base_cpu_detect
     absl::bits
     absl::config
     absl::core_headers
@@ -67,7 +52,7 @@ absl_cc_library(
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS
-    absl::crc_cpu_detect
+    absl::base_cpu_detect
     absl::crc_internal
     absl::non_temporal_memcpy
     absl::config
