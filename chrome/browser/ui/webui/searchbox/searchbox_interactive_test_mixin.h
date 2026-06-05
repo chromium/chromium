@@ -51,29 +51,33 @@ class SearchboxInteractiveTestMixin : public T {
     });
   }
 
-  // Waits for navigation to a Google search results page for `expected_params`.
+  // Waits for the tab to commit a Google search results page for
+  // `expected_params`.
   auto WaitForGoogleSearch(
       const ui::ElementIdentifier& tab_id,
       const std::map<std::string, std::string>& expected_params) {
-    return T::Steps(T::InAnyContext(
-        T::WaitForWebContentsNavigation(tab_id),
-        T::CheckElement(
-            tab_id,
-            [](ui::TrackedElement* el) {
-              GURL url = el->AsA<TrackedElementWebContents>()
-                             ->owner()
-                             ->web_contents()
-                             ->GetLastCommittedURL();
-              std::map<std::string, std::string> actual_params;
+    // Submitting can fire a synchronous same-WebContents OpenURL before
+    // WaitForWebContentsNavigation is armed, so poll the committed URL instead
+    // of relying on a one-shot navigation event.
+    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
+        ui::test::PollingElementStateObserver<bool>, kGoogleSearchNavigated);
+    return T::Steps(
+        T::InAnyContext(T::PollElement(
+            kGoogleSearchNavigated, tab_id,
+            [expected_params](const ui::TrackedElement* el) {
+              const GURL url = el->AsA<TrackedElementWebContents>()
+                                   ->owner()
+                                   ->web_contents()
+                                   ->GetLastCommittedURL();
               if (!google_util::IsGoogleSearchUrl(url)) {
-                return actual_params;
+                return false;
               }
               static constexpr base::UnescapeRule::Type kUnescapeRules =
                   base::UnescapeRule::SPACES |
                   base::UnescapeRule::REPLACE_PLUS_WITH_SPACE |
                   base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
                   base::UnescapeRule::PATH_SEPARATORS;
-
+              std::map<std::string, std::string> actual_params;
               for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
                 std::string key =
                     base::UnescapeURLComponent(it.GetKey(), kUnescapeRules);
@@ -81,9 +85,16 @@ class SearchboxInteractiveTestMixin : public T {
                     base::UnescapeURLComponent(it.GetValue(), kUnescapeRules);
                 actual_params[key] = value;
               }
-              return actual_params;
-            },
-            testing::IsSupersetOf(expected_params))));
+              for (const auto& [key, value] : expected_params) {
+                const auto found = actual_params.find(key);
+                if (found == actual_params.end() || found->second != value) {
+                  return false;
+                }
+              }
+              return true;
+            })),
+        T::WaitForState(kGoogleSearchNavigated, testing::Optional(true)),
+        T::StopObservingState(kGoogleSearchNavigated));
   }
 
   // Waits for match to render and verifies its text equals `expected_text`.
