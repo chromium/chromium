@@ -89,7 +89,7 @@ void DataDevice::SetSelection(DataSource* source) {
 }
 
 void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
-  CHECK(!data_offer_);
+  DCHECK(!data_offer_);
 
   Surface* surface = GetEffectiveTargetForEvent(event);
   if (!surface)
@@ -213,8 +213,10 @@ void DataDevice::OnDataOfferDestroying(DataOffer* data_offer) {
 
 void DataDevice::OnSurfaceDestroying(Surface* surface) {
   if (focused_surface_ && focused_surface_->get() == surface) {
-    CHECK(surface->window());
-    aura::client::SetDragDropDelegate(surface->window(), nullptr);
+    DCHECK(surface->window());
+    if (surface->window()) {
+      aura::client::SetDragDropDelegate(surface->window(), nullptr);
+    }
     focused_surface_.reset();
   }
 }
@@ -234,7 +236,7 @@ Surface* DataDevice::GetEffectiveTargetForEvent(
 }
 
 void DataDevice::SetSelectionToCurrentClipboardData() {
-  CHECK(focused_surface_);
+  DCHECK(focused_surface_);
   if (!delegate_) {
     return;
   }

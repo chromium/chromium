@@ -391,7 +391,7 @@ void Buffer::Texture::DestroyResources() {
 void Buffer::Texture::ReleaseWhenQueryResultIsAvailable(
     base::OnceClosure callback) {
   DCHECK(context_provider_);
-  CHECK(release_callback_.is_null());
+  DCHECK(release_callback_.is_null());
   release_callback_ = std::move(callback);
   wait_for_release_time_ = base::TimeTicks::Now() + wait_for_release_delay_;
   ScheduleWaitForRelease(wait_for_release_delay_);
@@ -483,9 +483,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
       use_zero_copy_(use_zero_copy),
       is_overlay_candidate_(is_overlay_candidate),
       y_invert_(y_invert),
-      wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {
-  CHECK(use_zero_copy_ || query_type_ != 0);
-}
+      wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {}
 
 Buffer::~Buffer() = default;
 
@@ -568,7 +566,7 @@ std::optional<viz::TransferableResource> Buffer::ProduceTransferableResource(
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
                GetBufferId());
-  CHECK(attach_count_);
+  DCHECK(attach_count_);
 
   // If textures are lost, destroy them to ensure that we create new ones
   // below.
@@ -716,7 +714,7 @@ void Buffer::OnAttach() {
 }
 
 void Buffer::OnDetach() {
-  CHECK_GT(attach_count_, 0u);
+  DCHECK_GT(attach_count_, 0u);
   TRACE_EVENT2("exo", "Buffer::OnAttach", "buffer_id", GetBufferId(), "count",
                attach_count_);
   --attach_count_;
