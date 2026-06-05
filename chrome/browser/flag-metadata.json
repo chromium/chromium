@@ -7886,14 +7886,6 @@
     "expiry_milestone": 146
   },
   {
-    "name": "privacy-sandbox-internals",
-    "owners": [
-      "kmg@google.com",
-      "koilos@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "private-metrics-enable-puma",
     "owners": [
       "kjarosz@google.com",

@@ -3975,12 +3975,6 @@ inline constexpr char kPrivacySandboxEnrollmentOverridesDescription[] =
     "Allows a list of sites to use Privacy Sandbox features without them being "
     "enrolled and attested into the Privacy Sandbox experiment. See: "
     "https://developer.chrome.com/en/docs/privacy-sandbox/enroll/";
-
-inline constexpr char kPrivacySandboxInternalsName[] =
-    "Privacy Sandbox Internals Page";
-inline constexpr char kPrivacySandboxInternalsDescription[] =
-    "Enables the chrome://privacy-sandbox-internals debugging page.";
-
 inline constexpr char kPrivateMetricsEnablePumaName[] =
     "Enable Private User Metrics";
 inline constexpr char kPrivateMetricsEnablePumaDescription[] =
