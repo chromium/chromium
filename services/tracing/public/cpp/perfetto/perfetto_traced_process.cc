@@ -349,7 +349,8 @@ void PerfettoTracedProcess::SetupClientLibrary(
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
   init_args.shmem_batch_commits_duration_ms = 1000;
-  init_args.shmem_size_hint_kb = 4 * 1024;
+  init_args.shmem_size_hint_kb =
+      features::kPerfettoSharedMemorySizeBytes.Get() / 1024;
   init_args.shmem_direct_patching_enabled = true;
   init_args.use_monotonic_clock = true;
   init_args.disallow_merging_with_system_tracks = true;
