@@ -223,7 +223,6 @@ class BottomSheet extends FrameLayout
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
-    private int mBottomControlsOffset;
     private int mBottomMargin;
     private @ColorInt int mSheetBgColor;
 
@@ -370,7 +369,7 @@ class BottomSheet extends FrameLayout
      * @param alwaysFullWidth Whether bottom sheet is always full-width.
      * @param edgeToEdgeBottomInsetSupplier The supplier of the bottom inset in DP when e2e is on.
      * @param appHeaderHeight The app header height, in px.
-     * @param bottomControlsOffset The extra margin to add to the bottom of sheet container.
+     * @param bottomMargin The extra margin to add to the bottom of sheet container.
      * @param insetObserver An observer for inset changes.
      */
     @Initializer
@@ -380,7 +379,7 @@ class BottomSheet extends FrameLayout
             boolean alwaysFullWidth,
             Supplier<Integer> edgeToEdgeBottomInsetSupplier,
             int appHeaderHeight,
-            int bottomControlsOffset,
+            int bottomMargin,
             InsetObserver insetObserver) {
         mWindow = window;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
@@ -390,8 +389,7 @@ class BottomSheet extends FrameLayout
         mSheetBackground = findViewById(R.id.background);
         mShadowLayer = findViewById(R.id.shadow_layer);
         onAppHeaderHeightChanged(appHeaderHeight);
-        mBottomControlsOffset = bottomControlsOffset;
-        setBottomMargin(bottomControlsOffset);
+        setBottomMargin(bottomMargin);
 
         mToolbarHolder = findViewById(R.id.bottom_sheet_toolbar_container);
         mToolbarHolder.setBottomSheet(this);
@@ -818,8 +816,6 @@ class BottomSheet extends FrameLayout
     private void createSettleAnimation(
             @SheetState final int targetState, @StateChangeReason final int reason) {
         mTargetState = targetState;
-        setInternalCurrentState(SheetState.SCROLLING, reason);
-
         mSettleAnimator =
                 ValueAnimator.ofFloat(getCurrentOffsetPx(), getSheetHeightForState(targetState));
         boolean isExpand = targetState == SheetState.FULL;
@@ -851,6 +847,7 @@ class BottomSheet extends FrameLayout
                     }
                 });
 
+        setInternalCurrentState(SheetState.SCROLLING, reason);
         mSettleAnimator.start();
     }
 
@@ -936,7 +933,6 @@ class BottomSheet extends FrameLayout
                 onSheetClosed(reason);
             } else if (!isSheetOpen()
                     && mTargetState != SheetState.HIDDEN
-                    && mTargetState != SheetState.PEEK
                     && getCurrentOffsetPx() > minScrollableHeight) {
                 onSheetOpened(reason);
             }
@@ -1312,11 +1308,7 @@ class BottomSheet extends FrameLayout
             ensureContentDesiredHeightIsComputed();
         }
 
-        float height = getRatioForState(state) * getMaxContentHeight();
-        if (state == SheetState.PEEK) {
-            height += mBottomControlsOffset - mBottomMargin - getEdgeToEdgeBottomInset();
-        }
-        return height;
+        return getRatioForState(state) * getMaxContentHeight();
     }
 
     /**
@@ -1705,33 +1697,10 @@ class BottomSheet extends FrameLayout
     }
 
     void setBottomMargin(int bottomMargin) {
-        if (mBottomMargin == bottomMargin) return;
-
-        int marginDelta = mBottomMargin - bottomMargin;
-        // Store the old inset before updating mBottomMargin (which will change the return value).
-        int oldInset = getEdgeToEdgeBottomInset();
         mBottomMargin = bottomMargin;
-
-        int insetDelta =
-                mTargetState == SheetState.HIDDEN ? 0 : oldInset - getEdgeToEdgeBottomInset();
-
-        if (mCurrentState != SheetState.HIDDEN && mCurrentState != SheetState.NONE) {
-            mCurrentOffsetPx = mCurrentOffsetPx + marginDelta + insetDelta;
-        }
-        cancelAnimation();
-
-        if (!mIsSheetOpen && mTargetState != SheetState.NONE) {
-            setInternalCurrentState(mTargetState, StateChangeReason.NONE);
-            mTargetState = SheetState.NONE;
-        }
-
         MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
         layoutParams.bottomMargin = mBottomMargin;
         mSheetContainer.setLayoutParams(layoutParams);
-    }
-
-    void setBottomControlsOffset(int bottomControlsOffset) {
-        mBottomControlsOffset = bottomControlsOffset;
     }
 
     void onSheetBackgroundColorOverrideChanged() {
