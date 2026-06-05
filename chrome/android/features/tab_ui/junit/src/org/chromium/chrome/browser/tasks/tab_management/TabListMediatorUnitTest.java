@@ -6119,6 +6119,24 @@ public class TabListMediatorUnitTest {
         }
     }
 
+    private Tab setUpNestedLayoutWithTwoTabGroup(boolean isCollapsed) {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, tab3);
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(isCollapsed);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        return tab3;
+    }
+
     private void mockOptimizationGuideResponse(
             @OptimizationGuideDecision int decision, Map<GURL, Any> responses) {
         for (Map.Entry<GURL, Any> responseEntry : responses.entrySet()) {
@@ -6316,20 +6334,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testVerticalTabsCollapse_RemovesNestedChildCards() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
-        mMediator.initWithNative(mProfile);
-        mMediator.resetWithListOfTabs(null, null, false);
-
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
-
-        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
 
         assertEquals(3, mModelList.size());
         assertTrue(mModelList.get(0).model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null);
@@ -6350,19 +6355,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testVerticalTabsCollapse_Idempotent() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
-        mMediator.initWithNative(mProfile);
-
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
-
-        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
 
         assertEquals(3, mModelList.size());
 
@@ -6375,20 +6368,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testVerticalTabsExpand_InsertsNestedChildCards() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
-        mMediator.initWithNative(mProfile);
-        mMediator.resetWithListOfTabs(null, null, false);
-
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
-
-        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ true);
 
         assertEquals(1, mModelList.size());
         assertTrue(mModelList.get(0).model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null);
@@ -6409,20 +6389,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testVerticalTabs_IndexFromTabIdPrioritizesChildOverHeader() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
-        mMediator.initWithNative(mProfile);
-        mMediator.resetWithListOfTabs(null, null, false);
-
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
-
-        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
 
         // Model list contains:
         // [0] Group Header Card (shares TAB1_ID)
@@ -6438,20 +6405,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testVerticalTabs_CloseLastTabInGroup_RemovesHeaderCard() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
-        mMediator.initWithNative(mProfile);
-        mMediator.resetWithListOfTabs(null, null, false);
-
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
-
-        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
 
         // Initially, list contains: [0] Group Header, [1] First Child, [2] Second Child.
         assertEquals(3, mModelList.size());
@@ -6677,19 +6631,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testMoveTabOutOfGroup_NestedLayout() {
-        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
-        mMediator.initWithNative(mProfile);
-
-        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
-        createTabGroup(tabs, TAB_GROUP_ID);
-
-        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
-        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
-        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
-        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
-
-        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
 
         assertEquals(3, mModelList.size());
         assertEquals(TAB_GROUP_ID, mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
@@ -6709,5 +6651,57 @@ public class TabListMediatorUnitTest {
         // tab3 should be a top-level tab (no tab_group_id property)
         assertNull(mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
         assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+        assertNotNull(mModelList.get(2).model.get(TabProperties.TAB_CLICK_LISTENER));
+    }
+
+    @Test
+    public void testMergeTabToGroup_NestedLayout() {
+        Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(TAB_GROUP_ID, mModelList.get(1).model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB_GROUP_ID, mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
+
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        when(tab4.getTabGroupId()).thenReturn(null);
+
+        mockTabIndexes(mTab1, tab3, tab4);
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        tab4,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        false);
+
+        assertEquals(4, mModelList.size());
+        assertNull(mModelList.get(3).model.get(TabProperties.TAB_GROUP_ID));
+
+        when(tab4.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        List<Tab> newTabs = List.of(mTab1, tab3, tab4);
+        createTabGroup(newTabs, TAB_GROUP_ID);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(newTabs);
+
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab4, /* isDestinationTab= */ false);
+
+        assertEquals(4, mModelList.size());
+        assertEquals(TAB_GROUP_ID, mModelList.get(3).model.get(TabProperties.TAB_GROUP_ID));
+        assertNotNull(mModelList.get(3).model.get(TabProperties.TAB_CLICK_LISTENER));
+        assertNotNull(mModelList.get(3).model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER));
+    }
+
+    @Test
+    public void testDidChangeTabGroupTitle_NestedLayout() {
+        Tab tab3 = setUpNestedLayoutWithTwoTabGroup(/* isCollapsed= */ false);
+
+        PropertyModel headerModel = mModelList.get(0).model;
+        assertEquals("2 tabs", headerModel.get(TabProperties.TITLE));
+
+        Tab tab4 = prepareTab(TAB4_ID, TAB4_TITLE, TAB4_URL);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab1, tab3, tab4));
+
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupTitle(TAB_GROUP_ID, "New Title");
+
+        assertEquals("3 tabs", headerModel.get(TabProperties.TITLE));
     }
 }

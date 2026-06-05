@@ -749,19 +749,7 @@ public class TabListMediator implements TabListNotificationHandler {
                     assert mShowingTabs;
 
                     if (mLayoutType == TabListLayoutType.FLAT) return;
-
-                    @Nullable Pair<Integer, Tab> indexAndTab =
-                            getIndexAndTabForTabGroupId(tabGroupId);
-                    if (indexAndTab == null) return;
-                    Tab tab = indexAndTab.second;
-                    PropertyModel model = mModelList.get(indexAndTab.first).model;
-
-                    // Do not trust the `newTitle`, it may be necessary to apply a default/fallback.
-                    newTitle = getLatestTitleForTab(tab, model, /* useDefault= */ true);
-
-                    model.set(TabProperties.TITLE, newTitle);
-                    updateDescriptionString(tab, model);
-                    updateActionButtonDescriptionString(tab, model);
+                    updateTabGroupTitle(tabGroupId);
                 }
 
                 @Override
@@ -862,7 +850,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
                     switch (mLayoutType) {
                         case TabListLayoutType.NESTED:
-                            moveTabOutOfGroupInNestedLayout(movedTab);
+                            updateTabGroupStateInNestedLayout(movedTab);
                             break;
                         case TabListLayoutType.GROUPED:
                             moveTabOutOfGroupInGroupedLayout(
@@ -879,7 +867,9 @@ public class TabListMediator implements TabListNotificationHandler {
                     assert mShowingTabs;
 
                     TabModel tabModel = getCurrentTabModelChecked();
-                    if (mLayoutType != TabListLayoutType.FLAT) {
+                    if (mLayoutType == TabListLayoutType.NESTED) {
+                        updateTabGroupStateInNestedLayout(movedTab);
+                    } else if (mLayoutType == TabListLayoutType.GROUPED) {
                         List<Tab> relatedTabs = getRelatedTabsForId(movedTab.getId());
                         Pair<Integer, Integer> positions =
                                 mModelList.getIndexesForMergeToGroup(
@@ -1830,22 +1820,47 @@ public class TabListMediator implements TabListNotificationHandler {
                 : adjustIndexForTabMovement(mModelList.size(), targetTabCurrentIndex);
     }
 
-    private void moveTabOutOfGroupInNestedLayout(Tab movedTab) {
-        int index = mModelList.indexFromTabId(movedTab.getId());
-        if (index == TabModel.INVALID_TAB_INDEX) return;
-
-        PropertyModel model = mModelList.get(index).model;
-        clearTabGroupProperties(model);
-        model.set(
-                TabProperties.TAB_CLICK_LISTENER,
-                getTabActionListener(movedTab, /* isInTabGroup= */ false));
-
-        int newIndex = getInsertionIndexOfTabForNestedGroups(movedTab);
-        if (newIndex != TabModel.INVALID_TAB_INDEX && index != newIndex) {
-            mModelList.move(index, newIndex);
+    private void updateTabGroupStateInNestedLayout(Tab tab) {
+        int srcIndex = mModelList.indexFromTabId(tab.getId());
+        if (srcIndex == TabModel.INVALID_TAB_INDEX) {
+            // TODO(crbug.com/509226293): Address this for external/GTS operations (like
+            // group-to-group merges) where a tab is moved from a collapsed group (hidden in VT)
+            // to an expanded group. In this case, we must dynamically generate a new child card
+            // row so it doesn't vanish.
+            return;
         }
 
-        // TODO(crbug.com/509226293): Update the tab group title
+        PropertyModel model = mModelList.get(srcIndex).model;
+        Token oldTabGroupId = model.get(TabProperties.TAB_GROUP_ID);
+        Token newTabGroupId = tab.getTabGroupId();
+
+        if (newTabGroupId == null) {
+            // Tab is moving out of a group (becoming standalone).
+            clearTabGroupProperties(model);
+        } else {
+            // Tab is moving into a group.
+            TabModel tabModel = getCurrentTabModelChecked();
+            @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(newTabGroupId);
+            model.set(TabProperties.TAB_GROUP_ID, newTabGroupId);
+            updateTabGroupProperties(tab, model, colorId);
+        }
+
+        bindTabActionStateProperties(mTabActionState, tab, model);
+
+        int desIndex = getInsertionIndexOfTabForNestedGroups(tab);
+        // Hidden if the destination group is collapsed.
+        if (desIndex == TabModel.INVALID_TAB_INDEX) {
+            mModelList.removeAt(srcIndex);
+        } else if (srcIndex != desIndex) {
+            mModelList.move(srcIndex, desIndex);
+        }
+
+        if (newTabGroupId != null) {
+            updateTabGroupTitle(newTabGroupId);
+        }
+        if (oldTabGroupId != null && !oldTabGroupId.equals(newTabGroupId)) {
+            updateTabGroupTitle(oldTabGroupId);
+        }
     }
 
     private void moveTabOutOfGroupInGroupedLayout(
@@ -3874,6 +3889,18 @@ public class TabListMediator implements TabListNotificationHandler {
                                 isIncognito,
                                 savedTabGroup.color));
         model.set(THUMBNAIL_FETCHER, newFetcher);
+    }
+
+    private void updateTabGroupTitle(Token tabGroupId) {
+        @Nullable Pair<Integer, Tab> headerIndexAndTab = getIndexAndTabForTabGroupId(tabGroupId);
+        if (headerIndexAndTab == null) return;
+        PropertyModel headerModel = mModelList.get(headerIndexAndTab.first).model;
+        Tab tab = headerIndexAndTab.second;
+        // Do not trust the `newTitle`, it may be necessary to apply a default/fallback.
+        String title = getLatestTitleForTab(tab, headerModel, /* useDefault= */ true);
+        headerModel.set(TabProperties.TITLE, title);
+        updateDescriptionString(tab, headerModel);
+        updateActionButtonDescriptionString(tab, headerModel);
     }
 
     private void clearTabGroupProperties(PropertyModel model) {
