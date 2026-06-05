@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
@@ -1033,8 +1034,11 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLAttributionReportingBrowserTest,
           ->GetDataHostManager());
   EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationStarted).Times(1);
   EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationData).Times(0);
+  base::test::TestFuture<void> completed_future;
   EXPECT_CALL(*data_host_manager, NotifyBackgroundRegistrationCompleted)
-      .Times(1);
+      .Times(1)
+      .WillOnce(
+          [&](BackgroundRegistrationsId) { completed_future.SetValue(); });
 
   // Set up redirects according to the following redirect chain:
   // fetch("http://a.test:<port>/beacon", keepalive: true)
@@ -1053,6 +1057,8 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLAttributionReportingBrowserTest,
   // browser process in time, such that calling
   // `WaitforTotalCompleteProcessed()` here might be flaky.
   loaders_observer().WaitForTotalOnComplete({net::ERR_BLOCKED_BY_CSP});
+  ASSERT_TRUE(completed_future.Wait())
+      << "Timed out waiting for background registration completion.";
 }
 
 class KeepAliveFetchRetryBrowserTest
