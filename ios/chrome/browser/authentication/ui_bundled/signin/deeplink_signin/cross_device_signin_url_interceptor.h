@@ -27,7 +27,7 @@ class CrossDeviceSigninURLInterceptor : public URLInterceptor {
 
   ~CrossDeviceSigninURLInterceptor() override;
 
-  void OnIntercept(const UrlLoadParams& params) override;
+  bool OnIntercept(const UrlLoadParams& params) override;
 
  private:
   // Callback executed upon successful intercept and parsing.

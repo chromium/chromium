@@ -40,7 +40,7 @@ TEST_F(CrossDeviceSigninURLInterceptorTest, InterceptsValidUrl) {
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(GURL(
       "https://signin.example.com/?email=user@example.com&entry_point_id=1"));
-  interceptor->OnIntercept(params);
+  EXPECT_TRUE(interceptor->OnIntercept(params));
 
   EXPECT_EQ(intercepted_email, "user@example.com");
 }
@@ -56,7 +56,7 @@ TEST_F(CrossDeviceSigninURLInterceptorTest,
   // Missing entry_point_id.
   UrlLoadParams params = UrlLoadParams::InCurrentTab(
       GURL("https://signin.example.com/?email=user@example.com"));
-  interceptor->OnIntercept(params);
+  EXPECT_FALSE(interceptor->OnIntercept(params));
 
   EXPECT_TRUE(intercepted_email.empty());
 }
@@ -73,7 +73,7 @@ TEST_F(CrossDeviceSigninURLInterceptorTest, DoesNotInterceptIfFeatureDisabled) {
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(GURL(
       "https://signin.example.com/?email=user@example.com&entry_point_id=1"));
-  interceptor->OnIntercept(params);
+  EXPECT_FALSE(interceptor->OnIntercept(params));
 
   EXPECT_TRUE(intercepted_email.empty());
 }
@@ -89,7 +89,7 @@ TEST_F(CrossDeviceSigninURLInterceptorTest, DoesNotInterceptIfIncognito) {
       "https://signin.example.com/?email=user@example.com&entry_point_id=1"));
   params.in_incognito = true;
 
-  interceptor->OnIntercept(params);
+  EXPECT_FALSE(interceptor->OnIntercept(params));
 
   EXPECT_TRUE(intercepted_email.empty());
   EXPECT_TRUE(interceptor->prevent_normal_flow());

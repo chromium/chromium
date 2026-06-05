@@ -158,14 +158,11 @@ void SceneUrlLoadingService::RemoveInterceptor(const GURL& url) {
 bool SceneUrlLoadingService::OnIntercept(const UrlLoadParams& params) {
   URLInterceptor* matched_interceptor =
       GetActiveInterceptorForUrl(interceptors_, params.web_params.url);
-  if (matched_interceptor) {
-    matched_interceptor->OnIntercept(params);
+  if (matched_interceptor && matched_interceptor->OnIntercept(params)) {
     if (matched_interceptor->deactivates_on_match()) {
       matched_interceptor->set_active(false);
     }
-    if (matched_interceptor->prevent_normal_flow()) {
-      return true;
-    }
+    return matched_interceptor->prevent_normal_flow();
   }
 
   return false;
