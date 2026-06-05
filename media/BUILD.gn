@@ -365,6 +365,7 @@ fuzzer_test("cbcs_decryptor_fuzzer") {
     ":media",
     "//base",
     "//crypto",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
 
@@ -374,6 +375,7 @@ fuzzer_test("cenc_decryptor_fuzzer") {
     ":media",
     "//base",
     "//crypto",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
 
@@ -382,6 +384,7 @@ fuzzer_test("json_web_key_fuzzer") {
   deps = [
     ":media",
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
 

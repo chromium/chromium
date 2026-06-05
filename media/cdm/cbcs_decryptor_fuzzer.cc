@@ -7,17 +7,16 @@
 #include <stdint.h>
 
 #include <array>
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_view_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/subsample_entry.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 const std::array<uint8_t, 16> kKey = {0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
                                       0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -34,9 +33,8 @@ struct Environment {
 
 Environment* env = new Environment();
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
-  // SAFETY: LibFuzzer must pass a valid `data_ptr` and `size`.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+  const size_t size = data.size();
 
   // From the data provided:
   // 1) Use the first byte to determine how much of the buffer is "clear".
@@ -70,7 +68,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
 
   // Key_ID is never used.
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
-      "key_id", std::string(base::as_string_view(kIv)), subsamples, pattern));
+      "key_id", std::string(kIv.begin(), kIv.end()), subsamples, pattern));
 
   media::DecryptCbcsBuffer(*encrypted_buffer, kKey);
   return 0;
