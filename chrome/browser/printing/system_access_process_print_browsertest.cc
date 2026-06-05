@@ -1636,7 +1636,7 @@ IN_PROC_BROWSER_TEST_P(
   for (const auto& advanced_setting : advanced_settings) {
     advanced_setting_keys.push_back(advanced_setting.first);
   }
-  for (const auto& option : test::kPrintInfoOptions) {
+  for (const auto& option : test::GetPrintInfoOptions()) {
     print_info_options_keys.push_back(option.first);
   }
   EXPECT_THAT(advanced_setting_keys,

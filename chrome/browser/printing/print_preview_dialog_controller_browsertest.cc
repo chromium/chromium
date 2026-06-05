@@ -72,12 +72,9 @@ using content::WebContentsObserver;
 namespace {
 
 void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
-  static const base::FilePath kPdfInternalPluginPath(
-      ChromeContentClient::kPDFInternalPluginPath);
-
   std::optional<content::WebPluginInfo> pdf_internal_plugin_info =
       content::PluginService::GetInstance()->GetPluginInfoByPathForTesting(
-          kPdfInternalPluginPath);
+          base::FilePath(ChromeContentClient::kPDFInternalPluginPath));
   ASSERT_TRUE(pdf_internal_plugin_info.has_value());
 
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();

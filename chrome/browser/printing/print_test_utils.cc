@@ -24,19 +24,27 @@ namespace printing::test {
 
 const char kPrinterName[] = "DefaultPrinter";
 
-const PrinterSemanticCapsAndDefaults::Paper kPaperLetter{
-    /*display_name=*/"Letter", /*vendor_id=*/"45",
-    /*size_um=*/gfx::Size(215900, 279400),
-    /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 275872)};
-const PrinterSemanticCapsAndDefaults::Paper kPaperLegal{
-    /*display_name=*/"Legal", /*vendor_id=*/"46",
-    /*size_um=*/gfx::Size(215900, 355600),
-    /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 352072)};
+PrinterSemanticCapsAndDefaults::Paper GetPaperLetter() {
+  return PrinterSemanticCapsAndDefaults::Paper{
+      /*display_name=*/"Letter", /*vendor_id=*/"45",
+      /*size_um=*/gfx::Size(215900, 279400),
+      /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 275872)};
+}
 
-const std::vector<gfx::Size> kPrinterCapabilitiesDefaultDpis{
-    kPrinterCapabilitiesDpi};
-const PrinterBasicInfoOptions kPrintInfoOptions{{"opt1", "123"},
-                                                {"opt2", "456"}};
+PrinterSemanticCapsAndDefaults::Paper GetPaperLegal() {
+  return PrinterSemanticCapsAndDefaults::Paper{
+      /*display_name=*/"Legal", /*vendor_id=*/"46",
+      /*size_um=*/gfx::Size(215900, 355600),
+      /*printable_area_um=*/gfx::Rect(1764, 1764, 212372, 352072)};
+}
+
+std::vector<gfx::Size> GetPrinterCapabilitiesDefaultDpis() {
+  return std::vector<gfx::Size>{kPrinterCapabilitiesDpi};
+}
+
+PrinterBasicInfoOptions GetPrintInfoOptions() {
+  return PrinterBasicInfoOptions{{"opt1", "123"}, {"opt2", "456"}};
+}
 
 base::DictValue GetPrintTicket(mojom::PrinterType type) {
   base::DictValue ticket;

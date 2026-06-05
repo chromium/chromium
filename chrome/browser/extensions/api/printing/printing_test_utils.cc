@@ -63,7 +63,9 @@ constexpr int kCustomPaperWidth = 200000;
 constexpr int kCustomPaperHeight = 250000;
 constexpr int kCustomPaperMaxHeight = 300000;
 
-const printing::PaperMargins kDefaultPaperMargins = {1003, 3002, 5008, 3050};
+printing::PaperMargins GetDefaultPaperMargins() {
+  return printing::PaperMargins{1003, 3002, 5008, 3050};
+}
 
 // Mapping of the different extension types used in the test to the specific
 // manifest file names to create an extension of that type. The actual location
@@ -244,7 +246,7 @@ ConstructPrinterCapabilities() {
       /*printable_area_um=*/{kCustomPaperWidth, kCustomPaperHeight},
       /*max_height_um=*/kCustomPaperMaxHeight,
       /*has_borderless_variant=*/true,
-      /*supported_margins_um=*/kDefaultPaperMargins);
+      /*supported_margins_um=*/GetDefaultPaperMargins());
   capabilities->default_paper = iso_a4_paper;
   capabilities->papers = {std::move(iso_a4_paper), std::move(na_letter_paper),
                           std::move(custom_paper)};

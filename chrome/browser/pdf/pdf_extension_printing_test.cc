@@ -189,15 +189,15 @@ class PDFExtensionPrintingTest
         printer_name,
         /*display_name=*/"test printer",
         /*printer_description=*/"A printer for testing.",
-        printing::test::kPrintInfoOptions);
+        printing::test::GetPrintInfoOptions());
 
     auto default_caps =
         std::make_unique<printing::PrinterSemanticCapsAndDefaults>();
     default_caps->copies_max = 1;
-    default_caps->dpis = printing::test::kPrinterCapabilitiesDefaultDpis;
+    default_caps->dpis = printing::test::GetPrinterCapabilitiesDefaultDpis();
     default_caps->default_dpi = printing::test::kPrinterCapabilitiesDpi;
-    default_caps->papers.push_back(printing::test::kPaperLetter);
-    default_caps->papers.push_back(printing::test::kPaperLegal);
+    default_caps->papers.push_back(printing::test::GetPaperLetter());
+    default_caps->papers.push_back(printing::test::GetPaperLegal());
     test_print_backend_->AddValidPrinter(
         printer_name, std::move(default_caps),
         std::make_unique<printing::PrinterBasicInfo>(printer_info));

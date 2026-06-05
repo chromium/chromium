@@ -514,14 +514,14 @@ void PrintBrowserTest::AddPrinter(const std::string& printer_name) {
       printer_name,
       /*display_name=*/"test printer",
       /*printer_description=*/"A printer for testing.",
-      test::kPrintInfoOptions);
+      test::GetPrintInfoOptions());
 
   auto default_caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
   default_caps->copies_max = kTestPrinterCapabilitiesMaxCopies;
-  default_caps->dpis = test::kPrinterCapabilitiesDefaultDpis;
+  default_caps->dpis = test::GetPrinterCapabilitiesDefaultDpis();
   default_caps->default_dpi = test::kPrinterCapabilitiesDpi;
-  default_caps->papers.push_back(test::kPaperLetter);
-  default_caps->papers.push_back(test::kPaperLegal);
+  default_caps->papers.push_back(test::GetPaperLetter());
+  default_caps->papers.push_back(test::GetPaperLegal());
   test_print_backend_->AddValidPrinter(
       printer_name, std::move(default_caps),
       std::make_unique<PrinterBasicInfo>(printer_info));
