@@ -348,6 +348,13 @@ std::unique_ptr<policy::ConfigurationPolicyHandlerList> BuildPolicyHandlerList(
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
+          policy::key::kOnBulkDataEntryEnterpriseConnector,
+          enterprise_connectors::kOnBulkDataEntryPref,
+          enterprise_connectors::kOnBulkDataEntryScopePref, chrome_schema));
+
+  handlers->AddHandler(
+      std::make_unique<
+          enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
           policy::key::kOnFileDownloadedEnterpriseConnector,
           enterprise_connectors::kOnFileDownloadedPref,
           enterprise_connectors::kOnFileDownloadedScopePref, chrome_schema));

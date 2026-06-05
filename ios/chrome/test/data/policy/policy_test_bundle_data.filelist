@@ -65,6 +65,7 @@
 //ios/chrome/test/data/policy/pref_mapping/NTPContentSuggestionsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NTPCustomBackgroundEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
+//ios/chrome/test/data/policy/pref_mapping/OnBulkDataEntryEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OnFileDownloadedEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json
