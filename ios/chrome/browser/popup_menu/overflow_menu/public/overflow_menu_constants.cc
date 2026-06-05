@@ -179,8 +179,6 @@ std::optional<ActionType> ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::AskBWG;
   } else if (action == "HideToolbars") {
     return overflow_menu::ActionType::HideToolbars;
-  } else if (action == "TabGroup") {
-    NOTREACHED();
   } else if (action == "ShareThisPage") {
     return overflow_menu::ActionType::ShareThisPage;
   } else {
