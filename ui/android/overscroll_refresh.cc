@@ -59,7 +59,7 @@ OverscrollRefresh::~OverscrollRefresh() {
 void OverscrollRefresh::Reset() {
   scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
   handler_->PullReset();
-  active_action_ = OverscrollAction::kNone;
+  active_action_ = std::nullopt;
 }
 
 void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
@@ -72,8 +72,8 @@ void OverscrollRefresh::OnScrollBegin(const gfx::PointF& pos) {
 }
 
 void OverscrollRefresh::OnScrollEnd(const gfx::Vector2dF& scroll_velocity) {
-  // If the velocity does not meet the
-  // activation threshold, we infer the user is trying to cancel the gesture.
+  // If the velocity does not meet the activation threshold, we infer the user
+  // is trying to cancel the gesture.
   bool allow_activation = GetVelocityInActiveActionDirection(scroll_velocity) >
                           kMinFlingVelocityForActivation;
   Release(allow_activation);
@@ -146,8 +146,8 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
                                     : ScrollConsumptionState::kDisabled;
     if (scroll_consumption_state_ == ScrollConsumptionState::kEnabled) {
       // Make sure active_action_ is not set yet before set
-      CHECK_EQ(active_action_, OverscrollAction::kNone);
-      active_action_ = type;
+      CHECK(!active_action_.has_value());
+      active_action_ = ActiveAction{type, overscroll_edge};
     }
   }
 }
@@ -228,19 +228,28 @@ void OverscrollRefresh::Release(bool allow_refresh) {
   if (scroll_consumption_state_ == ScrollConsumptionState::kEnabled)
     handler_->PullRelease(allow_refresh);
   scroll_consumption_state_ = ScrollConsumptionState::kDisabled;
-  active_action_ = OverscrollAction::kNone;
+  active_action_ = std::nullopt;
 }
 
 float OverscrollRefresh::GetVelocityInActiveActionDirection(
     const gfx::Vector2dF& velocity) {
-  switch (active_action_) {
+  if (!active_action_.has_value()) {  // Reached as kNone when a user scrolls
+                                      // but not overscrolls
+    return 0.f;
+  }
+  switch (active_action_->action) {
     case OverscrollAction::kPullToRefresh:
       return velocity.y();
     case OverscrollAction::kPullFromBottomEdge:
       return -velocity.y();
+    case OverscrollAction::kHistoryNavigation:
+      if (active_action_->edge == BackGestureEventSwipeEdge::LEFT) {
+        return velocity.x();
+      } else {
+        return -velocity.x();
+      }
     default:
-      // TODO(crbug.com/491001724): set allow_activiation to true for history
-      // navigation for now. Will fix this in crrev.com/c/7849875
+      // Reached as kNone when a user scrolls but not overscrolls
       return 0.f;
   }
 }

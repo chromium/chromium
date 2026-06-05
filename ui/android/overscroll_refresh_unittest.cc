@@ -558,6 +558,39 @@ TEST_F(OverscrollRefreshTest,
 }
 
 TEST_F(OverscrollRefreshTest,
+       LeftEdgeHistoryNavigationCancelledByOpposingFling) {
+  effect_.OnScrollBegin(gfx::PointF(2.f, 50.f));  // Near LEFT edge
+  gfx::Vector2dF scroll_right(10, 0);
+  effect_.OnOverscrolled(cc::OverscrollBehavior(), -scroll_right,
+                         blink::WebGestureDevice::kTouchscreen);
+  ASSERT_TRUE(effect_.IsActive());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Fling in opposing direction (negative X velocity) should cancel history
+  // navigation.
+  effect_.OnScrollEnd(gfx::Vector2dF(-800, 0));
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_FALSE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest,
+       RightEdgeHistoryNavigationCancelledByOpposingFling) {
+  effect_.OnScrollBegin(
+      gfx::PointF(98.f, 50.f));  // Near RIGHT edge (viewport=100)
+  gfx::Vector2dF scroll_left(-10, 0);
+  effect_.OnOverscrolled(cc::OverscrollBehavior(), -scroll_left,
+                         blink::WebGestureDevice::kTouchscreen);
+  ASSERT_TRUE(effect_.IsActive());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Fling in opposing direction (positive X velocity) should cancel history
+  // navigation.
+  effect_.OnScrollEnd(gfx::Vector2dF(800, 0));
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_FALSE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest,
        TriggerSwipeToNavigateEverywhereOnTouchpadWithFeatureEnabled) {
   effect_.SetTouchpadOverscrollHistoryNavigation(true);
   EXPECT_FALSE(effect_.IsActive());
