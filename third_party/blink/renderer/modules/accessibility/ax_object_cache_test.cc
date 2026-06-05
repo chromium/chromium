@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
-#include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -440,8 +439,10 @@ class AXViewTransitionTest : public testing::Test {
 
   void UpdateAllLifecyclePhasesAndFinishDirectives() {
     UpdateAllLifecyclePhasesForTest();
-    ViewTransitionTestUtils::ProcessPendingDirectives(GetDocument(),
-                                                      LayerTreeHost());
+    for (auto& callback :
+         LayerTreeHost()->TakeViewTransitionCallbacksForTesting()) {
+      std::move(callback).Run({});
+    }
   }
 
   cc::LayerTreeHost* LayerTreeHost() {

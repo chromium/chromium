@@ -33,7 +33,4 @@ blink_core_sources_view_transition = [
   "view_transition_utils.h",
 ]
 
-blink_core_tests_view_transition = [
-  "view_transition_test.cc",
-  "view_transition_test_utils.h",
-]
+blink_core_tests_view_transition = [ "view_transition_test.cc" ]

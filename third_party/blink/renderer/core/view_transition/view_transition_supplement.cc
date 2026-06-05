@@ -347,29 +347,7 @@ void ViewTransitionSupplement::OnSkippedTransitionDOMCallback(
   }
 }
 
-bool ViewTransitionSupplement::HasNonScriptTransitions() const {
-  if (document_transition_ && !document_transition_->IsCreatedViaScriptAPI()) {
-    return true;
-  }
-  for (auto& element_transition : element_transitions_.Values()) {
-    if (!element_transition->IsCreatedViaScriptAPI()) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool ViewTransitionSupplement::IsEarlyCallbackEnabled() const {
-  if (!RuntimeEnabledFeatures::ViewTransitionDOMCallbackAfterCommitEnabled()) {
-    return false;
-  }
-  if (HasNonScriptTransitions()) {
-    return false;
-  }
-  return true;
-}
-
-void ViewTransitionSupplement::OnDOMCallbackReadyToRun(
+void ViewTransitionSupplement::OnTransitionCaptured(
     ViewTransition* transition) {
   CHECK(transition);
   captured_transitions_.push_back(transition);
@@ -379,32 +357,9 @@ void ViewTransitionSupplement::OnDOMCallbackReadyToRun(
     HeapVector<Member<ViewTransition>> local_copy(captured_transitions_);
     captured_transitions_.clear();
     for (auto captured_transition : local_copy) {
-      if (IsEarlyCallbackEnabled()) {
-        captured_transition->OnCaptureCommitted();
-      } else {
-        captured_transition->OnCapturePhaseComplete();
-      }
+      captured_transition->OnCapturePhaseComplete();
     }
   }
-}
-
-void ViewTransitionSupplement::OnTransitionCaptured(
-    ViewTransition* transition) {
-  CHECK(transition);
-  if (!IsEarlyCallbackEnabled()) {
-    OnDOMCallbackReadyToRun(transition);
-  } else {
-    // In early DOM callbacks mode, OnTransitionCaptured is called when
-    // capture rects are received. We just notify the waiting state machine!
-    transition->OnCaptureRectsReceived();
-  }
-}
-
-void ViewTransitionSupplement::OnCaptureCommitted(ViewTransition* transition) {
-  CHECK(transition);
-  CHECK(IsEarlyCallbackEnabled());
-
-  OnDOMCallbackReadyToRun(transition);
 }
 
 ViewTransition* ViewTransitionSupplement::GetTransition() {

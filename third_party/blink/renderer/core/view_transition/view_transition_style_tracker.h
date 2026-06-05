@@ -243,23 +243,13 @@ class ViewTransitionStyleTracker
       const AtomicString& container_name) const;
 
   void InvalidateBackdropFilterCompositingProperties();
-  bool IsOldSnapshotFrozen() const {
-    return state_ == State::kOldSnapshotFrozen;
-  }
 
  private:
   class ImageWrapperPseudoElement;
 
   // These state transitions are executed in a serial order unless the
   // transition is aborted.
-  enum class State {
-    kIdle,
-    kCapturing,
-    kOldSnapshotFrozen,
-    kCaptured,
-    kStarted,
-    kFinished
-  };
+  enum class State { kIdle, kCapturing, kCaptured, kStarted, kFinished };
   static const char* StateToString(State state);
 
   AtomicString ComputeContainingGroupName(

@@ -6463,10 +6463,6 @@
       status: "stable",
     },
     {
-      name: "ViewTransitionDOMCallbackAfterCommit",
-      status: "stable",
-    },
-    {
       name: "ViewTransitionHoistBackdropFilterEffect",
       status: "stable",
     },
