@@ -162,8 +162,6 @@ class FakeWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
 
   bool IsPageHidden() override { return is_page_hidden_; }
 
-  bool IsFrameHidden() override { return false; }
-
   void set_page_hidden(bool is_page_hidden) {
     is_page_hidden_ = is_page_hidden;
   }

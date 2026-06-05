@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test behavior of HTMLMediaElements with the media-playback-while-not-rendered permission policy</title>
+<title>Test behavior of HTMLMediaElements with the media-playback-while-not-rendered permission policy in nested iframes</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <body>
@@ -19,17 +19,20 @@
 
   function runCantPlayTest(mediaTag, mediaSrc, type) {
     async_test(function(t) {
-      const iframe = document.createElement('iframe');
-      iframe.allow = "media-playback-while-not-visible 'none'; autoplay *";
-      // Hide the iframe before it is appended so it is hidden by the time the
-      // media element is created.
-      hideFrame(iframe, type);
-      iframe.srcdoc = `<!DOCTYPE html><${mediaTag} loop></${mediaTag}>`;
-      document.body.appendChild(iframe);
-      t.add_cleanup(() => { document.body.removeChild(iframe); });
+      const intermediateIframe = document.createElement('iframe');
+      intermediateIframe.allow = "media-playback-while-not-visible 'none'; autoplay *";
+      // Hide the intermediate iframe before it is appended so it is hidden by
+      // the time the media element is created in the nested iframe.
+      hideFrame(intermediateIframe, type);
+      intermediateIframe.srcdoc =
+          `<!DOCTYPE html><html><body><iframe id='nested-iframe' srcdoc='<!DOCTYPE html><${mediaTag} loop></${mediaTag}>'></iframe></body></html>`;
+      document.body.appendChild(intermediateIframe);
+      t.add_cleanup(() => { document.body.removeChild(intermediateIframe); });
 
-      iframe.onload = t.step_func(function() {
-        const media = iframe.contentDocument.querySelector(mediaTag);
+      intermediateIframe.onload = t.step_func(function() {
+        const nestedIframe =
+            intermediateIframe.contentDocument.getElementById('nested-iframe');
+        const media = nestedIframe.contentDocument.querySelector(mediaTag);
         media.src = mediaSrc;
         assert_true(media.paused);
 
@@ -40,7 +43,7 @@
               t.done();
             });
       });
-    }, `When media-playback-while-not-visible permission policy is set, ${mediaTag} elements in non-rendered iframes shouldn't be allowed to play (type = ${type})`);
+    }, `When media-playback-while-not-visible permission policy is set, ${mediaTag} elements in non-rendered nested iframes shouldn't be allowed to play (type = ${type})`);
   }
 
   const visibility_types = ['display', 'visibility', 'zeroSize'];
@@ -50,3 +53,4 @@
   }
 </script>
 </body>
+

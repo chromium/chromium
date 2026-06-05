@@ -15,12 +15,10 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "content/public/test/render_view_test.h"
 #include "content/renderer/render_process.h"
-#include "content/test/test_render_frame.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 
 using testing::NiceMock;
@@ -199,149 +197,6 @@ TEST_F(RendererWebMediaPlayerDelegateTest, IdleDelegatesAreSuspended) {
     tick_clock_.Advance(kIdleTimeout + base::Microseconds(1));
     RunLoopOnce();
   }
-}
-
-TEST_F(RendererWebMediaPlayerDelegateTest, FrameVisibilityChanged) {
-  delegate_manager_->AddObserver(&observer_1_);
-
-  // The frame is initially rendered.
-  EXPECT_CALL(observer_1_, OnFrameHidden()).Times(testing::Exactly(1));
-  delegate_manager_->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kNotRendered);
-
-  EXPECT_CALL(observer_1_, OnFrameShown()).Times(testing::Exactly(1));
-  delegate_manager_->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kRenderedInViewport);
-}
-
-class RendererWebMediaPlayerDelegateVisibilityTest
-    : public content::RenderViewTest {
- public:
-  RendererWebMediaPlayerDelegateVisibilityTest() = default;
-
-  RendererWebMediaPlayerDelegateVisibilityTest(
-      const RendererWebMediaPlayerDelegateVisibilityTest&) = delete;
-  RendererWebMediaPlayerDelegateVisibilityTest& operator=(
-      const RendererWebMediaPlayerDelegateVisibilityTest&) = delete;
-
-  ~RendererWebMediaPlayerDelegateVisibilityTest() override = default;
-
-  void SetUp() override {
-    RenderViewTest::SetUp();
-    LoadHTML("<iframe src='data:text/html,frame 1'></iframe>");
-    blink::WebFrame* web_frame = frame()->GetWebFrame();
-    content::TestRenderFrame* child_frame =
-        static_cast<content::TestRenderFrame*>(
-            content::RenderFrameImpl::FromWebFrame(
-                web_frame->FirstChild()->ToWebLocalFrame()));
-    delegate_manager_ =
-        std::make_unique<RendererWebMediaPlayerDelegate>(child_frame);
-  }
-
-  void TearDown() override {
-    delegate_manager_.reset();
-    RenderViewTest::TearDown();
-  }
-
-  content::TestRenderFrame* frame() {
-    return static_cast<content::TestRenderFrame*>(GetMainRenderFrame());
-  }
-
-  std::unique_ptr<RendererWebMediaPlayerDelegate> delegate_manager_;
-  StrictMock<MockWebMediaPlayerDelegateObserver> child_frame_observer_;
-};
-
-TEST_F(RendererWebMediaPlayerDelegateVisibilityTest, NotRendered) {
-  delegate_manager_->SetFrameHiddenForTesting(false);
-  delegate_manager_->AddObserver(&child_frame_observer_);
-
-  blink::WebFrame* web_frame = frame()->GetWebFrame();
-  content::TestRenderFrame* child_frame =
-      static_cast<content::TestRenderFrame*>(
-          content::RenderFrameImpl::FromWebFrame(
-              web_frame->FirstChild()->ToWebLocalFrame()));
-
-  EXPECT_CALL(child_frame_observer_, OnFrameShown()).Times(testing::Exactly(0));
-  EXPECT_CALL(child_frame_observer_, OnFrameHidden())
-      .Times(testing::Exactly(1));
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kNotRendered);
-}
-
-TEST_F(RendererWebMediaPlayerDelegateVisibilityTest, RenderedInViewport) {
-  delegate_manager_->SetFrameHiddenForTesting(true);
-  delegate_manager_->AddObserver(&child_frame_observer_);
-
-  blink::WebFrame* web_frame = frame()->GetWebFrame();
-  content::TestRenderFrame* child_frame =
-      static_cast<content::TestRenderFrame*>(
-          content::RenderFrameImpl::FromWebFrame(
-              web_frame->FirstChild()->ToWebLocalFrame()));
-
-  EXPECT_CALL(child_frame_observer_, OnFrameShown()).Times(testing::Exactly(1));
-  EXPECT_CALL(child_frame_observer_, OnFrameHidden())
-      .Times(testing::Exactly(0));
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kRenderedInViewport);
-}
-
-TEST_F(RendererWebMediaPlayerDelegateVisibilityTest, RenderedOutOfViewport) {
-  delegate_manager_->SetFrameHiddenForTesting(true);
-  delegate_manager_->AddObserver(&child_frame_observer_);
-
-  blink::WebFrame* web_frame = frame()->GetWebFrame();
-  content::TestRenderFrame* child_frame =
-      static_cast<content::TestRenderFrame*>(
-          content::RenderFrameImpl::FromWebFrame(
-              web_frame->FirstChild()->ToWebLocalFrame()));
-
-  EXPECT_CALL(child_frame_observer_, OnFrameShown()).Times(testing::Exactly(1));
-  EXPECT_CALL(child_frame_observer_, OnFrameHidden())
-      .Times(testing::Exactly(0));
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kRenderedOutOfViewport);
-}
-
-TEST_F(RendererWebMediaPlayerDelegateVisibilityTest,
-       RenderedToOutOfViewportDoesNotTriggerEvents) {
-  delegate_manager_->SetFrameHiddenForTesting(false);
-  delegate_manager_->AddObserver(&child_frame_observer_);
-
-  blink::WebFrame* web_frame = frame()->GetWebFrame();
-  content::TestRenderFrame* child_frame =
-      static_cast<content::TestRenderFrame*>(
-          content::RenderFrameImpl::FromWebFrame(
-              web_frame->FirstChild()->ToWebLocalFrame()));
-
-  EXPECT_CALL(child_frame_observer_, OnFrameShown()).Times(testing::Exactly(0));
-  EXPECT_CALL(child_frame_observer_, OnFrameHidden())
-      .Times(testing::Exactly(0));
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kRenderedInViewport);
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kRenderedOutOfViewport);
-}
-
-TEST_F(RendererWebMediaPlayerDelegateVisibilityTest,
-       RepeatedNotificationsDoNotTriggerEvents) {
-  delegate_manager_->SetFrameHiddenForTesting(false);
-  delegate_manager_->AddObserver(&child_frame_observer_);
-
-  blink::WebFrame* web_frame = frame()->GetWebFrame();
-  content::TestRenderFrame* child_frame =
-      static_cast<content::TestRenderFrame*>(
-          content::RenderFrameImpl::FromWebFrame(
-              web_frame->FirstChild()->ToWebLocalFrame()));
-
-  EXPECT_CALL(child_frame_observer_, OnFrameShown()).Times(testing::Exactly(0));
-  EXPECT_CALL(child_frame_observer_, OnFrameHidden())
-      .Times(testing::Exactly(1));
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kNotRendered);
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kNotRendered);
-  child_frame->OnFrameVisibilityChanged(
-      blink::mojom::FrameVisibility::kNotRendered);
 }
 
 }  // namespace media

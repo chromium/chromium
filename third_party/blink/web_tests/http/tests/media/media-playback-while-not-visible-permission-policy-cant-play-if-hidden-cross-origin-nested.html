@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<title>Test behavior of cross-origin HTMLMediaElements with the media-playback-while-not-rendered permission policy in nested iframes</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/media-playback-while-not-visible-utils.js"></script>
+<body>
+<script>
+  internals.settings.setAutoplayPolicy('no-user-gesture-required');
+
+  function hideFrame(iframe, type) {
+    if (type === 'display') {
+      iframe.style.setProperty('display', 'none');
+    } else if (type === 'visibility') {
+      iframe.style.setProperty('visibility', 'hidden');
+    } else if (type === 'zeroSize') {
+      iframe.style.setProperty('width', '0');
+      iframe.style.setProperty('height', '0');
+    }
+  }
+
+  let visibility_types = ['display', 'visibility', 'zeroSize'];
+  for (let type of visibility_types) {
+    promise_test(async t => {
+      let iframe = document.createElement('iframe');
+      iframe.id = 'intermediate-iframe';
+      iframe.src = "http://localhost:8000/media/resources/media-playback-while-not-visible-intermediate-iframe.html";
+      document.body.appendChild(iframe);
+      await new Promise(resolve => {
+        iframe.addEventListener('load', resolve);
+      });
+
+      t.add_cleanup(() => {
+        document.body.removeChild(iframe);
+      });
+
+      // Give some time for the nested iframe to load.
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      hideFrame(iframe, type);
+
+      // Wait for the cross-origin iframe visibility state to propagate through
+      // the nested iframes.
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Attempting to play while hidden should fail with NotAllowedError.
+      assert_equals(await playMediaInIframe(iframe), 'NotAllowedError');
+      assert_equals(await queryPlayerStatus(iframe), 'Paused');
+    }, "Cross-origin media elements in non-rendered nested iframes shouldn't be allowed to play (type = " + type + ")");
+  }
+</script>
+</body>

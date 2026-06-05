@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test behavior of HTMLMediaElements with the media-playback-while-not-rendered permission policy</title>
+<title>Test behavior of HTMLMediaElements with the media-playback-while-not-rendered permission policy in nested iframes</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <body>
@@ -19,20 +19,24 @@
 
   function runPauseTest(mediaTag, mediaSrc, type) {
     async_test(function(t) {
-      const iframe = document.createElement('iframe');
-      iframe.allow = "media-playback-while-not-visible 'none'; autoplay *";
-      iframe.srcdoc = `<!DOCTYPE html><${mediaTag} autoplay loop></${mediaTag}>`;
-      document.body.appendChild(iframe);
-      t.add_cleanup(() => { document.body.removeChild(iframe); });
+      const intermediateIframe = document.createElement('iframe');
+      intermediateIframe.allow = "media-playback-while-not-visible 'none'; autoplay *";
+      intermediateIframe.srcdoc =
+          `<!DOCTYPE html><html><body><iframe id='nested-iframe' srcdoc='<!DOCTYPE html><${mediaTag} autoplay loop></${mediaTag}>'></iframe></body></html>`;
+      document.body.appendChild(intermediateIframe);
+      t.add_cleanup(() => { document.body.removeChild(intermediateIframe); });
 
-      iframe.onload = t.step_func(function() {
-        const media = iframe.contentDocument.querySelector(mediaTag);
+      intermediateIframe.onload = t.step_func(function() {
+        const nestedIframe =
+            intermediateIframe.contentDocument.getElementById('nested-iframe');
+        const media = nestedIframe.contentDocument.querySelector(mediaTag);
         assert_true(media.paused);
 
         media.addEventListener('playing', t.step_func(function() {
           assert_false(media.paused);
-          // Hiding the iframe should pause the embedded media element playback.
-          hideFrame(iframe, type);
+          // Hiding the intermediate iframe should pause the embedded media
+          // element playback in the nested iframe.
+          hideFrame(intermediateIframe, type);
 
           media.addEventListener('pause', t.step_func(function() {
             assert_true(media.paused);
@@ -47,7 +51,7 @@
 
         media.src = mediaSrc;
       });
-    }, `${mediaTag} playback should pause for hidden iframes when media-playback-while-not-visible permission policy is set (type = ${type})`);
+    }, `${mediaTag} playback should pause for nested hidden iframes when media-playback-while-not-visible permission policy is set (type = ${type})`);
   }
 
   const visibility_types = ['display', 'visibility', 'zeroSize'];
@@ -57,3 +61,4 @@
   }
 </script>
 </body>
+

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<title>Test scroll behavior of HTMLMediaElements with the media-playback-while-not-rendered permission policy</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/media-playback-while-not-visible-utils.js"></script>
+<body>
+  <div id="container" style="height: 500px; overflow: scroll;">
+    <iframe id="video-iframe" allow="media-playback-while-not-visible 'none'; autoplay *" src="http://localhost:8000/media/resources/media-playback-while-not-visible-iframe.html"></iframe>
+    <div id="very-long-content" style="height: 5000px;"></div>
+  </div>
+<script>
+  internals.settings.setAutoplayPolicy('no-user-gesture-required');
+
+  async function setUpIframeMediaPlayerInitialState() {
+    if (document.readyState !=='complete'){
+      await new Promise(resolve => {
+        window.addEventListener('load', resolve)
+      })
+    }
+
+    let iframe = document.getElementById('video-iframe');
+    let initial_status = await queryPlayerStatus(iframe);
+    if (initial_status !== 'Paused') {
+      await pauseMediaInIframe(iframe);
+    }
+    assert_equals(await queryPlayerStatus(iframe), 'Paused');
+  }
+
+  promise_test(async t => {
+      await setUpIframeMediaPlayerInitialState(t);
+      let iframe = document.getElementById('video-iframe');
+
+      // Start playing media in the iframe.
+      assert_equals(await playMediaInIframe(iframe), 'Success');
+      assert_equals(await queryPlayerStatus(iframe), 'Playing');
+
+      let stateChangePromise = expectMediaPlayerStateChangeInIframe(iframe);
+      // Scroll the iframe out of view.
+      let container = document.getElementById('container');
+      container.scrollTop = container.scrollHeight;
+      assert_equals(await stateChangePromise, 'Timed out waiting for statechange');
+      assert_equals(await queryPlayerStatus(iframe), 'Playing');
+    }, "Media playback should not pause if iframe is scrolled out of view when permission policy is set");
+</script>
+</body>

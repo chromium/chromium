@@ -57,10 +57,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerDelegate {
   // Returns true if the hosting page (WebView) is hidden or closed.
   virtual bool IsPageHidden() = 0;
 
-  // Returns true if the WebMediaPlayer's host frame is hidden or destroyed in
-  // the document. Returns false otherwise.
-  virtual bool IsFrameHidden() = 0;
-
   // Subscribe to observer callbacks. A player must use the returned |player_id|
   // for the rest of the calls below.
   virtual int AddObserver(Observer* observer) = 0;
