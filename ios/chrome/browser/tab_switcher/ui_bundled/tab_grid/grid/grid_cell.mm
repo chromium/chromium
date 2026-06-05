@@ -117,6 +117,10 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 @property(nonatomic, strong) UIView* groupingBackgroundView;
 // Dimming view over the cell contents while cell is highlighted.
 @property(nonatomic, strong) UIView* dimmingView;
+// The trait change registration object for system trait changes.
+@property(nonatomic, strong) id<UITraitChangeRegistration> traitRegistration;
+// The window scene that the trait change registration is registered on.
+@property(nonatomic, weak) UIWindowScene* registeredWindowScene;
 
 @end
 
@@ -292,6 +296,10 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   return self;
 }
 
+- (void)dealloc {
+  [self updateInterfaceStyleForWindow:nil];
+}
+
 #pragma mark - UIView
 
 - (void)didMoveToWindow {
@@ -309,6 +317,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
+  [self updateInterfaceStyleForWindow:nil];
   self.title = nil;
   self.icon = nil;
   self.snapshot = nil;
@@ -357,7 +366,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 // Updates the theme to either forced dark or dynamic. Updating is only done if
 // the current theme is not the desired theme.
 - (void)setTheme:(GridTheme)theme {
-  if (_theme == theme) {
+  if (self.registeredWindowScene && _theme == theme) {
     return;
   }
 
@@ -371,6 +380,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
           [UIColor colorNamed:kStaticBlue400Color].CGColor;
       break;
     case GridTheme::kDark:
+      [self updateInterfaceStyleForWindow:nil];
       self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
       self.border.layer.borderColor = UIColor.whiteColor.CGColor;
       break;
@@ -795,16 +805,23 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 // If window is not nil, register for updates to its interface style updates and
 // set the user interface style to be the same as the window.
 - (void)updateInterfaceStyleForWindow:(UIWindow*)window {
+  if (self.traitRegistration && self.registeredWindowScene) {
+    [self.registeredWindowScene
+        unregisterForTraitChanges:self.traitRegistration];
+    self.traitRegistration = nil;
+    self.registeredWindowScene = nil;
+  }
   if (!window) {
     return;
   }
-  [self.window.windowScene
+  self.registeredWindowScene = window.windowScene;
+  self.traitRegistration = [window.windowScene
       registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                    withTarget:self
                        action:@selector(interfaceStyleChangedForWindow:
                                                        traitCollection:)];
   self.overrideUserInterfaceStyle =
-      self.window.windowScene.traitCollection.userInterfaceStyle;
+      window.windowScene.traitCollection.userInterfaceStyle;
 }
 
 // Callback for the observation of the user interface style trait of the window
@@ -812,7 +829,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 - (void)interfaceStyleChangedForWindow:(UIView*)window
                        traitCollection:(UITraitCollection*)traitCollection {
   self.overrideUserInterfaceStyle =
-      self.window.windowScene.traitCollection.userInterfaceStyle;
+      self.registeredWindowScene.traitCollection.userInterfaceStyle;
 }
 
 // Updates the size of the 'top bar' UI when the view's UITraits change.
