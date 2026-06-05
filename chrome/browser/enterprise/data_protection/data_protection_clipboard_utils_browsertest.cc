@@ -118,15 +118,14 @@ class DataControlsClipboardUtilsBrowserTest
         machine_scope());
 
 #if BUILDFLAG(IS_CHROMEOS)
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidToken("fake_dm_token"));
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 #else
     if (machine_scope()) {
       policy::SetDMTokenForTesting(
-          policy::DMToken::CreateValidToken("fake_dm_token"));
+          policy::DMToken::CreateValidToken("dm_token"));
     } else {
       enterprise_connectors::test::SetProfileDMToken(browser()->profile(),
-                                                     "fake_dm_token");
+                                                     "dm_token");
     }
 #endif
 
@@ -140,7 +139,7 @@ class DataControlsClipboardUtilsBrowserTest
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
             &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
-            base::DoNothing(), status_callback, "fake_dm_token"));
+            base::DoNothing(), status_callback, "dm_token"));
   }
 
   bool machine_scope() const { return std::get<0>(GetParam()); }
@@ -2225,6 +2224,37 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteFromGeminiIfAllowedByPolicy_WarnedThenBlocked) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  base::RunLoop run_loop;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("GEMINI");
+  expected_event.set_destination(url.spec());
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(1000);
+  expected_event.set_trigger(chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_name("");
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
         "restrictions": [
           {"class": "CLIPBOARD", "level": "WARN"}
@@ -2237,10 +2267,6 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   SetupContentAnalysisToBlock();
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(contents(), url));
-
   data_controls::DesktopDataControlsDialogTestHelper dialog_helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
@@ -2250,14 +2276,74 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    future.GetCallback());
 
   dialog_helper.WaitForDialogToInitialize();
+  run_loop.Run();
+
+  base::RunLoop run_loop_bypass;
+  event_validator = event_report_validator_helper_->CreateValidator();
+
+  event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event_bypass;
+  expected_event_bypass.set_url(url.spec());
+  expected_event_bypass.set_tab_url(url.spec());
+  expected_event_bypass.set_source("GEMINI");
+  expected_event_bypass.set_destination(url.spec());
+  expected_event_bypass.set_content_type("text/plain");
+  expected_event_bypass.set_content_size(1000);
+  expected_event_bypass.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::
+          WEB_CONTENT_UPLOAD);
+  expected_event_bypass.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_bypass;
+  triggered_rule_bypass.set_rule_name("");
+  *expected_event_bypass.add_triggered_rule_info() = triggered_rule_bypass;
+  expected_event_bypass.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event_bypass.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event_bypass));
+
   dialog_helper.BypassWarning();
   dialog_helper.WaitForDialogToClose();
 
   EXPECT_FALSE(future.Get());
+  run_loop_bypass.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteFromGeminiIfAllowedByPolicy_DataControlsBlocked) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  base::RunLoop run_loop;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("GEMINI");
+  expected_event.set_destination(url.spec());
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(1000);
+  expected_event.set_trigger(chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BLOCKED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_name("");
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
         "restrictions": [
           {"class": "CLIPBOARD", "level": "BLOCK"}
@@ -2268,20 +2354,48 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       })"},
                                  machine_scope());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(contents(), url));
-
   base::test::TestFuture<bool> future;
   PasteFromGeminiIfAllowedByPolicy(contents()->GetPrimaryMainFrame(),
                                    std::string(1000, 'a'),
                                    future.GetCallback());
 
   EXPECT_FALSE(future.Get());
+  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        PasteFromGeminiIfAllowedByPolicy_DataControlsWarned) {
+  active_user_test_mixin_->SetFakeCookieValue();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(contents(), url));
+
+  base::RunLoop run_loop;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop.QuitClosure());
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event;
+  expected_event.set_url(url.spec());
+  expected_event.set_tab_url(url.spec());
+  expected_event.set_source("GEMINI");
+  expected_event.set_destination(url.spec());
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(1000);
+  expected_event.set_trigger(chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+  expected_event.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_name("");
+  *expected_event.add_triggered_rule_info() = triggered_rule;
+  expected_event.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event));
+
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
         "restrictions": [
           {"class": "CLIPBOARD", "level": "WARN"}
@@ -2292,10 +2406,6 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
       })"},
                                  machine_scope());
 
-  ASSERT_TRUE(embedded_test_server()->Start());
-  GURL url = embedded_test_server()->GetURL("/empty.html");
-  ASSERT_TRUE(content::NavigateToURL(contents(), url));
-
   data_controls::DesktopDataControlsDialogTestHelper dialog_helper(
       data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
 
@@ -2305,9 +2415,38 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                                    future.GetCallback());
 
   dialog_helper.WaitForDialogToInitialize();
+  run_loop.Run();
+
+  base::RunLoop run_loop_bypass;
+  event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
+
+  chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_event_bypass;
+  expected_event_bypass.set_url(url.spec());
+  expected_event_bypass.set_tab_url(url.spec());
+  expected_event_bypass.set_source("GEMINI");
+  expected_event_bypass.set_destination(url.spec());
+  expected_event_bypass.set_content_type("text/plain");
+  expected_event_bypass.set_content_size(1000);
+  expected_event_bypass.set_trigger(
+      chrome::cros::reporting::proto::DataTransferEventTrigger::
+          WEB_CONTENT_UPLOAD);
+  expected_event_bypass.set_event_result(
+      chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+
+  ::chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule_bypass;
+  triggered_rule_bypass.set_rule_name("");
+  *expected_event_bypass.add_triggered_rule_info() = triggered_rule_bypass;
+  expected_event_bypass.set_profile_identifier(
+      browser()->profile()->GetPath().AsUTF8Unsafe());
+  expected_event_bypass.set_profile_user_name(kUserName);
+
+  event_validator.ExpectSensitiveDataEvent(std::move(expected_event_bypass));
+
   dialog_helper.BypassWarning();
   dialog_helper.WaitForDialogToClose();
 
   EXPECT_TRUE(future.Get());
+  run_loop_bypass.Run();
 }
 }  // namespace enterprise_data_protection

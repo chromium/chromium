@@ -53,6 +53,14 @@ class MockReportingEventRouter
                const data_controls::Verdict&),
               (override));
   MOCK_METHOD(void,
+              ReportPasteFromGemini,
+              (const GURL&,
+               const std::string&,
+               const data_controls::Verdict&,
+               int64_t,
+               bool),
+              (override));
+  MOCK_METHOD(void,
               ReportCopy,
               (const data_controls::ClipboardContext&,
                const data_controls::Verdict&),

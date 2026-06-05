@@ -49,6 +49,7 @@
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
@@ -85,6 +86,14 @@ GURL GetUrlFromEndpoint(const content::ClipboardEndpoint& endpoint) {
     return GURL();
   }
   return *endpoint.data_transfer_endpoint()->GetURL();
+}
+
+GURL GetSourceURL(content::RenderFrameHost* rfh) {
+  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
+  if (dom_distiller::url_utils::IsDistilledPage(url)) {
+    url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
+  }
+  return url;
 }
 
 bool SkipDataControlOrContentAnalysisChecks(
@@ -264,6 +273,35 @@ data_controls::DataControlsDialogFactory* GetDialogFactory() {
 #else
   return nullptr;
 #endif
+}
+
+void MaybeReportDataControlsPasteFromGemini(
+    content::RenderFrameHost* destination,
+    const data_controls::Verdict& verdict,
+    int64_t content_size,
+    bool bypassed = false) {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  auto* router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          destination->GetBrowserContext());
+
+  // `router` can be null for incognito browser contexts, so since there's no
+  // reporting in that case we just return early.
+  if (!router) {
+    return;
+  }
+
+  std::string email;
+  if (auto* profile =
+          Profile::FromBrowserContext(destination->GetBrowserContext())) {
+    email = enterprise_connectors::ContentAreaUserProvider::GetUser(
+        profile, content::WebContents::FromRenderFrameHost(destination),
+        GetSourceURL(destination));
+  }
+
+  router->ReportPasteFromGemini(GetSourceURL(destination), email, verdict,
+                                content_size, bypassed);
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 void MaybeReportDataControlsPaste(const content::ClipboardEndpoint& source,
@@ -635,14 +673,6 @@ void IsCopyRestrictedByDialog(
   }
 
   IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
-}
-
-GURL GetSourceURL(content::RenderFrameHost* rfh) {
-  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
-  if (dom_distiller::url_utils::IsDistilledPage(url)) {
-    url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
-  }
-  return url;
 }
 
 content::ClipboardEndpoint MakeClipboardEndpoint(
@@ -1267,9 +1297,9 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
       auto* factory = GetDialogFactory();
 
       switch (verdict.level()) {
-        // TODO(crbug.com/515092886): Emit reports for kReport, kWarn, and
-        // kBlock verdicts.
         case data_controls::Rule::Level::kBlock:
+          MaybeReportDataControlsPasteFromGemini(destination, verdict,
+                                                 data.size());
           if (factory) {
             factory->ShowDialogIfNeeded(
                 content::WebContents::FromRenderFrameHost(destination),
@@ -1278,16 +1308,21 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
           std::move(callback).Run(false);
           return;
         case data_controls::Rule::Level::kWarn:
+          MaybeReportDataControlsPasteFromGemini(destination, verdict,
+                                                 data.size());
           if (factory) {
             factory->ShowDialogIfNeeded(
                 content::WebContents::FromRenderFrameHost(destination),
                 data_controls::DataControlsDialog::Type::kClipboardPasteWarn,
                 base::BindOnce(
                     [](content::GlobalRenderFrameHostId rfh_id,
-                       std::string content_text,
+                       std::string content_text, data_controls::Verdict verdict,
                        base::OnceCallback<void(bool)> cb, bool bypassed) {
                       auto* rfh = content::RenderFrameHost::FromID(rfh_id);
                       if (bypassed && rfh) {
+                        MaybeReportDataControlsPasteFromGemini(
+                            rfh, verdict, content_text.size(),
+                            /*bypassed=*/true);
                         PasteFromGeminiIfAllowedByContentAnalysis(
                             rfh, std::move(content_text), std::move(cb));
                       } else {
@@ -1295,12 +1330,15 @@ void PasteFromGeminiIfAllowedByPolicy(content::RenderFrameHost* destination,
                       }
                     },
                     destination->GetGlobalId(), std::move(data),
-                    std::move(callback)));
+                    std::move(verdict), std::move(callback)));
           } else {
             std::move(callback).Run(false);
           }
           return;
         case data_controls::Rule::Level::kReport:
+          MaybeReportDataControlsPasteFromGemini(destination, verdict,
+                                                 data.size());
+          break;
         case data_controls::Rule::Level::kAllow:
         case data_controls::Rule::Level::kNotSet:
           break;

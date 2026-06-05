@@ -241,6 +241,11 @@ class ReportingEventRouter : public KeyedService {
   virtual void ReportPasteWarningBypassed(
       const data_controls::ClipboardContext& context,
       const data_controls::Verdict& verdict);
+  virtual void ReportPasteFromGemini(const GURL& destination_url,
+                                     const std::string& destination_active_user,
+                                     const data_controls::Verdict& verdict,
+                                     int64_t content_size,
+                                     bool bypassed);
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
  private:
