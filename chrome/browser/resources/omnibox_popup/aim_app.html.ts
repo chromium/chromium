@@ -17,6 +17,11 @@ export function getHtml(this: OmniboxAimAppElement) {
   ${this.composeboxForkEnabled_ ? html`
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
+      ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
+      .showMenuOnClick="${false}"
+      .shouldShowGhostFiles="${true}"
+      .usePecApi="${this.usePecApi_}"
+      .smartComposeEnabled="${this.smartComposeEnabled_}"
       .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
       .isOblongShape="${this.isOblongShape_}"
       .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"

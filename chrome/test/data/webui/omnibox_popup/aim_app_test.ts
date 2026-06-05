@@ -410,4 +410,41 @@ suite('AimAppTest', function() {
         app.$.composebox.style.getPropertyValue(
             '--cr_composebox_minimum_width'));
   });
+
+  test(
+      'Passes props and attributes to OmniboxComposeboxElement',
+      async function() {
+        loadTimeData.overrideValues({
+          composeboxForkEnabled: true,
+          composeboxSmartComposeEnabled: true,
+          caretAnimationEnabled: false,
+          contextualMenuUsePecApi: true,
+          searchboxLayoutMode: 'TallBottomContext',
+          contextButtonShapeIsOblong: true,
+          webuiOmniboxSimplificationEnabled: true,
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        const app = document.createElement('omnibox-aim-app');
+        document.body.appendChild(app);
+        await microtasksFinished();
+        app.setHasAllowedInputsForTesting(true);
+        await app.updateComplete;
+
+        const composebox = app.$.composebox;
+
+        assertTrue(composebox.hasAttribute('searchbox-next-enabled'));
+        assertTrue(composebox.hasAttribute('disable-caret-color-animation'));
+        assertEquals(
+            'TallBottomContext',
+            composebox.getAttribute('searchbox-layout-mode'));
+        assertEquals('forward', composebox.submitButtonIconType);
+        assertTrue(composebox.isOblongShape);
+        assertTrue(composebox.webuiOmniboxSimplificationEnabled);
+        assertTrue(composebox.showVoiceSearch);
+        assertFalse(composebox.disableVoiceSearchAnimation);
+        assertFalse(composebox.showMenuOnClick);
+        assertTrue(composebox.shouldShowGhostFiles);
+        assertTrue(composebox.usePecApi);
+        assertTrue(composebox.smartComposeEnabled);
+      });
 });

@@ -61,6 +61,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       smartTabSharingVisible_: {type: Boolean},
       isOblongShape_: {type: Boolean},
       webuiOmniboxSimplificationEnabled_: {type: Boolean},
+      smartComposeEnabled_: {type: Boolean},
     };
   }
 
@@ -92,6 +93,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
   protected accessor webuiOmniboxSimplificationEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxSimplificationEnabled');
+  protected accessor smartComposeEnabled_: boolean =
+      loadTimeData.getBoolean('composeboxSmartComposeEnabled');
 
   private eventTracker_ = new EventTracker();
   private browserProxy_: BrowserProxy;
