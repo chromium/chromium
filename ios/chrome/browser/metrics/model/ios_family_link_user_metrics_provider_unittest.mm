@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/metrics/model/ios_family_link_user_metrics_provider.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
@@ -14,7 +15,9 @@
 #import "components/supervised_user/core/browser/supervised_user_log_record.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
+#import "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -23,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -67,24 +71,8 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
         IdentityManagerFactory::GetForProfile(profile), account);
 
     if (is_subject_to_parental_controls) {
-      // Note: in prod environment, prefs::kSupervisedUserSafeSites and
-      // kDefaultSupervisedUserFilteringBehavioris are set to true in the
-      // managed pref store automatically after enabling parental controls.
-      // However, this testing profile lacks this infrastructure (supervised
-      // user service and settings service), so we're setting this *before*
-      // enabling parental controls. After EnableParentalControls call, system
-      // is correctly supervised.
-      sync_preferences::TestingPrefServiceSyncable* pref_service =
-          static_cast<TestProfileIOS*>(profile)->GetTestingPrefService();
-      pref_service->SetSupervisedUserPref(
-          prefs::kDefaultSupervisedUserFilteringBehavior,
-          base::Value(
-              static_cast<int>(supervised_user::FilteringBehavior::kAllow)));
-      pref_service->SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                          base::Value(true));
-
-      // Enable parental controls only after, so that the system is in
-      // consistent state.
+      // This activates the settings service in its default state
+      // (WebFilterType::kTryToBlockMatureSites).
       supervised_user::EnableParentalControls(*profile->GetPrefs());
     }
   }
@@ -104,28 +92,17 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   }
 
   void RestrictAllSitesForSupervisedUser(ProfileIOS* profile) {
-    // Note: overrides the setting in the user pref store in the context of user
-    // managed by family link.
-    static_cast<TestProfileIOS*>(profile)
-        ->GetTestingPrefService()
-        ->SetSupervisedUserPref(
-            prefs::kDefaultSupervisedUserFilteringBehavior,
-            base::Value(
-                static_cast<int>(supervised_user::FilteringBehavior::kBlock)));
+    supervised_user::SupervisedUserTestEnvironment::SetWebFilterType(
+        supervised_user::WebFilterType::kCertainSites,
+        *supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+            profile));
   }
 
   void AllowUnsafeSitesForSupervisedUser(ProfileIOS* profile) {
-    // Note: overrides the setting in the user pref store in the context of user
-    // managed by family link. In true environment, for these users, this
-    // happens in the supervised user pref store.
-    sync_preferences::TestingPrefServiceSyncable* pref_service =
-        static_cast<TestProfileIOS*>(profile)->GetTestingPrefService();
-    pref_service->SetSupervisedUserPref(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        base::Value(
-            static_cast<int>(supervised_user::FilteringBehavior::kAllow)));
-    pref_service->SetSupervisedUserPref(prefs::kSupervisedUserSafeSites,
-                                        base::Value(false));
+    supervised_user::SupervisedUserTestEnvironment::SetWebFilterType(
+        supervised_user::WebFilterType::kAllowAllSites,
+        *supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+            profile));
   }
 
   ProfileIOS* default_profile() { return default_profile_.get(); }
@@ -149,6 +126,8 @@ class IOSFamilyLinkUserMetricsProviderTest : public PlatformTest {
   raw_ptr<ProfileIOS> default_profile_;
 
   IOSFamilyLinkUserMetricsProvider metrics_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      supervised_user::kSupervisedUserUseUrlFilteringService};
 };
 
 TEST_F(IOSFamilyLinkUserMetricsProviderTest,
