@@ -64,11 +64,6 @@ InputHandlerClient::ScrollEventDispatchMode GetScrollEventDispatchMode() {
                  kScrollEventDispatchModeUseScrollPredictorForDeadline) {
     return InputHandlerClient::ScrollEventDispatchMode::
         kUseScrollPredictorForDeadline;
-  } else if (mode_name ==
-             ::features::
-                 kScrollEventDispatchModeDispatchScrollEventsUntilDeadline) {
-    return InputHandlerClient::ScrollEventDispatchMode::
-        kDispatchScrollEventsUntilDeadline;
   }
 
   return InputHandlerClient::ScrollEventDispatchMode::kEnqueueScrollEvents;

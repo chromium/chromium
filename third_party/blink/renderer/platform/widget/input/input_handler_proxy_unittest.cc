@@ -1526,7 +1526,7 @@ TEST_P(InputHandlerProxyEventQueueTest, EmptyGestureScrollUpdateHistogram) {
 
   input_handler_proxy_->SetScrollEventDispatchMode(
       cc::InputHandlerClient::ScrollEventDispatchMode::
-          kDispatchScrollEventsUntilDeadline,
+          kDispatchScrollEventsImmediately,
       0.333);
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
@@ -1612,7 +1612,7 @@ TEST_P(InputHandlerProxyEventQueueTest, FilterOutEmptyUpdates) {
 
   input_handler_proxy_->SetScrollEventDispatchMode(
       cc::InputHandlerClient::ScrollEventDispatchMode::
-          kDispatchScrollEventsUntilDeadline,
+          kDispatchScrollEventsImmediately,
       0.333);
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
@@ -1682,7 +1682,7 @@ TEST_P(InputHandlerProxyEventQueueTest,
 
   input_handler_proxy_->SetScrollEventDispatchMode(
       cc::InputHandlerClient::ScrollEventDispatchMode::
-          kDispatchScrollEventsUntilDeadline,
+          kDispatchScrollEventsImmediately,
       0.333);
 
   EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
@@ -3459,90 +3459,6 @@ TEST_P(InputHandlerProxyEventQueueTest, GestureEventAttribution) {
   testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
 }
 
-// Tests that when we are only dispatching events until the deadline, that input
-// arriving after the deadline is enqueued. As well any MISSED BeginFrames
-// arriving after the deadline do not dispatch any enqueued input events.
-TEST_P(InputHandlerProxyEventQueueTest, QueueInputForLateBeginFrameArgs) {
-  // This test verifies the legacy deadline-based dispatch
-  // mode, which is superseded by the kUpdateScrollPredictorInputMapping
-  // feature. It should only run when the new feature is disabled.
-  if (IsUpdateScrollPredictorInputMappingEnabled()) {
-    return;
-  }
-
-  base::SimpleTestTickClock tick_clock;
-  tick_clock.SetNowTicks(base::TimeTicks::Now());
-  SetInputHandlerProxyTickClockForTesting(&tick_clock);
-  input_handler_proxy_->SetScrollEventDispatchMode(
-      cc::InputHandlerClient::ScrollEventDispatchMode::
-          kDispatchScrollEventsUntilDeadline,
-      0.333);
-
-  // ScrollBegin should idenfity the target element, and the event should be
-  // processed immediately without being queued.
-  EXPECT_CALL(mock_input_handler_, ScrollBegin(_, _))
-      .WillOnce(testing::Return(kImplThreadScrollState));
-  EXPECT_CALL(
-      mock_input_handler_,
-      RecordScrollBegin(ui::ScrollInputType::kTouchscreen,
-                        cc::ScrollBeginThreadState::kScrollingOnCompositor))
-      .Times(1);
-  if (!::features::IsCCSlimmingEnabled()) {
-    EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_)).Times(1);
-  }
-  HandleGestureEventWithSourceDevice(WebInputEvent::Type::kGestureScrollBegin,
-                                     WebGestureDevice::kTouchscreen);
-  EXPECT_EQ(0ul, event_queue().size());
-  EXPECT_EQ(1ul, event_disposition_recorder_.size());
-  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
-
-  // When a BeginFrame is received, if the queue is empty we should dispatch
-  // any incoming scroll event immediately. As long as it is before the
-  // deadline.
-  DeliverInputForBeginFrame(tick_clock.NowTicks());
-  if (!::features::IsCCSlimmingEnabled()) {
-    EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_)).Times(1);
-  }
-  EXPECT_CALL(mock_input_handler_, ScrollUpdate).Times(1);
-  HandleGestureEventWithSourceDevice(WebInputEvent::Type::kGestureScrollUpdate,
-                                     WebGestureDevice::kTouchscreen, -20);
-  EXPECT_EQ(0ul, event_queue().size());
-  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
-
-  // When a BeginFrame is received, and the input arrives after the deadline,
-  // the event should be enqueued. We should signal that we still require
-  // BeginFrames by calling SetNeedsAnimateInput.
-  constexpr base::TimeDelta interval = base::Milliseconds(16);
-  tick_clock.Advance(interval);
-  DeliverInputForBeginFrame(tick_clock.NowTicks());
-  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput());
-  EXPECT_CALL(mock_input_handler_, ScrollUpdate).Times(0);
-  constexpr base::TimeDelta after_deadline = interval * 0.4f;
-  tick_clock.Advance(after_deadline);
-  HandleGestureEventWithSourceDevice(WebInputEvent::Type::kGestureScrollUpdate,
-                                     WebGestureDevice::kTouchscreen, -20);
-  EXPECT_EQ(1ul, event_queue().size());
-  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
-
-  // When a BeginFrame is received, that is of viz::BeginFrameArgs::MISSED, and
-  // arrives after the deadline. We should not process the queue.
-  tick_clock.Advance(interval);
-  const base::TimeTicks missed_frame_time = tick_clock.NowTicks();
-  tick_clock.Advance(after_deadline);
-  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput());
-  DeliverInputForBeginFrame(missed_frame_time, viz::BeginFrameArgs::MISSED);
-  EXPECT_EQ(1ul, event_queue().size());
-  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
-
-  // When a regular BeginFrame arrives we resume processing the queue.
-  if (!::features::IsCCSlimmingEnabled()) {
-    EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_)).Times(1);
-  }
-  EXPECT_CALL(mock_input_handler_, ScrollUpdate);
-  DeliverInputForBeginFrame(tick_clock.NowTicks());
-  EXPECT_EQ(0ul, event_queue().size());
-  testing::Mock::VerifyAndClearExpectations(&mock_input_handler_);
-}
 
 class InputHandlerProxyMainThreadScrollingReasonTest
     : public InputHandlerProxyTest {

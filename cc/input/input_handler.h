@@ -152,11 +152,6 @@ class CC_EXPORT InputHandlerClient {
     // `kUseScrollPredictorForEmptyQueue`. After which we will resume frame
     // production and enqueuing input.
     kUseScrollPredictorForDeadline,
-
-    // Will perform as `kDispatchScrollEventsImmediately` until the deadline.
-    // However no input arriving after the deadline will dispatch. Event if
-    // frame production has yet to complete.
-    kDispatchScrollEventsUntilDeadline,
   };
 
   InputHandlerClient(const InputHandlerClient&) = delete;
