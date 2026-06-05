@@ -855,11 +855,13 @@ class ReadAnythingAppModel {
   void FlattenAXTree(ui::AXSerializableTree* tree);
 
   // Logs the execution time for each step of the Readability mapping algorithm.
-  void RecordReadabilityMappingMetrics(base::TimeDelta total_duration,
-                                       base::TimeDelta flattening_duration,
-                                       base::TimeDelta suffix_array_duration,
-                                       base::TimeDelta initial_anchors_duration,
-                                       base::TimeDelta gap_alignment_duration);
+  void RecordReadabilityMappingMetrics(
+      const std::vector<std::u16string>& blocks,
+      base::TimeDelta total_duration,
+      base::TimeDelta flattening_duration,
+      base::TimeDelta suffix_array_duration,
+      base::TimeDelta initial_anchors_duration,
+      base::TimeDelta gap_alignment_duration);
 
   // Checks if a candidate AXTree range overlaps with text that has already
   // been mapped to a distilled block. This prevents multiple mappings to the

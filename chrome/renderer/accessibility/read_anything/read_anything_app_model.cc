@@ -1476,7 +1476,7 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   }
 
   RecordReadabilityMappingMetrics(
-      total_timer.Elapsed(), flattening_duration, suffix_array_duration,
+      blocks, total_timer.Elapsed(), flattening_duration, suffix_array_duration,
       initial_anchors_duration, gap_alignment_duration);
 
   return true;
@@ -1914,11 +1914,31 @@ ReadAnythingAppModel::CreateSegmentsForMatch(size_t ax_start,
 }
 
 void ReadAnythingAppModel::RecordReadabilityMappingMetrics(
+    const std::vector<std::u16string>& blocks,
     base::TimeDelta total_duration,
     base::TimeDelta flattening_duration,
     base::TimeDelta suffix_array_duration,
     base::TimeDelta initial_anchors_duration,
     base::TimeDelta gap_alignment_duration) {
+  size_t total_distilled_chars = 0;
+  for (const auto& block : blocks) {
+    total_distilled_chars += block.length();
+  }
+
+  if (total_distilled_chars > 0) {
+    size_t total_mapped_chars = 0;
+    for (const auto& block_segments : text_to_ax_map_) {
+      for (const auto& segment : block_segments) {
+        total_mapped_chars += (segment.end - segment.start);
+      }
+    }
+    int success_rate =
+        static_cast<int>((total_mapped_chars * 100) / total_distilled_chars);
+    base::UmaHistogramPercentage(
+        "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate",
+        success_rate);
+  }
+
   base::UmaHistogramTimes(
       "Accessibility.ReadAnything.ReadabilityMapping.1_Flattening."
       "ExecutionTime",

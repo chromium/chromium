@@ -3298,6 +3298,17 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.ReadabilityMapping.SuccessRate"
+    units="%" expires_after="2027-01-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    The percentage of characters in the distilled Readability output that were
+    successfully mapped back to an AXNode in the original page. Recorded once
+    per successful mapping attempt.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.ReadAnything.ReadabilityMapping.{Step}.ExecutionTime"
     units="ms" expires_after="2027-01-01">

@@ -2519,7 +2519,7 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_ResetsMappingState) {
 TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_RecordsMetrics) {
   base::HistogramTester histograms;
   model().set_should_map_rendered_text_to_tree_for_readability(true);
-  // Setup a simple tree
+  // Setup a tree
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   update.root_id = 1;
@@ -2527,6 +2527,8 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_RecordsMetrics) {
   ApplyAccessibilityUpdates(tree_id_, {update});
   model().MapRenderedTextToTree({u"Hello World"});
 
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate", 100, 1);
   histograms.ExpectTotalCount(
       "Accessibility.ReadAnything.ReadabilityMapping.0_Total.ExecutionTime", 1);
   histograms.ExpectTotalCount(
@@ -2545,6 +2547,25 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_RecordsMetrics) {
       "Accessibility.ReadAnything.ReadabilityMapping.4_GapAlignment."
       "ExecutionTime",
       1);
+}
+
+TEST_F(ReadAnythingAppModelTest,
+       MapRenderedTextToTree_RecordsPartialSuccessRate) {
+  base::HistogramTester histograms;
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  // Setup a tree
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = 1;
+  update.nodes = {test::TextNode(1, u"Mapped Text")};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+
+  // Provide two blocks: one that matches perfectly, and one that doesn't match
+  // at all. Both blocks are the same length (11 characters).
+  model().MapRenderedTextToTree({u"Mapped Text", u"Unmap Text!"});
+
+  histograms.ExpectUniqueSample(
+      "Accessibility.ReadAnything.ReadabilityMapping.SuccessRate", 50, 1);
 }
 
 TEST_F(ReadAnythingAppModelTest,
