@@ -644,16 +644,9 @@ class SystemTrayClientShowChannelInfoGiveFeedbackTest
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-// TODO(crbug.com/40857702): Flaky on release bots.
-#if defined(NDEBUG)
-#define MAYBE_RecordFeedbackSourceChannelIndicator \
-  DISABLED_RecordFeedbackSourceChannelIndicator
-#else
-#define MAYBE_RecordFeedbackSourceChannelIndicator \
-  RecordFeedbackSourceChannelIndicator
-#endif
+// TODO(crbug.com/520272283): Disabled due to segfaulting.
 IN_PROC_BROWSER_TEST_F(SystemTrayClientShowChannelInfoGiveFeedbackTest,
-                       MAYBE_RecordFeedbackSourceChannelIndicator) {
+                       DISABLED_RecordFeedbackSourceChannelIndicator) {
   base::HistogramTester histograms;
   auto tray_test_api = ash::SystemTrayTestApi::Create();
 
