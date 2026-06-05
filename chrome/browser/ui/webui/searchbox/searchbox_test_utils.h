@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_TEST_UTILS_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -154,11 +152,7 @@ class MockOmniboxEditModel : public OmniboxEditModel {
 
   // OmniboxEditModel:
   MOCK_METHOD(void, SetUserText, (const std::u16string&), (override));
-  MOCK_METHOD(
-      void,
-      OpenAiMode,
-      (bool, bool, std::optional<std::u16string>, WindowOpenDisposition),
-      (override));
+  MOCK_METHOD(void, OpenAiMode, (bool, bool), (override));
 };
 
 class MockLensSearchboxClient : public LensSearchboxClient {

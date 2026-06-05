@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 
@@ -269,14 +268,8 @@ class OmniboxEditModel {
   // event. `via_context_menu` is used to differentiate between users that open
   // the popup via the AI mode button vs context menu and allow for the popup
   // to open rather than navigate to the Google AI page when context is added.
-  // `query_text_override`, if provided, overrides the query text used for AI
-  // Mode instead of using the current match's contents.
   // Virtual for testing.
-  virtual void OpenAiMode(
-      bool via_keyboard,
-      bool via_context_menu,
-      std::optional<std::u16string> query_text_override = std::nullopt,
-      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+  virtual void OpenAiMode(bool via_keyboard, bool via_context_menu);
 
   // Returns true if the popup is open and is in in AI-Mode.
   bool PopupInAiMode() const;
@@ -668,8 +661,7 @@ class OmniboxEditModel {
                  WindowOpenDisposition disposition,
                  const GURL& alternate_nav_url,
                  const std::u16string& pasted_text,
-                 base::TimeTicks match_selection_timestamp = base::TimeTicks(),
-                 bool via_keyboard = false);
+                 base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
   void OnDefaultSearchExtensionDialogDone(
       OmniboxPopupSelection selection,
@@ -774,8 +766,7 @@ class OmniboxEditModel {
   // Helper for `OpenAiMode()` to determine whether the AIM popup should open or
   // a navigation should occur.
   bool ShouldOpenAimPopup(bool via_context_menu,
-                          AutocompleteMatchType::Type current_match_type,
-                          bool has_query_text_override);
+                          AutocompleteMatchType::Type current_match_type);
 
   // Helper for `OpenAiMode()` to initialize `query_contextualizer_`. No-op if
   // called before. `query_contextualizer_` may be null after this is called.
@@ -788,8 +779,7 @@ class OmniboxEditModel {
 
   // TODO(hujasonx): Add comment.
   // Helper for `OpenAiMode()`...
-  void NavigateToAiModeWithContextualizer(std::u16string query_text,
-                                          WindowOpenDisposition disposition);
+  void NavigateToAiModeWithContextualizer(std::u16string query_text);
 
   // TODO(hujasonx): Add comment and possibly rename.
   // Helper for `OpenAiMode()`...
@@ -810,8 +800,7 @@ class OmniboxEditModel {
 
   // Helper for `OpenAiMode()` to navigate to the DSE's AI mode page without
   // including context.
-  void NavigateToAiModeWithoutContextualizer(std::u16string query_text,
-                                             WindowOpenDisposition disposition);
+  void NavigateToAiModeWithoutContextualizer(std::u16string query_text);
 
   // Owns this.
   const raw_ptr<OmniboxController> controller_;

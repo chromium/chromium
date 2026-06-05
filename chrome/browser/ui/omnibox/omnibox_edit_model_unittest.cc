@@ -1829,7 +1829,6 @@ TEST_F(OmniboxEditModelPopupTest, KeywordStateObserver) {
   model()->RemoveObserver(&observer);
 }
 
-// `OpenAiMode()` should pass default disposition (CURRENT_TAB) to `OpenUrl()`.
 TEST_F(OmniboxEditModelPopupTest, AimPopupDisabled) {
   base::HistogramTester histogram_tester;
 
@@ -1842,17 +1841,6 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupDisabled) {
       "Omnibox.AimEntrypoint.Activated.ViaKeyboard", true, 1);
   histogram_tester.ExpectBucketCount(
       "Omnibox.AimEntrypoint.Activated.UserTextPresent", false, 1);
-}
-
-// `OpenAiMode()` should pass disposition to `OpenUrl()`.
-TEST_F(OmniboxEditModelPopupTest, AimPopupDisabledWithDisposition) {
-  EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(false));
-  EXPECT_CALL(*client(), OpenUrl(_, WindowOpenDisposition::NEW_BACKGROUND_TAB))
-      .Times(1);
-
-  model()->OpenAiMode(/*via_keyboard=*/true, /*via_context_menu=*/false,
-                      /*query_text_override=*/std::nullopt,
-                      WindowOpenDisposition::NEW_BACKGROUND_TAB);
 }
 
 TEST_F(OmniboxEditModelPopupTest, AimPopupEnabledNavigationFallback) {

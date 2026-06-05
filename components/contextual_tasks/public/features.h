@@ -14,7 +14,6 @@
 namespace contextual_tasks {
 
 BASE_DECLARE_FEATURE(kContextualTasks);
-BASE_DECLARE_FEATURE(kFulfillSearchQueriesInAim);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
@@ -384,8 +383,6 @@ namespace flag_descriptions {
 
 extern const char kContextualTasksName[];
 extern const char kContextualTasksDescription[];
-extern const char kFulfillSearchQueriesInAimName[];
-extern const char kFulfillSearchQueriesInAimDescription[];
 extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];

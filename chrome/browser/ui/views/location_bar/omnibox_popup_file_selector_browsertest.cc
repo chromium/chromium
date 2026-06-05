@@ -64,9 +64,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
       /*is_image=*/true, &mock_edit_model, std::nullopt,
       /*was_ai_mode_open=*/true);
 
-  EXPECT_CALL(mock_edit_model,
-              OpenAiMode(false, true, std::optional<std::u16string>(),
-                         WindowOpenDisposition::CURRENT_TAB));
+  EXPECT_CALL(mock_edit_model, OpenAiMode(false, true));
   file_selector.FileSelectionCanceled();
 }
 
@@ -84,9 +82,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
       /*is_image=*/true, &mock_edit_model, std::nullopt,
       /*was_ai_mode_open=*/false);
 
-  EXPECT_CALL(mock_edit_model,
-              OpenAiMode(testing::_, testing::_, testing::_, testing::_))
-      .Times(0);
+  EXPECT_CALL(mock_edit_model, OpenAiMode(testing::_, testing::_)).Times(0);
   file_selector.FileSelectionCanceled();
 }
 
@@ -113,9 +109,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   ASSERT_TRUE(base::WriteFile(text_file_path, "dummy data"));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_edit_model,
-              OpenAiMode(false, true, std::optional<std::u16string>(),
-                         WindowOpenDisposition::CURRENT_TAB))
+  EXPECT_CALL(mock_edit_model, OpenAiMode(false, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   // Trigger the file selection.
@@ -164,9 +158,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   ASSERT_TRUE(base::WriteFile(text_file_path, "dummy data"));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_edit_model,
-              OpenAiMode(false, true, std::optional<std::u16string>(),
-                         WindowOpenDisposition::CURRENT_TAB))
+  EXPECT_CALL(mock_edit_model, OpenAiMode(false, true))
       .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
 
   // Trigger the file selection.

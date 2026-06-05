@@ -2009,11 +2009,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "contextual-tasks-fulfill-search-queries-in-aim",
-    "owners": ["kiehl@google.com", "chrome-contextual-tasks-eng@google.com"],
-    "expiry_milestone": 160
-  },
-  {
     "name": "contextual-tasks-java-fusebox",
     "owners": ["shaktisahu@chromium.org", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 155
