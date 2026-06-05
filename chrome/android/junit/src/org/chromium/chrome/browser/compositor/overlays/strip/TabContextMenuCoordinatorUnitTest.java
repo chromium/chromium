@@ -118,6 +118,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
@@ -2732,6 +2733,27 @@ public class TabContextMenuCoordinatorUnitTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
 
+        Activity mockMenuActivity =
+                Mockito.mock(
+                        Activity.class,
+                        Mockito.withSettings()
+                                .extraInterfaces(MenuOrKeyboardActionController.class));
+
+        // Pass the mock activity controller here.
+        mOnItemClickedCallback =
+                TabContextMenuCoordinator.getMenuItemClickedCallback(
+                        () -> mTabModel,
+                        mBottomSheetCoordinator,
+                        mTabGroupCreationCallback,
+                        mMultiInstanceManager,
+                        ObservableSuppliers.createMonotonic(mShareDelegate),
+                        () -> mTabBookmarker,
+                        mWindowAndroid,
+                        mockMenuActivity,
+                        mSnackbarManager,
+                        mActivityResultTracker,
+                        mModalDialogManager);
+
         mTabModel.addTab(
                 mTab1,
                 TabModel.INVALID_TAB_INDEX,
@@ -2754,6 +2776,18 @@ public class TabContextMenuCoordinatorUnitTest {
                 verticalTabsItem.model.get(ListMenuItemProperties.MENU_ITEM_ID));
         assertEquals(R.string.show_tabs_vertically, verticalTabsItem.model.get(TITLE_ID));
         assertEquals(ListItemType.DIVIDER, modelList.get(12).type);
+
+        // Simulate selecting the item.
+        mOnItemClickedCallback.onClick(
+                R.id.show_tabs_vertically_menu_id,
+                new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)),
+                /* collaborationId= */ null,
+                /* listViewTouchTracker= */ null);
+
+        assertNotNull("Menu item property model should remain intact.", verticalTabsItem.model);
+
+        verify((MenuOrKeyboardActionController) mockMenuActivity, times(1))
+                .onMenuOrKeyboardAction(eq(R.id.toggle_tab_layout_menu_id), eq(false));
     }
 
     // --------------------------------------------------------------//

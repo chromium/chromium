@@ -1897,16 +1897,23 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private ListItem buildTabLayoutToggleItem() {
+        boolean isVerticalActive = VerticalTabUtils.isVerticalTabsEnabled(mContext);
         int stringRes =
-                VerticalTabUtils.isVerticalTabsEnabled(mContext)
+                isVerticalActive
                         ? org.chromium.chrome.tab_ui.R.string.show_tabs_horizontally
                         : org.chromium.chrome.tab_ui.R.string.show_tabs_vertically;
+
+        int iconRes = 0;
+        if (shouldShowIconBeforeItem()) {
+            iconRes =
+                    isVerticalActive
+                            ? R.drawable.ic_toolbar_24dp
+                            : R.drawable.ic_dock_to_right_24dp;
+        }
+
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
-                buildModelForStandardMenuItem(
-                        R.id.toggle_tab_layout_menu_id,
-                        stringRes,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_dock_to_right_24dp : 0));
+                buildModelForStandardMenuItem(R.id.toggle_tab_layout_menu_id, stringRes, iconRes));
     }
 
     @Contract("null -> false")

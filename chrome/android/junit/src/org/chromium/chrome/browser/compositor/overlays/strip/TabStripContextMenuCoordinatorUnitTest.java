@@ -149,7 +149,6 @@ public class TabStripContextMenuCoordinatorUnitTest {
                 .getListMenuDelegate(mContentView)
                 .onItemSelected(verticalTabsItemModel, mListView);
 
-        // TODO: Test click logic here.
         assertFalse(mMenuWindow.isShowing());
     }
 

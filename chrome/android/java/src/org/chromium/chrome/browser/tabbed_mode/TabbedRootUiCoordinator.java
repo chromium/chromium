@@ -2181,18 +2181,37 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         View secondaryUiContainer = mActivity.findViewById(R.id.secondary_ui_container);
         mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
         mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
+
+        // Restore the user's saved tab layout preference upon browser cold launch.
+        if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
+            boolean useVerticalLayoutOnLaunch =
+                    ChromeSharedPreferences.getInstance()
+                            .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+
+            if (useVerticalLayoutOnLaunch) {
+                var transitionCoordinator =
+                        assumeNonNull(mToolbarManager).getTabStripTransitionCoordinator();
+                assumeNonNull(transitionCoordinator).suppressTabStrip(true);
+                assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(true);
+            }
+        }
     }
 
     /** Toggle the visibility between horizontal tab strip and vertical tab list. */
     public void toggleTabStrip() {
         var transitionCoordinator =
                 assumeNonNull(mToolbarManager).getTabStripTransitionCoordinator();
-        boolean showVerticalTab = assumeNonNull(transitionCoordinator).getTabStripHeight() > 0;
         // TODO(crbug.com/509226293):
         //    - Coordinate horizontal/vertical tab animation.
-        //    - Persist toggle state to SharedPreference, and check the state on initialization.
-        transitionCoordinator.suppressTabStrip(showVerticalTab);
-        assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(showVerticalTab);
+        boolean shouldShowVerticalTabs =
+                !ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, shouldShowVerticalTabs);
+
+        assumeNonNull(transitionCoordinator).suppressTabStrip(shouldShowVerticalTabs);
+        assumeNonNull(mVerticalTabsSideUiCoordinator).setVisible(shouldShowVerticalTabs);
     }
 
     private void destroySideUi() {

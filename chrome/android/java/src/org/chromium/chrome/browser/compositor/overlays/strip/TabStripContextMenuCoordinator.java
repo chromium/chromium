@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -250,7 +251,11 @@ public class TabStripContextMenuCoordinator {
             } else if (model.get(MENU_ITEM_ID) == R.id.name_window) {
                 mMultiInstanceManager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
             } else if (model.get(MENU_ITEM_ID) == R.id.show_tabs_vertically_menu_id) {
-                // No-op placeholder. Click behavior will be added in a follow-up CL.
+                RecordUserAction.record("Android.TabStripMenu.ShowTabsVertically");
+                if (mContext instanceof MenuOrKeyboardActionController controller) {
+                    controller.onMenuOrKeyboardAction(
+                            R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
+                }
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
                 RecordUserAction.record("Android.TabStripMenu.PinGlic");
                 if (profile != null) GlicUtils.setButtonPinnedToTabStrip(profile, true);

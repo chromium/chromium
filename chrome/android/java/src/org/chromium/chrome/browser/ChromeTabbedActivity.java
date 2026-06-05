@@ -4517,6 +4517,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             .build());
             RecordUserAction.record("MobileMenuTabSearch");
         } else if (id == R.id.toggle_tab_layout_menu_id) {
+            if (fromMenu) {
+                RecordUserAction.record("MobileMenuToggleTabLayout");
+            }
             ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleTabStrip();
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);

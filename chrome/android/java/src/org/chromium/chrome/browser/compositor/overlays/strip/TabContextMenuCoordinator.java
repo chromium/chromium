@@ -85,6 +85,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.list_view.ListViewTouchTracker;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -415,7 +416,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         activityResultTracker,
                         modalDialogManager);
             } else if (menuId == R.id.show_tabs_vertically_menu_id) {
-                // Click/tab behavior will be added in a follow-up.
+                if (activity instanceof MenuOrKeyboardActionController controller) {
+                    controller.onMenuOrKeyboardAction(
+                            R.id.toggle_tab_layout_menu_id, /* fromMenu= */ false);
+                }
             }
         };
     }
@@ -1096,6 +1100,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         } else if (menuId == R.id.send_to_your_devices_menu_id) {
             recordUserAction("SendToYourDevices", false);
         } else if (menuId == R.id.show_tabs_vertically_menu_id) {
+            // TODO(crbug.com/516961384): Replace show_tabs_vertically_menu_id with
+            // toggle_tab_layout_menu_id once we add context menus to vertical tabs.
             // Force false since switching to a vertical layout is a global UI state toggle
             // and doesn't benefit from distinguishing single vs multi-tab context.
             recordUserAction("ShowTabsVertically", /* isMultipleTabs= */ false);

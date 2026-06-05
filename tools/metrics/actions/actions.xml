@@ -5074,6 +5074,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.ShowTabsVertically">
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    User tapped 'Show tabs vertically' in the tab strip context menu to display
+    the vertical tabs.
+  </description>
+</action>
+
 <action name="Android.TabStripMenu.UnpinGlic">
   <owner>mklw@google.com</owner>
   <description>
@@ -29476,6 +29484,14 @@ should be able to be added at any place in this file.
   <owner>massan@google.com</owner>
   <description>
     User pressed 'Show / Hide bookmarks bar' in the app menu.
+  </description>
+</action>
+
+<action name="MobileMenuToggleTabLayout">
+  <owner>eleanorlee@google.com</owner>
+  <description>
+    User pressed 'Show tabs vertically' or 'Show tabs horizontally' in 'More
+    tools' in the app menu.
   </description>
 </action>
 
