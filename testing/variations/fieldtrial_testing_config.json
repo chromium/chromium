@@ -14635,27 +14635,6 @@
             ]
         }
     ],
-    "ImmersiveReadAnything": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WithReadability_Dogfood",
-                    "enable_features": [
-                        "ImmersiveReadAnything",
-                        "ReadAnythingImagesViaAlgorithm",
-                        "ReadAnythingReadabilitySelectText",
-                        "ReadAnythingWithReadability"
-                    ]
-                }
-            ]
-        }
-    ],
     "IncognitoScreenshot": [
         {
             "platforms": [
@@ -20417,6 +20396,27 @@
                     "name": "Disabled",
                     "disable_features": [
                         "ReadAnythingReadAloudPhraseHighlighting"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ReadAnythingWithReadability": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_WithReadability",
+                    "enable_features": [
+                        "ImmersiveReadAnything",
+                        "ReadAnythingImagesViaAlgorithm",
+                        "ReadAnythingReadabilitySelectText",
+                        "ReadAnythingWithReadability"
                     ]
                 }
             ]
