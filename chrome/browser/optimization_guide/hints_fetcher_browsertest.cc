@@ -1927,7 +1927,10 @@ IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
 // Verify access token is attached during url fetching if a
 // personalizable optimization type is requested.
 // TODO(crbug.com/40919396): De-leakify and re-enable.
-#if BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)
+// TODO(crbug.com/520436633): Fix timeout issues before re-enabling likely due
+// to the wait call.
+#if (BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 #define MAYBE_FetchingUrlFetchesWithAccessToken \
   DISABLED_FetchingUrlFetchesWithAccessToken
 #else
