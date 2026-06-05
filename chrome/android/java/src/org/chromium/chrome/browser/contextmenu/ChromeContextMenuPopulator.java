@@ -242,6 +242,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             Action.SAVE_PAGE,
             Action.SHARE_PAGE,
             Action.PRINT_PAGE,
+            Action.RELOAD,
             Action.INSPECT_ELEMENT,
             Action.SHOW_INTEREST_IN_ELEMENT,
             Action.ENTER_PICTURE_IN_PICTURE,
@@ -299,7 +300,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int PRINT_PAGE = 43;
             // int BACK = 44;  Deprecated since 05/2025.
             // int FORWARD = 45;  Deprecated since 05/2025.
-            // int RELOAD = 46;  Deprecated since 05/2025.
+            int RELOAD = 46;
             int INSPECT_ELEMENT = 47;
             int SHOW_INTEREST_IN_ELEMENT = 48;
             int ENTER_PICTURE_IN_PICTURE = 49;
@@ -485,20 +486,24 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         if (mParams.isPage() && shouldShowEmptySpaceContextMenu()) {
             ModelList pageGroup = new ModelList();
-            if (UrlUtilities.isDownloadableScheme(mParams.getPageUrl())) {
-                pageGroup.add(
-                        createListItem(Item.SAVE_PAGE, false, !mIsDownloadRestrictedByPolicy));
-            }
-            if (enableShareFromContextMenu()) {
-                pageGroup.add(createShareListItem(Item.SHARE_PAGE, Item.DIRECT_SHARE_LINK));
-            }
-            if (mItemDelegate.isPrintSupported()) {
-                pageGroup.add(createListItem(Item.PRINT_PAGE));
-            }
-            if (shouldShowLensOverlay()) {
-                Tab tab = getTab();
-                boolean isEnabled = !LensOverlayTabHelper.isOverlayShowing(tab);
-                pageGroup.add(createListItem(Item.LENS_OVERLAY, false, isEnabled));
+            if (mMode == ContextMenuMode.THIN_WEB_VIEW) {
+                pageGroup.add(createListItem(Item.RELOAD));
+            } else {
+                if (UrlUtilities.isDownloadableScheme(mParams.getPageUrl())) {
+                    pageGroup.add(
+                            createListItem(Item.SAVE_PAGE, false, !mIsDownloadRestrictedByPolicy));
+                }
+                if (enableShareFromContextMenu()) {
+                    pageGroup.add(createShareListItem(Item.SHARE_PAGE, Item.DIRECT_SHARE_LINK));
+                }
+                if (mItemDelegate.isPrintSupported()) {
+                    pageGroup.add(createListItem(Item.PRINT_PAGE));
+                }
+                if (shouldShowLensOverlay()) {
+                    Tab tab = getTab();
+                    boolean isEnabled = !LensOverlayTabHelper.isOverlayShowing(tab);
+                    pageGroup.add(createListItem(Item.LENS_OVERLAY, false, isEnabled));
+                }
             }
             groupedItems.add(pageGroup);
         }
@@ -791,12 +796,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         if (shouldShowDeveloperMenu() && areMandatoryFlowsCompleted(getProfile())) {
             ModelList developerGroup = new ModelList();
-            if (mParams.isPage()
-                    && shouldShowEmptySpaceContextMenu()
-                    && shouldShowViewPageSourceMenu()) {
-                developerGroup.add(createListItem(Item.VIEW_PAGE_SOURCE));
-            }
             if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
+                if (mParams.isPage()
+                        && shouldShowEmptySpaceContextMenu()
+                        && shouldShowViewPageSourceMenu()) {
+                    developerGroup.add(createListItem(Item.VIEW_PAGE_SOURCE));
+                }
                 developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
             }
             if (!developerGroup.isEmpty()) {
@@ -1107,6 +1112,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_remove_highlight) {
             recordContextMenuSelection(ContextMenuUma.Action.REMOVE_HIGHLIGHT);
             LinkToTextHelper.removeHighlightsAllFrames(mItemDelegate.getWebContents());
+        } else if (itemId == R.id.contextmenu_reload) {
+            recordContextMenuSelection(ContextMenuUma.Action.RELOAD);
+            mItemDelegate.onReloadCurrentTab();
         } else if (itemId == R.id.contextmenu_view_page_source) {
             recordContextMenuSelection(ContextMenuUma.Action.VIEW_PAGE_SOURCE);
             mItemDelegate.getWebContents().getMainFrame().viewSource();

@@ -262,6 +262,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         }
     }
 
+    @Override
     public void onReloadCurrentTab() {
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab != null) {

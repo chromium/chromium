@@ -2530,7 +2530,7 @@ Called by update_net_error_codes.py.-->
   <int value="43" label="Print page"/>
   <int value="44" label="(Obsolete) Navigate back"/>
   <int value="45" label="(Obsolete) Navigate forward"/>
-  <int value="46" label="(Obsolete) Reload page"/>
+  <int value="46" label="Reload page"/>
   <int value="47" label="Inspect"/>
   <int value="48" label="Show Interest In Element"/>
   <int value="49" label="Enter Picture in Picture"/>

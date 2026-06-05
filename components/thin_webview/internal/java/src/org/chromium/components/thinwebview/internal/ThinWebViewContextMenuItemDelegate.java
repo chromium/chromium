@@ -132,6 +132,11 @@ public class ThinWebViewContextMenuItemDelegate implements ContextMenuItemDelega
         return mWebContents.getVisibleUrl();
     }
 
+    @Override
+    public void onReloadCurrentTab() {
+        mWebContents.getNavigationController().reload(/* checkForRepost= */ true);
+    }
+
     private void safeStartActivity(Intent intent) {
         WindowAndroid window = mWebContents.getTopLevelNativeWindow();
         if (window != null) {

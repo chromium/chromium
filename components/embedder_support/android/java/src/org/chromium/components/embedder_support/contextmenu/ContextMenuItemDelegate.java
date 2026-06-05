@@ -154,4 +154,7 @@ public interface ContextMenuItemDelegate {
      * @param url The URL to open.
      */
     void onOpenInDefaultBrowser(GURL url);
+
+    /** Called when the current tab should be reloaded. */
+    default void onReloadCurrentTab() {}
 }

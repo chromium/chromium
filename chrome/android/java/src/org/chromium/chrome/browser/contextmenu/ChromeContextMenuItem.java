@@ -77,6 +77,7 @@ class ChromeContextMenuItem {
         Item.SHARE_PAGE,
         Item.PRINT_PAGE,
         Item.VIEW_PAGE_SOURCE,
+        Item.RELOAD,
         Item.INSPECT_ELEMENT,
         Item.COPY_VIDEO_FRAME,
         Item.DOWNLOAD_VIDEO_FRAME,
@@ -135,14 +136,15 @@ class ChromeContextMenuItem {
         int SAVE_PAGE = 38;
         int SHARE_PAGE = 39;
         int PRINT_PAGE = 40;
+        int RELOAD = 41;
         // Developer Group
-        int VIEW_PAGE_SOURCE = 41;
-        int INSPECT_ELEMENT = 42;
-        int COPY_VIDEO_FRAME = 43;
-        int DOWNLOAD_VIDEO_FRAME = 44;
-        int LENS_OVERLAY = 45;
+        int VIEW_PAGE_SOURCE = 42;
+        int INSPECT_ELEMENT = 43;
+        int COPY_VIDEO_FRAME = 44;
+        int DOWNLOAD_VIDEO_FRAME = 45;
+        int LENS_OVERLAY = 46;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 46;
+        int NUM_ENTRIES = 47;
     }
 
     /** Mapping from {@link Item} to the ID found in the ids.xml. */
@@ -188,6 +190,7 @@ class ChromeContextMenuItem {
         R.id.contextmenu_save_page, // Item.SAVE_PAGE
         R.id.contextmenu_share_page, // Item.SHARE_PAGE
         R.id.contextmenu_print_page, // Item.PRINT_PAGE
+        R.id.contextmenu_reload, // Item.RELOAD
         R.id.contextmenu_view_page_source, // Item.VIEW_PAGE_SOURCE
         R.id.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
         R.id.contextmenu_copy_video_frame, // Item.COPY_VIDEO_FRAME
@@ -238,6 +241,7 @@ class ChromeContextMenuItem {
         R.string.contextmenu_save_page, // Item.SAVE_PAGE
         R.string.contextmenu_share_page, // Item.SHARE_PAGE
         R.string.contextmenu_print_page, // Item.PRINT_PAGE
+        R.string.contextmenu_reload, // Item.RELOAD
         R.string.contextmenu_view_page_source, // Item.VIEW_PAGE_SOURCE
         R.string.contextmenu_inspect_element, // Item.INSPECT_ELEMENT
         R.string.contextmenu_copy_video_frame, // Item.COPY_VIDEO_FRAME
