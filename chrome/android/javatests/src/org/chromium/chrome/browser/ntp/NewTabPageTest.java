@@ -430,6 +430,15 @@ public class NewTabPageTest {
     }
 
     @Test
+    @SmallTest
+    @Feature({"NewTabPage"})
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false")
+    public void testNtpScrollListenerAttached() {
+        Assert.assertNotNull(mNtp.getScrollListenerForTesting());
+    }
+
+    @Test
     @LargeTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testUrlFocusAnimationsEnabledOnFailedLoad() throws Exception {
