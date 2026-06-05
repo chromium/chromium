@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -41,6 +42,15 @@ namespace {
 bool SupportsSharedWorker() {
   return base::FeatureList::IsEnabled(blink::features::kSharedWorker);
 }
+
+// In Fuchsia size-optimized builds, the V8 code cache is explicitly disabled
+// to save storage space.
+static constexpr bool kExpectCodeCache =
+#if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
+    false;
+#else
+    true;
+#endif
 
 }  // namespace
 
@@ -376,7 +386,8 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
         GeneratedCodeCache::CacheEntryStatus::kMiss, 1);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kCreate, 1);
+        GeneratedCodeCache::CacheEntryStatus::kCreate,
+        kExpectCodeCache ? 1 : 0);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
         GeneratedCodeCache::CacheEntryStatus::kHit, 0);
@@ -395,10 +406,10 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
 
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
+        GeneratedCodeCache::CacheEntryStatus::kMiss, kExpectCodeCache ? 0 : 1);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+        GeneratedCodeCache::CacheEntryStatus::kHit, kExpectCodeCache ? 1 : 0);
 
     PurgeResourceCacheFromTheFirstSubFrame();
   }
@@ -420,9 +431,9 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
     FetchHistogramsFromChildProcesses();
 
     // Note: We don't check the kCreate counts below because for some reason,
-    // the previous part of the test causes the /cacheable.js entry to be doomed
-    // and then re-created in this part of the test (so the kCreate count is
-    // always one more than we'd expect).
+    // the previous part of the test causes the /cacheable.js entry to be
+    // doomed and then re-created in this part of the test (so the kCreate
+    // count is always one more than we'd expect).
     if (IsCachePartitioningEnabled()) {
       histogram_tester.ExpectBucketCount(
           "SiteIsolatedCodeCache.JS.Behaviour",
@@ -433,10 +444,11 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromThirdPartyFrames) {
     } else {
       histogram_tester.ExpectBucketCount(
           "SiteIsolatedCodeCache.JS.Behaviour",
-          GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
+          GeneratedCodeCache::CacheEntryStatus::kMiss,
+          kExpectCodeCache ? 0 : 1);
       histogram_tester.ExpectBucketCount(
           "SiteIsolatedCodeCache.JS.Behaviour",
-          GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+          GeneratedCodeCache::CacheEntryStatus::kHit, kExpectCodeCache ? 1 : 0);
     }
   }
 }
@@ -473,7 +485,8 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromIFrame) {
         GeneratedCodeCache::CacheEntryStatus::kMiss, 1);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kCreate, 1);
+        GeneratedCodeCache::CacheEntryStatus::kCreate,
+        kExpectCodeCache ? 1 : 0);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
         GeneratedCodeCache::CacheEntryStatus::kHit, 0);
@@ -492,10 +505,10 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromIFrame) {
 
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
+        GeneratedCodeCache::CacheEntryStatus::kMiss, kExpectCodeCache ? 0 : 1);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+        GeneratedCodeCache::CacheEntryStatus::kHit, kExpectCodeCache ? 1 : 0);
 
     PurgeResourceCacheFromTheFirstSubFrame();
   }
@@ -511,10 +524,10 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest, CachingFromIFrame) {
 
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kMiss, 0);
+        GeneratedCodeCache::CacheEntryStatus::kMiss, kExpectCodeCache ? 0 : 1);
     histogram_tester.ExpectBucketCount(
         "SiteIsolatedCodeCache.JS.Behaviour",
-        GeneratedCodeCache::CacheEntryStatus::kHit, 1);
+        GeneratedCodeCache::CacheEntryStatus::kHit, kExpectCodeCache ? 1 : 0);
 
     PurgeResourceCacheFromTheFirstSubFrame();
   }
@@ -618,6 +631,10 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
   }
 }
 
+// In Fuchsia size-optimized builds, the V8 code cache is explicitly disabled
+// to save storage space. Therefore, tests that verify generated code cache
+// entry sizes are skipped on these builds.
+#if !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 class CodeCacheSizeChecker {
  public:
   CodeCacheSizeChecker(GeneratedCodeCacheContext* cache_context,
@@ -813,6 +830,7 @@ IN_PROC_BROWSER_TEST_P(CodeCacheBrowserTest,
       blink::kCodeCacheTimestampCachedMetaSize + 1);
   code_cache_size_checker2.Wait();
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 
 class CompileHintsBrowserTest : public ContentBrowserTest {
  public:
@@ -909,6 +927,10 @@ class NoLocalCompileHintsBrowserTest : public CompileHintsBrowserTest {
   base::test::ScopedFeatureList local_compile_hints_;
 };
 
+// In Fuchsia size-optimized builds, the V8 code cache is explicitly disabled
+// to save storage space. Therefore, compile hints tests that rely on code
+// cache generation and consumption are skipped on these builds.
+#if !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 IN_PROC_BROWSER_TEST_F(NoLocalCompileHintsBrowserTest, NoCompileHints) {
   // TODO(chromium:1495723): Migrate this test to use use counters once we no
   // longer have the histograms.
@@ -1062,5 +1084,6 @@ IN_PROC_BROWSER_TEST_F(LocalCompileHintsBrowserTest, LocalCompileHints) {
         1);
   }
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 
 }  // namespace content

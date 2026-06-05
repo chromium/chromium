@@ -1558,6 +1558,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   }
 }
 
+// In Fuchsia size-optimized builds, the V8 code cache is explicitly disabled
+// to save storage space. Therefore, tests verifying full code cache storage
+// behavior for service workers are skipped on these builds.
+#if !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 class ServiceWorkerVersionBrowserV8FullCodeCacheTest
     : public ServiceWorkerVersionBrowserTest,
       public ServiceWorkerVersion::Observer {
@@ -1617,6 +1621,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserV8FullCodeCacheTest,
   // Stop the worker.
   StopWorker();
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA) || !defined(__OPTIMIZE_SIZE__)
 
 class CacheStorageEagerReadingTest : public ServiceWorkerVersionBrowserTest {
  public:
