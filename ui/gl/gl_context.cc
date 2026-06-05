@@ -456,6 +456,7 @@ bool GLContext::MakeVirtuallyCurrent(
     if (current_state &&
         !virtual_context->GetGLStateRestorer()->IsInitialized()) {
       current_state->PauseTransformFeedback();
+      current_state->PauseQueries();
     }
 
     if (virtual_context->GetGLStateRestorer()->IsInitialized()) {

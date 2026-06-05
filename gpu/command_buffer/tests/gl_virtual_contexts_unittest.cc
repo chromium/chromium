@@ -370,6 +370,71 @@ TEST_P(GLVirtualContextsTest, VirtualQueries) {
   }
 }
 
+TEST_P(GLVirtualContextsTest, VirtualQueriesOcclusionLeak) {
+  // This test requires occlusion query support.
+  // We use GL_ANY_SAMPLES_PASSED_EXT.
+  const GLenum query_target = GL_ANY_SAMPLES_PASSED_EXT;
+
+  gl1_.MakeCurrent();
+  GLuint query1 = 0;
+  glGenQueriesEXT(1, &query1);
+  glBeginQueryEXT(query_target, query1);
+  const GLenum begin_error = glGetError();
+  if (GL_INVALID_OPERATION == begin_error) {
+    // Not supported, simply skip.
+    glDeleteQueriesEXT(1, &query1);
+    return;
+  }
+  ASSERT_EQ(static_cast<GLenum>(GL_NO_ERROR), begin_error);
+  glFlush();
+
+  // Context B (gl2_) warmup.
+  gl2_.MakeCurrent();
+  SetUpColoredUnitQuad(kFloatGreen);
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glFinish();
+
+  // Switch back to Context A (gl1_) to ensure it is the active context
+  // when the new context is created.
+  gl1_.MakeCurrent();
+
+  // Context C (gl3) - brand new context.
+  // Initializing it should trigger MakeVirtuallyCurrent on a new context,
+  // which should trigger the bug (skipping PauseQueries on gl1_).
+  GLManager gl3;
+  GLManager::Options options;
+  options.context_type = gl1_.GetContextType();
+  options.virtual_manager = &gl_real_shared_;
+  options.size = gfx::Size(kSize0, kSize0);
+  gl3.InitializeWithWorkarounds(options, GetParam());
+
+  // Context B (gl2_) renders.
+  // If gl1_'s query was not paused, gl2_'s rendering will leak into it.
+  gl2_.MakeCurrent();
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glFlush();
+
+  // Context A (gl1_) ends query and checks result.
+  gl1_.MakeCurrent();
+  glEndQueryEXT(query_target);
+  glFinish();
+
+  GLuint query1_available = 0;
+  glGetQueryObjectuivEXT(query1, GL_QUERY_RESULT_AVAILABLE_EXT,
+                         &query1_available);
+  EXPECT_TRUE(query1_available);
+
+  GLuint query_result = 0;
+  glGetQueryObjectuivEXT(query1, GL_QUERY_RESULT_EXT, &query_result);
+  glDeleteQueriesEXT(1, &query1);
+
+  // Since we drew nothing in gl1_ while the query was active,
+  // the result should be 0. If it's > 0, it leaked from gl2_.
+  EXPECT_EQ(0u, query_result);
+
+  gl3.Destroy();
+}
+
 // http://crbug.com/930327
 TEST_P(GLVirtualContextsTest, Texture2DArrayAnd3DRestore) {
   // This test should only be run for ES3 or higher context
