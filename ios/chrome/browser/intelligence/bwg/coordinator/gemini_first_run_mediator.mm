@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ios/web/public/web_state.h"
@@ -162,6 +163,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
 // Returns whether to show AI Hub IPH.
 - (BOOL)shouldShowAIHubIPH {
+  if (IsChromeNextIaEnabled()) {
+    return NO;
+  }
+
   BOOL wouldTriggerIPH =
       _tracker->WouldTriggerHelpUI(feature_engagement::kIPHIOSPageActionMenu);
 
