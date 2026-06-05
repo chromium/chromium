@@ -5415,6 +5415,8 @@ void GLES2DecoderImpl::DoBeginTransformFeedback(GLenum primitive_mode) {
   }
   transform_feedback->DoBeginTransformFeedback(primitive_mode);
   DCHECK(transform_feedback->active());
+
+  transform_feedback->SetActiveProgram(program);
 }
 
 void GLES2DecoderImpl::DoEndTransformFeedback() {
@@ -5427,6 +5429,11 @@ void GLES2DecoderImpl::DoEndTransformFeedback() {
   }
   // TODO(zmo): Validate binding points.
   state_.bound_transform_feedback->DoEndTransformFeedback();
+
+  Program* program = state_.bound_transform_feedback->active_program();
+  if (program) {
+    state_.bound_transform_feedback->ClearActiveProgram();
+  }
 }
 
 void GLES2DecoderImpl::DoPauseTransformFeedback() {
@@ -8145,6 +8152,12 @@ void GLES2DecoderImpl::DoLinkProgram(GLuint program_id) {
   Program* program = GetProgramInfoNotShader(
       program_id, "glLinkProgram");
   if (!program) {
+    return;
+  }
+
+  if (program->IsActiveForTransformFeedback()) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glLinkProgram",
+                       "program is active for transform feedback");
     return;
   }
 
