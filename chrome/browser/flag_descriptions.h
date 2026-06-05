@@ -5202,10 +5202,6 @@ inline constexpr char kAndroidBricksNativePageName[] =
 inline constexpr char kAndroidBricksNativePageDescription[] =
     "Enables the chrome://bricks native page as a Compose playground.";
 
-inline constexpr char kAndroidCaretBrowsingName[] = "Enable Caret Browsing.";
-inline constexpr char kAndroidCaretBrowsingDescription[] =
-    "Allows users to interact with a webpage using a keyboard.";
-
 inline constexpr char kAndroidContextMenuDisabledMenuItemsName[] =
     "Android context menu disabled menu items";
 inline constexpr char kAndroidContextMenuDisabledMenuItemsDescription[] =

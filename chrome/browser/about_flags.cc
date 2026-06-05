@@ -12156,12 +12156,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIdbSqliteBackingStoreDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kIdbSqliteBackingStore)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"android-caret-browsing", flag_descriptions::kAndroidCaretBrowsingName,
-     flag_descriptions::kAndroidCaretBrowsingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidCaretBrowsing)},
-#endif
-
     // On other platforms, this requires --enable-features=ElasticOverscroll to
     // have an effect.
     {"overscroll-effect-on-non-root-scrollers",

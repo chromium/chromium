@@ -26,7 +26,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/renderer_preferences_util.h"
-#include "content/public/common/content_features.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -202,12 +201,6 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
 #endif
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kAndroidCaretBrowsing)) {
-    // ensures caret browsing is disabled on Clank if the feature flag is off
-    prefs->caret_browsing_enabled = false;
-  }
-#endif
   ui::AXPlatform::GetInstance().SetCaretBrowsingState(
       prefs->caret_browsing_enabled);
   if (PrefService* const local_state = g_browser_process->local_state()) {

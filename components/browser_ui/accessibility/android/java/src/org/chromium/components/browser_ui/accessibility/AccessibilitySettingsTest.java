@@ -385,7 +385,6 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @Features.EnableFeatures({ContentFeatureList.ANDROID_CARET_BROWSING})
     public void testCaretFeatureToggle() {
         DeviceInput.setSupportsKeyboardForTesting(true);
         launchPreferenceUI();

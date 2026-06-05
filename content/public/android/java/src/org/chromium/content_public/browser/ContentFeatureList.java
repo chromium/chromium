@@ -62,7 +62,6 @@ public class ContentFeatureList {
             "AndroidEnableBackgroundMediaCapturing";
 
     public static final String ANDROID_CAPTURE_KEY_EVENTS = "AndroidCaptureKeyEvents";
-    public static final String ANDROID_CARET_BROWSING = "AndroidCaretBrowsing";
 
     public static final String ANDROID_DEV_TOOLS_FRONTEND = "AndroidDevToolsFrontend";
     public static final String ANDROID_FORCE_TEXT_INPUT_STATE_UPDATE_UPON_FOCUS =
@@ -147,10 +146,6 @@ public class ContentFeatureList {
                     ContentFeatureMap.getInstance(),
                     ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS,
                     false);
-
-    public static final MutableFlagWithSafeDefault sAndroidCaretBrowsing =
-            new MutableFlagWithSafeDefault(
-                    ContentFeatureMap.getInstance(), ContentFeatures.ANDROID_CARET_BROWSING, false);
 
     public static final MutableFlagWithSafeDefault sStrictHighRankProcessLRU =
             new MutableFlagWithSafeDefault(

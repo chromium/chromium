@@ -272,15 +272,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "android-caret-browsing",
-    "owners": [
-      "lokeric@google.com",
-      "mschillaci@google.com",
-      "clank-large-form-factors@google.com"
-    ],
-    "expiry_milestone": 149
-  },
-  {
     "name": "android-context-menu-disabled-menu-items",
     "owners": [
       "hitarthkothari@google.com",

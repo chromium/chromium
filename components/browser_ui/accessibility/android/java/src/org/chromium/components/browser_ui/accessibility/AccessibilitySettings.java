@@ -212,13 +212,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
         // Caret Browsing Settings
         mCaretBrowsingPref = findPreference(PREF_CARET_BROWSING);
-
-        if (shouldShowCaretBrowsingPref()) {
-            mCaretBrowsingPref.setChecked(mDelegate.isCaretBrowsingEnabled());
-            mCaretBrowsingPref.setOnPreferenceChangeListener(this);
-        } else {
-            mCaretBrowsingPref.setVisible(false);
-        }
+        mCaretBrowsingPref.setChecked(mDelegate.isCaretBrowsingEnabled());
+        mCaretBrowsingPref.setOnPreferenceChangeListener(this);
 
         // Touchpad swipe-to-navigate settings.
         mTouchpadOverscrollHistoryNavigationPref =
@@ -319,10 +314,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         return ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2);
     }
 
-    private static boolean shouldShowCaretBrowsingPref() {
-        return ContentFeatureList.sAndroidCaretBrowsing.isEnabled();
-    }
-
     private static boolean shouldShowTouchpadOverscrollHistoryNavigationPref() {
         return UiAndroidFeatureList.sAndroidTouchpadOverscrollHistoryNavigation.isEnabled();
     }
@@ -389,9 +380,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         }
         if (!shouldShowImageDescriptionsPref(delegate)) {
             indexData.removeEntryForKey(prefFragment, PREF_IMAGE_DESCRIPTIONS);
-        }
-        if (!shouldShowCaretBrowsingPref()) {
-            indexData.removeEntryForKey(prefFragment, PREF_CARET_BROWSING);
         }
         if (!shouldShowTouchpadOverscrollHistoryNavigationPref()) {
             indexData.removeEntryForKey(prefFragment, PREF_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);

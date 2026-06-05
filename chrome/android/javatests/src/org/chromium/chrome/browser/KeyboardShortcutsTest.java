@@ -72,8 +72,7 @@ import java.util.Set;
 @Batch(Batch.UNIT_TESTS)
 @Features.EnableFeatures({
     ChromeFeatureList.TASK_MANAGER_CLANK,
-    ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
-    ContentFeatureList.ANDROID_CARET_BROWSING
+    ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND
 })
 public class KeyboardShortcutsTest {
 

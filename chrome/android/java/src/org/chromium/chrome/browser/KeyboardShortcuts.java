@@ -1271,12 +1271,9 @@ public class KeyboardShortcuts {
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.TOGGLE_CARET_BROWSING:
-                    if (ContentFeatureList.sAndroidCaretBrowsing.isEnabled()) {
-                        menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                                R.id.toggle_caret_browsing, false);
-                        return true;
-                    }
-                    return false;
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.toggle_caret_browsing, false);
+                    return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;

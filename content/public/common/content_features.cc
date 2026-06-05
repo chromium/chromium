@@ -33,10 +33,6 @@ BASE_FEATURE(kAbortNavigationsFromTabClosures,
 // IME sends composition texts.
 BASE_FEATURE(kAndroidCaptureKeyEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the caret browsing a11y feature - can use arrow keys to navigate
-// through web pages.
-BASE_FEATURE(kAndroidCaretBrowsing, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // DevTools frontend for Android.
 BASE_FEATURE(kAndroidDevToolsFrontend, base::FEATURE_DISABLED_BY_DEFAULT);
 
