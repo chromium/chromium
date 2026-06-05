@@ -851,6 +851,9 @@ void FrameNodeImpl::OnUninitializingEdges() {
   // Leave the page.
   DCHECK(graph()->NodeInGraph(page_node_));
   page_node_->RemoveFrame(base::PassKey<FrameNodeImpl>(), this);
+  TRACE_EVENT_INSTANT("performance_manager.graph", "DetachPage",
+                      perfetto::NamedTrack("Edges", 0, tracing_track_),
+                      perfetto::TerminatingFlow::FromPointer(this));
 
   // Leave the frame hierarchy.
   if (parent_frame_node_) {

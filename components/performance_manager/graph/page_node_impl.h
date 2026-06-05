@@ -71,7 +71,8 @@ class PageNodeImpl
                const base::UnguessableToken& browser_context_id,
                const GURL& visible_url,
                PagePropertyFlags initial_properties,
-               base::TimeTicks visibility_change_time);
+               base::TimeTicks visibility_change_time,
+               const perfetto::NamedTrack& tracing_track);
 
   PageNodeImpl(const PageNodeImpl&) = delete;
   PageNodeImpl& operator=(const PageNodeImpl&) = delete;
@@ -271,6 +272,7 @@ class PageNodeImpl
   // Perfetto track that can record trace events for the page.
   const perfetto::NamedTrack tracing_track_;
   const perfetto::NamedTrack loading_track_;
+  const perfetto::NamedTrack frames_track_;
 
   // The main frame nodes of this page. There can be more than one main frame
   // in a page, among other reasons because during main frame navigation, the

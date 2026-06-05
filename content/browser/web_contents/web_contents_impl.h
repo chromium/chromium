@@ -28,6 +28,7 @@
 #include "base/process/kill.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_session_observer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
@@ -214,7 +215,8 @@ class CONTENT_EXPORT WebContentsImpl
       public ui::NativeThemeObserver,
       public ui::ColorProviderSourceObserver,
       public SlowWebPreferenceCacheObserver,
-      public input::RenderWidgetHostInputEventRouter::Delegate {
+      public input::RenderWidgetHostInputEventRouter::Delegate,
+      public base::trace_event::TraceSessionObserver {
  public:
   class FriendWrapper;
 
@@ -2813,11 +2815,16 @@ class CONTENT_EXPORT WebContentsImpl
   void SetDragSource(const DragId& drag_id,
                      const GlobalRenderFrameHostToken& source_rfh_token);
 
+  // base::trace_event::TraceSessionObserver implementation:
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
+
   std::optional<DragId> active_drag_id_;
 
   const UniqueToken web_contents_token_;
-  const base::trace_event::TrackRegistration<perfetto::NamedTrack>
+  std::optional<base::trace_event::TrackRegistration<perfetto::NamedTrack>>
       tracing_track_;
+
+  void EmitTracingSlice(const std::string& name);
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

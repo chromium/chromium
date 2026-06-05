@@ -38,16 +38,17 @@ perfetto::NamedTrack GetLocalFrameTracingTrack(
 }
 
 perfetto::NamedTrack GetWebContentsTracingTrack(
-    const WebContents::UniqueToken& web_contents_token) {
+    const WebContents::UniqueToken& web_contents_token,
+    perfetto::StaticString name) {
   static const base::NoDestructor<
       base::trace_event::TrackRegistration<perfetto::NamedTrack>>
       page_group_track(perfetto::NamedTrack::Global("WebContentsList", 0));
 
-  auto track = perfetto::NamedTrack(
-                   "WebContents",
-                   base::UnguessableTokenHash()(web_contents_token.value()),
-                   page_group_track->track())
-                   .disable_sibling_merge();
+  auto track =
+      perfetto::NamedTrack(
+          name, base::UnguessableTokenHash()(web_contents_token.value()),
+          page_group_track->track())
+          .disable_sibling_merge();
   return track;
 }
 

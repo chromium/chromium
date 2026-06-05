@@ -47,7 +47,8 @@ CONTENT_EXPORT perfetto::NamedTrack GetLocalFrameTracingTrack(
 // `web_contents_token`. This may be used to emit events relating to a
 // WebContents.
 CONTENT_EXPORT perfetto::NamedTrack GetWebContentsTracingTrack(
-    const WebContents::UniqueToken& web_contents_token);
+    const WebContents::UniqueToken& web_contents_token,
+    perfetto::StaticString name = "WebContents");
 
 // Returns a global tracing flow for `navigation_id`.
 CONTENT_EXPORT perfetto::Flow GetNavigationTracingFlow(int64_t navigation_id);

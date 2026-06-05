@@ -193,7 +193,8 @@ struct TestNodeWrapper<PageNodeImpl>::Factory {
           content::WebContents::UniqueToken()) {
     return std::make_unique<PageNodeImpl>(
         std::move(web_contents), page_token, browser_context_id, url,
-        initial_property_flags, visibility_change_time);
+        initial_property_flags, visibility_change_time,
+        perfetto::NamedTrack("PageNodeTest"));
   }
 };
 

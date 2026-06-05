@@ -119,7 +119,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
       web_contents->GetWeakPtr(), web_contents->GetUniqueToken(),
       web_contents->GetBrowserContext()->UniqueToken(),
       web_contents->GetVisibleURL(), initial_property_flags,
-      web_contents->GetLastActiveTimeTicks());
+      web_contents->GetLastActiveTimeTicks(), web_contents->GetTracingTrack());
 
   // If the main frame was activated during WebContentsImpl::Init, we missed the
   // RenderFrameCreated notification, so synthesize it now.

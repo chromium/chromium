@@ -114,10 +114,12 @@ std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
     const base::UnguessableToken& browser_context_id,
     const GURL& visible_url,
     PagePropertyFlags initial_property_flags,
-    base::TimeTicks visibility_change_time) {
-  return CreateNodeImpl<PageNodeImpl>(
-      std::move(web_contents), web_contents_token, browser_context_id,
-      visible_url, initial_property_flags, visibility_change_time);
+    base::TimeTicks visibility_change_time,
+    const perfetto::NamedTrack& tracing_track) {
+  return CreateNodeImpl<PageNodeImpl>(std::move(web_contents),
+                                      web_contents_token, browser_context_id,
+                                      visible_url, initial_property_flags,
+                                      visibility_change_time, tracing_track);
 }
 
 // static

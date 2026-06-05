@@ -19,6 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
@@ -67,7 +68,7 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
       PerformanceManagerImpl::CreatePageNode(
           nullptr, content::WebContents::UniqueToken(),
           base::UnguessableToken(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now());
+          base::TimeTicks::Now(), perfetto::NamedTrack("PageNodeTest"));
   EXPECT_NE(nullptr, page_node.get());
 
   // Create a node of each type.
@@ -116,7 +117,7 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
       PerformanceManagerImpl::CreatePageNode(
           nullptr, content::WebContents::UniqueToken(),
           base::UnguessableToken(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now());
+          base::TimeTicks::Now(), perfetto::NamedTrack("PageNodeTest"));
 
   std::unique_ptr<FrameNodeImpl> parent1_frame =
       PerformanceManagerImpl::CreateFrameNode(
@@ -186,7 +187,7 @@ TEST_F(PerformanceManagerImplTest, GetGraphImpl) {
       PerformanceManagerImpl::CreatePageNode(
           nullptr, content::WebContents::UniqueToken(),
           base::UnguessableToken(), GURL(), PagePropertyFlags{},
-          base::TimeTicks::Now());
+          base::TimeTicks::Now(), perfetto::NamedTrack("PageNodeTest"));
 
   ASSERT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
