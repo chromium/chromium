@@ -169,10 +169,15 @@ void SidePanelCoordinatorAndroid::ShowFrom(
 
 void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
                                         bool suppress_animations) {
-  SPLOG("Close - hide_reason: " << ToString(hide_reason)
-                                << ", suppress_animations: "
-                                << suppress_animations);
-  CHECK(state_ == SidePanelState::kOpening || state_ == SidePanelState::kShown)
+  SPLOG("Close - hide_reason: "
+        << ToString(hide_reason) << ", suppress_animations: "
+        << suppress_animations << ", state: " << ToString(state_));
+  if (state_ == SidePanelState::kOpening ||
+      state_ == SidePanelState::kClosing) {
+    SPLOG("Close - mid-animation, skipping.")
+    return;
+  }
+  CHECK(state_ == SidePanelState::kShown)
       << "Close calls should only occur for opening or shown side panels. "
          "Current state: "
       << ToString(state_);
@@ -335,7 +340,14 @@ void SidePanelCoordinatorAndroid::Show(
     bool suppress_animations) {
   SPLOG("Show - key: " << key << ", open_trigger: "
                        << (open_trigger ? ToString(*open_trigger) : "nullopt")
-                       << ", suppress_animations: " << suppress_animations);
+                       << ", suppress_animations: " << suppress_animations
+                       << ", state: " << ToString(state_));
+
+  if (state_ == SidePanelState::kOpening ||
+      state_ == SidePanelState::kClosing) {
+    SPLOG("Show - mid-animation, skipping.")
+    return;
+  }
 
   if (is_window_too_small_) {
     SPLOG("Show - window is too small, skipping.");
