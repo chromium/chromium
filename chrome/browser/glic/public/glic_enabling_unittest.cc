@@ -28,6 +28,9 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -498,11 +501,21 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
 
+    // Set a default avatar icon index to avoid Skia text rendering in tests,
+    // which otherwise crashes Android `unit_tests` that lack font files.
+    testing_profile_manager->profile_manager()
+        ->GetProfileAttributesStorage()
+        .GetProfileAttributesWithPath(profile_->GetPath())
+        ->SetAvatarIconIndex(1);
+
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
   }
 
   void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
     identity_test_env_adaptor_.reset();
     profile_ = nullptr;
 
@@ -647,6 +660,9 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
   }
 
   void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
     identity_test_env_adaptor_.reset();
     profile_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
@@ -1622,6 +1638,91 @@ TEST_F(GlicEnablingGeminiEnterpriseSettingsErrorTest, MissingFieldsLogsError) {
 }
 
 #endif
+
+class GlicEnablingWebActuationToggleTest
+    : public GlicEnablingProfileEligibilityTest {
+ public:
+  GlicEnablingWebActuationToggleTest() {
+    feature_list_.InitAndEnableFeature(features::kGlicActor);
+  }
+
+ protected:
+  base::test::ScopedCommandLine scoped_command_line_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(GlicEnablingWebActuationToggleTest, AlwaysShowSwitch) {
+  scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+      switches::kGlicAlwaysShowWebActuationToggle);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  EXPECT_TRUE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+TEST_F(GlicEnablingWebActuationToggleTest, FeatureDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kGlicWebActuationSetting);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  EXPECT_FALSE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+TEST_F(GlicEnablingWebActuationToggleTest, CapabilityIneligible) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kGlicWarming);
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  EXPECT_FALSE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+TEST_F(GlicEnablingWebActuationToggleTest, ManagedProfile_CannotActOnWeb) {
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicActuationOnWeb,
+      static_cast<int>(glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  EXPECT_FALSE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+TEST_F(GlicEnablingWebActuationToggleTest, ManagedProfile_CanActOnWeb) {
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  profile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicActuationOnWeb,
+      static_cast<int>(glic::prefs::GlicActuationOnWebPolicyState::kEnabled));
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  EXPECT_TRUE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
 
 }  // namespace
 }  // namespace glic

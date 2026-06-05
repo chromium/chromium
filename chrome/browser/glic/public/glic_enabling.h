@@ -394,6 +394,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Sets the FRE status.
   void SetCompletedFre(prefs::FreStatus status);
 
+  // Whether the Web Actuation Toggle (Auto Browse) should be shown in Settings.
+  bool ShouldShowWebActuationToggle() const;
+
   // Returns whether user enabled actuation on web.
   bool GetUserEnabledActuationOnWeb() const;
   // Returns true if the user enabled actuation on web pref is at its default

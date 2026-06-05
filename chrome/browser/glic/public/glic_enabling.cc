@@ -21,9 +21,11 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -870,6 +873,77 @@ bool GlicEnabling::IsInternalsWebUIEnabled(Profile* profile) {
 // static
 bool GlicEnabling::ShouldShowSettingsPage(Profile* profile) {
   return EnablementForProfile(profile).ShouldShowSettingsPage();
+}
+
+bool GlicEnabling::ShouldShowWebActuationToggle() const {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAlwaysShowWebActuationToggle)) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(features::kGlicWebActuationSetting)) {
+    return false;
+  }
+
+  // If the account is ineligible, hide the toggle.
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+  if (!glic_service) {
+    return false;
+  }
+  if (!glic_service->HasActorPolicyChecker()) {
+    return false;
+  }
+  if (glic_service->actor_policy_checker().CannotActOnWebReason() ==
+      glic::GlicActorPolicyChecker::CannotActReason::
+          kAccountCapabilityIneligible) {
+    return false;
+  }
+
+  bool is_managed = glic::GlicActorPolicyChecker::IsBrowserManaged(*profile_);
+
+  bool is_enterprise_account = false;
+  if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+    is_enterprise_account = glic::GlicActorPolicyChecker::IsEnterpriseAccount(
+        *profile_, actor_service->GetJournal());
+  }
+
+  // Enterprise Case: Align toggle visibility with GlicActorPolicyChecker.
+  if (is_managed || is_enterprise_account) {
+    return glic_service->actor_policy_checker().CanActOnWeb();
+  }
+
+  // Google one User
+  // If not managed, we check consumer subscription tiers.
+  const base::flat_set<int32_t>& allowed_tiers =
+      glic::GlicActorPolicyChecker::GetActorEligibleTiers();
+  // If no tiers are allowed, the toggle should never be shown.
+  if (allowed_tiers.empty()) {
+    return false;
+  }
+
+  // NOTE: kGlicWebActuationSettingsToggle controls toggle visibility based
+  // solely on subscription eligibility. If this feature is disabled, the
+  // toggle remains visible only if the user has previously accepted the
+  // consent card.
+  if (base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
+    // Always show the toggle for internal dogfooders, mirroring the bypass in
+    // GlicActorPolicyChecker.
+    if (glic::GlicEnabling::IsLikelyDogfoodClient()) {
+      return true;
+    }
+    // Strict subscription check for external users.
+    auto* subscription_service = subscription_eligibility::
+        SubscriptionEligibilityServiceFactory::GetForProfile(profile_);
+    CHECK(subscription_service);
+    return allowed_tiers.contains(
+        subscription_service->GetAiSubscriptionTier());
+  }
+  // Show the toggle if the user has explicitly modified the preference before
+  // (via accepting the consent card).
+  if (!glic_service->enabling().IsUserEnabledActuationOnWebDefault()) {
+    return true;
+  }
+  return false;
 }
 
 bool GlicEnabling::ShouldShowGlicButton(Profile* profile) {

@@ -89,6 +89,7 @@ public class GlicSettingsUnitTest {
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfileMock))
                 .thenReturn(mGlicKeyedServiceMock);
+        when(mGlicEnablingJniMock.shouldShowWebActuationToggle(any())).thenReturn(true);
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);

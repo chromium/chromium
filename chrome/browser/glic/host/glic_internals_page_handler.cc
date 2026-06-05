@@ -131,8 +131,9 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
 
   GlicKeyedService* glic_service = GetGlicService();
   payload->enablement = BuildProfileEnablement(
-      browser_context_,
-      glic_service ? &glic_service->actor_policy_checker() : nullptr);
+      browser_context_, (glic_service && glic_service->HasActorPolicyChecker())
+                            ? &glic_service->actor_policy_checker()
+                            : nullptr);
 
   mojom::ConfigInfoPtr config = mojom::ConfigInfo::New();
   config->guest_url = GetGuestURL();
