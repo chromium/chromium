@@ -204,11 +204,15 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
           button_string_id, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
           SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
-    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase: {
+#if BUILDFLAG(IS_CHROMEOS)
+      syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
+#endif
       return {
           SyncStatusMessageType::kSyncError,
 #if BUILDFLAG(IS_CHROMEOS)
-          syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+          (syncer::IsReplaceSyncPromosWithSignInPromosEnabled() && service &&
+           !service->HasSyncConsent())
               ? IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL
               : IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION,
 #else
@@ -219,6 +223,7 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
               ? IDS_SETTINGS_PEOPLE_SIGN_OUT
               : IDS_SETTINGS_SIGN_OUT,
           SyncStatusActionType::kEnterPassphrase};
+    }
 
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:
