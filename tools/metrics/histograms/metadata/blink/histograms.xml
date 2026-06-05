@@ -1472,6 +1472,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Evp.Autofill.FlowResult" enum="EvpAutofillFlowResult"
+    expires_after="2026-11-01">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcomes and failure reasons of the high-level Email
+    Verification Protocol (EVP) flow from autofill side. Recorded once per
+    autofill attempt when a comformant form contains an email verification token
+    field.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Evp.PermissionUi.Status" enum="EvpPermissionUiStatus"
     expires_after="2026-11-01">
   <owner>yigu@chromium.org</owner>
