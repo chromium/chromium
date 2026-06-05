@@ -165,8 +165,7 @@ NSString* const kSetUpListTitleAxId = @"kSetUpListTitleAxId";
         constraintEqualToAnchor:subtitle.bottomAnchor
                        constant:kSetUpListStackViewDescriptionSpacing],
     [scrollView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
-                                              .bottomAnchor],
+        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor],
   ]];
 
   AddSameConstraints(setUpListItemStackView, scrollView);

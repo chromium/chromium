@@ -644,7 +644,6 @@ using segmentation_platform::TipIdentifier;
     presentationController.selectedDetentIdentifier =
         UISheetPresentationControllerDetentIdentifierLarge;
   }
-  presentationController.preferredCornerRadius = 16;
 
   [_magicStackCollectionView presentViewController:navController
                                           animated:YES
