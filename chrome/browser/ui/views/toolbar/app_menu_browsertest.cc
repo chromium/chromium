@@ -292,7 +292,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_main_incognito) {
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_history) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_bookmarks) {
+
+// TODO(crbug.com/520132855): Re-enable test after features::kMenuSimplification
+// is fully enabled
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_bookmarks) {
   ShowAndVerifyUi();
 }
 // Flaky b/40261456
@@ -407,7 +410,10 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_save_and_share) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_main_profile_signed_in) {
+// TODO(crbug.com/520132855): Re-enable test after features::kMenuSimplification
+// is fully enabled
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
+                       DISABLED_InvokeUi_main_profile_signed_in) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",
