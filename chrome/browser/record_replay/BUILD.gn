@@ -38,7 +38,7 @@ static_library("impl") {
     "//components/record_replay/content/browser",
     "//components/record_replay/core/browser",
     "//components/record_replay/core/common:mojom",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//content/public/browser",
     "//ui/base/unowned_user_data",
     "//ui/strings",

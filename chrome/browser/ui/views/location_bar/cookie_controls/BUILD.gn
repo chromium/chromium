@@ -30,7 +30,7 @@ source_set("cookie_controls") {
       "//components/content_settings/browser/ui",
       "//components/content_settings/core/common",
       "//components/favicon_base",
-      "//components/tabs",
+      "//components/tabs:impl",
       "//content/public/browser",
       "//ui/base/metadata",
       "//ui/views",

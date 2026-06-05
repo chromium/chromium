@@ -254,7 +254,7 @@ if (!is_android) {
       "//chrome/browser/ui/window_metadata",
       "//components/saved_tab_groups/public",
       "//components/tab_groups",
-      "//components/tabs",
+      "//components/tabs:impl",
     ]
 
     if (is_chromeos) {
@@ -540,7 +540,7 @@ if (!is_android) {
       "//components/skills:features",
       "//components/sync_sessions",
       "//components/tab_groups",
-      "//components/tabs",
+      "//components/tabs:impl",
       "//components/wallet/core/common:features",
       "//net",
       "//ui/base/unowned_user_data",

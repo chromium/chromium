@@ -42,7 +42,7 @@ source_set("page_action") {
     "//components/metrics/structured:structured_events",
     "//components/prefs",
     "//components/saved_tab_groups/public",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//components/user_education/common",
     "//components/zoom",
     "//content/public/browser",

@@ -44,7 +44,7 @@ source_set("impl") {
     "//chrome/browser/ui",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/google/browser",
-    "//components/tabs",
+    "//components/tabs:impl",
   ]
 
   if (is_chromeos) {

@@ -56,7 +56,7 @@ source_set("impl") {
     "//components/search_engines",
     "//components/sessions",
     "//components/sync_device_info",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//components/url_deduplication",
     "//components/visited_url_ranking/internal",
     "//components/visited_url_ranking/internal:internal_url_grouping",

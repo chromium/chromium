@@ -38,7 +38,7 @@ if (!is_android) {
       "//chrome/browser/web_applications/isolated_web_apps/key_distribution",
       "//chrome/common",
       "//components/prefs",
-      "//components/tabs",
+      "//components/tabs:impl",
       "//components/webapps/browser",
       "//components/webapps/common",
       "//components/webapps/isolated_web_apps",

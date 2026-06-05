@@ -181,7 +181,7 @@ source_set("cocoa") {
     "//components/sessions",
     "//components/startup_metric_utils",
     "//components/tab_groups",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//skia",

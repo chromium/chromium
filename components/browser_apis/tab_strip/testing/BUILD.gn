@@ -31,7 +31,7 @@ source_set("testing") {
     "//components/browser_apis/tab_strip/adapters",
     "//components/browser_apis/tab_strip/aggregation",
     "//components/browser_apis/tab_strip/types",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//testing/gmock",
     "//url",
   ]

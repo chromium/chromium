@@ -22,7 +22,7 @@ source_set("glic") {
       "//chrome/browser/ui/views",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
-      "//components/tabs",
+      "//components/tabs:impl",
       "//ui/base/metadata",
       "//ui/gfx/geometry",
       "//ui/views",

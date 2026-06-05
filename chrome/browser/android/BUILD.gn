@@ -698,7 +698,7 @@ if (is_android) {
       "//components/supervised_user/core/browser/android",
       "//components/sync_preferences/synced_set_up/android",
       "//components/sync_preferences/synced_set_up/android:jni_headers",
-      "//components/tabs",
+      "//components/tabs:impl",
       "//components/tabs:public",
       "//components/themes",
       "//components/thin_webview/internal",

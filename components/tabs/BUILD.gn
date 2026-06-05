@@ -49,7 +49,7 @@ source_set("public") {
   deps = [ "//ui/gfx/range" ]
 }
 
-source_set("tabs") {
+source_set("impl") {
   sources = [
     "impl/pinned_tab_collection.cc",
     "impl/split_tab_collection.cc",
@@ -105,8 +105,8 @@ source_set("unit_tests") {
   public_deps = [ "//base" ]
 
   deps = [
+    ":impl",
     ":public",
-    ":tabs",
     ":test_support",
     "//components/split_tabs",
     "//testing/gmock",

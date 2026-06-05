@@ -75,7 +75,7 @@ source_set("net") {
     "//components/offline_pages/buildflags",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//content/public/browser",
     "//extensions/buildflags",
     "//mojo/public/cpp/bindings",

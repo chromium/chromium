@@ -33,7 +33,7 @@ source_set("vertical") {
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/tabs/dragging:tab_drag_target",
     "//chrome/browser/ui/views/tabs/shared",
-    "//components/tabs",
+    "//components/tabs:impl",
     "//ui/base/metadata",
     "//ui/gfx/geometry",
     "//ui/views",
