@@ -695,6 +695,16 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       // for the first column, and pass the scaling factor via a BreakToken.
 
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);
+      cloned_algorithm.relayout_mode_ = relayout_mode_;
+      cloned_algorithm.line_clamp_data_ = line_clamp_data_;
+      cloned_algorithm.override_text_box_trim_end_child_ =
+          override_text_box_trim_end_child_;
+      cloned_algorithm.override_text_box_trim_end_break_token_ =
+          override_text_box_trim_end_break_token_;
+      cloned_algorithm.is_relayout_for_margin_end_trim_ =
+          is_relayout_for_margin_end_trim_;
+      cloned_algorithm.pending_margin_end_trim_child_ =
+          pending_margin_end_trim_child_;
       const LayoutResult* result =
           cloned_algorithm.LayoutInlineChild(node, nullptr);
       // The layout might abort with non-success status. For example, it may
@@ -710,6 +720,12 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
           // triggered the abort.
           DCHECK(result->BfcBlockOffset());
           container_builder_.SetBfcBlockOffset(*result->BfcBlockOffset());
+        } else if (result->Status() ==
+                   LayoutResult::kTextBoxTrimEndDidNotApply) {
+          last_non_empty_inflow_child_ =
+              cloned_algorithm.last_non_empty_inflow_child_;
+          last_non_empty_break_token_ =
+              cloned_algorithm.last_non_empty_break_token_;
         }
         return container_builder_.Abort(result->Status());
       }
