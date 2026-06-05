@@ -207,8 +207,16 @@ void MojoDecryptorService::DeinitializeDecoder(StreamType stream_type) {
     return;
   }
 
-  DCHECK(!reader->HasPendingReads())
-      << "The decoder should be fully flushed before deinitialized.";
+  // A well-behaved client never deinitializes the decoder while a
+  // DecryptAndDecode read is still pending. A compromised renderer can stall
+  // the DataPipe to force this state and then fire DecryptAndDecode* into a
+  // deinitialized library CDM, so reject it with a bad message.
+  if (reader->HasPendingReads()) {
+    CHECK(mojo::IsInMessageDispatch());
+    mojo::ReportBadMessage(
+        "DeinitializeDecoder with pending DecryptAndDecode reads");
+    return;
+  }
 
   decryptor_->DeinitializeDecoder(stream_type);
 }
