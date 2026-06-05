@@ -72,7 +72,6 @@
 #include "chrome/browser/ui/webui/personal_context/personal_context_notice.mojom.h"
 #include "chrome/browser/ui/webui/personal_context/personal_context_notice_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens.mojom.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
@@ -549,13 +548,6 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         related_website_sets::mojom::RelatedWebsiteSetsPageHandler,
         privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
   }
-
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
-    RegisterWebUIControllerInterfaceBinder<
-        private_state_tokens::mojom::PrivateStateTokensPageHandler,
-        privacy_sandbox_internals::PrivacySandboxInternalsUI>(map);
-  }
-
   RegisterWebUIControllerInterfaceBinder<
       guest_contents::mojom::GuestContentsHost, WebUIBrowserUI>(map);
 

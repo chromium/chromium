@@ -5448,7 +5448,6 @@ group("browser_generated_files") {
       "//chrome/browser/ui/webui/omnibox_popup/mojom",
       "//chrome/browser/ui/webui/on_device_internals:mojom",
       "//chrome/browser/ui/webui/personal_context:mojo_bindings",
-      "//chrome/browser/ui/webui/privacy_sandbox/private_state_tokens:mojo_bindings",
       "//chrome/browser/ui/webui/privacy_sandbox/related_website_sets:mojo_bindings",
       "//chrome/browser/ui/webui/search_engine_choice:mojo_bindings",
       "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings",

@@ -22,7 +22,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/private_state_tokens/private_state_tokens_handler.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -34,7 +33,6 @@ namespace privacy_sandbox_internals {
 using ::privacy_sandbox_internals::mojom::Page;
 using ::privacy_sandbox_internals::mojom::PageHandler;
 #if !BUILDFLAG(IS_ANDROID)
-using ::private_state_tokens::mojom::PrivateStateTokensPageHandler;
 using ::related_website_sets::mojom::RelatedWebsiteSetsPageHandler;
 #endif
 
@@ -71,15 +69,6 @@ void PrivacySandboxInternalsUI::BindInterface(
         related_website_sets::mojom::RelatedWebsiteSetsPageHandler> receiver) {
   if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
     related_website_sets_handler_ = std::make_unique<RelatedWebsiteSetsHandler>(
-        web_ui(), std::move(receiver));
-  }
-}
-
-void PrivacySandboxInternalsUI::BindInterface(
-    mojo::PendingReceiver<
-        private_state_tokens::mojom::PrivateStateTokensPageHandler> receiver) {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
-    private_state_tokens_handler_ = std::make_unique<PrivateStateTokensHandler>(
         web_ui(), std::move(receiver));
   }
 }
