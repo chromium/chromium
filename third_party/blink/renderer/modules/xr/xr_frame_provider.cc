@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport_delegate.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -276,8 +277,9 @@ void XRFrameProvider::ScheduleImmersiveFrame(
   frame_data_time_.StartTimer();
   // `this` is an okay TRACE ID here, since we are only allowed one immersive
   // session at a time.
-  TRACE_EVENT_BEGIN("xr", "RequestImmersiveFrame",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "xr", "RequestImmersiveFrame",
+      perfetto::NamedTrack::FromPointer("blink::XRFrameProvider", this));
   immersive_data_provider_->GetFrameData(
       std::move(options), BindOnce(&XRFrameProvider::OnImmersiveFrameData,
                                    WrapWeakPersistent(this)));
@@ -310,8 +312,9 @@ void XRFrameProvider::ScheduleNonImmersiveFrame(
 void XRFrameProvider::OnImmersiveFrameData(
     device::mojom::blink::XRFrameDataPtr data) {
   frame_data_time_.StopTimer();
-  TRACE_EVENT_END("xr", /*RequestImmersiveFrame*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END(
+      "xr", /*RequestImmersiveFrame*/
+      perfetto::NamedTrack::FromPointer("blink::XRFrameProvider", this));
   TRACE_EVENT0("gpu", "OnImmersiveFrameData");
 
   if (data.is_null()) {

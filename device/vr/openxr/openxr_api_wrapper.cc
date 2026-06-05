@@ -1790,16 +1790,14 @@ void OpenXrApiWrapper::SetXrSessionState(XrSessionState new_state) {
   DVLOG(1) << __func__ << " Transitioning from: " << old_state_name
            << " to: " << new_state_name;
 
+  auto track = perfetto::NamedTrack::FromPointer("XRSessionState", this);
   if (session_state_ != XR_SESSION_STATE_UNKNOWN) {
     TRACE_EVENT_END("xr", /*"XRSessionState"*/
-                    perfetto::Track::FromPointer(this), "state",
-                    old_state_name);
+                    track, "state", old_state_name);
   }
 
   if (new_state != XR_SESSION_STATE_UNKNOWN) {
-    TRACE_EVENT_BEGIN("xr", "XRSessionState",
-                      perfetto::Track::FromPointer(this), "state",
-                      new_state_name);
+    TRACE_EVENT_BEGIN("xr", "XRSessionState", track, "state", new_state_name);
   }
 
   session_state_ = new_state;
