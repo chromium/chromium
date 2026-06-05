@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.62.0"
 name = "chrono"
-version = "0.4.44"
+version = "0.4.45"
 build = false
 include = [
     "src/*",
@@ -155,7 +155,7 @@ default-features = false
 version = "1"
 
 [dev-dependencies.similar-asserts]
-version = "1.6.1"
+version = "2.0.0"
 
 [dev-dependencies.windows-bindgen]
 version = "0.66"

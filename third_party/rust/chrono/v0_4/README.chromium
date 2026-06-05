@@ -1,7 +1,7 @@
 Name: chrono
 URL: https://crates.io/crates/chrono
-Version: 0.4.44
-Revision: c14b4599d07ef36ffa1f8a531fb0bc7eb3b42464
+Version: 0.4.45
+Revision: 170338250e836976a211e64728ec956e45e78a39
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/chrono-v0_4/LICENSE.txt

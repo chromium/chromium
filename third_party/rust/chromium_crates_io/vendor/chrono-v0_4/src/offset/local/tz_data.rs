@@ -25,9 +25,14 @@ pub(crate) fn for_zone(tz_string: &str) -> Result<Option<Vec<u8>>> {
 /// Open the `tzdata` file of Android from the environment variables.
 #[cfg(target_os = "android")]
 fn open_android_tz_data_file() -> Result<File> {
-    for (env_var, path) in
-        [("ANDROID_DATA", "/misc/zoneinfo"), ("ANDROID_ROOT", "/usr/share/zoneinfo")]
-    {
+    for (env_var, path) in [
+        // Default root path: /apex/com.android.tzdata
+        ("ANDROID_TZDATA_ROOT", "/etc/tz"),
+        // Default root path: /data
+        ("ANDROID_DATA", "/misc/zoneinfo/current"),
+        // Default root path: /system
+        ("ANDROID_ROOT", "/usr/share/zoneinfo"),
+    ] {
         if let Ok(env_value) = std::env::var(env_var) {
             if let Ok(file) = File::open(format!("{}{}/tzdata", env_value, path)) {
                 return Ok(file);

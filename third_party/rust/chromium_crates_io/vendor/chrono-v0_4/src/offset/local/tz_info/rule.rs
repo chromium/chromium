@@ -357,7 +357,8 @@ fn parse_name<'a>(cursor: &mut Cursor<'a>) -> Result<&'a [u8], Error> {
 fn parse_offset(cursor: &mut Cursor) -> Result<i32, Error> {
     let (sign, hour, minute, second) = parse_signed_hhmmss(cursor)?;
 
-    if !(0..=24).contains(&hour) {
+    // The offset must fit in a `FixedOffset`, which is limited to ±23:59:59.
+    if !(0..=23).contains(&hour) {
         return Err(Error::InvalidTzString("invalid offset hour"));
     }
     if !(0..=59).contains(&minute) {
@@ -844,6 +845,16 @@ mod tests {
             .into()
         );
         Ok(())
+    }
+
+    #[test]
+    fn test_invalid_offset_hour() {
+        // An offset of 24 hours does not fit in a `FixedOffset` and must be rejected.
+        assert!(TransitionRule::from_tz_string(b"FOO24", false).is_err());
+        assert!(TransitionRule::from_tz_string(b"FOO+24", false).is_err());
+        assert!(TransitionRule::from_tz_string(b"FOO-24", false).is_err());
+        // The maximum valid offset is 23:59:59.
+        assert!(TransitionRule::from_tz_string(b"FOO23:59:59", false).is_ok());
     }
 
     #[test]
