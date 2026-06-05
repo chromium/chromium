@@ -609,10 +609,11 @@ bool AtMemoryManager::IsSearching() const {
 
 void AtMemoryManager::MaybeAppendPersonalContextNotice(
     std::vector<Suggestion>& suggestions) const {
-  // TODO(crbug.com/515651053): Call
-  // FirstRunService::ShouldShowPersonalContextAutofillNotice when available.
   if (personal_context::features::
           IsPersonalContextFirstRunNoticePhase2Enabled()) {
+    if (!owner_->client().ShouldShowPersonalContextAutofillNotice()) {
+      return;
+    }
     if (!suggestions.empty() &&
         suggestions.back().type == SuggestionType::kPersonalContextNotice) {
       return;
