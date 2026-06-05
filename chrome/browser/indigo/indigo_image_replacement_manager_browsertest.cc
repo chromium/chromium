@@ -1256,4 +1256,60 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       WaitUntilReplacementImageSrcMatches(subframe.get(), success_url2.spec()));
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       GetPrimaryTrackedElementIdAfterPrimaryDisconnect) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Register primary replacement.
+  MockImageReplacement mock_replacement(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  // Process generate request.
+  fake_api_.WaitForGenerateRequest(0);
+  GURL success_url(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url, 0);
+
+  // Wait until replacement image is loaded in the subframe.
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url.spec()));
+
+  // Before disconnect, the primary tracked element ID should be valid.
+  EXPECT_TRUE(manager->GetPrimaryTrackedElementId().has_value());
+
+  // Set up disconnect handler on the receiver to wait for the browser-side
+  // IndigoImageReplacement to be destroyed.
+  base::test::TestFuture<void> receiver_disconnect_future;
+  receiver.set_disconnect_handler(receiver_disconnect_future.GetCallback());
+
+  // Disconnect the primary replacement (drops the ImageReplacementHost remote).
+  mock_replacement.Disconnect();
+
+  // Wait for the browser-side remote to be destroyed, which disconnects the
+  // client-side receiver.
+  EXPECT_TRUE(receiver_disconnect_future.Wait());
+
+  // Verify that calling GetPrimaryTrackedElementId() does not crash and returns
+  // std::nullopt.
+  EXPECT_FALSE(manager->GetPrimaryTrackedElementId().has_value());
+}
+
 }  // namespace indigo
