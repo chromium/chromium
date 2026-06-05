@@ -1954,6 +1954,10 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       UpdatePropertyTree(property_trees, property_trees.scroll_tree_mutable(),
                          update->scroll_nodes));
 
+  // Property tree updates may have invalidated the existing viewport property
+  // ID values. Update them now.
+  RETURN_IF_ERROR(UpdateViewportPropertyIds(layers, property_trees, *update));
+
   // Pull any copy output requests that came in over the wire.
   for (const auto& wire : update->effect_nodes) {
     for (auto&& copy_request : wire->copy_output_requests) {
@@ -2071,7 +2075,10 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     }
   }
 
-  // This needs to happen before SetPageSvaleFactorAndLimitsForDisplayTree().
+  // Call UpdateViewportPropertyIds() to set layer properties (namely,
+  // is_inner_viewport_scroll_layer_). This needs to happen after
+  // CreateOrUpdateLayers() sets layer element IDs and before
+  // SetPageScaleFactorAndLimitsForDisplayTree().
   RETURN_IF_ERROR(UpdateViewportPropertyIds(layers, property_trees, *update));
 
   layers.set_background_color(update->background_color);
