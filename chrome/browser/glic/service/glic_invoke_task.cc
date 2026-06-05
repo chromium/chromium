@@ -150,16 +150,18 @@ void ShowInstanceTask::Start(base::OnceClosure done_callback) {
   std::move(done_callback).Run();
 }
 
-SetupHiddenPanelTask::SetupHiddenPanelTask(GlicInstanceImpl* instance,
-                                           tabs::TabInterface* tab)
-    : instance_(instance), tab_(tab) {}
+SetupHiddenPanelTask::SetupHiddenPanelTask(
+    GlicInstanceImpl* instance,
+    tabs::TabInterface* tab,
+    std::optional<mojom::InvocationSource> invocation_source)
+    : instance_(instance), tab_(tab), invocation_source_(invocation_source) {}
 
 SetupHiddenPanelTask::~SetupHiddenPanelTask() = default;
 
 void SetupHiddenPanelTask::Start(base::OnceClosure done_callback) {
   instance_->SuppressShowOnNextTabAddedToTask(true);
   instance_->BindTabWithoutShowing(tab_, GlicPinTrigger::kActuation,
-                                   /*pin_on_bind=*/true);
+                                   /*pin_on_bind=*/true, invocation_source_);
   std::move(done_callback).Run();
 }
 

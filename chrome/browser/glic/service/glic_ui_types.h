@@ -54,8 +54,6 @@ struct FloatingShowOptions {
 
 using EmbedderOptions = std::variant<SidePanelShowOptions, FloatingShowOptions>;
 struct ShowOptions {
-  explicit ShowOptions(EmbedderOptions panel_options);
-  explicit ShowOptions(EmbedderOptions panel_options, bool focus);
   explicit ShowOptions(EmbedderOptions panel_options,
                        mojom::InvocationSource source);
   ShowOptions(const ShowOptions&);
@@ -67,13 +65,14 @@ struct ShowOptions {
   // nullptr, it will use default location values.
   static ShowOptions ForFloating(
       tabs::TabInterface::Handle source_tab,
+      mojom::InvocationSource invocation_source,
       mojom::WebClientMode initial_mode = mojom::WebClientMode::kUnknown);
   static ShowOptions ForFloating(
       gfx::Rect initial_bounds,
+      mojom::InvocationSource invocation_source,
       mojom::WebClientMode initial_mode = mojom::WebClientMode::kUnknown);
-  static ShowOptions ForSidePanel(tabs::TabInterface& bound_tab);
   static ShowOptions ForSidePanel(tabs::TabInterface& bound_tab,
-                                  GlicPinTrigger pin_trigger);
+                                  mojom::InvocationSource invocation_source);
   static ShowOptions ForSidePanel(tabs::TabInterface& bound_tab,
                                   GlicPinTrigger pin_trigger,
                                   mojom::InvocationSource invocation_source);
@@ -82,8 +81,7 @@ struct ShowOptions {
   bool focus_on_show = false;
   bool reinitialize_if_already_active = false;
   std::optional<std::string> prompt_suggestion;
-  mojom::InvocationSource invocation_source =
-      mojom::InvocationSource::kTopChromeButton;
+  mojom::InvocationSource invocation_source;
   mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified;
 
   // Container for options that are different between side panel and floaty.

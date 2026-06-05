@@ -436,7 +436,7 @@ class GlicBrowserTestMixin : public T {
 
   void ActivateTab(tabs::TabInterface* tab) {
     CHECK(tab);
-    tab->GetContents()->GetDelegate()->ActivateContents(tab->GetContents());
+    T::GetTabListInterface()->ActivateTab(tab->GetHandle());
   }
 
   tabs::TabInterface* CreateUserInitiatedTab(const GURL& url) {

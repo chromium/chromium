@@ -66,8 +66,13 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "AutoOpenedByContextualCue";
     case mojom::InvocationSource::kAutoOpenedForPdf:
       return "AutoOpenedForPdf";
+
     case mojom::InvocationSource::kCaptureRegionHotkey:
       return "CaptureRegionHotkey";
+    case mojom::InvocationSource::kConversationSwitch:
+      return "ConversationSwitch";
+    case mojom::InvocationSource::kDetachAttachButton:
+      return "DetachAttachButton";
     case mojom::InvocationSource::kFre:
       return "Fre";
     case mojom::InvocationSource::kHandoffButton:
@@ -76,6 +81,8 @@ std::string GetInvocationSourceString(mojom::InvocationSource source) {
       return "Iph";
     case mojom::InvocationSource::kNavigationCapture:
       return "NavigationCapture";
+    case mojom::InvocationSource::kDaisyChain:
+      return "DaisyChain";
     case mojom::InvocationSource::kNudge:
       return "Nudge";
     case mojom::InvocationSource::kOsButton:

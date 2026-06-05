@@ -26,6 +26,10 @@ class FakeGlicInstance : public GlicInstanceHelper::Instance {
   std::string conversation_title() const override {
     return "test_conversation_title";
   }
+  std::optional<mojom::InvocationSource> initial_invocation_source()
+      const override {
+    return std::nullopt;
+  }
 
  private:
   InstanceId id_;

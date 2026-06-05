@@ -133,9 +133,11 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
   info->conversation_title = "Test Conversation";
 
   auto* tab = GetTabListInterface()->GetActiveTab();
-  coordinator().SwitchConversation(*instance,
-                                   ShowOptions{SidePanelShowOptions{*tab}},
-                                   std::move(info), base::DoNothing());
+  coordinator().SwitchConversation(
+      *instance,
+      ShowOptions{SidePanelShowOptions{*tab},
+                  mojom::InvocationSource::kUnsupported},
+      std::move(info), base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",

@@ -412,7 +412,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, BackgroundCreationThenReveal) {
   ASSERT_TRUE(instance);
 
   SidePanelShowOptions side_panel_options{*background_tab};
-  auto show_options = ShowOptions{side_panel_options};
+  auto show_options = ShowOptions{side_panel_options,
+                                  mojom::InvocationSource::kTopChromeButton};
   instance->Show(show_options);
 
   // 4. Verify no OnOpen sample is added yet for Tab 2.
@@ -520,7 +521,8 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
   ASSERT_TRUE(instance);
 
   SidePanelShowOptions side_panel_options{*background_tab};
-  auto show_options = ShowOptions{side_panel_options};
+  auto show_options = ShowOptions{side_panel_options,
+                                  mojom::InvocationSource::kTopChromeButton};
   instance->Show(show_options);
 
   // 4. Verify no OnOpen sample is added yet for Tab 2.
@@ -610,10 +612,10 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, FloatyDetachAttachDetach) {
   // 2. Detach to Floaty.
   instance->Detach(*tab1);
 
-  // Floaty logs OnOpen. Detach uses kTopChromeButton as default.
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
-                                     1);
+  // Floaty logs OnOpen. Detach uses kDetachAttachButton.
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kDetachAttachButton, 1);
 
   // 3. Attach floaty back to side panel. This deactivates Floaty and should
   // reset its flag.
@@ -623,9 +625,9 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, FloatyDetachAttachDetach) {
   instance->Detach(*tab1);
 
   // 5. Verify Floaty logged OnOpen again.
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
-                                     2);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kDetachAttachButton, 2);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
@@ -647,14 +649,14 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
 
   // 2. Detach to Floaty.
   instance->Detach(*tab1);
-  histogram_tester.ExpectBucketCount("Glic.Instance.Floaty.OpenSource",
-                                     mojom::InvocationSource::kTopChromeButton,
-                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Instance.Floaty.OpenSource",
+      mojom::InvocationSource::kDetachAttachButton, 1);
 
   // 3. Switch conversation on the instance.
   FloatingShowOptions floating_options{gfx::Rect(), tab1->GetHandle()};
-  ShowOptions switch_options(floating_options);
-  switch_options.invocation_source = mojom::InvocationSource::kOsHotkey;
+  ShowOptions switch_options(floating_options,
+                             mojom::InvocationSource::kOsHotkey);
 
   // Call SwitchConversation to test the specific fix.
   instance->SwitchConversation(switch_options, mojom::ConversationInfo::New(),

@@ -3070,6 +3070,12 @@ export enum InvocationSource {
   WEB_DRAG_DROP = 33,
   // From the promotion page.
   PROMOTION_PAGE = 34,
+  // User kept the side panel open on a new tab or follow-link.
+  DAISY_CHAIN = 35,
+  // User switched conversation.
+  CONVERSATION_SWITCH = 36,
+  // User detached or attached the panel.
+  DETACH_ATTACH_BUTTON = 37,
 }
 
 ///////////////////////////////////////////////

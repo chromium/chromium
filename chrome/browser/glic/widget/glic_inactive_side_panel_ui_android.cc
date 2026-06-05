@@ -28,6 +28,7 @@ GlicInactiveSidePanelUi::CreateForBackgroundTab(
     GlicUiEmbedder::Delegate& delegate) {
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
+
   return inactive_side_panel;
 }
 
@@ -89,7 +90,8 @@ GlicSidePanelCoordinator* GlicInactiveSidePanelUi::GetGlicSidePanelCoordinator()
 void GlicInactiveSidePanelUi::OnSidePanelStateChanged(
     GlicSidePanelCoordinator::State state) {
   if (state == GlicSidePanelCoordinator::State::kShown && tab_) {
-    delegate_->Show(ShowOptions::ForSidePanel(*tab_));
+    delegate_->Show(ShowOptions::ForSidePanel(
+        *tab_, mojom::InvocationSource::kUnsupported));
   }
 }
 
@@ -121,7 +123,8 @@ void GlicInactiveSidePanelUi::InitializeAfterRegistration() {
           GlicSidePanelCoordinator::State::kShown) {
     SidePanelShowOptions side_panel_options{*tab_};
     side_panel_options.prefer_peek = true;
-    Show(ShowOptions{side_panel_options});
+    Show(
+        ShowOptions{side_panel_options, mojom::InvocationSource::kUnsupported});
   }
 }
 

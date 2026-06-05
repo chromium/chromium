@@ -205,7 +205,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnInstanceCreatedWithoutWarming();
 
   // Called when this instance is shown in the side panel.
-  void OnShowInSidePanel(tabs::TabInterface* tab);
+  void OnShowInSidePanel(tabs::TabInterface* tab,
+                         mojom::InvocationSource source);
 
   // Called when this instance is shown in a floaty.
   void OnShowInFloaty(const ShowOptions& options);
@@ -336,6 +337,14 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   std::optional<mojom::InvocationSource> initial_invocation_source_for_testing()
       const {
     return initial_invocation_source_;
+  }
+
+  std::optional<mojom::InvocationSource> initial_invocation_source() const {
+    return initial_invocation_source_;
+  }
+
+  mojom::InvocationSource last_invocation_source() const {
+    return last_invocation_source_;
   }
 
  private:

@@ -202,7 +202,8 @@ void GlicInvokeHandler::Invoke() {
     tasks.push_back(
         std::make_unique<ShowInstanceTask>(&*instance_, show_options));
   } else {
-    tasks.push_back(std::make_unique<SetupHiddenPanelTask>(&*instance_, tab_));
+    tasks.push_back(std::make_unique<SetupHiddenPanelTask>(
+        &*instance_, tab_, options_.GetInvocationSource()));
   }
   tasks.push_back(std::make_unique<MaybeInitializeHiddenClientTask>(
       &*instance_, options_.GetInvocationSource(), options_.fre_override));

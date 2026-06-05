@@ -77,7 +77,7 @@ Host::EmbedderDelegate* GlicSidePanelUi::GetHostEmbedderDelegate() {
 }
 
 void GlicSidePanelUi::Show(const ShowOptions& options) {
-  instance_metrics_->OnShowInSidePanel(tab_.get());
+  instance_metrics_->OnShowInSidePanel(tab_.get(), options.invocation_source);
   auto* glic_side_panel_coordinator = GetGlicSidePanelCoordinator();
   if (!glic_side_panel_coordinator) {
     return;
@@ -151,8 +151,10 @@ void GlicSidePanelUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   // NOTE: `this` may be destroyed after this call.
-  delegate_->SwitchConversation(ShowOptions::ForSidePanel(*tab_),
-                                std::move(info), std::move(callback));
+  delegate_->SwitchConversation(
+      ShowOptions::ForSidePanel(*tab_,
+                                mojom::InvocationSource::kConversationSwitch),
+      std::move(info), std::move(callback));
 }
 
 void GlicSidePanelUi::CaptureScreenshot(

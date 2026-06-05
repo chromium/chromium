@@ -395,15 +395,14 @@ void GlicInstanceMetrics::OnSwitchToConversation(
   }
 }
 
-void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
+void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab,
+                                            mojom::InvocationSource source) {
   current_ui_mode_ = EmbedderType::kSidePanel;
   if (!tab) {
     return;
   }
   if (!initial_invocation_source_.has_value()) {
-    // If a side panel is opened outside of the ToggleFlow (e.g. for daisy
-    // chaining on new tab) we would log the default value "Unsupported".
-    initial_invocation_source_ = last_invocation_source_;
+    initial_invocation_source_ = source;
   }
 
   if (side_panel_open_times_.contains(tab->GetHandle())) {

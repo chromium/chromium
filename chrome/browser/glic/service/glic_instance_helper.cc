@@ -69,6 +69,14 @@ std::string GlicInstanceHelper::GetConversationTitle() const {
   return "";
 }
 
+std::optional<mojom::InvocationSource>
+GlicInstanceHelper::GetInitialInvocationSource() const {
+  if (bound_instance_) {
+    return bound_instance_->initial_invocation_source();
+  }
+  return std::nullopt;
+}
+
 void GlicInstanceHelper::OnPinnedByInstance(Instance* instance) {
   CHECK(instance);
   pinned_instances_.insert(instance);

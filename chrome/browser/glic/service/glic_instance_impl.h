@@ -136,9 +136,11 @@ class GlicInstanceImpl : public GlicInstance,
   void Hibernate();
   void Shutdown();
   void CloseInstanceAndShutdown();
-  void BindTabWithoutShowing(tabs::TabInterface* tab,
-                             GlicPinTrigger pin_trigger,
-                             bool pin_on_bind);
+  void BindTabWithoutShowing(
+      tabs::TabInterface* tab,
+      GlicPinTrigger pin_trigger,
+      bool pin_on_bind,
+      std::optional<mojom::InvocationSource> invocation_source = std::nullopt);
   void SuppressShowOnNextTabAddedToTask(bool suppress);
   // Initializes the instance for a hidden client. No-op if the instance already
   // has webui contents.
@@ -195,6 +197,8 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<std::string> conversation_id() const override;
   std::string conversation_title() const override;
   std::vector<tabs::TabInterface*> GetBoundTabs() const;
+  std::optional<mojom::InvocationSource> initial_invocation_source()
+      const override;
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
   void CancelTask() override;
@@ -293,6 +297,7 @@ class GlicInstanceImpl : public GlicInstance,
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
     bool user_input_submitted_while_bound = false;
+    std::optional<mojom::InvocationSource> invocation_source;
   };
 
   void NotifyVisibilityChange();
@@ -300,6 +305,21 @@ class GlicInstanceImpl : public GlicInstance,
 
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   EmbedderEntry* GetEmbedderEntry(EmbedderKey key);
+
+  // Resolves the effective invocation source to log for a Glic Show request.
+  //
+  // For explicit user actions, the source is retrieved directly from `options`.
+  // For background-to-foreground transitions or internal triggers where the
+  // trigger is not explicitly known (i.e., `options.invocation_source` is
+  // `kUnsupported`), this resolves the source by falling back to:
+  // 1. The invocation source stored in the tab's `EmbedderEntry` (if bound).
+  // 2. The last recorded invocation source for this instance
+  // (`last_invocation_source_`).
+  // 3. The initial invocation source used to create this instance
+  // (`initial_invocation_source()`).
+  mojom::InvocationSource ResolveEffectiveInvocationSource(
+      const ShowOptions& options,
+      const EmbedderEntry* entry);
   void DeactivateCurrentEmbedder();
   void OnAllEmbeddersInactive();
   GlicUiEmbedder* CreateActiveEmbedder(const ShowOptions& options);
@@ -308,7 +328,8 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* CreateActiveEmbedderForFloaty(
       const gfx::Rect& initial_bounds,
       tabs::TabInterface::Handle source_tab);
-  void ShowInactiveSidePanelEmbedderFor(const SidePanelShowOptions& options);
+  void ShowInactiveSidePanelEmbedderFor(const SidePanelShowOptions& options,
+                                        mojom::InvocationSource source);
   void SetActiveEmbedderAndNotifyVisibilityChange(
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyVisibilityChange();

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace glic {
@@ -23,6 +24,7 @@ struct GlicRestoredState {
   struct InstanceInfo {
     std::string instance_id;
     std::string conversation_id;
+    mojom::InvocationSource invocation_source;
   };
 
   InstanceInfo bound_instance;

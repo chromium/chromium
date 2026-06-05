@@ -41,6 +41,7 @@ GlicInactiveSidePanelUi::CreateForBackgroundTab(
   // Using `new` to access a private constructor.
   auto inactive_side_panel =
       base::WrapUnique(new GlicInactiveSidePanelUi(tab, delegate));
+
   return inactive_side_panel;
 }
 
@@ -71,7 +72,8 @@ GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 void GlicInactiveSidePanelUi::OnViewFocused(views::View* observed_view) {
   if (tab_) {
     // NOTE: `this` will be destroyed after this call.
-    delegate_->Show(ShowOptions::ForSidePanel(*tab_));
+    delegate_->Show(ShowOptions::ForSidePanel(
+        *tab_, mojom::InvocationSource::kUnsupported));
   }
 }
 

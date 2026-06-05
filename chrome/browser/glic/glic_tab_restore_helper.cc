@@ -4,6 +4,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/public/features.h"
@@ -21,12 +22,14 @@ namespace {
 // Legacy keys for backward compatibility (and simplicity for bound instance).
 constexpr char kGlicInstanceIdKey[] = "glic.instance_id";
 constexpr char kGlicConversationIdKey[] = "glic.conversation_id";
+constexpr char kGlicInvocationSourceKey[] = "glic.invocation_source";
 constexpr char kGlicPanelOpenKey[] = "glic.panel_open";
 // New key for pinned instances list (JSON).
 constexpr char kGlicPinnedInstancesKey[] = "glic.pinned_instances";
 
 constexpr char kInstanceIdKey[] = "instance_id";
 constexpr char kConversationIdKey[] = "conversation_id";
+constexpr char kInvocationSourceKey[] = "invocation_source";
 }  // namespace
 
 void PopulateGlicExtraData(tabs::TabInterface* tab,
@@ -43,6 +46,10 @@ void PopulateGlicExtraData(tabs::TabInterface* tab,
     if (auto conversation_id = helper->GetConversationId()) {
       (*extra_data)[kGlicConversationIdKey] = *conversation_id;
     }
+    if (auto source = helper->GetInitialInvocationSource()) {
+      (*extra_data)[kGlicInvocationSourceKey] =
+          base::NumberToString(static_cast<int>(*source));
+    }
 
     auto pinned_instances = helper->GetPinnedInstances();
     if (!pinned_instances.empty()) {
@@ -55,6 +62,9 @@ void PopulateGlicExtraData(tabs::TabInterface* tab,
         dict.Set(kInstanceIdKey, instance->id().value());
         if (auto conv_id = instance->conversation_id()) {
           dict.Set(kConversationIdKey, *conv_id);
+        }
+        if (auto source = instance->initial_invocation_source()) {
+          dict.Set(kInvocationSourceKey, static_cast<int>(*source));
         }
         list.Append(std::move(dict));
       }
@@ -88,6 +98,21 @@ void RestoreGlicStateFromExtraData(
     state.bound_instance.conversation_id = it_conversation->second;
   }
 
+  auto it_source = extra_data.find(kGlicInvocationSourceKey);
+  if (it_source != extra_data.end()) {
+    int val;
+    if (base::StringToInt(it_source->second, &val)) {
+      state.bound_instance.invocation_source =
+          static_cast<mojom::InvocationSource>(val);
+    } else {
+      state.bound_instance.invocation_source =
+          mojom::InvocationSource::kUnsupported;
+    }
+  } else {
+    state.bound_instance.invocation_source =
+        mojom::InvocationSource::kUnsupported;
+  }
+
   auto it_panel_open = extra_data.find(kGlicPanelOpenKey);
   if (it_panel_open != extra_data.end() && it_panel_open->second == "true") {
     state.side_panel_open = true;
@@ -111,6 +136,13 @@ void RestoreGlicStateFromExtraData(
           info.instance_id = *id;
           if (conv_id) {
             info.conversation_id = *conv_id;
+          }
+          std::optional<int> source_val = dict.FindInt(kInvocationSourceKey);
+          if (source_val) {
+            info.invocation_source =
+                static_cast<mojom::InvocationSource>(*source_val);
+          } else {
+            info.invocation_source = mojom::InvocationSource::kUnsupported;
           }
           state.pinned_instances.push_back(std::move(info));
           has_state = true;

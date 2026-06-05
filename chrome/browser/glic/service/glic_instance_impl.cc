@@ -164,7 +164,8 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
     side_panel_options.prefer_peek = true;
-    auto show_options = ShowOptions{side_panel_options};
+    auto show_options =
+        ShowOptions{side_panel_options, mojom::InvocationSource::kDaisyChain};
     instance_metrics().OnDaisyChain(source,
                                     /*success=*/true, target_tab, source_tab);
     Show(show_options);
@@ -355,12 +356,17 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options) {
     if (ShouldShowInactiveSidePanel(*side_panel_options)) {
-      ShowInactiveSidePanelEmbedderFor(*side_panel_options);
+      ShowInactiveSidePanelEmbedderFor(*side_panel_options,
+                                       options.invocation_source);
       return;
     }
   }
 
   EmbedderKey new_key = GetEmbedderKey(options);
+
+  EmbedderEntry* entry = GetEmbedderEntry(new_key);
+  mojom::InvocationSource effective_source =
+      ResolveEffectiveInvocationSource(options, entry);
 
   GlicUiEmbedder* embedder_to_show = nullptr;
 
@@ -377,19 +383,22 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
     host_.CreateContents();
     embedder_to_show = CreateActiveEmbedder(options);
     CHECK(embedder_to_show);
+    if (EmbedderEntry* new_entry = GetEmbedderEntry(new_key)) {
+      new_entry->invocation_source = effective_source;
+    }
     host_.SetDelegate(embedder_to_show->GetHostEmbedderDelegate());
     SetActiveEmbedderAndNotifyVisibilityChange(new_key);
   }
 
   MaybeWarmZeroStateSuggestions();
 
-  MaybeShowHostUi(embedder_to_show, options.invocation_source,
-                  options.prompt_suggestion, options.fre_override);
+  MaybeShowHostUi(embedder_to_show, effective_source, options.prompt_suggestion,
+                  options.fre_override);
 
   if (instance_metrics().MarkShownAndCheckIfFirstTime(new_key)) {
-    instance_metrics().OnOpen(options.invocation_source, options);
+    instance_metrics().OnOpen(effective_source, options);
     service_->metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
-                                                    options.invocation_source);
+                                                    effective_source);
   }
 
   embedder_to_show->Show(options);
@@ -406,8 +415,9 @@ void GlicInstanceImpl::Detach(tabs::TabInterface& tab) {
   CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags())
       << "Detach called when floaty is disabled by flags.";
   instance_metrics_.OnDetach();
-  auto show_options =
-      ShowOptions::ForFloating(tab.GetHandle(), interaction_mode_);
+  auto show_options = ShowOptions::ForFloating(
+      tab.GetHandle(), mojom::InvocationSource::kDetachAttachButton,
+      interaction_mode_);
   show_options.focus_on_show = true;
   Show(show_options);
   Close(CreateSidePanelEmbedderKey(&tab),
@@ -438,7 +448,8 @@ void GlicInstanceImpl::Attach(tabs::TabHandle tab) {
       delegate->ActivateContents(contents);
     }
   }
-  Show(ShowOptions::ForSidePanel(*tab_to_attach_to));
+  Show(ShowOptions::ForSidePanel(*tab_to_attach_to,
+                                 mojom::InvocationSource::kDetachAttachButton));
 }
 
 void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
@@ -541,6 +552,37 @@ GlicInstanceImpl::EmbedderEntry* GlicInstanceImpl::GetEmbedderEntry(
   return nullptr;
 }
 
+mojom::InvocationSource GlicInstanceImpl::ResolveEffectiveInvocationSource(
+    const ShowOptions& options,
+    const EmbedderEntry* entry) {
+  mojom::InvocationSource effective_source = options.invocation_source;
+  // If the show request has an explicit invocation source, use it directly.
+  if (effective_source != mojom::InvocationSource::kUnsupported) {
+    return effective_source;
+  }
+
+  // Fallback 1: Check if this specific tab had a source registered when it was
+  // bound.
+  if (entry && entry->invocation_source) {
+    return *entry->invocation_source;
+  }
+
+  // Fallback 2: Use the most recently recorded invocation source for this
+  // instance.
+  if (instance_metrics().last_invocation_source() !=
+      mojom::InvocationSource::kUnsupported) {
+    return instance_metrics().last_invocation_source();
+  }
+
+  // Fallback 3: Fall back to the initial invocation source that started the
+  // instance.
+  if (initial_invocation_source()) {
+    return *initial_invocation_source();
+  }
+
+  return mojom::InvocationSource::kUnsupported;
+}
+
 GlicSharingManager& GlicInstanceImpl::sharing_manager() {
   return sharing_manager_coordinator_.GetActiveSharingManager();
 }
@@ -621,7 +663,9 @@ void GlicInstanceImpl::CreateTab(
   if (base::FeatureList::IsEnabled(
           kGlicBindOnlyForDaisyChainingFromFloatingUi) &&
       IsDetached()) {
-    BindTab(created_tab, GlicPinTrigger::kDaisyChain, /*pin_on_bind=*/true);
+    auto& entry =
+        BindTab(created_tab, GlicPinTrigger::kDaisyChain, /*pin_on_bind=*/true);
+    entry.invocation_source = mojom::InvocationSource::kDaisyChain;
     if (embedder_has_focus) {
       GetActiveEmbedder()->Focus();
     }
@@ -629,7 +673,8 @@ void GlicInstanceImpl::CreateTab(
     SidePanelShowOptions side_panel_options{*created_tab};
     side_panel_options.suppress_opening_animation = true;
     side_panel_options.prefer_peek = true;
-    auto show_options = ShowOptions{side_panel_options};
+    auto show_options =
+        ShowOptions{side_panel_options, mojom::InvocationSource::kDaisyChain};
     Show(show_options);
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kGlicContents,
@@ -868,6 +913,11 @@ std::vector<tabs::TabInterface*> GlicInstanceImpl::GetBoundTabs() const {
   return tabs;
 }
 
+std::optional<mojom::InvocationSource>
+GlicInstanceImpl::initial_invocation_source() const {
+  return instance_metrics_.initial_invocation_source();
+}
+
 glic::mojom::ConversationInfoPtr GlicInstanceImpl::GetConversationInfo() const {
   return conversation_info_->Clone();
 }
@@ -897,7 +947,8 @@ void GlicInstanceImpl::OnBrowserActivated(BrowserWindowInterface* browser) {
       side_panel_options.prefer_peek =
           coordinator->state() == GlicSidePanelCoordinator::State::kPeek;
     }
-    Show(ShowOptions{side_panel_options});
+    Show(ShowOptions{side_panel_options,
+                     instance_metrics().last_invocation_source()});
   }
 }
 
@@ -986,16 +1037,21 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
 }
 
 void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
-    const SidePanelShowOptions& options) {
+    const SidePanelShowOptions& options,
+    mojom::InvocationSource source) {
   CHECK(!IsActiveEmbedder(CreateSidePanelEmbedderKey(&options.tab.get())))
       << "ShowInactiveSidePanelEmbedderFor called for active embedder. "
          "Converting an active embedder to an inactive one needs to be done "
          "with DeactivateCurrentEmbedder.";
   auto& entry =
       BindTab(&options.tab.get(), options.pin_trigger, options.pin_on_bind);
+  if (source != mojom::InvocationSource::kUnsupported ||
+      !entry.invocation_source.has_value()) {
+    entry.invocation_source = source;
+  }
   entry.embedder = GlicInactiveSidePanelUi::CreateForBackgroundTab(
       options.tab.get().GetWeakPtr(), *this);
-  entry.embedder->Show(ShowOptions(options));
+  entry.embedder->Show(ShowOptions(options, source));
 }
 
 void GlicInstanceImpl::SetActiveEmbedderAndNotifyVisibilityChange(
@@ -1086,7 +1142,11 @@ void GlicInstanceImpl::OnBoundTabActivated(tabs::TabInterface* tab) {
     // Ensure that the side panel in this tab becomes the active embedder.
     SidePanelShowOptions side_panel_options{*tab};
     side_panel_options.prefer_peek = true;
-    Show(ShowOptions{side_panel_options});
+    // We pass kUnsupported here because GlicInstanceImpl::Show automatically
+    // resolves the effective invocation source from the tab's EmbedderEntry
+    // or fallback state.
+    Show(
+        ShowOptions{side_panel_options, mojom::InvocationSource::kUnsupported});
   }
 }
 
@@ -1204,10 +1264,17 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   return new_entry;
 }
 
-void GlicInstanceImpl::BindTabWithoutShowing(tabs::TabInterface* tab,
-                                             GlicPinTrigger pin_trigger,
-                                             bool pin_on_bind) {
-  BindTab(tab, pin_trigger, pin_on_bind);
+void GlicInstanceImpl::BindTabWithoutShowing(
+    tabs::TabInterface* tab,
+    GlicPinTrigger pin_trigger,
+    bool pin_on_bind,
+    std::optional<mojom::InvocationSource> invocation_source) {
+  auto& entry = BindTab(tab, pin_trigger, pin_on_bind);
+  if (invocation_source.has_value() &&
+      (*invocation_source != mojom::InvocationSource::kUnsupported ||
+       !entry.invocation_source.has_value())) {
+    entry.invocation_source = *invocation_source;
+  }
 }
 
 void GlicInstanceImpl::SuppressShowOnNextTabAddedToTask(bool suppress) {
@@ -1301,7 +1368,8 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
         if (coordinator &&
             coordinator->state() == GlicSidePanelCoordinator::State::kShown) {
           // Note that this will only happen for full show, not peek.
-          Show(ShowOptions::ForSidePanel(**tab));
+          Show(ShowOptions::ForSidePanel(
+              **tab, instance_metrics().last_invocation_source()));
           return;
         }
       }
@@ -1482,7 +1550,13 @@ void GlicInstanceImpl::OnTabPinningStatusEvent(tabs::TabInterface* tab,
     // pinning to actually happen on bind.
     BindTab(tab, GlicPinTrigger::kUnknown, /*pin_on_bind=*/false);
   } else {
-    ShowInactiveSidePanelEmbedderFor(SidePanelShowOptions(*tab));
+    // We pass the last known invocation source as the baseline metric. If none
+    // exists, we fallback to kUnsupported, which
+    // ResolveEffectiveInvocationSource will subsequently resolve using the
+    // instance fallback chain.
+    ShowInactiveSidePanelEmbedderFor(
+        SidePanelShowOptions(*tab),
+        instance_metrics().last_invocation_source());
   }
 }
 
@@ -1569,12 +1643,14 @@ void GlicInstanceImpl::OnTabAddedToTask(
           kGlicActorDaisyChainingFromFloatingUiDoesntClose) &&
       IsDetached()) {
     side_panel_options.pin_trigger = GlicPinTrigger::kActuation;
-    ShowInactiveSidePanelEmbedderFor(side_panel_options);
+    ShowInactiveSidePanelEmbedderFor(side_panel_options,
+                                     mojom::InvocationSource::kDaisyChain);
   } else if (suppress_show_on_tab_added_to_task_) {
     BindTab(tab, GlicPinTrigger::kActuation, /*pin_on_bind=*/true);
     suppress_show_on_tab_added_to_task_ = false;
   } else {
-    Show(ShowOptions{side_panel_options});
+    Show(ShowOptions{side_panel_options,
+                     mojom::InvocationSource::kActorTaskIcon});
   }
   instance_metrics_.OnDaisyChain(DaisyChainSource::kActorAddTab,
                                  /*success=*/true, tab);
