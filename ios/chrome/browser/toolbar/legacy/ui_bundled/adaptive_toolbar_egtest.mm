@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -165,6 +166,19 @@ void CheckVisibleInSecondaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
       assertWithMatcher:assertionMatcher];
 }
 
+// Checks that the element with `accessibilityIdentifier` is `visible` in the
+// App Bar.
+void CheckVisibilityInAppBar(NSString* accessibilityIdentifier, BOOL visible) {
+  id<GREYMatcher> assertionMatcher = visible ? grey_notNil() : grey_nil();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              accessibilityIdentifier),
+                                          grey_ancestor(grey_kindOfClassName(
+                                              @"AppBarView")),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:assertionMatcher];
+}
+
 // Rotate the device if it is an iPhone or change the trait collection to
 // compact width if it is an iPad. Returns the new trait collection.
 UITraitCollection* RotateOrChangeTraitCollection(
@@ -203,7 +217,7 @@ void CheckOmniboxVisibility(BOOL omniboxFocused) {
     CheckVisibleInPrimaryToolbar(chrome_test_util::Omnibox(), YES);
   } else {
     // Check that location view is visible.
-    BOOL isBottomOmnibox = [ChromeEarlGrey isUnfocusedOmniboxAtBottom];
+    BOOL isBottomOmnibox = [ChromeEarlGrey isCurrentLayoutBottomOmnibox];
     ButtonVisibility locationBarVisibility =
         isBottomOmnibox ? ButtonVisibilitySecondary : ButtonVisibilityPrimary;
     CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
@@ -233,11 +247,28 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
     CheckVisibilityInToolbar(LegacyShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
 
-    CheckVisibilityInToolbar(BackButton(), ButtonVisibilitySecondary);
-    CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilitySecondary);
-    CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilitySecondary);
-    CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilitySecondary);
-    CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilitySecondary);
+    if ([ChromeEarlGrey isChromeNextEnabled]) {
+      BOOL isBottomOmnibox = [ChromeEarlGrey isCurrentLayoutBottomOmnibox];
+      ButtonVisibility mainButtonsVisibility =
+          isBottomOmnibox ? ButtonVisibilitySecondary : ButtonVisibilityPrimary;
+
+      // In Chrome Next, Back and Tools Menu are in the primary toolbar when the
+      // omnibox is at the top, or the secondary toolbar when the omnibox is at
+      // the bottom.
+      CheckVisibilityInToolbar(BackButton(), mainButtonsVisibility);
+      CheckVisibilityInToolbar(ToolsMenuButton(), mainButtonsVisibility);
+
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
+
+      CheckVisibilityInAppBar(kAppBarNewTabButtonIdentifier, YES);
+      CheckVisibilityInAppBar(kAppBarTabGridButtonIdentifier, YES);
+    } else {
+      CheckVisibilityInToolbar(BackButton(), ButtonVisibilitySecondary);
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilitySecondary);
+      CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilitySecondary);
+      CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilitySecondary);
+      CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilitySecondary);
+    }
   }
 }
 
@@ -258,31 +289,65 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
   } else {
     CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityNone);
 
-    CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
+    if ([ChromeEarlGrey isChromeNextEnabled]) {
+      BOOL isBottomOmnibox = [ChromeEarlGrey isCurrentLayoutBottomOmnibox];
+      ButtonVisibility mainButtonsVisibility =
+          isBottomOmnibox ? ButtonVisibilitySecondary : ButtonVisibilityPrimary;
 
-    CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(TabShareButton(), mainButtonsVisibility);
+      CheckVisibilityInToolbar(ReloadButton(), mainButtonsVisibility);
+      CheckVisibilityInToolbar(BackButton(), mainButtonsVisibility);
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
+      CheckVisibilityInToolbar(ToolsMenuButton(), mainButtonsVisibility);
+
+      CheckVisibilityInAppBar(kAppBarNewTabButtonIdentifier, YES);
+      CheckVisibilityInAppBar(kAppBarTabGridButtonIdentifier, YES);
+    } else {
+      CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
+      CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
+    }
   }
-  // The secondary toolbar is not visible.
-  [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+
+  // The secondary toolbar visibility.
+  BOOL isBottomOmnibox = [ChromeEarlGrey isCurrentLayoutBottomOmnibox];
+  id<GREYMatcher> secondaryToolbarMatcher = SecondaryToolbar();
+  if (isBottomOmnibox) {
+    [[EarlGrey selectElementWithMatcher:secondaryToolbarMatcher]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:secondaryToolbarMatcher]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  }
 }
 
 // Check the visibility of the buttons if the device is an iPad not in
 // multitasking.
-void CheckButtonsVisibilityIPad() {
+void CheckButtonsVisibilityIPad(BOOL compactWidth) {
   CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityNone);
 
-  CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityPrimary);
-  CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
-  CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
+  if (compactWidth) {
+    CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityNone);
+  } else {
+    if ([ChromeEarlGrey isChromeNextEnabled]) {
+      CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityNone);
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
+    } else {
+      CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityPrimary);
+      CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
+    }
+    CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
+    CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
+  }
 
   CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
-  CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
   CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
   CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
 
@@ -298,14 +363,20 @@ void CheckToolbarButtonVisibility(UITraitCollection* traitCollection,
   CheckOmniboxVisibility(omniboxFocused);
 
   // Button checks.
-  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    BOOL isCompactWidth = (traitCollection.horizontalSizeClass ==
+                           UIUserInterfaceSizeClassCompact);
+    CheckButtonsVisibilityIPad(isCompactWidth);
+  } else if (traitCollection.horizontalSizeClass ==
+                 UIUserInterfaceSizeClassCompact &&
+             traitCollection.verticalSizeClass !=
+                 UIUserInterfaceSizeClassCompact) {
     CheckButtonsVisibilityIPhonePortrait(omniboxFocused);
   } else if (traitCollection.verticalSizeClass ==
              UIUserInterfaceSizeClassCompact) {
     CheckButtonsVisibilityIPhoneLandscape(omniboxFocused);
   } else {
-    CheckButtonsVisibilityIPad();
+    CheckButtonsVisibilityIPad(/*compactWidth=*/NO);
   }
 }
 
@@ -401,15 +472,6 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 @end
 
 @implementation AdaptiveToolbarTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testToolbarsUI)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
-  return config;
-}
 
 - (void)setUp {
   [super setUp];
@@ -753,13 +815,6 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 @end
 
 @implementation AdaptiveToolbarBottomOmniboxTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix tests with Chrome Next enabled.
-  config.features_disabled.push_back(kChromeNextIa);
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

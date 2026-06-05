@@ -292,6 +292,7 @@ source_set("eg2_tests") {
     "//components/omnibox/browser:pref_names",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/app_bar/ui:constants",
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
     "//ios/chrome/browser/omnibox/public:constants",
