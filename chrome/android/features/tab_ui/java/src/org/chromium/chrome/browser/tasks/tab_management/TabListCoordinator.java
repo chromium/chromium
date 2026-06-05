@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.Selectio
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabGridDialogHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -347,13 +348,10 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
         TabListConfigDelegate tabListConfigDelegate =
                 new TabListConfigDelegate() {
                     @Override
-                    public boolean supportsNestedTabGroups() {
-                        return false;
-                    }
-
-                    @Override
-                    public boolean shouldActOnRelatedTabs() {
-                        return actionOnRelatedTabs;
+                    public @TabListLayoutType int getLayoutType() {
+                        return actionOnRelatedTabs
+                                ? TabListLayoutType.GROUPED
+                                : TabListLayoutType.FLAT;
                     }
 
                     @Override

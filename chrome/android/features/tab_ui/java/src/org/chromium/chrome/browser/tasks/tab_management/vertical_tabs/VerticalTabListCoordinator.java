@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListItemOnClickListenerProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -186,13 +187,8 @@ public class VerticalTabListCoordinator {
         TabListConfigDelegate tabListConfigDelegate =
                 new TabListConfigDelegate() {
                     @Override
-                    public boolean supportsNestedTabGroups() {
-                        return true;
-                    }
-
-                    @Override
-                    public boolean shouldActOnRelatedTabs() {
-                        return true;
+                    public @TabListLayoutType int getLayoutType() {
+                        return TabListLayoutType.NESTED;
                     }
 
                     @Override

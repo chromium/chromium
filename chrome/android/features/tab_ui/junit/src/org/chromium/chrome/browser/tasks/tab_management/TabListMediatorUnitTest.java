@@ -169,6 +169,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabA
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
+import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.AnimationStatus;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
@@ -550,8 +551,7 @@ public class TabListMediatorUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        when(mTabListConfigDelegate.supportsNestedTabGroups()).thenReturn(false);
-        when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(true);
+        when(mTabListConfigDelegate.getLayoutType()).thenReturn(TabListLayoutType.GROUPED);
         when(mTabListConfigDelegate.supportsMessageCards()).thenReturn(true);
 
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
@@ -998,7 +998,8 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void sendsCloseSignalCorrectly() {
-        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        initAndAssertAllProperties();
         mModelList
                 .get(1)
                 .model
@@ -1030,7 +1031,8 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void sendsCloseSignalCorrectly_TriggeringMotionFromMouse_DisallowUndo() {
-        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        initAndAssertAllProperties();
         mModelList
                 .get(1)
                 .model
@@ -1053,7 +1055,6 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void sendsCloseSignalCorrectly_ActionOnAllRelatedTabs() {
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
         mModelList
                 .get(1)
                 .model
@@ -1073,7 +1074,8 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void sendsCloseSignalCorrectly_Incognito() {
-        mMediator.setActionOnAllRelatedTabsForTesting(false);
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+        initAndAssertAllProperties();
         when(mTabModel.isIncognito()).thenReturn(true);
         mModelList
                 .get(1)
@@ -1829,7 +1831,6 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testCloseTabInGroup_withArchivedTabsMessagePresent() {
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
         when(mTabModel.tabGroupExists(any())).thenReturn(true);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -4350,7 +4351,6 @@ public class TabListMediatorUnitTest {
                 mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertEquals(2, mModelList.size());
 
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
         doReturn(true).when(mTabModel).tabGroupExists(TAB_GROUP_ID);
         doReturn(false).when(mTab1).isClosing();
 
@@ -4377,7 +4377,6 @@ public class TabListMediatorUnitTest {
                 mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertEquals(2, mModelList.size());
 
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
         doReturn(true).when(mTabModel).tabGroupExists(TAB_GROUP_ID);
         doReturn(true).when(mTab1).isClosing();
 
@@ -4392,6 +4391,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabClosure_ignoresUpdateForTabGroup_outsideTabSwitcher() {
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
         initAndAssertAllProperties();
         TabActionListener actionListenerBeforeUpdate =
                 mModelList.get(0).model.get(TabProperties.TAB_CLICK_LISTENER);
@@ -4403,7 +4403,6 @@ public class TabListMediatorUnitTest {
 
         assertEquals(2, mModelList.size());
 
-        mMediator.setActionOnAllRelatedTabsForTesting(false);
         doReturn(true).when(mTabModel).tabGroupExists(TAB_GROUP_ID);
 
         mTabModelObserverCaptor.getValue().didRemoveTabForClosure(mTab1);
@@ -4431,8 +4430,6 @@ public class TabListMediatorUnitTest {
                 mModelList.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
         assertEquals(2, mModelList.size());
         assertEquals(mModelList.get(0).model.get(TabProperties.TAB_ID), mTab1.getId());
-
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
 
         mMediator.resetWithListOfTabs(List.of(tab3, mTab2), null, true);
 
@@ -5338,7 +5335,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testSingleTabClosure_ArchivedTab_ExplicitTriggerSnackbar() {
-        when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(false);
+        when(mTabListConfigDelegate.getLayoutType()).thenReturn(TabListLayoutType.FLAT);
 
         mMediator =
                 new TabListMediator(
@@ -5791,7 +5788,6 @@ public class TabListMediatorUnitTest {
         setUpActorState(mTab1, TabIndicatorStatus.NONE);
         setUpActorState(mTab2, TabIndicatorStatus.NONE);
 
-        mMediator.setActionOnAllRelatedTabsForTesting(true);
         mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
 
         assertEquals(1, mModelList.size());
@@ -6047,9 +6043,6 @@ public class TabListMediatorUnitTest {
 
         TabListMediator.TabGridDialogHandler handler =
                 type == TabListMediatorType.TAB_GRID_DIALOG ? mTabGridDialogHandler : null;
-        boolean actionOnRelatedTabs =
-                type == TabListMediatorType.TAB_SWITCHER
-                        || type == TabListMediatorType.VERTICAL_TABS;
         ThumbnailProvider thumbnailProvider =
                 mode == TabListMode.GRID ? getTabThumbnailCallback() : null;
         @TabComponentId
@@ -6058,9 +6051,13 @@ public class TabListMediatorUnitTest {
                         ? TabComponentId.VERTICAL_TABS
                         : TabComponentId.GRID_TAB_SWITCHER;
 
-        when(mTabListConfigDelegate.supportsNestedTabGroups())
-                .thenReturn(type == TabListMediatorType.VERTICAL_TABS);
-        when(mTabListConfigDelegate.shouldActOnRelatedTabs()).thenReturn(actionOnRelatedTabs);
+        @TabListLayoutType int layoutType = TabListLayoutType.FLAT;
+        if (type == TabListMediatorType.VERTICAL_TABS) {
+            layoutType = TabListLayoutType.NESTED;
+        } else if (type == TabListMediatorType.TAB_SWITCHER) {
+            layoutType = TabListLayoutType.GROUPED;
+        }
+        when(mTabListConfigDelegate.getLayoutType()).thenReturn(layoutType);
 
         mMediator =
                 new TabListMediator(
