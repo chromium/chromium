@@ -4,10 +4,14 @@
 
 #include "chrome/test/base/drag_and_drop_test_utils.h"
 
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -45,21 +49,21 @@ bool DragAndDropSimulator::SimulateDragEnter(const gfx::Point& location,
                                              const std::string& text) {
   os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
   os_exchange_data_->SetString(base::UTF8ToUTF16(text));
-  return SimulateDragEnter(location, *os_exchange_data_);
+  return SimulateDragEnter(location, std::move(os_exchange_data_));
 }
 
 bool DragAndDropSimulator::SimulateDragEnter(const gfx::Point& location,
                                              const GURL& url) {
   os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
   os_exchange_data_->SetURL(url, base::UTF8ToUTF16(url.spec()));
-  return SimulateDragEnter(location, *os_exchange_data_);
+  return SimulateDragEnter(location, std::move(os_exchange_data_));
 }
 
 bool DragAndDropSimulator::SimulateDragEnter(const gfx::Point& location,
                                              const base::FilePath& file) {
   os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
   os_exchange_data_->SetFilename(file);
-  return SimulateDragEnter(location, *os_exchange_data_);
+  return SimulateDragEnter(location, std::move(os_exchange_data_));
 }
 
 bool DragAndDropSimulator::SimulateDragEnter(
@@ -67,7 +71,7 @@ bool DragAndDropSimulator::SimulateDragEnter(
     const std::vector<ui::FileInfo>& file_infos) {
   os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
   os_exchange_data_->SetFilenames(file_infos);
-  return SimulateDragEnter(location, *os_exchange_data_);
+  return SimulateDragEnter(location, std::move(os_exchange_data_));
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -79,7 +83,7 @@ bool DragAndDropSimulator::SimulateDragEnter(
   os_exchange_data_ = std::make_unique<ui::OSExchangeData>();
   os_exchange_data_->provider().SetVirtualFileContentsForTesting(
       filenames_and_contents, tymed);
-  return SimulateDragEnter(location, *os_exchange_data_);
+  return SimulateDragEnter(location, std::move(os_exchange_data_));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -161,8 +165,9 @@ bool DragAndDropSimulator::SimulateOmniboxDrop(aura::Window* omnibox,
   return true;
 }
 
-bool DragAndDropSimulator::SimulateDragEnter(const gfx::Point& location,
-                                             const ui::OSExchangeData& data) {
+bool DragAndDropSimulator::SimulateDragEnter(
+    const gfx::Point& location,
+    std::unique_ptr<ui::OSExchangeData> data) {
   if (active_drag_event_) {
     ADD_FAILURE() << "Cannot start a new drag when old one hasn't ended yet.";
     return false;
@@ -173,12 +178,17 @@ bool DragAndDropSimulator::SimulateDragEnter(const gfx::Point& location,
     return false;
   }
 
+  CHECK(data);
+
+  os_exchange_data_ = std::move(data);
+
   gfx::PointF event_location;
   gfx::PointF event_root_location;
   CalculateEventLocations(location, &event_location, &event_root_location,
                           drag_contents_);
   active_drag_event_ = std::make_unique<ui::DropTargetEvent>(
-      data, event_location, event_root_location, kDefaultSourceOperations);
+      *os_exchange_data_, event_location, event_root_location,
+      kDefaultSourceOperations);
 
   delegate->OnDragEntered(*active_drag_event_);
   delegate->OnDragUpdated(*active_drag_event_);
@@ -223,5 +233,98 @@ void DragAndDropSimulator::CalculateEventLocations(
                                      &root_location);
   *out_event_root_location = gfx::PointF(root_location);
 }
+
+DragStartWaiter::DragStartWaiter(content::WebContents* web_contents)
+    : DragStartWaiter(web_contents, base::DoNothing()) {}
+
+DragStartWaiter::DragStartWaiter(content::WebContents* web_contents,
+                                 base::OnceClosure on_drag_started_callback)
+    : web_contents_(web_contents),
+      on_drag_started_callback_(std::move(on_drag_started_callback)) {
+  CHECK(web_contents_);
+  CHECK(web_contents_->GetContentNativeView());
+  gfx::NativeWindow root_window =
+      web_contents_->GetContentNativeView()->GetRootWindow();
+  CHECK(root_window);
+  old_client_ = aura::client::GetDragDropClient(root_window);
+  CHECK(old_client_);
+  aura::client::SetDragDropClient(root_window, this);
+}
+
+DragStartWaiter::~DragStartWaiter() {
+  DragCancel();
+  if (web_contents_->GetContentNativeView()) {
+    gfx::NativeWindow root_window =
+        web_contents_->GetContentNativeView()->GetRootWindow();
+    if (root_window) {
+      aura::client::SetDragDropClient(root_window, old_client_);
+    }
+  }
+}
+
+void DragStartWaiter::WaitUntilDragStart() {
+  run_loop_.Run();
+}
+
+void DragStartWaiter::ReleaseDrag() {
+  release_loop_.Quit();
+}
+
+std::unique_ptr<ui::OSExchangeData> DragStartWaiter::TakeCapturedData() {
+  CHECK(suppress_passing_further_ || captured_data_)
+      << "Cannot extract captured data unless drag is suppressed or completed.";
+  return std::move(captured_data_);
+}
+
+void DragStartWaiter::SuppressPassingStartDragFurther() {
+  suppress_passing_further_ = true;
+}
+
+ui::mojom::DragOperation DragStartWaiter::StartDragAndDrop(
+    std::unique_ptr<ui::OSExchangeData> data,
+    aura::Window* root_window,
+    aura::Window* source_window,
+    const gfx::Point& screen_location,
+    int allowed_operations,
+    ui::mojom::DragEventSource source) {
+  CHECK(!on_drag_started_callback_ || suppress_passing_further_)
+      << "on_drag_started_callback requires SuppressPassingStartDragFurther "
+         "to be called.";
+  captured_data_ = std::move(data);
+  run_loop_.Quit();
+
+  if (suppress_passing_further_) {
+    if (on_drag_started_callback_) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(on_drag_started_callback_));
+    }
+    release_loop_.Run();
+    return ui::mojom::DragOperation::kCopy;
+  }
+
+  CHECK(captured_data_);
+  return old_client_->StartDragAndDrop(std::move(captured_data_), root_window,
+                                       source_window, screen_location,
+                                       allowed_operations, source);
+}
+
+void DragStartWaiter::DragCancel() {
+  release_loop_.Quit();
+}
+
+#if BUILDFLAG(IS_LINUX)
+void DragStartWaiter::UpdateDragImage(const gfx::ImageSkia& image,
+                                      const gfx::Vector2d& offset) {}
+#endif
+
+bool DragStartWaiter::IsDragDropInProgress() {
+  return captured_data_ != nullptr;
+}
+
+void DragStartWaiter::AddObserver(
+    aura::client::DragDropClientObserver* observer) {}
+
+void DragStartWaiter::RemoveObserver(
+    aura::client::DragDropClientObserver* observer) {}
 
 }  // namespace drag_and_drop_test_utils
