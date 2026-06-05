@@ -541,7 +541,8 @@ void SpellCheck::CreateTextCheckingResults(
     int line_offset,
     const std::u16string& line_text,
     const std::vector<SpellCheckResult>& spellcheck_results,
-    std::vector<WebTextCheckingResult>* textcheck_results) {
+    std::vector<WebTextCheckingResult>* textcheck_results,
+    const std::set<std::u16string>* document_custom_words) {
   DCHECK(!line_text.empty());
 
   std::vector<WebTextCheckingResult> results;
@@ -569,6 +570,11 @@ void SpellCheck::CreateTextCheckingResults(
     // Ignore words in custom dictionary.
     if (custom_dictionary_.SpellCheckWord(misspelled_word, 0,
                                           misspelled_word.length())) {
+      continue;
+    }
+
+    if (document_custom_words &&
+        document_custom_words->contains(misspelled_word)) {
       continue;
     }
 

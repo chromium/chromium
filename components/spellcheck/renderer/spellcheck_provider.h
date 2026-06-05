@@ -19,6 +19,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#include <set>
+#include <string>
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include <unordered_map>
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -85,6 +90,9 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 
   // content::RenderFrameObserver:
   void FocusedElementChanged(const blink::WebElement& element) override;
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  void DidCreateNewDocument() override;
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   // Returns the SpellCheckHost.
   spellcheck::mojom::SpellCheckHost& GetSpellCheckHost();
@@ -185,6 +193,12 @@ class SpellCheckProvider : public content::RenderFrameObserver,
 
   // Dictionary updated observer.
   std::unique_ptr<DictionaryUpdateObserverImpl> dictionary_update_observer_;
+
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Per-document word set supplied by the SpellCheckCustomDictionary web API.
+  // Reset on cross-document navigation.
+  std::set<std::u16string> document_custom_words_;
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   std::unordered_map<int, HybridSpellCheckRequestInfo> hybrid_requests_info_;

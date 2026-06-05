@@ -252,6 +252,14 @@ void SpellCheckProvider::OnRespondInitializeDictionaries(
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+void SpellCheckProvider::DidCreateNewDocument() {
+  // SpellCheckCustomDictionary is document-scoped: a fresh document starts
+  // with no custom words.
+  document_custom_words_.clear();
+}
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
 void SpellCheckProvider::FocusedElementChanged(
     const blink::WebElement& unused) {
 #if BUILDFLAG(IS_ANDROID)
@@ -341,6 +349,16 @@ void SpellCheckProvider::RequestCheckingOfText(
 void SpellCheckProvider::SpellCheckCustomDictionaryChanged(
     const std::vector<std::string>& words_added,
     const std::vector<std::string>& words_removed) {
+#if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  // Mirror the changes into a per-document set.
+  for (const std::string& word : words_added) {
+    document_custom_words_.insert(base::UTF8ToUTF16(word));
+  }
+  for (const std::string& word : words_removed) {
+    document_custom_words_.erase(base::UTF8ToUTF16(word));
+  }
+#endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+
   spellcheck_->SpellCheckCustomDictionaryChanged(words_added, words_removed);
 }
 
@@ -417,9 +435,10 @@ void SpellCheckProvider::OnRespondTextCheck(
   }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-  spellcheck_->CreateTextCheckingResults(result_filter, GetSpellCheckHost(),
-                                         /*line_offset=*/0, line, results,
-                                         &textcheck_results);
+  spellcheck_->CreateTextCheckingResults(
+      result_filter, GetSpellCheckHost(),
+      /*line_offset=*/0, line, results, &textcheck_results,
+      document_custom_words_.empty() ? nullptr : &document_custom_words_);
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   if (request_info != hybrid_requests_info_.end()) {

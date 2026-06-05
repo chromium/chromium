@@ -142,13 +142,18 @@ class SpellCheck : public spellcheck::mojom::SpellChecker {
   // list of SpellCheckResult objects (used by Chrome). This function also
   // checks misspelled words returned by the Spelling service and changes the
   // underline colors of contextually-misspelled words.
+  // If |document_custom_words| is non-null, misspellings whose word matches
+  // an entry are also dropped. This is how the SpellCheckCustomDictionary web
+  // API's per-document word set is applied; the set lives on the
+  // SpellCheckProvider since it is document-scoped.
   void CreateTextCheckingResults(
       ResultFilter filter,
       spellcheck::mojom::SpellCheckHost& host,
       int line_offset,
       const std::u16string& line_text,
       const std::vector<SpellCheckResult>& spellcheck_results,
-      std::vector<blink::WebTextCheckingResult>* textcheck_results);
+      std::vector<blink::WebTextCheckingResult>* textcheck_results,
+      const std::set<std::u16string>* document_custom_words = nullptr);
 
   bool IsSpellcheckEnabled();
 
