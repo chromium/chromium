@@ -5,7 +5,7 @@ use crate::reader::error::SyntaxError;
 use crate::reader::lexer::Token;
 use crate::reader::XmlEvent;
 
-use super::{DoctypeSubstate, PullParser, QuoteToken, Result, State};
+use super::{DoctypeSubstate, ProcessingInstructionSubstate, PullParser, QuoteToken, Result, State};
 
 impl PullParser {
     pub fn inside_doctype(&mut self, t: Token, substate: DoctypeSubstate) -> Option<Result> {
@@ -180,16 +180,12 @@ impl PullParser {
                 }
                 Token::Character(c) if is_whitespace_char(c) => None,
                 Token::ProcessingInstructionStart => {
-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::IgnorePI))
+                    self.buf.clear();
+                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PI(ProcessingInstructionSubstate::PIReadingName)))
                 }
                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
             },
-            DoctypeSubstate::IgnorePI => match t {
-                Token::ProcessingInstructionEnd => {
-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
-                }
-                _ => None,
-            },
+            DoctypeSubstate::PI(s) => self.inside_processing_instruction(t, s),
             DoctypeSubstate::String => match t {
                 Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => None,
                 Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => None,

@@ -1,0 +1,174 @@
+From 656f78a92101a79121872817511ea7b0f69fe215 Mon Sep 17 00:00:00 2001
+From: Dominik Röttsches <drott@chromium.org>
+Date: Tue, 19 May 2026 13:45:18 +0300
+Subject: [PATCH] Improve well-formedness checks for Processing Instructions
+
+Cover cases where a PI occurs inside doctype, instead of ignoring. This
+allows the parser to detect wellformedness issues, for example
+discovering an invalid <?xml inside a doctype, not at the beginning
+of the file.
+
+We still ignore PIs in DOCTYPE and do not send them upwards, but we
+better detect non-wellformed documents now.
+
+Upstream PR: https://github.com/kornelski/xml-rs/pull/81
+---
+ .../vendor/xml-v1/src/reader/parser.rs        |  6 +++---
+ .../vendor/xml-v1/src/reader/parser/inside_doctype.rs   | 10 +++------
+ .../parser/inside_processing_instruction.rs   | 22 ++++++++++++++++---
+ .../vendor/xml-v1/src/reader/parser/outside_tag.rs      |  4 ++--
+ 4 files changed, 28 insertions(+), 14 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+index 927cb19daefbb..593ff1fdbf417 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser.rs
+@@ -262,7 +262,7 @@ pub(crate) enum DoctypeSubstate {
+     /// name definition
+     PEReferenceDefinitionStart,
+     PEReferenceDefinition,
+-    IgnorePI,
++    PI(ProcessingInstructionSubstate),
+     SkipDeclaration,
+     Comment,
+ }
+@@ -288,8 +288,8 @@ pub(crate) enum ClosingTagSubstate {
+ 
+ #[derive(Copy, Clone, PartialEq, Debug)]
+ pub(crate) enum ProcessingInstructionSubstate {
+-    PIInsideName,
+-    PIInsideData,
++    PIReadingName,
++    PIReadingData,
+ }
+ 
+ #[derive(Copy, Clone, PartialEq, Debug)]
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
+index e9a54b3834b15..7e038a70274ee 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_doctype.rs
+@@ -5,7 +5,7 @@ use crate::reader::error::SyntaxError;
+ use crate::reader::lexer::Token;
+ use crate::reader::XmlEvent;
+ 
+-use super::{DoctypeSubstate, PullParser, QuoteToken, Result, State};
++use super::{DoctypeSubstate, ProcessingInstructionSubstate, PullParser, QuoteToken, Result, State};
+ 
+ impl PullParser {
+     pub fn inside_doctype(&mut self, t: Token, substate: DoctypeSubstate) -> Option<Result> {
+@@ -180,16 +180,12 @@ impl PullParser {
+                 }
+                 Token::Character(c) if is_whitespace_char(c) => None,
+                 Token::ProcessingInstructionStart => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::IgnorePI))
++                    self.buf.clear();
++                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PI(ProcessingInstructionSubstate::PIReadingName)))
+                 }
+                 _ => Some(self.error(SyntaxError::UnexpectedToken(t))),
+             },
+-            DoctypeSubstate::IgnorePI => match t {
+-                Token::ProcessingInstructionEnd => {
+-                    self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset))
+-                }
+-                _ => None,
+-            },
++            DoctypeSubstate::PI(s) => self.inside_processing_instruction(t, s),
+             DoctypeSubstate::String => match t {
+                 Token::SingleQuote if self.data.quote != Some(QuoteToken::SingleQuoteToken) => None,
+                 Token::DoubleQuote if self.data.quote != Some(QuoteToken::DoubleQuoteToken) => None,
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs
+index cba1eb4ce4a02..f62723a4f0b3d 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/inside_processing_instruction.rs
+@@ -4,12 +4,12 @@ use crate::reader::error::SyntaxError;
+ use crate::reader::events::XmlEvent;
+ use crate::reader::lexer::Token;
+ 
+-use super::{DeclarationSubstate, Encountered, ProcessingInstructionSubstate, PullParser, Result, State};
++use super::{DeclarationSubstate, DoctypeSubstate, Encountered, ProcessingInstructionSubstate, PullParser, Result, State};
+ 
+ impl PullParser {
+     pub fn inside_processing_instruction(&mut self, t: Token, s: ProcessingInstructionSubstate) -> Option<Result> {
+         match s {
+-            ProcessingInstructionSubstate::PIInsideName => match t {
++            ProcessingInstructionSubstate::PIReadingName => match t {
+                 Token::Character(c) if self.buf.is_empty() && is_name_start_char(c) ||
+                                  self.buf_has_data() && is_name_char(c) => {
+                     if self.buf.len() > self.config.max_name_length {
+@@ -37,6 +37,11 @@ impl PullParser {
+ 
+                         // All is ok, emitting event
+                         _ => {
++                            if matches!(self.st, State::InsideDoctype(_)) {
++                                // PIs are allowed inside DOCTYPE internal subset, but we currently ignore them
++                                return self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset));
++                            }
++
+                             debug_assert!(self.next_event.is_none(), "{:?}", self.next_event);
+                             // can't have a PI before `<?xml`
+                             let event1 = self.set_encountered(Encountered::Declaration);
+@@ -58,6 +63,9 @@ impl PullParser {
+                     let name = self.take_buf();
+ 
+                     match &*name {
++                        // Name is empty, it is an error
++                        "" => Some(self.error(SyntaxError::ProcessingInstructionWithoutName)),
++
+                         // We have not ever encountered an element and have not parsed XML declaration
+                         "xml" if self.encountered == Encountered::None => {
+                             self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeVersion))
+@@ -72,9 +80,13 @@ impl PullParser {
+                         // All is ok, starting parsing PI data
+                         _ => {
+                             self.data.name = name;
++                            if matches!(self.st, State::InsideDoctype(_)) {
++                                // PIs are allowed inside DOCTYPE internal subset, but we currently ignore them
++                                return self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PI(ProcessingInstructionSubstate::PIReadingData)));
++                            }
+                             // can't have a PI before `<?xml`
+                             let next_event = self.set_encountered(Encountered::Declaration);
+-                            self.into_state(State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideData), next_event)
++                            self.into_state(State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIReadingData), next_event)
+                         },
+                     }
+                 },
+@@ -85,10 +97,14 @@ impl PullParser {
+                 },
+             },
+ 
+-            ProcessingInstructionSubstate::PIInsideData => match t {
++            ProcessingInstructionSubstate::PIReadingData => match t {
+                 Token::ProcessingInstructionEnd => {
+                     let name = self.data.take_name();
+                     let data = self.take_buf();
++                    if matches!(self.st, State::InsideDoctype(_)) {
++                        // PIs are allowed inside DOCTYPE internal subset, but we currently ignore them
++                        return self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset));
++                    }
+                     self.into_state_emit(
+                         State::OutsideTag,
+                         Ok(XmlEvent::ProcessingInstruction { name, data: Some(data) }),
+diff --git a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs
+index 73b739d8a160c..fff5d50f7c921 100644
+--- a/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs
++++ b/third_party/rust/chromium_crates_io/vendor/xml-v1/src/reader/parser/outside_tag.rs
+@@ -143,7 +143,7 @@ impl PullParser {
+                     },
+ 
+                     Token::ProcessingInstructionStart => self.into_state(
+-                        State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideName),
++                        State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIReadingName),
+                         next_event,
+                     ),
+ 
+@@ -202,7 +202,7 @@ impl PullParser {
+             Token::ProcessingInstructionStart => {
+                 self.push_pos();
+                 self.into_state_continue(State::InsideProcessingInstruction(
+-                    ProcessingInstructionSubstate::PIInsideName,
++                    ProcessingInstructionSubstate::PIReadingName,
+                 ))
+             },
+ 
+-- 
+2.54.0

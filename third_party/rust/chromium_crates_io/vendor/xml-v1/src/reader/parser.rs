@@ -262,7 +262,7 @@ pub(crate) enum DoctypeSubstate {
     /// name definition
     PEReferenceDefinitionStart,
     PEReferenceDefinition,
-    IgnorePI,
+    PI(ProcessingInstructionSubstate),
     SkipDeclaration,
     Comment,
 }
@@ -288,8 +288,8 @@ pub(crate) enum ClosingTagSubstate {
 
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub(crate) enum ProcessingInstructionSubstate {
-    PIInsideName,
-    PIInsideData,
+    PIReadingName,
+    PIReadingData,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]

@@ -143,7 +143,7 @@ impl PullParser {
                     },
 
                     Token::ProcessingInstructionStart => self.into_state(
-                        State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideName),
+                        State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIReadingName),
                         next_event,
                     ),
 
@@ -202,7 +202,7 @@ impl PullParser {
             Token::ProcessingInstructionStart => {
                 self.push_pos();
                 self.into_state_continue(State::InsideProcessingInstruction(
-                    ProcessingInstructionSubstate::PIInsideName,
+                    ProcessingInstructionSubstate::PIReadingName,
                 ))
             },
 

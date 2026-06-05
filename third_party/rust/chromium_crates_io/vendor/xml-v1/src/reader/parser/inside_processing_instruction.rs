@@ -4,12 +4,12 @@ use crate::reader::error::SyntaxError;
 use crate::reader::events::XmlEvent;
 use crate::reader::lexer::Token;
 
-use super::{DeclarationSubstate, Encountered, ProcessingInstructionSubstate, PullParser, Result, State};
+use super::{DeclarationSubstate, DoctypeSubstate, Encountered, ProcessingInstructionSubstate, PullParser, Result, State};
 
 impl PullParser {
     pub fn inside_processing_instruction(&mut self, t: Token, s: ProcessingInstructionSubstate) -> Option<Result> {
         match s {
-            ProcessingInstructionSubstate::PIInsideName => match t {
+            ProcessingInstructionSubstate::PIReadingName => match t {
                 Token::Character(c) if self.buf.is_empty() && is_name_start_char(c) ||
                                  self.buf_has_data() && is_name_char(c) => {
                     if self.buf.len() > self.config.max_name_length {
@@ -37,6 +37,11 @@ impl PullParser {
 
                         // All is ok, emitting event
                         _ => {
+                            if matches!(self.st, State::InsideDoctype(_)) {
+                                // PIs are allowed inside DOCTYPE internal subset, but we currently ignore them
+                                return self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset));
+                            }
+
                             debug_assert!(self.next_event.is_none(), "{:?}", self.next_event);
                             // can't have a PI before `<?xml`
                             let event1 = self.set_encountered(Encountered::Declaration);
@@ -58,6 +63,9 @@ impl PullParser {
                     let name = self.take_buf();
 
                     match &*name {
+                        // Name is empty, it is an error
+                        "" => Some(self.error(SyntaxError::ProcessingInstructionWithoutName)),
+
                         // We have not ever encountered an element and have not parsed XML declaration
                         "xml" if self.encountered == Encountered::None => {
                             self.into_state_continue(State::InsideDeclaration(DeclarationSubstate::BeforeVersion))
@@ -72,9 +80,13 @@ impl PullParser {
                         // All is ok, starting parsing PI data
                         _ => {
                             self.data.name = name;
+                            if matches!(self.st, State::InsideDoctype(_)) {
+                                // PIs are allowed inside DOCTYPE internal subset, but we currently ignore them
+                                return self.into_state_continue(State::InsideDoctype(DoctypeSubstate::PI(ProcessingInstructionSubstate::PIReadingData)));
+                            }
                             // can't have a PI before `<?xml`
                             let next_event = self.set_encountered(Encountered::Declaration);
-                            self.into_state(State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIInsideData), next_event)
+                            self.into_state(State::InsideProcessingInstruction(ProcessingInstructionSubstate::PIReadingData), next_event)
                         },
                     }
                 },
@@ -85,10 +97,14 @@ impl PullParser {
                 },
             },
 
-            ProcessingInstructionSubstate::PIInsideData => match t {
+            ProcessingInstructionSubstate::PIReadingData => match t {
                 Token::ProcessingInstructionEnd => {
                     let name = self.data.take_name();
                     let data = self.take_buf();
+                    if matches!(self.st, State::InsideDoctype(_)) {
+                        // PIs are allowed inside DOCTYPE internal subset, but we currently ignore them
+                        return self.into_state_continue(State::InsideDoctype(DoctypeSubstate::InternalSubset));
+                    }
                     self.into_state_emit(
                         State::OutsideTag,
                         Ok(XmlEvent::ProcessingInstruction { name, data: Some(data) }),
