@@ -4,7 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<vector android:autoMirrored="true" android:height="48dp"
+<vector android:height="48dp"
     android:viewportHeight="48" android:viewportWidth="148"
     android:width="148dp" xmlns:android="http://schemas.android.com/apk/res/android">
     <path android:fillColor="@color/google_logo_green"

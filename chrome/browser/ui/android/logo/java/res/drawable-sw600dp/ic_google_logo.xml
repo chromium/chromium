@@ -7,7 +7,7 @@ found in the LICENSE file.
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="VectorRaster"
-    android:autoMirrored="true" android:height="72dp"
+    android:height="72dp"
     android:viewportHeight="72" android:viewportWidth="210"
     android:width="210dp">
     <group>
