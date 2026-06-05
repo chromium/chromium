@@ -17,6 +17,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
@@ -275,9 +276,10 @@ public class WebContentsDarkModeMessageController {
         Resources resources = activity.getResources();
         boolean feedbackDialogEnabled =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
-                        FEEDBACK_DIALOG_PARAM,
-                        false);
+                                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
+                                FEEDBACK_DIALOG_PARAM,
+                                false)
+                        && FeedbackPolicyManager.getInstance().isUserFeedbackAllowed();
         int titleId =
                 feedbackDialogEnabled
                         ? R.string.auto_dark_dialog_title
@@ -341,8 +343,10 @@ public class WebContentsDarkModeMessageController {
     /** Show feedback. */
     private static void showFeedback(Activity activity, Profile profile, String url) {
         // TODO(crbug.com/40201746): Import ScreenshotMode instead of hardcoding value once new
-        // build
-        //  target added.
+        // build target added.
+        if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+            return;
+        }
         HelpAndFeedbackLauncherFactory.getForProfile(profile)
                 .showFeedback(activity, url, null, /* ScreenshotMode.DEFAULT */ 0, null);
     }

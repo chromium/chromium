@@ -55,6 +55,9 @@ public class ChromeFeedbackCollector extends FeedbackCollector<ChromeFeedbackCol
     protected List<FeedbackSource> buildSynchronousFeedbackSources(
             Activity activity, InitParams initParams) {
         List<FeedbackSource> sources = new ArrayList<>();
+        if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+            return sources;
+        }
 
         // This is the list of all synchronous sources of feedback.  Please add new synchronous
         // entries here.
@@ -81,6 +84,9 @@ public class ChromeFeedbackCollector extends FeedbackCollector<ChromeFeedbackCol
     @Override
     protected List<AsyncFeedbackSource> buildAsynchronousFeedbackSources(InitParams initParams) {
         List<AsyncFeedbackSource> sources = new ArrayList<>();
+        if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+            return sources;
+        }
 
         // This is the list of all asynchronous sources of feedback.  Please add new asynchronous
         // entries here.

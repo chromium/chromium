@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -141,6 +142,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     @Mock WebContents mMockWebContents;
     @Mock SettingsNavigation mMockSettingsNavigation;
     @Mock HelpAndFeedbackLauncher mMockFeedbackLauncher;
+    @Mock FeedbackPolicyManager mMockFeedbackPolicyManager;
 
     @Mock Resources mMockResources;
     @Mock Tracker mMockTracker;
@@ -182,6 +184,8 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         SettingsNavigationFactory.setInstanceForTesting(mMockSettingsNavigation);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockFeedbackLauncher);
         TrackerFactory.setTrackerForTests(mMockTracker);
+        FeedbackPolicyManager.setInstanceForTesting(mMockFeedbackPolicyManager);
+        when(mMockFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
         mIsFeatureEnabled = true;
     }
 
@@ -421,6 +425,31 @@ public class WebContentsDarkModeMessageControllerUnitTest {
                 mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
         verifyLaunchSettings(1);
+
+        // Verify dismissal.
+        Assert.assertNull(
+                "Shown dialog model should be null after clicking the positive button.",
+                mModalDialogManager.mShownDialogModel);
+        verify(mMockTracker, times(1)).dismissed(eq(OPT_OUT_FEATURE));
+    }
+
+    @Test
+    public void testDialogController_ClickPositiveButton_FeedbackAllowedFalse() {
+        // Enable feedback in feature flags, but disable it in policy.
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING,
+                WebContentsDarkModeMessageController.FEEDBACK_DIALOG_PARAM,
+                true);
+        when(mMockFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(false);
+
+        // Click on positive button.
+        WebContentsDarkModeMessageController.attemptToShowDialog(
+                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+        mModalDialogManager.clickButton(ButtonType.POSITIVE);
+
+        // Should open settings, NOT feedback.
+        verifyLaunchSettings(1);
+        verify(mMockFeedbackLauncher, never()).showFeedback(any(), any(), any(), anyInt(), any());
 
         // Verify dismissal.
         Assert.assertNull(

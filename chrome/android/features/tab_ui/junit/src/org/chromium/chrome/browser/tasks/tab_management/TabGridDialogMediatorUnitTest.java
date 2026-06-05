@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -215,6 +216,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private Tracker mTracker;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private View mCardView;
@@ -273,6 +275,8 @@ public class TabGridDialogMediatorUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);
@@ -1906,6 +1910,19 @@ public class TabGridDialogMediatorUnitTest {
         // Shows "new" as a combination of added (1 -> 0) and navigated (2 -> 2).
         assertFalse(text, text.contains("3"));
         assertTrue(text, text.contains("2"));
+    }
+
+    @Test
+    public void testShowSendFeedback_PolicyDisabled() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.DATA_SHARING)
+                .param(TabGridDialogMediator.SHOW_SEND_FEEDBACK_PARAM, true)
+                .apply();
+
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(false);
+
+        resetForDataSharing(/* isShared= */ true, GROUP_MEMBER1, GROUP_MEMBER2);
+        assertFalse(mModel.get(TabGridDialogProperties.SHOW_SEND_FEEDBACK));
     }
 
     @Test

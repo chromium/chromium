@@ -24,8 +24,8 @@ import org.chromium.components.user_prefs.UserPrefs;
  * Provides information for the user feedback related policies. Monitors changes for the feedback
  * preference. Safe to call pre-native.
  *
- * <p>TODO(b/467060116): Update this class from application-scoped to one-per-profile when Chrome
- * Android supports multiple profile switching.
+ * <p>TODO(crbug.com/467060116): Update this class from application-scoped to one-per-profile when
+ * Chrome Android supports multiple profile switching.
  */
 @NullMarked
 public class FeedbackPolicyManager {

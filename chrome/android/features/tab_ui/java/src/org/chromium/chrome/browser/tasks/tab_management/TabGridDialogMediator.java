@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServi
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1121,6 +1122,9 @@ public class TabGridDialogMediator
     }
 
     private void sendFeedback() {
+        if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+            return;
+        }
         HelpAndFeedbackLauncher launcher =
                 HelpAndFeedbackLauncherFactory.getForProfile(mOriginalProfile);
         String tag = mActivity.getPackageName() + SHARE_FEEDBACK_CATEGORY_SUFFIX;
@@ -1176,7 +1180,8 @@ public class TabGridDialogMediator
     }
 
     private boolean shouldShowSendFeedback() {
-        return mCollaborationService.getServiceStatus().isAllowedToJoin()
+        return FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()
+                && mCollaborationService.getServiceStatus().isAllowedToJoin()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         DATA_SHARING, SHOW_SEND_FEEDBACK_PARAM, true);
     }

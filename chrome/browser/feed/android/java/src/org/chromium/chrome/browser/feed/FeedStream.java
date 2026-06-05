@@ -37,6 +37,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -378,6 +379,9 @@ public class FeedStream implements Stream {
         public void sendFeedback(Map<String, String> productSpecificDataMap) {
             assert ThreadUtils.runningOnUiThread();
             mBridge.reportOtherUserAction(FeedUserActionType.TAPPED_SEND_FEEDBACK);
+            if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+                return;
+            }
 
             String url = productSpecificDataMap.get(XSURFACE_CARD_URL);
 

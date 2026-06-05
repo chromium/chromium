@@ -42,6 +42,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -60,6 +62,7 @@ public class ChromeFeedbackCollectorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
     // Test constants.
     private static final String CATEGORY_TAG = "category_tag";
@@ -275,6 +278,9 @@ public class ChromeFeedbackCollectorUnitTest {
 
     @Before
     public void setUp() {
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
+
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));
@@ -864,5 +870,48 @@ public class ChromeFeedbackCollectorUnitTest {
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertEquals(bitmap, collector.getScreenshot()));
+    }
+
+    @Test
+    @Feature({"Feedback"})
+    @DisableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
+    public void testFeedbackAllowed() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
+
+        ChromeFeedbackCollector collector = mock(ChromeFeedbackCollector.class);
+        when(collector.buildSynchronousFeedbackSources(any(), any())).thenCallRealMethod();
+        when(collector.buildAsynchronousFeedbackSources(any())).thenCallRealMethod();
+
+        ChromeFeedbackCollector.InitParams initParams =
+                new ChromeFeedbackCollector.InitParams(mProfile, "http://example.com", null);
+
+        List<FeedbackSource> syncSources =
+                collector.buildSynchronousFeedbackSources(mActivity, initParams);
+        assertFalse(syncSources.isEmpty());
+
+        List<AsyncFeedbackSource> asyncSources =
+                collector.buildAsynchronousFeedbackSources(initParams);
+        assertFalse(asyncSources.isEmpty());
+    }
+
+    @Test
+    @Feature({"Feedback"})
+    public void testFeedbackDisallowed() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(false);
+
+        ChromeFeedbackCollector collector = mock(ChromeFeedbackCollector.class);
+        when(collector.buildSynchronousFeedbackSources(any(), any())).thenCallRealMethod();
+        when(collector.buildAsynchronousFeedbackSources(any())).thenCallRealMethod();
+
+        ChromeFeedbackCollector.InitParams initParams =
+                new ChromeFeedbackCollector.InitParams(mProfile, null, null);
+
+        List<FeedbackSource> syncSources =
+                collector.buildSynchronousFeedbackSources(mActivity, initParams);
+        assertTrue(syncSources.isEmpty());
+
+        List<AsyncFeedbackSource> asyncSources =
+                collector.buildAsynchronousFeedbackSources(initParams);
+        assertTrue(asyncSources.isEmpty());
     }
 }

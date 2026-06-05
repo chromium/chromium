@@ -30,6 +30,10 @@ public interface HelpAndFeedbackLauncher {
     /**
      * Starts an activity prompting the user to enter feedback.
      *
+     * <p>Note: Please check the isUserFeedbackAllowed policy (via {@link
+     * FeedbackPolicyManager#isUserFeedbackAllowed()}) when adding a UI entry to send feedback. See
+     * crbug.com/467060116 for more details.
+     *
      * @param activity The activity to use for starting the feedback activity and to take a
      *     screenshot of.
      * @param url the current URL. May be null.
@@ -49,6 +53,10 @@ public interface HelpAndFeedbackLauncher {
     /**
      * Starts an activity prompting the user to enter feedback.
      *
+     * <p>Note: Please check the isUserFeedbackAllowed policy (via {@link
+     * FeedbackPolicyManager#isUserFeedbackAllowed()}) when adding a UI entry to send feedback. See
+     * crbug.com/467060116 for more details.
+     *
      * @param activity The activity to use for starting the feedback activity and to take a
      *     screenshot of.
      * @param url the current URL. May be null.
@@ -61,6 +69,10 @@ public interface HelpAndFeedbackLauncher {
 
     /**
      * Starts an activity prompting the user to enter feedback for the interest feed.
+     *
+     * <p>Note: Please check the isUserFeedbackAllowed policy (via {@link
+     * FeedbackPolicyManager#isUserFeedbackAllowed()}) when adding a UI entry to send feedback. See
+     * crbug.com/467060116 for more details.
      *
      * @param activity The activity to use for starting the feedback activity and to take a
      *     screenshot of.

@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinatorSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.firstrun.ForcedSigninProcessor;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -2858,6 +2859,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.feedback_form || id == R.id.report_issue_menu_id) {
+            if (!FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+                return true;
+            }
             String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
             String helpContextId =
                     HelpAndFeedbackLauncherImpl.getHelpContextIdFromUrl(

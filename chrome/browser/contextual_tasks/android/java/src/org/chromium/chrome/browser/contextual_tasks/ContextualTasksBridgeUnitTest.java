@@ -29,6 +29,7 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -57,6 +58,7 @@ public class ContextualTasksBridgeUnitTest {
     @Mock private Activity mMockActivity;
     @Mock private ContextualTasksFuseboxManager mFuseboxManager;
     @Mock private WebContents mWebContents;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
     private ContextualTasksBridge mBridge;
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
@@ -84,6 +86,8 @@ public class ContextualTasksBridgeUnitTest {
                         Display.DEFAULT_DISPLAY));
 
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockHelpAndFeedbackLauncher);
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
     }
 
     @Test
@@ -146,6 +150,14 @@ public class ContextualTasksBridgeUnitTest {
 
         verify(mMockHelpAndFeedbackLauncher)
                 .showFeedback(eq(mMockActivity), eq(TEST_URL), eq("cobrowse"));
+    }
+
+    @Test
+    public void testOpenFeedbackUi_PolicyDisabled() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(false);
+        mBridge.openFeedbackUi(TEST_URL);
+
+        verify(mMockHelpAndFeedbackLauncher, never()).showFeedback(any(), any(), any());
     }
 
     @Test
