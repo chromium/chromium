@@ -491,9 +491,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mNodeProvider
-                            .createAccessibilityNodeInfo(virtualViewId)
-                            .isAccessibilityFocused();
+                    AccessibilityNodeInfoCompat node =
+                            mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
+                    return node.isAccessibilityFocused()
+                            && (!node.isFocusable() || node.isFocused());
                 },
                 NODE_TIMEOUT_ERROR);
     }

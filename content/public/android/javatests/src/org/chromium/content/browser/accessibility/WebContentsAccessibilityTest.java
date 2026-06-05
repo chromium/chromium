@@ -4220,7 +4220,6 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/512096079")
     public void testPerformAction_nextHtmlElement_gridCellDelegation() throws Throwable {
         // Build an ARIA grid where each cell contains a single interactive link.
         setupTestWithHTML(
