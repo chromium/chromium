@@ -315,7 +315,6 @@ void RTCRtpTransceiver::setHeaderExtensionsToNegotiate(
   Vector<webrtc::RtpHeaderExtensionCapability> webrtc_hdr_exts;
   auto webrtc_offered_exts =
       platform_transceiver_->GetHeaderExtensionsToNegotiate();
-  int id = 1;
   for (const auto& hdr_ext : extensions) {
     // Handle invalid requests for mandatory extensions as per
     // https://w3c.github.io/webrtc-extensions/#rtcrtptransceiver-interface
@@ -332,9 +331,9 @@ void RTCRtpTransceiver::setHeaderExtensionsToNegotiate(
       exception_state.ThrowTypeError("Invalid RTCRtpTransceiverDirection.");
       return;
     }
-    const int id_to_store = direction ? id++ : 0;
-    webrtc_hdr_exts.emplace_back(hdr_ext->uri().Ascii(), id_to_store,
-                                 *direction);
+    // The preferred ID doesn't matter, so just pass in 1 all the time.
+    webrtc_hdr_exts.emplace_back(hdr_ext->uri().Ascii(),
+                                 webrtc::RtpHeaderExtensionId(1), *direction);
   }
   webrtc::RTCError status =
       platform_transceiver_->SetHeaderExtensionsToNegotiate(
