@@ -596,6 +596,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // but no NSWindow, like when in headless.
   bool IsHeadless() const;
 
+  // Returns true if this view is the active unbounded widget of the popup
+  // parent host view.
+  bool IsActiveUnboundedPopup() const;
+
   // If `requested_range` is within the selection region, stores the first rect
   // of the region in `rect` and the selection range in `actual_range`, and
   // returns true. Otherwise returns false.

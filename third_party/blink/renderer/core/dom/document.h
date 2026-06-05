@@ -1747,6 +1747,25 @@ class CORE_EXPORT Document : public ContainerNode,
     --popover_hiding_nesting_count_;
   }
 
+  // Unbounded elements shown in any local frame under the same page are tracked
+  // on the top-level Main Frame document so that they can be checked globally
+  // (e.g. for clip escaping and hit testing). Non-top documents forward the
+  // count to TopDocument() and must always keep their local
+  // `active_unbounded_element_count_` at 0.
+  void IncrementActiveUnboundedElementCount() {
+    DCHECK(&TopDocument() == this || !active_unbounded_element_count_);
+    TopDocument().active_unbounded_element_count_++;
+  }
+  void DecrementActiveUnboundedElementCount() {
+    DCHECK(&TopDocument() == this || !active_unbounded_element_count_);
+    DCHECK_GT(TopDocument().active_unbounded_element_count_, 0u);
+    TopDocument().active_unbounded_element_count_--;
+  }
+  bool HasActiveUnboundedElements() const {
+    DCHECK(&TopDocument() == this || !active_unbounded_element_count_);
+    return TopDocument().active_unbounded_element_count_ > 0;
+  }
+
   HeapHashSet<Member<HTMLElement>>& AllOpenPopovers() {
     return all_open_popovers_;
   }
@@ -3038,6 +3057,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // Used during the popover show/hide process to avoid reentrant show/hide.
   bool popover_showing_ = false;
   uint32_t popover_hiding_nesting_count_ = 0;
+
+  // Used during unbounded element show/hide to keep track of whether there is
+  // an active unbounded element.
+  // TODO(crbug.com/508672616) this likely can just be a bool, once checks are
+  // implemented to ensure only one unbounded element is open at a time.
+  uint32_t active_unbounded_element_count_ = 0;
 
   // The ordered list of currently-open dialogs, in order they were opened.
   HeapLinkedHashSet<Member<HTMLDialogElement>> all_open_dialogs_;

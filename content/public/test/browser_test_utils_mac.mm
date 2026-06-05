@@ -40,5 +40,4 @@ void HandleMissingKeyWindow() {
     break;
   }
 }
-
 }  // namespace content

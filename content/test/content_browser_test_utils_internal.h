@@ -763,6 +763,11 @@ class LoadFinishObserver : public WebContentsObserver {
   Callback callback_;
 };
 
+#if BUILDFLAG(IS_MAC)
+void RouteMouseEventToPopupViewMacForTesting(RenderWidgetHostView* rwhv,
+                                             const blink::WebMouseEvent& event);
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_CONTENT_BROWSER_TEST_UTILS_INTERNAL_H_

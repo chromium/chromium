@@ -1346,8 +1346,11 @@ PaintLayer* PaintLayer::HitTestLayer(
   }
 
   ShouldRespectOverflowClipType clip_behavior = kRespectOverflowClip;
-  if (result.GetHitTestRequest().IgnoreClipping())
+  if (result.GetHitTestRequest().IgnoreClipping() ||
+      (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+       layout_object.IsInclusiveDescendantOfUnboundedElement())) {
     clip_behavior = kIgnoreOverflowClip;
+  }
 
   // For the global root scroller, hit test the layout viewport scrollbars
   // first, as they are visually presented on top of the content.

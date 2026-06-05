@@ -469,6 +469,12 @@ void RenderWidgetHostViewMac::InitAsPopup(
   // This path is used by the time/date picker.
   ns_view_->InitAsPopup(pos, popup_parent_host_view_->ns_view_id_);
   ShowWithVisibility(PageVisibilityState::kVisible);
+
+  if (IsActiveUnboundedPopup() && host()->delegate() &&
+      host()->delegate()->GetInputEventRouter()) {
+    host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
+        GetFrameSinkId());
+  }
 }
 
 RenderWidgetHostViewBase*
@@ -2016,6 +2022,19 @@ void RenderWidgetHostViewMac::ForwardKeyboardEventWithCommands(
 
 void RenderWidgetHostViewMac::RouteOrProcessMouseEvent(
     const blink::WebMouseEvent& const_web_event) {
+  if (IsActiveUnboundedPopup()) {
+    blink::WebMouseEvent web_event = const_web_event;
+    gfx::PointF screen_point(web_event.PositionInScreen());
+    gfx::Point parent_origin =
+        popup_parent_host_view_->GetViewBounds().origin();
+    gfx::PointF parent_local_point =
+        screen_point - gfx::Vector2dF(parent_origin.x(), parent_origin.y());
+    web_event.SetPositionInWidget(parent_local_point.x(),
+                                  parent_local_point.y());
+    popup_parent_host_view_->RouteOrProcessMouseEvent(web_event);
+    return;
+  }
+
   blink::WebMouseEvent web_event = const_web_event;
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
@@ -2612,6 +2631,23 @@ RenderWidgetHostViewMac::MaybeUpdateScreenInfosForHiDPI() {
 
 bool RenderWidgetHostViewMac::IsHeadless() const {
   return GetInProcessNSView() && ![GetInProcessNSView() window];
+}
+
+bool RenderWidgetHostViewMac::IsActiveUnboundedPopup() const {
+  if (!popup_parent_host_view_) {
+    return false;
+  }
+  WebContents* web_contents = popup_parent_host_view_->GetWebContents();
+  if (!web_contents) {
+    return false;
+  }
+  RenderFrameHostImpl* main_frame =
+      static_cast<RenderFrameHostImpl*>(web_contents->GetPrimaryMainFrame());
+  if (!main_frame) {
+    return false;
+  }
+  RenderFrameHostImpl* active_frame = main_frame->active_unbounded_frame();
+  return active_frame && active_frame->active_unbounded_widget() == host();
 }
 
 Class GetRenderWidgetHostViewCocoaClassForTesting() {

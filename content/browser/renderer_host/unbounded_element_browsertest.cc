@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -10,6 +11,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
@@ -323,6 +325,195 @@ IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
   gfx::Rect popup_bounds = popup_view->GetViewBounds();
   EXPECT_GE(popup_bounds.width(), 200);
   EXPECT_GE(popup_bounds.height(), 90);
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, PopupInputEventRouting) {
+#if !BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/508672616): RouteMouseEventToPopupViewForTesting is not yet
+  // implemented on non-Mac platforms.
+  GTEST_SKIP();
+#else
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.style.margin = '0';
+    document.body.innerHTML =
+        '<div id="child" style="width:100px; height:100px;" unbounded></div>';
+    const div = document.getElementById('child');
+    div.addEventListener('mousemove', (e) => {
+      window.__mouse_x = e.clientX;
+      window.__mouse_y = e.clientY;
+    });
+    div.showUnboundedElement();
+  )";
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
+  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
+
+  blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
+                             blink::WebInputEvent::kNoModifiers,
+                             base::TimeTicks::Now());
+  event.button = blink::WebMouseEvent::Button::kNoButton;
+  gfx::Rect popup_bounds = popup_view->GetViewBounds();
+  const int kMouseOffsetX = 50;
+  const int kMouseOffsetY = 50;
+  event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
+  event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
+                            popup_bounds.y() + kMouseOffsetY);
+
+  RouteMouseEventToPopupViewMacForTesting(popup_view, event);
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  EXPECT_EQ(kMouseOffsetX,
+            EvalJs(primary_main_frame_host(), "window.__mouse_x"));
+  EXPECT_EQ(kMouseOffsetY,
+            EvalJs(primary_main_frame_host(), "window.__mouse_y"));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       PopupOutsideViewportInputEventRouting) {
+#if !BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/508672616): RouteMouseEventToPopupViewForTesting is not yet
+  // implemented on non-Mac platforms.
+  GTEST_SKIP();
+#else
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const int kOutsideElementLeft = 50;
+  const int kOutsideElementTop = 400;
+  std::string script = base::StringPrintf(
+      R"(
+    document.body.style.margin = '0';
+    document.body.innerHTML =
+        '<div id="child" style="width:100px; height:100px; ' +
+        'position:absolute; top:%dpx; left:%dpx;" unbounded></div>';
+    const div = document.getElementById('child');
+    div.addEventListener('mousemove', (e) => {
+      window.__mouse_x = e.clientX;
+      window.__mouse_y = e.clientY;
+    });
+    div.showUnboundedElement();
+  )",
+      kOutsideElementTop, kOutsideElementLeft);
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  ASSERT_EQ(1u, web_contents()->GetPopupWidgets().size());
+  RenderWidgetHostView* popup_view = web_contents()->GetPopupWidgets()[0];
+
+  blink::WebMouseEvent event(blink::WebInputEvent::Type::kMouseMove,
+                             blink::WebInputEvent::kNoModifiers,
+                             base::TimeTicks::Now());
+  event.button = blink::WebMouseEvent::Button::kNoButton;
+  gfx::Rect popup_bounds = popup_view->GetViewBounds();
+  const int kMouseOffsetX = 50;
+  const int kMouseOffsetY = 70;
+  event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
+  event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
+                            popup_bounds.y() + kMouseOffsetY);
+
+  RouteMouseEventToPopupViewMacForTesting(popup_view, event);
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  // The expected document coordinates are calculated as:
+  // element_coordinate + mouse_offset_inside_popup.
+  constexpr int kExpectedMouseX = kOutsideElementLeft + kMouseOffsetX;
+  constexpr int kExpectedMouseY = kOutsideElementTop + kMouseOffsetY;
+  EXPECT_EQ(kExpectedMouseX,
+            EvalJs(primary_main_frame_host(), "window.__mouse_x"));
+  EXPECT_EQ(kExpectedMouseY,
+            EvalJs(primary_main_frame_host(), "window.__mouse_y"));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest,
+                       InputEventRoutingWithScroll) {
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  std::string script = R"(
+    document.body.style.margin = '0';
+    document.body.style.height = '2000px';
+    document.body.innerHTML =
+        '<div id="child" style="width:100px; height:100px; ' +
+        'position:absolute; top:400px; left:50px;" unbounded></div>';
+    window.scrollTo(0, 100);
+    const div = document.getElementById('child');
+    div.addEventListener('mousemove', (e) => {
+      window.__mouse_x = e.clientX;
+      window.__mouse_y = e.clientY;
+    });
+    div.showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), script));
+  WaitForFrameReady();
+
+  // Element is at document (50, 400).
+  // Scroll is 100 down.
+  // Element is visible at viewport (50, 300).
+  // Simulate mouse move at viewport (100, 370) which is offset (50, 70) inside
+  // the element.
+  SimulateMouseEvent(web_contents(), blink::WebInputEvent::Type::kMouseMove,
+                     gfx::Point(100, 370));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  // We expect the event to be received with client coordinates matching the
+  // simulation.
+  EXPECT_EQ(100, EvalJs(primary_main_frame_host(), "window.__mouse_x"));
+  EXPECT_EQ(370, EvalJs(primary_main_frame_host(), "window.__mouse_y"));
+}
+
+// TODO(crbug.com/508672616): Unbounded elements within frames are not yet
+// working properly.
+IN_PROC_BROWSER_TEST_F(UnboundedElementBrowserTest, DISABLED_IframeInputEventRouting) {
+  GURL url(embedded_test_server()->GetURL("/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Position and style the iframe.
+  std::string setup_script =
+      "document.getElementById('test_iframe').style.cssText = "
+      "'width:100px; height:100px; border:none; margin:0; position:absolute; "
+      "top:50px; left:50px;';";
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+
+  // Set up the unbounded element inside the iframe.
+  std::string iframe_script = R"(
+    document.body.style.margin = '0';
+    document.body.innerHTML =
+        '<div id="child" style="width:50px; height:50px; ' +
+        'position:absolute; top:120px; left:120px;" unbounded></div>';
+    const div = document.getElementById('child');
+    div.addEventListener('mousemove', (e) => {
+      window.__mouse_x = e.clientX;
+      window.__mouse_y = e.clientY;
+    });
+    div.showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe, iframe_script));
+  WaitForFrameReady();
+
+  // The iframe is at document (50, 50). Its bounds are [50, 50] to [150, 150].
+  // The child element is at iframe-document (120, 120), which is document (170,
+  // 170). Simulate mouse move at viewport (180, 180) which is offset (10, 10)
+  // inside the child element, and completely outside the iframe bounds.
+  SimulateMouseEvent(web_contents(), blink::WebInputEvent::Type::kMouseMove,
+                     gfx::Point(180, 180));
+  RunUntilInputProcessed(primary_main_frame_host()->GetRenderWidgetHost());
+
+  // We expect the event to be received by the iframe with client coordinates
+  // matching the simulation.
+  EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_x"));
+  EXPECT_EQ(130, EvalJs(iframe, "window.__mouse_y"));
 }
 
 }  // namespace content

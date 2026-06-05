@@ -1641,6 +1641,11 @@ void HTMLElement::SetUnboundedElementActive(bool active) {
     return;
   }
   SetElementFlag(ElementFlags::kIsUnboundedElementActive, active);
+  if (active) {
+    GetDocument().IncrementActiveUnboundedElementCount();
+  } else {
+    GetDocument().DecrementActiveUnboundedElementCount();
+  }
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
@@ -3711,6 +3716,12 @@ void HTMLElement::RemovedFrom(ContainerNode& insertion_point) {
           HidePopoverTransitionBehavior::kNoEventsNoWaiting,
           /*exception_state=*/nullptr);
     }
+  }
+
+  if (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+      IsUnboundedElementActive() &&
+      !GetDocument().StatePreservingAtomicMoveInProgress()) {
+    SetUnboundedElementActive(false);
   }
 
   Element::RemovedFrom(insertion_point);

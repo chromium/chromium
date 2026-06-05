@@ -1175,7 +1175,10 @@ static_library("browsertest_support") {
   }
 
   if (is_mac) {
-    sources += [ "../public/test/content_browser_test_utils_mac.mm" ]
+    sources += [
+      "../public/test/content_browser_test_utils_mac.mm",
+      "content_browser_test_utils_internal_mac.mm",
+    ]
     deps += [ "//ui/base/mojom" ]
   }
 

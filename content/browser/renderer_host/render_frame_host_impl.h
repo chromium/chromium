@@ -2681,6 +2681,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return active_unbounded_widget_.get();
   }
 
+  RenderFrameHostImpl* active_unbounded_frame() const {
+    return active_unbounded_frame_.get();
+  }
+
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(
       blink::mojom::RendererEvictionReason,

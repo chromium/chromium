@@ -176,7 +176,9 @@ bool LayoutView::HitTestNoLifecycleUpdate(const HitTestLocation& location,
       // Start with a rect sized to the frame, to ensure we include the
       // scrollbars.
       hit_test_area.size = PhysicalSize(frame_view->Size());
-      if (result.GetHitTestRequest().IgnoreClipping()) {
+      if (result.GetHitTestRequest().IgnoreClipping() ||
+          (RuntimeEnabledFeatures::UnboundedElementEnabled() &&
+           GetDocument().HasActiveUnboundedElements())) {
         hit_test_area.Unite(
             frame_view->DocumentToFrame(PhysicalRect(DocumentRect())));
       }
