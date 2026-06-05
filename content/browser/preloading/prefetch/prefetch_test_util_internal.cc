@@ -261,6 +261,8 @@ void MakeServableStreamingURLLoaderForTest(
   CHECK(weak_streaming_loader);
   CHECK(weak_response_reader);
   CHECK(weak_response_reader->Servable(base::TimeDelta::Max()));
+  CHECK_EQ(prefetch_container->GetLoadState(),
+           PrefetchContainer::LoadState::kCompleted);
 }
 
 network::TestURLLoaderFactory::PendingRequest
@@ -348,6 +350,8 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
   CHECK(weak_first_response_reader);
   CHECK(weak_second_response_reader);
   CHECK(weak_second_response_reader->Servable(base::TimeDelta::Max()));
+  CHECK_EQ(prefetch_container->GetLoadState(),
+           PrefetchContainer::LoadState::kCompleted);
 }
 
 void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
@@ -430,6 +434,8 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   CHECK(weak_second_streaming_loader);
   CHECK(weak_second_response_reader);
   CHECK(weak_second_response_reader->Servable(base::TimeDelta::Max()));
+  CHECK_EQ(prefetch_container->GetLoadState(),
+           PrefetchContainer::LoadState::kCompleted);
 }
 
 PrefetchTestURLLoaderClient::PrefetchTestURLLoaderClient() = default;
