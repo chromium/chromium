@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "url/origin.h"
 
 using testing::_;
 using testing::SaveArg;
@@ -121,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
         // Call the OnThreadLinkClicked() method.
         const GURL clicked_url("https://google.com/");
         service->OnThreadLinkClicked(clicked_url, task1.GetTaskId(), nullptr,
-                                     browser()->GetWeakPtr());
+                                     browser()->GetWeakPtr(), url::Origin());
 
         EXPECT_TRUE(observer.was_inserted());
       }),
@@ -169,9 +170,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   RunTestSequence(Do([&]() {
                     // Fake a link click interception.
                     const GURL clicked_url("https://google.com/");
-                    service->OnThreadLinkClicked(clicked_url, task1.GetTaskId(),
-                                                 task_tab->GetWeakPtr(),
-                                                 browser()->GetWeakPtr());
+                    service->OnThreadLinkClicked(
+                        clicked_url, task1.GetTaskId(), task_tab->GetWeakPtr(),
+                        browser()->GetWeakPtr(), url::Origin());
                   }),
                   WaitForShow(kContextualTasksSidePanelWebViewElementId));
   ASSERT_EQ(tab_list->GetActiveTab()->GetGroup(), group_id);
@@ -199,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   // Fake a link click interception.
   service->OnThreadLinkClicked(GURL(chrome::kChromeUIHistoryURL),
                                task1.GetTaskId(), task_tab->GetWeakPtr(),
-                               browser()->GetWeakPtr());
+                               browser()->GetWeakPtr(), url::Origin());
 
   // Wait for the navigation to finish.
   {
@@ -297,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
         // Simulate a link click to a URL that's already open in a
         // tab.
         service->OnThreadLinkClicked(version_url, task1.GetTaskId(), nullptr,
-                                     browser()->GetWeakPtr());
+                                     browser()->GetWeakPtr(), url::Origin());
 
         // There should still only be three tabs.
         ASSERT_EQ(3, tab_list->GetTabCount());
@@ -359,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
         // Simulate a link click to a URL that's already open in a
         // tab.
         service->OnThreadLinkClicked(version_url, task1.GetTaskId(), nullptr,
-                                     browser()->GetWeakPtr());
+                                     browser()->GetWeakPtr(), url::Origin());
 
         // Another tab should have been added
         ASSERT_EQ(4, tab_list->GetTabCount());

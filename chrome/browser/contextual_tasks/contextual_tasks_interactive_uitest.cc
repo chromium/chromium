@@ -7,11 +7,14 @@
 #include "base/base64.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
+#include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -51,10 +54,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/aim_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
@@ -1621,8 +1629,74 @@ class ContextualTasksInteractiveUiTestParameterized
     }
   }
 
- private:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+
+    // Add command line to allow opaque origin post messages to be accepted in
+    // GetGuestForMessage. For some reason, during testing, the
+    // accounts.google.com postMessage is always opaque, so this is needed for
+    // the test to pass.
+    command_line->AppendSwitch(
+        "allow-opaque-origin-for-contextual-tasks-testing");
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksInteractiveUiTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+
+    base::FilePath test_data_dir;
+    base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+    base::FilePath file_path = test_data_dir.AppendASCII("mock_aim_page.html");
+    std::string mock_aim_page_content;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::ReadFileToString(file_path, &mock_aim_page_content));
+    }
+
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        [](std::string mock_aim_page_content,
+           const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/html; charset=utf-8");
+          response->AddCustomHeader("Cross-Origin-Opener-Policy",
+                                    "unsafe-none");
+
+          auto it = request.headers.find("Host");
+          if (it != request.headers.end()) {
+            if (it->second == "myaccount.google.com" &&
+                request.relative_url == "/title1.html") {
+              response->set_content(
+                  "<html><body>Title 1 HTML Page</body></html>");
+              return response;
+            }
+            if (it->second == kMockAimPageHost) {
+              response->set_content(mock_aim_page_content);
+              return response;
+            }
+          }
+          return nullptr;
+        },
+        mock_aim_page_content));
+
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 // CUJ covered by this test:
@@ -1782,6 +1856,146 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
 
       // 3) Verifies the Contextual Tasks tab navigates to the opened URL.
       WaitForWebContentsNavigation(kPrimaryTab, kTargetUrl));
+}
+
+// CUJ covered by this test:
+// 1) Opens Contextual Tasks in a tab.
+// 2) Call window.open from the Contextual Tasks <webview>.
+// 3) In the opened window, call window.opener.postMessage.
+// 4) Verify the postMessage is received in the <webview>.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
+                       PostMessageToDummyOpenerRoutedToWebview) {
+  const GURL kActiveTabUrl =
+      https_server_.GetURL("myaccount.google.com", "/title1.html");
+  const GURL clicked_url =
+      https_server_.GetURL("myaccount.google.com", "/title1.html#citation");
+  const GURL kInterceptionUrl =
+      https_server_.GetURL(kMockAimPageHost, "/search?udm=50");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOpenedTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab2);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId2);
+
+  // Step 1: Open Contextual Tasks in a Tab
+  auto sequence =
+      Steps(InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+            OpenContextualTasksInCurrentTab(kInterceptionUrl),
+            InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0));
+
+  sequence = Steps(
+      std::move(sequence),
+      // 1. Inject listener in the <webview> to collect
+      // received messages.
+      WithElement(kInnerWebContentsId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    std::string setup_listener = R"(
+            window.receivedMessages = [];
+            window.messagePromiseResolver = null;
+            window.addEventListener('message', (event) => {
+              window.receivedMessages.push(event.data);
+              if (window.messagePromiseResolver &&
+                  event.data === 'hello_from_opened_page') {
+                window.messagePromiseResolver(true);
+              }
+            });
+          )";
+                    auto* wc = AsInstrumentedWebContents(el)->web_contents();
+                    EXPECT_TRUE(content::ExecJs(wc, setup_listener));
+                  })),
+
+      // 2. Within the <webview>, inject and open a window.
+      WithElement(kInnerWebContentsId,
+                  base::BindOnce(
+                      [](GURL url, ui::TrackedElement* el) {
+                        auto* wc =
+                            AsInstrumentedWebContents(el)->web_contents();
+                        std::string click_script = content::JsReplace(
+                            R"(
+                (() => {
+                  window.open($1, '_blank');
+                })();
+              )",
+                            url.spec());
+                        EXPECT_TRUE(content::ExecJs(wc, click_script));
+                      },
+                      clicked_url)),
+
+      // 3. Verify the URL opens in a new tab in the tab strip and instrument
+      // it.
+      InstrumentNextTab(kOpenedTab),
+
+      // 4. Wait for the opened tab to finish loading
+      WaitForWebContentsNavigation(kOpenedTab, clicked_url),
+
+      // 5. Verify window.opener is non-null and call postMessage from the
+      // opened tab.
+      WithElement(kOpenedTab, base::BindOnce([](ui::TrackedElement* el) {
+                    auto* wc = AsInstrumentedWebContents(el)->web_contents();
+                    std::string post_message_script = R"(
+            (async () => {
+              if (!window.opener) {
+                return "no opener";
+              }
+              try {
+                window.opener.postMessage("hello_from_opened_page", "*");
+                return "ok";
+              } catch (e) {
+                return "error: " + e.message;
+              }
+            })();
+          )";
+                    EXPECT_EQ("ok", content::EvalJs(wc, post_message_script));
+                  })),
+
+      // Switch back to the original tab.
+      SelectTab(kTabStripElementId, 0));
+
+  const std::string check_message_script = R"(
+          new Promise((resolve) => {
+            if (window.receivedMessages &&
+                window.receivedMessages.includes("hello_from_opened_page")) {
+              resolve(true);
+            } else {
+              window.messagePromiseResolver = resolve;
+            }
+          });
+        )";
+
+  // If AimTriggeredThreadLinks is enabled, the window.open call opens in a new
+  // tab, so the original contextual tasks tab still exists.
+  if (GetParam()) {
+    sequence = Steps(
+        std::move(sequence), WaitForShow(kInnerWebContentsId),
+        WithElement(kInnerWebContentsId,
+                    base::BindOnce(
+                        [](std::string script, ui::TrackedElement* el) {
+                          auto* wc =
+                              AsInstrumentedWebContents(el)->web_contents();
+                          EXPECT_EQ(true, content::EvalJs(wc, script));
+                        },
+                        check_message_script)));
+  } else {
+    // If AimTriggeredThreadLinks is disabled, the window.open call moves
+    // Contextual Tasks into the side panel. Therefore, instrument the side
+    // panel <webview> and ensure the postMessage was received.
+    sequence = Steps(
+        std::move(sequence),
+        WaitForShow(kContextualTasksSidePanelWebViewElementId),
+        InstrumentNonTabWebView(kPrimaryTab2,
+                                kContextualTasksSidePanelWebViewElementId),
+        InstrumentInnerWebContents(kInnerWebContentsId2, kPrimaryTab2, 0),
+        WaitForShow(kInnerWebContentsId2),
+        WithElement(kInnerWebContentsId2,
+                    base::BindOnce(
+                        [](std::string script, ui::TrackedElement* el) {
+                          auto* wc =
+                              AsInstrumentedWebContents(el)->web_contents();
+                          EXPECT_EQ(true, content::EvalJs(wc, script));
+                        },
+                        check_message_script)));
+  }
+
+  RunTestSequence(std::move(sequence));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

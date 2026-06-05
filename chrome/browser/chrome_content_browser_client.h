@@ -51,6 +51,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
@@ -1076,6 +1077,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
   content::RenderFrameHost* GetEffectiveTopFrameForPartitioning(
       content::RenderFrameHost* render_frame_host) override;
+  content::RenderFrameHost* GetPostMessageTargetOverride(
+      content::RenderFrameHost* target_rfh,
+      const std::optional<blink::LocalFrameToken>& source_frame_token,
+      const url::Origin& source_origin,
+      const std::optional<url::Origin>& target_origin) override;
   bool IsCrossOriginSubframeAllowedToShowFilePicker(
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;

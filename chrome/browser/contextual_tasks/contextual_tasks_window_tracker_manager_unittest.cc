@@ -45,7 +45,8 @@ class ContextualTasksWindowTrackerManagerTest
 TEST_F(ContextualTasksWindowTrackerManagerTest, AddAndRemoveTracker) {
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
       ContextualTaskId(base::Uuid::GenerateRandomV4()),
-      GURL("https://example.com"), nullptr, base::DoNothing());
+      GURL("https://example.com"), content::GlobalRenderFrameHostToken(),
+      nullptr, base::DoNothing());
   auto* tracker_ptr = tracker.get();
   manager_->AddTracker(std::move(tracker));
 
@@ -59,8 +60,8 @@ TEST_F(ContextualTasksWindowTrackerManagerTest,
        MatchAndAssociatePendingTracker_FallbackVectorMatch) {
   GURL url("https://example.com");
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      ContextualTaskId(base::Uuid::GenerateRandomV4()), url, nullptr,
-      base::DoNothing());
+      ContextualTaskId(base::Uuid::GenerateRandomV4()), url,
+      content::GlobalRenderFrameHostToken(), nullptr, base::DoNothing());
   auto* tracker_ptr = tracker.get();
   // Do not add to pending map, only to vector.
   manager_->AddTracker(std::move(tracker));
@@ -69,7 +70,8 @@ TEST_F(ContextualTasksWindowTrackerManagerTest,
       browser_context(), content::SiteInstance::Create(browser_context()));
 
   ContextualTasksWindowTracker* matched =
-      manager_->MatchAndAssociatePendingTracker(url, web_contents.get());
+      manager_->MatchAndAssociatePendingTracker(url, web_contents.get(),
+                                                nullptr);
   EXPECT_EQ(matched, tracker_ptr);
 }
 
@@ -80,7 +82,8 @@ TEST_F(ContextualTasksWindowTrackerManagerTest, OnTabAdded_OpenerMatch) {
   GURL url("https://example.com");
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
       ContextualTaskId(base::Uuid::GenerateRandomV4()), url,
-      initiator_contents->GetWeakPtr(), base::DoNothing());
+      initiator_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(), nullptr,
+      base::DoNothing());
   auto* tracker_ptr = tracker.get();
   manager_->AddTracker(std::move(tracker));
 
@@ -111,8 +114,8 @@ TEST_F(ContextualTasksWindowTrackerManagerTest, OnTabAdded_OpenerMatch) {
 TEST_F(ContextualTasksWindowTrackerManagerTest, OnTabAdded_UrlMatchFallback) {
   GURL url("https://example.com");
   auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-      ContextualTaskId(base::Uuid::GenerateRandomV4()), url, nullptr,
-      base::DoNothing());
+      ContextualTaskId(base::Uuid::GenerateRandomV4()), url,
+      content::GlobalRenderFrameHostToken(), nullptr, base::DoNothing());
   auto* tracker_ptr = tracker.get();
   manager_->AddTracker(std::move(tracker));
 

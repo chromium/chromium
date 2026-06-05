@@ -77,6 +77,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
+#include "chrome/browser/contextual_tasks/guest_opener_user_data.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/defaults.h"
@@ -339,6 +340,7 @@
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/digital_identity_provider.h"
 #include "content/public/browser/file_url_loader.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
@@ -4541,7 +4543,9 @@ bool ChromeContentBrowserClient::CanCreateWindow(
             std::move(url_params), responsible_web_contents,
             is_from_embedded_page,
             /*from_can_create_window=*/true, is_same_site_or_from_ui,
-            /*is_mobile_ua=*/false)) {
+            /*is_mobile_ua=*/false,
+            /*initiator_origin=*/opener->GetLastCommittedOrigin(),
+            /*initiator_frame_token=*/opener->GetGlobalFrameToken())) {
       return false;
     }
   }
@@ -8786,6 +8790,43 @@ ChromeContentBrowserClient::GetEffectiveTopFrameForPartitioning(
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+}
+
+content::RenderFrameHost*
+ChromeContentBrowserClient::GetPostMessageTargetOverride(
+    content::RenderFrameHost* target_rfh,
+    const std::optional<blink::LocalFrameToken>& source_frame_token,
+    const url::Origin& source_origin,
+    const std::optional<url::Origin>& target_origin) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(target_rfh);
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  // Don't proceed to looking up the ContextualTasksUiService if the WebContents
+  // is not marked as a guest opener. In other words, this post message is
+  // unrelated to Contextual Tasks.
+  if (!contextual_tasks::GuestOpenerUserData::IsGuestOpener(web_contents)) {
+    return nullptr;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!profile) {
+    return nullptr;
+  }
+
+  // The ContextualTasks feature manually tracks window opens to be able to
+  // route messages back to the appropriate RenderFrameHost. If that feature
+  // returns a frame, use that instead.
+  contextual_tasks::ContextualTasksUiService* service = contextual_tasks::
+      ContextualTasksUiServiceFactory::GetForBrowserContextIfExists(profile);
+  if (service) {
+    return service->GetGuestForMessage(target_rfh, source_origin);
+  }
+
+  return nullptr;
 }
 
 bool ChromeContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(

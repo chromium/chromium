@@ -308,6 +308,8 @@ source_set("ui_impl") {
     "contextual_tasks_window_tracker.cc",
     "contextual_tasks_window_tracker_manager.cc",
     "entry_point_eligibility_manager.cc",
+    "guest_opener_user_data.cc",
+    "guest_opener_user_data.h",
   ]
 
   if (is_android) {

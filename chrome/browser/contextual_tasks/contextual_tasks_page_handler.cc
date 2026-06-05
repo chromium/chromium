@@ -502,7 +502,13 @@ void ContextualTasksPageHandler::OnWebviewMessage(
       ui_service_->OnThreadLinkClicked(
           target_url, web_ui_controller_->GetTaskId().value_or(base::Uuid()),
           tab ? tab->GetWeakPtr() : nullptr,
-          browser ? browser->GetWeakPtr() : nullptr);
+          browser ? browser->GetWeakPtr() : nullptr,
+          /*initiator_origin=*/
+          web_ui_controller_->GetInnerWebContents()
+              ? web_ui_controller_->GetInnerWebContents()
+                    ->GetPrimaryMainFrame()
+                    ->GetLastCommittedOrigin()
+              : url::Origin());
     }
   }
 }

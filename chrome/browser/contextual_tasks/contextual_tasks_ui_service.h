@@ -25,8 +25,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class AimEligibilityService;
 class BrowserWindowInterface;
@@ -40,6 +42,8 @@ class Uuid;
 namespace content {
 struct OpenURLParams;
 class WebContents;
+class RenderFrameHost;
+struct GlobalRenderFrameHostToken;
 }  // namespace content
 
 namespace signin {
@@ -125,7 +129,8 @@ class ContextualTasksUiService : public KeyedService {
       const GURL& url,
       base::Uuid task_id,
       base::WeakPtr<tabs::TabInterface> tab,
-      base::WeakPtr<BrowserWindowInterface> browser);
+      base::WeakPtr<BrowserWindowInterface> browser,
+      const url::Origin& initiator_origin);
 
   // Determines if a new tab should be allowed to open for a thread link click.
   // Returns false if the link can be handled by focusing an existing tab or
@@ -157,12 +162,16 @@ class ContextualTasksUiService : public KeyedService {
   // open in a new tab or window. The `initiated_in_page` param is to help
   // determine if the navigation was from something like a link or redirect
   // versus an action in Chrome's UI like back/forward.
-  virtual bool HandleNavigation(content::OpenURLParams url_params,
-                                content::WebContents* source_contents,
-                                bool is_from_embedded_page,
-                                bool from_can_create_window,
-                                bool is_same_site_or_from_ui,
-                                bool is_mobile_ua = false);
+  virtual bool HandleNavigation(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents,
+      bool is_from_embedded_page,
+      bool from_can_create_window,
+      bool is_same_site_or_from_ui,
+      bool is_mobile_ua,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<content::GlobalRenderFrameHostToken>&
+          initiator_frame_token);
 
   // Returns the contextual_task UI for a task.
   virtual GURL GetContextualTaskUrlForTask(const base::Uuid& task_id);
@@ -211,6 +220,16 @@ class ContextualTasksUiService : public KeyedService {
 
   // Returns whether the provided WebContents is a tracked window for any task.
   virtual bool IsTrackedWindow(content::WebContents* web_contents);
+
+  // Returns the RenderFrameHost that is tied to the `target_rfh` message proxy.
+  // This is used to route messages from opened windows back to the <webview>
+  // that opened them, even across separate StoragePartitions. If
+  //  `target_rfh` isn't a tracked message proxy or `source_origin` isn't an
+  //  allowlisted origin to send postMessages to the <webview>, then returns
+  //  null.
+  content::RenderFrameHost* GetGuestForMessage(
+      content::RenderFrameHost* target_rfh,
+      const url::Origin& source_origin);
 
   // either in a full tab or in the side panel. If |task_id| is invalid, the
   // UI is in a zero-state that is waiting for user to create a new task.
@@ -374,13 +393,17 @@ class ContextualTasksUiService : public KeyedService {
   // The actual implementation of `HandleNavigation` that extracts more of the
   // components needed to decide if the navigation should be handled by this
   // service.
-  virtual bool HandleNavigationImpl(content::OpenURLParams url_params,
-                                    content::WebContents* source_contents,
-                                    tabs::TabInterface* tab,
-                                    bool is_from_embedded_page,
-                                    bool from_can_create_window,
-                                    bool is_same_site_or_from_ui,
-                                    bool is_mobile_ua = false);
+  virtual bool HandleNavigationImpl(
+      content::OpenURLParams url_params,
+      content::WebContents* source_contents,
+      tabs::TabInterface* tab,
+      bool is_from_embedded_page,
+      bool from_can_create_window,
+      bool is_same_site_or_from_ui,
+      bool is_mobile_ua,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<content::GlobalRenderFrameHostToken>&
+          initiator_frame_token);
 
   // Used primarily for debugging - loads a URL in the specified WebContents.
   virtual void LoadUrlInWebContents(
@@ -403,6 +426,15 @@ class ContextualTasksUiService : public KeyedService {
 
  private:
   void StartAccessTokenFetch();
+
+  // Creates a WebContents for the given origin to be used as an
+  // opener for message routing. This WebContents is not loading any content.
+  // Origin will be used as the initiator_origin and initiator_base_url for the
+  // created WebContents. This is the value shown to window.opener.origin`
+  // when assigned to an opener. This should be the same origin as the
+  // initiator of creating the WebContents that this will be the proxy for.
+  std::unique_ptr<content::WebContents> CreateMessageProxyWebContents(
+      const url::Origin& origin);
 
   // Called when the OAuth token is received. If the token is valid, it is
   // passed to all pending access token callbacks. Otherwise, the fetch is

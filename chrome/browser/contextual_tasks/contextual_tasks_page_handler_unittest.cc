@@ -107,7 +107,8 @@ class MockContextualTasksUiServiceForThreadLink
               (const GURL& url,
                base::Uuid task_id,
                base::WeakPtr<tabs::TabInterface> tab,
-               base::WeakPtr<BrowserWindowInterface> browser),
+               base::WeakPtr<BrowserWindowInterface> browser,
+               const url::Origin& initiator_origin),
               (override));
 };
 
@@ -767,7 +768,8 @@ TEST_F(ContextualTasksPageHandlerTest,
 
   EXPECT_CALL(*mock_contextual_tasks_ui_service_,
               OnThreadLinkClicked(GURL("https://example.com"), base::Uuid(),
-                                  testing::Eq(nullptr), testing::Eq(nullptr)))
+                                  testing::Eq(nullptr), testing::Eq(nullptr),
+                                  testing::_))
       .Times(1);
 
   page_handler_->OnWebviewMessage(serialized);
@@ -786,7 +788,7 @@ TEST_F(ContextualTasksPageHandlerTest,
   message.SerializeToArray(serialized.data(), size);
 
   EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              OnThreadLinkClicked(_, _, _, _))
+              OnThreadLinkClicked(_, _, _, _, _))
       .Times(0);
 
   page_handler_->OnWebviewMessage(serialized);
