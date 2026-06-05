@@ -1007,6 +1007,17 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const storage::FileSystemURL& filesystem_url,
       int permissions);
 
+  // Helper function for `HasPermissionsForFileSystemFile`, which looks for any
+  // permission policy granted to `type` in `file_system_policy_map_`. Returns
+  // false if `type` was not found in the map, and otherwise writes any granted
+  // permission policy to the `policy` mutable ref out parameter (which is
+  // necessary for Rust FFI) and returns true.
+  // TODO(crbug.com/482216433): Return a `std::optional<int>` once Rust CXX
+  // supports it in https://github.com/dtolnay/cxx/issues/87, or when switching
+  // to Crubit.
+  bool FindPermissionPolicyForFileSystemType(storage::FileSystemType type,
+                                             int& policy);
+
   // Determines if certain permissions were granted for a file system.
   // |permissions| is an internally defined bit-set.
   bool HasPermissionsForFileSystem(ChildProcessId child_id,

@@ -1984,17 +1984,13 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFileSystemFile(
     return false;
   }
 
-  int found_permissions = 0;
-  {
-    base::AutoLock lock(lock_);
-    auto found = file_system_policy_map_.find(filesystem_url.type());
-    if (found == file_system_policy_map_.end()) {
-      return false;
-    }
-    found_permissions = found->second;
+  int found_policy = 0;
+  if (!FindPermissionPolicyForFileSystemType(filesystem_url.type(),
+                                             found_policy)) {
+    return false;
   }
 
-  if ((found_permissions & storage::FILE_PERMISSION_READ_ONLY) &&
+  if ((found_policy & storage::FILE_PERMISSION_READ_ONLY) &&
       permissions & ~READ_FILE_GRANT) {
     return false;
   }
@@ -2002,15 +1998,27 @@ bool ChildProcessSecurityPolicyImpl::HasPermissionsForFileSystemFile(
   // Note that HasPermissionsForFile (called below) will internally acquire the
   // |lock_|, therefore the |lock_| has to be released before the call (since
   // base::Lock is not reentrant).
-  if (found_permissions & storage::FILE_PERMISSION_USE_FILE_PERMISSION) {
+  if (found_policy & storage::FILE_PERMISSION_USE_FILE_PERMISSION) {
     return HasPermissionsForFile(child_id, filesystem_url.path(), permissions);
   }
 
-  if (found_permissions & storage::FILE_PERMISSION_SANDBOX) {
+  if (found_policy & storage::FILE_PERMISSION_SANDBOX) {
     return true;
   }
 
   return false;
+}
+
+bool ChildProcessSecurityPolicyImpl::FindPermissionPolicyForFileSystemType(
+    storage::FileSystemType type,
+    int& policy) {
+  base::AutoLock lock(lock_);
+  auto found = file_system_policy_map_.find(type);
+  if (found == file_system_policy_map_.end()) {
+    return false;
+  }
+  policy = found->second;
+  return true;
 }
 
 bool ChildProcessSecurityPolicyImpl::CanReadFileSystemFile(
