@@ -118,8 +118,16 @@ IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
   WaitForBrowserSerialization();
 }
 
+// TODO(crbug.com/468203351): Re-enable when no longer flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WindowActivationFiresSelectionOnNewTab \
+  DISABLED_WindowActivationFiresSelectionOnNewTab
+#else
+#define MAYBE_WindowActivationFiresSelectionOnNewTab \
+  WindowActivationFiresSelectionOnNewTab
+#endif
 IN_PROC_BROWSER_TEST_P(TabStripDumpAccessibilityEventsTest,
-                       WindowActivationFiresSelectionOnNewTab) {
+                       MAYBE_WindowActivationFiresSelectionOnNewTab) {
   ui::AXPlatform::GetInstance().NotifyAssistiveTechChanged(
       ui::AssistiveTech::kJaws);
 

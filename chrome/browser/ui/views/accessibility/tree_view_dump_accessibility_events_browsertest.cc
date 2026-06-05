@@ -80,7 +80,13 @@ class TreeViewDumpAccessibilityEventsTest
   std::unique_ptr<ui::TreeNodeModel<TestNode>> model_;
 };
 
-IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, ExpandNode) {
+// TODO(crbug.com/468203351): Re-enable when no longer flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ExpandNode DISABLED_ExpandNode
+#else
+#define MAYBE_ExpandNode ExpandNode
+#endif
+IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, MAYBE_ExpandNode) {
 #if BUILDFLAG(IS_LINUX)
   if (IsViewsAXEnabled()) {
     GTEST_SKIP() << "crbug.com/40672441";
@@ -94,7 +100,14 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, ExpandNode) {
   WaitForPendingSerialization();
 }
 
-IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, CollapseNode) {
+// TODO(crbug.com/468203351): Re-enable when no longer flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CollapseNode DISABLED_CollapseNode
+#else
+#define MAYBE_CollapseNode CollapseNode
+#endif
+IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest,
+                       MAYBE_CollapseNode) {
   AddAllowFilter("STATE-CHANGE:EXPANDED:FALSE*");
   ui::TreeModelNode* child1 = model_->GetRoot()->children()[0].get();
   tree_view_->Expand(child1);
