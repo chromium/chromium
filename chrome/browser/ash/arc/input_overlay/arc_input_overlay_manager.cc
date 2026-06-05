@@ -254,8 +254,11 @@ void ArcInputOverlayManager::OnWindowDestroying(aura::Window* window) {
 }
 
 void ArcInputOverlayManager::OnWindowAddedToRootWindow(aura::Window* window) {
-  if (!window ||
-      ash::window_util::GetFocusedWindow()->GetToplevelWindow() != window) {
+  if (!window) {
+    return;
+  }
+  aura::Window* focused_window = ash::window_util::GetFocusedWindow();
+  if (!focused_window || focused_window->GetToplevelWindow() != window) {
     return;
   }
   RegisterWindow(window);
