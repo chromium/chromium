@@ -21,7 +21,6 @@
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -159,7 +158,6 @@ class DeviceTrustServiceTest : public testing::Test,
   std::unique_ptr<DeviceTrustService> device_trust_service_;
   raw_ptr<MockAttestationService> mock_attestation_service_;
   raw_ptr<MockSignalsService> mock_signals_service_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester_;
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };

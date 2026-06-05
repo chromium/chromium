@@ -9994,7 +9994,6 @@ test("unit_tests") {
       "//components/device_signals/core/browser",
       "//components/device_signals/core/browser:test_support",
       "//components/enterprise/device_trust",
-      "//services/data_decoder/public/cpp:test_support",
     ]
   }
 
