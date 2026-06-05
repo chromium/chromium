@@ -167,11 +167,18 @@ class ABSL_ATTRIBUTE_OWNER flat_hash_set
   //   // Move is guaranteed efficient
   //   absl::flat_hash_set<std::string> set5(std::move(set4));
   //
+  //   // After the move, set4 is in a valid but unspecified state. The only
+  //   // operations guaranteed to be safe on a moved-from set are destruction,
+  //   // assignment, and clear(). Any other operation (e.g. size(), empty(),
+  //   // iteration) results in undefined behavior.
+  //
   // * Move assignment operator
   //
   //   // May be efficient if allocators are compatible
   //   absl::flat_hash_set<std::string> set6;
   //   set6 = std::move(set5);
+  //
+  //   // Same moved-from guarantees apply to set5 after this operation.
   //
   // * Range constructor
   //

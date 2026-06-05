@@ -1165,6 +1165,101 @@ TYPED_TEST(SooTest, InsertWithinCapacity) {
   EXPECT_THAT(addr(0), original_addr_0);
 }
 
+TYPED_TEST(SooTest, ClearDifferentSizes) {
+  for (size_t size = 0; size < 32; ++size) {
+    for (bool reserve : {false, true}) {
+      for (bool clear_via_erase : {false, true}) {
+        SCOPED_TRACE(absl::StrCat("size: ", size, ", reserve: ", reserve,
+                                  ", clear_via_erase: ", clear_via_erase));
+        TypeParam t;
+        if (reserve) {
+          t.reserve(size);
+        }
+        for (size_t i = 0; i < size; ++i) {
+          ASSERT_TRUE(t.insert(static_cast<int>(i)).second) << i;
+        }
+        if (clear_via_erase) {
+          t.erase(t.begin(), t.end());
+        } else {
+          t.clear();
+        }
+        ASSERT_EQ(t.size(), 0);
+        for (size_t i = 0; i < size; ++i) {
+          ASSERT_TRUE(t.insert(static_cast<int>(i)).second) << i;
+        }
+      }
+    }
+  }
+}
+
+TYPED_TEST(SooTest, ReserveTwice) {
+  for (size_t reserve_size = 0; reserve_size < 32; ++reserve_size) {
+    for (size_t reserve_size2 = reserve_size; reserve_size2 < 32;
+         ++reserve_size2) {
+      SCOPED_TRACE(absl::StrCat("reserve_size: ", reserve_size,
+                                ", reserve_size2: ", reserve_size2));
+      TypeParam t;
+      t.reserve(reserve_size);
+      {  // Insert first batch of elements.
+        size_t cap = t.capacity();
+        for (size_t i = 0; i < reserve_size; ++i) {
+          ASSERT_TRUE(t.insert(static_cast<int>(i)).second) << i;
+        }
+        ASSERT_EQ(t.capacity(), cap);
+      }
+      t.reserve(reserve_size2);
+      {  // Insert second batch of elements.
+        size_t cap = t.capacity();
+        for (size_t i = reserve_size; i < reserve_size2; ++i) {
+          ASSERT_TRUE(t.insert(static_cast<int>(i)).second) << i;
+        }
+        ASSERT_EQ(t.capacity(), cap);
+      }
+      for (size_t i = 0; i < reserve_size2; ++i) {
+        ASSERT_TRUE(t.contains(static_cast<int>(i))) << i;
+      }
+    }
+  }
+}
+
+TYPED_TEST(SooTest, GrowAfterReserve) {
+  for (size_t reserve_size = 1; reserve_size <= 150; ++reserve_size) {
+    size_t size = reserve_size + 1;
+    TypeParam s;
+    s.reserve(reserve_size);
+    for (size_t i = 0; i < size; ++i) {
+      ASSERT_TRUE(s.insert(static_cast<int>(i)).second) << i;
+    }
+    EXPECT_EQ(s.size(), size);
+    for (size_t i = 0; i < size; ++i) {
+      ASSERT_TRUE(s.contains(static_cast<int>(i))) << i;
+    }
+  }
+}
+
+TYPED_TEST(SooTest, ClearAfterReserve) {
+  for (size_t reserve_size :
+       std::vector<size_t>{1, 3, 4, 6, 7, 8, 13, 14, 15, 128, 150}) {
+    TypeParam s;
+    s.reserve(reserve_size);
+    for (size_t i = 0; i < reserve_size; ++i) {
+      ASSERT_TRUE(s.insert(static_cast<int>(i)).second);
+    }
+    EXPECT_EQ(s.size(), reserve_size);
+    s.clear();
+    EXPECT_EQ(s.size(), 0);
+    for (size_t i = 0; i < reserve_size; ++i) {
+      ASSERT_FALSE(s.contains(static_cast<int>(i))) << i;
+    }
+    for (size_t i = 0; i < reserve_size; ++i) {
+      ASSERT_TRUE(s.insert(static_cast<int>(i)).second) << i;
+    }
+    for (size_t i = 0; i < reserve_size; ++i) {
+      ASSERT_TRUE(s.contains(static_cast<int>(i))) << i;
+    }
+  }
+}
+
 template <class TableType>
 class SmallTableResizeTest : public testing::Test {};
 
@@ -2770,6 +2865,18 @@ TYPED_TEST(SooTest, HintInsert) {
   EXPECT_EQ(*it, 2);
   // The node was not emptied by the insert call.
   EXPECT_TRUE(node);  // NOLINT(bugprone-use-after-move)
+}
+
+TYPED_TEST(SooTest, RehashZeroForSmallTable) {
+  TypeParam t{0};
+  EXPECT_EQ(t.capacity(), 1);
+  t.rehash(0);
+  EXPECT_EQ(t.capacity(), 1);
+  EXPECT_TRUE(t.contains(0));
+  t.insert(1);
+  EXPECT_EQ(t.capacity(), NextCapacity(1));
+  EXPECT_TRUE(t.contains(0));
+  EXPECT_TRUE(t.contains(1));
 }
 
 template <typename T>

@@ -507,7 +507,7 @@ EXPORTS
     ?CityHash64WithSeed@hash_internal@absl@@YA_KPEBD_K1@Z
     ?CityHash64WithSeeds@hash_internal@absl@@YA_KPEBD_K11@Z
     ?Clear@Cord@absl@@QEAAXXZ
-    ?ClearBackingArray@container_internal@absl@@YAXAEAVCommonFields@12@AEBUPolicyFunctions@12@PEAX_N3@Z
+    ?ClearBackingArray@container_internal@absl@@YAXAEAVCommonFields@12@AEBUPolicyFunctions@12@PEAX_N@Z
     ?ClearCurrentThreadIdentity@base_internal@absl@@YAXXZ
     ?ClearLogBacktraceLocation@absl@@YAXXZ
     ?ClearTimeZoneMapTestOnly@Impl@time_zone@cctz@time_internal@absl@@SAXXZ

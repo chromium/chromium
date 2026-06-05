@@ -438,7 +438,7 @@ class Cord {
 
   // CopyCordToSpan()
   //
-  // Copies up to `dest.size()` bytes starting from the beginning of `src` to
+  // Copies up to `dst.size()` bytes starting from the beginning of `src` to
   // `dst`.  Returns the number of bytes copied.
   friend size_t CopyCordToSpan(const Cord& src, absl::Span<char> dst);
 

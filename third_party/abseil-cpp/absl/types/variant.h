@@ -16,9 +16,9 @@
 // variant.h
 // -----------------------------------------------------------------------------
 //
-// Historical note: Abseil once provided an implementation of `std::variant`
+// Historical note: Abseil once provided an implementation of `absl::variant`
 // as a polyfill for `std::variant` prior to C++17. Now that C++17 is required,
-// `std::variant` is an alias for `std::variant`.
+// `absl::variant` is an alias for `std::variant`.
 
 #ifndef ABSL_TYPES_VARIANT_H_
 #define ABSL_TYPES_VARIANT_H_

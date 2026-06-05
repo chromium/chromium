@@ -686,10 +686,36 @@ c_copy_backward(const C& src, BidirectionalIterator dest) {
 // Container-based version of the <algorithm> `std::move()` function to move
 // a container's elements into an iterator.
 template <typename C, typename OutputIterator>
-ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20 OutputIterator c_move(C&& src,
-                                                          OutputIterator dest) {
+ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20
+    std::enable_if_t<container_algorithm_internal::IsIterator<
+                         absl::remove_cvref_t<OutputIterator>>::value &&
+                         !container_algorithm_internal::IsMultidimensionalArray<
+                             std::remove_reference_t<C>>::value,
+                     std::decay_t<OutputIterator>>
+    c_move(C&& src, OutputIterator&& dest) {
   return std::move(container_algorithm_internal::c_begin(src),
-                   container_algorithm_internal::c_end(src), dest);
+                   container_algorithm_internal::c_end(src),
+                   std::forward<OutputIterator>(dest));
+}
+
+// Moves elements from `src` to `dest`. `absl::c_move(src, dest)` is
+// equivalent to `std::move(std::begin(src), std::end(src), std::begin(dest))`.
+//
+// The `dest` container must be large enough to hold all elements of `src`;
+// this function does not resize `dest`.
+template <typename C, typename OutputRange>
+ABSL_INTERNAL_CONSTEXPR_SINCE_CXX20
+    std::enable_if_t<container_algorithm_internal::HasBeginEnd<
+                         std::add_lvalue_reference_t<OutputRange>>::value &&
+                         !container_algorithm_internal::IsMultidimensionalArray<
+                             std::remove_reference_t<OutputRange>>::value &&
+                         !container_algorithm_internal::IsMultidimensionalArray<
+                             std::remove_reference_t<C>>::value,
+                     void>
+    c_move(C&& src, OutputRange&& dest) {
+  container_algorithm_internal::AssertCopySize(src, dest);
+  absl::c_move(std::forward<C>(src), container_algorithm_internal::c_begin(
+                                         std::forward<OutputRange>(dest)));
 }
 
 // c_move_backward()

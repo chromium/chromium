@@ -413,12 +413,11 @@ class CRC32AcceleratedX86ARMCombinedMultipleStreamsBase
   }
 #else
   template <typename T = V256>
-  ABSL_ATTRIBUTE_ALWAYS_INLINE void Process64BytesVpclmul(
-      const uint8_t* p, T* vpartialCRC, T loopMultiplicands) const {
+  ABSL_ATTRIBUTE_ALWAYS_INLINE void Process64BytesVpclmul(const uint8_t*, T*,
+                                                          T) const {
     static_assert(sizeof(T) == 0, "Vector PCLMUL not supported");
   }
-  ABSL_ATTRIBUTE_ALWAYS_INLINE uint64_t
-  FinalizeVpclmulStream(V256* partialCRC) const {
+  ABSL_ATTRIBUTE_ALWAYS_INLINE uint64_t FinalizeVpclmulStream(V256*) const {
     return 0;
   }
 #endif  // defined(ABSL_CRC_INTERNAL_HAVE_X86_SIMD) && defined(__AVX__)

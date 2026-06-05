@@ -93,3 +93,77 @@ index 49f3e24a86e7e..a6e5187fa2f48 100644
      std::declval<Args>()...))
  holds_alternative(Args&&... args) {
    return std::holds_alternative<T>(std::forward<Args>(args)...);
+diff --git a/third_party/abseil-cpp/absl/meta/type_traits.h b/third_party/abseil-cpp/absl/meta/type_traits.h
+index 7d68b4d690cca..e77112fcb3d81 100644
+--- a/third_party/abseil-cpp/absl/meta/type_traits.h
++++ b/third_party/abseil-cpp/absl/meta/type_traits.h
+@@ -151,8 +151,7 @@ template <class T>
+ using decay_t ABSL_DEPRECATE_AND_INLINE() = std::decay_t<T>;
+ 
+ template <bool C, class T = void>
+-using enable_if_t [[deprecated("Use std::enable_if_t instead.")]] =
+-    std::enable_if_t<C, T>;
++using enable_if_t ABSL_DEPRECATE_AND_INLINE() = std::enable_if_t<C, T>;
+ 
+ template <class... T>
+ using disjunction ABSL_DEPRECATE_AND_INLINE() = std::disjunction<T...>;
+diff --git a/third_party/abseil-cpp/absl/utility/utility.h b/third_party/abseil-cpp/absl/utility/utility.h
+index 3cb6940f182e7..dd699d4900ad6 100644
+--- a/third_party/abseil-cpp/absl/utility/utility.h
++++ b/third_party/abseil-cpp/absl/utility/utility.h
+@@ -71,12 +71,10 @@ inline constexpr const std::in_place_t& in_place ABSL_DEPRECATE_AND_INLINE() =
+ 
+ template <size_t I>
+ inline constexpr const std::in_place_index_t<I>& in_place_index
+-    [[deprecated("Use std::in_place_index<I> instead.")]] =
+-        std::in_place_index<I>;
++ABSL_DEPRECATE_AND_INLINE() = std::in_place_index<I>;
+ 
+ template <size_t I>
+-using in_place_index_t [[deprecated("Use std::in_place_index_t<I> instead.")]] =
+-    std::in_place_index_t<I>;
++using in_place_index_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_index_t<I>;
+ 
+ using in_place_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_t;
+ 
+@@ -88,17 +86,15 @@ template <class T>
+ using in_place_type_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_type_t<T>;
+ 
+ template <size_t... I>
+-using index_sequence [[deprecated("Use std::index_sequence instead.")]] =
+-    std::index_sequence<I...>;
++using index_sequence ABSL_DEPRECATE_AND_INLINE() = std::index_sequence<I...>;
+ 
+ template <class T, T... I>
+-using integer_sequence [[deprecated("Use std::integer_sequence instead.")]] =
++using integer_sequence ABSL_DEPRECATE_AND_INLINE() =
+     std::integer_sequence<T, I...>;
+ 
+ template <class... T>
+-using index_sequence_for
+-    [[deprecated("Use std::index_sequence_for instead.")]] =
+-        std::index_sequence_for<T...>;
++using index_sequence_for ABSL_DEPRECATE_AND_INLINE() =
++    std::index_sequence_for<T...>;
+ 
+ template <class T, class Tuple>
+ ABSL_DEPRECATE_AND_INLINE()
+@@ -109,14 +105,12 @@ ABSL_DEPRECATE_AND_INLINE()
+ }
+ 
+ template <size_t N>
+-using make_index_sequence
+-    [[deprecated("Use std::make_index_sequence instead.")]] =
+-        std::make_index_sequence<N>;
++using make_index_sequence ABSL_DEPRECATE_AND_INLINE() =
++    std::make_index_sequence<N>;
+ 
+ template <class T, T N>
+-using make_integer_sequence
+-    [[deprecated("Use std::make_integer_sequence instead.")]] =
+-        std::make_integer_sequence<T, N>;
++using make_integer_sequence ABSL_DEPRECATE_AND_INLINE() =
++    std::make_integer_sequence<T, N>;
+ 
+ template <class It, class OutIt>
+ [[deprecated("Use std::move instead.")]]

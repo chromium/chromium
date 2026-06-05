@@ -266,52 +266,67 @@ ABSL_NAMESPACE_END
 // Internal helpers for macro expansion.
 #define ABSL_INTERNAL_STATUS_MACROS_IMPL_EAT(...)
 #define ABSL_INTERNAL_STATUS_MACROS_IMPL_REM(...) __VA_ARGS__
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_EMPTY()
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_COMMA(...) ,
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_ARG_3(a, b, c, ...) c
 
-// Internal helpers for emptiness arguments check.
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER(...) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER_HELPER((__VA_ARGS__, 0, 1))
-// MSVC expands variadic macros incorrectly, so we need this extra indirection
-// to work around that (b/110959038).
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER_HELPER(args) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER_I args
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER_I(e0, e1, is_empty, \
-                                                          ...)              \
-  is_empty
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_HAS_COMMA(...) \
+  ABSL_INTERNAL_STATUS_MACROS_IMPL_REM(                 \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_ARG_3(__VA_ARGS__, 1, 10))
 
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY(...) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_I(__VA_ARGS__)
+// Concatenates five macro arguments.
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_CONCAT_5(a, b, c, d, e) a##b##c##d##e
 
-#if !defined(_MSC_VER) || defined(__clang__) || \
-    (defined(_MSVC_TRADITIONAL) && !_MSVC_TRADITIONAL)
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_I(...) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER(_ __VA_OPT__(, )##__VA_ARGS__)
+// Identifies (below) the case where all arguments are empty, except the last.
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_CASE_1010101 ,
+
+// Evaluates to 1 if the arguments concatenate to 1010101, and 10 otherwise.
+#define ABSL_INTERNAL_STATUS_MACROS_1_IF_1010101_ELSE_10(a, b, c, d) \
+  ABSL_INTERNAL_STATUS_MACROS_IMPL_HAS_COMMA(                        \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_CONCAT_5(                     \
+          ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_CASE_, a, b, c, d))
+
+// Evaluates to 1 if __VA_OPT__ is supported and the argument list is non-empty,
+// and 0 otherwise.
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_HAVE_VA_OPT(...) \
+  ABSL_INTERNAL_STATUS_MACROS_IMPL_ARG_3(__VA_OPT__(, ), 1, 0, )
+
+#if ABSL_INTERNAL_STATUS_MACROS_IMPL_HAVE_VA_OPT(.)
+// Evaluates to 1 if the argument list is empty, and 10 otherwise.
+#define ABSL_INTERNAL_STATUS_MACROS_1_IF_EMPTY_ELSE_10(...) 1##__VA_OPT__(0)
 #else
-// Nonstandard hack that works for MSVC's legacy preprocessor
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_I(...) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY_INNER(_, ##__VA_ARGS__)
+#define ABSL_INTERNAL_STATUS_MACROS_1_IF_EMPTY_ELSE_10(...)      \
+  ABSL_INTERNAL_STATUS_MACROS_1_IF_1010101_ELSE_10(              \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_HAS_COMMA(__VA_ARGS__),   \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_HAS_COMMA(                \
+          ABSL_INTERNAL_STATUS_MACROS_IMPL_COMMA __VA_ARGS__),   \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_HAS_COMMA(__VA_ARGS__()), \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_HAS_COMMA(                \
+          ABSL_INTERNAL_STATUS_MACROS_IMPL_COMMA __VA_ARGS__()))
+
 #endif
 
-// Internal helpers for if statement.
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IF_1(_Then, _Else) _Then
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IF_0(_Then, _Else) _Else
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IF(_Cond, _Then, _Else) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_CONCAT_(                      \
-      ABSL_INTERNAL_STATUS_MACROS_IMPL_IF_, _Cond)(_Then, _Else)
+// Parenthesized case: strips the initial pair of parentheses from the input.
+//
+// Note that this may not result in an equivalent expression. For example,
+// (*a)[b] would evaluate to a[b]. The caller below is required to ensure
+// this is only called when the input is fully parenthesized to avoid this
+// issue.
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED_1(x) \
+  ABSL_INTERNAL_STATUS_MACROS_IMPL_REM x
 
-// Expands to 1 if the input is parenthesized. Otherwise expands to 0.
-#define ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_PARENTHESIZED(...) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_EMPTY(                   \
-      ABSL_INTERNAL_STATUS_MACROS_IMPL_EAT __VA_ARGS__)
+// Unparenthesized case: evaluates to the argument list as-is.
+#define ABSL_INTERNAL_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED_10(x) \
+  ABSL_INTERNAL_STATUS_MACROS_IMPL_REM(x)
 
 // If the input is parenthesized, removes the parentheses. Otherwise expands to
 // the input unchanged.
 #define ABSL_INTERNAL_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(...) \
-  ABSL_INTERNAL_STATUS_MACROS_IMPL_IF(                                        \
-      ABSL_INTERNAL_STATUS_MACROS_IMPL_IS_PARENTHESIZED(__VA_ARGS__),         \
-      ABSL_INTERNAL_STATUS_MACROS_IMPL_REM,                                   \
-      ABSL_INTERNAL_STATUS_MACROS_IMPL_EMPTY())                               \
-  __VA_ARGS__
+  ABSL_INTERNAL_STATUS_MACROS_IMPL_REM(                                       \
+      ABSL_INTERNAL_STATUS_MACROS_IMPL_CONCAT_(                               \
+          ABSL_INTERNAL_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED_,  \
+          ABSL_INTERNAL_STATUS_MACROS_1_IF_EMPTY_ELSE_10(                     \
+              ABSL_INTERNAL_STATUS_MACROS_IMPL_EAT __VA_ARGS__))(             \
+          ABSL_INTERNAL_STATUS_MACROS_IMPL_REM(__VA_ARGS__)))
 
 // Internal helper for concatenating macro values.
 #define ABSL_INTERNAL_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
@@ -330,11 +345,6 @@ ABSL_NAMESPACE_END
 //   if (do_expr) ABSL_RETURN_IF_ERROR(expr) << "Some message";
 //
 // The "switch (0) case 0:" idiom is used to suppress this.
-// TODO(b/491833032): Remove this once all users and redefinitions are updated.
-#define STATUS_MACROS_IMPL_ELSE_BLOCKER_ \
-  switch (0)                             \
-  case 0:                                \
-  default:  // NOLINT
 #define ABSL_INTERNAL_STATUS_MACROS_IMPL_ELSE_BLOCKER_ \
   switch (0)                                           \
   case 0:                                              \

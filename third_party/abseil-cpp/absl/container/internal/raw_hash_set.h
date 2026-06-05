@@ -728,11 +728,11 @@ static_assert(
     sizeof(HashtableInlineDataImpl<kCapacityByLog>::HashtableCapacity) == 1);
 static_assert(sizeof(HashtableInlineDataImpl<kCapacityByLog>) == 8);
 
-#ifndef ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_LOG
-using HashtableInlineData = HashtableInlineDataImpl<kCapacityByValue>;
-#else
+#ifndef ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_VALUE
 using HashtableInlineData = HashtableInlineDataImpl<kCapacityByLog>;
-#endif  // ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_LOG
+#else
+using HashtableInlineData = HashtableInlineDataImpl<kCapacityByValue>;
+#endif  // ABSL_SWISSTABLE_INTERNAL_ENABLE_CAPACITY_BY_VALUE
 using PerTableSeed = HashtableInlineData::PerTableSeed;
 using HashtableCapacity = HashtableInlineData::HashtableCapacity;
 
@@ -989,10 +989,20 @@ constexpr size_t NumControlBytes(size_t capacity) {
   return IsSmallCapacity(capacity) ? 0 : capacity + 1 + NumClonedBytes();
 }
 
+// Returns whether table with the given capacity has a GrowthInfo.
+constexpr bool HasGrowthInfoForCapacity(size_t capacity) {
+  return !IsSmallCapacity(capacity);
+}
+
 // Computes the offset from the start of the backing allocation of control.
 // infoz and growth_info are stored at the beginning of the backing array.
-constexpr size_t ControlOffset(bool has_infoz) {
-  return (has_infoz ? sizeof(HashtablezInfoHandle) : 0) + sizeof(GrowthInfo);
+constexpr size_t ControlOffset(bool has_infoz, bool has_growth_info) {
+  if (ABSL_PREDICT_FALSE(has_infoz)) {
+    // We always allocate GrowthInfo for sampled tables to allow branchless
+    // access to infoz pointer.
+    return sizeof(HashtablezInfoHandle) + sizeof(GrowthInfo);
+  }
+  return has_growth_info ? sizeof(GrowthInfo) : 0;
 }
 
 // Returns the offset of the next item after `offset` that is aligned to `align`
@@ -1004,12 +1014,10 @@ constexpr size_t AlignUpTo(size_t offset, size_t align) {
 // Helper class for computing offsets and allocation size of hash set fields.
 class RawHashSetLayout {
  public:
-  // TODO(b/413062340): maybe don't allocate growth info for capacity 1 tables.
-  // Doing so may require additional branches/complexity so it might not be
-  // worth it.
   explicit RawHashSetLayout(size_t capacity, size_t slot_size,
                             size_t slot_align, bool has_infoz)
-      : control_offset_(ControlOffset(has_infoz)),
+      : control_offset_(
+            ControlOffset(has_infoz, HasGrowthInfoForCapacity(capacity))),
         generation_offset_(control_offset_ + NumControlBytes(capacity)),
         slot_offset_(
             AlignUpTo(generation_offset_ + NumGenerationBytes(), slot_align)),
@@ -1240,7 +1248,7 @@ class CommonFields : public CommonFieldsGenerationInfo {
   size_t growth_left() const { return growth_info().GetGrowthLeft(); }
 
   GrowthInfo& growth_info() {
-    ABSL_SWISSTABLE_ASSERT(!is_small());
+    ABSL_SWISSTABLE_ASSERT(HasGrowthInfoForCapacity(capacity()));
     return GetGrowthInfoFromControl(control());
   }
   GrowthInfo growth_info() const {
@@ -1259,7 +1267,8 @@ class CommonFields : public CommonFieldsGenerationInfo {
         reinterpret_cast<uintptr_t>(control()) % alignof(size_t) == 0);
     ABSL_SWISSTABLE_ASSERT(has_infoz());
     return reinterpret_cast<HashtablezInfoHandle*>(
-        control() - ControlOffset(/*has_infoz=*/true));
+        control() - ControlOffset(/*has_infoz=*/true,
+                                  HasGrowthInfoForCapacity(capacity())));
   }
 
   HashtablezInfoHandle infoz() {
@@ -1929,9 +1938,9 @@ void ResizeAllocatedTableWithSeedChange(CommonFields& common,
 
 // ClearBackingArray clears the backing array, either modifying it in place,
 // or creating a new one based on the value of "reuse".
-// REQUIRES: c.capacity > 0
+// REQUIRES: c.capacity > MaxSmallCapacity().
 void ClearBackingArray(CommonFields& c, const PolicyFunctions& policy,
-                       void* alloc, bool reuse, bool soo_enabled);
+                       void* alloc, bool reuse);
 
 // Type-erased versions of raw_hash_set::erase_meta_only_{small,large}.
 void EraseMetaOnlySmall(CommonFields& c, bool soo_enabled, size_t slot_size);
@@ -2908,8 +2917,8 @@ class raw_hash_set {
   iterator erase(const_iterator first,
                  const_iterator last) ABSL_ATTRIBUTE_LIFETIME_BOUND {
     AssertNotDebugCapacity();
-    // We check for empty first because clear_backing_array requires that
-    // capacity() > 0 as a precondition.
+    // We check for empty and for is_small because clear_backing_array requires
+    // that capacity() > MaxSmallCapacity() as a precondition.
     if (empty()) return end();
     if (first == last) return last.inner_;
     if (is_small()) {
@@ -3264,9 +3273,8 @@ class raw_hash_set {
   }
 
   void clear_backing_array(bool reuse) {
-    ABSL_SWISSTABLE_ASSERT(capacity() > DefaultCapacity());
-    ClearBackingArray(common(), GetPolicyFunctions(), &char_alloc_ref(), reuse,
-                      SooEnabled());
+    ABSL_SWISSTABLE_ASSERT(capacity() > MaxSmallCapacity());
+    ClearBackingArray(common(), GetPolicyFunctions(), &char_alloc_ref(), reuse);
   }
 
   void destroy_slots() {

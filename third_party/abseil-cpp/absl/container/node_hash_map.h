@@ -167,11 +167,18 @@ class ABSL_ATTRIBUTE_OWNER node_hash_map
   //   // Move is guaranteed efficient
   //   absl::node_hash_map<int, std::string> map5(std::move(map4));
   //
+  //   // After the move, map4 is in a valid but unspecified state. The only
+  //   // operations guaranteed to be safe on a moved-from map are destruction,
+  //   // assignment, and clear(). Any other operation (e.g. size(), empty(),
+  //   // iteration) results in undefined behavior.
+  //
   // * Move assignment operator
   //
   //   // May be efficient if allocators are compatible
   //   absl::node_hash_map<int, std::string> map6;
   //   map6 = std::move(map5);
+  //
+  //   // Same moved-from guarantees apply to map5 after this operation.
   //
   // * Range constructor
   //

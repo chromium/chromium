@@ -957,6 +957,95 @@ TEST(MutatingTest, MoveWithRvalue) {
                                 Pointee(2), Pointee(3)));
 }
 
+TEST(MutatingTest, MoveToContainer) {
+  std::vector<std::unique_ptr<int>> input;
+  input.push_back(std::make_unique<int>(1));
+  input.push_back(std::make_unique<int>(2));
+  input.push_back(std::make_unique<int>(3));
+
+  std::vector<std::unique_ptr<int>> actual(5);
+  absl::c_move(input, actual);
+
+  EXPECT_EQ(input[0], nullptr);
+  EXPECT_EQ(input[1], nullptr);
+  EXPECT_EQ(input[2], nullptr);
+
+  ASSERT_NE(actual[0], nullptr);
+  EXPECT_EQ(*actual[0], 1);
+  ASSERT_NE(actual[1], nullptr);
+  EXPECT_EQ(*actual[1], 2);
+  ASSERT_NE(actual[2], nullptr);
+  EXPECT_EQ(*actual[2], 3);
+  EXPECT_EQ(actual[3], nullptr);
+}
+
+TEST(MutatingTest, MoveToDifferentContainerType) {
+  std::list<std::unique_ptr<int>> input;
+  input.push_back(std::make_unique<int>(1));
+  input.push_back(std::make_unique<int>(2));
+
+  std::array<std::unique_ptr<int>, 3> actual;
+  absl::c_move(input, actual);
+
+  EXPECT_EQ(input.front(), nullptr);
+  ASSERT_NE(actual[0], nullptr);
+  EXPECT_EQ(*actual[0], 1);
+}
+
+TEST(MutatingTest, MoveToCArray) {
+  std::vector<std::unique_ptr<int>> input;
+  input.push_back(std::make_unique<int>(1));
+  input.push_back(std::make_unique<int>(2));
+
+  std::unique_ptr<int> actual[3];
+  absl::c_move(input, actual);
+
+  EXPECT_EQ(input.front(), nullptr);
+  ASSERT_NE(actual[0], nullptr);
+  EXPECT_EQ(*actual[0], 1);
+}
+
+TEST(MutatingTest, MoveFromCArray) {
+  std::unique_ptr<int> input[2];
+  input[0] = std::make_unique<int>(1);
+  input[1] = std::make_unique<int>(2);
+
+  std::vector<std::unique_ptr<int>> actual(3);
+  absl::c_move(input, actual);
+
+  EXPECT_EQ(input[0], nullptr);
+  ASSERT_NE(actual[0], nullptr);
+  EXPECT_EQ(*actual[0], 1);
+}
+
+#if GTEST_HAS_DEATH_TEST
+
+TEST(MutatingTest, MoveToCArrayInvalidSize) {
+  std::vector<int> input = {1, 2, 3};
+  int actual[2] = {0, 0};
+  if (IsHardened()) {
+    EXPECT_DEATH(absl::c_move(input, actual), "");
+  }
+}
+
+TEST(MutatingTest, MoveToContainerInvalidSize) {
+  std::list<int> input = {1, 2, 3, 4, 5};
+  std::list<int> actual = {0, 0, 0};
+  if (IsHardened()) {
+    EXPECT_DEATH(absl::c_move(input, actual), "");
+  }
+}
+
+TEST(MutatingTest, MoveToForwardListInvalidSize) {
+  std::forward_list<int> input = {1, 2, 3, 4, 5};
+  std::forward_list<int> actual = {0, 0, 0};
+  if (IsHardened()) {
+    EXPECT_DEATH(absl::c_move(input, actual), "");
+  }
+}
+
+#endif  // GTEST_HAS_DEATH_TEST
+
 TEST(MutatingTest, SwapRanges) {
   std::vector<int> odds = {2, 4, 6};
   std::vector<int> evens = {1, 3, 5};
@@ -2459,6 +2548,14 @@ struct CanCopyN<Container, Output,
                     std::declval<Container>(), std::declval<ptrdiff_t>(),
                     std::declval<Output>()))>> : std::true_type {};
 
+template <typename Container, typename Output, typename = void>
+struct CanMove : std::false_type {};
+template <typename Container, typename Output>
+struct CanMove<Container, Output,
+               absl::void_t<decltype(absl::c_move(std::declval<Container>(),
+                                                  std::declval<Output>()))>>
+    : std::true_type {};
+
 TEST(CanCopyTest, CopyToMultiDimArray) {
   static_assert(CanCopy<std::vector<int>, int (&)[10]>::value);
   static_assert(!CanCopy<std::vector<int>, int (&)[2][2]>::value);
@@ -2489,6 +2586,24 @@ TEST(CanCopyTest, AmbiguousTypeFailsToCompile) {
   static_assert(!CanCopy<Vec, AmbiguousType>::value,
                 "Ambiguous types should not compile!");
   static_assert(!CanCopyN<Vec, AmbiguousType>::value,
+                "Ambiguous types should not compile!");
+}
+
+TEST(CanMoveTest, MoveToMultiDimArray) {
+  static_assert(CanMove<std::vector<int>, int (&)[10]>::value);
+  static_assert(!CanMove<std::vector<int>, int (&)[2][2]>::value);
+
+  static_assert(CanMove<int[10], int (&)[10]>::value);
+  static_assert(!CanMove<int[10], int (&)[2][2]>::value);
+  static_assert(!CanMove<int[2][2], int (&)[4]>::value);
+  static_assert(!CanMove<int[2][2], int (&)[2][2]>::value);
+}
+
+TEST(CanMoveTest, AmbiguousTypeFailsToCompile) {
+  using Vec = std::vector<int>;
+  // Because AmbiguousType is both an iterator and a container,
+  // the compiler should fail to resolve the c_move overload.
+  static_assert(!CanMove<Vec, AmbiguousType>::value,
                 "Ambiguous types should not compile!");
 }
 }  // namespace
