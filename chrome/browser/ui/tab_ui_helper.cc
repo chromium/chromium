@@ -48,11 +48,11 @@ namespace {
 
 bool IsNTP(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
-         (url.GetHost() == chrome::kChromeUINewTabHost ||
+         (url.host() == chrome::kChromeUINewTabHost ||
 #if !BUILDFLAG(IS_ANDROID)
-          url.GetHost() == chrome::kChromeUITabSearchHost ||
+          url.host() == chrome::kChromeUITabSearchHost ||
 #endif  // !BUILDFLAG(IS_ANDROID)
-          url.GetHost() == chrome::kChromeUINewTabPageHost);
+          url.host() == chrome::kChromeUINewTabPageHost);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

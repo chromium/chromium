@@ -850,7 +850,7 @@ bool HandleNewTabPageLocationOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
   if (!url->SchemeIs(content::kChromeUIScheme) ||
-      url->GetHost() != chrome::kChromeUINewTabHost) {
+      url->host() != chrome::kChromeUINewTabHost) {
     return false;
   }
 
@@ -2092,7 +2092,7 @@ bool ChromeContentBrowserClient::DoesWebUIUrlRequireProcessLock(
   // embeds those tiles, should be locked.  This allows most visited tiles to
   // stay in their parent (i.e., third-party NTP's) process.
   if (url.SchemeIs(chrome::kChromeSearchScheme) &&
-      url.GetHost() == chrome::kChromeSearchMostVisitedHost) {
+      url.host() == chrome::kChromeSearchMostVisitedHost) {
     return false;
   }
 
@@ -2339,7 +2339,7 @@ bool ChromeContentBrowserClient::ShouldStayInParentProcessForNTP(
   //
   // TODO(crbug.com/41261582): clean up the logic for detecting NTP.
   return url.SchemeIs(chrome::kChromeSearchScheme) &&
-         url.GetHost() == chrome::kChromeSearchMostVisitedHost &&
+         url.host() == chrome::kChromeSearchMostVisitedHost &&
          search::IsNTPURL(parent_site_url);
 }
 
@@ -7338,7 +7338,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   // Rewrite chrome://help to chrome://settings/help.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUIHelpHost) {
+      url->host() == chrome::kChromeUIHelpHost) {
     *url = ReplaceURLHostAndPath(*url, chrome::kChromeUISettingsHost,
                                  chrome::kChromeUIHelpHost);
   }
@@ -7348,8 +7348,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   // Rewrite chrome://settings/enhancedAutofill to chrome://settings/autofill.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUISettingsHost &&
-      url->GetPath() == chrome::kChromeUIAutofillAiPath &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kChromeUIAutofillAiPath &&
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
     GURL::Replacements replacements;
@@ -7359,8 +7359,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   // Rewrite chrome://settings/addresses to chrome://settings/contactInfo.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUISettingsHost &&
-      (url->GetPath() == chrome::kChromeUIAddressesPath) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      (url->path() == chrome::kChromeUIAddressesPath) &&
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
     GURL::Replacements replacements;
@@ -7370,8 +7370,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   // Rewrite chrome://settings/searchEngines to chrome://settings/search.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUISettingsHost &&
-      (url->GetPath() == chrome::kChromeUISearchEngineSettingsPath) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      (url->path() == chrome::kChromeUISearchEngineSettingsPath) &&
       base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)) {
     GURL::Replacements replacements;
     replacements.SetPathStr(chrome::kChromeUISearchSettingsPath);
@@ -7382,8 +7382,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUISettingsHost &&
-      url->GetPath() == chrome::kChromeUICertificateRedirectPath) {
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kChromeUICertificateRedirectPath) {
     *url = GURL(chrome::kChromeUICertificateManagerDialogURL);
     return true;
   }
@@ -7458,7 +7458,7 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
   // displayed URL when rewriting chrome://settings/certificates to
   // chrome://certificate-manager
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->GetHost() == chrome::kChromeUICertificateManagerHost) {
+      url->host() == chrome::kChromeUICertificateManagerHost) {
     return true;
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
@@ -7466,7 +7466,7 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.
   return url->SchemeIs(content::kChromeUIScheme) &&
-         url->GetHost() == chrome::kChromeUISettingsHost;
+         url->host() == chrome::kChromeUISettingsHost;
 }
 
 void ChromeContentBrowserClient::AddExtraPart(

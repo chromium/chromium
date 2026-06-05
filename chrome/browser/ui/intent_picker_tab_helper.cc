@@ -101,7 +101,7 @@ bool IsValidIntentPickerUrl(const GURL& url, bool is_error_page) {
   // chrome://password-manager is a valid PWA, so it should be considered when
   // evaluating whether to show the intent picker.
   if (url.SchemeIs(content::kChromeUIScheme) &&
-      url.GetHost() == password_manager::kChromeUIPasswordManagerHost) {
+      url.host() == password_manager::kChromeUIPasswordManagerHost) {
     return true;
   }
 

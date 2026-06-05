@@ -53,8 +53,7 @@ const char kServiceWorkerFileName[] = "newtab-serviceworker.js";
 
 bool MatchesOrigin(const GURL& my_url, const GURL& other_url) {
   return my_url.scheme() == other_url.scheme() &&
-         my_url.host() == other_url.host() &&
-         my_url.GetPort() == other_url.GetPort();
+         my_url.host() == other_url.host() && my_url.port() == other_url.port();
 }
 
 }  // namespace
@@ -378,7 +377,7 @@ bool HandleNewTabURLRewrite(GURL* url,
   }
 
   if (!(url->SchemeIs(content::kChromeUIScheme) &&
-        url->GetHost() == chrome::kChromeUINewTabHost)) {
+        url->host() == chrome::kChromeUINewTabHost)) {
     return false;
   }
 
