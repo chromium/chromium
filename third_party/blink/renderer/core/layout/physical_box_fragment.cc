@@ -1551,7 +1551,8 @@ PositionWithAffinity PhysicalBoxFragment::PositionForPoint(
     }
   }
 
-  if (IsA<LayoutBlockFlow>(*layout_object_) &&
+  if (!RuntimeEnabledFeatures::PreventTextSelectionJumpEnabled() &&
+      IsA<LayoutBlockFlow>(*layout_object_) &&
       layout_object_->ChildrenInline()) {
     // Here |this| may have out-of-flow children without inline children, we
     // don't find closest child of |point| for out-of-flow children.

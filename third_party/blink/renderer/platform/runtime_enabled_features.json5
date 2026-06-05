@@ -4622,6 +4622,13 @@
       status: "stable",
     },
     {
+      // When enabled, fixes selection jumping when drag-selecting out of
+      // a float box boundary.
+      // See https://crbug.com/41340914
+      name: "PreventTextSelectionJump",
+      status: "stable",
+    },
+    {
       // When enabled, prevents undo to be applied if the enclosing block
       // is not editable
       name: "PreventUndoIfNotEditable",

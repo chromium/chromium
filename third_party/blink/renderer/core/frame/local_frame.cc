@@ -3909,15 +3909,56 @@ Frame* LocalFrame::GetProvisionalOwnerFrame() {
 
 namespace {
 
+static PositionWithAffinity PositionForSmartClipPoint(
+    const gfx::Point& contents_point,
+    const LocalFrame* frame) {
+  constexpr HitTestRequest::HitTestRequestType kRequest =
+      HitTestRequest::kMove | HitTestRequest::kReadOnly |
+      HitTestRequest::kActive | HitTestRequest::kIgnoreClipping;
+  HitTestLocation location(contents_point);
+  HitTestResult result(kRequest, location);
+  frame->GetDocument()->GetLayoutView()->HitTest(location, result);
+
+  Node* inner_node = result.InnerNode();
+  if (!inner_node) {
+    return PositionWithAffinity();
+  }
+
+  if (const auto* layout_box_flow =
+          DynamicTo<LayoutBlockFlow>(inner_node->GetLayoutObject());
+      layout_box_flow && !layout_box_flow->HasFragmentItems() &&
+      layout_box_flow->ChildrenInline()) {
+    // Here layout of inner_node may have out-of-flow children without inline
+    // children, we don't find closest child of |point| for out-of-flow
+    // children. See WebFrameTest.SmartClipData
+    return layout_box_flow->CreatePositionWithAffinity(0);
+  }
+
+  return PositionRespectingEditingBoundary(
+      frame->Selection().ComputeVisibleSelectionInDOMTree().Start(), result);
+}
+
 // TODO(editing-dev): We should move |CreateMarkupInRect()| to
 // "core/editing/serializers/Serialization.cpp".
 String CreateMarkupInRect(LocalFrame* frame,
                           const gfx::Point& start_point,
                           const gfx::Point& end_point) {
-  VisiblePosition start_visible_position = CreateVisiblePosition(
-      PositionForContentsPointRespectingEditingBoundary(start_point, frame));
-  VisiblePosition end_visible_position = CreateVisiblePosition(
-      PositionForContentsPointRespectingEditingBoundary(end_point, frame));
+  PositionWithAffinity start_position_with_affinity;
+  PositionWithAffinity end_position_with_affinity;
+  if (RuntimeEnabledFeatures::PreventTextSelectionJumpEnabled()) {
+    start_position_with_affinity =
+        PositionForSmartClipPoint(start_point, frame);
+    end_position_with_affinity = PositionForSmartClipPoint(end_point, frame);
+  } else {
+    start_position_with_affinity =
+        PositionForContentsPointRespectingEditingBoundary(start_point, frame);
+    end_position_with_affinity =
+        PositionForContentsPointRespectingEditingBoundary(end_point, frame);
+  }
+  VisiblePosition start_visible_position =
+      CreateVisiblePosition(start_position_with_affinity);
+  VisiblePosition end_visible_position =
+      CreateVisiblePosition(end_position_with_affinity);
 
   Position start_position = start_visible_position.DeepEquivalent();
   Position end_position = end_visible_position.DeepEquivalent();
