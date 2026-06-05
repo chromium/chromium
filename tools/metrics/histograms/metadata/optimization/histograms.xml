@@ -144,6 +144,8 @@ chromium-metrics-reviews@google.com.
   <variant name="Compose" summary="Weights for On-Device Compose"/>
   <variant name="ContextualPageActionPriceTracking"
       summary="Contextual Page Action: Show price tracking"/>
+  <variant name="ContextualTasksMultiTurnTabRelevance"
+      summary="Contextual Tasks Multi-Turn Tab Relevance"/>
   <variant name="ContextualTasksTabRelevance"
       summary="Contextual Tasks Tab Relevance"/>
   <variant name="EduClassifier" summary="Education classifier"/>

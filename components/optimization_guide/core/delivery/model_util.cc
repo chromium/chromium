@@ -180,6 +180,8 @@ std::string_view GetStringNameForOptimizationTarget(
       return "ModelExecutionFeatureClassifier";
     case proto::OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE:
       return "ContextualTasksTabRelevance";
+    case proto::OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_MULTI_TURN_TAB_RELEVANCE:
+      return "ContextualTasksMultiTurnTabRelevance";
     case proto::OPTIMIZATION_TARGET_SHOPPING_CLASSIFIER:
       return "ShoppingClassifier";
       // Whenever a new value is added, make sure to add it to the OptTarget

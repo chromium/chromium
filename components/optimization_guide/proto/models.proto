@@ -281,6 +281,8 @@ enum OptimizationTarget {
   // Target for on-device speech recognition using Tiny Gemma.
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_ON_DEVICE_SPEECH_RECOGNITION_TINY_GEMMA =
       75;
+  // Target for contextual tasks multi-turn tab relevance.
+  OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_MULTI_TURN_TAB_RELEVANCE = 76;
 }
 
 // The model engine versions that can be used to do model inference.
