@@ -10,6 +10,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
 #include "chrome/browser/default_browser/test_support/fake_default_browser_setter.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_bubble_dialog.h"
@@ -105,6 +106,11 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserBubbleDialogInteractiveTest,
 class DefaultBrowserDialogManagerInteractiveTest
     : public InteractiveBrowserTest {
  protected:
+  void SetUp() override {
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
+    InteractiveBrowserTest::SetUp();
+  }
+
   void ShowDialogManager() {
     manager_ = std::make_unique<DefaultBrowserBubbleDialogManager>();
     manager_->Show(/*can_pin_to_taskbar=*/false);
@@ -147,14 +153,8 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
       WaitForHide(default_browser::kBubbleDialogId));
 }
 
-// TODO(crbug.com/501030880): Re-enable the test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ShowAndAccept DISABLED_ShowAndAccept
-#else
-#define MAYBE_ShowAndAccept ShowAndAccept
-#endif
 IN_PROC_BROWSER_TEST_F(DefaultBrowserDialogManagerInteractiveTest,
-                       MAYBE_ShowAndAccept) {
+                       ShowAndAccept) {
   RunTestSequence(
       Do([this]() { ShowDialogManager(); }),
       WaitForShow(default_browser::kBubbleDialogOpenSettingsButtonId),
