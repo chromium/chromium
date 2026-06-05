@@ -66,8 +66,20 @@ declare namespace chrome {
       statusCode: StatusCode;
     }
 
+    export enum ActivateTabResult {
+      SUCCESS = 'SUCCESS',
+      CONVERSATION_NOT_FOUND = 'CONVERSATION_NOT_FOUND',
+      NO_BOUND_TABS = 'NO_BOUND_TABS',
+      TAB_NOT_IN_WINDOW = 'TAB_NOT_IN_WINDOW',
+    }
+
     export function getState(documentId: string): Promise<ProfileState>;
 
     export function invoke(details: InvokeDetails): Promise<GlicInvokeResult>;
+
+    export function hasConversation(conversationId: string): Promise<boolean>;
+
+    export function activateTabWithConversation(conversationId: string):
+        Promise<ActivateTabResult>;
   }
 }

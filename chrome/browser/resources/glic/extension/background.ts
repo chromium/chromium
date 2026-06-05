@@ -53,5 +53,24 @@ chrome.runtime.onMessageExternal.addListener(
         });
       }
 
+      if (message && message.type === 'glicPrivate.hasConversation') {
+        if (!message.args || !message.args.conversationId) {
+          return {error: 'missing conversationId'};
+        }
+        const isPresent = await chrome.glicPrivate.hasConversation(
+            message.args.conversationId);
+        return {isPresent};
+      }
+
+      if (message &&
+          message.type === 'glicPrivate.activateTabWithConversation') {
+        if (!message.args || !message.args.conversationId) {
+          return {error: 'missing conversationId'};
+        }
+        await chrome.glicPrivate.activateTabWithConversation(
+            message.args.conversationId);
+        return;
+      }
+
       throw new Error(`Unhandled message: ${JSON.stringify(message)}`);
     });

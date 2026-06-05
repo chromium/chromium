@@ -6,7 +6,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/glic_private/glic_private_api_test_base.h"
+#include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#endif
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -86,6 +94,31 @@ content::EvalJsResult ExecuteInvoke(content::WebContents* web_contents,
   return content::EvalJs(web_contents, script);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+content::EvalJsResult ExecuteActivateTabWithConversation(
+    content::WebContents* web_contents,
+    const std::string& conversation_id) {
+  std::string script = base::StringPrintf(
+      R"(
+      (async () => {
+        return new Promise((resolve) => {
+          chrome.runtime.sendMessage(
+              '%s', {type: 'glicPrivate.activateTabWithConversation', args: {
+                conversationId: '%s'
+              }}, (response) => {
+                if (chrome.runtime.lastError) {
+                  resolve('error: ' + chrome.runtime.lastError.message);
+                } else {
+                  resolve('success');
+                }
+              });
+        });
+      })()
+      )",
+      extension_misc::kGlicExtensionId, conversation_id.c_str());
+
+  return content::EvalJs(web_contents, script);
+}
 
 }  // namespace
 
@@ -413,6 +446,243 @@ IN_PROC_BROWSER_TEST_F(GlicMessagingWebViewGuestTest, WebViewGuestInvoke) {
   content::EvalJsResult result = content::EvalJs(guest_rfh, script);
   EXPECT_EQ("success", result.ExtractString());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+class GlicMessagingFullyEnabledBrowserTest
+    : public glic::GlicBrowserTestMixin<GlicMessagingBrowserTest> {
+ public:
+  void SetUpOnMainThread() override {
+    GlicMessagingBrowserTest::SetUpOnMainThread();
+    SetupIdentityAndCapabilities();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest, HasConversation) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  // Test hasConversation with valid args.
+  {
+    std::string script = base::StringPrintf(
+        R"(
+        (async () => {
+          return new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+                '%s', {type: 'glicPrivate.hasConversation', args: {
+                  conversationId: 'test-conv-id'
+                }}, (response) => {
+                  if (chrome.runtime.lastError) {
+                    resolve('error: ' + chrome.runtime.lastError.message);
+                  } else {
+                    resolve('success: ' + response.isPresent);
+                  }
+                });
+          });
+        })()
+        )",
+        extension_misc::kGlicExtensionId);
+
+    content::EvalJsResult result =
+        content::EvalJs(GetActiveWebContents(), script);
+    EXPECT_EQ("success: false", result.ExtractString());
+  }
+
+  // Test hasConversation with conversation found.
+  {
+    ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+    RegisterConversation(instance, "test-conv-id-found");
+
+    std::string script = base::StringPrintf(
+        R"(
+        (async () => {
+          return new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+                '%s', {type: 'glicPrivate.hasConversation', args: {
+                  conversationId: 'test-conv-id-found'
+                }}, (response) => {
+                  if (chrome.runtime.lastError) {
+                    resolve('error: ' + chrome.runtime.lastError.message);
+                  } else {
+                    resolve('success: ' + response.isPresent);
+                  }
+                });
+          });
+        })()
+        )",
+        extension_misc::kGlicExtensionId);
+
+    content::EvalJsResult result =
+        content::EvalJs(GetActiveWebContents(), script);
+    EXPECT_EQ("success: true", result.ExtractString());
+  }
+
+  // Test missing arguments for hasConversation.
+  {
+    std::string script = base::StringPrintf(
+        R"(
+        (async () => {
+          return new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+                '%s', {type: 'glicPrivate.hasConversation'}, (response) => {
+                  if (chrome.runtime.lastError) {
+                    resolve('error: ' + chrome.runtime.lastError.message);
+                  } else if (response && response.error) {
+                    resolve('error: ' + response.error);
+                  } else {
+                    resolve('success');
+                  }
+                });
+          });
+        })()
+        )",
+        extension_misc::kGlicExtensionId);
+
+    content::EvalJsResult result =
+        content::EvalJs(GetActiveWebContents(), script);
+    EXPECT_EQ("error: missing conversationId", result.ExtractString());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
+                       ActivateTabWithConversation_ConversationNotFound) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  // Test activateTabWithConversation with non-existent conversation.
+  {
+    content::EvalJsResult result = ExecuteActivateTabWithConversation(
+        GetActiveWebContents(), "test-conv-id");
+    EXPECT_EQ("error: Uncaught Error: local-conversation-not-found",
+              result.ExtractString());
+  }
+
+  // Test missing arguments for activateTabWithConversation.
+  {
+    std::string script = base::StringPrintf(
+        R"(
+        (async () => {
+          return new Promise((resolve) => {
+            chrome.runtime.sendMessage(
+                '%s',
+                {type: 'glicPrivate.activateTabWithConversation'},
+                (response) => {
+                  if (chrome.runtime.lastError) {
+                    resolve('error: ' + chrome.runtime.lastError.message);
+                  } else if (response && response.error) {
+                    resolve('error: ' + response.error);
+                  } else {
+                    resolve('success');
+                  }
+                });
+          });
+        })()
+        )",
+        extension_misc::kGlicExtensionId);
+
+    content::EvalJsResult result =
+        content::EvalJs(GetActiveWebContents(), script);
+    EXPECT_EQ("error: missing conversationId", result.ExtractString());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
+                       ActivateTabWithConversation_Success) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  RegisterConversation(instance, "test-conv-id-success");
+
+  // Open a second tab to make the first one inactive.
+  tabs::TabInterface* second_tab =
+      CreateAndActivateTab(GURL("https://gemini.google.com/empty.html"));
+  ASSERT_NE(nullptr, second_tab);
+
+  content::EvalJsResult result = ExecuteActivateTabWithConversation(
+      second_tab->GetContents(), "test-conv-id-success");
+  EXPECT_EQ("success", result.ExtractString());
+}
+
+// These tests rely on detaching the Glic panel (floaty/detached mode) or
+// desktop-only concepts like tabs::TabModel, which are not supported or
+// disabled on Android.
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
+                       ActivateTabWithConversation_NoBoundTabs) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_NE(nullptr, tab);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+  instance->UnbindEmbedder(tab);
+  RegisterConversation(instance, "test-conv-no-bound");
+
+  content::EvalJsResult result = ExecuteActivateTabWithConversation(
+      GetActiveWebContents(), "test-conv-no-bound");
+  EXPECT_EQ("error: Uncaught Error: local-no-bound-tabs",
+            result.ExtractString());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMessagingFullyEnabledBrowserTest,
+                       ActivateTabWithConversation_TabNotInWindow) {
+  const Extension* extension =
+      ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+          extension_misc::kGlicExtensionId);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GURL("https://gemini.google.com/empty.html")));
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_NE(nullptr, tab);
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+  RegisterConversation(instance, "test-conv-tab-not-in-window");
+
+  // Open a second tab to make sure there's another tab in the window.
+  tabs::TabInterface* second_tab =
+      CreateAndActivateTab(GURL("https://gemini.google.com/empty.html"));
+  ASSERT_NE(nullptr, second_tab);
+
+  // Detach the first tab. It's now not in any window.
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      InProcessBrowserTest::browser()
+          ->tab_strip_model()
+          ->DetachTabAtForInsertion(0);
+  ASSERT_NE(nullptr, detached_tab);
+
+  content::EvalJsResult result = ExecuteActivateTabWithConversation(
+      second_tab->GetContents(), "test-conv-tab-not-in-window");
+  EXPECT_EQ("error: Uncaught Error: local-tab-not-in-window",
+            result.ExtractString());
+
+  // Re-insert the detached tab back to the browser's tab strip model so that
+  // it is properly destroyed during teardown, notifying observers and
+  // preventing dangling pointer warnings.
+  InProcessBrowserTest::browser()->tab_strip_model()->InsertDetachedTabAt(
+      0, std::move(detached_tab), AddTabTypes::ADD_NONE);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
