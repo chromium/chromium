@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/host/glic_skills_manager.h"
 #include "chrome/browser/glic/host/host.h"
 #include "components/skills/public/skill.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace tabs {
 class TabInterface;
@@ -57,6 +58,16 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
  private:
   tabs::TabInterface* EnsureTabForSkills();
   void ShowSkillsUiAtRelativePath(const std::string& path);
+  void OnBrowserWindowCreatedForSkills(
+      skills::Skill skill,
+      skills::mojom::SkillsDialogType dialog_type,
+      const GURL& url,
+      base::OnceCallback<void(bool)> callback,
+      BrowserWindowInterface* browser_window);
+  void LaunchSkillsDialogWithTab(tabs::TabInterface* target_tab,
+                                 skills::Skill skill,
+                                 skills::mojom::SkillsDialogType dialog_type,
+                                 base::OnceCallback<void(bool)> callback);
 
   // The function corresponding to our subscription.
   void OnFocusedTabChanged(const FocusedTabData& focused_tab_data);

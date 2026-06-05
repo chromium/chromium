@@ -1905,7 +1905,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testGetSkillPreviewsSuccess) {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testDisplaySkillInDialogSuccess) {
-#if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
+#if !BUILDFLAG(IS_ANDROID)  // TODO(b/520114620): Enable skills on Android.
   ExecuteJsTest();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
@@ -1934,7 +1934,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testShowBrowseSkillsUi) {
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testSendingContextualSkillsToGlic) {
-#if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
+#if !BUILDFLAG(IS_ANDROID)  // TODO(b/520114620): Enable skills on Android.
   SkillsService()->AddSkill(/*source_skill_id=*/"", /*name=*/"user_skill_1",
                             /*icon=*/"user_icon_1",
                             /*prompt=*/"test_prompt_1");
@@ -1976,7 +1976,33 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills,
                        testShowManageSkillsUiNoWindow) {
-#if !BUILDFLAG(IS_ANDROID)  // TODO(harringtond): Enable skills on Android.
+#if !BUILDFLAG(IS_ANDROID)  // TODO(b/520114620): Enable skills on Android.
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
+  BrowserWindowInterface* browser_to_close = GetBrowserWindowInterface();
+  PlatformBrowserTest::CreateIncognitoBrowser();
+  CloseBrowserAsynchronously(browser_to_close);
+
+  ui_test_utils::WaitForBrowserToClose(browser_to_close);
+
+  ExecuteJsTest({.instance = instance});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    auto all_bwis = GetAllBrowserWindowInterfaces();
+    for (auto* bwi : all_bwis) {
+      for (auto* tab : TabListInterface::From(bwi)->GetAllTabs()) {
+        if (tab->GetContents()->GetLastCommittedURL().spec().starts_with(
+                chrome::kChromeUISkillsURL)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithSkills, testCreateSkillNoWindow) {
+#if !BUILDFLAG(IS_ANDROID)  // TODO(b/520114620): Enable skills on Android.
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTabAndDetach());
   BrowserWindowInterface* browser_to_close = GetBrowserWindowInterface();
   PlatformBrowserTest::CreateIncognitoBrowser();
@@ -2074,7 +2100,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
-// Skills are not supported yet on Android.
+// TODO(b/520114620): Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
                          NewGlicApiTestWithSkills,

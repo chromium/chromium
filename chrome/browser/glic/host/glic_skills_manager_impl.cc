@@ -113,12 +113,57 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
     skills::mojom::SkillsDialogType dialog_type,
     base::OnceCallback<void(bool)> callback) {
   tabs::TabInterface* target_tab = EnsureTabForSkills();
+  if (!target_tab || !target_tab->IsInNormalWindow()) {
+    const GURL skills_url = GURL(chrome::kChromeUISkillsURL)
+                                .Resolve(chrome::kChromeUISkillsBrowsePath);
 
-  if (!target_tab) {
+    BrowserWindowCreateParams create_params(
+        BrowserWindowInterface::Type::TYPE_NORMAL, *profile_,
+        /*from_user_gesture=*/true);
+
+    CreateBrowserWindow(
+        std::move(create_params),
+        base::BindOnce(&GlicSkillsManagerImpl::OnBrowserWindowCreatedForSkills,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(skill),
+                       dialog_type, skills_url, std::move(callback)));
+    return;
+  }
+
+  LaunchSkillsDialogWithTab(target_tab, std::move(skill), dialog_type,
+                            std::move(callback));
+}
+
+void GlicSkillsManagerImpl::OnBrowserWindowCreatedForSkills(
+    skills::Skill skill,
+    skills::mojom::SkillsDialogType dialog_type,
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback,
+    BrowserWindowInterface* browser_window) {
+  if (!browser_window) {
     std::move(callback).Run(false);
     return;
   }
-  // Delegate the race-condition handling to the Skills launcher.
+  browser_window->GetWindow()->Show();
+  auto* tab_list = TabListInterface::From(browser_window);
+  if (!tab_list) {
+    std::move(callback).Run(false);
+    return;
+  }
+  tabs::TabInterface* opened_tab = tab_list->OpenTab(url, /*index=*/-1);
+  if (!opened_tab) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  LaunchSkillsDialogWithTab(opened_tab, std::move(skill), dialog_type,
+                            std::move(callback));
+}
+
+void GlicSkillsManagerImpl::LaunchSkillsDialogWithTab(
+    tabs::TabInterface* target_tab,
+    skills::Skill skill,
+    skills::mojom::SkillsDialogType dialog_type,
+    base::OnceCallback<void(bool)> callback) {
   auto target = std::make_unique<glic::Target>();
   target->surface = target_tab->GetHandle();
   if (auto conv_id = instance_->conversation_id()) {
@@ -190,6 +235,7 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
         base::BindOnce(
             [](const GURL& url, BrowserWindowInterface* browser_window) {
               if (browser_window) {
+                browser_window->GetWindow()->Show();
                 if (auto* tab_list = TabListInterface::From(browser_window)) {
                   tab_list->OpenTab(url, /*index=*/-1);
                 }

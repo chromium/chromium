@@ -1071,6 +1071,18 @@ class SkillsApiTests extends ApiTests {
     assertDefined(this.testParams);
     await this.host.resizeWindow(this.testParams.width, this.testParams.height);
   }
+
+  async testCreateSkillNoWindow() {
+    assertDefined(this.host.createSkill);
+    const request = {
+      id: 'id',
+      name: 'name',
+      icon: 'icon',
+      prompt: 'prompt',
+      source: SkillSource.FIRST_PARTY,
+    };
+    this.host.createSkill(request);
+  }
 }
 
 class ContextCapturingClient extends WebClient {
