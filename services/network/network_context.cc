@@ -79,6 +79,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_store.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/context_host_resolver.h"
@@ -2452,6 +2453,14 @@ void NetworkContext::PreconnectSockets(
         connection_change_observer_client) {
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
+
+  if (base::FeatureList::IsEnabled(
+          net::features::kEarlyCookieLoadOnPreconnect)) {
+    net::CookieStore* cookie_store = url_request_context_->cookie_store();
+    if (cookie_store) {
+      cookie_store->OnPreconnect(original_url);
+    }
+  }
 
   GURL url = GetHSTSRedirectForPreconnect(original_url);
 

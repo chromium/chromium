@@ -66,6 +66,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
@@ -2911,6 +2912,10 @@ void CookieMonster::DoCookieCallback(base::OnceClosure callback) {
   }
 
   std::move(callback).Run();
+}
+
+void CookieMonster::OnPreconnect(const GURL& url) {
+  DoCookieCallbackForHostOrDomain(base::DoNothing(), url.host());
 }
 
 void CookieMonster::DoCookieCallbackForURL(base::OnceClosure callback,

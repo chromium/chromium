@@ -250,6 +250,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
       const net::SchemefulSite& site,
       const CookiePartitionKey& partition_key) const override;
 
+  void OnPreconnect(const GURL& url) override;
+
   // Enables writing session cookies into the cookie database. If this this
   // method is called, it must be called before first use of the instance
   // (i.e. as part of the instance initialization process).

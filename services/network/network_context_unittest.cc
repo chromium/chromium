@@ -95,6 +95,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_monster_store_test.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_store.h"
@@ -12090,6 +12091,58 @@ TEST_F(ConnectionAllowlistReportingTest,
   VerifyReports(network_context.get(), {});
 }
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+class EarlyCookieLoadOnPreconnectTest : public NetworkContextTest {
+ public:
+  EarlyCookieLoadOnPreconnectTest() {
+    feature_list_.InitAndEnableFeature(
+        net::features::kEarlyCookieLoadOnPreconnect);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(EarlyCookieLoadOnPreconnectTest, Basic) {
+  auto store = base::MakeRefCounted<net::MockPersistentCookieStore>();
+  store->set_store_load_commands(true);
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithBuilderCallback(
+          std::move(context_params),
+          base::BindOnce(
+              [](scoped_refptr<net::MockPersistentCookieStore> store,
+                 net::URLRequestContextBuilder* builder) {
+                auto cookie_monster = std::make_unique<net::CookieMonster>(
+                    std::move(store), nullptr);
+                builder->SetCookieStore(std::move(cookie_monster));
+              },
+              store));
+
+  net::EmbeddedTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  network_context->PreconnectSockets(
+      1, test_server.base_url(), network::mojom::CredentialsMode::kInclude,
+      net::NetworkAnonymizationKey(), /*network_restrictions_id=*/std::nullopt,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      std::nullopt, mojo::NullRemote());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return store->commands().size() == 2u; }));
+
+  // Now, let the MockPersistentCookieStore finish loading.
+  ASSERT_EQ(2u, store->commands().size());
+  EXPECT_EQ(net::CookieStoreCommand::LOAD, store->commands()[0].type);
+  EXPECT_EQ(net::CookieStoreCommand::LOAD_COOKIES_FOR_KEY,
+            store->commands()[1].type);
+  EXPECT_EQ(net::CookieMonster::GetKey(test_server.base_url().host()),
+            store->commands()[1].key);
+}
+
 }  // namespace
 
 }  // namespace network

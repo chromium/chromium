@@ -49,4 +49,6 @@ std::optional<bool> CookieStore::SiteHasCookieInOtherPartition(
   return std::nullopt;
 }
 
+void CookieStore::OnPreconnect(const GURL& url) {}
+
 }  // namespace net

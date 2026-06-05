@@ -183,6 +183,10 @@ class NET_EXPORT CookieStore {
       const net::SchemefulSite& site,
       const CookiePartitionKey& cookie_partition_key) const;
 
+  // Called when a preconnect request is initiated for the `url` to trigger
+  // pre-loading of the cookies for it.
+  virtual void OnPreconnect(const GURL& url);
+
  private:
   // Used to determine whether a particular cookie should be subject to legacy
   // or non-legacy access semantics.
