@@ -6,6 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/cancelable_callback.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
@@ -1378,36 +1379,64 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 // Handles back button tap.
 - (void)backButtonTapped {
+  if (_NTPVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarBackOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarBack"));
+
   [self.mutator goBack];
 }
 
 // Handles forward button tap.
 - (void)forwardButtonTapped {
+  if (_NTPVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarForwardOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
+
   [self.mutator goForward];
 }
 
 // Handles reload button tap.
 - (void)reloadButtonTapped {
+  if (_NTPVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarReloadOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarReload"));
   [self.mutator reload];
 }
 
 // Handles stop button tap.
 - (void)stopButtonTapped {
+  if (_NTPVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarStopOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
   [self.mutator stop];
 }
 
 // Handles share button tap.
 - (void)shareButtonTapped:(UIView*)sender {
+  if (_NTPVisible) {
+    base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenuOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarShareMenu"));
   [self.activityServiceHandler showShareSheetFromShareButton:sender];
 }
 
 // Handles assistant button tap.
 - (void)assistantButtonTapped {
+  if (_NTPVisible) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileToolbarShowAssistantOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarShowAssistant"));
   [self.mutator assistantButtonTapped];
 }
 
 // Handles tools menu button tap.
 - (void)toolsMenuButtonTapped {
+  [self.mutator recordUserActionsForToolsMenuTapped];
   [self.popupMenuHandler showToolsMenuPopup];
 }
 
@@ -1419,6 +1448,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
 // Handles tab grid button touch up.
 - (void)tabGridTouchUp {
+  if (_NTPVisible) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileToolbarShowStackViewOnNTP"));
+  }
+  base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
+
   [self.sceneHandler displayTabGridInMode:TabGridOpeningMode::kDefault];
 }
 
