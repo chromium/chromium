@@ -34,23 +34,23 @@ TaskService::~TaskService() {
   threads.clear();
 }
 
-bool TaskService::BindInstance() {
+std::optional<TaskService::InstanceId> TaskService::BindInstance() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(instance_binding_sequence_checker_);
   base::AutoLock lock(lock_);
   if (bound_instance_id_ != kInvalidInstanceId)
-    return false;
+    return std::nullopt;
 
   // If the InstanceId reaches to the limit, just fail rather than doing
   // something nicer for such impractical case.
   if (std::numeric_limits<InstanceId>::max() == next_instance_id_)
-    return false;
+    return std::nullopt;
 
   bound_instance_id_ = ++next_instance_id_;
 
   DCHECK(!default_task_runner_);
   default_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 
-  return true;
+  return bound_instance_id_;
 }
 
 bool TaskService::UnbindInstance() {
@@ -80,11 +80,12 @@ bool TaskService::UnbindInstance() {
 
 bool TaskService::IsOnTaskRunner(RunnerId runner_id) {
   base::AutoLock lock(lock_);
-  if (bound_instance_id_ == kInvalidInstanceId)
-    return false;
-
-  if (runner_id == kDefaultRunnerId)
+  if (runner_id == kDefaultRunnerId) {
+    if (bound_instance_id_ == kInvalidInstanceId) {
+      return false;
+    }
     return default_task_runner_->BelongsToCurrentThread();
+  }
 
   size_t thread = runner_id - 1;
   if (threads_.size() <= thread || !threads_[thread])
@@ -98,17 +99,46 @@ void TaskService::PostStaticTask(RunnerId runner_id, base::OnceClosure task) {
   GetTaskRunner(runner_id)->PostTask(FROM_HERE, std::move(task));
 }
 
-void TaskService::PostBoundTask(RunnerId runner_id, base::OnceClosure task) {
-  InstanceId instance_id;
+void TaskService::PostBoundTask(InstanceId instance_id,
+                                RunnerId runner_id,
+                                base::OnceClosure task) {
+  if (instance_id == kInvalidInstanceId)
+    return;
   {
     base::AutoLock lock(lock_);
-    if (bound_instance_id_ == kInvalidInstanceId)
+    if (instance_id != bound_instance_id_)
       return;
-    instance_id = bound_instance_id_;
   }
   GetTaskRunner(runner_id)->PostTask(
       FROM_HERE, base::BindOnce(&TaskService::RunTask, base::Unretained(this),
                                 instance_id, runner_id, std::move(task)));
+}
+
+void TaskService::PostBoundTask(RunnerId runner_id, base::OnceClosure task) {
+  InstanceId instance_id;
+  {
+    base::AutoLock lock(lock_);
+    instance_id = bound_instance_id_;
+  }
+  PostBoundTask(instance_id, runner_id, std::move(task));
+}
+
+void TaskService::PostBoundDelayedTask(InstanceId instance_id,
+                                       RunnerId runner_id,
+                                       base::OnceClosure task,
+                                       base::TimeDelta delay) {
+  if (instance_id == kInvalidInstanceId)
+    return;
+  {
+    base::AutoLock lock(lock_);
+    if (instance_id != bound_instance_id_)
+      return;
+  }
+  GetTaskRunner(runner_id)->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&TaskService::RunTask, base::Unretained(this), instance_id,
+                     runner_id, std::move(task)),
+      delay);
 }
 
 void TaskService::PostBoundDelayedTask(RunnerId runner_id,
@@ -117,15 +147,9 @@ void TaskService::PostBoundDelayedTask(RunnerId runner_id,
   InstanceId instance_id;
   {
     base::AutoLock lock(lock_);
-    if (bound_instance_id_ == kInvalidInstanceId)
-      return;
     instance_id = bound_instance_id_;
   }
-  GetTaskRunner(runner_id)->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&TaskService::RunTask, base::Unretained(this), instance_id,
-                     runner_id, std::move(task)),
-      delay);
+  PostBoundDelayedTask(instance_id, runner_id, std::move(task), delay);
 }
 
 void TaskService::OverflowInstanceIdForTesting() {

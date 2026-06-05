@@ -9,6 +9,7 @@
 
 #include "base/thread_annotations.h"
 #include "media/midi/midi_manager.h"
+#include "media/midi/task_service.h"
 
 namespace midi {
 
@@ -42,7 +43,7 @@ class MIDI_EXPORT MidiManagerWinrt final : public MidiManager {
   class MidiPortManager;
 
   // Callbacks on kComTaskRunner.
-  void InitializeOnComRunner();
+  void InitializeOnComRunner(TaskService::InstanceId instance_id);
   void SendOnComRunner(uint32_t port_index, const std::vector<uint8_t>& data);
 
   // Callback from MidiPortManager::OnEnumerationComplete on kComTaskRunner.
