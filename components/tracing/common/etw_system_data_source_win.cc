@@ -186,6 +186,12 @@ void EtwSystemDataSource::OnStop(const StopArgs& args) {
   etw_controller_.Stop(nullptr);
 }
 
+void EtwSystemDataSource::WillClearIncrementalState(
+    const ClearIncrementalStateArgs& args) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  consumer_->WillClearIncrementalState();
+}
+
 }  // namespace tracing
 
 PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(

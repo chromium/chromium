@@ -44,6 +44,8 @@ class TRACING_EXPORT EtwSystemDataSource
   void OnSetup(const SetupArgs&) override;
   void OnStart(const StartArgs&) override;
   void OnStop(const StopArgs&) override;
+  void WillClearIncrementalState(
+      const ClearIncrementalStateArgs& args) override;
 
  private:
   std::unique_ptr<perfetto::TraceWriterBase> CreateTraceWriter();

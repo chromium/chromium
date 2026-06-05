@@ -65,6 +65,7 @@ if (is_win) {
     deps = [
       "//base",
       "//crypto",
+      "//services/tracing/public/cpp:perfetto_interning_index",
       "//third_party/perfetto:libperfetto",
     ]
   }

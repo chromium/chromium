@@ -15,6 +15,7 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
+#include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -26,9 +27,12 @@
 #include "build/build_config.h"
 #include "components/tracing/common/system_log_event_utils_win.h"
 #include "crypto/hmac.h"
+#include "services/tracing/public/cpp/perfetto/interning_index.h"
 #include "third_party/perfetto/protos/perfetto/trace/etw/etw.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/etw/etw_event.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/etw/etw_event_bundle.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/interned_data/interned_data.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/profiling/profile_common.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
 namespace tracing {
@@ -77,7 +81,7 @@ uint64_t CopyPointerHash(base::BufferIterator<const uint8_t>& iterator,
   return base::U64FromNativeEndian(base::span(hash).first<8u>());
 }
 
-// Returns the given QueryPerformanceCounter (QPC) timestamp in nanoseconds.
+// Returns the given `QueryPerformanceCounter` (QPC) timestamp in nanoseconds.
 uint64_t GetTimestampNanoseconds(uint64_t qpc_timestamp) {
   static const double qpc_ticks_per_second = []() {
     LARGE_INTEGER perf_counter_frequency = {};
@@ -86,7 +90,6 @@ uint64_t GetTimestampNanoseconds(uint64_t qpc_timestamp) {
     CHECK_GT(frequency, 0.0);
     return frequency;
   }();
-
   return static_cast<uint64_t>(base::Time::kNanosecondsPerSecond *
                                static_cast<double>(qpc_timestamp) /
                                qpc_ticks_per_second);
@@ -118,6 +121,19 @@ void EtwConsumer::ConsumeEvents() {
 void EtwConsumer::Flush(std::function<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   trace_writer_->Flush(std::move(callback));
+}
+
+void EtwConsumer::WillClearIncrementalState() {
+  reset_emitted_state_.store(true, std::memory_order_relaxed);
+}
+
+void EtwConsumer::ResetEmittedState() {
+  interned_callstacks_.ResetEmittedState();
+  interned_frames_.ResetEmittedState();
+  auto trace_packet = trace_writer_->NewTracePacket();
+  trace_packet->set_sequence_flags(
+      perfetto::protos::pbzero::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED);
+  reset_emitted_state_.store(false, std::memory_order_relaxed);
 }
 
 // static
@@ -166,6 +182,13 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
       0x11d0,
       {0x9d, 0xda, 0x00, 0xc0, 0x4f, 0xd7, 0xba, 0x7c}};
 
+  // StackWalk event provider GUID, def2fe46-7bd6-4b80-bd94-f57fe20d0ce3
+  static constexpr GUID kStackWalkGuid = {
+      0xdef2fe46,
+      0x7bd6,
+      0x4b80,
+      {0xbd, 0x94, 0xf5, 0x7f, 0xe2, 0xd, 0xc, 0xe3}};
+
   // A mapping of provider GUIDs to handler member functions.
   static constexpr auto kGuidToProvider =
       base::MakeFixedFlatMap<std::reference_wrapper<const GUID>,
@@ -175,7 +198,8 @@ void EtwConsumer::ProcessEventRecord(EVENT_RECORD* event_record) {
            {kLostEventGuid, &EtwConsumer::HandleLostEvent},
            {kMemInfoGuid, &EtwConsumer::HandleMemInfoEvent},
            {kFileIoGuid, &EtwConsumer::HandleFileIoEvent},
-           {kDiskIoGuid, &EtwConsumer::HandleDiskIoEvent}});
+           {kDiskIoGuid, &EtwConsumer::HandleDiskIoEvent},
+           {kStackWalkGuid, &EtwConsumer::HandleStackWalkEvent}});
 
   auto* const self = reinterpret_cast<EtwConsumer*>(event_record->UserContext);
   DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
@@ -385,6 +409,98 @@ void EtwConsumer::HandleDiskIoEvent(const EVENT_HEADER& header,
       DLOG(ERROR) << "Unhandled disk i/o opcode "
                   << header.EventDescriptor.Opcode;
   }
+}
+
+void EtwConsumer::HandleStackWalkEvent(const EVENT_HEADER& header,
+                                       const ETW_BUFFER_CONTEXT& buffer_context,
+                                       size_t pointer_size,
+                                       base::span<const uint8_t> packet_data) {
+  static constexpr int kStackWalkEventId = 32;
+  if (header.EventDescriptor.Opcode != kStackWalkEventId) {
+    return;
+  }
+
+  // Before interning any data, clear previous incremental state if needed.
+  if (reset_emitted_state_.load(std::memory_order_relaxed)) {
+    ResetEmittedState();
+  }
+
+  // Read and validate the contents of `packet_data`.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  // Size of `StackWalk` event:
+  //   `uint64` timestamp + `uint32` process and thread + up to 193 pointers.
+  const size_t kMinimumSize = sizeof(uint64_t) + 2 * sizeof(uint32_t);
+  if (packet_data.size() < kMinimumSize) {
+    return;
+  }
+  const auto qpc_timestamp = *iterator.CopyObject<uint64_t>();
+  (void)*iterator.CopyObject<uint32_t>();  // StackProcess
+  const auto stack_thread = *iterator.CopyObject<uint32_t>();
+
+  // The remainder of the packet consists of the call stack.
+  const size_t remaining_bytes = packet_data.size_bytes() - iterator.position();
+  const size_t num_frames = remaining_bytes / pointer_size;
+  std::vector<uint64_t> call_stack;
+  call_stack.reserve(num_frames);
+  for (size_t i = 0; i < num_frames; ++i) {
+    call_stack.push_back(CopyPointer(iterator, pointer_size));
+  }
+
+  // Use a hash of the call stack as a unique identifier for interning.
+  size_t ip_hash = 0;
+  for (const auto& instruction_pointer : call_stack) {
+    ip_hash = base::HashInts(ip_hash, instruction_pointer);
+  }
+  InterningIndexEntry interned_callstack =
+      interned_callstacks_.LookupOrAdd(ip_hash);
+
+  // Generate a `StackWalk` event, using the timestamp of the event that the
+  // call stack is for, not that of the `StackWalk` event itself.
+  if (interned_callstack.was_emitted) {
+    // This call stack has been seen before in this trace, so the event can
+    // simply be added.
+    auto* event = MakeNextEventWithTimestamp(qpc_timestamp, buffer_context);
+    if (inclusion_policy_.ShouldIncludeThreadId(stack_thread)) {
+      event->set_thread_id(stack_thread);
+    }
+    perfetto::protos::pbzero::StackWalkEtwEvent* stackwalk_event =
+        event->set_stack_walk();
+    stackwalk_event->set_callstack_iid(interned_callstack.id);
+    return;
+  }
+
+  // This call stack hasn't been seen before in this trace. Finalize previous
+  // data and start a new packet with interned data.
+  StartNewPacket(qpc_timestamp);
+  perfetto::protos::pbzero::InternedData* interned_data =
+      packet_handle_->set_interned_data();
+
+  // Intern each stack frame not seen before.
+  std::vector<InterningID> frame_ids;
+  for (const auto& instruction_pointer : call_stack) {
+    InterningIndexEntry interned_frame =
+        interned_frames_.LookupOrAdd(instruction_pointer);
+    if (!interned_frame.was_emitted) {
+      auto* frame_entry = interned_data->add_frames();
+      frame_entry->set_iid(interned_frame.id);
+      frame_entry->set_rel_pc(instruction_pointer);
+    }
+    frame_ids.push_back(interned_frame.id);
+  }
+
+  auto* callstack_entry = interned_data->add_callstacks();
+  callstack_entry->set_iid(interned_callstack.id);
+  for (const auto& id : frame_ids) {
+    callstack_entry->add_frame_ids(id);
+  }
+
+  etw_events_ = packet_handle_->set_etw_events();
+  auto* event = MakeNextEventWithTimestamp(qpc_timestamp, buffer_context);
+  if (inclusion_policy_.ShouldIncludeThreadId(stack_thread)) {
+    event->set_thread_id(stack_thread);
+  }
+  auto* stackwalk_event = event->set_stack_walk();
+  stackwalk_event->set_callstack_iid(interned_callstack.id);
 }
 
 void EtwConsumer::HandleLostEvent(const EVENT_HEADER& header,
@@ -1081,17 +1197,20 @@ void EtwConsumer::DecodeDiskIoEventTypeGroup3(
 perfetto::protos::pbzero::EtwTraceEvent* EtwConsumer::MakeNextEvent(
     const EVENT_HEADER& header,
     const ETW_BUFFER_CONTEXT& buffer_context) {
-  uint64_t now =
-      GetTimestampNanoseconds(static_cast<double>(header.TimeStamp.QuadPart));
+  return MakeNextEventWithTimestamp(header.TimeStamp.QuadPart, buffer_context);
+}
+
+perfetto::protos::pbzero::EtwTraceEvent*
+EtwConsumer::MakeNextEventWithTimestamp(
+    uint64_t qpc_timestamp,
+    const ETW_BUFFER_CONTEXT& buffer_context) {
   if (!etw_events_) {
-    // Resetting the `packet_handle_` finalizes previous data.
-    packet_handle_ = trace_writer_->NewTracePacket();
-    packet_handle_->set_timestamp(now);
+    StartNewPacket(qpc_timestamp);
     etw_events_ = packet_handle_->set_etw_events();
   }
 
   auto* event = etw_events_->add_event();
-  event->set_timestamp(now);
+  event->set_timestamp(GetTimestampNanoseconds(qpc_timestamp));
   event->set_cpu(buffer_context.ProcessorIndex);
   return event;
 }
@@ -1109,6 +1228,17 @@ bool EtwConsumer::CalculateDiskIoEventInclusionAndThreadId(
     return true;
   }
   return false;
+}
+
+void EtwConsumer::StartNewPacket(uint64_t qpc_timestamp) {
+  // Resetting the `packet_handle_` finalizes previous data.
+  packet_handle_ = trace_writer_->NewTracePacket();
+  packet_handle_->set_timestamp(GetTimestampNanoseconds(qpc_timestamp));
+  // `StackWalk` events require incremental state.
+  packet_handle_->set_sequence_flags(
+      perfetto::protos::pbzero::perfetto_pbzero_enum_TracePacket::
+          SEQ_NEEDS_INCREMENTAL_STATE);
+  etw_events_ = nullptr;
 }
 
 }  // namespace tracing

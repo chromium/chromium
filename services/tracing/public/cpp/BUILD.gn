@@ -28,6 +28,11 @@ source_set("traced_process") {
   ]
 }
 
+source_set("perfetto_interning_index") {
+  sources = [ "perfetto/interning_index.h" ]
+  public_deps = [ "//base" ]
+}
+
 target("component", "cpp") {
   sources = [
     "perfetto/common_data_sources.cc",
@@ -71,6 +76,7 @@ target("component", "cpp") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":perfetto_interning_index",
     "//base",
     "//components/tracing:tracing_config",
   ]

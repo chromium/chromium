@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 
 #include "base/containers/span.h"
@@ -18,6 +19,7 @@
 #include "components/tracing/common/active_processes_win.h"
 #include "components/tracing/common/inclusion_policy_win.h"
 #include "components/tracing/tracing_export.h"
+#include "services/tracing/public/cpp/perfetto/interning_index.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_writer.h"
 #include "third_party/perfetto/include/perfetto/tracing/trace_writer_base.h"
 
@@ -60,6 +62,10 @@ class TRACING_EXPORT EtwConsumer
   // service to ACK the flush and will be invoked after the service has
   // acknowledged it.
   void Flush(std::function<void()> callback);
+
+  // When called, any interned data emitted so far will be reset before the next
+  // time data is interned.
+  void WillClearIncrementalState();
 
   // base::win::EtwTraceConsumerBase<>:
   static void ProcessEventRecord(EVENT_RECORD* event_record);
@@ -111,6 +117,11 @@ class TRACING_EXPORT EtwConsumer
                           const ETW_BUFFER_CONTEXT& buffer_context,
                           size_t pointer_size,
                           base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+  void HandleStackWalkEvent(const EVENT_HEADER& header,
+                            const ETW_BUFFER_CONTEXT& buffer_context,
+                            size_t pointer_size,
+                            base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   void OnProcessStart(const EVENT_HEADER& header,
@@ -265,6 +276,20 @@ class TRACING_EXPORT EtwConsumer
                                                 int32_t& event_thread_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Returns a new perfetto trace event to be emitted for an ETW event with a
+  // given `QueryPerformanceCounter` (QPC) timestamp.
+  perfetto::protos::pbzero::EtwTraceEvent* MakeNextEventWithTimestamp(
+      uint64_t qpc_timestamp,
+      const ETW_BUFFER_CONTEXT& buffer_context)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Finalizes previous data and starts a new packet, i.e., event bundle.
+  void StartNewPacket(uint64_t qpc_timestamp)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Clears interned data.
+  void ResetEmittedState() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   const ActiveProcesses& active_processes() const { return active_processes_; }
 
   ActiveProcesses active_processes_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -278,6 +303,14 @@ class TRACING_EXPORT EtwConsumer
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   // Whether to omit sensitive fields, like strings, from the trace.
   bool privacy_filtering_enabled_;
+
+  // Call stacks, each interned by a hash of the entire call stack.
+  InterningIndex<TypeList<size_t>, SizeList<1024>> interned_callstacks_;
+  // Stack frames, each interned by the address on the stack.
+  InterningIndex<TypeList<uint64_t>, SizeList<1024>> interned_frames_;
+
+  // If true, interned data will be reset before the next event is processed.
+  std::atomic<bool> reset_emitted_state_{false};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
