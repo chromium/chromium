@@ -712,13 +712,6 @@ public class WebViewChromiumAwInit {
                                     "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
                         mChromiumStartedGlobals = new ChromiumStartedGlobals();
                     }
-                    if (mShouldInitializeDefaultProfile) {
-                        try (DualTraceEvent e =
-                                DualTraceEvent.scoped(
-                                        "WebViewChromiumAwInit.initializeDefaultProfile")) {
-                            mDefaultProfileHolder.initializeDefaultProfileOnUI();
-                        }
-                    }
 
                     if (ApkInfo.isDebugAndroidOrApp()) {
                         getSharedStatics().setWebContentsDebuggingEnabledUnconditionally(true);
@@ -749,6 +742,18 @@ public class WebViewChromiumAwInit {
                     // Must happen right after Chromium initialization is complete.
                     mInitState.set(INIT_FINISHED);
                     mStartupFinished.countDown();
+
+                    // Initialize the default profile once Chromium initialization is fully
+                    // complete,
+                    // ensuring it is available before executing pending post-init tasks.
+                    if (mShouldInitializeDefaultProfile) {
+                        try (DualTraceEvent e =
+                                DualTraceEvent.scoped(
+                                        "WebViewChromiumAwInit.initializeDefaultProfile")) {
+                            mDefaultProfileHolder.initializeDefaultProfileOnUI();
+                        }
+                    }
+
                     // This runs all the pending tasks queued for after Chromium init is
                     // finished, so should run after `mInitState` is `INIT_FINISHED`.
                     mFactory.getRunQueue().notifyChromiumStarted();
