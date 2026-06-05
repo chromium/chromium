@@ -161,6 +161,21 @@ def Main():
     results = p.map(unzip_func, [(corpus, args.download_dir)
                                  for corpus in corpora_to_download])
 
+  # TODO(crbug.com/503931690): Delete once we get the information we need.
+  print("\n--- Corpora Directory Sizes ---")
+  for target in os.listdir(args.download_dir):
+    target_path = os.path.join(args.download_dir, target)
+    if os.path.isdir(target_path):
+      total_size = 0
+      for root, _, files in os.walk(target_path):
+        for f in files:
+          fp = os.path.join(root, f)
+          try:
+            total_size += os.path.getsize(fp)
+          except OSError:
+            pass
+      print(f"{target}: {total_size / (1024 * 1024):.2f} MB")
+  print("--------------------------------\n")
 
 if __name__ == '__main__':
   sys.exit(Main())
