@@ -1801,6 +1801,9 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   bool has_pending_ready_promise = false;
   bool has_finite_timeline =
       timeline_ && !timeline_->IsMonotonicallyIncreasing();
+  // TODO(crbug.com/451238244): Implement AutoRewind::kForced for
+  // blink::Animation.
+  DCHECK(auto_rewind != AutoRewind::kForced);
   bool enable_seek =
       auto_rewind == AutoRewind::kEnabled && !has_finite_timeline;
 

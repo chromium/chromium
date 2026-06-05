@@ -151,7 +151,7 @@ void AnimationTrigger::PerformPause(Animation& animation,
 
 void AnimationTrigger::PerformReplay(Animation& animation,
                                      base::TimeTicks monotonic_time) {
-  animation.Play(monotonic_time, Animation::ForcePlayRewind::kEnabled);
+  animation.Play(monotonic_time, Animation::AutoRewind::kForced);
 }
 
 void AnimationTrigger::PerformPlayOnce(Animation& animation,

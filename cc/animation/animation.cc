@@ -316,8 +316,8 @@ bool Animation::IsFinished() const {
 }
 
 void Animation::Play(base::TimeTicks monotonic_time,
-                     Animation::ForcePlayRewind force_rewind) {
-  bool forcing_rewind = (force_rewind == Animation::ForcePlayRewind::kEnabled);
+                     Animation::AutoRewind auto_rewind) {
+  bool forcing_rewind = (auto_rewind == Animation::AutoRewind::kForced);
 
   // If we are not forcing a rewind, ignore the call if we are already running.
   if (!forcing_rewind &&
@@ -331,9 +331,11 @@ void Animation::Play(base::TimeTicks monotonic_time,
   std::optional<base::TimeDelta> hold_time = first_km->hold_time();
 
   // We need to set it up to start playing from the "beginning" if:
-  // - we are forcing a rewind, i.e. ForcePlayRewind::kEnabled, or
-  // - the animation had finished.
-  if (forcing_rewind || IsFinished() || !hold_time) {
+  // - we are forcing a rewind, i.e. AutoRewind::kForced, or
+  // - we don't have a hold time, or
+  // - the animation had finished and auto rewind is enabled.
+  if (forcing_rewind || !hold_time ||
+      (auto_rewind == Animation::AutoRewind::kEnabled && IsFinished())) {
     hold_time = first_km->CalculateInitialHoldTime(first_km->playback_rate());
   }
 

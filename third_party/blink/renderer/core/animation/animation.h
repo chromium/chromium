@@ -35,6 +35,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
+#include "cc/animation/animation.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -505,7 +506,7 @@ class CORE_EXPORT Animation : public EventTarget,
   // Plays an animation. When auto_rewind is enabled, the current time can be
   // adjusted to accommodate reversal of an animation or snapping to an
   // endpoint.
-  enum class AutoRewind { kDisabled, kEnabled };
+  using AutoRewind = cc::Animation::AutoRewind;
   void PlayInternal(AutoRewind auto_rewind, ExceptionState& exception_state);
   void PauseInternal(ExceptionState& exception_state);
   void ReverseInternal(ExceptionState& exception_state);
