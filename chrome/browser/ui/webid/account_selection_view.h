@@ -49,6 +49,8 @@ class AccountSelectionView {
     virtual gfx::NativeView GetNativeView() = 0;
     // The WebContents for the page.
     virtual content::WebContents* GetWebContents() = 0;
+    virtual content::IdentityRequestDialogController::PassiveDialogVolume
+    GetPassiveDialogVolume() const = 0;
   };
 
   static std::unique_ptr<AccountSelectionView> Create(Delegate* delegate);

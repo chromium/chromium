@@ -87,8 +87,7 @@ class IdentityDialogController
   int GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) override;
 
   // content::IdentityRequestDialogController
-  void ShouldShowAccountsPassiveDialog(
-      ShouldShowAccountsPassiveDialogCallback cb) override;
+  void GetPassiveDialogVolume(GetPassiveDialogVolumeCallback cb) override;
   bool ShowAccountsDialog(
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& identity_provider_data,
@@ -159,6 +158,8 @@ class IdentityDialogController
   void OnAccountsDisplayed() override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
+  content::IdentityRequestDialogController::PassiveDialogVolume
+  GetPassiveDialogVolume() const override;
 
   // Allows setting a mock AccountSelectionView for testing purposes.
   void SetAccountSelectionViewForTesting(
@@ -171,9 +172,7 @@ class IdentityDialogController
   void RequestUiVolumeRecommendation(
       segmentation_platform::ClassificationResultCallback callback);
 
-  // Called when |RequestUiVolumeRecommendation| returns a result.
   void OnRequestUiVolumeRecommendationResultReceived(
-      ShouldShowAccountsPassiveDialogCallback cb,
       const segmentation_platform::ClassificationResult&
           ui_volume_recommendation);
 
@@ -217,6 +216,9 @@ class IdentityDialogController
   // Whether we show any FedCM UI or not. Excludes the loading dialog since that
   // one is not something that modifies user state or is actionable by the user.
   bool did_show_ui_ = false;
+  std::optional<content::IdentityRequestDialogController::PassiveDialogVolume>
+      passive_dialog_volume_;
+  GetPassiveDialogVolumeCallback passive_dialog_volume_callback_;
 
   // Request ID associated with a |GetClassificationResult| call to
   // |segmentation_platform_service_|. This is nullopt when the

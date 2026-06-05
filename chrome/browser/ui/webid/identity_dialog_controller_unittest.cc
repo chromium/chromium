@@ -482,7 +482,7 @@ TEST_F(IdentityDialogControllerTest, NoTabDoesNotCrash) {
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kActive);
 }
 
-TEST_F(IdentityDialogControllerTest, SegmentationPlatformShowUi) {
+TEST_F(IdentityDialogControllerTest, SegmentationPlatformLoudUi) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(
       segmentation_platform::features::kSegmentationPlatformFedCmUser);
@@ -495,19 +495,20 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformShowUi) {
           CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
           CreateMockOptimizationGuideDecider());
 
-  base::MockCallback<
-      IdentityDialogController::ShouldShowAccountsPassiveDialogCallback>
-      should_show_callback;
-  bool value = false;
-  EXPECT_CALL(should_show_callback, Run).WillOnce(SaveArg<0>(&value));
+  base::MockCallback<IdentityDialogController::GetPassiveDialogVolumeCallback>
+      callback;
+  content::IdentityRequestDialogController::PassiveDialogVolume value;
+  EXPECT_CALL(callback, Run).WillOnce(SaveArg<0>(&value));
 
-  controller->ShouldShowAccountsPassiveDialog(should_show_callback.Get());
+  controller->GetPassiveDialogVolume(callback.Get());
 
   run_loop.Run();
-  EXPECT_EQ(true, value);
+  EXPECT_EQ(
+      content::IdentityRequestDialogController::PassiveDialogVolume::kDefault,
+      value);
 }
 
-TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
+TEST_F(IdentityDialogControllerTest, SegmentationPlatformAmbientUi) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(
       segmentation_platform::features::kSegmentationPlatformFedCmUser);
@@ -520,16 +521,17 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
           CreateMockSegmentationPlatformService("FedCmUserQuiet", run_loop),
           CreateMockOptimizationGuideDecider());
 
-  base::MockCallback<
-      IdentityDialogController::ShouldShowAccountsPassiveDialogCallback>
-      should_show_callback;
-  bool value = true;
-  EXPECT_CALL(should_show_callback, Run).WillOnce(SaveArg<0>(&value));
+  base::MockCallback<IdentityDialogController::GetPassiveDialogVolumeCallback>
+      callback;
+  content::IdentityRequestDialogController::PassiveDialogVolume value;
+  EXPECT_CALL(callback, Run).WillOnce(SaveArg<0>(&value));
 
-  controller->ShouldShowAccountsPassiveDialog(should_show_callback.Get());
+  controller->GetPassiveDialogVolume(callback.Get());
 
   run_loop.Run();
-  EXPECT_EQ(false, value);
+  EXPECT_EQ(
+      content::IdentityRequestDialogController::PassiveDialogVolume::kAmbient,
+      value);
 }
 
 TEST_F(IdentityDialogControllerTest,
@@ -562,7 +564,7 @@ TEST_F(IdentityDialogControllerTest,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
+    controller->GetPassiveDialogVolume(base::DoNothing());
     run_loop.Run();
     ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -589,7 +591,7 @@ TEST_F(IdentityDialogControllerTest,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
+    controller->GetPassiveDialogVolume(base::DoNothing());
     run_loop.Run();
     ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -616,7 +618,7 @@ TEST_F(IdentityDialogControllerTest,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
+    controller->GetPassiveDialogVolume(base::DoNothing());
     run_loop.Run();
     ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -645,7 +647,7 @@ TEST_F(IdentityDialogControllerTest,
               CollectTrainingData(_, _, _, _, _))
       .Times(0);
 
-  controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
+  controller->GetPassiveDialogVolume(base::DoNothing());
   run_loop.Run();
   ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
@@ -669,7 +671,7 @@ TEST_F(IdentityDialogControllerTest,
   controller->SetAccountSelectionViewForTesting(
       std::make_unique<MockAccountSelectionView>());
 
-  controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
+  controller->GetPassiveDialogVolume(base::DoNothing());
 
   // Reset the controller before running
   // `segmentation_platform_service_callback_`. This should not crash.

@@ -431,6 +431,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   bool ShowPageAction(const std::vector<IdentityProviderDataPtr>& idp_list,
                       const std::vector<IdentityRequestAccountPtr>& accounts);
 
+  // Returns whether the ambient UI is enabled.
+  bool IsAmbientEnabled() const;
+
   // Shows the multi account picker and updates the internal state.
   void ShowMultiAccountPicker(
       const std::vector<IdentityRequestAccountPtr>& accounts,

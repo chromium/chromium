@@ -622,8 +622,11 @@ class TestDialogController
             config.idp_signin_status_mismatch_dialog_action),
         error_dialog_action_(config.error_dialog_action),
         loading_dialog_action_(config.loading_dialog_action),
-        should_show_accounts_passive_dialog_(
-            !config.suppressed_by_segmentation_platform) {}
+        passive_dialog_volume_(
+            config.suppressed_by_segmentation_platform
+                ? IdentityRequestDialogController::PassiveDialogVolume::kAmbient
+                : IdentityRequestDialogController::PassiveDialogVolume::
+                      kDefault) {}
 
   ~TestDialogController() override = default;
   TestDialogController(TestDialogController&) = delete;
@@ -636,9 +639,8 @@ class TestDialogController
     idp_signin_status_mismatch_dialog_action_ = action;
   }
 
-  void ShouldShowAccountsPassiveDialog(
-      ShouldShowAccountsPassiveDialogCallback cb) override {
-    std::move(cb).Run(should_show_accounts_passive_dialog_);
+  void GetPassiveDialogVolume(GetPassiveDialogVolumeCallback cb) override {
+    std::move(cb).Run(passive_dialog_volume_);
   }
 
   bool ShowAccountsDialog(
@@ -847,7 +849,7 @@ class TestDialogController
   ErrorDialogAction error_dialog_action_{ErrorDialogAction::kNone};
   LoadingDialogAction loading_dialog_action_{LoadingDialogAction::kNone};
   bool did_show_ui_ = false;
-  bool should_show_accounts_passive_dialog_;
+  IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_;
 
   // Pointer so that the state can be queried after RequestService
   // destroys TestDialogController.
@@ -8531,17 +8533,12 @@ TEST_F(RequestServiceTest, CancelReasonMetrics) {
           IdentityRequestDialogController::DismissReason::kCloseButton));
 }
 
-// Tests that the correct FederatedAuthRequestResult is returned when the
-// accounts dialog is suppressed by segmentation platform.
-TEST_F(RequestServiceTest, SuppressedBySegmentationPlatform) {
+// Tests that the request is successful when the segmentation platform
+// recommends the ambient UI volume.
+TEST_F(RequestServiceTest, SegmentationPlatformRecommendsAmbientVolume) {
   MockConfiguration configuration = kConfigurationValid;
   configuration.suppressed_by_segmentation_platform = true;
-  RequestExpectations expectations = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kSuppressedBySegmentationPlatform,
-      /*standalone_console_message=*/std::nullopt,
-      /*selected_idp_config_url=*/std::nullopt};
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
 TEST_F(RequestServiceTest, MetricsForConsecutiveSuccessfulRequests) {

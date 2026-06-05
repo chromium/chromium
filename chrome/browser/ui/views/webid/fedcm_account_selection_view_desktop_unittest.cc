@@ -393,6 +393,11 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   gfx::NativeView GetNativeView() override { return gfx::NativeView(); }
 
   content::WebContents* GetWebContents() override { return web_contents_; }
+  content::IdentityRequestDialogController::PassiveDialogVolume
+  GetPassiveDialogVolume() const override {
+    return content::IdentityRequestDialogController::PassiveDialogVolume::
+        kDefault;
+  }
   std::optional<DismissReason> GetDismissReason() { return dismiss_reason_; }
 
   void SetOnDismissClosure(base::OnceClosure on_dismiss) {

@@ -280,7 +280,7 @@ bool FedCmAccountSelectionView::Show(
     rp_context = identity_provider->rp_context;
   }
 
-  if (base::FeatureList::IsEnabled(features::kFedCmAmbientUI)) {
+  if (IsAmbientEnabled()) {
     if (rp_mode == blink::mojom::RpMode::kPassive) {
       if (ShowPageAction(idp_list, accounts)) {
         dialog_type_ = DialogType::AMBIENT;
@@ -1087,7 +1087,7 @@ SheetType FedCmAccountSelectionView::GetSheetType() {
 
 void FedCmAccountSelectionView::Close(bool notify_delegate, bool hide_widget) {
   scoped_user_data_.reset();
-  if (base::FeatureList::IsEnabled(features::kFedCmAmbientUI) && tab_) {
+  if (IsAmbientEnabled() && tab_) {
     if (auto* features = tab_->GetTabFeatures()) {
       if (auto* controller = features->page_action_controller()) {
         controller->Hide(kActionFederation);
@@ -1557,6 +1557,13 @@ bool FedCmAccountSelectionView::ShowPageAction(
   controller->Show(kActionFederation);
   controller->ShowSuggestionChip(kActionFederation);
   return true;
+}
+
+bool FedCmAccountSelectionView::IsAmbientEnabled() const {
+  return base::FeatureList::IsEnabled(features::kFedCmAmbientUI) ||
+         (delegate_ && delegate_->GetPassiveDialogVolume() ==
+                           content::IdentityRequestDialogController::
+                               PassiveDialogVolume::kAmbient);
 }
 
 void FedCmAccountSelectionView::RecordPageActionImpression(
