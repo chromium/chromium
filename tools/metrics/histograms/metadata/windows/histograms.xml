@@ -498,6 +498,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.RunningIsolated" enum="BooleanEnabled"
+    expires_after="2027-02-28">
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-platform-security-core@google.com</owner>
+  <summary>
+    Reports true if the browser process is running isolated from other apps
+    running as the current user, false otherwise. Reported in every UMA log
+    upload.
+  </summary>
+</histogram>
+
 <histogram name="Windows.ShouldPinToTaskbarResult{PinAppToTaskbarChannel}"
     enum="TaskbarPinResult" expires_after="2026-10-11">
   <owner>davidbienvenu@chromium.org</owner>

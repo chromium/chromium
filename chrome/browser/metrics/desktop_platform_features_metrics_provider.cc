@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,6 +25,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/os_settings_provider.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/win/isolated_browser_support.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -95,4 +100,9 @@ void DesktopPlatformFeaturesMetricsProvider::ProvideCurrentSessionData(
         }
         return true;
       });
+
+#if BUILDFLAG(IS_WIN)
+  base::UmaHistogramBoolean("Windows.RunningIsolated",
+                            chrome::IsRunningIsolated());
+#endif  // BUILDFLAG(IS_WIN)
 }
