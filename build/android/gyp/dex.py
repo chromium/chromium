@@ -200,8 +200,10 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
     # Stripped invalid locals information from 1 method.
     try:
       build_utils.CheckOutput(dex_cmd,
+                              print_stdout=is_debug,
                               stderr_filter=stderr_filter,
-                              fail_on_output=warnings_as_errors)
+                              fail_on_output=(warnings_as_errors
+                                              and not is_debug))
     except Exception as e:
       if isinstance(e, build_utils.CalledProcessError):
         output = e.output
@@ -546,6 +548,9 @@ def main(args):
   # With flags:
   # Time (mean ± σ): 6.579 s ±  0.057 s   [User: 37.612 s, System: 8.015 s]
   dex_cmd += ['-XX:TieredStopAtLevel=1']
+
+  if logging.getLogger().isEnabledFor(logging.DEBUG):
+    dex_cmd += ['-Dcom.android.tools.r8.printtimes=1']
 
   if options.dump_inputs:
     dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']
