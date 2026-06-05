@@ -415,7 +415,8 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowScreenAvail, "shared/window-screen-avail.js")
 
 // TODO(crbug.com/424797525): Fails Mac 13.
 // TODO(crbug.com/520311348): Fails win-asan.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/520432613): Fails on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_StartFullscreenSwitch DISABLED_StartFullscreenSwitch
 #else
 #define MAYBE_StartFullscreenSwitch StartFullscreenSwitch
