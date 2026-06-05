@@ -13,11 +13,13 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
 #include "chrome/browser/contextual_cueing/cue_target.h"
+#include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/gurl.h"
 
 class BrowserWindowInterface;
 class OptimizationGuideKeyedService;
@@ -58,7 +60,8 @@ struct CueTabMetrics;
 
 class ContextualCueingController
     : public page_content_annotations::PageContentAnnotationsService::
-          PageContentAnnotationsObserver {
+          PageContentAnnotationsObserver,
+      public TabListInterfaceObserver {
  public:
   explicit ContextualCueingController(
       BrowserWindowInterface* browser_window_interface,
@@ -85,6 +88,12 @@ class ContextualCueingController
       const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
+
+  // TabListInterfaceObserver:
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
+
+  void ActiveTabUrlChanged(const GURL& url);
 
   // Hide the cue if it's showing.
   void HideCue();
@@ -184,6 +193,8 @@ class ContextualCueingController
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<page_actions::PageActionObserver> page_action_observer_;
 #endif
+
+  GURL last_logged_active_url_;
 
   base::WeakPtrFactory<ContextualCueingController> weak_ptr_factory_{this};
 };

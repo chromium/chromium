@@ -6,6 +6,7 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_controller.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
@@ -58,6 +59,10 @@ void ContextualCueingWebContentsObserver::DidFinishNavigation(
   if (auto* controller =
           ContextualCueingController::GetForWebContents(GetWebContents())) {
     controller->HideCue();
+    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(&GetWebContents());
+        tab->IsActivated()) {
+      controller->ActiveTabUrlChanged(navigation_handle->GetURL());
+    }
   }
 }
 

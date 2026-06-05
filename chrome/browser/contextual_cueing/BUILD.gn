@@ -20,6 +20,7 @@ source_set("contextual_cueing") {
   public_deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_list",
     "//chrome/browser/ui/actions:actions_headers",
     "//components/favicon_base",
     "//components/page_content_annotations/core",

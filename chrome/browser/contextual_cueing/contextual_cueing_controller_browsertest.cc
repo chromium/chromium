@@ -442,8 +442,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerTabListOnlyIfMultipleTest,
             u"www.example.com");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
-                       NoLongerActiveTabAfterCategoryClassification) {
+IN_PROC_BROWSER_TEST_F(
+    ContextualCueingControllerBrowserTest,
+    ShouldNotRecordDecisionIfReturnedCategoryClassificationNotForActiveTab) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -467,13 +468,11 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                   page_content_annotations::CategoryType::kShopping, 0.4),
           }));
 
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.V2.Decision",
-      ContextualCueingDecision::kNoLongerActiveTabAfterCategoryClassification,
-      1);
-  VerifyProactiveCueDecision(
-      ukm_recorder,
-      ContextualCueingDecision::kNoLongerActiveTabAfterCategoryClassification);
+  histogram_tester.ExpectTotalCount("ContextualCueing.V2.Decision", 0);
+  EXPECT_TRUE(ukm_recorder
+                  .GetEntriesByName(
+                      ukm::builders::ContextualCueing_CueShown::kEntryName)
+                  .empty());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
