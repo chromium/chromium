@@ -24,6 +24,13 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 
 }  // namespace
 
+@interface CRWWebViewContentView () {
+  UIEdgeInsets _pendingMinInset;
+  UIEdgeInsets _pendingMaxInset;
+  BOOL _hasPendingViewportInsets;
+}
+@end
+
 @implementation CRWWebViewContentView
 @synthesize contentOffset = _contentOffset;
 @synthesize contentInset = _contentInset;
@@ -93,6 +100,10 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 - (void)layoutSubviews {
   switch (self.webViewResizingType) {
     case WebViewResizingType::kContentInset:
+      if (_hasPendingViewportInsets) {
+        [self setMinimumViewportInset:_pendingMinInset
+                 maximumViewportInset:_pendingMaxInset];
+      }
       break;
     case WebViewResizingType::kFrame:
       _webView.frame = UIEdgeInsetsInsetRect(self.frame, _obscuredInsets);
@@ -169,8 +180,16 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
            maximumViewportInset:(UIEdgeInsets)maxInset {
   switch (self.webViewResizingType) {
     case WebViewResizingType::kContentInset:
-      [_webView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
-      [_webView setNeedsLayout];
+      if (_webView.window) {
+        [_webView setMinimumViewportInset:minInset
+                     maximumViewportInset:maxInset];
+        [_webView setNeedsLayout];
+        _hasPendingViewportInsets = NO;
+      } else {
+        _pendingMinInset = minInset;
+        _pendingMaxInset = maxInset;
+        _hasPendingViewportInsets = YES;
+      }
       break;
     case WebViewResizingType::kFrame:
       // Do not set the min/max viewport insets if we are resizing frame. Since
