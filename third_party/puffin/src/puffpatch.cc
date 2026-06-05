@@ -119,6 +119,7 @@ std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedTemporaryFile(
     size_t size) {
   base::FilePath temp_path;
   if (!base::CreateTemporaryFile(&temp_path)) {
+    PLOG(ERROR) << "Failed to create a temporary file for memory-mapping";
     return nullptr;
   }
 
@@ -129,6 +130,7 @@ std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedTemporaryFile(
                      base::File::FLAG_DELETE_ON_CLOSE);
 
   if (!temp_file.IsValid()) {
+    PLOG(ERROR) << "Failed to open temporary file for memory-mapping";
     base::DeleteFile(temp_path);
     return nullptr;
   }
@@ -136,6 +138,7 @@ std::unique_ptr<base::MemoryMappedFile> CreateMemoryMappedTemporaryFile(
   auto mapped_file = std::make_unique<base::MemoryMappedFile>();
   if (!mapped_file->Initialize(std::move(temp_file), {0, size},
                                base::MemoryMappedFile::READ_WRITE_EXTEND)) {
+    PLOG(ERROR) << "Failed to memory-map temporary file";
     return nullptr;
   }
 
@@ -166,25 +169,34 @@ PatchBufferBacking AllocatePatchBuffer(size_t size) {
   return Buffer(size);
 }
 
+base::span<uint8_t> GetMutableSpan(PatchBufferBacking& backing) {
+  return std::visit(
+      absl::Overload{
+          [](const std::unique_ptr<base::MemoryMappedFile>& mapped_file) {
+            return mapped_file->mutable_bytes();
+          },
+          [](Buffer& buffer) { return base::span<uint8_t>(buffer); }},
+      backing);
+}
+
 Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
                           size_t src_size,
                           const uint8_t* patch_start,
                           size_t patch_size,
                           UniqueStreamPtr dst_stream) {
   // Read the source data
-  Buffer puffed_src(src_size);
-  Buffer buffer(1024 * 1024);
+  PatchBufferBacking puffed_src_backing = AllocatePatchBuffer(src_size);
+  base::span<uint8_t> puffed_src_span = GetMutableSpan(puffed_src_backing);
+
   uint64_t bytes_wrote = 0;
   while (bytes_wrote < src_size) {
     auto write_size =
-        std::min(static_cast<uint64_t>(buffer.size()), src_size - bytes_wrote);
-    if (!src_stream->Read(buffer.data(), write_size)) {
+        std::min(static_cast<uint64_t>(1024 * 1024), src_size - bytes_wrote);
+    if (!src_stream->Read(puffed_src_span.data() + bytes_wrote, write_size)) {
       src_stream->Close();
       dst_stream->Close();
       return Status::P_READ_ERROR;
     }
-    std::copy(buffer.data(), buffer.data() + write_size,
-              puffed_src.data() + bytes_wrote);
     bytes_wrote += write_size;
   }
   src_stream->Close();
@@ -203,16 +215,10 @@ Status ApplyZucchiniPatch(UniqueStreamPtr src_stream,
   // can save some memory when applying patch on device.
   PatchBufferBacking buffer_backing =
       AllocatePatchBuffer(patch_reader->header().new_size);
-  base::span<uint8_t> patched_span = std::visit(
-      absl::Overload{
-          [](const std::unique_ptr<base::MemoryMappedFile>& backing) {
-            return backing->mutable_bytes();
-          },
-          [](Buffer& backing) { return base::span<uint8_t>(backing); }},
-      buffer_backing);
+  base::span<uint8_t> patched_span = GetMutableSpan(buffer_backing);
 
   auto status = zucchini::ApplyBuffer(
-      {puffed_src.data(), puffed_src.size()}, *patch_reader,
+      {puffed_src_span.data(), puffed_src_span.size()}, *patch_reader,
       {patched_span.data(), patched_span.size()});
   Status result = Status::P_OK;
   switch (status) {
