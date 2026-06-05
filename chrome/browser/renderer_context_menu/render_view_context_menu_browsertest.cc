@@ -1640,7 +1640,29 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME));
 }
 
-IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
+class DataControlsContextMenuMenuSimplificationBrowserTest
+    : public DataControlsContextMenuBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  DataControlsContextMenuMenuSimplificationBrowserTest() {
+    if (GetParam()) {
+      menu_simplification_feature_list_.InitAndEnableFeature(
+          features::kMenuSimplification);
+    } else {
+      menu_simplification_feature_list_.InitAndDisableFeature(
+          features::kMenuSimplification);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList menu_simplification_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DataControlsContextMenuMenuSimplificationBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(DataControlsContextMenuMenuSimplificationBrowserTest,
                        DataControlsSearchWith_VideoWarn) {
   auto menu = SetUpVideoAndCreateMenu(R"({
                                    "name": "warn_rule",
@@ -1655,9 +1677,12 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
 
   // Only the web search item should be visible because it's a non-Google
   // provider and it's only a warning.
-  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME));
-  EXPECT_FALSE(
-      menu->IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME));
+  EXPECT_TRUE(
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME)
+          .has_value());
+  EXPECT_FALSE(menu->GetMenuModelAndItemIndex(
+                       IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME)
+                   .has_value());
 
   data_controls::DesktopDataControlsDialogTestHelper helper(
       data_controls::DataControlsDialog::Type::kClipboardActionWarn);
