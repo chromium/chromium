@@ -27,6 +27,7 @@ public class AutocompleteMatchBuilder {
     private @OmniboxSuggestionType int mType;
     private Set<Integer> mSubtypes;
     private boolean mIsSearchType;
+    private @OmniboxSuggestionKind int mSuggestionKind;
     private int mIconType;
     private String mDisplayText;
     private List<AutocompleteMatch.MatchClassification> mDisplayTextClassifications;
@@ -83,6 +84,7 @@ public class AutocompleteMatchBuilder {
         mType = AutocompleteMatch.INVALID_TYPE;
         mSubtypes = new ArraySet<>();
         mIsSearchType = false;
+        mSuggestionKind = OmniboxSuggestionKind.SEARCH;
         mDisplayText = null;
         mDisplayTextClassifications = new ArrayList<>();
         mDescription = null;
@@ -127,6 +129,7 @@ public class AutocompleteMatchBuilder {
                 mType,
                 mSubtypes,
                 mIsSearchType,
+                mSuggestionKind,
                 mIconType,
                 mTransition,
                 mDisplayText,
@@ -243,6 +246,17 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setIsSearch(boolean isSearch) {
         mIsSearchType = isSearch;
+        mSuggestionKind =
+                isSearch ? OmniboxSuggestionKind.SEARCH : OmniboxSuggestionKind.NAVIGATION;
+        return this;
+    }
+
+    /**
+     * @param type Accessibility type for TalkBack announcements.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setSuggestionKind(@OmniboxSuggestionKind int kind) {
+        mSuggestionKind = kind;
         return this;
     }
 

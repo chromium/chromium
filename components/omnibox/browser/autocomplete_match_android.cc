@@ -108,12 +108,12 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type, temp_subtypes,
-          IsSearchType(type), icon_type, transition, contents,
-          contents_class_offsets, contents_class_styles, description,
-          description_class_offsets, description_class_styles,
-          j_answer_template, answer_type, fill_into_edit, destination_url,
-          image_url, image_dominant_color, SupportsDeletion(), starter_pack_id,
-          post_content_type, j_post_data,
+          IsSearchType(type), static_cast<int>(GetOmniboxSuggestionKind()),
+          icon_type, transition, contents, contents_class_offsets,
+          contents_class_styles, description, description_class_offsets,
+          description_class_styles, j_answer_template, answer_type,
+          fill_into_edit, destination_url, image_url, image_dominant_color,
+          SupportsDeletion(), starter_pack_id, post_content_type, j_post_data,
           suggestion_group_id.value_or(omnibox::GROUP_INVALID),
           j_clipboard_image_data, has_tab_match.value_or(false), android_tab_id,
           actions_list, allowed_to_be_default_match, inline_autocompletion,

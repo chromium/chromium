@@ -177,6 +177,14 @@ enum class AutocompleteMatchDedupeType {
   kInlineLocationSignaling,
 };
 
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: OmniboxSuggestionKind
+enum class OmniboxSuggestionKind {
+  kSearch = 0,
+  kNavigation = 1,
+  kConversation = 2,
+};
+
 // AutocompleteMatch ----------------------------------------------------------
 
 // A single result line with classified spans.  The autocomplete popup displays
@@ -574,6 +582,9 @@ struct AutocompleteMatch {
 
   // Checks if this match is a AI mode suggestion.
   bool IsSearchAimSuggestion() const;
+
+  // Returns the kind for accessibility announcements.
+  OmniboxSuggestionKind GetOmniboxSuggestionKind() const;
 
   // Checks if this match has a Lens search action.
   bool HasLensSearchAction() const;

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -212,13 +213,16 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
 
             if (totalInGroup > 0) {
                 String announcement;
+                String suggestionKindStr = mContext.getString(getSuggestionKindString(suggestion));
                 if (textLine2 != null && !TextUtils.isEmpty(textLine2.toString())) {
                     announcement =
                             OmniboxResourceProvider.getString(
                                     mContext,
-                                    R.string.acc_omnibox_suggestion_in_group_with_description,
+                                    R.string
+                                            .acc_omnibox_suggestion_in_group_with_type_and_description,
                                     textLine1.toString(),
                                     textLine2.toString(),
+                                    suggestionKindStr,
                                     String.valueOf(indexInGroup),
                                     String.valueOf(totalInGroup),
                                     header != null ? header : "");
@@ -226,8 +230,9 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                     announcement =
                             OmniboxResourceProvider.getString(
                                     mContext,
-                                    R.string.acc_omnibox_suggestion_in_group,
+                                    R.string.acc_omnibox_suggestion_in_group_with_type,
                                     textLine1.toString(),
+                                    suggestionKindStr,
                                     String.valueOf(indexInGroup),
                                     String.valueOf(totalInGroup),
                                     header != null ? header : "");
@@ -241,6 +246,18 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         setRemoveOrRefineAction(model, input, suggestion, position);
+    }
+
+    private int getSuggestionKindString(AutocompleteMatch suggestion) {
+        switch (suggestion.getSuggestionKind()) {
+            case OmniboxSuggestionKind.CONVERSATION:
+                return R.string.acc_omnibox_suggestion_type_conversation;
+            case OmniboxSuggestionKind.SEARCH:
+                return R.string.acc_omnibox_suggestion_type_search;
+            case OmniboxSuggestionKind.NAVIGATION:
+            default:
+                return R.string.acc_omnibox_suggestion_type_navigation;
+        }
     }
 
     protected @Nullable SuggestionSpannable getSuggestionDescription(AutocompleteMatch match) {

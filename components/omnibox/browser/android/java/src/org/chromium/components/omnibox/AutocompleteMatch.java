@@ -74,6 +74,7 @@ public class AutocompleteMatch {
     private final int mType;
     private final Set<Integer> mSubtypes;
     private final boolean mIsSearchType;
+    private final @OmniboxSuggestionKind int mSuggestionKind;
     private final int /* SuggestTemplateInfo.IconType */ mIconType;
     private String mDisplayText;
     private final List<MatchClassification> mDisplayTextClassifications;
@@ -108,6 +109,7 @@ public class AutocompleteMatch {
             int nativeType,
             Set<Integer> subtypes,
             boolean isSearchType,
+            @OmniboxSuggestionKind int suggestionKind,
             int iconType,
             int transition,
             String displayText,
@@ -141,6 +143,7 @@ public class AutocompleteMatch {
         mType = nativeType;
         mSubtypes = subtypes;
         mIsSearchType = isSearchType;
+        mSuggestionKind = suggestionKind;
         mIconType = iconType;
         mTransition = transition;
         mDisplayText = displayText;
@@ -208,6 +211,7 @@ public class AutocompleteMatch {
             int nativeType,
             @JniType("std::vector<int32_t>") int[] nativeSubtypes,
             boolean isSearchType,
+            @OmniboxSuggestionKind int suggestionKind,
             int iconType,
             int transition,
             @JniType("std::u16string") String contents,
@@ -255,6 +259,7 @@ public class AutocompleteMatch {
                         nativeType,
                         subtypes,
                         isSearchType,
+                        suggestionKind,
                         iconType,
                         transition,
                         contents,
@@ -574,6 +579,13 @@ public class AutocompleteMatch {
         return mStarterPackId;
     }
 
+    /**
+     * @return The suggestion kind for accessibility announcements.
+     */
+    public @OmniboxSuggestionKind int getSuggestionKind() {
+        return mSuggestionKind;
+    }
+
     public boolean isRefineable() {
         return mIsRefineable;
     }
@@ -665,6 +677,7 @@ public class AutocompleteMatch {
                 input.getType(),
                 new ArraySet<>(input.getSubtypeList()),
                 input.getIsSearchType(),
+                OmniboxSuggestionKind.NAVIGATION,
                 input.getIconType(),
                 input.getTransition(),
                 input.getDisplayText(),

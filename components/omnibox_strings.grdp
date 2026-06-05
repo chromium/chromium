@@ -330,12 +330,23 @@
   <ph name="ENGINE">$1<ex>Agentspace</ex></ph> People
   </message>
 
-  <!-- Accessibility for Grouped Omnibox Suggestions -->
-  <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP" desc="Accessibility text for an omnibox suggestion that may be in a specific group, with the group's header text, along with its list position. Speaks the suggestion title, followed by its position within the group and the group's header." formatter_data="android_java">
-    <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>, <ph name="MATCH_POSITION">$2<ex>2</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$3<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$4<ex>Trending Searches</ex></ph>.
+  <!-- Accessibility labels for suggestion types -->
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_TYPE_SEARCH" desc="Accessibility announcement for search suggestion type." formatter_data="android_java">
+    Search
   </message>
-  <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP_WITH_DESCRIPTION" desc="Accessibility text for an omnibox suggestion that may be in a specific group, with the group's header text, along with its list position. Speaks the suggestion title and description, followed by its position within the group and the group's header." formatter_data="android_java">
-    <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>, <ph name="SUGGESTION_DESCRIPTION">$2<ex>Search result</ex></ph>, <ph name="MATCH_POSITION">$3<ex>2</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$4<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$5<ex>Trending Searches</ex></ph>.
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_TYPE_NAVIGATION" desc="Accessibility announcement for navigation suggestion type." formatter_data="android_java">
+    Navigation
+  </message>
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_TYPE_CONVERSATION" desc="Accessibility announcement for conversation suggestion type." formatter_data="android_java">
+    Conversation
+  </message>
+
+  <!-- Accessibility templates for Grouped Omnibox Suggestions -->
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP_WITH_TYPE" desc="Accessibility text for an omnibox suggestion in a specific group. Speaks the suggestion title, suggestion type, its position within the group, and the group's header if exists." formatter_data="android_java">
+    <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>. <ph name="SUGGESTION_TYPE">$2<ex>Search</ex></ph>. <ph name="MATCH_POSITION">$3<ex>3</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$4<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$5<ex>Trending Searches</ex></ph>.
+  </message>
+  <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP_WITH_TYPE_AND_DESCRIPTION" desc="Accessibility text for an omnibox suggestion in a specific group. Speaks the suggestion title and description, suggestion type, its position within the group, and the group's header if exists." formatter_data="android_java">
+    <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>, <ph name="SUGGESTION_DESCRIPTION">$2<ex>Search result</ex></ph>. <ph name="SUGGESTION_TYPE">$3<ex>Navigation</ex></ph>. <ph name="MATCH_POSITION">$4<ex>3</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$5<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$6<ex>Trending Searches</ex></ph>.
   </message>
 
   <message name="IDS_OMNIBOX_ACTION_CROSS_DEVICE_TAB_HINT" desc="The button text for the Cross-Device Tab omnibox action. Clicking this button takes users to a view of their synced tabs from other devices.">

@@ -563,7 +563,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ITEM_DECORATION)
-    public void accessibilityAnnouncements_groupedSuggestions() {
+    public void accessibilityAnnouncements_groupedSearchSuggestions() {
         mProcessor.onNativeInitialized();
         mSuggestion =
                 createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "Google")
@@ -580,7 +580,34 @@ public class BasicSuggestionProcessorUnitTest {
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
 
         String expectedAnnouncement =
-                "Google, Technology corporation, 2 of 5 in the group Trending Searches.";
+                "Google, Technology corporation. Search. 2 of 5 in the group Trending"
+                        + " Searches.";
+        assertEquals(
+                expectedAnnouncement, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ITEM_DECORATION)
+    public void accessibilityAnnouncements_groupedAiModeSuggestions() {
+        mProcessor.onNativeInitialized();
+        mSuggestion =
+                createSuggestionBuilder(OmniboxSuggestionType.SEARCH_SUGGEST, "Gemini")
+                        .setSuggestionKind(
+                                org.chromium.components.omnibox.OmniboxSuggestionKind.CONVERSATION)
+                        .setDescription("AI Mode")
+                        .build();
+        mModel = mProcessor.createModel();
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        mModel.set(SuggestionCommonProperties.HEADER_TITLE, "AI Suggestions");
+        mModel.set(SuggestionCommonProperties.INDEX_IN_GROUP, 2);
+        mModel.set(SuggestionCommonProperties.TOTAL_IN_GROUP, 4);
+
+        mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
+
+        String expectedAnnouncement =
+                "Gemini, AI Mode. Conversation. 3 of 4 in the group AI Suggestions.";
         assertEquals(
                 expectedAnnouncement, mModel.get(SuggestionViewProperties.CONTENT_DESCRIPTION));
     }

@@ -1874,6 +1874,16 @@ bool AutocompleteMatch::IsSearchAimSuggestion() const {
   return false;
 }
 
+OmniboxSuggestionKind AutocompleteMatch::GetOmniboxSuggestionKind() const {
+  if (IsSearchAimSuggestion()) {
+    return OmniboxSuggestionKind::kConversation;
+  }
+  if (IsSearchType(type)) {
+    return OmniboxSuggestionKind::kSearch;
+  }
+  return OmniboxSuggestionKind::kNavigation;
+}
+
 void AutocompleteMatch::FilterOmniboxActions(
     const std::vector<OmniboxActionId>& allowed_action_ids) {
   // Short circuit if there's nothing to do.
