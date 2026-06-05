@@ -4,6 +4,8 @@
 
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>
@@ -372,10 +374,29 @@ void PageContentExtractionService::RunCleanUpTasksWithActiveTabs(
   }
 }
 
-PageContentCache* PageContentExtractionService::GetPageContentCache() {
-  return is_page_content_cache_enabled_
-             ? page_content_cache_handler_->page_content_cache()
-             : nullptr;
+bool PageContentExtractionService::IsOnDiskCacheEnabled() const {
+  return is_page_content_cache_enabled_;
+}
+
+void PageContentExtractionService::GetPageContentFromOnDiskCache(
+    int64_t tab_id,
+    GetPageContentCallback callback) {
+  if (is_page_content_cache_enabled_) {
+    page_content_cache_handler_->page_content_cache()->GetPageContentForTab(
+        tab_id, std::move(callback));
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
+}
+
+void PageContentExtractionService::GetOnDiskCachedTabIds(
+    GetAllTabIdsCallback callback) {
+  if (is_page_content_cache_enabled_) {
+    page_content_cache_handler_->page_content_cache()->GetAllTabIds(
+        std::move(callback));
+  } else {
+    std::move(callback).Run({});
+  }
 }
 
 AnnotatedPageContentRequest*

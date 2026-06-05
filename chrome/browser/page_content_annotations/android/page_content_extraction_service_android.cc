@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/page_content_annotations/service_jni_headers/PageContentExtractionService_jni.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
-#include "components/page_content_annotations/core/page_content_cache.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -55,13 +54,13 @@ PageContentExtractionServiceAndroid::~PageContentExtractionServiceAndroid() {
 void PageContentExtractionServiceAndroid::GetAllCachedTabIds(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_callback) {
-  if (!service_ || !service_->GetPageContentCache()) {
+  if (!service_ || !service_->IsOnDiskCacheEnabled()) {
     base::android::RunObjectCallbackAndroid(
         j_callback,
         base::android::ToJavaLongArray(env, std::vector<int64_t>()));
     return;
   }
-  service_->GetPageContentCache()->GetAllTabIds(base::BindOnce(
+  service_->GetOnDiskCachedTabIds(base::BindOnce(
       [](const base::android::JavaRef<jobject>& callback,
          std::vector<int64_t> tab_ids) {
         JNIEnv* env = base::android::AttachCurrentThread();

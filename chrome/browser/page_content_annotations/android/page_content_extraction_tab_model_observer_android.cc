@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
-#include "components/page_content_annotations/core/page_content_cache.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
@@ -83,7 +82,7 @@ void PageContentExtractionTabModelObserverAndroid::OnTabStateInitialized() {
       active_tab_ids.insert(tab->GetAndroidId());
     }
   }
-  if (service_->GetPageContentCache()) {
+  if (service_->IsOnDiskCacheEnabled()) {
     service_->RunCleanUpTasksWithActiveTabs(std::move(active_tab_ids));
   }
 }

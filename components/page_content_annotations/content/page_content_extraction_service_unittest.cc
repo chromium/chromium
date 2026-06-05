@@ -44,7 +44,7 @@ TEST_F(PageContentExtractionServiceTest, CacheDisabled) {
   PageContentExtractionService service(os_crypt_async_.get(),
                                        temp_dir_.GetPath(), &mock_tracker_);
 
-  EXPECT_FALSE(service.GetPageContentCache());
+  EXPECT_FALSE(service.IsOnDiskCacheEnabled());
 }
 
 TEST_F(PageContentExtractionServiceTest, CacheEnabled_NoEngagement) {
@@ -55,7 +55,7 @@ TEST_F(PageContentExtractionServiceTest, CacheEnabled_NoEngagement) {
   PageContentExtractionService service(os_crypt_async_.get(),
                                        temp_dir_.GetPath(), &mock_tracker_);
 
-  EXPECT_TRUE(service.GetPageContentCache());
+  EXPECT_TRUE(service.IsOnDiskCacheEnabled());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -73,7 +73,7 @@ TEST_F(PageContentExtractionServiceTest,
   PageContentExtractionService service(os_crypt_async_.get(),
                                        temp_dir_.GetPath(), &mock_tracker_);
 
-  EXPECT_TRUE(service.GetPageContentCache());
+  EXPECT_TRUE(service.IsOnDiskCacheEnabled());
 }
 
 TEST_F(PageContentExtractionServiceTest,
@@ -90,7 +90,7 @@ TEST_F(PageContentExtractionServiceTest,
   PageContentExtractionService service(os_crypt_async_.get(),
                                        temp_dir_.GetPath(), &mock_tracker_);
 
-  EXPECT_FALSE(service.GetPageContentCache());
+  EXPECT_FALSE(service.IsOnDiskCacheEnabled());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

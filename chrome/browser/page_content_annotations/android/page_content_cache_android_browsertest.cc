@@ -20,6 +20,7 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_cache_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -155,6 +156,12 @@ class PageContentCacheBrowserTest : public AndroidBrowserTest {
     tab_model->CloseTabAt(index_to_close);
   }
 
+  PageContentCache* GetPageContentCache(
+      PageContentExtractionService* extraction_service) {
+    return extraction_service->page_content_cache_handler_
+        ->page_content_cache();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -165,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(PageContentCacheBrowserTest,
   auto* extraction_service =
       PageContentExtractionServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(extraction_service);
-  auto* cache = extraction_service->GetPageContentCache();
+  PageContentCache* cache = GetPageContentCache(extraction_service);
   ASSERT_TRUE(cache);
   TestPageContentCacheObserver cache_observer(cache);
 

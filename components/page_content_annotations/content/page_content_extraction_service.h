@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_EXTRACTION_SERVICE_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_CONTENT_EXTRACTION_SERVICE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -89,7 +91,6 @@ enum class PageContentExtractionEnablementReason {
 
 class AnnotatedPageContentRequest;
 struct ExtractedPageContentResult;
-class PageContentCache;
 class PageContentCacheHandler;
 
 class PageContentExtractionService : public KeyedService,
@@ -99,6 +100,9 @@ class PageContentExtractionService : public KeyedService,
       base::OnceCallback<void(std::optional<ExtractedPageContentResult>)>;
   using GetServerUploadEligibilityCallback =
       base::OnceCallback<void(std::optional<bool>)>;
+  using GetPageContentCallback = base::OnceCallback<void(
+      std::optional<optimization_guide::proto::PageContext>)>;
+  using GetAllTabIdsCallback = base::OnceCallback<void(std::vector<int64_t>)>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -203,8 +207,15 @@ class PageContentExtractionService : public KeyedService,
   // entries in the page content cache.
   void RunCleanUpTasksWithActiveTabs(const std::set<int64_t>& all_tab_ids);
 
-  // Disk cache for getting page contents for tabs without webcontents.
-  PageContentCache* GetPageContentCache();
+  bool IsOnDiskCacheEnabled() const;
+
+  // Asynchronously retrieves the on-disk cached page context for a specific
+  // tab. This should be used when a tab is not active and has no WebContents.
+  void GetPageContentFromOnDiskCache(int64_t tab_id,
+                                     GetPageContentCallback callback);
+
+  // Asynchronously retrieves all tab IDs that have cached page content on-disk.
+  void GetOnDiskCachedTabIds(GetAllTabIdsCallback callback);
 
  protected:
   // Invoked when `page_content` is extracted for `page`, to notify the
@@ -219,6 +230,7 @@ class PageContentExtractionService : public KeyedService,
 
  private:
   friend class AnnotatedPageContentRequest;
+  friend class PageContentCacheBrowserTest;
 
   AnnotatedPageContentRequest* GetAnnotatedPageContentRequestFromWebContents(
       content::WebContents* web_contents);
