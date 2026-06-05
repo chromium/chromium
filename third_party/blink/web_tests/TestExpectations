@@ -1117,6 +1117,8 @@ crbug.com/429929881 external/wpt/css/css-text/line-breaking/line-breaking-019.ht
 crbug.com/1098801 external/wpt/css/css-text/overflow-wrap/overflow-wrap-normal-keep-all-001.html [ Failure ]
 
 crbug.com/501115609 external/wpt/css/css-pseudo/first-letter-capitalize-supplementary-char.html [ Failure ]
+crbug.com/40260693 external/wpt/css/css-pseudo/first-letter-c0.tentative.html [ Failure ]
+crbug.com/40260693 external/wpt/css/css-pseudo/first-letter-trailing-punctuation.html [ Failure ]
 
 # CSS Inline `initial-letter` property.
 crbug.com/370423031 external/wpt/css/css-inline/initial-letter/initial-letter-float-001-vlr.html [ Failure ]
@@ -1269,10 +1271,11 @@ crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Fa
 
 crbug.com/484218877 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-viewport-metrics-first-line-001.html [ Failure ]
 
-# attr() with namespaces
+# attr()
 crbug.com/387281256 external/wpt/css/css-values/attr-namespace-case-sensitivity.xhtml [ Failure ]
 crbug.com/387281256 external/wpt/css/css-values/attr-namespace-non-existing.html [ Failure ]
 crbug.com/387281256 external/wpt/css/css-values/attr-namespace-valid.xhtml [ Failure ]
+crbug.com/519984269 external/wpt/css/css-values/attr-pseudo-element-placeholder.html [ Failure ]
 
 # Custom highlights
 crbug.com/488137634 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-container-metrics-005.html [ Failure ]
@@ -2053,6 +2056,7 @@ crbug.com/40244183 [ Linux ] external/wpt/css/css-fonts/font-variant-emoji-2.htm
 
 # ::first-line issues
 crbug.com/1085772 external/wpt/css/css-pseudo/first-line-opacity-001.html [ Failure ]
+crbug.com/519984271 external/wpt/css/css-pseudo/first-line-input-textarea.tentative.html [ Failure ]
 
 
 # Various css-values WPT failures
@@ -2790,12 +2794,6 @@ crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-bas
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=middle [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-bottom [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-top [ Failure ]
-
-crbug.com/515776376 external/wpt/css/css-pseudo/first-letter-c0.tentative.html [ Failure ]
-crbug.com/515776376 external/wpt/css/css-pseudo/first-letter-trailing-punctuation.html [ Failure ]
-crbug.com/515776376 external/wpt/css/css-pseudo/first-line-input-textarea.tentative.html [ Failure ]
-
-crbug.com/515776376 external/wpt/css/css-values/attr-pseudo-element-placeholder.html [ Failure ]
 
 crbug.com/515776380 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-box-rule-break.html [ Failure ]
 crbug.com/515776380 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-content-box-rule-inset.html [ Failure ]
