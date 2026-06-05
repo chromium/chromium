@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../empty-style.css">
+<script>
+const executed_during_prerendering = document.prerendering;
+// Encode `document.prerendering` into the beacon URL so the test can
+// distinguish "script resumed during prerendering (upgrade worked)" from
+// "script only resumed after activation". The test asserts that the
+// `prerendering=true` variant fires.
+navigator.sendBeacon(
+    `/iframe-beacon?prerendering=${executed_during_prerendering}`, "");
+</script>
+</head>
+<body>
+</body>
+</html>

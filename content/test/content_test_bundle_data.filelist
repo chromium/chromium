@@ -8709,6 +8709,7 @@ data/prerender/external_sync_script.html
 data/prerender/form_submission_origin_trial_initiator.html
 data/prerender/image_loading_lazy.html
 data/prerender/inline_script.html
+data/prerender/inline_script_iframe.html
 data/prerender/multiple_prerender_with_tags.html
 data/prerender/multiple_prerender_with_tags_and_different_eagerness.html
 data/prerender/page-with-embedded-plugin.html

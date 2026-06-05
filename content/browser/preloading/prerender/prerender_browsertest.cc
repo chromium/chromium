@@ -18850,4 +18850,250 @@ IN_PROC_BROWSER_TEST_F(PrerenderActivationBeaconBrowserTest,
   EXPECT_FALSE(WasBeaconSeen(cross_origin_beacon_url));
 }
 
+// Tests for the multi-RenderViewHost propagation of the
+// prerender-until-script to full prerender upgrade IPC. These exercise the
+// `ForEachRenderViewHost(...)` broadcast in
+// `PrerenderHost::UpgradeToFullPrerender`, which ensures that not just the
+// main frame's RVH but also iframe RVHs (in particular OOPIF RVHs created
+// for cross-origin iframes) clear their paused-JS state.
+class PrerenderUntilScriptUpgradeIframeBrowserTest
+    : public PrerenderUntilScriptBaseBrowserTest {
+ public:
+  PrerenderUntilScriptUpgradeIframeBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kPrerenderUntilScript,
+                                    features::kPrerenderUntilScriptUpgrade},
+                                   {});
+  }
+
+  void SetUp() override {
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &PrerenderUntilScriptUpgradeIframeBrowserTest::HandleSameOriginParent,
+        base::Unretained(this)));
+    ssl_server().RegisterRequestHandler(base::BindRepeating(
+        &PrerenderUntilScriptUpgradeIframeBrowserTest::HandleCrossOriginParent,
+        base::Unretained(this)));
+    PrerenderUntilScriptBaseBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderUntilScriptBaseBrowserTest::SetUpCommandLine(command_line);
+    // Enable the runtime feature backing the `Prerender2CrossOriginIframes`
+    // Origin Trial so cross-origin iframes are allowed to load (rather than
+    // being deferred) inside a prerendered page.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "Prerender2CrossOriginIframes");
+    IsolateAllSitesForTesting(command_line);
+  }
+
+ protected:
+  static constexpr char kSameOriginParentPath[] =
+      "/prerender/upgrade_same_origin_iframe_main";
+  static constexpr char kCrossOriginParentPath[] =
+      "/prerender/upgrade_cross_origin_iframe_main";
+  static constexpr char kIframePath[] = "/prerender/inline_script_iframe.html";
+
+  // Returns the URL for `/iframe-beacon?prerendering=<bool>` on the given
+  // host, matching the beacon emitted by `inline_script_iframe.html`. The
+  // `prerendering=true` variant proves the iframe's inline <script> ran
+  // during prerendering (i.e., released by the upgrade), as opposed to
+  // after activation.
+  GURL IframeBeaconUrlForHost(const std::string& host, bool prerendering) {
+    return ssl_server().GetURL(host,
+                               base::StrCat({"/iframe-beacon?prerendering=",
+                                             prerendering ? "true" : "false"}));
+  }
+
+ private:
+  // Serves the prerender main document for the same-origin iframe test.
+  // Body is a single <iframe> pointing at the shared iframe probe.
+  std::unique_ptr<net::test_server::HttpResponse> HandleSameOriginParent(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != kSameOriginParentPath) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    response->set_content(
+        base::StrCat({"<!DOCTYPE html><html><body><iframe src=\"", kIframePath,
+                      "\"></iframe></body></html>"}));
+    return response;
+  }
+
+  // Serves the prerender main document for the cross-origin iframe test. It
+  // emits the `Supports-Loading-Mode: prerender-cross-origin-frames` header
+  // (required to opt the page into cross-origin iframe loading during
+  // prerendering) and embeds a static <iframe> whose `src` is taken from the
+  // `iframe_url` query parameter. The src is supplied by the test so that the
+  // dynamic test-server port can be plumbed through.
+  std::unique_ptr<net::test_server::HttpResponse> HandleCrossOriginParent(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path() != kCrossOriginParentPath) {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    std::string iframe_url;
+    if (!net::GetValueForKeyInQuery(request.GetURL(), "iframe_url",
+                                    &iframe_url)) {
+      // Surface a 400 rather than falling through to a 404, so a misuse of
+      // this path in a future test is diagnosable.
+      response->set_code(net::HTTP_BAD_REQUEST);
+      response->set_content_type("text/plain");
+      response->set_content("Missing required iframe_url query parameter.");
+      return response;
+    }
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    response->AddCustomHeader("Supports-Loading-Mode",
+                              "prerender-cross-origin-frames");
+    response->set_content(base::StrCat(
+        {"<!DOCTYPE html><html><body><iframe src=\"",
+         base::EscapeForHTML(iframe_url), "\"></iframe></body></html>"}));
+    return response;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that upgrading a prerender-until-script host to a full prerender
+// also resumes script execution in a same-origin (in-process) iframe that
+// already exists in the prerender frame tree at upgrade time.
+//
+// This is a sanity test for the renderer-side per-Document loop in
+// `Page::UpgradePrerenderUntilScriptToFullPrerender`, which iterates local
+// frames and unblocks each Document.
+IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptUpgradeIframeBrowserTest,
+                       UpgradeUnblocksSameOriginIframe) {
+  GURL url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  GURL prerender_url = GetUrl(kSameOriginParentPath);
+  GURL iframe_url = GetUrl(kIframePath);
+  GURL iframe_beacon_during_prerender_url =
+      IframeBeaconUrlForHost("a.test", /*prerendering=*/true);
+
+  StartPrerenderUntilScript(prerender_url);
+
+  // Wait for the iframe document to be requested.
+  prerender_helper()->WaitForRequest(iframe_url, 1);
+
+  PrerenderHostId host_id =
+      test::PrerenderTestHelper::GetHostForUrl(*web_contents(), prerender_url);
+  ASSERT_TRUE(host_id);
+  PrerenderHostRegistry* registry =
+      web_contents_impl()->GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host = registry->FindNonReservedHostById(host_id);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerender_main_rfh =
+      prerender_host->GetPrerenderedMainFrameHost();
+  ASSERT_TRUE(prerender_main_rfh);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return prerender_main_rfh->child_count() == 1u;
+  })) << "Timeout waiting for same-origin iframe RFH to be created";
+  EXPECT_TRUE(prerender_host->should_pause_javascript_execution());
+
+  // The iframe's inline script must not have run yet. The script-blocking
+  // stylesheet in inline_script_iframe.html prevents the parser from running
+  // the <script> early, and the prerender-until-script JS pause prevents it
+  // from running after the parser reaches it.
+  EXPECT_EQ(GetRequestCount(iframe_beacon_during_prerender_url), 0);
+
+  // Trigger the upgrade by adding a regular prerender rule for the same URL.
+  prerender_helper()->AddPrerenderAsync(prerender_url);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    PrerenderHost* host = registry->FindNonReservedHostById(host_id);
+    return host && !host->should_pause_javascript_execution();
+  })) << "Timeout waiting for prerender-until-script host to be upgraded "
+         "to full prerender";
+
+  // After upgrade, the iframe's inline script must have resumed and fired
+  // its beacon while the page is still prerendering. The `prerendering=true`
+  // beacon variant proves the upgrade itself (not activation) is what
+  // unblocked the iframe: if the script had instead run only after
+  // activation, `document.prerendering` would have been false at script time
+  // and this beacon URL would never be hit.
+  prerender_helper()->WaitForRequest(iframe_beacon_during_prerender_url, 1);
+}
+
+// Tests that upgrading a prerender-until-script host to a full prerender
+// resumes script execution in a cross-origin (out-of-process) iframe that
+// already exists in the prerender frame tree at upgrade time. Exercises the
+// `ForEachRenderViewHost(...)` broadcast in
+// `PrerenderHost::UpgradeToFullPrerender`.
+IN_PROC_BROWSER_TEST_F(PrerenderUntilScriptUpgradeIframeBrowserTest,
+                       UpgradeUnblocksCrossOriginIframe) {
+  GURL url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // Cross-site iframe URL that the dynamic handler will embed in the parent.
+  GURL iframe_url = GetCrossSiteUrl(kIframePath);
+  GURL iframe_beacon_during_prerender_url =
+      IframeBeaconUrlForHost("b.test", /*prerendering=*/true);
+  GURL prerender_url = GetUrl(base::StrCat(
+      {kCrossOriginParentPath, "?iframe_url=",
+       base::EscapeQueryParamValue(iframe_url.spec(), /*use_plus=*/false)}));
+
+  StartPrerenderUntilScript(prerender_url);
+
+  // Wait for the cross-origin iframe to be requested. This proves the
+  // loading-mode opt-in worked and the iframe is being loaded inside the
+  // prerender, rather than being deferred by
+  // PrerenderSubframeNavigationThrottle until activation.
+  prerender_helper()->WaitForRequest(iframe_url, 1);
+
+  PrerenderHostId host_id =
+      test::PrerenderTestHelper::GetHostForUrl(*web_contents(), prerender_url);
+  ASSERT_TRUE(host_id);
+  PrerenderHostRegistry* registry =
+      web_contents_impl()->GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host = registry->FindNonReservedHostById(host_id);
+  ASSERT_TRUE(prerender_host);
+  RenderFrameHostImpl* prerender_main_rfh =
+      prerender_host->GetPrerenderedMainFrameHost();
+  ASSERT_TRUE(prerender_main_rfh);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return prerender_main_rfh->child_count() == 1u;
+  })) << "Timeout waiting for cross-origin iframe RFH to be created";
+
+  // Wait for the cross-origin navigation to commit into a separate
+  // process/ RenderViewHost.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* iframe_rfh =
+        static_cast<RenderFrameHostImpl*>(ChildFrameAt(prerender_main_rfh, 0));
+    return iframe_rfh && iframe_rfh->IsRenderFrameLive() &&
+           iframe_rfh->render_view_host() != nullptr &&
+           iframe_rfh->GetProcess() != prerender_main_rfh->GetProcess() &&
+           iframe_rfh->render_view_host() !=
+               prerender_main_rfh->render_view_host();
+  })) << "Timeout waiting for cross-origin iframe to become an OOPIF with its "
+         "own RenderViewHost";
+
+  // Sanity-check that the upgrade is what unblocks the iframe (rather than
+  // the OOPIF coming up post-upgrade): assert the host is still paused and
+  // the OOPIF already exists at this point, immediately before we trigger
+  // the upgrade below.
+  ASSERT_TRUE(prerender_host->should_pause_javascript_execution());
+  // The cross-origin iframe's inline script must not have run yet. Its
+  // RenderViewHost was created in the paused-JS state inherited from the
+  // prerender host, and the script-blocking stylesheet in
+  // inline_script_iframe.html keeps the parser from running the <script>
+  // early.
+  EXPECT_EQ(GetRequestCount(iframe_beacon_during_prerender_url), 0);
+
+  // Trigger the upgrade by adding a regular prerender rule for the same URL.
+  prerender_helper()->AddPrerenderAsync(prerender_url);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    PrerenderHost* host = registry->FindNonReservedHostById(host_id);
+    return host && !host->should_pause_javascript_execution();
+  })) << "Timeout waiting for prerender-until-script host to be upgraded "
+         "to full prerender";
+
+  // After upgrade, the cross-origin iframe's inline script must have resumed
+  // and fired its beacon while the page is still prerendering. This only
+  // happens if the upgrade IPC reached the iframe's separate RenderViewHost.
+  // The `prerendering=true` beacon variant also proves the script ran during
+  // prerendering rather than after activation.
+  prerender_helper()->WaitForRequest(iframe_beacon_during_prerender_url, 1);
+}
+
 }  // namespace content
