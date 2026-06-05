@@ -2159,3 +2159,832 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/ui/android/extensions:public" ]
   }
 }
+
+# By default these tests run on Win, Mac, Linux, Chrome OS and desktop Android.
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = [
+    "all_urls_apitest.cc",
+    "api/alarms/alarms_apitest.cc",
+    "api/bookmarks/bookmarks_apitest.cc",
+    "api/browsing_data/browsing_data_test.cc",
+    "api/content_settings/content_settings_apitest.cc",
+    "api/context_menus/context_menu_apitest.cc",
+    "api/context_menus/extension_context_menu_browsertest.cc",
+    "api/cookies/cookies_apitest.cc",
+    "api/debugger/debugger_apitest.cc",
+    "api/debugger/debugger_extension_apitest.cc",
+    "api/declarative_content/declarative_content_apitest.cc",
+    "api/declarative_content/request_content_script_apitest.cc",
+    "api/declarative_content/set_icon_apitest.cc",
+    "api/declarative_net_request/declarative_net_request_apitest.cc",
+    "api/declarative_net_request/declarative_net_request_browsertest.cc",
+    "api/desktop_capture/desktop_capture_apitest.cc",
+    "api/developer_private/developer_private_apitest.cc",
+    "api/devtools/devtools_apitest.cc",
+    "api/dns/dns_apitest.cc",
+    "api/downloads/downloads_api_browsertest.cc",
+    "api/extension_action/extension_action_apitest.cc",
+    "api/extension_action/test_icon_image_observer.cc",
+    "api/extension_action/test_icon_image_observer.h",
+    "api/favicon/favicon_apitest.cc",
+    "api/font_settings/font_settings_apitest.cc",
+    "api/gcm/gcm_apitest.cc",
+    "api/glic_private/glic_messaging_browsertest.cc",
+    "api/glic_private/glic_private_api_test_base.cc",
+    "api/glic_private/glic_private_api_test_base.h",
+    "api/glic_private/glic_private_apitest.cc",
+    "api/history/history_apitest.cc",
+    "api/i18n/i18n_apitest.cc",
+    "api/identity/identity_apitest.cc",
+    "api/identity/web_auth_flow_browsertest.cc",
+    "api/idle/idle_apitest.cc",
+    "api/instance_id/instance_id_apitest.cc",
+    "api/management/management_api_browsertest.cc",
+    "api/management/management_api_non_persistent_apitest.cc",
+    "api/management/management_apitest.cc",
+    "api/management/management_browsertest.cc",
+    "api/metrics_private/metrics_apitest.cc",
+    "api/module/module_apitest.cc",
+    "api/offscreen/audio_lifetime_enforcer_browsertest.cc",
+    "api/offscreen/offscreen_apitest.cc",
+    "api/offscreen/offscreen_document_manager_browsertest.cc",
+    "api/page_capture/page_capture_apitest.cc",
+    "api/permissions/permissions_apitest.cc",
+    "api/power/power_apitest.cc",
+    "api/preference/preference_apitest.cc",
+    "api/processes/processes_apitest.cc",
+    "api/proxy/proxy_apitest.cc",
+    "api/reading_list/reading_list_apitest.cc",
+    "api/runtime/runtime_apitest.cc",
+    "api/scripting/scripting_apitest.cc",
+    "api/search/search_api_apitest.cc",
+    "api/search/search_api_browsertest.cc",
+    "api/sessions/sessions_apitest.cc",
+    "api/settings_overrides/settings_overrides_browsertest.cc",
+    "api/storage/settings_apitest.cc",
+    "api/system_display/system_display_extension_apitest.cc",
+    "api/system_network/system_network_apitest.cc",
+    "api/tab_capture/tab_capture_apitest.cc",
+    "api/tab_groups/tab_groups_api_apitest.cc",
+    "api/tab_groups/tab_groups_api_browsertest.cc",
+    "api/tabs/tabs_apitest.cc",
+    "api/tabs/tabs_test.cc",
+    "api/test/apitest_apitest.cc",
+    "api/top_sites/top_sites_apitest.cc",
+    "api/user_scripts/user_scripts_apitest.cc",
+    "api/user_scripts/user_scripts_apitest.h",
+    "api/web_navigation/web_navigation_apitest.cc",
+    "api/web_request/web_request_apitest.cc",
+    "api/webrtc_logging_private/webrtc_logging_private_apitest.cc",
+    "api/webrtc_logging_private/webrtc_logging_private_browsertest.cc",
+    "api/webstore_private/webstore_private_apitest.cc",
+    "back_forward_cache_browsertest.cc",
+    "background_color_provider_browsertest.cc",
+    "background_header_browsertest.cc",
+    "background_script_executor_browsertest.cc",
+    "browsertest_util_browsertest.cc",
+    "chrome_extension_host_delegate_browsertest.cc",
+    "chrome_test_extension_loader_browsertest.cc",
+    "commands/command_service_browsertest.cc",
+    "component_extension_browsertest.cc",
+    "content_capabilities_browsertest.cc",
+    "content_script_apitest.cc",
+    "content_script_matching_browsertest.cc",
+    "content_security_policy_apitest.cc",
+    "content_verifier_browsertest.cc",
+    "content_verifier_hash_fetch_behavior_browsertest.cc",
+    "content_verifier_test_utils.cc",
+    "content_verifier_test_utils.h",
+    "cross_origin_isolation_browsertest.cc",
+    "cross_origin_xhr_apitest.cc",
+    "error_console/error_console_browsertest.cc",
+    "error_console/error_console_test_observer.cc",
+    "error_console/error_console_test_observer.h",
+    "extension_action_runner_browsertest.cc",
+    "extension_api_frame_id_map_browsertest.cc",
+    "extension_bindings_apitest.cc",
+    "extension_bookmarklet_browsertest.cc",
+    "extension_browsertest_browsertest.cc",
+    "extension_cookies_browsertest.cc",
+    "extension_csp_bypass_browsertest.cc",
+    "extension_dom_apitest.cc",
+    "extension_dom_clipboard_apitest.cc",
+    "extension_frame_host_browsertest.cc",
+    "extension_function_registration_browsertest.cc",
+    "extension_functional_browsertest.cc",
+    "extension_geolocation_apitest.cc",
+    "extension_icon_source_apitest.cc",
+    "extension_incognito_apitest.cc",
+    "extension_install_prompt_browsertest.cc",
+    "extension_install_prompt_test_helper.cc",
+    "extension_install_prompt_test_helper.h",
+    "extension_keybinding_browsertest.cc",
+    "extension_modules_apitest.cc",
+    "extension_override_apitest.cc",
+    "extension_tab_util_browsertest.cc",
+    "extension_unload_browsertest.cc",
+    "extension_url_loader_throttle_browsertest.cc",
+    "extension_user_activation_service_browsertest.cc",
+    "extension_user_script_loader_browsertest.cc",
+    "extension_view_host_factory_browsertest.cc",
+    "extensions_disabled_browsertest.cc",
+    "feature_provider_browsertest.cc",
+    "google_docs_offline_ukm_browsertest.cc",
+    "gpu_browsertest.cc",
+    "isolated_world_csp_browsertest.cc",
+    "loading_predictor_extension_browsertest.cc",
+    "manifest_v3_browsertest.cc",
+    "mutation_observers_apitest.cc",
+    "navigation_extension_enabler_browsertest.cc",
+    "offscreen_document_browsertest.cc",
+    "options_page_apitest.cc",
+    "pack_extension_browsertest.cc",
+    "permissions/permissions_manager_browsertest.cc",
+    "permissions/permissions_updater_browsertest.cc",
+    "permissions/site_permissions_helper_browsertest.cc",
+    "process_map_browsertest.cc",
+    "renderer_initialization_browsertest.cc",
+    "sandboxed_pages_apitest.cc",
+    "script_executor_browsertest.cc",
+    "service_worker_apitest.cc",
+    "service_worker_apitest.h",
+    "service_worker_event_dispatching_browsertest.cc",
+    "service_worker_installation_browsertest.cc",
+    "service_worker_lifetime_keepalive_browsertest.cc",
+    "service_worker_registration_apitest.cc",
+    "service_worker_tracking_browsertest.cc",
+    "shared_module_apitest.cc",
+    "startup_helper_browsertest.cc",
+    "stubs_apitest.cc",
+    "system_cpu_apitest.cc",
+    "system_memory_apitest.cc",
+    "test_resources_browsertest.cc",
+    "unpacked_installer_browsertest.cc",
+    "updater/extension_update_client_base_browsertest.cc",
+    "updater/extension_update_client_base_browsertest.h",
+    "updater/test_update_client_event_waiter.cc",
+    "updater/test_update_client_event_waiter.h",
+    "updater/update_service_browsertest.cc",
+    "user_host_restrictions_browsertest.cc",
+    "user_script_csp_browsertest.cc",
+    "user_script_extension_browsertest.cc",
+    "view_extension_source_browsertest.cc",
+    "wasm_mv3_browsertest.cc",
+    "web_accessible_resources_browsertest.cc",
+    "web_contents_browsertest.cc",
+    "webstore_installer_browsertest.cc",
+    "webstore_installer_test.cc",
+    "webstore_installer_test.h",
+    "webstore_reinstaller_browsertest.cc",
+
+    # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
+    "//chrome/browser/task_manager/providers/web_contents/extension_tag_browsertest.cc",
+    "//chrome/browser/ui/extensions/extension_action_view_model_browsertest.cc",
+    "//chrome/browser/ui/extensions/extensions_menu_view_model_browsertest.cc",
+    "//chrome/browser/ui/extensions/extensions_toolbar_view_model_browsertest.cc",
+    "//chrome/renderer/extensions/script_context_browsertest.cc",
+  ]
+
+  deps = [
+    ":extensions",
+    ":test_support",
+    "//chrome/app:command_ids",
+    "//chrome/browser:chrome_browser_main",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/devtools",
+    "//chrome/browser/devtools:test_support",
+    "//chrome/browser/download:test_support",
+    "//chrome/browser/extensions/api/bookmarks/test:test_support",
+    "//chrome/browser/extensions/api/messaging:platform_browser_tests",
+    "//chrome/browser/gcm",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/new_tab_page",
+    "//chrome/browser/permissions",
+    "//chrome/browser/policy:test_support",
+    "//chrome/browser/prefetch",
+    "//chrome/browser/prefs",
+    "//chrome/browser/prefs:util",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/push_messaging",
+    "//chrome/browser/push_messaging:service_impl_public",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/renderer_host",
+    "//chrome/browser/resource_coordinator:utils",
+    "//chrome/browser/resources:component_extension_resources_grit",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/sessions",
+    "//chrome/browser/speech",
+    "//chrome/browser/sync",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/browser_window:create_browser_window",
+    "//chrome/browser/ui/browser_window/test:test_support",
+    "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/extensions:test_support",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/webui/extensions:browser_tests",
+    "//chrome/browser/ui/zoom",
+    "//chrome/browser/web_applications/proto",
+    "//chrome/test:platform_browser_tests",
+    "//chrome/test:test_support",
+    "//components/back_forward_cache",
+    "//components/bookmarks/managed",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/embedder_support",
+    "//components/enterprise/browser/promotion",
+    "//components/infobars/content",
+    "//components/javascript_dialogs",
+    "//components/media_device_salt",
+    "//components/privacy_sandbox:privacy_sandbox_settings_headers",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
+    "//components/privacy_sandbox/privacy_sandbox_attestations:test_support",
+    "//components/proxy_config",
+    "//components/reading_list/core:test_support",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/tabs:public",
+    "//components/ukm:test_support",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//content/test:browsertest_support",
+    "//extensions:test_support",
+    "//extensions/browser:crx_installer",
+    "//extensions/browser:webstore_installer",
+    "//extensions/browser/updater",
+    "//extensions/renderer",
+    "//extensions/strings",
+    "//ui/base:ozone_buildflags",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
+    "//ui/menus",
+    "//ui/webui:buildflags",
+    "//ui/webui:test_support",
+  ]
+
+  public_deps = []
+
+  data = [
+    "//chrome/test/data/extensions/",
+    "//extensions/test/data/",
+  ]
+
+  data_deps = []
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies_test_support" ]
+  }
+
+  if (is_android) {
+    sources += [ "//chrome/browser/extensions/extension_keybinding_apitest.cc" ]
+    deps += [
+      "//chrome/test:test_support_jni_headers",
+      "//components/feed:feature_list",
+      "//components/messages/android:test_support",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/ui/search:test_support_ui",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
+      "//chrome/browser/ui/views/location_bar",
+      "//chrome/browser/ui/webui/history_clusters:browser_tests",
+      "//chrome/browser/ui/webui/interstitials:browser_tests",
+      "//chrome/browser/ui/webui/location_internals:browser_tests",
+      "//chrome/browser/ui/webui/policy:browser_tests",
+      "//components/keep_alive_registry",
+      "//components/webapps/isolated_web_apps/test_support",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/boca/on_task",
+      "//chrome/browser/ash/net",
+      "//chrome/browser/ash/test:test_support",
+      "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chrome/browser/ui/webui/ash/parent_access:test_support",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/services/tts",
+    ]
+  }
+
+  # ChromeOS and Android don't use the download bubble UI.
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/ui/download" ]
+  }
+
+  if (enable_service_discovery) {
+    sources += [ "//chrome/browser/extensions/api/mdns/mdns_apitest.cc" ]
+    deps += [ "//chrome/browser/media/router:test_support" ]
+  }
+
+  # These tests don't run on desktop Android.
+  if (enable_extensions) {
+    sources += [
+      # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
+      "//chrome/browser/chrome_service_worker_browsertest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_apitest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_contextmenus_browsertest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_dialog_browsertest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_disabled_permission_browsertest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_new_window_browsertest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_permission_request_browsertest.cc",
+      "//chrome/browser/controlled_frame/controlled_frame_wpt_browsertest.cc",
+      "//chrome/browser/controlled_frame/scoped_test_driver_proxy.cc",
+      "//chrome/browser/controlled_frame/scoped_test_driver_proxy.h",
+      "//chrome/browser/notifications/notification_permission_context_apitest.cc",
+      "//chrome/browser/page_load_metrics/observers/serp_page_load_metrics_observer_browsertest.cc",
+      "//chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_browsertest.cc",
+      "//chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
+      "//chrome/browser/ui/views/user_education/recent_session_observer_impl_browsertest.cc",
+      "//chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
+      "//chrome/renderer/controlled_frame/web_url_pattern_natives_browsertest.cc",
+      "ai_language_model_browsertest.cc",
+      "alert_apitest.cc",
+      "api/activity_log_private/activity_log_private_apitest.cc",
+      "api/autofill_private/autofill_private_api_browsertest.cc",
+      "api/autofill_private/autofill_private_apitest.cc",
+      "api/autofill_private/autofill_util_browsertest.cc",
+      "api/automation/automation_apitest.cc",
+      "api/braille_display_private/braille_display_private_apitest.cc",
+      "api/command_line_private/command_line_private_apitest.cc",
+      "api/declarative/declarative_apitest.cc",
+      "api/extension_action/browser_action_apitest.cc",
+      "api/extension_action/browser_action_browsertest.cc",
+      "api/extension_action/page_action_apitest.cc",
+      "api/extension_action/page_action_browsertest.cc",
+      "api/feedback_private/feedback_browsertest.cc",
+      "api/feedback_private/feedback_private_apitest.cc",
+      "api/file_system/file_system_apitest.cc",
+      "api/hid/hid_apitest.cc",
+      "api/identity/gaia_remote_consent_flow_browsertest.cc",
+      "api/idltest/idltest_apitest.cc",
+      "api/image_writer_private/extractor_browsertest.cc",
+      "api/image_writer_private/image_writer_private_apitest.cc",
+      "api/image_writer_private/test_utils.cc",
+      "api/image_writer_private/test_utils.h",
+      "api/passwords_private/passwords_private_apitest.cc",
+      "api/passwords_private/passwords_private_delegate_impl_browsertest.cc",
+      "api/printer_provider/printer_provider_apitest.cc",
+      "api/protocol_handlers/protocol_handlers_manager_browsertest.cc",
+      "api/resources_private/resources_private_apitest.cc",
+      "api/safe_browsing_private/safe_browsing_private_api_browsertest.cc",
+      "api/settings_private/settings_private_apitest.cc",
+      "api/side_panel/side_panel_apitest.cc",
+      "api/socket/socket_apitest.cc",
+      "api/sockets_tcp/sockets_tcp_apitest.cc",
+      "api/sockets_tcp_server/sockets_tcp_server_apitest.cc",
+      "api/sockets_udp/sockets_udp_apitest.cc",
+      "api/system_display/system_display_apitest.cc",
+      "api/system_private/system_private_apitest.cc",
+      "api/system_storage/storage_api_test_util.cc",
+      "api/system_storage/storage_api_test_util.h",
+      "api/system_storage/system_storage_apitest.cc",
+      "api/system_storage/system_storage_eject_apitest.cc",
+      "api/tab_capture/tab_capture_performance_test_base.cc",
+      "api/tab_capture/tab_capture_performance_test_base.h",
+      "api/tab_capture/tab_capture_performancetest.cc",
+      "api/tabs/execute_script_apitest.cc",
+      "api/user_scripts/user_scripts_uitest.cc",
+      "api/webrtc_from_web_accessible_resource_browsertest.cc",
+      "api_binding_perf_browsertest.cc",
+      "app_background_page_apitest.cc",
+      "app_process_apitest.cc",
+      "app_window_overrides_browsertest.cc",
+      "autoplay_browsertest.cc",
+      "background_page_apitest.cc",
+      "background_scripts_apitest.cc",
+      "background_xhr_browsertest.cc",
+      "cache_wasm_extension_browsertest.cc",
+      "calculator_app_browsertest.cc",
+      "chrome_app_api_browsertest.cc",
+      "chrome_theme_url_browsertest.cc",
+      "crx_installer_browsertest.cc",
+      "event_metrics_browsertest.cc",
+      "events_apitest.cc",
+      "extension_context_menu_model_browsertest.cc",
+      "extension_disabled_ui_browsertest.cc",
+      "extension_fileapi_apitest.cc",
+      "extension_get_views_apitest.cc",
+      "extension_install_ui_browsertest.cc",
+      "extension_l10n_browsertest.cc",
+      "extension_loading_browsertest.cc",
+      "extension_resource_request_policy_apitest.cc",
+      "extension_security_exploit_browsertest.cc",
+      "extension_service_browsertest.cc",
+      "extension_shared_array_buffer_browsertest.cc",
+      "extension_startup_browsertest.cc",
+      "extension_untrusted_webui_apitest.cc",
+      "extension_url_rewrite_browsertest.cc",
+      "extension_websocket_apitest.cc",
+      "extension_webui_apitest.cc",
+      "external_extension_install_browsertest.cc",
+      "external_install_error_browsertest.cc",
+      "fetch_apitest.cc",
+      "file_iframe_apitest.cc",
+      "initial_external_extension_loader_browsertest.cc",
+      "lazy_background_page_apitest.cc",
+      "locked_fullscreen_window_apitest.cc",
+      "manifest_v2_experiment_manager_browsertest.cc",
+      "native_bindings_apitest.cc",
+      "orb_and_cors_extension_browsertest.cc",
+      "permissions/active_tab_apitest.cc",
+      "process_management_browsertest.cc",
+      "process_manager_browsertest.cc",
+      "process_util_browsertest.cc",
+      "protocol_handler_apitest.cc",
+      "renderer_startup_helper_browsertest.cc",
+      "scoped_test_mv2_enabler_browsertest.cc",
+      "script_injection_tracker_browsertest.cc",
+      "shared_worker_apitest.cc",
+      "side_panel_manifest_browsertest.cc",
+      "subscribe_page_action_browsertest.cc",
+      "user_script_listener_browsertest.cc",
+      "user_script_world_browsertest.cc",
+      "wasm_app_browsertest.cc",
+      "webstore_domain_browsertest.cc",
+      "window_open_apitest.cc",
+      "worker_apitest.cc",
+    ]
+
+    sources += [
+      # TODO(crbug.com/424013924): Move
+      # settings_overridden_dialog_browsertest.cc to
+      # chrome/browser/ui/extensions/ once we enable it on Android.
+      "//chrome/browser/ui/extensions/settings_overridden_dialog_browsertest.cc",
+    ]
+
+    public_deps += [
+      "//chrome/browser/ui/extensions:extension_enable_flow_delegate",
+      "//chrome/test/supervised_user:live_tests",
+    ]
+
+    data += [
+      "//chrome/test/data/controlled_frame/resources/expected_properties.json",
+      "//chrome/test/data/controlled_frame/resources/mangle.js",
+    ]
+
+    if (use_brlapi) {
+      deps += [ "//third_party/libbrlapi" ]
+    } else {
+      sources -=
+          [ "api/braille_display_private/braille_display_private_apitest.cc" ]
+    }
+
+    if (is_win) {
+      data_deps += [
+        "//chrome/browser/extensions/api/messaging:native_messaging_test_echo_&_host",
+        "//chrome/browser/extensions/api/messaging:native_messaging_test_echo_host",
+        "//chrome/browser/extensions/api/messaging:native_messaging_test_echo_space_host",
+      ]
+    }
+
+    if (enable_pdf) {
+      sources += [ "api/pdf_viewer_private/pdf_viewer_private_apitest.cc" ]
+    }
+
+    if (is_win || is_linux || is_mac) {
+      sources += [
+        "//chrome/browser/ui/views/web_apps/file_handler_launch_dialog_browsertest.cc",
+        "api/experimental_actor/experimental_actor_apitest.cc",
+        "api/proxy_override_rules/proxy_override_rules_private_apitest.cc",
+        "api/web_authentication_proxy/web_authentication_proxy_apitest.cc",
+      ]
+
+      deps += [ "//chrome/browser/ui/webui/app_home:browser_tests" ]
+    }
+
+    if (enterprise_cloud_content_analysis || is_android) {
+      # Use this scope to migrate files/deps from
+      # `enterprise_cloud_content_analysis` conditions that now need to
+      # compile on Android.
+      sources += [ "//chrome/browser/enterprise/connectors/connectors_service_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/enterprise/connectors/reporting:browser_tests",
+        "//components/enterprise/connectors/core:cloud_content_scanning",
+      ]
+    }
+
+    if (enterprise_cloud_content_analysis) {
+      sources += [
+        "//chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
+        "api/enterprise_reporting_private/enterprise_reporting_private_apitest.cc",
+        "api/enterprise_reporting_private/enterprise_reporting_private_browsertest.cc",
+      ]
+      deps += [
+        "//chrome/browser/enterprise/connectors/test:test_support",
+        "//components/enterprise/buildflags",
+        "//components/enterprise/connectors/core",
+      ]
+    }
+    if (is_win || is_linux || is_mac || is_chromeos) {
+      sources += [ "//chrome/browser/enterprise/connectors/device_trust/device_trust_browsertest.cc" ]
+
+      deps += [
+        "//chrome/browser/enterprise/connectors/device_trust:features",
+        "//chrome/browser/enterprise/connectors/device_trust/common",
+        "//chrome/browser/enterprise/connectors/device_trust/test:test_support",
+        "//components/device_signals/core/common",
+        "//components/device_signals/core/common:features",
+        "//components/device_signals/test:test_support",
+        "//components/enterprise/connectors/core",
+      ]
+    }
+
+    if (is_win || is_linux || is_mac) {
+      deps += [
+        "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",
+        "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence:test_support",
+        "//chrome/browser/ui/webui/app_home:mojo_bindings",
+        "//components/device_signals/core/browser",
+      ]
+    }
+
+    if (is_chromeos) {
+      sources += [
+        # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
+        "//chrome/browser/apps/guest_view/app_view_browsertest.cc",
+        "//chrome/browser/apps/guest_view/web_view_browsertest.cc",
+        "//chrome/browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
+        "//chrome/browser/apps/platform_apps/api/browser/browser_apitest.cc",
+        "//chrome/browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
+        "//chrome/browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
+        "//chrome/browser/chromeos/extensions/info_private/info_private_apitest.cc",
+        "//chrome/browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
+        "//chrome/browser/chromeos/extensions/login_screen/storage_apitest.cc",
+        "//chrome/browser/chromeos/extensions/wallpaper/wallpaper_apitest.cc",
+        "//chrome/browser/chromeos/extensions/wm/wm_desks_private_apitest.cc",
+        "//chrome/browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_browsertest.cc",
+        "api/audio/audio_apitest_chromeos.cc",
+        "api/bluetooth/bluetooth_apitest.cc",
+        "api/bluetooth/bluetooth_private_apitest.cc",
+        "api/bluetooth_low_energy/bluetooth_low_energy_apitest_chromeos.cc",
+        "api/bluetooth_socket/bluetooth_socket_apitest.cc",
+        "api/cec_private/cec_private_ash_apitest.cc",
+        "api/certificate_provider/certificate_provider_apitest.cc",
+        "api/crash_report_private/crash_report_private_apitest.cc",
+        "api/document_scan/document_scan_apitest.cc",
+        "api/enterprise_device_attributes/enterprise_device_attributes_ash_apitest.cc",
+        "api/enterprise_networking_attributes/enterprise_networking_attributes_ash_apitest.cc",
+        "api/enterprise_platform_keys/enterprise_platform_keys_api_browsertest.cc",
+        "api/enterprise_platform_keys/enterprise_platform_keys_apitest_nss.cc",
+        "api/file_system/file_system_apitest_chromeos.cc",
+        "api/force_installed_affiliated_extension_apitest.cc",
+        "api/force_installed_affiliated_extension_apitest.h",
+        "api/identity/launch_web_auth_flow_delegate_ash_browsertest.cc",
+        "api/input_ime/input_ime_apitest_chromeos.cc",
+        "api/media_perception_private/media_perception_private_apitest.cc",
+        "api/networking_private/networking_private_apitest.cc",
+        "api/networking_private/networking_private_chromeos_apitest.cc",
+        "api/platform_keys/platform_keys_apitest_nss.cc",
+        "api/platform_keys/platform_keys_test_base.cc",
+        "api/platform_keys/platform_keys_test_base.h",
+        "api/serial/serial_apitest.cc",
+        "api/settings_private/settings_private_browsertest_chromeos.cc",
+        "api/system_display/system_display_chromeos_apitest.cc",
+        "api/terminal/terminal_private_apitest.cc",
+        "api/terminal/terminal_private_browsertest.cc",
+        "api/usb/chrome_usb_apitest.cc",
+        "api/usb/usb_apitest.cc",
+        "api/usb/usb_manual_apitest.cc",
+        "api/video_capture/video_capture_apitest_chromeos.cc",
+        "api/virtual_keyboard/virtual_keyboard_apitest.cc",
+        "api/virtual_keyboard_private/virtual_keyboard_private_apitest.cc",
+        "api/vpn_provider/vpn_provider_apitest.cc",
+        "clipboard_extension_apitest_chromeos.cc",
+        "delayed_setting_change_browsertest.cc",
+        "guest_view/app_view/app_view_apitest.cc",
+        "guest_view/web_view/web_view_apitest.cc",
+        "guest_view/web_view/web_view_apitest.h",
+        "guest_view/web_view/web_view_media_access_apitest.cc",
+      ]
+
+      deps += [
+        "//ash/app_list",
+        "//ash/webui/boca_ui:constants",
+        "//build/config/chromebox_for_meetings:buildflags",
+        "//chrome/browser/ash/app_list/arc",
+        "//chrome/browser/ash/app_mode:test_support",
+        "//chrome/browser/ash/arc:arc_util",
+        "//chrome/browser/ash/attestation:test_support",
+        "//chrome/browser/ash/boca/on_task",
+        "//chrome/browser/ash/certificate_provider",
+        "//chrome/browser/ash/certificate_provider:test_support",
+        "//chrome/browser/ash/crostini:browser_test_support",
+        "//chrome/browser/ash/crostini:test_support",
+        "//chrome/browser/ash/drive:test_support",
+        "//chrome/browser/ash/file_manager:test_support",
+        "//chrome/browser/ash/login/lock",
+        "//chrome/browser/ash/login/lock:test_support",
+        "//chrome/browser/ash/ownership",
+        "//chrome/browser/ash/platform_keys",
+        "//chrome/browser/ash/platform_keys:test_support",
+        "//chrome/browser/ash/platform_keys/key_permissions",
+        "//chrome/browser/ash/platform_keys/key_permissions:test_support",
+        "//chrome/browser/ash/policy/affiliation:test_support",
+        "//chrome/browser/ash/policy/core:test_support",
+        "//chrome/browser/ash/policy/test_support",
+        "//chrome/browser/ash/remote_apps",
+        "//chrome/browser/ash/scanning",
+        "//chrome/browser/ash/scanning:test_support",
+        "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+        "//chrome/browser/chromeos/extensions/smart_card_provider_private:browser_tests",
+        "//chrome/browser/chromeos/extensions/telemetry/api:browser_tests",
+        "//chrome/browser/chromeos/extensions/vpn_provider",
+        "//chrome/browser/chromeos/extensions/wm",
+        "//chrome/browser/chromeos/platform_keys",
+        "//chrome/browser/error_reporting:test_support",
+        "//chrome/browser/extensions/api/enterprise_platform_keys_private:browser_tests",
+        "//chrome/browser/guest_view",
+        "//chrome/browser/policy:system_features_disable_list",
+        "//chrome/browser/preloading/prefetch/no_state_prefetch",
+        "//chrome/browser/site_protection",
+        "//chrome/browser/ui/apps",
+        "//chrome/browser/ui/ash/shelf",
+        "//chrome/browser/ui/ash/system_web_apps",
+        "//chrome/browser/ui/login",
+        "//chrome/browser/ui/webui/ash/parent_access:test_support",
+        "//chromeos/ash/components/chaps_util:test_support",
+        "//chromeos/ash/components/dbus/audio",
+        "//chromeos/ash/components/dbus/cec_service",
+        "//chromeos/ash/components/dbus/image_burner",
+        "//chromeos/ash/components/dbus/shill",
+        "//chromeos/ash/components/disks:test_support",
+        "//chromeos/ash/components/platform_keys",
+        "//chromeos/ash/components/policy/device_policy:test_support",
+        "//chromeos/ash/components/settings:test_support",
+        "//chromeos/ash/components/system",
+        "//chromeos/ash/experiences/arc:arc_test_support",
+        "//chromeos/ash/experiences/arc:notification_test_support",
+        "//chromeos/components/kiosk:test_support",
+        "//chromeos/constants",
+        "//chromeos/dbus/constants",
+        "//chromeos/dbus/dlp",
+        "//chromeos/dbus/power",
+        "//chromeos/process_proxy",
+        "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
+        "//components/device_event_log",
+        "//components/file_access:test_support",
+        "//components/no_state_prefetch/browser",
+        "//crypto:test_support",
+        "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
+        "//storage/browser:test_support",
+        "//ui/events:gesture_detection",
+        "//ui/events:test_support",
+        "//ui/events/devices:test_support",
+      ]
+
+      data += [
+        "//media/test/data/90rotation.mp4",
+        "//media/test/data/id3_png_test.mp3",
+      ]
+    }  # is_chromeos
+
+    deps += [
+      "//apps:browser_tests",
+      "//chrome/browser:browser_process_platform_part",
+      "//chrome/browser/affiliations",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/autofill",
+      "//chrome/browser/background",
+      "//chrome/browser/background:test_support",
+      "//chrome/browser/bluetooth:test_support",
+      "//chrome/browser/client_hints",
+      "//chrome/browser/controlled_frame:test_support",
+      "//chrome/browser/custom_handlers",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/extensions/api/braille_display_private:controller",
+      "//chrome/browser/extensions/api/messaging:browser_tests",
+      "//chrome/browser/extensions/api/messaging:test_support",
+      "//chrome/browser/extensions/api/mime_handlers:browser_tests",
+      "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests",
+      "//chrome/browser/hid",
+      "//chrome/browser/password_manager",
+      "//chrome/browser/pdf:pdf_extension_test_utils",
+      "//chrome/browser/prefetch",
+      "//chrome/browser/sync_file_system",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui/global_error:test_support",
+      "//chrome/browser/ui/hid",
+      "//chrome/browser/ui/javascript_dialogs",
+      "//chrome/browser/ui/search:test_support_ui",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+      "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/supervised_user",
+      "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/tabs/alert:tab_alert",
+      "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
+      "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views:file_system_access_test_support",
+      "//chrome/browser/ui/views/web_apps:browser_tests",
+      "//chrome/browser/ui/webui/bookmarks",
+      "//chrome/browser/ui/webui/extensions_zero_state_promo",
+      "//chrome/browser/usb",
+      "//chrome/browser/usb:browser_test_support",
+      "//chrome/browser/user_education",
+      "//chrome/browser/web_applications/extensions",
+      "//chrome/browser/web_applications/isolated_web_apps/window_management",
+      "//chrome/browser/webapps:desktop",
+      "//chrome/browser/webauthn:test_support",
+      "//chrome/common/extensions/api",
+      "//chrome/renderer/controlled_frame",
+      "//chrome/services/media_gallery_util/public/cpp:browser_tests",
+      "//components/affiliations/core/browser:test_support",
+      "//components/autofill/core/common:features",
+      "//components/client_hints/browser",
+      "//components/consent_auditor",
+      "//components/content_settings/core/test:test_support",
+      "//components/drive:test_support",
+      "//components/embedder_support:user_agent",
+      "//components/enterprise:test_support",
+      "//components/guest_view/browser:test_support",
+      "//components/history_clusters/history_clusters_internals/webui",
+      "//components/history_clusters/history_clusters_internals/webui:constants",
+      "//components/keep_alive_registry",
+      "//components/media_router/browser:test_support",
+      "//components/media_router/common:test_support",
+      "//components/onc",
+      "//components/optimization_guide/optimization_guide_internals/webui",
+      "//components/page_load_metrics/browser:test_support",
+      "//components/password_manager/content/browser",
+      "//components/password_manager/core/browser/sharing",
+      "//components/password_manager/core/browser/sharing:test_support",
+      "//components/safe_browsing/content/browser/web_ui",
+      "//components/wallet/core/browser",
+      "//components/wallet/core/common:features",
+      "//components/wallet/core/common:prefs",
+      "//components/web_package",
+      "//components/webauthn/core/browser:test_support",
+      "//extensions/browser:crx_installer",
+      "//extensions/browser:test_support",
+      "//extensions/browser:webstore_installer",
+      "//extensions/browser/api:extensions_api_client",
+      "//extensions/browser/api/storage:settings_namespace",
+      "//extensions/browser/api/system_display:display_info_provider",
+      "//extensions/browser/forced_extensions",
+      "//extensions/browser/updater",
+      "//extensions/buildflags",
+      "//extensions/common:mojom",
+      "//extensions/common/api",
+      "//extensions/renderer",
+      "//extensions/renderer:unit_test_support",
+      "//google_apis/common:test_support",
+      "//google_apis/drive",
+      "//pdf:features",
+      "//services/network/public/cpp:ip_address_space_overrides_test_utils",
+      "//ui/accessibility:test_support",
+      "//ui/actions:actions_headers",
+      "//ui/base/clipboard:clipboard_test_support",
+      "//ui/base/idle:test_support",
+      "//ui/views:test_support",
+      "//ui/web_dialogs:test_support",
+    ]
+
+    if (!is_chromeos) {
+      # Chrome OS doesn't use background mode or download bubbles.
+      deps += [
+        "//chrome/browser/background/extensions",
+        "//chrome/browser/download/bubble",
+      ]
+    }
+
+    if (use_aura) {
+      deps += [ "//chrome/browser/ui/aura/accessibility" ]
+    }
+
+    # TODO(417228688): Remove when the following tests get modularized:
+    # - chrome_serial_browsertest.cc
+    # - controlled_frame_disabled_permission_browsertest.cc
+    # - web_view_browsertest.cc
+    deps += [ "//chrome/browser/serial" ]
+
+    # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom` when
+    # tests that include chrome_zoom_level_prefs.h get modularized, eg
+    # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and
+    # ats_browsertest.cc.
+    deps += [ "//chrome/browser/ui/zoom" ]
+
+    data += [
+      "//chrome/test/data/extensions/",
+      "//extensions/test/data/",
+      "//third_party/blink/web_tests/external/wpt/resources/testharness.js",
+      "//third_party/blink/web_tests/http/tests/wasm/resources/large.wasm",
+      "//third_party/wpt_tools/wpt/resources/testdriver.js",
+    ]
+  }  # enable_extensions
+}
