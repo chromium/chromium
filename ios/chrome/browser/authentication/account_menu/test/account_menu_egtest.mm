@@ -357,10 +357,10 @@ id<GREYMatcher> identityDiscMatcher() {
                                           kAccountMenuErrorActionButtonId)]
       performAction:grey_tap()];
   // Verify that the passphrase view was opened.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(
+              kSyncEncryptionPassphraseTableViewAccessibilityIdentifier)];
   // Enter the passphrase.
   [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
   // Entering the passphrase closes the view.
