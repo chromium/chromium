@@ -7,8 +7,6 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.js';
@@ -121,11 +119,6 @@ export class SettingsSyncControlsElement extends
         value: window.trustedTypes!.emptyHTML as unknown as string,
         observer: 'attachOpenBatchUploadLinkClick_',
       },
-
-      showSkillsSettingsCard_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showSkillsSettingPage'),
-      },
     };
   }
 
@@ -138,7 +131,6 @@ export class SettingsSyncControlsElement extends
   declare showSyncDisabledInformation: boolean;
   declare private isAccountSettingsPage_: boolean;
   declare private batchUploadPromoHTML_: TrustedHTML;
-  declare private showSkillsSettingsCard_: boolean;
 
   constructor() {
     super();
@@ -256,10 +248,6 @@ export class SettingsSyncControlsElement extends
     // Prevent navigation to href='#' and open the batch upload dialog instead.
     event.preventDefault();
     BatchUploadPromoProxyImpl.getInstance().handler.onBatchUploadPromoClicked();
-  }
-
-  private onGoToSkillsClick_() {
-    Router.getInstance().navigateTo(routes.SKILLS);
   }
 
   /**

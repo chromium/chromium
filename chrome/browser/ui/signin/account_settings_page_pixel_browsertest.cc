@@ -15,7 +15,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
-#include "components/skills/features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_test.h"
@@ -39,7 +38,7 @@ class AccountSettingsPagePixelBrowserTest : public InteractiveBrowserTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
                               syncer::kUnoPhase2FollowUp},
-        /*disabled_features=*/{features::kSkillsEnabled});
+        /*disabled_features=*/{});
   }
 
   void SetUpBrowserContextKeyedServices(
