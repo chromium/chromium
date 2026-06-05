@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "media/base/limits.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/skia/include/core/SkImage.h"
 
@@ -17,6 +18,7 @@ AutoCanvasDrawListener::AutoCanvasDrawListener(
 
 CanvasDrawListener::NewFrameCallback
 AutoCanvasDrawListener::GetNewFrameCallback() {
+  last_frame_time_ = base::TimeTicks::Now();
   return handler_->GetNewFrameCallback();
 }
 
@@ -25,7 +27,16 @@ bool AutoCanvasDrawListener::CanDiscardAlpha() const {
 }
 
 bool AutoCanvasDrawListener::NeedsNewFrame() const {
-  return frame_capture_requested_ && handler_->NeedsNewFrame();
+  if (!frame_capture_requested_ || !handler_->NeedsNewFrame()) {
+    return false;
+  }
+
+  if (last_frame_time_.is_null()) {
+    return true;
+  }
+
+  base::TimeDelta elapsed = base::TimeTicks::Now() - last_frame_time_;
+  return elapsed >= base::Seconds(1.0 / media::limits::kMaxFramesPerSecond);
 }
 
 void AutoCanvasDrawListener::RequestFrame() {

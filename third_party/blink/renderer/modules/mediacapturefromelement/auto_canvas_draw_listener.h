@@ -6,14 +6,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_AUTO_CANVAS_DRAW_LISTENER_H_
 
 #include <memory>
+
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_draw_listener.h"
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-class AutoCanvasDrawListener : public GarbageCollected<AutoCanvasDrawListener>,
-                               public CanvasDrawListener {
+class MODULES_EXPORT AutoCanvasDrawListener
+    : public GarbageCollected<AutoCanvasDrawListener>,
+      public CanvasDrawListener {
  public:
   explicit AutoCanvasDrawListener(std::unique_ptr<CanvasCaptureHandler>);
   ~AutoCanvasDrawListener() override = default;
@@ -28,6 +32,7 @@ class AutoCanvasDrawListener : public GarbageCollected<AutoCanvasDrawListener>,
  protected:
   std::unique_ptr<CanvasCaptureHandler> handler_;
   bool frame_capture_requested_;
+  base::TimeTicks last_frame_time_;
 };
 
 }  // namespace blink

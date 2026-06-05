@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/mediacapturefromelement/auto_canvas_draw_listener.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_to_video_frame_copier.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -305,6 +306,90 @@ TEST_F(CanvasCaptureHandlerTest, CheckNeedsNewFrame) {
   EXPECT_TRUE(canvas_capture_handler_->NeedsNewFrame());
   source->StopCapture();
   EXPECT_FALSE(canvas_capture_handler_->NeedsNewFrame());
+}
+
+class AutoCanvasDrawListenerRateLimitingTest : public Test {
+ public:
+  AutoCanvasDrawListenerRateLimitingTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+ protected:
+  void SetUp() override {
+    MediaStreamComponent* component = nullptr;
+    canvas_capture_handler_ = CanvasCaptureHandler::CreateCanvasCaptureHandler(
+        /*LocalFrame =*/nullptr,
+        gfx::Size(kTestCanvasCaptureWidth, kTestCanvasCaptureHeight),
+        kTestCanvasCaptureFramesPerSecond,
+        scheduler::GetSingleThreadTaskRunnerForTesting(),
+        scheduler::GetSingleThreadTaskRunnerForTesting(), &component);
+    component_ = component;
+  }
+
+  void TearDown() override {
+    component_ = nullptr;
+    blink::WebHeap::CollectAllGarbageForTesting();
+    canvas_capture_handler_.reset();
+    task_environment_.FastForwardUntilNoTasksRemain();
+  }
+
+  test::TaskEnvironment task_environment_;
+  Persistent<MediaStreamComponent> component_;
+  std::unique_ptr<CanvasCaptureHandler> canvas_capture_handler_;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+};
+
+TEST_F(AutoCanvasDrawListenerRateLimitingTest, RateLimiting) {
+  MediaStreamSource* const media_stream_source = component_->Source();
+  blink::MediaStreamVideoCapturerSource* const ms_source =
+      static_cast<blink::MediaStreamVideoCapturerSource*>(
+          media_stream_source->GetPlatformSource());
+  VideoCapturerSource* source = ms_source->GetSourceForTesting();
+
+  media::VideoCaptureFormats formats = source->GetPreferredFormats();
+  media::VideoCaptureParams params;
+  params.requested_format = formats[0];
+
+  VideoCaptureCallbacks video_capture_callbacks;
+  video_capture_callbacks.deliver_frame_cb = base::DoNothing();
+  video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
+
+  source->StartCapture(params, std::move(video_capture_callbacks),
+                       base::DoNothing());
+
+  auto* listener = MakeGarbageCollected<AutoCanvasDrawListener>(
+      std::move(canvas_capture_handler_));
+
+  // First check, should need new frame.
+  EXPECT_TRUE(listener->NeedsNewFrame());
+
+  // Get callback, this should update last_frame_time_ to current mock time (0).
+  listener->GetNewFrameCallback();
+
+  // Immediate second check should fail because min interval has not passed.
+  EXPECT_FALSE(listener->NeedsNewFrame());
+
+  base::TimeDelta interval =
+      base::Seconds(1.0 / media::limits::kMaxFramesPerSecond);
+
+  // Fast forward half interval, still should not need new frame.
+  task_environment_.FastForwardBy(interval / 2);
+  EXPECT_FALSE(listener->NeedsNewFrame());
+
+  // Fast forward another half interval (total 1 interval), now it should need
+  // new frame.
+  task_environment_.FastForwardBy(interval / 2);
+  EXPECT_TRUE(listener->NeedsNewFrame());
+
+  // Get callback again, updates last_frame_time_.
+  listener->GetNewFrameCallback();
+  EXPECT_FALSE(listener->NeedsNewFrame());
+
+  // Fast forward 1 interval, should need new frame again.
+  task_environment_.FastForwardBy(interval);
+  EXPECT_TRUE(listener->NeedsNewFrame());
+
+  source->StopCapture();
 }
 
 INSTANTIATE_TEST_SUITE_P(
