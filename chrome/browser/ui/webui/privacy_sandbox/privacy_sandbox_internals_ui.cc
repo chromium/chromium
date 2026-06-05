@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_ui.h"
 
+#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals_handler.h"
@@ -20,22 +21,10 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/feature_list.h"
-#include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
-#include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "content/public/browser/url_data_source.h"
-#endif
-
 namespace privacy_sandbox_internals {
 
 using ::privacy_sandbox_internals::mojom::Page;
 using ::privacy_sandbox_internals::mojom::PageHandler;
-#if !BUILDFLAG(IS_ANDROID)
-using ::related_website_sets::mojom::RelatedWebsiteSetsPageHandler;
-#endif
-
 PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -62,16 +51,5 @@ void PrivacySandboxInternalsUI::BindInterface(
           web_ui()->GetWebContents()->GetBrowserContext()),
       std::move(receiver));
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void PrivacySandboxInternalsUI::BindInterface(
-    mojo::PendingReceiver<
-        related_website_sets::mojom::RelatedWebsiteSetsPageHandler> receiver) {
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
-    related_website_sets_handler_ = std::make_unique<RelatedWebsiteSetsHandler>(
-        web_ui(), std::move(receiver));
-  }
-}
-#endif
 
 }  // namespace privacy_sandbox_internals

@@ -1275,8 +1275,6 @@ static_library("ui") {
       "webui/password_manager/sync_handler.h",
       "webui/policy_indicator_localized_strings_provider.cc",
       "webui/policy_indicator_localized_strings_provider.h",
-      "webui/privacy_sandbox/related_website_sets/related_website_sets_handler.cc",
-      "webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h",
       "webui/settings/about_handler.cc",
       "webui/settings/about_handler.h",
       "webui/settings/accessibility_main_handler.cc",
