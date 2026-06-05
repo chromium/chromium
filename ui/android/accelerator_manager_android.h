@@ -20,7 +20,7 @@ class UI_ANDROID_EXPORT AcceleratorManagerAndroid {
  public:
   // Returns the AcceleratorManagerAndroid for the given WindowAndroid. Returns
   // nullptr if it doesn't exist.
-  static AcceleratorManagerAndroid* FromWindow(WindowAndroid& window);
+  static AcceleratorManagerAndroid* FromWindow(WindowAndroid* window);
 
   explicit AcceleratorManagerAndroid(
       base::android::ScopedJavaGlobalRef<jobject> obj);
