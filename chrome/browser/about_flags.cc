@@ -11926,6 +11926,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          contextual_tasks::kContextualTasksBackButtonExpandsSidePanel)},
 
+    {"contextual-tasks-cookie-prefetch",
+     contextual_tasks::flag_descriptions::kContextualTasksCookiePrefetchName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksCookiePrefetchDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksCookiePrefetch)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"create-new-tab-group-app-menu-top-level",
      flag_descriptions::kCreateNewTabGroupAppMenuTopLevelName,

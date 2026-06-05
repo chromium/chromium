@@ -133,6 +133,9 @@ BASE_FEATURE(kContextualTasksJavaFusebox, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables prefetching of cookies for contextual tasks.
+BASE_FEATURE(kContextualTasksCookiePrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAimTriggeredThreadLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
@@ -161,11 +164,6 @@ const base::FeatureParam<bool> kContextualTasksEnableCookieSync(
     &kContextualTasks,
     "ContextualTasksEnableCookieSync",
     true);
-
-const base::FeatureParam<bool> kContextualTasksEnableCookiePrefetch(
-    &kContextualTasks,
-    "ContextualTasksEnableCookiePrefetch",
-    false);
 
 const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     &kContextualTasksContext,
@@ -620,7 +618,7 @@ bool ShouldEnableCookieSync() {
 }
 
 bool ShouldEnableCookiePrefetch() {
-  return kContextualTasksEnableCookiePrefetch.Get();
+  return base::FeatureList::IsEnabled(kContextualTasksCookiePrefetch);
 }
 
 bool ShouldEnableLockAndUnlockInputCapability() {
@@ -686,6 +684,11 @@ const char kContextualTasksOverrideShowBottomSheetOnLargeScreenName[] =
 const char kContextualTasksOverrideShowBottomSheetOnLargeScreenDescription[] =
     "Enables overriding side panel to show Bottom Sheet on large screens for "
     "contextual tasks.";
+
+const char kContextualTasksCookiePrefetchName[] =
+    "Contextual Tasks Cookie Prefetch";
+const char kContextualTasksCookiePrefetchDescription[] =
+    "Enables prefetching of cookies for contextual tasks.";
 
 }  // namespace flag_descriptions
 

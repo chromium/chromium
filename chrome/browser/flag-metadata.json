@@ -1980,6 +1980,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "contextual-tasks-cookie-prefetch",
+    "owners": ["nguyenbryan@chromium.org", "chrome-contextual-tasks-eng@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-java-fusebox",
     "owners": ["shaktisahu@chromium.org", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 155
