@@ -114,6 +114,16 @@ bool IsLastResortFont(CTFontRef font) {
                                       0) == kCFCompareEqualTo;
 }
 
+bool IsAppleColorEmojiFont(CTFontRef font) {
+  ScopedCFTypeRef<CFStringRef> family_name(
+      CTFontCopyName(font, kCTFontFamilyNameKey));
+  return family_name &&
+         (CFStringCompare(family_name.get(), CFSTR("Apple Color Emoji"),
+                          kCFCompareCaseInsensitive) == kCFCompareEqualTo ||
+          CFStringCompare(family_name.get(), CFSTR(".Apple Color Emoji UI"),
+                          kCFCompareCaseInsensitive) == kCFCompareEqualTo);
+}
+
 ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
                                              UChar32 character,
                                              float size) {
@@ -143,18 +153,15 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
 
-  ScopedCFTypeRef<CFStringRef> substitute_font_name(
-      CTFontCopyName(substitute_font.get(), kCTFontFamilyNameKey));
   // System API might return colored "Apple Color Emoji" font for some emoji
-  // code points. But if emoji code point was requested and fallback_priority is
-  // not emoji presentation, it means that we need a monochromatic (text)
-  // presentation of emoji. To do that we will replace colored emoji font with
-  // the "Apple Symbols" monochromatic emoji font with "Apple Color Emoji"
+  // code points. It might also return ".Apple Color Emoji UI" when starting
+  // from system-ui. But if an emoji code point was requested and fallback
+  // priority is not emoji presentation, it means that we need a monochromatic
+  // (text) presentation of emoji. To do that we will replace colored emoji font
+  // with the "Apple Symbols" monochromatic emoji font with the color emoji
   // cascade list since it has better glyph coverage.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
-      substitute_font_name &&
-      CFStringCompare(substitute_font_name.get(), CFSTR("Apple Color Emoji"),
-                      kCFCompareCaseInsensitive) == kCFCompareEqualTo &&
+      IsAppleColorEmojiFont(substitute_font.get()) &&
       Character::IsEmoji(character)) {
     NSArray* lang_list = @[ @"en" ];
     NSArray* cascade_list =

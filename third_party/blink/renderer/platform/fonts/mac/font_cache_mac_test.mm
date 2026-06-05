@@ -7,8 +7,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_render_theme.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
@@ -70,6 +72,22 @@ INSTANTIATE_TEST_SUITE_P(SystemUISyntheticBold,
 
 TEST_P(FontCacheMacTest, SystemUISyntheticBoldCoreText) {
   TestSystemUISyntheticBold();
+}
+
+TEST_F(FontCacheMacTest, SystemUIEmojiTextPresentationUsesAppleSymbols) {
+  FontCache& font_cache = FontCache::Get();
+  FontDescription font_description;
+
+  const SimpleFontData* system_ui_font =
+      font_cache.GetFontData(font_description, font_family_names::kSystemUi);
+  ASSERT_TRUE(system_ui_font);
+
+  const SimpleFontData* fallback_font = font_cache.FallbackFontForCharacter(
+      font_description, U'\U0001F310', system_ui_font,
+      FontFallbackPriority::kEmojiTextWithVS);
+  ASSERT_TRUE(fallback_font);
+  EXPECT_EQ(fallback_font->PlatformData().FontFamilyName(),
+            String::FromUtf8("Apple Symbols"));
 }
 
 TEST_F(FontCacheMacTest, InvalidateOnRegisteredFontsChanged) {
