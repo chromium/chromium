@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/url_constants.h"
 
 namespace blink {
 
@@ -797,7 +798,7 @@ const AtomicString& ModelContext::InterfaceName() const {
 bool ModelContext::IsOriginIsolatedOrFileUrl() const {
   return document_->domWindow()->originAgentCluster() ||
          document_->GetExecutionContext()->GetSecurityOrigin()->Protocol() ==
-             "file";
+             url::kFileScheme;
 }
 
 ScriptPromise<IDLSequence<RegisteredTool>> ModelContext::getTools(
