@@ -70,17 +70,21 @@ BookmarkContextMenu::BookmarkContextMenu(
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::IS_NESTED |
           views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
   ui::SimpleMenuModel* menu_model = controller_->menu_model();
+  ui::MenuModel* submodel = nullptr;
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    views::MenuModelAdapter::AppendMenuItemFromModel(
+        menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+    if (menu_model->GetCommandIdAt(i) == IDC_BOOKMARK_BAR_SUBMENU) {
+      submodel = menu_model->GetSubmenuModelAt(i);
+    }
+  }
+
+  if (submodel) {
     views::MenuItemView* item =
-        views::MenuModelAdapter::AppendMenuItemFromModel(
-            menu_model, i, menu_, menu_model->GetCommandIdAt(i));
-    // TODO(crbug.com/503036610): Simplify by adding command id for the submenu.
-    if (item && menu_model->GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
-      ui::MenuModel* submodel = menu_model->GetSubmenuModelAt(i);
-      for (size_t j = 0; j < submodel->GetItemCount(); ++j) {
-        views::MenuModelAdapter::AppendMenuItemFromModel(
-            submodel, j, item, submodel->GetCommandIdAt(j));
-      }
+        menu_->GetMenuItemByID(IDC_BOOKMARK_BAR_SUBMENU);
+    for (size_t i = 0; i < submodel->GetItemCount(); ++i) {
+      views::MenuModelAdapter::AppendMenuItemFromModel(
+          submodel, i, item, submodel->GetCommandIdAt(i));
     }
   }
 }
@@ -144,6 +148,17 @@ bool BookmarkContextMenu::ShouldCloseAllMenusOnExecute(int id) {
   return (id != IDC_BOOKMARK_BAR_REMOVE) || close_on_remove_;
 }
 
+bool BookmarkContextMenu::ShouldExecuteCommandWithoutClosingMenu(
+    int id,
+    const ui::Event& e) {
+  if (id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW ||
+      id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE ||
+      id == IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP) {
+    return true;
+  }
+  return false;
+}
+
 void BookmarkContextMenu::OnMenuClosed(views::MenuItemView* menu) {
   observers_.Notify(&BookmarkContextMenuObserver::OnContextMenuClosed);
 }
@@ -169,5 +184,22 @@ void BookmarkContextMenu::WillExecuteCommand(
 void BookmarkContextMenu::DidExecuteCommand(int command_id) {
   if (IsRemoveBookmarksCommand(command_id)) {
     observers_.Notify(&BookmarkContextMenuObserver::DidRemoveBookmarks);
+  }
+
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW ||
+      command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE ||
+      command_id == IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP) {
+    UpdateSubMenuState();
+  }
+}
+
+void BookmarkContextMenu::UpdateSubMenuState() {
+  for (int id : {IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW,
+                 IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE,
+                 IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP}) {
+    views::MenuItemView* item = menu_->GetMenuItemByID(id);
+    if (item) {
+      item->RefreshCheckmarkState();
+    }
   }
 }

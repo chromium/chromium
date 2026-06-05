@@ -40,6 +40,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/browser/scoped_group_bookmark_actions.h"
+#include "components/bookmarks/common/bookmark_bar_visibility_state.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
@@ -300,30 +301,23 @@ void BookmarkContextMenuController::BuildMenu() {
   } else {
     AddItem(IDC_BOOKMARK_MANAGER, IDS_BOOKMARK_MANAGER);
   }
-  // Use the native host desktop type in tests.
-  if (chrome::IsAppsShortcutEnabled(profile_)) {
-    AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
-                    IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
-  }
-  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
-      !tab_groups::IsProjectsPanelFeatureEnabled()) {
-    AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
-                    IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
-  }
-  AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
-                  IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
 
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpSimplificationBookmarkBar)) {
-    submenu_model_->AddCheckItemWithStringId(
-        IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE);
-    submenu_model_->AddCheckItemWithStringId(
-        IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW);
-    submenu_model_->AddCheckItemWithStringId(
-        IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP);
-    menu_model_->AddSubMenuWithStringId(
-        IDC_SHOW_BOOKMARK_BAR, IDS_SHOW_BOOKMARK_BAR, submenu_model_.get());
+    AddSubmenuItems();
   } else {
+    // Use the native host desktop type in tests.
+    if (chrome::IsAppsShortcutEnabled(profile_)) {
+      AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
+                      IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
+    }
+    if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
+        !tab_groups::IsProjectsPanelFeatureEnabled()) {
+      AddCheckboxItem(IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
+                      IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
+    }
+    AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
+                    IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
     AddCheckboxItem(IDC_BOOKMARK_BAR_ALWAYS_SHOW, IDS_SHOW_BOOKMARK_BAR);
   }
 }
@@ -351,6 +345,7 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
   }
 
   base::WeakPtr<BookmarkContextMenuController> ref(weak_factory_.GetWeakPtr());
+  PrefService* prefs = profile_->GetPrefs();
 
   switch (id) {
     case IDC_BOOKMARK_BAR_OPEN_ALL:
@@ -503,7 +498,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT: {
-      PrefService* prefs = profile_->GetPrefs();
       prefs->SetBoolean(
           bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
           !prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar));
@@ -513,7 +507,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     case IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS: {
       base::RecordAction(base::UserMetricsAction(
           "BookmarkBar_ContextMenu_ToggleShowSavedTabGroups"));
-      PrefService* prefs = profile_->GetPrefs();
       prefs->SetBoolean(
           bookmarks::prefs::kShowTabGroupsInBookmarkBar,
           !prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar));
@@ -521,7 +514,6 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS: {
-      PrefService* prefs = profile_->GetPrefs();
       prefs->SetBoolean(
           bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
           !prefs->GetBoolean(
@@ -563,6 +555,28 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
           GetIndexForNewNodes(),
           base::BindOnce(&BookmarkContextMenuController::OnPasteFinished,
                          weak_factory_.GetWeakPtr(), std::move(paste_helper)));
+      break;
+    }
+
+    case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW: {
+      prefs->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+      break;
+    }
+
+    case IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE: {
+      prefs->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+      break;
+    }
+
+    case IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP: {
+      prefs->SetInteger(
+          bookmarks::prefs::kBookmarkBarVisibilityState,
+          static_cast<int>(
+              bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
       break;
     }
 
@@ -620,6 +634,19 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
   }
   if (command_id == IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS) {
     return prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW) {
+    return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE) {
+    return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP) {
+    return prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+           static_cast<int>(
+               bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp);
   }
 
   DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);
@@ -768,6 +795,36 @@ BookmarkContextMenuController::ComputeNodeToFocusForBookmarkManager() const {
   CHECK(!selection_[0]->is_folder());
   CHECK(selection_[0]->parent()->is_permanent_node());
   return selection_[0]->parent();
+}
+
+void BookmarkContextMenuController::AddSubmenuItems() {
+  submenu_model_->AddCheckItemWithStringId(
+      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE,
+      IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_HIDE);
+  submenu_model_->AddCheckItemWithStringId(
+      IDC_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW,
+      IDS_BOOKMARK_BAR_SUBMENU_ALWAYS_SHOW);
+  submenu_model_->AddCheckItemWithStringId(
+      IDC_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP,
+      IDS_BOOKMARK_BAR_SUBMENU_ONLY_ON_NTP);
+  submenu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  if (chrome::IsAppsShortcutEnabled(profile_)) {
+    submenu_model_->AddCheckItemWithStringId(
+        IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
+        IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
+  }
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(profile_) &&
+      !tab_groups::IsProjectsPanelFeatureEnabled()) {
+    submenu_model_->AddCheckItemWithStringId(
+        IDC_BOOKMARK_BAR_TOGGLE_SHOW_TAB_GROUPS,
+        IDS_BOOKMARK_BAR_SHOW_TAB_GROUPS);
+  }
+  submenu_model_->AddCheckItemWithStringId(
+      IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
+      IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
+  menu_model_->AddSubMenuWithStringId(IDC_BOOKMARK_BAR_SUBMENU,
+                                      IDS_BOOKMARK_BAR_SUBMENU_LABEL,
+                                      submenu_model_.get());
 }
 
 bool IsSelectionPermanentBookmarkFolder(

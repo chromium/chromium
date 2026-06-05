@@ -130,6 +130,10 @@ class BookmarkContextMenuController
   // Returns null if no node should be focused.
   const bookmarks::BookmarkNode* ComputeNodeToFocusForBookmarkManager() const;
 
+  // Adds a submenu to the menu with items for the visibility of the bookmark
+  // bar.
+  void AddSubmenuItems();
+
   gfx::NativeWindow parent_window_;
   raw_ptr<BookmarkContextMenuControllerDelegate> delegate_;
   const raw_ptr<Browser> browser_;

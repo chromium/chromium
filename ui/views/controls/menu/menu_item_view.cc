@@ -171,6 +171,20 @@ void MenuItemView::UpdateAccessibleCheckedState() {
   }
 }
 
+void MenuItemView::RefreshCheckmarkState() {
+  UpdateAccessibleCheckedState();
+  if (radio_check_image_view_) {
+    if (type_ == Type::kCheckbox) {
+      bool is_checked =
+          GetDelegate() && GetDelegate()->IsItemChecked(GetCommand());
+      radio_check_image_view_->SetVisible(is_checked);
+    }
+    if (GetWidget()) {
+      UpdateSelectionBasedState(last_paint_as_selected_);
+    }
+  }
+}
+
 void MenuItemView::SetCommand(int command) {
   command_ = command;
   UpdateAccessibleCheckedState();
