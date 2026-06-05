@@ -45,6 +45,12 @@
 
 namespace cc {
 
+namespace {
+perfetto::NamedTrack GetTracingTrack(const SingleThreadProxy* proxy) {
+  return perfetto::NamedTrack::FromPointer("cc::SingleThreadProxy", proxy);
+}
+}  // namespace
+
 std::unique_ptr<Proxy> SingleThreadProxy::Create(
     LayerTreeHost* layer_tree_host,
     LayerTreeHostSingleThreadDelegate* delegate,
@@ -349,10 +355,10 @@ void SingleThreadProxy::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
 
   if (defer_main_frame_update) {
     TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
-                      perfetto::Track::FromPointer(this));
+                      GetTracingTrack(this));
   } else {
     TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferMainFrameUpdate"*/
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
   }
 
   defer_main_frame_update_ = defer_main_frame_update;
@@ -378,10 +384,10 @@ void SingleThreadProxy::SetPauseRendering(bool pause_rendering,
   pause_rendering_ = pause_rendering;
   if (pause_rendering_) {
     TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetPauseRendering",
-                      perfetto::Track::FromPointer(this));
+                      GetTracingTrack(this));
   } else {
     TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetPauseRendering"*/
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
   }
 
   // The scheduler needs to know that it should not issue BeginFrame.
@@ -401,7 +407,7 @@ bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
     return false;
 
   TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetDeferCommits",
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
 
   paint_holding_reason_ = reason;
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
@@ -419,7 +425,7 @@ void SingleThreadProxy::StopDeferringCommits() {
   paint_holding_reason_.reset();
   commits_restart_time_ = base::TimeTicks();
   TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferCommits"*/
-                  perfetto::Track::FromPointer(this));
+                  GetTracingTrack(this));
 
   // Notify dependent systems that the deferral status has changed.
   layer_tree_host_->OnDeferCommitsChanged(false, reason);

@@ -64,6 +64,12 @@ bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+perfetto::NamedTrack GetTracingTrack(
+    const SchedulerStateMachine* state_machine) {
+  return perfetto::NamedTrack::FromPointer("cc::SchedulerStateMachine",
+                                           state_machine);
+}
+
 }  // namespace
 
 SchedulerStateMachine::SchedulerStateMachine(const SchedulerSettings& settings)
@@ -1535,7 +1541,7 @@ void SchedulerStateMachine::SetNeedsPrepareTiles() {
 void SchedulerStateMachine::DidSubmitCompositorFrame() {
   if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
     TRACE_EVENT_BEGIN("cc", "Scheduler:pending_submit_frames",
-                      perfetto::Track::FromPointer(this), "pending_frames",
+                      GetTracingTrack(this), "pending_frames",
                       pending_submit_frames_);
 
     // If we are running with no frame rate limits, the GPU process can submit
@@ -1565,7 +1571,7 @@ void SchedulerStateMachine::DidReceiveCompositorFrameAck() {
     NOTREACHED();
   } else {
     TRACE_EVENT_END("cc", /*"Scheduler:pending_submit_frames"*/
-                    perfetto::Track::FromPointer(this), "pending_frames",
+                    GetTracingTrack(this), "pending_frames",
                     pending_submit_frames_);
     pending_submit_frames_--;
   }

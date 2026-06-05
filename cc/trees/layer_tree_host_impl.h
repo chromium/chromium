@@ -89,6 +89,10 @@ namespace viz {
 class ClientResourceProvider;
 }
 
+namespace perfetto {
+class NamedTrack;
+}
+
 namespace cc {
 
 class BrowserControlsOffsetManager;
@@ -896,6 +900,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
 
  protected:
+  static perfetto::NamedTrack GetTracingTrack(const LayerTreeImpl* tree);
+
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
       LayerTreeHostImplDelegate* delegate,

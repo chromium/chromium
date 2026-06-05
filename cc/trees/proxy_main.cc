@@ -46,6 +46,12 @@
 
 namespace cc {
 
+namespace {
+perfetto::NamedTrack GetTracingTrack(const ProxyMain* proxy_main) {
+  return perfetto::NamedTrack::FromPointer("cc::ProxyMain", proxy_main);
+}
+}  // namespace
+
 ProxyMain::ProxyMain(LayerTreeHost* layer_tree_host,
                      TaskRunnerProvider* task_runner_provider)
     : layer_tree_host_(layer_tree_host),
@@ -558,10 +564,10 @@ void ProxyMain::DidChangeBeginFrameSourcePaused(bool paused) {
   begin_frame_source_paused_ = paused;
   if (begin_frame_source_paused_) {
     TRACE_EVENT_BEGIN("cc", "ProxyMain::SetBeginFrameSourcePaused",
-                      perfetto::Track::FromPointer(this));
+                      GetTracingTrack(this));
   } else {
     TRACE_EVENT_END("cc", /*"ProxyMain::SetBeginFrameSourcePaused"*/
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
   }
 }
 
@@ -757,10 +763,11 @@ void ProxyMain::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
   defer_main_frame_update_ = defer_main_frame_update;
   if (defer_main_frame_update_) {
     TRACE_EVENT_BEGIN("cc", "ProxyMain::SetDeferMainFrameUpdate",
-                      perfetto::Track::FromPointer(this));
+                      GetTracingTrack(this));
   } else {
-    TRACE_EVENT_END("cc", /*"ProxyMain::SetDeferMainFrameUpdate"*/
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("cc",
+                    /*"ProxyMain::SetDeferMainFrameUpdate"*/
+                    GetTracingTrack(this));
   }
 
   // Notify dependent systems that the deferral status has changed.
@@ -782,10 +789,10 @@ void ProxyMain::SetPauseRendering(bool pause_rendering,
   pause_rendering_ = pause_rendering;
   if (pause_rendering_) {
     TRACE_EVENT_BEGIN("cc", "ProxyMain::SetPauseRendering",
-                      perfetto::Track::FromPointer(this));
+                      GetTracingTrack(this));
   } else {
     TRACE_EVENT_END("cc", /*"ProxyMain::SetPauseRendering"*/
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
   }
 
   // The impl thread needs to know that it should not issue BeginFrames.
@@ -813,8 +820,7 @@ bool ProxyMain::StartDeferringCommits(base::TimeDelta timeout,
   if (IsDeferringCommits())
     return false;
 
-  TRACE_EVENT_BEGIN("cc", "ProxyMain::SetDeferCommits",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("cc", "ProxyMain::SetDeferCommits", GetTracingTrack(this));
 
   paint_holding_reason_ = reason;
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
@@ -831,7 +837,7 @@ void ProxyMain::StopDeferringCommits() {
   paint_holding_reason_.reset();
   commits_restart_time_ = base::TimeTicks();
   TRACE_EVENT_END("cc", /*"ProxyMain::SetDeferCommits"*/
-                  perfetto::Track::FromPointer(this));
+                  GetTracingTrack(this));
 
   // Notify depended systems that the deferral status has changed.
   layer_tree_host_->OnDeferCommitsChanged(false, reason);

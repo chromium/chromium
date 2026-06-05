@@ -56,6 +56,10 @@
 namespace cc {
 namespace {
 
+perfetto::NamedTrack GetTracingTrack(const TileManager* tile_manager) {
+  return perfetto::NamedTrack::FromPointer("cc::TileManager", tile_manager);
+}
+
 // Flag to indicate whether we should try and detect that
 // a tile is of solid color.
 const bool kUseColorEstimator = true;
@@ -599,9 +603,8 @@ void TileManager::Release(Tile* tile) {
 void TileManager::DidFinishRunningTileTasksRequiredForActivation() {
   TRACE_EVENT0("cc",
                "TileManager::DidFinishRunningTileTasksRequiredForActivation");
-  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState",
-                      perfetto::Track::FromPointer(this), "state",
-                      ScheduledTasksStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState", GetTracingTrack(this),
+                      "state", ScheduledTasksStateAsValue());
   // TODO(vmpstr): Temporary check to debug crbug.com/642927.
   CHECK(tile_task_manager_);
   signals_.activate_tile_tasks_completed = true;
@@ -610,9 +613,8 @@ void TileManager::DidFinishRunningTileTasksRequiredForActivation() {
 
 void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningTileTasksRequiredForDraw");
-  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState",
-                      perfetto::Track::FromPointer(this), "state",
-                      ScheduledTasksStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState", GetTracingTrack(this),
+                      "state", ScheduledTasksStateAsValue());
   // TODO(vmpstr): Temporary check to debug crbug.com/642927.
   CHECK(tile_task_manager_);
   signals_.draw_tile_tasks_completed = true;
@@ -622,8 +624,7 @@ void TileManager::DidFinishRunningTileTasksRequiredForDraw() {
 void TileManager::DidFinishRunningAllTileTasks(base::TimeTicks start_time,
                                                bool has_pending_queries) {
   TRACE_EVENT0("cc", "TileManager::DidFinishRunningAllTileTasks");
-  TRACE_EVENT_END("cc",
-                  /*"ScheduledTasks"*/ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("cc", /*"ScheduledTasks"*/ GetTracingTrack(this));
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
 
@@ -1244,8 +1245,7 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
   DCHECK(did_check_for_completed_tasks_since_last_schedule_tasks_);
 
   if (!has_scheduled_tile_tasks_) {
-    TRACE_EVENT_BEGIN("cc", "ScheduledTasks",
-                      perfetto::Track::FromPointer(this));
+    TRACE_EVENT_BEGIN("cc", "ScheduledTasks", GetTracingTrack(this));
   }
 
   // Cancel existing OnTaskSetFinished callbacks.
@@ -1439,9 +1439,8 @@ void TileManager::ScheduleTasks(PrioritizedWorkToSchedule work_to_schedule) {
 
   did_check_for_completed_tasks_since_last_schedule_tasks_ = false;
 
-  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState",
-                      perfetto::Track::FromPointer(this), "state",
-                      ScheduledTasksStateAsValue());
+  TRACE_EVENT_INSTANT("cc", "ScheduledTasksState", GetTracingTrack(this),
+                      "state", ScheduledTasksStateAsValue());
 }
 
 scoped_refptr<TileTask> TileManager::CreateRasterTask(

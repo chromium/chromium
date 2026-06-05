@@ -756,12 +756,10 @@ void FrameSequenceMetrics::TraceJankV3(uint64_t sequence_number,
   dict->SetString("tracker-type",
                   FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type_));
   dict->EndDictionary();
-  TRACE_EVENT_BEGIN("cc,benchmark", "JankV3",
-                    perfetto::Track::FromPointer(this), last_termination_time,
+  const auto track = perfetto::NamedTrack::FromPointer("JankV3", this);
+  TRACE_EVENT_BEGIN("cc,benchmark", "JankV3", track, last_termination_time,
                     "data", std::move(dict));
-  TRACE_EVENT_END("cc,benchmark",
-                  /*"JankV3"*/ perfetto::Track::FromPointer(this),
-                  termination_time);
+  TRACE_EVENT_END("cc,benchmark", track, termination_time);
 }
 
 }  // namespace cc

@@ -1482,10 +1482,11 @@ void LayerTreeHost::SetViewportRectAndScale(
       pending_commit_state()->local_surface_id_from_parent;
   SetLocalSurfaceIdFromParent(local_surface_id_from_parent);
 
+  const auto size_track =
+      perfetto::NamedTrack::FromPointer("LayerTreeHostSize", this);
   TRACE_EVENT_END("cc", /*"LayerTreeHostSize"*/
-                  perfetto::Track::FromPointer(this), "id", id_);
-  TRACE_EVENT_BEGIN("cc", "LayerTreeHostSize",
-                    perfetto::Track::FromPointer(this), "size",
+                  size_track, "id", id_);
+  TRACE_EVENT_BEGIN("cc", "LayerTreeHostSize", size_track, "size",
                     device_viewport_rect.ToString(), "lsid",
                     local_surface_id_from_parent.ToString());
 

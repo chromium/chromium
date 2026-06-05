@@ -355,8 +355,7 @@ void ClientLayerTreeHostImpl::CreatePendingTree() {
 
   delegate_->OnCanDrawStateChanged(CanDraw());
   TRACE_EVENT_BEGIN("cc", "PendingTree:waiting",
-                    perfetto::Track::FromPointer(pending_tree_.get()),
-                    "active_lsid",
+                    GetTracingTrack(pending_tree_.get()), "active_lsid",
                     active_tree()->local_surface_id_from_parent().ToString());
 }
 

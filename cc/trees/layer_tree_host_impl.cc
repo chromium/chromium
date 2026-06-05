@@ -210,15 +210,17 @@ bool IsMobileOptimized(LayerTreeImpl* active_tree) {
 }
 
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
+  const auto visibility_track =
+      perfetto::NamedTrack::FromPointer("LayerTreeHostVisibility", id);
   if (visible) {
     TRACE_EVENT_BEGIN("cc,benchmark", "LayerTreeHostImpl::SetVisible",
-                      perfetto::Track::FromPointer(id), "LayerTreeHostImpl",
+                      visibility_track, "LayerTreeHostImpl",
                       static_cast<void*>(id));
     return;
   }
 
-  TRACE_EVENT_END("cc,benchmark", /*"LayerTreeHostImpl::SetVisible"*/
-                  perfetto::Track::FromPointer(id));
+  TRACE_EVENT_END("cc,benchmark",
+                  /*"LayerTreeHostImpl::SetVisible"*/ visibility_track);
 }
 
 void PopulateMetadataContentColorUsage(const FrameData* frame,
@@ -295,6 +297,12 @@ void DoDumpCompositorFrame(const std::string& data,
   VLOG_IF(3, VerboseLogEnabled()) << ClientNameForVerboseLog() << ": "
 
 }  // namespace
+
+// static
+perfetto::NamedTrack LayerTreeHostImpl::GetTracingTrack(
+    const LayerTreeImpl* tree) {
+  return perfetto::NamedTrack::FromPointer("cc::PendingTree", tree);
+}
 
 // Holds either a created ImageDecodeCache or a ptr to a shared
 // GpuImageDecodeCache.
@@ -3840,8 +3848,7 @@ void LayerTreeHostImpl::ActivateSyncTree() {
       });
   if (pending_tree_) {
     TRACE_EVENT_END("cc", /*"PendingTree:waiting"*/
-                    perfetto::Track::FromPointer(pending_tree_.get()),
-                    "pending_lsid",
+                    GetTracingTrack(pending_tree_.get()), "pending_lsid",
                     pending_tree_->local_surface_id_from_parent().ToString());
     active_tree_->lifecycle().AdvanceTo(LayerTreeLifecycle::kBeginningSync);
 
