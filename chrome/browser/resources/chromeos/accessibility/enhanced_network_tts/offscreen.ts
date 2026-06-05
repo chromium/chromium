@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {OffscreenCommand, ServiceWorkerCommand} from './commands.js';
+import {ExtensionUtil} from '/common/extension_util.js';
 
 type MessageSender = chrome.runtime.MessageSender;
 
@@ -18,8 +19,11 @@ class DecodeAudioHandler {
   constructor() {
     // Handle messages from the service worker.
     chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
+        (message: any|undefined, sender: MessageSender,
          sendResponse: (value: any) => void) => {
+          if (!ExtensionUtil.isValidSender(sender)) {
+            return false;
+          }
           return this.onMessage_(message, sendResponse);
         });
 

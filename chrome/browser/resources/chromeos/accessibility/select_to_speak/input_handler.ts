@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {RectUtil} from '/common/rect_util.js';
+import {ExtensionUtil} from '/common/extension_util.js';
 
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 
@@ -90,8 +91,11 @@ export class InputHandler {
 
     // Handle messages from the offscreen document.
     chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
+        (message: any|undefined, sender: MessageSender,
          _sendResponse: (value: any) => void) => {
+          if (!ExtensionUtil.isValidSender(sender)) {
+            return false;
+          }
           switch (message['command']) {
             case 'paste':
               this.onClipboardPaste_(message);

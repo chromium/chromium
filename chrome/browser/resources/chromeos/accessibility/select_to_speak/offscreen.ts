@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ExtensionUtil} from '/common/extension_util.js';
+
 type MessageSender = chrome.runtime.MessageSender;
 
 // Number of milliseconds to wait after requesting a clipboard read
@@ -47,8 +49,11 @@ class AudioAndCopyHandler {
 
     // Handle messages from the service worker.
     chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: MessageSender,
+        (message: any|undefined, sender: MessageSender,
          _sendResponse: (value: any) => void) => {
+          if (!ExtensionUtil.isValidSender(sender)) {
+            return false;
+          }
           switch (message['command']) {
             case 'playNullSelectionTone':
               this.audioElement_.play();

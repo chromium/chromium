@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {TestImportManager} from '/common/testing/test_import_manager.js';
+import {ExtensionUtil} from '/common/extension_util.js';
 
 import {OffscreenCommandType} from './offscreen_command_type.js';
 
@@ -38,9 +39,13 @@ export class Messenger {
     this.registry_ = new Map<OffscreenCommandType, Messenger.Handler>();
 
     chrome.runtime.onMessage.addListener(
-        (message: any|undefined, _sender: chrome.runtime.MessageSender,
-         sendResponse: (response?: any) => void) =>
-            this.handleMessage_(message, sendResponse));
+        (message: any|undefined, sender: chrome.runtime.MessageSender,
+         sendResponse: (response?: any) => void) => {
+          if (!ExtensionUtil.isValidSender(sender)) {
+            return false;
+          }
+          return this.handleMessage_(message, sendResponse);
+        });
   }
 
   static async init(context: Messenger.Context): Promise<void> {
