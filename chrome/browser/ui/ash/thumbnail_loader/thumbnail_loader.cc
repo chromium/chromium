@@ -33,7 +33,6 @@
 #include "net/base/data_url.h"
 #include "net/base/mime_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -188,12 +187,11 @@ using ThumbnailDataCallback = base::OnceCallback<void(const std::string& data)>;
 
 // Handles a parsed message sent from image loader extension in response to a
 // thumbnail request.
-void HandleParsedThumbnailResponse(
-    const std::string& request_id,
-    ThumbnailDataCallback callback,
-    data_decoder::DataDecoder::ValueOrError result) {
+void HandleParsedThumbnailResponse(const std::string& request_id,
+                                   ThumbnailDataCallback callback,
+                                   const base::JSONReader::Result& result) {
   if (!result.has_value()) {
-    VLOG(2) << "Failed to parse request response " << result.error();
+    VLOG(2) << "Failed to parse request response " << result.error().message;
     std::move(callback).Run("");
     return;
   }
@@ -242,11 +240,12 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
     }
     response_received_ = true;
 
-    // Detach the callback from the message host in case the extension closes
-    // connection by the time the response is parsed.
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        message, base::BindOnce(&HandleParsedThumbnailResponse, request_id_,
-                                std::move(callback_)));
+    // JSONReader is now safe for rule of 2.
+    base::JSONReader::Result result =
+        base::JSONReader::ReadAndReturnValueWithError(message,
+                                                      base::JSON_PARSE_RFC);
+
+    HandleParsedThumbnailResponse(request_id_, std::move(callback_), result);
 
     client_->CloseChannel("");
     client_ = nullptr;
