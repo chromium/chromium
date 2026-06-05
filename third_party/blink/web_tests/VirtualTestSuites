@@ -2993,7 +2993,7 @@
     "args": [
       "--disable-blink-features=ScopedCustomElementRegistry"
     ],
-    "expires": "Jun 1, 2026"
+    "expires": "Jul 1, 2026"
   },
   {
     "prefix": "select-audio-output",
