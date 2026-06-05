@@ -43,7 +43,6 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
             Function<Integer, Integer> getMenuWidthFunc) {
         testAnchorWidth_smallAnchorWidth(weakReferenceActivity, getMenuWidthFunc);
         testAnchorWidth_largeAnchorWidth(weakReferenceActivity, getMenuWidthFunc);
-        testAnchorWidth_moderateAnchorWidth(weakReferenceActivity, getMenuWidthFunc);
     }
 
     private static void testAnchorWidth_smallAnchorWidth(
@@ -53,7 +52,7 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                 weakReferenceActivity
                         .get()
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
+                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width),
                 (int) getMenuWidthFunc.apply(1));
     }
 
@@ -66,18 +65,6 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width),
                 (int) getMenuWidthFunc.apply(10000));
-    }
-
-    private static void testAnchorWidth_moderateAnchorWidth(
-            WeakReference<Activity> weakReferenceActivity,
-            Function<Integer, Integer> getMenuWidthFunc) {
-        int minWidth =
-                weakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width);
-        int expectedWidth = minWidth + 1;
-        assertEquals(expectedWidth, (int) getMenuWidthFunc.apply(expectedWidth));
     }
 
     public static void testAnchor_offset(

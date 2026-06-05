@@ -31,7 +31,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -1228,10 +1227,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
-        return MathUtils.clamp(
-                anchorViewWidthPx,
-                getDimensionPixelSize(R.dimen.tab_strip_context_menu_min_width),
-                getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width));
+        return getDimensionPixelSize(R.dimen.tab_strip_context_menu_max_width);
     }
 
     @Override
