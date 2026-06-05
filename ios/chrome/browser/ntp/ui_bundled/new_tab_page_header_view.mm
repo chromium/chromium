@@ -1666,8 +1666,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  self.voiceSearchButton.enabled = NO;
-  self.voiceSearchButton.isAccessibilityElement = NO;
+  self.voiceSearchButton.enabled = _voiceSearchIsEnabled;
+  self.voiceSearchButton.isAccessibilityElement = _voiceSearchIsEnabled;
   [_buttonStack addArrangedSubview:self.voiceSearchButton];
 
   // Lens.
