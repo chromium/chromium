@@ -646,6 +646,35 @@ TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
   EXPECT_EQ(1, TotalTriggerCount());
 }
 
+TEST_F(PageActionViewTriggerTest, NoClickWhenAnchoredMessageVisible) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
+      .WillRepeatedly(Return(true));
+
+  std::u16string text = u"Test Anchored Message";
+  std::optional<ui::ImageModel> icon = std::nullopt;
+  std::optional<AnchoredMessageExpandableContent> content = std::nullopt;
+
+  EXPECT_CALL(*model(), GetAnchoredMessageText())
+      .WillRepeatedly(ReturnRef(text));
+  EXPECT_CALL(*model(), GetAnchoredMessageIcon())
+      .WillRepeatedly(ReturnRef(icon));
+  EXPECT_CALL(*model(), GetAnchoredMessageExpandableContent())
+      .WillRepeatedly(ReturnRef(content));
+  EXPECT_CALL(*model(), GetAnchoredMessageActionIconType())
+      .WillRepeatedly(Return(AnchoredMessageActionIconType::kNone));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  ASSERT_TRUE(page_action_view()->IsAnchoredMessageVisible());
+
+  page_action_view()->NotifyClick(
+      ui::test::TestEvent(EventType::kMousePressed));
+  EXPECT_EQ(0, TotalTriggerCount());
+
+  EXPECT_FALSE(page_action_view()->IsTriggerableEvent(
+      ui::test::TestEvent(EventType::kMousePressed)));
+}
+
 TEST_F(PageActionViewTriggerTest, PageActionTriggersOnKeyboardClick) {
   EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
       .WillRepeatedly(Return(false));

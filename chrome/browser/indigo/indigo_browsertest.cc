@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
+#include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
@@ -233,7 +234,10 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioning) {
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       WaitForShow(kIndigoPageActionIconElementId),
-      PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -271,7 +275,10 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, CloseResetsReplacements) {
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       WaitForShow(kIndigoPageActionIconElementId),
-      PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoToolbar::kToolbarElementId),
 
       WithElement(
@@ -309,7 +316,10 @@ IN_PROC_BROWSER_TEST_F(IndigoHighDsfBrowserTest, ToolbarPositioning) {
   RunTestSequence(
       InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
       WaitForShow(kIndigoPageActionIconElementId),
-      PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
 
       AfterShow(IndigoToolbar::kToolbarElementId,
                 base::BindLambdaForTesting([&](ui::TrackedElement* el) {
@@ -347,27 +357,31 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
   const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
   const GURL popup_url = embedded_test_server()->GetURL("/empty.html");
 
-  RunTestSequence(InstrumentTab(kWebContentsId),
-                  NavigateWebContents(kWebContentsId, main_tab_url),
-                  WaitForWebContentsReady(kWebContentsId, main_tab_url),
-                  WaitForShow(kIndigoPageActionIconElementId),
-                  PressButton(kIndigoPageActionIconElementId),
-                  WaitForShow(IndigoOnboardingDialog::kWebViewId),
-                  InstrumentNonTabWebView(kDialogWebContentsId,
-                                          IndigoOnboardingDialog::kWebViewId),
-                  WaitForWebContentsReady(kDialogWebContentsId, popup_url),
-                  ExecuteJs(kDialogWebContentsId,
-                            R"js(
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, main_tab_url),
+      WaitForWebContentsReady(kWebContentsId, main_tab_url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      WaitForShow(IndigoOnboardingDialog::kWebViewId),
+      InstrumentNonTabWebView(kDialogWebContentsId,
+                              IndigoOnboardingDialog::kWebViewId),
+      WaitForWebContentsReady(kDialogWebContentsId, popup_url),
+      ExecuteJs(kDialogWebContentsId,
+                R"js(
                     () => {
                       window.chromeOnboarding.acknowledgeChromeDisclaimer();
                       window.close();
                     }
                   )js",
-                            ExecuteJsMode::kFireAndForget),
-                  WaitForHide(IndigoOnboardingDialog::kWebViewId), Check([&]() {
-                    return browser()->profile()->GetPrefs()->GetBoolean(
-                        prefs::kIndigoHasOnboarded);
-                  }));
+                ExecuteJsMode::kFireAndForget),
+      WaitForHide(IndigoOnboardingDialog::kWebViewId), Check([&]() {
+        return browser()->profile()->GetPrefs()->GetBoolean(
+            prefs::kIndigoHasOnboarded);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
@@ -380,7 +394,10 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
       NavigateWebContents(kWebContentsId, main_tab_url),
       WaitForWebContentsReady(kWebContentsId, main_tab_url),
       WaitForShow(kIndigoPageActionIconElementId),
-      PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
       WaitForShow(IndigoOnboardingDialog::kWebViewId),
       InstrumentNonTabWebView(kDialogWebContentsId,
                               IndigoOnboardingDialog::kWebViewId),
@@ -400,26 +417,29 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   const GURL url2 = embedded_test_server()->GetURL("/empty.html");
 
-  RunTestSequence(InstrumentTab(kWebContentsId),
-                  NavigateWebContents(kWebContentsId, url),
-                  WaitForShow(kIndigoPageActionIconElementId),
-                  PressButton(kIndigoPageActionIconElementId),
-                  WaitForShow(IndigoToolbar::kToolbarElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      WaitForShow(IndigoToolbar::kToolbarElementId),
 
-                  // Expand the toolbar
-                  PressButton(IndigoToolbar::kExpandButtonElementId),
-                  WaitForShow(IndigoToolbar::kExpandedContainerElementId),
+      // Expand the toolbar
+      PressButton(IndigoToolbar::kExpandButtonElementId),
+      WaitForShow(IndigoToolbar::kExpandedContainerElementId),
 
-                  // Open a new tab and switch to it
-                  AddInstrumentedTab(kSecondTabId, url2),
-                  WaitForHide(IndigoToolbar::kToolbarElementId),
+      // Open a new tab and switch to it
+      AddInstrumentedTab(kSecondTabId, url2),
+      WaitForHide(IndigoToolbar::kToolbarElementId),
 
-                  // Switch back to the first tab
-                  SelectTab(kTabStripElementId, 0),
-                  WaitForShow(IndigoToolbar::kToolbarElementId),
+      // Switch back to the first tab
+      SelectTab(kTabStripElementId, 0),
+      WaitForShow(IndigoToolbar::kToolbarElementId),
 
-                  // Verify it is still expanded
-                  WaitForShow(IndigoToolbar::kExpandedContainerElementId));
+      // Verify it is still expanded
+      WaitForShow(IndigoToolbar::kExpandedContainerElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ShowToolbarWhileInactiveDeferred) {
