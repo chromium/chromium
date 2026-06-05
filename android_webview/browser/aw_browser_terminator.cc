@@ -162,9 +162,7 @@ void AwBrowserTerminator::OnChildExit(
   // If the process has never been used, this is the spare render process.
   // Treat this as if it never existed since it's an internal performance
   // optimization.
-  if (base::FeatureList::IsEnabled(
-          features::kCreateSpareRendererOnBrowserContextCreation) &&
-      rph && AwRenderProcess::IsUnused(rph)) {
+  if (rph && AwRenderProcess::IsUnused(rph)) {
     return;
   }
 

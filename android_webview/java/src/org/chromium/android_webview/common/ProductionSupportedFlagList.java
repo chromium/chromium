@@ -806,7 +806,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.NO_THROTTLING_VISIBLE_AGENT,
                 "Do not throttle Javascript timers to 1Hz on hidden cross-origin frames that are"
                         + " same-agent with a visible frame."),
-        Flag.baseFeature("CreateSpareRendererOnBrowserContextCreation"),
         Flag.baseFeature(
                 "AllowDatapipeDrainedAsBytesConsumerInBFCache",
                 "When enabled, allow pages with drained datapipe into bfcache."),

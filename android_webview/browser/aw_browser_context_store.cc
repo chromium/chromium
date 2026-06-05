@@ -46,10 +46,6 @@ constexpr char kProfilePathKey[] = "path";
 
 bool g_initialized = false;
 
-const base::FeatureParam<bool> kCreateSpareRendererForDefaultIfMultiProfile{
-    &features::kCreateSpareRendererOnBrowserContextCreation,
-    "create_spare_renderer_for_default_if_multi_profile", false};
-
 }  // namespace
 
 AwBrowserContextStore::AwBrowserContextStore(PrefService* pref_service)
@@ -152,11 +148,9 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
         std::make_unique<AwBrowserContext>(name, entry->path, is_default);
     // Ensure this code path is only taken if the IO thread is already running,
     // as it's needed for launching processes.
-    if (base::FeatureList::IsEnabled(
-            features::kCreateSpareRendererOnBrowserContextCreation) &&
-        content::BrowserThread::IsThreadInitialized(
+    if (content::BrowserThread::IsThreadInitialized(
             content::BrowserThread::IO) &&
-        (!is_default || kCreateSpareRendererForDefaultIfMultiProfile.Get())) {
+        !is_default) {
       content::SpareRenderProcessHostManager::Get().WarmupSpare(
           entry->instance.get());
     }

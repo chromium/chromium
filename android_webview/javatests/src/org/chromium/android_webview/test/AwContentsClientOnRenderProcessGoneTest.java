@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
@@ -57,6 +58,7 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     public void setUp() throws Exception {
         mWebServer = TestWebServer.start();
         mContentsClient = new TestAwContentsClient();
+        mContentsClient.getRenderProcessGoneHelper().setResponse(true);
         mTestView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = mTestView.getAwContents();
     }
@@ -78,18 +80,21 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     }
 
     private AwRenderProcess createAndTerminateRenderProcess(
-            Terminator terminator, boolean expectCrash) throws Throwable {
-        TestAwContentsClient.RenderProcessGoneHelper helper =
-                mContentsClient.getRenderProcessGoneHelper();
+            AwContents awContents,
+            TestAwContentsClient client,
+            Terminator terminator,
+            boolean expectCrash)
+            throws Throwable {
+        TestAwContentsClient.RenderProcessGoneHelper helper = client.getRenderProcessGoneHelper();
         helper.setResponse(true); // Don't automatically kill the browser process.
 
         final AwRenderProcess renderProcess =
-                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
 
         // Ensure that the renderer has started.
         mActivityTestRule.loadUrlSync(
-                mAwContents,
-                mContentsClient.getOnPageFinishedHelper(),
+                awContents,
+                client.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         // Terminate the renderer.
@@ -105,6 +110,12 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
                 RendererPriority.HIGH, helper.getAwRenderProcessGoneDetail().rendererPriority());
 
         return renderProcess;
+    }
+
+    private AwRenderProcess createAndTerminateRenderProcess(
+            Terminator terminator, boolean expectCrash) throws Throwable {
+        return createAndTerminateRenderProcess(
+                mAwContents, mContentsClient, terminator, expectCrash);
     }
 
     @Test
@@ -237,30 +248,40 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @Feature({"AndroidWebView"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add({
-        "enable-features=CreateSpareRendererOnBrowserContextCreation"
-                + ":create_spare_renderer_for_default_if_multi_profile/true"
-    })
-    public void testTerminateBeforeRenderProcessCreated() throws Throwable {
+    public void testTerminateBeforeUsingSpareRenderer() throws Throwable {
+        // By default, spare renderer is not created for the default profile. We must
+        // warm it up explicitly before creating the AwContents that we want to use it.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> AwBrowserContext.getDefault().warmUpSpareRenderer());
+
+        TestAwContentsClient client = new TestAwContentsClient();
+        client.getRenderProcessGoneHelper().setResponse(true);
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+        AwContents awContents = testView.getAwContents();
+
         AwRenderProcess process =
-                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
         mActivityTestRule.pollUiThread(() -> process.isReadyForTesting());
         ThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
 
         mActivityTestRule.loadUrlSync(
-                mAwContents,
-                mContentsClient.getOnPageFinishedHelper(),
+                awContents,
+                client.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertSame(process, mAwContents.getRenderProcess()));
+                () -> Assert.assertSame(process, awContents.getRenderProcess()));
 
         // Terminating future renderers works as expected.
         createAndTerminateRenderProcess(
-                () -> Assert.assertTrue(mAwContents.getRenderProcess().terminate()), false);
+                awContents,
+                client,
+                () -> Assert.assertTrue(awContents.getRenderProcess().terminate()),
+                false);
         mActivityTestRule.loadUrlSync(
-                mAwContents,
-                mContentsClient.getOnPageFinishedHelper(),
+                awContents,
+                client.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
     }
 
@@ -268,32 +289,37 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @Feature({"AndroidWebView"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add({
-        "enable-features=CreateSpareRendererOnBrowserContextCreation"
-                + ":create_spare_renderer_for_default_if_multi_profile/true"
-    })
     public void testSetNetworkAvailableAfterSpareRenderTerminate() throws Throwable {
+        // By default, spare renderer is not created for the default profile. We must
+        // warm it up explicitly before creating the AwContents that we want to use it.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> AwBrowserContext.getDefault().warmUpSpareRenderer());
+
+        TestAwContentsClient client = new TestAwContentsClient();
+        client.getRenderProcessGoneHelper().setResponse(true);
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+        AwContents awContents = testView.getAwContents();
+
         AwRenderProcess process =
-                ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
+                ThreadUtils.runOnUiThreadBlocking(() -> awContents.getRenderProcess());
         mActivityTestRule.pollUiThread(() -> process.isReadyForTesting());
         ThreadUtils.runOnUiThreadBlocking(() -> Assert.assertFalse(process.terminate()));
 
         mActivityTestRule.loadUrlSync(
-                mAwContents,
-                mContentsClient.getOnPageFinishedHelper(),
+                awContents,
+                client.getOnPageFinishedHelper(),
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
-        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         String script = "navigator.onLine";
         Assert.assertEquals(
                 "true",
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        mAwContents, mContentsClient, script));
+                mActivityTestRule.executeJavaScriptAndWaitForResult(awContents, client, script));
 
-        AwActivityTestRule.setNetworkAvailableOnUiThread(mAwContents, false);
+        AwActivityTestRule.setNetworkAvailableOnUiThread(awContents, false);
         Assert.assertEquals(
                 "false",
-                mActivityTestRule.executeJavaScriptAndWaitForResult(
-                        mAwContents, mContentsClient, script));
+                mActivityTestRule.executeJavaScriptAndWaitForResult(awContents, client, script));
     }
 }

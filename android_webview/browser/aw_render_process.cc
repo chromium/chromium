@@ -102,9 +102,7 @@ void AwRenderProcess::Cleanup() {
 
   // If the process was never used, keep the same Java object to satisfy CTS
   // tests.
-  if (base::FeatureList::IsEnabled(
-          features::kCreateSpareRendererOnBrowserContextCreation) &&
-      IsUnused(render_process_host_)) {
+  if (IsUnused(render_process_host_)) {
     renderer_remote_.reset();
     return;
   }
@@ -122,9 +120,7 @@ bool AwRenderProcess::TerminateChildProcess(JNIEnv* env) {
   // If the process has never been used, this is the spare render process.
   // Treat this as if it never existed since it's an internal performance
   // optimization.
-  if (base::FeatureList::IsEnabled(
-          features::kCreateSpareRendererOnBrowserContextCreation) &&
-      result && IsUnused(render_process_host_)) {
+  if (result && IsUnused(render_process_host_)) {
     // Use fast shutdown for the unused process to allow loadUrl() calls to work
     // immediately after the terminate call.
     bool ignore_pending_reuse = false;
