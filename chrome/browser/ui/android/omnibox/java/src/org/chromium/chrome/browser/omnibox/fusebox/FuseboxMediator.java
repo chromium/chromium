@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
@@ -85,6 +86,7 @@ import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.url.GURL;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -118,6 +120,8 @@ import java.util.function.Supplier;
     private final BackPressManager mBackPressManager;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
+    private final Callback<@Nullable GURL> mOnExactMatchUrlChanged = this::onExactMatchUrlChanged;
 
     private boolean mIsTextWrapping;
     private boolean mHasContextualTasksFocus;
@@ -157,7 +161,8 @@ import java.util.function.Supplier;
             ScrimManager scrimManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
             BackPressManager backPressManager,
-            @Nullable Runnable onFirstPickerInteractionCanceledCallback) {
+            @Nullable Runnable onFirstPickerInteractionCanceledCallback,
+            NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -172,6 +177,8 @@ import java.util.function.Supplier;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
         mBackPressManager = backPressManager;
         mOnFirstPickerInteractionCanceledCallback = onFirstPickerInteractionCanceledCallback;
+        mExactMatchUrlSupplier = exactMatchUrlSupplier;
+        mExactMatchUrlSupplier.addSyncObserver(mOnExactMatchUrlChanged);
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -214,6 +221,7 @@ import java.util.function.Supplier;
     /* package */ void destroy() {
         endInput();
         mBackPressManager.removeHandler(this);
+        mExactMatchUrlSupplier.removeObserver(mOnExactMatchUrlChanged);
     }
 
     public boolean wasActionTaken() {
@@ -972,6 +980,10 @@ import java.util.function.Supplier;
         updateActivationChip();
     }
 
+    private void onExactMatchUrlChanged(@Nullable GURL url) {
+        updateActivationChip();
+    }
+
     private void updateActivationChip() {
         boolean showActivationChip =
                 isInInputSession()
@@ -979,7 +991,8 @@ import java.util.function.Supplier;
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         && mModel.get(FuseboxProperties.REQUEST_TYPE)
                                 == AutocompleteRequestType.SEARCH
-                        && mInput.getSiteSearchData() == null;
+                        && mInput.getSiteSearchData() == null
+                        && (mExactMatchUrlSupplier.get() == null);
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_VISIBLE, showActivationChip);
     }
 

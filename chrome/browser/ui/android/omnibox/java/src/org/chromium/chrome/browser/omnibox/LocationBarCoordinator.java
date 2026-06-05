@@ -41,6 +41,7 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -101,6 +102,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ViewRectProvider;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -302,6 +304,8 @@ public class LocationBarCoordinator
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
         OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
+        SettableNullableObservableSupplier<GURL> exactMatchUrlSupplier =
+                ObservableSuppliers.createNullable();
         mFuseboxCoordinator =
                 new FuseboxCoordinator(
                         context,
@@ -314,7 +318,8 @@ public class LocationBarCoordinator
                                 mAutocompleteCoordinator != null
                                         ? mAutocompleteCoordinator.getSuggestionsDropdown()
                                         : null,
-                        backPressManager);
+                        backPressManager,
+                        exactMatchUrlSupplier);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier;
         NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier;
         if (OmniboxFeatures.isMultimodalInputEnabled(context)) {
@@ -387,7 +392,8 @@ public class LocationBarCoordinator
                         mFuseboxCoordinator,
                         locationBarEmbedder,
                         omniboxChipManager,
-                        scrimHandler);
+                        scrimHandler,
+                        exactMatchUrlSupplier);
         mBackButton = mLocationBarLayout.findViewById(R.id.omnibox_back_button);
         if (mBackButton != null) {
             mBackButton.setOnClickListener(v -> mLocationBarMediator.onBackButtonClicked());

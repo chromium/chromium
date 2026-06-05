@@ -63,6 +63,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -175,6 +176,8 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull(List.of());
     private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier =
             ObservableSuppliers.createNonNull(PopupState.HIDDEN);
+    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+            ObservableSuppliers.createNullable();
 
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
@@ -252,7 +255,8 @@ public class FuseboxMediatorUnitTest {
                         mScrimManager,
                         () -> null,
                         mBackPressManager,
-                        mOnFirstPickerInteractionCanceledCallback);
+                        mOnFirstPickerInteractionCanceledCallback,
+                        mExactMatchUrlSupplier);
         mMediator.beginInput(createSession());
     }
 
@@ -2370,6 +2374,12 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
         mInput.setSiteSearchData(null);
+        assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+
+        mExactMatchUrlSupplier.set(new GURL("https://example.com"));
+        assertFalse(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
+
+        mExactMatchUrlSupplier.set(null);
         assertTrue(mModel.get(FuseboxProperties.ACTIVATION_CHIP_VISIBLE));
 
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);

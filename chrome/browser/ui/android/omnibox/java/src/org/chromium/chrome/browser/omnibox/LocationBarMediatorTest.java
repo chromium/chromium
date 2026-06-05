@@ -69,6 +69,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -252,6 +253,8 @@ public class LocationBarMediatorTest {
                     ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
     private final FuseboxSessionState mSessionState = new FuseboxSessionState();
+    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
+            ObservableSuppliers.createNullable();
 
     // Members capturing final state of the LocationBarLayout elements.
     private boolean mNavigateButtonIsVisible;
@@ -361,7 +364,8 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        mScrimHandler);
+                        mScrimHandler,
+                        mExactMatchUrlSupplier);
         verify(mFuseboxCoordinator)
                 .setOnInteractionCompletedCallback(mOnInteractionCompletedCallbackCaptor.capture());
         mOnInteractionCompletedCallback = mOnInteractionCompletedCallbackCaptor.getValue();
@@ -405,7 +409,8 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        /* scrimHandler= */ null);
+                        /* scrimHandler= */ null,
+                        mExactMatchUrlSupplier);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         return tabletMediator;
@@ -1528,7 +1533,8 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        mScrimHandler);
+                        mScrimHandler,
+                        mExactMatchUrlSupplier);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mProfileSupplier.set(mProfile);

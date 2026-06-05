@@ -293,8 +293,7 @@ class LocationBarMediator
     private final ButtonToolbarWidthConsumer mLensButtonToolbarWidthConsumer;
     private final ButtonToolbarWidthConsumer mZoomButtonToolbarWidthConsumer;
     private final @Nullable OmniboxChipManager mOmniboxChipManager;
-    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
-            ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private boolean mMiniOriginMode;
 
     /*package */ LocationBarMediator(
@@ -320,12 +319,14 @@ class LocationBarMediator
             FuseboxCoordinator fuseboxCoordinator,
             LocationBarEmbedder locationBarEmbedder,
             @Nullable OmniboxChipManager omniboxChipManager,
-            @Nullable LocationBarFocusScrimHandler scrimHandler) {
+            @Nullable LocationBarFocusScrimHandler scrimHandler,
+            SettableNullableObservableSupplier<GURL> exactMatchUrlSupplier) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
         mLocationBarEmbedder = locationBarEmbedder;
         mFuseboxCoordinator = fuseboxCoordinator;
+        mExactMatchUrlSupplier = exactMatchUrlSupplier;
         mLocationBarDataProvider.addObserver(this);
         mEmbedderUiOverrides = embedderUiOverrides;
         mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
