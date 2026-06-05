@@ -80,11 +80,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -2071,6 +2073,86 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
             get_future.Get()->get_get_assertion_response()->status);
 
   EXPECT_TRUE(logger->log().empty());
+}
+
+class WebAuthConnectionAllowlistTest : public WebAuthCrossDomainTest {
+ public:
+  WebAuthConnectionAllowlistTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{network::features::kConnectionAllowlists,
+                              blink::features::
+                                  kOverrideConnectionAllowlistOriginTrial},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    https_server().RegisterRequestHandler(base::BindRepeating(
+        &WebAuthConnectionAllowlistTest::ServeConnectionAllowlistResponse,
+        base::Unretained(this)));
+    WebAuthCrossDomainTest::SetUpOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse>
+  ServeConnectionAllowlistResponse(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/connection_allowlist.html") {
+      return nullptr;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content("<html><body>Hello</body></html>");
+    response->AddCustomHeader("Connection-Allowlist",
+                              R"((response-origin "*://a.test:*/*"))");
+    return response;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebAuthConnectionAllowlistTest,
+                       RemoteValidationAllowed) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetHttpsURL("www.acme.com", "/connection_allowlist.html")));
+
+  CreateParameters parameters;
+  // A remote validation request is required. The validation URL obtained using
+  // the relying party id is allowed by the connection allowlist.
+  parameters.rp_id = "a.test";
+
+  test_client()->set_webauthn_origins_response(
+      "application/json", GetHttpsURL("www.acme.com", "/").spec());
+
+  WebAuthRequestSecurityCheckerImpl::
+      UseSystemSharedURLLoaderFactoryForTesting() = true;
+
+  EXPECT_EQ(kOkMessage, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                               BuildCreateCallWithParameters(parameters)));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthConnectionAllowlistTest,
+                       RemoteValidationBlocked) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GetHttpsURL("www.acme.com", "/connection_allowlist.html")));
+
+  CreateParameters parameters;
+  // A remote validation request is required. The validation URL obtained using
+  // the relying party id is blocked by the connection allowlist.
+  parameters.rp_id = "foo.com";
+
+  test_client()->set_webauthn_origins_response(
+      "application/json", GetHttpsURL("www.acme.com", "/").spec());
+
+  WebAuthRequestSecurityCheckerImpl::
+      UseSystemSharedURLLoaderFactoryForTesting() = true;
+
+  std::string result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                              BuildCreateCallWithParameters(parameters))
+                           .ExtractString();
+
+  EXPECT_EQ(kNotAllowedErrorMessage,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   BuildCreateCallWithParameters(parameters)));
 }
 
 }  // namespace

@@ -14,6 +14,7 @@
 #include "components/webauthn/core/browser/remote_validation.h"
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -212,6 +213,23 @@ WebAuthRequestSecurityCheckerImpl::ValidateDomainAndRelyingPartyID(
     return nullptr;
   }
 
+  const PolicyContainerHost* policy_container_host =
+      static_cast<RenderFrameHostImpl*>(render_frame_host_)
+          ->policy_container_host();
+
+  // The relying party ID requires remote validation, the URL used for
+  // validation is checked against the initiator frame's connection allowlist.
+  std::optional<GURL> remote_validation_url =
+      webauthn::GetRemoteValidationUrl(relying_party_id);
+
+  if (remote_validation_url.has_value() &&
+      !ConnectionAllowlistAllowsUrlAndReportIfNeeded(
+          policy_container_host->policies(), *remote_validation_url)) {
+    std::move(callback).Run(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return nullptr;
+  }
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   if (!WebAuthRequestSecurityCheckerImpl::
           UseSystemSharedURLLoaderFactoryForTesting()) {
@@ -226,10 +244,7 @@ WebAuthRequestSecurityCheckerImpl::ValidateDomainAndRelyingPartyID(
   content::GlobalRenderFrameHostId rfh_id = render_frame_host_->GetGlobalId();
   return webauthn::RemoteValidation::Create(
       caller_origin, relying_party_id, url_loader_factory,
-      mojo::Clone(static_cast<RenderFrameHostImpl*>(render_frame_host_)
-                      ->policy_container_host()
-                      ->policies()
-                      .content_security_policies),
+      mojo::Clone(policy_container_host->policies().content_security_policies),
       base::BindOnce(
           [](content::GlobalRenderFrameHostId rfh_id) {
             RenderFrameHost* rfh = RenderFrameHost::FromID(rfh_id);

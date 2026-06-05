@@ -4,9 +4,15 @@
 
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 
+#include <optional>
+#include <string>
+
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "url/gurl.h"
+#include "url/url_canon.h"
 #include "url/url_util.h"
 
 namespace webauthn {
@@ -85,6 +91,32 @@ bool OriginIsAllowedToClaimRelyingPartyId(
   }
 
   return true;
+}
+
+std::optional<GURL> GetRemoteValidationUrl(
+    const std::string& relying_party_id) {
+  std::string canonicalized_domain_storage;
+  url::StdStringCanonOutput canon_output(&canonicalized_domain_storage);
+  url::CanonHostInfo host_info;
+  url::CanonicalizeHostVerbose(relying_party_id,
+                               url::Component(0, relying_party_id.size()),
+                               &canon_output, &host_info);
+  const std::string_view canonicalized_domain = canon_output.view();
+  if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
+      !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
+    // The RP ID must look like a hostname, e.g. not an IP address.
+    return std::nullopt;
+  }
+
+  constexpr char well_known_url_template[] =
+      "https://domain.com/.well-known/webauthn";
+  GURL well_known_url(well_known_url_template);
+  CHECK(well_known_url.is_valid());
+
+  GURL::Replacements replace_host;
+  replace_host.SetHostStr(canonicalized_domain);
+
+  return well_known_url.ReplaceComponents(replace_host);
 }
 
 }  // namespace webauthn

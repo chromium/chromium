@@ -24,7 +24,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
-#include "url/url_canon.h"
 
 namespace webauthn {
 
@@ -84,40 +83,22 @@ std::unique_ptr<RemoteValidation> RemoteValidation::Create(
     return nullptr;
   }
 
-  // The relying party may allow other origins to use its RP ID based on the
-  // contents of a .well-known file.
-  std::string canonicalized_domain_storage;
-  url::StdStringCanonOutput canon_output(&canonicalized_domain_storage);
-  url::CanonHostInfo host_info;
-  url::CanonicalizeHostVerbose(relying_party_id,
-                               url::Component(0, relying_party_id.size()),
-                               &canon_output, &host_info);
-  const std::string_view canonicalized_domain = canon_output.view();
-  if (host_info.family != url::CanonHostInfo::Family::NEUTRAL ||
-      !net::IsCanonicalizedHostCompliant(canonicalized_domain)) {
-    // The RP ID must look like a hostname, e.g. not an IP address.
+  std::optional<GURL> well_known_url =
+      webauthn::GetRemoteValidationUrl(relying_party_id);
+  if (!well_known_url.has_value()) {
     std::move(callback).Run(ValidationStatus::kBadRelyingPartyId);
     return nullptr;
   }
 
-  constexpr char well_known_url_template[] =
-      "https://domain.com/.well-known/webauthn";
-  GURL well_known_url(well_known_url_template);
-  CHECK(well_known_url.is_valid());
-
-  GURL::Replacements replace_host;
-  replace_host.SetHostStr(canonicalized_domain);
-  well_known_url = well_known_url.ReplaceComponents(replace_host);
-
   auto network_request = std::make_unique<network::ResourceRequest>();
-  network_request->url = well_known_url;
+  network_request->url = *well_known_url;
   network_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   std::unique_ptr<RemoteValidation> validation(new RemoteValidation(
       caller_origin, std::move(content_security_policies),
       std::move(log_use_counter_callback), std::move(callback)));
 
-  validation->CheckCsp(well_known_url, /*has_followed_redirect=*/false);
+  validation->CheckCsp(*well_known_url, /*has_followed_redirect=*/false);
 
   validation->loader_ = network::SimpleURLLoader::Create(
       std::move(network_request), kRpIdCheckTrafficAnnotation);

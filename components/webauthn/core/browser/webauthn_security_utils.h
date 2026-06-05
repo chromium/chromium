@@ -4,8 +4,11 @@
 
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_WEBAUTHN_SECURITY_UTILS_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_WEBAUTHN_SECURITY_UTILS_H_
+
+#include <optional>
 #include <string>
 
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace webauthn {
@@ -35,6 +38,12 @@ ValidationStatus OriginAllowedToMakeWebAuthnRequests(url::Origin caller_origin);
 bool OriginIsAllowedToClaimRelyingPartyId(
     const std::string& claimed_relying_party_id,
     const url::Origin& caller_origin);
+
+// Returns the URL used for remote validation.
+//
+// This method returns a nullopt if the remote validation URL resembles an IP
+// address.
+std::optional<GURL> GetRemoteValidationUrl(const std::string& relying_party_id);
 
 }  // namespace webauthn
 
