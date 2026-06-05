@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -22,7 +23,7 @@
 #include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/test_support/glic_api_test.h"
+#include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -31,7 +32,6 @@
 #include "chrome/test/base/drag_and_drop_test_utils.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_types.h"
@@ -45,6 +45,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/aura/client/drag_drop_client.h"
@@ -62,24 +63,29 @@
 namespace glic {
 namespace {
 
-class GlicDragAndDropPolicyTest : public InteractiveGlicApiTest {
+class GlicDragAndDropPolicyTest : public GlicApiBrowserTest {
  public:
+  using InProcessBrowserTest::browser;
+
   GlicDragAndDropPolicyTest()
-      : InteractiveGlicApiTest("./glic_drag_and_drop_interactive_uitest.js") {
+      : GlicApiBrowserTest("./glic_drag_and_drop_interactive_uitest.js") {
     feature_list_.InitWithFeatures({features::kGlicDragAndDropFileUpload,
                                     features::kGlicWebDragAndDropFileUpload},
                                    {});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveGlicApiTest::SetUpCommandLine(command_line);
+    GlicApiBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(::switches::kGlicDev);
     // Skips FRE experience.
     command_line->AppendSwitch(::switches::kGlicAutomation);
   }
 
   void SetUpOnMainThread() override {
-    InteractiveGlicApiTest::SetUpOnMainThread();
+    host_resolver()->AddRule("a.com", "127.0.0.1");
+    host_resolver()->AddRule("b.com", "127.0.0.1");
+
+    GlicApiBrowserTest::SetUpOnMainThread();
 
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
         ->SetTestingFactory(
@@ -130,7 +136,7 @@ class GlicDragAndDropPolicyTest : public InteractiveGlicApiTest {
     enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
         browser()->profile())
         ->SetBrowserCloudPolicyClientForTesting(nullptr);
-    InteractiveGlicApiTest::TearDownOnMainThread();
+    GlicApiBrowserTest::TearDownOnMainThread();
   }
 
  protected:
@@ -286,9 +292,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlp) {
               }),
           "fake-dm-token"));
 
-  RunTestSequence(OpenGlic());
-  Host* glic_host = GetHost();
-  ASSERT_TRUE(glic_host);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
   PrepareGuestForDrag(*glic_host);
   gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
 
@@ -333,9 +339,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest, testDragAndDropDlpBlocked) {
           }),
           "fake-dm-token"));
 
-  RunTestSequence(OpenGlic());
-  Host* glic_host = GetHost();
-  ASSERT_TRUE(glic_host);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
   PrepareGuestForDrag(*glic_host);
   gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
 
@@ -397,9 +403,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
           "fake-dm-token"));
 
   // 1. Open GLIC and prepare the guest.
-  RunTestSequence(OpenGlic());
-  Host* glic_host = GetHost();
-  ASSERT_TRUE(glic_host);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
   PrepareGuestForDrag(*glic_host);
 
   // 2. Setup Source Tab with an image.
@@ -481,9 +487,9 @@ IN_PROC_BROWSER_TEST_F(GlicDragAndDropPolicyTest,
           }),
           "fake-dm-token"));
   // 1. Open GLIC and prepare the guest.
-  RunTestSequence(OpenGlic());
-  Host* glic_host = GetHost();
-  ASSERT_TRUE(glic_host);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
   PrepareGuestForDrag(*glic_host);
 
   // 2. Setup Source Tab with an image.
