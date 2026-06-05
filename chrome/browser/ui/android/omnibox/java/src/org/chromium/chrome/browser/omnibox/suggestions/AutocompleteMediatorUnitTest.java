@@ -23,6 +23,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -158,6 +159,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock FuseboxCoordinator mFuseboxCoordinator;
     private @Mock PreloadingFeatureMap mPreloadingFeatureMap;
     private @Mock ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
+    private @Mock Callback<GURL> mGurlCallback;
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
     private @Captor ArgumentCaptor<Consumer<SiteSearchData>> mKeywordModeEnteredCaptor;
     private @Captor ArgumentCaptor<Callback<GURL>> mUrlCallbackCaptor;
@@ -2454,5 +2456,109 @@ public class AutocompleteMediatorUnitTest {
 
         // Verify that observers are NOT installed because activity is not focused.
         verify(mAutocompleteController, never()).addOnSuggestionsReceivedListener(any());
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_noInputSession_noUrlAdjustment() {
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mGurlCallback).onResult(JUnitTestGURLs.BLUE_1);
+        verifyNoInteractions(mComposeboxQueryControllerBridge);
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_conventionalRequest_noUrlAdjustment() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mGurlCallback).onResult(JUnitTestGURLs.BLUE_1);
+        verifyNoInteractions(mComposeboxQueryControllerBridge);
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_modelPickerAIM_getAimUrlFromInputState() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mMediator.beginInput(createSession(AutocompleteRequestType.AI_MODE));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mComposeboxQueryControllerBridge)
+                .getAimUrlFromInputState(eq(JUnitTestGURLs.BLUE_1), eq("query"), eq(mGurlCallback));
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_modelPickerImageGen_getAimUrlFromInputState() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mMediator.beginInput(createSession(AutocompleteRequestType.IMAGE_GENERATION));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mComposeboxQueryControllerBridge)
+                .getAimUrlFromInputState(eq(JUnitTestGURLs.BLUE_1), eq("query"), eq(mGurlCallback));
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_modelPickerCanvas_getAimUrlFromInputState() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mMediator.beginInput(createSession(AutocompleteRequestType.CANVAS));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mComposeboxQueryControllerBridge)
+                .getAimUrlFromInputState(eq(JUnitTestGURLs.BLUE_1), eq("query"), eq(mGurlCallback));
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_modelPickerDeepSearch_getAimUrlFromInputState() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        mMediator.beginInput(createSession(AutocompleteRequestType.DEEP_SEARCH));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mComposeboxQueryControllerBridge)
+                .getAimUrlFromInputState(eq(JUnitTestGURLs.BLUE_1), eq("query"), eq(mGurlCallback));
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_noModelPicker_getAimUrl() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        mMediator.beginInput(createSession(AutocompleteRequestType.AI_MODE));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mComposeboxQueryControllerBridge)
+                .getAimUrl(eq(JUnitTestGURLs.BLUE_1), eq("query"), eq(mGurlCallback));
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_noModelPicker_getImageGenerationUrl() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        mMediator.beginInput(createSession(AutocompleteRequestType.IMAGE_GENERATION));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mComposeboxQueryControllerBridge)
+                .getImageGenerationUrl(eq(JUnitTestGURLs.BLUE_1), eq("query"), eq(mGurlCallback));
+    }
+
+    @Test
+    @SmallTest
+    public void adjustGurlForRequestType_noModelPickerDeepSearch_noUrlAdjustment() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        mMediator.beginInput(createSession(AutocompleteRequestType.DEEP_SEARCH));
+
+        mMediator.adjustGurlForRequestType(JUnitTestGURLs.BLUE_1, "query", mGurlCallback);
+
+        verify(mGurlCallback).onResult(JUnitTestGURLs.BLUE_1);
+        verifyNoInteractions(mComposeboxQueryControllerBridge);
     }
 }

@@ -1519,26 +1519,44 @@ class AutocompleteMediator
             // contextualized in the AIM chat.
             String suggestionDisplayText = suggestion.getDisplayText();
 
-            if (OmniboxFeatures.sShowModelPicker.getValue()) {
-                @AutocompleteRequestType int requestType = mAutocompleteInput.getRequestType();
-                if (ToolModeUtils.isConventionalRequest(requestType)) {
-                    onUrlReady.onResult(url);
-                } else {
-                    assert ToolModeUtils.isAimRequest(requestType);
-                    ComposeboxQueryControllerBridge bridge =
-                            assumeNonNull(mSessionState.getComposeboxQueryControllerBridge());
-                    bridge.getAimUrlFromInputState(url, suggestionDisplayText, onUrlReady);
-                }
-            } else {
-                switch (mAutocompleteInput.getRequestType()) {
-                    case AutocompleteRequestType.AI_MODE ->
-                            assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                    .getAimUrl(url, suggestionDisplayText, onUrlReady);
-                    case AutocompleteRequestType.IMAGE_GENERATION ->
-                            assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                    .getImageGenerationUrl(url, suggestionDisplayText, onUrlReady);
-                    default -> onUrlReady.onResult(url);
-                }
+            adjustGurlForRequestType(url, suggestionDisplayText, onUrlReady);
+        }
+    }
+
+    /**
+     * Potentially adjust the given URL based on the current request type (e.g. AIM mode, Image
+     * Generation) and model picker flag, and invoke the callback with that URL.
+     *
+     * @param url The base {@link GURL} to potentially be adjusted.
+     * @param queryText The query text for the request. May be used by the bridge to help generate
+     *     the adjusted URL.
+     * @param callback The callback to be invoked with the potentially adjusted URL.
+     */
+    @VisibleForTesting
+    /* package */ void adjustGurlForRequestType(
+            GURL url, String queryText, Callback<GURL> callback) {
+        if (!isInInputSession()) {
+            callback.onResult(url);
+            return;
+        }
+
+        @Nullable ComposeboxQueryControllerBridge bridge =
+                mSessionState.getComposeboxQueryControllerBridge();
+        @AutocompleteRequestType int requestType = mAutocompleteInput.getRequestType();
+
+        if (bridge == null || ToolModeUtils.isConventionalRequest(requestType)) {
+            callback.onResult(url);
+            return;
+        }
+
+        if (OmniboxFeatures.sShowModelPicker.getValue()) {
+            bridge.getAimUrlFromInputState(url, queryText, callback);
+        } else {
+            switch (requestType) {
+                case AutocompleteRequestType.AI_MODE -> bridge.getAimUrl(url, queryText, callback);
+                case AutocompleteRequestType.IMAGE_GENERATION ->
+                        bridge.getImageGenerationUrl(url, queryText, callback);
+                default -> callback.onResult(url);
             }
         }
     }
