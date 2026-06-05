@@ -219,6 +219,7 @@ source_set("programmatic_form_submission_handler_feature") {
     ":programatic_form_submission_js",
     "//base",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/common:autofill_optimization_features",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
   ]

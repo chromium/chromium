@@ -168,10 +168,7 @@ function fillPasswordForm(
   }
 
   // Check fields that are not inside any <form> tag.
-  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
-  const unownedInputs =
-      fillUtil.getUnownedAutofillableFormFieldElements(
-          Array.from(document.all) as fillConstants.FormControlElement[], []) as
+  const unownedInputs = fillUtil.getUnownedAutofillableFormFieldElements([]) as
       HTMLInputElement[];
   if (unownedInputs.length > 0) {
     return fillUsernameAndPassword(unownedInputs, formData, username, password);
@@ -224,11 +221,9 @@ function fillGeneratedPassword(
   if (!form && hasFormTag) {
     return false;
   }
-  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
   const inputs = hasFormTag ?
       getFormInputElements(form as HTMLFormElement) :
-      fillUtil.getUnownedAutofillableFormFieldElements(
-          Array.from(document.all) as fillConstants.FormControlElement[], []) as
+      fillUtil.getUnownedAutofillableFormFieldElements([]) as
           HTMLInputElement[];
   const newPasswordField =
       findInputByFieldRendererID(inputs, newPasswordIdentifier);
@@ -378,9 +373,7 @@ function getPasswordFormDataList(formDataList: fillUtil.AutofillFormData[]) {
       addSubmitButtonTouchEndHandler(form);
     }
   }
-  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
-  const unownedFormData =
-      getPasswordFormDataFromUnownedElements() as fillUtil.AutofillFormData;
+  const unownedFormData = getPasswordFormDataFromUnownedElements();
   if (unownedFormData && isRecognizedCredentialForm(unownedFormData)) {
     formDataList.push(unownedFormData);
   }
@@ -391,13 +384,11 @@ function getPasswordFormDataList(formDataList: fillUtil.AutofillFormData[]) {
  * JS object containing the form data.
  * @return Object of data from formElement.
  */
-function getPasswordFormDataFromUnownedElements(): object|null {
-  const fieldsets: fillConstants.FormControlElement[] = [];
-  // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+function getPasswordFormDataFromUnownedElements(): fillUtil.AutofillFormData|
+    null {
+  const fieldsets: Element[] = [];
   const unownedControlElements =
-      fillUtil.getUnownedAutofillableFormFieldElements(
-          Array.from(document.all) as fillConstants.FormControlElement[],
-          fieldsets) as HTMLInputElement[];
+      fillUtil.getUnownedAutofillableFormFieldElements(fieldsets);
   if (unownedControlElements.length === 0) {
     return null;
   }
@@ -455,11 +446,8 @@ function submitPasswordForm(
     if (form) {
       inputs = getFormInputElements(form);
     } else {
-      // TODO(crbug.com/454044167): Cleanup autofill TS type casting.
-      inputs =
-          fillUtil.getUnownedAutofillableFormFieldElements(
-              Array.from(document.all) as fillConstants.FormControlElement[],
-              []) as HTMLInputElement[];
+      inputs = fillUtil.getUnownedAutofillableFormFieldElements([]) as
+          HTMLInputElement[];
     }
     const passwordInput =
         findInputByFieldRendererID(inputs, passwordIdentifier);

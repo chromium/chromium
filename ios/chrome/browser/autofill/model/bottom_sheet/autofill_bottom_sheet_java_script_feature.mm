@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/values.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
+#import "components/autofill/ios/common/autofill_optimization_features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -46,7 +47,19 @@ AutofillBottomSheetJavaScriptFeature::AutofillBottomSheetJavaScriptFeature()
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
-              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
+              FeatureScript::ReinjectionBehavior::kInjectOncePerWindow,
+              base::BindRepeating(
+                  []() -> FeatureScript::PlaceholderReplacements {
+                    return @{
+                      @"window."
+                      @"gCrWebPlaceholderAutofillOptimizationFormSearch" :
+                              base::FeatureList::IsEnabled(
+                                  autofill::features::
+                                      kAutofillOptimizationFormSearchIos)
+                          ? @"true"
+                          : @"false",
+                    };
+                  }))}) {}
 
 AutofillBottomSheetJavaScriptFeature::~AutofillBottomSheetJavaScriptFeature() =
     default;

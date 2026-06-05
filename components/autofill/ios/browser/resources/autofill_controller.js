@@ -83,13 +83,6 @@ function isAutofillUndoEnabled() {
 }
 
 /**
- * Returns true if autofill optimization form search is enabled.
- */
-function isAutofillOptimizationFormSearchEnabled() {
-  return window.gCrWebPlaceholderAutofillOptimizationFormSearch;
-}
-
-/**
  * Determines whether the form is interesting enough to send to the browser for
  * further operations.
  *
@@ -158,11 +151,8 @@ function getUnownedIframes() {
  */
 function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
   const fieldsets = [];
-  const elements = isAutofillOptimizationFormSearchEnabled() ?
-      document.querySelectorAll('input, select, textarea, fieldset') :
-      document.all;
   const unownedControlElements =
-      fillUtil.getUnownedAutofillableFormFieldElements(elements, fieldsets);
+      fillUtil.getUnownedAutofillableFormFieldElements(fieldsets);
   const numEditableUnownedElements =
       countEditableElements_(unownedControlElements);
   const iframeElements =
@@ -395,9 +385,7 @@ function clearAutofilledFields(formUniqueID, fieldUniqueID) {
 
   const controlElements = form ?
       getFormControlElements(form) :
-      fillUtil.getUnownedAutofillableFormFieldElements(
-          document.all,
-          /*fieldsets=*/[]);
+      fillUtil.getUnownedAutofillableFormFieldElements(/*fieldsets=*/[]);
 
   let formField = null;
   for (let i = 0; i < controlElements.length; ++i) {
