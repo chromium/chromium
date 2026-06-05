@@ -11,6 +11,8 @@
 #import "components/actor/core/journal_details_builder.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -104,9 +106,10 @@ void LogEngineStateTransition(AggregatedJournal* journal,
 
 // TODO(crbug.com/503841160): Log the proper WebState URLs.
 // Logs the start of the Act sequence to the journal.
-void LogActStart(AggregatedJournal* journal,
-                 ActorTaskId task_id,
-                 const std::vector<std::unique_ptr<ActorTool>>& actions) {
+void LogActStart(
+    AggregatedJournal* journal,
+    ActorTaskId task_id,
+    const std::vector<std::unique_ptr<ActorToolRequest>>& actions) {
   CHECK(journal);
 
   JournalDetailsBuilder builder;
@@ -144,23 +147,47 @@ void EndAsyncEntry(AggregatedJournal::PendingAsyncEntry* entry,
   entry->EndEntry(std::move(builder).Build());
 }
 
-// Returns the WebStateID for the target WebState of `tool`, or an invalid
-// WebStateID if `tool` is null or has no target WebState.
-web::WebStateID GetWebStateIDForTool(ActorTool* tool) {
-  if (!tool) {
+// Logs a ToolExecutionResult immediately to the journal.
+//
+// Note that `result` has a success code and can be used to carry errors
+// made before the tool was even executed.
+void LogToolExecutionResult(AggregatedJournal* journal,
+                            ActorTaskId task_id,
+                            std::string_view details_key,
+                            std::string_view event_name,
+                            const ToolExecutionResult& result) {
+  CHECK(journal);
+  std::vector<mojom::JournalDetailsPtr> details;
+
+  if (result.IsOk()) {
+    details = JournalDetailsBuilder()
+                  .Add(details_key, GetToolExecutionResultMessage(result))
+                  .Build();
+  } else {
+    details = JournalDetailsBuilder()
+                  .AddError(GetToolExecutionResultMessage(result))
+                  .Build();
+  }
+  journal->Log(GURL(), task_id, event_name, std::move(details));
+}
+
+// Returns the WebStateID for the target WebState of `action`, or an invalid
+// WebStateID if `action` is null or has no target WebState.
+web::WebStateID GetWebStateIDForAction(const ActorToolRequest* action) {
+  if (!action) {
     return web::WebStateID();
   }
-  base::WeakPtr<web::WebState> target_web_state = tool->GetTargetWebState();
-  return target_web_state ? target_web_state->GetUniqueIdentifier()
-                          : web::WebStateID();
+  return action->GetTargetWebStateId();
 }
 
 }  // namespace
 
 ActorEngine::ActorEngine(ActorTaskId task_id,
                          AggregatedJournal* journal,
-                         ExecutionUpdatesDelegate* execution_updates_delegate)
-    : state_(State::kInit),
+                         ExecutionUpdatesDelegate* execution_updates_delegate,
+                         ActorToolFactory* tool_factory)
+    : tool_factory_(tool_factory),
+      state_(State::kInit),
       task_id_(task_id),
       journal_(journal),
       execution_updates_delegate_(execution_updates_delegate) {
@@ -169,7 +196,7 @@ ActorEngine::ActorEngine(ActorTaskId task_id,
 
 ActorEngine::~ActorEngine() = default;
 
-void ActorEngine::Act(std::vector<std::unique_ptr<ActorTool>> actions,
+void ActorEngine::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
                       ActCallback callback) {
   // TODO(crbug.com/503054406): Add guards for invalid start states.
   action_sequence_ = std::move(actions);
@@ -186,6 +213,7 @@ void ActorEngine::CancelOngoingAndPendingActions(
     ActorEngine::EngineResult reason) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   action_sequence_.clear();
+  current_tool_.reset();
 
   if (current_async_entry_) {
     current_async_entry_->EndEntry(
@@ -235,15 +263,16 @@ void ActorEngine::ExecuteNextAction() {
 void ActorEngine::UiPreInvoke() {
   SetState(State::kUiPreInvoke);
 
-  ActorTool* tool = action_sequence_[InProgressActionIndex()].get();
-  if (!tool) {
+  const ActorToolRequest* action =
+      action_sequence_[InProgressActionIndex()].get();
+  if (!action) {
     FinishedUiPreInvoke(ActionResult(
         ToolExecutionResult(mojom::ActionResultCode::kToolUnknown)));
     return;
   }
 
-  execution_updates_delegate_->OnWillExecuteTool(tool->GetToolType(),
-                                                 GetWebStateIDForTool(tool));
+  execution_updates_delegate_->OnWillExecuteTool(
+      action->GetToolType(), GetWebStateIDForAction(action));
 
   FinishedUiPreInvoke(ActionResult(ToolExecutionResult::Ok()));
 }
@@ -256,13 +285,34 @@ void ActorEngine::FinishedUiPreInvoke(ActionResult result) {
 
   SetState(State::kToolInvoke);
 
-  ActorTool* tool_ptr = action_sequence_[InProgressActionIndex()].get();
+  const ActorToolRequest* action =
+      action_sequence_[InProgressActionIndex()].get();
 
+  // TODO(crbug.com/504625981): Move tool instantiation/controller behavior into
+  // the tools layer.
+  base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
+      maybe_created_tool = tool_factory_->CreateTool(action->action());
+
+  ToolExecutionResult create_tool_result = ToolExecutionResult::Ok();
+  if (!maybe_created_tool.has_value()) {
+    create_tool_result = maybe_created_tool.error();
+    CompleteActions(ActionResult(create_tool_result));
+    return;
+  }
+  LogToolExecutionResult(
+      journal_, task_id_,
+      /*detail_key=*/"ActorEngine::FinishedUiPreInvoke",
+      /*event_name=*/
+      base::StringPrintf("CreateTool #%zu", InProgressActionIndex()),
+      create_tool_result);
+
+  current_tool_ = std::move(maybe_created_tool).value();
   current_async_entry_ = CreateToolExecutionAsyncEntry(journal_, task_id_,
                                                        InProgressActionIndex());
 
-  tool_ptr->Execute(base::BindOnce(&ActorEngine::OnToolExecutionComplete,
-                                   weak_ptr_factory_.GetWeakPtr(), tool_ptr));
+  current_tool_->Execute(base::BindOnce(&ActorEngine::OnToolExecutionComplete,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        current_tool_.get()));
 }
 
 void ActorEngine::OnToolExecutionComplete(ActorTool* tool,
@@ -286,6 +336,7 @@ void ActorEngine::OnToolExecutionComplete(ActorTool* tool,
 }
 
 void ActorEngine::FinishedToolInvoke(ActionResult result) {
+  current_tool_.reset();
   bool success = result.tool_result.IsOk();
 
   if (!success) {

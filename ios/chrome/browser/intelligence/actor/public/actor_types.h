@@ -16,11 +16,11 @@
 
 namespace actor {
 
-class ActorTool;
+class ActorToolRequest;
 
-// Result of creating a batch of ActorTools from Action protos.
-using CreateActorToolsResult =
-    base::expected<std::vector<std::unique_ptr<ActorTool>>,
+// Result of creating a batch of ActorToolRequests from Action protos.
+using CreateActorToolRequestsResult =
+    base::expected<std::vector<std::unique_ptr<ActorToolRequest>>,
                    ToolExecutionResult>;
 
 // Strongly typed, performant unique ID representing an ActorTask.

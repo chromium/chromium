@@ -35,7 +35,8 @@
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
@@ -597,8 +598,8 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
   actor::ActorTaskId task_id = actorService->CreateTask(
       "AI Prototyping Test Task", /*allow_incognito_web_states=*/false);
 
-  actor::CreateActorToolsResult tools_result =
-      actorService->CreateActorTools(actions, task_id);
+  actor::CreateActorToolRequestsResult tools_result =
+      actorService->CreateActorToolRequests(actions, task_id);
 
   if (!tools_result.has_value()) {
     NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(

@@ -17,9 +17,10 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/snackbar_actor_task_updates_observer.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -38,11 +39,11 @@ namespace {
 // Fallback tool name string when an action case cannot be mapped.
 constexpr char kUnknownTool[] = "unknown tool";
 
-// Logs a failure to create a tool to the journal.
-void LogToolCreationFailed(AggregatedJournal* journal,
-                           ActorTaskId task_id,
-                           const std::string& tool_name,
-                           const ToolExecutionResult& error) {
+// Logs a failure to create a tool request to the journal.
+void LogToolRequestCreationFailed(AggregatedJournal* journal,
+                                  ActorTaskId task_id,
+                                  const std::string& tool_name,
+                                  const ToolExecutionResult& error) {
   CHECK(journal);
 
   std::vector<mojom::JournalDetailsPtr> details =
@@ -50,10 +51,10 @@ void LogToolCreationFailed(AggregatedJournal* journal,
           .AddError(GetToolExecutionResultMessage(error))
           .Build();
 
-  journal->Log(
-      GURL(), task_id,
-      base::StringPrintf("Failed to create tool: %s", tool_name.c_str()),
-      std::move(details));
+  journal->Log(GURL(), task_id,
+               base::StringPrintf("Failed to create tool request: %s",
+                                  tool_name.c_str()),
+               std::move(details));
 }
 
 // Logs an attempt to create a tool to the journal.
@@ -71,12 +72,8 @@ void LogToolCreationAttempt(AggregatedJournal* journal,
 }  // namespace
 
 ActorService::ActorService(ProfileIOS* profile)
-    : ActorService(profile, std::make_unique<ActorToolFactory>()) {}
-
-ActorService::ActorService(ProfileIOS* profile,
-                           std::unique_ptr<ActorToolFactory> tool_factory)
     : profile_(profile),
-      tool_factory_(std::move(tool_factory)),
+      tool_factory_(std::make_unique<ActorToolFactory>(profile)),
       journal_(std::make_unique<AggregatedJournal>()) {
   CHECK(tool_factory_);
 }
@@ -94,8 +91,9 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   CHECK(IsActorEnabled());
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
-  auto task = std::make_unique<ActorTask>(
-      task_id, title, allow_incognito_web_states, journal_.get());
+  auto task =
+      std::make_unique<ActorTask>(task_id, title, allow_incognito_web_states,
+                                  journal_.get(), tool_factory_.get());
 
   // TODO(crbug.com/512521102): Cleanup observers lifecycle.
   // Only the latest task is tracked.
@@ -107,13 +105,13 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   return task_id;
 }
 
-CreateActorToolsResult ActorService::CreateActorTools(
+CreateActorToolRequestsResult ActorService::CreateActorToolRequests(
     const std::vector<optimization_guide::proto::Action>& actions,
     ActorTaskId task_id) {
   CHECK(IsActorEnabled());
 
-  std::vector<std::unique_ptr<ActorTool>> tools;
-  tools.reserve(actions.size());
+  std::vector<std::unique_ptr<ActorToolRequest>> tool_requests;
+  tool_requests.reserve(actions.size());
 
   for (const auto& action : actions) {
     std::string tool_name =
@@ -124,34 +122,25 @@ CreateActorToolsResult ActorService::CreateActorTools(
     if (action.action_case() ==
         optimization_guide::proto::Action::ACTION_NOT_SET) {
       ToolExecutionResult error{InternalToolErrorCode::kUnsupportedAction};
-      LogToolCreationFailed(journal_.get(), task_id, tool_name, error);
+      LogToolRequestCreationFailed(journal_.get(), task_id, tool_name, error);
       return base::unexpected(error);
     }
 
     if (IsToolDisabled(action.action_case())) {
       ToolExecutionResult error{InternalToolErrorCode::kToolDisabledByFeature};
-      LogToolCreationFailed(journal_.get(), task_id, tool_name, error);
+      LogToolRequestCreationFailed(journal_.get(), task_id, tool_name, error);
       return base::unexpected(error);
     }
 
-    base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult>
-        create_tool_result = tool_factory_->CreateTool(action, profile_);
-
-    if (!create_tool_result.has_value()) {
-      LogToolCreationFailed(journal_.get(), task_id, tool_name,
-                            create_tool_result.error());
-      return base::unexpected(create_tool_result.error());
-    }
-
-    tools.push_back(std::move(create_tool_result.value()));
+    tool_requests.push_back(std::make_unique<ActorToolRequest>(action));
   }
 
-  return tools;
+  return tool_requests;
 }
 
 void ActorService::PerformActions(
     ActorTaskId task_id,
-    std::vector<std::unique_ptr<ActorTool>> actions,
+    std::vector<std::unique_ptr<ActorToolRequest>> actions,
     const std::string& task_update,
     PerformActionsCallback callback) {
   CHECK(IsActorEnabled());
@@ -165,10 +154,37 @@ void ActorService::PerformActions(
     return;
   }
 
+  // Resolve and register target WebStates from requests before execution.
+  AddControlledWebStates(it->second.get(), actions);
+
   it->second->Act(std::move(actions), task_update,
                   base::BindOnce(&ActorService::OnActCompleted,
                                  weak_ptr_factory_.GetWeakPtr(), task_id,
                                  std::move(callback)));
+}
+
+void ActorService::AddControlledWebStates(
+    ActorTask* task,
+    const std::vector<std::unique_ptr<ActorToolRequest>>& actions) {
+  CHECK(IsActorEnabled());
+  CHECK(task);
+
+  for (const auto& request : actions) {
+    // The vector is populated by `CreateActorToolRequests` with non-null
+    // entries, and since `AddControlledWebStates` is called before the vector
+    // is moved to the task, the pointers are guaranteed to still be valid.
+    CHECK(request);
+    web::WebStateID target_id = request->GetTargetWebStateId();
+    if (!target_id.valid()) {
+      continue;
+    }
+
+    web::WebState* web_state =
+        GetWebState(target_id, task->allow_incognito_web_states());
+    if (web_state) {
+      task->AddControlledWebState(web_state);
+    }
+  }
 }
 
 void ActorService::RequestTabObservation(ActorTaskId task_id,
@@ -271,36 +287,13 @@ void ActorService::OnActCompleted(ActorTaskId task_id,
 
 web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
                                               ActorTaskId task_id) {
-  bool allows_incognito = false;
   auto it = active_tasks_.find(task_id);
-  if (it != active_tasks_.end()) {
-    allows_incognito = it->second->allow_incognito_web_states();
-  } else {
-    return nullptr;
-  }
-
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
-
-  std::set<Browser*> browsers =
-      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
-  if (allows_incognito) {
-    const std::set<Browser*>& incognito_browsers =
-        browser_list->BrowsersOfType(BrowserList::BrowserType::kIncognito);
-    browsers.insert(incognito_browsers.begin(), incognito_browsers.end());
-  }
-
-  BrowserAndIndex browser_and_index =
-      FindBrowserAndIndex(web_state_id, browsers);
-
-  if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
-      !browser_and_index.browser) {
+  if (it == active_tasks_.end()) {
     return nullptr;
   }
 
   web::WebState* web_state =
-      browser_and_index.browser->GetWebStateList()->GetWebStateAt(
-          browser_and_index.tab_index);
-
+      GetWebState(web_state_id, it->second->allow_incognito_web_states());
   if (!web_state) {
     return nullptr;
   }
@@ -312,6 +305,20 @@ web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
   }
 
   return web_state;
+}
+
+web::WebState* ActorService::GetWebState(web::WebStateID web_state_id,
+                                         bool allows_incognito) {
+  BrowserAndIndex browser_and_index =
+      FindBrowserAndIndexFromProfile(profile_, web_state_id, allows_incognito);
+
+  if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
+      !browser_and_index.browser) {
+    return nullptr;
+  }
+
+  return browser_and_index.browser->GetWebStateList()->GetWebStateAt(
+      browser_and_index.tab_index);
 }
 
 void ActorService::AddControlledWebState(ActorTaskId task_id,

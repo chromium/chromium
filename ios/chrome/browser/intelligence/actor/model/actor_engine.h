@@ -15,12 +15,14 @@
 #import "components/actor/core/aggregated_journal.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
 #import "ios/web/public/web_state_id.h"
 
 namespace actor {
 
 class ActorTool;
+class ActorToolRequest;
+class ActorToolFactory;
+class ObservationDelayController;
 
 // Executes a sequence of actions moving through the state machine.
 //
@@ -86,14 +88,16 @@ class ActorEngine {
 
   ActorEngine(ActorTaskId task_id,
               AggregatedJournal* journal,
-              ExecutionUpdatesDelegate* execution_updates_delegate);
+              ExecutionUpdatesDelegate* execution_updates_delegate,
+              ActorToolFactory* tool_factory);
+
   ~ActorEngine();
   ActorEngine(const ActorEngine&) = delete;
   ActorEngine& operator=(const ActorEngine&) = delete;
 
-  // Performs the given sequence of tools and invokes the callback when
+  // Performs the given sequence of actions and invokes the callback when
   // completed.
-  void Act(std::vector<std::unique_ptr<ActorTool>> actions,
+  void Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
            ActCallback callback);
 
   // Cancels any ongoing and pending actions.
@@ -136,11 +140,20 @@ class ActorEngine {
   // Returns the index of the action currently in progress.
   size_t InProgressActionIndex() const;
 
+  // The tool factory used to instantiate tools. This is owned by the creator
+  // of the engine (i.e. ActorService) and is guaranteed to outlive this
+  // instance.
+  raw_ptr<ActorToolFactory> tool_factory_;
+
+  // The current tool being executed. This is reset when the action is completed
+  // or the ActorEngine is destroyed.
+  std::unique_ptr<ActorTool> current_tool_;
+
   // The current state of the execution engine.
   State state_;
 
   // The sequence of actions to be executed.
-  std::vector<std::unique_ptr<ActorTool>> action_sequence_;
+  std::vector<std::unique_ptr<ActorToolRequest>> action_sequence_;
 
   // The index of the *next* action that will be invoked. Prefer to use
   // `InProgressActionIndex()` to get the index of the action currently being

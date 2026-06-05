@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "actor_test_utils.h",
+    "actor_test_utils.mm",
+  ]
+  deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
+    "//ios/web/public",
+  ]
+}

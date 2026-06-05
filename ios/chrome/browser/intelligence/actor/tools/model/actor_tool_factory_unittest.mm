@@ -24,7 +24,7 @@ class ActorToolFactoryTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     profile_ = TestProfileIOS::Builder().Build();
-    factory_ = std::make_unique<ActorToolFactory>();
+    factory_ = std::make_unique<ActorToolFactory>(profile_.get());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -78,7 +78,7 @@ TEST_F(ActorToolFactoryTest, CreateToolUnsupported) {
   optimization_guide::proto::Action action;
 
   base::expected<std::unique_ptr<ActorTool>, ToolExecutionResult> result =
-      factory_->CreateTool(action, profile_.get());
+      factory_->CreateTool(action);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(InternalToolErrorCode::kUnsupportedAction,

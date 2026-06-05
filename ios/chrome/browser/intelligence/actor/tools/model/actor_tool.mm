@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -33,10 +35,10 @@ base::WeakPtr<web::WebFrame> ActorTool::GetTargetWebFrame() const {
 // static
 base::expected<ActorTool::TabResolutionResult, ToolExecutionResult>
 ActorTool::ResolveTab(int32_t tab_id, ProfileIOS* profile) {
-  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
-  BrowserAndIndex browser_and_index = FindBrowserAndIndex(
-      web::WebStateID::FromSerializedValue(tab_id),
-      browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular));
+  // TODO(crbug.com/520098751) - determine if we should support incognito here.
+  BrowserAndIndex browser_and_index = FindBrowserAndIndexFromProfile(
+      profile, web::WebStateID::FromSerializedValue(tab_id),
+      /*include_incognito=*/false);
 
   if (browser_and_index.tab_index == WebStateList::kInvalidIndex ||
       !browser_and_index.browser) {

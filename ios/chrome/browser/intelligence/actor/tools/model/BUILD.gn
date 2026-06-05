@@ -33,12 +33,16 @@ source_set("actor_tool_interface") {
     "actor_tool.mm",
     "actor_tool_java_script_feature_util.h",
     "actor_tool_java_script_feature_util.mm",
+    "actor_tool_request.h",
+    "actor_tool_request.mm",
   ]
 
   deps = [
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_browser_utils",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
@@ -364,6 +368,7 @@ source_set("unit_tests") {
     "action_target_java_script_feature_unittest.mm",
     "action_target_js_unittest.mm",
     "actor_tool_factory_unittest.mm",
+    "actor_tool_request_unittest.mm",
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
     "click_tool_unittest.mm",

@@ -21,6 +21,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ai_prototyping/ui",
     "//ios/chrome/browser/ai_prototyping/utils",
     "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/tools/public",
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",

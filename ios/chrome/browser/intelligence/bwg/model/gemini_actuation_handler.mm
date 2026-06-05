@@ -18,7 +18,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -308,7 +308,8 @@ void InjectTabIdIntoAction(optimization_guide::proto::Action& action,
     actions.push_back(action);
   }
 
-  auto toolsResult = _actorService->CreateActorTools(actions, taskID);
+  actor::CreateActorToolRequestsResult toolsResult =
+      _actorService->CreateActorToolRequests(actions, taskID);
   if (!toolsResult.has_value()) {
     completionBlock(CreateSerializedFailureActionsResult(
         actor::GetToolExecutionResultMessage(toolsResult.error())));

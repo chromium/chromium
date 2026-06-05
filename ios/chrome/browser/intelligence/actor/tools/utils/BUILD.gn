@@ -25,5 +25,20 @@ source_set("actor_tool_utils") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/web/public",
+  ]
+}
+
+source_set("actor_browser_utils") {
+  sources = [
+    "actor_browser_utils.h",
+    "actor_browser_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list:utils",
+    "//ios/web/public",
   ]
 }

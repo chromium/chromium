@@ -9,9 +9,13 @@
 #import "base/token.h"
 #import "base/types/strong_alias.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -145,49 +149,28 @@ std::vector<mojom::JournalEntryPtr> GetLogsForTesting(
 
 }  // namespace
 
-class MockTool : public ActorTool {
- public:
-  explicit MockTool(base::WeakPtr<web::WebState> web_state)
-      : web_state_(web_state) {}
-  ~MockTool() override = default;
-
-  void Execute(ToolExecutionCallback callback) override {
-    std::move(callback).Run(ToolExecutionResult::Ok());
-  }
-
-  base::WeakPtr<web::WebState> GetTargetWebState() const override {
-    return web_state_;
-  }
-
-  ToolType GetToolType() const override { return ToolType::kUnknown; }
-
- private:
-  base::WeakPtr<web::WebState> web_state_;
-};
-
 class ActorTaskTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();
+    tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
     task_ = std::make_unique<ActorTask>(ActorTaskId(1), "Test Task",
                                         /*allow_incognito_web_states=*/false,
-                                        journal_.get());
+                                        journal_.get(), tool_factory_.get());
   }
 
   void TearDown() override {
     task_.reset();
+    tool_factory_.reset();
     journal_.reset();
+    profile_.reset();
     PlatformTest::TearDown();
   }
 
   void AddControlledWebState(base::WeakPtr<web::WebState> web_state) {
-    task_->controlled_web_states_.push_back(web_state);
-  }
-
-  void AddControlledWebStates(
-      const std::vector<std::unique_ptr<ActorTool>>& actions) {
-    task_->AddControlledWebStates(actions);
+    task_->AddControlledWebState(web_state.get());
   }
 
   const std::vector<base::WeakPtr<web::WebState>>& GetControlledWebStates()
@@ -204,8 +187,11 @@ class ActorTaskTest : public PlatformTest {
 
   void TriggerOnPageLoadedTimeout() { task_->OnPageLoadedTimeout(); }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<AggregatedJournal> journal_;
+  std::unique_ptr<ActorToolFactory> tool_factory_;
   std::unique_ptr<ActorTask> task_;
 };
 
@@ -269,28 +255,6 @@ TEST_F(ActorTaskTest, SetState) {
   EXPECT_EQ("Acting", logs[0]->details[1]->value);
 }
 
-// Tests that AddControlledWebStates correctly adds targeted tabs and ignores
-// duplicates.
-TEST_F(ActorTaskTest, AddControlledWebStates) {
-  std::unique_ptr<web::FakeWebState> web_state1 =
-      std::make_unique<web::FakeWebState>();
-  std::unique_ptr<web::FakeWebState> web_state2 =
-      std::make_unique<web::FakeWebState>();
-
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state1->GetWeakPtr()));
-  actions.push_back(std::make_unique<MockTool>(web_state2->GetWeakPtr()));
-  actions.push_back(
-      std::make_unique<MockTool>(web_state1->GetWeakPtr()));  // Duplicate
-
-  AddControlledWebStates(actions);
-
-  const auto& controlled_states = GetControlledWebStates();
-  EXPECT_EQ(2u, controlled_states.size());
-  EXPECT_EQ(web_state1.get(), controlled_states[0].get());
-  EXPECT_EQ(web_state2.get(), controlled_states[1].get());
-}
-
 // Tests that adding a new controlled web state notifies observers.
 TEST_F(ActorTaskTest, AddControlledWebStateNotifiesObserver) {
   FakeActorTaskUpdatesObserver* observer =
@@ -300,11 +264,8 @@ TEST_F(ActorTaskTest, AddControlledWebStateNotifiesObserver) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
-
   observer.didAddWebStateCalled = NO;
-  AddControlledWebStates(actions);
+  AddControlledWebState(web_state->GetWeakPtr());
 
   EXPECT_TRUE(observer.didAddWebStateCalled);
   EXPECT_EQ(web_state->GetUniqueIdentifier().identifier(),
@@ -354,9 +315,11 @@ TEST_F(ActorTaskTest, AddControlledWebState) {
 TEST_F(ActorTaskTest, AddObserverTriggersImmediateSync) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
+  AddControlledWebState(web_state->GetWeakPtr());
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
 
   task_->Act(std::move(actions), "Performing some actions", base::DoNothing());
 
@@ -418,13 +381,15 @@ TEST_F(ActorTaskTest, RemoveObserverStopsUpdates) {
 }
 
 // Tests that OnWillExecuteTool propagates execution updates to registered
-// observers, covering both mapped actions and fallback unmapped actions.
+// observers, covering both mapped tools and fallback unmapped tools.
 TEST_F(ActorTaskTest, OnWillExecuteToolNotifiesObserver) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
+  AddControlledWebState(web_state->GetWeakPtr());
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
 
   task_->Act(std::move(actions), "Acting update", base::DoNothing());
 
@@ -495,19 +460,22 @@ TEST_F(ActorTaskTest, NewObserverRegistrationIsIsolated) {
 TEST_F(ActorTaskTest, CachesLatestTaskUpdateAcrossActs) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
+  AddControlledWebState(web_state->GetWeakPtr());
 
-  std::vector<std::unique_ptr<ActorTool>> actions1;
-  actions1.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
-  task_->Act(std::move(actions1), "First Update", base::DoNothing());
+  std::vector<std::unique_ptr<ActorToolRequest>> actions_1;
+  actions_1.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
+  task_->Act(std::move(actions_1), "First Update", base::DoNothing());
 
   FakeActorTaskUpdatesObserver* observer1 =
       [[FakeActorTaskUpdatesObserver alloc] init];
   task_->AddObserver(observer1);
   EXPECT_NSEQ(@"First Update", observer1.registeredTaskUpdate);
 
-  std::vector<std::unique_ptr<ActorTool>> actions2;
-  actions2.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
-  task_->Act(std::move(actions2), "Second Update", base::DoNothing());
+  std::vector<std::unique_ptr<ActorToolRequest>> actions_2;
+  actions_2.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
+  task_->Act(std::move(actions_2), "Second Update", base::DoNothing());
 
   FakeActorTaskUpdatesObserver* observer2 =
       [[FakeActorTaskUpdatesObserver alloc] init];
@@ -561,8 +529,11 @@ TEST_F(ActorTaskTest, SafeSelfRemovalDuringNotification) {
 TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeCallback) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+  AddControlledWebState(web_state->GetWeakPtr());
+
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
 
   bool callback_executed = false;
   ActorTaskState state_in_callback = ActorTaskState::kInit;
@@ -578,6 +549,7 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeCallback) {
           base::Unretained(&callback_executed),
           base::Unretained(&state_in_callback), base::Unretained(task_.get())));
 
+  task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(callback_executed);
   EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
 }
@@ -588,9 +560,11 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeDeferredCallback) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
   web_state->SetLoading(true);
+  AddControlledWebState(web_state->GetWeakPtr());
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
 
   bool callback_executed = false;
   ActorTaskState state_in_callback = ActorTaskState::kInit;
@@ -606,7 +580,9 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeDeferredCallback) {
           base::Unretained(&callback_executed),
           base::Unretained(&state_in_callback), base::Unretained(task_.get())));
 
-  // The callback should not be executed yet since the web_state is loading.
+  EXPECT_FALSE(callback_executed);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_FALSE(callback_executed);
 
   // Stop loading to trigger the deferred callback.
@@ -622,9 +598,11 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
   std::unique_ptr<web::FakeWebState> web_state =
       std::make_unique<web::FakeWebState>();
   web_state->SetLoading(true);
+  AddControlledWebState(web_state->GetWeakPtr());
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(
+      MakeSuccessfulActorToolRequest(web_state->GetUniqueIdentifier()));
 
   bool callback_executed = false;
   ActorTaskState state_in_callback = ActorTaskState::kInit;
@@ -640,7 +618,9 @@ TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
           base::Unretained(&callback_executed),
           base::Unretained(&state_in_callback), base::Unretained(task_.get())));
 
-  // The callback should not be executed yet since the web_state is loading.
+  EXPECT_FALSE(callback_executed);
+
+  task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_FALSE(callback_executed);
 
   // Directly trigger the page load timeout callback.

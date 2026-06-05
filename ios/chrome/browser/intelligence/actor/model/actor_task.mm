@@ -17,7 +17,7 @@
 #import "components/actor/core/journal_details_builder.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/web/public/web_state.h"
 
 namespace actor {
@@ -87,7 +87,8 @@ void LogAddControlledWebState(AggregatedJournal* journal,
 ActorTask::ActorTask(ActorTaskId task_id,
                      const std::string& title,
                      bool allow_incognito_web_states,
-                     AggregatedJournal* journal)
+                     AggregatedJournal* journal,
+                     ActorToolFactory* tool_factory)
     : task_id_(task_id),
       title_(title),
       allow_incognito_web_states_(allow_incognito_web_states),
@@ -95,7 +96,8 @@ ActorTask::ActorTask(ActorTaskId task_id,
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
 
-  engine_ = std::make_unique<ActorEngine>(task_id_, journal_, this);
+  engine_ =
+      std::make_unique<ActorEngine>(task_id_, journal_, this, tool_factory);
   observers_ = static_cast<CRBProtocolObservers<ActorTaskUpdatesObserver>*>(
       [CRBProtocolObservers
           observersWithProtocol:@protocol(ActorTaskUpdatesObserver)]);
@@ -140,28 +142,16 @@ ActorTaskState ActorTask::GetState() const {
   return state_;
 }
 
-void ActorTask::Act(std::vector<std::unique_ptr<ActorTool>> actions,
+void ActorTask::Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
                     const std::string& task_update,
                     ActCallback callback) {
   // TODO(crbug.com/503054406): Check for invalid states.
   SetState(ActorTaskState::kActing);
   last_task_update_ = task_update;
-  AddControlledWebStates(actions);
   engine_->Act(
       std::move(actions),
       base::BindOnce(&ActorTask::OnActCompleted, weak_ptr_factory_.GetWeakPtr(),
                      std::move(callback)));
-}
-
-void ActorTask::AddControlledWebStates(
-    const std::vector<std::unique_ptr<ActorTool>>& actions) {
-  for (const auto& action : actions) {
-    if (!action) {
-      continue;
-    }
-
-    AddControlledWebState(action->GetTargetWebState().get());
-  }
 }
 
 void ActorTask::AddControlledWebState(web::WebState* web_state) {

@@ -13,7 +13,7 @@
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/page_stability_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -65,12 +65,12 @@ const base::TimeDelta kApcFetchingTimeout = base::Seconds(10);
       service->CreateTask("EG Test Task", /*allow_incognito_web_states=*/false);
 
   std::vector<optimization_guide::proto::Action> actions = {action};
-  actor::CreateActorToolsResult tools_result =
-      service->CreateActorTools(actions, task_id);
+  actor::CreateActorToolRequestsResult tools_result =
+      service->CreateActorToolRequests(actions, task_id);
 
   if (!tools_result.has_value()) {
     NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
-        "Failed to create tools: %s",
+        "Failed to create tool requests: %s",
         actor::GetToolExecutionResultMessage(tools_result.error()).c_str()));
     NSError* error =
         [NSError errorWithDomain:@"mojom::ActionResultCode"

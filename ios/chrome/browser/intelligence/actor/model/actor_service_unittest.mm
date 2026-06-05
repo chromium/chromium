@@ -20,7 +20,9 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/snackbar_actor_task_updates_observer.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -51,36 +53,19 @@
 
 namespace actor {
 
-class TestTool : public ActorTool {
- public:
-  explicit TestTool(base::WeakPtr<web::WebState> web_state)
-      : web_state_(web_state) {}
-  ~TestTool() override = default;
-
-  void Execute(ToolExecutionCallback callback) override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), ToolExecutionResult::Ok()));
-  }
-
-  base::WeakPtr<web::WebState> GetTargetWebState() const override {
-    return web_state_;
-  }
-
-  ToolType GetToolType() const override { return ToolType::kUnknown; }
-
- private:
-  base::WeakPtr<web::WebState> web_state_;
-};
-
 class MockActorTask : public ActorTask {
  public:
   MockActorTask(ActorTaskId task_id,
                 const std::string& title,
                 bool allow_incognito_web_states,
                 AggregatedJournal* journal,
+                ActorToolFactory* tool_factory,
                 bool* stop_called)
-      : ActorTask(task_id, title, allow_incognito_web_states, journal),
+      : ActorTask(task_id,
+                  title,
+                  allow_incognito_web_states,
+                  journal,
+                  tool_factory),
         stop_called_(stop_called) {}
 
   void Stop(ActorTaskStoppedReason stop_reason) override {
@@ -99,8 +84,8 @@ class ActorServiceTest : public PlatformTest {
   explicit ActorServiceTest(
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT)
-      : web_client_(std::make_unique<web::FakeWebClient>()),
-        task_environment_(time_source) {
+      : task_environment_(time_source),
+        web_client_(std::make_unique<web::FakeWebClient>()) {
     ActorServiceFactory::GetInstance();
     profile_ = TestProfileIOS::Builder().Build();
   }
@@ -141,8 +126,12 @@ class ActorServiceTest : public PlatformTest {
     return service->journal_.get();
   }
 
-  web::ScopedTestingWebClient web_client_;
+  ActorToolFactory* GetToolFactory(ActorService* service) {
+    return service->tool_factory_.get();
+  }
+
   web::WebTaskEnvironment task_environment_;
+  web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
@@ -324,19 +313,21 @@ TEST_F(ActorServiceTest, GetWebStateForID_Controlled) {
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   web::WebStateID web_state_id = fake_web_state->GetUniqueIdentifier();
-  auto* fake_web_state_ptr = fake_web_state.get();
+  web::WebState* fake_web_state_ptr = fake_web_state.get();
 
   test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
   // Make the tab controlled by the task by performing an action targeting it.
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(
-      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(web_state_id));
 
   service->PerformActions(task_id, std::move(actions), "Update",
                           base::BindOnce(^(PerformActionsResult result){
                               // Do nothing.
                           }));
+
+  EXPECT_EQ(fake_web_state_ptr,
+            service->GetWebStateForID(web_state_id, task_id));
 
   web::WebState* resolved_web_state =
       service->GetWebStateForID(web_state_id, task_id);
@@ -364,7 +355,7 @@ TEST_F(ActorServiceTest, AddControlledWebState) {
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   web::WebStateID web_state_id = fake_web_state->GetUniqueIdentifier();
-  auto* fake_web_state_ptr = fake_web_state.get();
+  web::WebState* fake_web_state_ptr = fake_web_state.get();
 
   test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
@@ -460,9 +451,9 @@ TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
   auto* fake_web_state_ptr = fake_web_state.get();
   test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(
-      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(
+      fake_web_state_ptr->GetUniqueIdentifier()));
 
   bool callback_called = false;
   service->PerformActions(
@@ -505,9 +496,9 @@ TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
   // Set the WebState to a loading state.
   fake_web_state_ptr->SetLoading(true);
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(
-      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(
+      fake_web_state_ptr->GetUniqueIdentifier()));
 
   bool callback_called = false;
   service->PerformActions(
@@ -559,9 +550,9 @@ TEST_F(ActorServiceMockTimeTest,
   // Set the WebState to a loading state.
   fake_web_state_ptr->SetLoading(true);
 
-  std::vector<std::unique_ptr<ActorTool>> actions;
-  actions.push_back(
-      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+  std::vector<std::unique_ptr<ActorToolRequest>> actions;
+  actions.push_back(MakeSuccessfulActorToolRequest(
+      fake_web_state_ptr->GetUniqueIdentifier()));
 
   bool callback_called = false;
   service->PerformActions(
@@ -686,9 +677,10 @@ TEST_F(ActorServiceTest, StopTask) {
   // Swap the task with our MockActorTask.
   bool stop_called = false;
   SwapTask(service, task_id,
-           std::make_unique<MockActorTask>(task_id, "Test Task",
-                                           /*allow_incognito_web_states=*/false,
-                                           GetJournal(service), &stop_called));
+           std::make_unique<MockActorTask>(
+               task_id, "Test Task",
+               /*allow_incognito_web_states=*/false, GetJournal(service),
+               GetToolFactory(service), &stop_called));
 
   // Stop the task.
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);

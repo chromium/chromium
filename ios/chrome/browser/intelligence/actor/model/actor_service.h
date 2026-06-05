@@ -28,7 +28,7 @@ class WebState;
 namespace actor {
 
 class ActorTask;
-class ActorTool;
+class ActorToolRequest;
 class ActorToolFactory;
 class AggregatedJournal;
 
@@ -38,8 +38,6 @@ class AggregatedJournal;
 class ActorService : public KeyedService {
  public:
   explicit ActorService(ProfileIOS* profile);
-  ActorService(ProfileIOS* profile,
-               std::unique_ptr<ActorToolFactory> tool_factory);
   ~ActorService() override;
 
   // KeyedService:
@@ -49,16 +47,17 @@ class ActorService : public KeyedService {
   ActorTaskId CreateTask(const std::string& title,
                          bool allow_incognito_web_states);
 
-  // Creates a vector of ActorTools from a vector of Action protos. On failure,
-  // returns the error encountered by the factory.
-  CreateActorToolsResult CreateActorTools(
+  // Creates a vector of ActorToolRequests from a vector of Action protos. On
+  // failure, returns an ToolErrorResult describing the error.
+  CreateActorToolRequestsResult CreateActorToolRequests(
       const std::vector<optimization_guide::proto::Action>& actions,
       ActorTaskId task_id);
 
-  // Submits actions to an active task with a task update string (a short blurb
-  // which tells the user what the Actor is currently doing in plain language).
+  // Submits actions to an active task with a task update string (a short
+  // blurb which tells the user what the Actor is currently doing in plain
+  // language).
   void PerformActions(ActorTaskId task_id,
-                      std::vector<std::unique_ptr<ActorTool>> actions,
+                      std::vector<std::unique_ptr<ActorToolRequest>> actions,
                       const std::string& task_update,
                       PerformActionsCallback callback);
 
@@ -106,7 +105,8 @@ class ActorService : public KeyedService {
  private:
   friend class ActorServiceTest;
 
-  // The profile associated with this service instance.
+  // The profile associated with this service instance. Owned by the
+  // ProfileManager, which is guaranteed to outlive this KeyedService.
   raw_ptr<ProfileIOS> profile_;
 
   // Actor tool factory.
@@ -132,10 +132,21 @@ class ActorService : public KeyedService {
       TabObservationCallback callback,
       PageContextWrapperCallbackResponse response);
 
-  // Callback for when actions execution completes.
+  // Callback for when a task finishes executing its actions.
   void OnActCompleted(ActorTaskId task_id,
                       PerformActionsCallback callback,
                       std::vector<ActionResult> results);
+
+  // Resolves target WebStates from ActorToolRequests and registers them in the
+  // task's controlled WebStates.
+  void AddControlledWebStates(
+      ActorTask* task,
+      const std::vector<std::unique_ptr<ActorToolRequest>>& actions);
+
+  // Returns the WebState associated with the given `web_state_id`, or nullptr
+  // if it cannot be found.
+  web::WebState* GetWebState(web::WebStateID web_state_id,
+                             bool allows_incognito);
 
   // Generator for unique task IDs.
   ActorTaskId::Generator next_task_id_;
