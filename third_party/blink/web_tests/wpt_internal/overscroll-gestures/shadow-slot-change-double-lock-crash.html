@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html class="test-wait">
+<title>Overscroll area: slot change double lock crash test</title>
+<div id="host">
+  <div id="menu1" slot="slot1" overscrollarea style="width: 50px; height: 50px; background: red;"></div>
+</div>
+<script>
+const host = document.getElementById('host');
+const root = host.attachShadow({mode: 'open'});
+root.innerHTML = `
+  <div id="C1" overscrollcontainer style="width: 200px; height: 200px; overflow: scroll; position: relative;">
+    <slot name="slot1"></slot>
+  </div>
+  <div id="C2" overscrollcontainer style="width: 200px; height: 200px; overflow: scroll; position: relative;">
+    <div id="lock2" style="content-visibility: visible;">
+      <slot name="slot2"></slot>
+    </div>
+  </div>
+`;
+
+function runTest() {
+  const menu1 = document.getElementById('menu1');
+  const C1 = root.getElementById('C1');
+  const lock2 = root.getElementById('lock2');
+
+  // 1. Initial layout
+  menu1.getBoundingClientRect();
+
+  // 2. Lock C1 and lock2
+  C1.style.contentVisibility = 'hidden';
+  lock2.style.contentVisibility = 'hidden';
+
+  // 3. Reassign menu1 to locked slot
+  menu1.slot = 'slot2';
+
+  // 4. Force layout (both locked)
+  document.body.getBoundingClientRect();
+
+  // 5. Unlock C1
+  C1.style.contentVisibility = 'visible';
+
+  // 6. Force layout (C1 unlocked, should rebuild and not crash)
+  document.body.getBoundingClientRect();
+
+  document.documentElement.classList.remove('test-wait');
+}
+
+window.onload = () => requestAnimationFrame(runTest);
+</script>
+</html>

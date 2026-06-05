@@ -4536,9 +4536,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // We do this outside of the OverscrollCommandTargets check since we could,
   // for instance, remove the element's id first and then remove it from the
   // DOM.
-  if (auto* container = GetOverscrollContainer()) {
-    container->GetOverscrollAreaTracker()->RemoveOverscroll(this);
-  }
+  LeaveOverscrollContainer();
 
   // Remove all of the overscroll areas from this tracker.
   if (auto* tracker = GetOverscrollAreaTracker()) {
@@ -4725,6 +4723,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
 
   if (ElementRareDataVector* data = RareData()) {
     if (!performing_reattach) {
+      LeaveOverscrollContainer();
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
       data->ClearOutOfFlowData();
@@ -4793,6 +4792,20 @@ void Element::DetachLayoutTree(bool performing_reattach) {
 
   if (context) {
     context->DetachLayoutTree();
+  }
+}
+
+void Element::DetachDescendantsNeedingReattachDuringSkip() {
+  for (Node* child = FlatTreeTraversal::FirstChild(*this); child;
+       child = FlatTreeTraversal::NextSibling(*child)) {
+    if (child->GetForceReattachLayoutTree()) {
+      child->DetachLayoutTree();
+      child->SetForceReattachLayoutTree();
+    } else if (child->ChildNeedsStyleRecalc()) {
+      if (auto* child_element = DynamicTo<Element>(child)) {
+        child_element->DetachDescendantsNeedingReattachDuringSkip();
+      }
+    }
   }
 }
 
@@ -5118,6 +5131,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   child_change = display_lock_style_scope.DidUpdateSelfStyle(child_change);
   if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
     display_lock_style_scope.NotifyChildStyleRecalcWasBlocked(child_change);
+    DetachDescendantsNeedingReattachDuringSkip();
     if (HasCustomStyleCallbacks()) {
       DidRecalcStyle(child_change);
     }
@@ -5553,11 +5567,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (GetOverscrollContainer() &&
       (!new_style || !new_style->IsInternalOverscrollPositionAuto() ||
        GetOverscrollContainer() != style_recalc_context.overscroll_container)) {
-    auto* tracker = GetOverscrollContainer()->GetOverscrollAreaTracker();
-    // We should've created a tracker when we set the GetOverscrollContainer on
-    // `this`.
-    CHECK(tracker);
-    tracker->RemoveOverscroll(this);
+    LeaveOverscrollContainer();
     // We may need to remove this element's ::-internal-overscroll-area-parent.
     child_change =
         child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
@@ -13997,6 +14007,14 @@ void Element::SetOverscrollContainer(Element* element) {
 void Element::ClearOverscrollContainer() {
   if (ElementRareDataVector* data = RareData()) {
     data->ClearOverscrollContainer();
+  }
+}
+
+void Element::LeaveOverscrollContainer() {
+  if (auto* container = GetOverscrollContainer()) {
+    auto* tracker = container->GetOverscrollAreaTracker();
+    CHECK(tracker);
+    tracker->RemoveOverscroll(this);
   }
 }
 
