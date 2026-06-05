@@ -4,6 +4,7 @@
 
 package org.chromium.components.signin.base;
 
+import android.accounts.Account;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
@@ -13,9 +14,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountEmailDisplayHook;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.SigninConstants;
 import org.chromium.components.signin.Tribool;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -197,6 +200,48 @@ public class AccountInfo extends CoreAccountInfo {
         return !TextUtils.isEmpty(mFullName)
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
+    }
+
+    /**
+     * Null-checking helper to create {@link Account} from a possibly null {@link AccountInfo}.
+     *
+     * @return {@link Account} for the argument if it is not null, null otherwise.
+     */
+    @Contract("!null -> !null")
+    public static @Nullable Account getAndroidAccountFrom(@Nullable AccountInfo accountInfo) {
+        return accountInfo == null
+                ? null
+                : AccountUtils.createAccountFromEmail(accountInfo.getEmail());
+    }
+
+    /**
+     * Null-checking helper to get an account id from a possibly null {@link AccountInfo}.
+     *
+     * @return {@link #getId()} for the argument if it is not null, null otherwise.
+     */
+    @Contract("!null -> !null")
+    public static @Nullable CoreAccountId getIdFrom(@Nullable AccountInfo accountInfo) {
+        return accountInfo == null ? null : accountInfo.getId();
+    }
+
+    /**
+     * Null-checking helper to get an email from a possibly null {@link AccountInfo}.
+     *
+     * @return {@link #getEmail()} for the argument if it is not null, null otherwise.
+     */
+    @Contract("!null -> !null")
+    public static @Nullable String getEmailFrom(@Nullable AccountInfo accountInfo) {
+        return accountInfo == null ? null : accountInfo.getEmail();
+    }
+
+    /**
+     * Null-checking helper to get a GaiaId from a possibly null {@link AccountInfo}.
+     *
+     * @return {@link #getGaiaId()} for the argument if it is not null, null otherwise.
+     */
+    @Contract("!null -> !null")
+    public static @Nullable GaiaId getGaiaIdFrom(@Nullable AccountInfo accountInfo) {
+        return accountInfo == null ? null : accountInfo.getGaiaId();
     }
 
     @CalledByNative
