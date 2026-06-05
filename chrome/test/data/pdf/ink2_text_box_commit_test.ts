@@ -4,23 +4,19 @@
 
 import {TextBoxState, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {dragHandle, getTestAnnotation, initializeBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {assertDeepEquals} from './test_util.js';
 
-const {manager, mockPlugin, privateProxy, textbox, viewport} =
-    setupTextBoxTest();
-
 chrome.test.runTests([
   async function testCommit() {
-    await manager.initializeTextAnnotations();
+    const {manager, mockPlugin, textbox, viewport} = await setupTextBoxTest();
     // Initialize a new 100x100 box at 50, 60 (Box A).
     initializeBox(manager, 100, 100, 50, 60);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
-    // Reset viewport to less offset page values and a non-1.0 zoom to validate
-    // coordinate conversion.
+    // Set viewport to non-1.0 zoom to validate coordinate conversion.
     viewport.setZoom(2.0);
     await microtasksFinished();
 
@@ -137,14 +133,13 @@ chrome.test.runTests([
     expectedAnnotationTextCleared.text = '';
     await startNewAnnotationAndVerifyMessage(
         expectedAnnotationTextCleared, true);
-
-    // De-activate the textbox to set up for the next test.
-    manager.dispatchEvent(new CustomEvent('deactivate-text-box'));
-    await eventToPromise('state-changed', textbox);
     chrome.test.succeed();
   },
 
   async function testCloseAndEvents() {
+    const {manager, mockPlugin, textbox, viewport} = await setupTextBoxTest();
+    viewport.setZoom(2.0);
+    await microtasksFinished();
     // Add state-changed listener.
     let textBoxStates: TextBoxState[] = [];
     textbox.addEventListener('state-changed', e => {
@@ -216,6 +211,7 @@ chrome.test.runTests([
   },
 
   async function testCommitTextAnnotationFontCaching() {
+    const {manager, privateProxy, textbox} = await setupTextBoxTest();
     privateProxy.reset();
     assertDeepEquals([], manager.getKnownFontIds());
 

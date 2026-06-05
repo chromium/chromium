@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {MIN_TEXTBOX_SIZE_PX} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {Ink2Manager, InkTextBoxElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertPositionAndSize, dragHandleWithKeyboard, getTestAnnotation, initializeBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
 import {getRequiredElement} from './test_util.js';
 
-const {manager, mockPlugin, textbox, viewport} = setupTextBoxTest();
-
-async function setUpExistingAnnotation() {
+async function setUpExistingAnnotation(
+    manager: Ink2Manager, textbox: InkTextBoxElement) {
   // Initialize and commit a new annotation to make it "existing".
   initializeBox(manager, 100, 100, 55, 10);
   await microtasksFinished();
@@ -38,6 +38,7 @@ async function setUpExistingAnnotation() {
 
 chrome.test.runTests([
   async function testResizeWithKeyboard() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initialize to a 100x200 box at 400, 300.
     initializeBox(manager, 100, 200, 400, 300);
     await microtasksFinished();
@@ -115,6 +116,7 @@ chrome.test.runTests([
   },
 
   async function testMoveWithKeyboard() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(manager, 100, 100, 400, 300);
     await microtasksFinished();
@@ -138,6 +140,7 @@ chrome.test.runTests([
   },
 
   async function testEscape() {
+    const {manager, mockPlugin, textbox, viewport} = await setupTextBoxTest();
     viewport.setZoom(1.0);
 
     // Initialize to a 100x100 box at 55, 10. Place the box in the top corner
@@ -183,6 +186,7 @@ chrome.test.runTests([
   },
 
   async function testEscapeWhileDragging() {
+    const {manager, mockPlugin, textbox, viewport} = await setupTextBoxTest();
     viewport.setZoom(1.0);
 
     // If the user is dragging, escape commits the annotation at the start
@@ -214,6 +218,7 @@ chrome.test.runTests([
   },
 
   async function testEscapeWithoutModifications() {
+    const {manager, mockPlugin, textbox} = await setupTextBoxTest();
     // Escape without any modification hides the box but doesn't send a message.
     // This should also work when the Escape key is on some other element in the
     // document, and not on the textbox itself.
@@ -232,10 +237,8 @@ chrome.test.runTests([
   },
 
   async function testDeleteWithBackspaceKey() {
-    viewport.setZoom(1.0);
-    manager.clearAnnotationsForTesting();
-    manager.resetStackForTesting();
-    const testAnnotation = await setUpExistingAnnotation();
+    const {manager, mockPlugin, textbox} = await setupTextBoxTest();
+    const testAnnotation = await setUpExistingAnnotation(manager, textbox);
 
     mockPlugin.clearMessages();
     keyDownOn(textbox, 0, [], 'Backspace');
@@ -250,10 +253,8 @@ chrome.test.runTests([
   },
 
   async function testDeleteWithDeleteKey() {
-    viewport.setZoom(1.0);
-    manager.clearAnnotationsForTesting();
-    manager.resetStackForTesting();
-    const testAnnotation = await setUpExistingAnnotation();
+    const {manager, mockPlugin, textbox} = await setupTextBoxTest();
+    const testAnnotation = await setUpExistingAnnotation(manager, textbox);
 
     mockPlugin.clearMessages();
     keyDownOn(textbox, 0, [], 'Delete');

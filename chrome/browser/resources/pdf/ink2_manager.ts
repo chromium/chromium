@@ -160,11 +160,6 @@ export class Ink2Manager extends EventTarget {
     this.viewport_ = viewport;
   }
 
-  clearAnnotationsForTesting() {
-    this.annotations_.clear();
-    this.nextAnnotationId_ = 0;
-  }
-
   getAnnotationsForTesting(): Map<number, Map<number, TextAnnotation>> {
     return this.annotations_;
   }

@@ -7,12 +7,10 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertPositionAndSize, dragHandle, initializeBox, setupTextBoxTest} from './ink2_text_box_test_utils.js';
 import {getRequiredElement} from './test_util.js';
-
-const {manager, textbox} = setupTextBoxTest();
-
 chrome.test.runTests([
   // Test drawing the box based on data from the manager.
   async function testDrawsBox() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initial state. Textbox is not visible because it hasn't received an
     // initialize-text-box event yet.
     chrome.test.assertTrue(textbox.hidden);
@@ -59,6 +57,7 @@ chrome.test.runTests([
 
   // Test that the textbox styles change based on an update event.
   async function testTextbox() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Update to a 100x200 box at 400, 300.
     initializeBox(manager, 100, 200, 400, 300);
     await microtasksFinished();
@@ -116,21 +115,11 @@ chrome.test.runTests([
     manager.setTextAlignment(TextAlignment.RIGHT);
     await microtasksFinished();
     chrome.test.assertEq('right', textboxStyles.getPropertyValue('text-align'));
-
-    // Reset everything for later tests.
-    manager.setTextTypeface(TextTypeface.SANS_SERIF);
-    manager.setTextSize(12);
-    manager.setTextStyles({
-      [TextStyle.BOLD]: false,
-      [TextStyle.ITALIC]: false,
-    });
-    manager.setTextColor(hexToColor(TEXT_COLORS[0]!.color));
-    manager.setTextAlignment(TextAlignment.LEFT);
-    await microtasksFinished();
     chrome.test.succeed();
   },
 
   async function testDragHandles() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initialize to a 100x200 box at 400, 300.
     initializeBox(manager, 100, 200, 400, 300);
     await microtasksFinished();
@@ -218,7 +207,10 @@ chrome.test.runTests([
   },
 
   async function testAutoResize() {
-    // Textbox is in clamped size from the previous test.
+    const {manager, textbox} = await setupTextBoxTest();
+    initializeBox(manager, 24, 24, 416, 300);
+    await microtasksFinished();
+    // Textbox is initialized to the minimum clamped size.
     const clampedTextareaWidth = textbox.$.textbox.clientWidth;
     const clampedTextareaHeight = textbox.$.textbox.clientHeight;
     // Add 10 to min size for measured clientWidth due to padding.
@@ -259,15 +251,11 @@ chrome.test.runTests([
     assertPositionAndSize(
         textbox, '324px', `${updatedHeight - 100}px`, '399px', '285px');
 
-    // Reset the sample text for later tests.
-    textbox.$.textbox.value = '';
-    textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
-    await microtasksFinished();
-
     chrome.test.succeed();
   },
 
   async function testResizeClampedToPageBoundaries() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(manager, 100, 100, 400, 300);
     await microtasksFinished();
@@ -351,6 +339,7 @@ chrome.test.runTests([
   },
 
   async function testMove() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(manager, 100, 100, 400, 300);
     await microtasksFinished();
@@ -370,6 +359,7 @@ chrome.test.runTests([
   },
 
   async function testMoveToPageBoundaries() {
+    const {manager, textbox} = await setupTextBoxTest();
     // Initialize to a 100x100 box at 400, 300.
     initializeBox(manager, 100, 100, 400, 300);
     await microtasksFinished();

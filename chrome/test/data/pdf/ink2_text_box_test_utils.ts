@@ -11,12 +11,13 @@ import {TestPdfViewerPrivateProxy} from './test_pdf_viewer_private_proxy.js';
 import {assertDeepEquals, setUpInkTestContext} from './test_util.js';
 import type {MockPdfPluginElement} from './test_util.js';
 
-export function setupTextBoxTest() {
+export async function setupTextBoxTest() {
+  Ink2Manager.setInstance(null);
   const {viewport, mockPlugin} = setUpInkTestContext();
   const privateProxy = new TestPdfViewerPrivateProxy();
   PdfViewerPrivateProxyImpl.setInstance(privateProxy);
   const manager = Ink2Manager.getInstance();
-  manager.initializeTextAnnotations();
+  await manager.initializeTextAnnotations();
   const textbox = document.createElement('ink-text-box');
   document.body.appendChild(textbox);
   return {viewport, mockPlugin, privateProxy, manager, textbox};
