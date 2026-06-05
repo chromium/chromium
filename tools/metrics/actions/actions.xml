@@ -13757,17 +13757,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action
-    name="Extensions.Mv2Deprecation.Unsupported.ManageExtension.DisabledDialog">
-  <owner>emiliapaz@chomium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <description>
-    Emitted when the user clicked on the manage button in the dialog informing
-    the user that some extensions were disabled during the MV2 'unsupported'
-    experiment stage.
-  </description>
-</action>
-
 <action name="Extensions.Mv2Deprecation.Unsupported.RemoveExtension">
   <owner>emiliapaz@chomium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -13783,17 +13772,6 @@ should be able to be added at any place in this file.
   <description>
     The user clicked on the remove button in the extension's detailed page in
     chrome://extensions during the MV2 'unsupported' experiment stage.
-  </description>
-</action>
-
-<action
-    name="Extensions.Mv2Deprecation.Unsupported.RemoveExtension.DisabledDialog">
-  <owner>emiliapaz@chomium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <description>
-    Emitted when the user clicked on the remove button in the dialog informing
-    the user that some extensions were disabled during the MV2 'unsupported'
-    experiment stage.
   </description>
 </action>
 

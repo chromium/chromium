@@ -67,7 +67,6 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_controller.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
-#include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
@@ -750,13 +749,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       }
     }
 
-    auto* experiment_manager =
-        extensions::ManifestV2ExperimentManager::Get(profile);
-    if (experiment_manager) {
-      mv2_disabled_dialog_controller_ =
-          std::make_unique<extensions::Mv2DisabledDialogController>(browser);
-    }
-
     if (browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)) {
@@ -1083,9 +1075,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
     side_panel_coordinator_->TearDownPreBrowserWindowDestruction();
   }
 
-  if (mv2_disabled_dialog_controller_) {
-    mv2_disabled_dialog_controller_->TearDown();
-  }
 
   color_provider_browser_helper_.reset();
 

@@ -255,11 +255,6 @@ ManifestV2ExperimentManager::RegisterOnManagerReadyCallback(
   return on_manager_ready_callback_list_.Add(std::move(callback));
 }
 
-void ManifestV2ExperimentManager::SetHasTriggeredDisabledDialog(
-    bool has_triggered) {
-  has_triggered_disabled_dialog_ = has_triggered;
-}
-
 void ManifestV2ExperimentManager::DisableAffectedExtensions() {
   if (!ShouldDisableLegacyExtensions()) {
     return;

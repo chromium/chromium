@@ -101,13 +101,6 @@ class ManifestV2ExperimentManager : public KeyedService,
   base::CallbackListSubscription RegisterOnManagerReadyCallback(
       base::RepeatingClosure callback);
 
-  // Whether the disabled dialog has been triggered for this `browser_context_`.
-  bool has_triggered_disabled_dialog() {
-    return has_triggered_disabled_dialog_;
-  }
-  // This should be called when a new window is opened for `browser_context_`.
-  void SetHasTriggeredDisabledDialog(bool has_triggered);
-
   // Returns whether this has finished its initialization steps.
   bool is_manager_ready() { return is_manager_ready_; }
 
@@ -164,9 +157,6 @@ class ManifestV2ExperimentManager : public KeyedService,
   // The associated BrowserContext. Guaranteed to be safe to use since this is
   // a KeyedService for the context.
   raw_ptr<content::BrowserContext> browser_context_;
-
-  // Whether the disabled dialog has been triggered for this `browser_context_`.
-  bool has_triggered_disabled_dialog_ = false;
 
   // Whether this class has finished its initialization steps.
   bool is_manager_ready_ = false;

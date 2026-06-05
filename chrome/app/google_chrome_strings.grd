@@ -938,13 +938,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE" desc="A statement that an extension has been newly blocklisted for malware.">
           Chrome found that these extensions contain malware:
         </message>
-
-        <!-- Manifest V2 Deprecation dialog -->
-        <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_DESCRIPTION"  desc="The description of the dialog that appears when extensions were disabled due to the Manifest V2 deprecation">
-          {NUM_EXTENSIONS, plural,
-          =1 {This extension is no longer supported. Chrome recommends that you remove it.}
-          other {These extensions are no longer supported. Chrome recommends that you remove them.}}
-        </message>
         <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
           Chrome recommends that you remove it. <ph name="BEGIN_LINK">&lt;a href="$1" aria-description="$2" target="_blank"&gt;</ph>Learn more about supported extensions<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>

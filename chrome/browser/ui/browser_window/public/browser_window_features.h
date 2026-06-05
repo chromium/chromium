@@ -158,7 +158,6 @@ class BrowserExtensionWindowController;
 class ExtensionBrowserWindowHelper;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionSidePanelManager;
-class Mv2DisabledDialogController;
 }  // namespace extensions
 
 namespace tabs_api {
@@ -295,10 +294,6 @@ class BrowserWindowFeatures {
     return browser_command_controller_.get();
   }
 
-  extensions::Mv2DisabledDialogController*
-  mv2_disabled_dialog_controller_for_testing() {
-    return mv2_disabled_dialog_controller_.get();
-  }
 
   ImmersiveModeController* immersive_mode_controller() {
     return immersive_mode_controller_.get();
@@ -583,9 +578,6 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<lens::LensRegionSearchController>
       lens_region_search_controller_;
-
-  std::unique_ptr<extensions::Mv2DisabledDialogController>
-      mv2_disabled_dialog_controller_;
 
   std::unique_ptr<tabs::VerticalTabStripStateController>
       vertical_tab_strip_state_controller_;

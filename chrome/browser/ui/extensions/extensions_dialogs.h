@@ -11,7 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_danger_prompt.h"
-#include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -25,10 +24,13 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Browser;
 class ControlledHomeDialogControllerInterface;
 class SettingsOverriddenDialogController;
 class Profile;
+
+namespace base {
+class FilePath;
+}
 
 namespace content {
 class WebContents;
@@ -62,9 +64,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kControlledHomeDialogCancelButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kDownloadDangerDialogCancelButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kDownloadDangerDialogKeepButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionInstallFrictionLearnMoreLink);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogManageButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogParagraphElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogRemoveButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2KeepDialogOkButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
@@ -128,15 +127,6 @@ void ShowExtensionMultipleUninstallDialog(
     const std::vector<ExtensionId>& extension_ids,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback);
-
-// Shows a dialog with `extensions_info` when those extensions were disabled due
-// to the MV2 deprecation.
-void ShowMv2DeprecationDisabledDialog(
-    Browser* browser,
-    std::vector<Mv2DisabledDialogController::ExtensionInfo>& extensions_info,
-    base::OnceClosure remove_callback,
-    base::OnceClosure manage_callback,
-    base::OnceClosure close_callback);
 
 // Shows a dialog with a warning to the user that their settings have been
 // overridden by an extension.

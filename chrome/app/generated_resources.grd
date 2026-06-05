@@ -6268,22 +6268,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Learn more about disabled extensions.
       </message>
 
-      <!-- Manifest V2 Deprecation Dialogs -->
-      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_TITLE" desc="The title of the dialog that appears when extensions were disabled due to the Manifest V2 deprecation">
-        "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>" was turned off
-      </message>
-      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_PLURAL_TITLE" desc="The title of the dialog that appears when extensions were disabled due to the Manifest V2 deprecation">
-        <ph name="NUM_EXTENSIONS">$1<ex>3</ex></ph> extensions were turned off
-      </message>
-      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_OK_BUTTON" desc="The text of the dialog button that removes the extension(s) that were were disabled due to the Manifest V2 deprecation">
-        Remove
-      </message>
-      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_DISABLED_DIALOG_CANCEL_BUTTON" desc="The text of the dialog button that opens the settings for the extension(s) that were were disabled due to the Manifest V2 deprecation">
-        {NUM_EXTENSIONS, plural,
-          =1 {Manage extension}
-          other {Manage extensions}
-        }
-      </message>
 
       <!-- Begin Extension Settings Overridden Dialog strings. -->
       <message name="IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_CHANGE_IT_BACK" desc="The text of the button to revert to old settings; displayed in the dialog describing settings overridden by an extension.">
