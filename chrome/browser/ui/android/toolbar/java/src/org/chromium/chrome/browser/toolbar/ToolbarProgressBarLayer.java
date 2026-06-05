@@ -21,7 +21,9 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopContro
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.function.Supplier;
 
@@ -41,6 +43,7 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
     private final TopControlsStacker mTopControlsStacker;
     private final BottomControlsStacker mBottomControlsStacker;
     private final boolean mIsToolbarPositionCustomizationEnabled;
+    private final ToolbarLayout mToolbarLayout;
     private final Handler mHandler = new Handler();
 
     /**
@@ -55,6 +58,7 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
      * @param topControlStacker The TopControlStacker instance.
      * @param bottomControlsStacker The BottomControlsStacker instance.
      * @param isToolbarPositionCustomizationEnabled Whether the toolbar position is customizable.
+     * @param toolbarLayout The toolbar layout instance.
      */
     public ToolbarProgressBarLayer(
             ToolbarControlContainer controlContainer,
@@ -65,7 +69,8 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
             Supplier<Integer> bookmarkBarIdSupplier,
             TopControlsStacker topControlStacker,
             BottomControlsStacker bottomControlsStacker,
-            boolean isToolbarPositionCustomizationEnabled) {
+            boolean isToolbarPositionCustomizationEnabled,
+            ToolbarLayout toolbarLayout) {
         mControlContainer = controlContainer;
         mProgressBarContainer = progressBarContainer;
         mProgressBarView = toolbarProgressBar;
@@ -75,6 +80,7 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
         mTopControlsStacker = topControlStacker;
         mBottomControlsStacker = bottomControlsStacker;
         mIsToolbarPositionCustomizationEnabled = isToolbarPositionCustomizationEnabled;
+        mToolbarLayout = toolbarLayout;
 
         mTopControlsStacker.addControl(this);
         updateTopAnchorView();
@@ -165,6 +171,19 @@ public class ToolbarProgressBarLayer implements TopControlLayer {
                                     - mControlContainer.getToolbarHeight()
                                     - mControlContainer.getToolbarHairlineHeight();
                     yOffset += captureHeightDiff;
+                } else if (ChromeFeatureList.sAndroidTabstripStartupCaptureBugFix.isEnabled()
+                        && !ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()
+                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                mToolbarLayout.getContext())) {
+                    // TODO(peilinwang): This is a temporary fix for https://crbug.com/504438014.
+                    // See TopToolbarCoordinator.updateSceneLayerYOffset for more details. Remove
+                    // when ToolbarSnapshotRefactor launches.
+                    // Since we're shifting the tabstrip up, we need to shift the progress bar down
+                    // by the same amount so that it's still in the correct place. The position of
+                    // the progress bar is relative to the toolbar, and isn't effected by the
+                    // capture, so when the bug happens, the progress bar should still be in the
+                    // correct place.
+                    yOffset += mToolbarLayout.getTabStripHeightFromResource();
                 }
             } else if (toolbarPosition == ControlsPosition.BOTTOM) {
                 yOffset =

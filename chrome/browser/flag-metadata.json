@@ -394,6 +394,11 @@
   },
 
   {
+    "name": "android-tabstrip-startup-capture-bug-fix",
+    "owners": ["peilinwang@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-theme-module",
     "owners": [
       "wenyufu@chromium.org"

@@ -1177,7 +1177,8 @@ public class ToolbarManager
                         topControlsStacker,
                         bottomControlsStacker,
                         ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                                mActivity, mIsCustomTab));
+                                mActivity, mIsCustomTab),
+                        mToolbarLayout);
 
         if (mHomeButtonCoordinator != null) {
             browsingModeThemeColorProviderWithAdjustableTint.addTintObserver(
