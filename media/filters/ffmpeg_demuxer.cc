@@ -468,8 +468,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
     packet_span = packet_span.subspan(data_offset);
 
     if (packet_span.size() < MPEG1AudioStreamParser::kHeaderSize ||
-        !MPEG1AudioStreamParser::ParseHeader(nullptr, nullptr, packet_span,
-                                             nullptr)) {
+        !MPEG1AudioStreamParser::ParseHeader(packet_span, nullptr)) {
       LIMITED_MEDIA_LOG(INFO, media_log_, num_discarded_packet_warnings_, 5)
           << "Discarding invalid MP3 packet, ts: "
           << ConvertStreamTimestamp(stream_time_base_, packet->pts)

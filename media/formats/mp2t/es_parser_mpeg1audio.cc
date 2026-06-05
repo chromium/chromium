@@ -42,7 +42,9 @@ EsParserMpeg1Audio::EsParserMpeg1Audio(
     MediaLog* media_log)
     : media_log_(MediaLog::CloneSafely(media_log)),
       new_audio_config_cb_(new_audio_config_cb),
-      emit_buffer_cb_(std::move(emit_buffer_cb)) {}
+      emit_buffer_cb_(std::move(emit_buffer_cb)) {
+  DCHECK(media_log_);
+}
 
 EsParserMpeg1Audio::~EsParserMpeg1Audio() {
 }
@@ -122,8 +124,9 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     DCHECK_GE(base::checked_cast<size_t>(remaining_size),
               MPEG1AudioStreamParser::kHeaderSize);
     MPEG1AudioStreamParser::Header header;
-    if (!MPEG1AudioStreamParser::ParseHeader(
-            media_log_.get(), &mp3_parse_error_limit_, cur_buf, &header)) {
+    if (!MPEG1AudioStreamParser::ParseHeader(cur_buf, &header)) {
+      LIMITED_MEDIA_LOG(DEBUG, media_log_, mp3_parse_error_limit_, 5)
+          << "Invalid MP3 header data";
       continue;
     }
 
@@ -164,9 +167,9 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
 bool EsParserMpeg1Audio::UpdateAudioConfiguration(
     base::span<const uint8_t> mpeg1audio_header) {
   MPEG1AudioStreamParser::Header header;
-  if (!MPEG1AudioStreamParser::ParseHeader(media_log_.get(),
-                                           &mp3_parse_error_limit_,
-                                           mpeg1audio_header, &header)) {
+  if (!MPEG1AudioStreamParser::ParseHeader(mpeg1audio_header, &header)) {
+    LIMITED_MEDIA_LOG(DEBUG, media_log_, mp3_parse_error_limit_, 5)
+        << "Invalid MP3 header data";
     return false;
   }
 

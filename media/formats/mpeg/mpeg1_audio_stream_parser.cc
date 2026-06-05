@@ -76,9 +76,7 @@ constexpr int kCodecDelay = 529;
 }  // namespace
 
 // static
-bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
-                                         size_t* media_log_limit,
-                                         base::span<const uint8_t> data,
+bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
                                          Header* header) {
   BitReader reader(data.first<kHeaderSize>());
   uint16_t sync;
@@ -109,13 +107,6 @@ bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
   if (sync != 0x7ff || version == kVersionReserved || layer == kLayerReserved ||
       bitrate_index == kBitrateFree || bitrate_index == kBitrateBad ||
       sample_rate_index == kSampleRateReserved) {
-    if (media_log) {
-      LIMITED_MEDIA_LOG(DEBUG, media_log, *media_log_limit, 5)
-          << "Invalid MP3 header data :" << std::hex << " sync 0x" << sync
-          << " version 0x" << version << " layer 0x" << layer
-          << " bitrate_index 0x" << bitrate_index << " sample_rate_index 0x"
-          << sample_rate_index << " channel_mode 0x" << channel_mode;
-    }
     return false;
   }
 
@@ -123,25 +114,12 @@ bool MPEG1AudioStreamParser::ParseHeader(MediaLog* media_log,
   // allowed per spec since all tested decoders don't seem to care.
 
   int bitrate = kBitrateMap[bitrate_index][kVersionLayerMap[version][layer]];
-
   if (bitrate == 0) {
-    if (media_log) {
-      LIMITED_MEDIA_LOG(DEBUG, media_log, *media_log_limit, 5)
-          << "Invalid MP3 bitrate :" << std::hex << " version " << version
-          << " layer " << layer << " bitrate_index " << bitrate_index;
-    }
     return false;
   }
 
-  DVLOG(2) << " bitrate " << bitrate;
-
   int frame_sample_rate = kSampleRateMap[sample_rate_index][version];
   if (frame_sample_rate == 0) {
-    if (media_log) {
-      LIMITED_MEDIA_LOG(DEBUG, media_log, *media_log_limit, 5)
-          << "Invalid MP3 sample rate :" << std::hex << " version " << version
-          << " sample_rate_index " << sample_rate_index;
-    }
     return false;
   }
 
@@ -224,8 +202,11 @@ int MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
   }
 
   Header header;
-  if (!ParseHeader(media_log(), &mp3_parse_error_limit_, data, &header))
+  if (!ParseHeader(data, &header)) {
+    LIMITED_MEDIA_LOG(DEBUG, media_log(), mp3_parse_error_limit_, 5)
+        << "Invalid MP3 header.";
     return -1;
+  }
 
   *frame_size = header.frame_size;
   if (sample_rate)
@@ -263,7 +244,6 @@ int MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
 
   // Check to see if the tag contains 'Xing' or 'Info'
   if (tag == 0x496e666f || tag == 0x58696e67) {
-    MEDIA_LOG(DEBUG, media_log()) << "Skipping XING header.";
     if (metadata_frame)
       *metadata_frame = true;
     return header_bytes_read + reader.bits_read() / 8;
