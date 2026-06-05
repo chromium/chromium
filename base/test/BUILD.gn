@@ -830,6 +830,7 @@ if (is_android) {
       "//base:callback_java",
       "//base:log_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/junit",
     ]
 

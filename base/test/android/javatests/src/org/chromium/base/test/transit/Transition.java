@@ -242,7 +242,7 @@ public abstract class Transition {
 
         static final TransitionOptions DEFAULT = new TransitionOptions();
         private @Nullable List<Condition> mTransitionConditions;
-        private @Nullable Long mTimeoutMs;
+        @Nullable Long mTimeoutMs;
         private @Nullable Integer mTries;
         private @Nullable Boolean mPossiblyAlreadyFulfilled;
         private @Nullable Boolean mRunTriggerOnUiThread;

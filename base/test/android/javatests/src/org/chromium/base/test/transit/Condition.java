@@ -33,6 +33,7 @@ public abstract class Condition {
 
     private final boolean mIsRunOnUiThread;
     private @MonotonicNonNull ArrayMap<String, Supplier<?>> mDependentSuppliers;
+    private @Nullable Integer mTimeoutMs;
 
     @VisibleForTesting boolean mHasStartedMonitoringForTesting;
     @VisibleForTesting boolean mHasStoppedMonitoringForTesting;
@@ -46,6 +47,24 @@ public abstract class Condition {
      */
     public Condition(boolean isRunOnUiThread) {
         mIsRunOnUiThread = isRunOnUiThread;
+    }
+
+    /**
+     * Set a custom timeout for this Condition.
+     *
+     * @param timeoutMs 0 for expect fulfilled from outset, >0 for custom timeout.
+     * @return this Condition for chaining.
+     */
+    public Condition withTimeout(@Nullable Integer timeoutMs) {
+        mTimeoutMs = timeoutMs;
+        return this;
+    }
+
+    /**
+     * @return the custom timeout for this Condition, or null if default should be used.
+     */
+    public @Nullable Integer getTimeoutMs() {
+        return mTimeoutMs;
     }
 
     void bindToState(ConditionalState owner) {

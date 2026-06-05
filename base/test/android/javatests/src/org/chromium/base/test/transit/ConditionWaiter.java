@@ -15,6 +15,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.StatusStore.StatusRegion;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.base.test.util.TimeoutTimer;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
@@ -39,6 +40,23 @@ public class ConditionWaiter {
     /** Returns the current time in milliseconds, based on System.nanoTime(). */
     public static long getNow() {
         return System.nanoTime() / 1_000_000;
+    }
+
+    /** Calculate the timeout for the transition based on options and conditions. */
+    public static long calculateTimeoutMs(TransitionOptions options, List<Condition> conditions) {
+        boolean hasDefaultConditions = false;
+        long maxExplicitTimeout = 0;
+        for (Condition condition : conditions) {
+            Integer timeoutMs = condition.getTimeoutMs();
+            if (timeoutMs == null) {
+                hasDefaultConditions = true;
+            } else {
+                maxExplicitTimeout = Math.max(maxExplicitTimeout, timeoutMs.longValue());
+            }
+        }
+        long defaultTimeout = hasDefaultConditions ? MAX_TIME_TO_POLL : 0;
+        long baseTimeout = options.mTimeoutMs != null ? options.mTimeoutMs : defaultTimeout;
+        return Math.max(baseTimeout, maxExplicitTimeout);
     }
 
     /**
@@ -69,7 +87,14 @@ public class ConditionWaiter {
         /** The timestamp of the first check where the condition was fulfilled. */
         private long mTimeFulfilled;
 
+        /** Store of the condition's status history. */
         private final StatusStore mStatusStore = new StatusStore();
+
+        /** True if this condition has timed out. */
+        private boolean mTimedOut;
+
+        /** The scaled timeout for this condition in milliseconds, or null if not yet calculated. */
+        private @Nullable Long mScaledTimeoutMs;
 
         /**
          * Constructor.
@@ -100,6 +125,38 @@ public class ConditionWaiter {
             return mIsInitialWait;
         }
 
+        boolean isTimedOut() {
+            return mTimedOut;
+        }
+
+        long getScaledTimeoutMs() {
+            assert mScaledTimeoutMs != null;
+            return mScaledTimeoutMs;
+        }
+
+        boolean hasCustomTimeout() {
+            return mCondition.getTimeoutMs() != null;
+        }
+
+        /**
+         * Starts the timer and calculates the scaled timeout.
+         *
+         * @param transitionTimeoutMs the timeout of the transition, used if the condition does not
+         *     have a custom timeout.
+         */
+        void start(long transitionTimeoutMs) {
+            ensureTimerStarted();
+            calculateScaledTimeout(transitionTimeoutMs);
+        }
+
+        private void calculateScaledTimeout(long transitionTimeoutMs) {
+            long conditionTimeout =
+                    mCondition.getTimeoutMs() != null
+                            ? mCondition.getTimeoutMs().longValue()
+                            : transitionTimeoutMs;
+            mScaledTimeoutMs = ScalableTimeout.scaleTimeout(conditionTimeout);
+        }
+
         private void ensureTimerStarted() {
             if (mTimeStarted > 0) {
                 return;
@@ -128,14 +185,17 @@ public class ConditionWaiter {
             }
 
             mStatusStore.report(status);
-            if (status.isError()) {
-                return true;
-            } else if (status.isFulfilled()) {
+            if (status.isFulfilled()) {
                 reportFulfilledWait(status);
                 return false;
             } else {
                 reportUnfulfilledWait(status);
-                return true;
+                if (!isPreCheck) {
+                    if (getTimeUnfulfilled() >= getScaledTimeoutMs()) {
+                        mTimedOut = true;
+                    }
+                }
+                return !mTimedOut;
             }
         }
 
@@ -210,11 +270,13 @@ public class ConditionWaiter {
     protected @MonotonicNonNull Map<Condition, ElementFactory> mConditionsGuardingFactories;
     protected final Map<String, ConditionWait> mExitWaitsByElementId = new HashMap<>();
     private boolean mPreCheckFulfilledConditions;
+    private long mTimeoutMs;
 
     ConditionWaiter(Transition transition) {
         mTransition = transition;
     }
 
+    @EnsuresNonNull({"mWaits", "mConditionsGuardingFactories"})
     protected void onBeforeTransition(boolean failOnAlreadyFulfilled) {
         preCheck(failOnAlreadyFulfilled);
         for (ConditionWait wait : mWaits) {
@@ -245,6 +307,11 @@ public class ConditionWaiter {
     @EnsuresNonNull({"mWaits", "mConditionsGuardingFactories"})
     void preCheck(boolean failOnAlreadyFulfilled) {
         createWaits();
+        List<Condition> conditions = new ArrayList<>();
+        for (ConditionWait wait : mWaits) {
+            conditions.add(wait.getCondition());
+        }
+        mTimeoutMs = calculateTimeoutMs(mTransition.getOptions(), conditions);
         createFactories();
 
         if (mWaits.isEmpty()) {
@@ -257,12 +324,12 @@ public class ConditionWaiter {
         }
 
         for (ConditionWait wait : mWaits) {
-            wait.ensureTimerStarted();
+            wait.start(mTimeoutMs);
         }
-        TimeoutTimer timeoutTimer = new TimeoutTimer(mTransition.getOptions().getTimeoutMs());
-        boolean anyCriteriaMissing = processWaits(/* isPreCheck= */ true, timeoutTimer);
+        processWaits(/* isPreCheck= */ true, /* timeoutTimer= */ null);
+        boolean allConditionsFulfilled = areAllConditionsFulfilled();
 
-        if (!anyCriteriaMissing && failOnAlreadyFulfilled) {
+        if (allConditionsFulfilled && failOnAlreadyFulfilled) {
             throw new CriteriaNotSatisfiedException(
                     "All Conditions already fulfilled before running Trigger. If this is expected,"
                         + " use a null Trigger. If this is possible but not necessarily expected,"
@@ -273,7 +340,7 @@ public class ConditionWaiter {
 
         // If the preCheck already saw all Conditions fulfilled and there is no trigger which might
         // cause state changes, avoid checking Conditions a second time.
-        if (!mTransition.hasTrigger() && !anyCriteriaMissing) {
+        if (!mTransition.hasTrigger() && allConditionsFulfilled) {
             mPreCheckFulfilledConditions = true;
 
             Log.i(
@@ -295,14 +362,11 @@ public class ConditionWaiter {
         assert isPreCheckDone();
 
         if (!mPreCheckFulfilledConditions) {
-            TransitionOptions options = mTransition.getOptions();
-            long timeoutMs = options.getTimeoutMs();
+            long timeoutMs = mTimeoutMs;
             TimeoutTimer timeoutTimer = new TimeoutTimer(timeoutMs);
-            boolean anyCriteriaMissing = true;
-
             while (!timeoutTimer.isTimedOut()) {
-                anyCriteriaMissing = processWaits(/* isPreCheck= */ false, timeoutTimer);
-                if (!anyCriteriaMissing) {
+                processWaits(/* isPreCheck= */ false, timeoutTimer);
+                if (shouldStopWaiting()) {
                     break;
                 }
                 try {
@@ -312,13 +376,21 @@ public class ConditionWaiter {
                 }
             }
 
-            if (anyCriteriaMissing) {
+            if (!shouldStopWaiting()) {
                 // Run one last time after timeout to ensure the total time has been given
                 // and that every Condition has been checked at least once.
-                anyCriteriaMissing = processWaits(/* isPreCheck= */ false, null);
+                processWaits(/* isPreCheck= */ false, null);
             }
 
-            if (anyCriteriaMissing) {
+            boolean hasFailures = false;
+            for (ConditionWait wait : mWaits) {
+                if (!wait.isFulfilled() || wait.isTimedOut()) {
+                    hasFailures = true;
+                    break;
+                }
+            }
+
+            if (hasFailures) {
                 throw TravelException.newTravelException(
                         "Did not complete "
                                 + mTransition.toDebugString()
@@ -343,6 +415,26 @@ public class ConditionWaiter {
             }
             throw TravelException.newTravelException(failureMessage.toString());
         }
+    }
+
+    private boolean areAllConditionsFulfilled() {
+        assumeNonNull(mWaits);
+        for (ConditionWait wait : mWaits) {
+            if (!wait.isFulfilled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean shouldStopWaiting() {
+        assumeNonNull(mWaits);
+        for (ConditionWait wait : mWaits) {
+            if (!wait.isFulfilled() && !wait.isTimedOut()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @EnsuresNonNull("mWaits")
@@ -445,10 +537,9 @@ public class ConditionWaiter {
         return newWaits;
     }
 
-    private boolean processWaits(boolean isPreCheck, @Nullable TimeoutTimer timeoutTimer) {
+    private void processWaits(boolean isPreCheck, @Nullable TimeoutTimer timeoutTimer) {
         assert isPreCheckDone();
 
-        boolean anyCriteriaMissing = false;
         Set<String> newElementIds = new HashSet<>();
 
         // We process waits in batches because if a wait that guards a factory is
@@ -466,13 +557,11 @@ public class ConditionWaiter {
                 // Check timeout before each Condition check; if multiple Conditions are taking
                 // long, the Transition can take too long to time out.
                 if (timeoutTimer != null && timeoutTimer.isTimedOut()) {
-                    anyCriteriaMissing = true;
                     mWaits.addAll(nextBatch);
-                    return anyCriteriaMissing;
+                    return;
                 }
 
                 boolean stillNeedsWait = wait.update(isPreCheck);
-                anyCriteriaMissing |= stillNeedsWait;
                 ElementFactory generator = mConditionsGuardingFactories.get(wait.mCondition);
                 if (!stillNeedsWait && generator != null) {
                     // Remove from the map so that next time we check this wait
@@ -508,7 +597,7 @@ public class ConditionWaiter {
 
             for (ConditionWait wait : nextBatch) {
                 wait.markAsDelayedWait();
-                wait.ensureTimerStarted();
+                wait.start(mTimeoutMs);
                 // We do not want to start monitoring conditions (even newly
                 // created ones) during the first update cycle (aka preCheck)
                 // since we already do that after.
@@ -533,8 +622,6 @@ public class ConditionWaiter {
                 mWaits.remove(removedExitWait);
             }
         }
-
-        return anyCriteriaMissing;
     }
 
     private BaseElements fabricateElements(List<ElementFactory> factories) {
@@ -547,8 +634,8 @@ public class ConditionWaiter {
 
     private static String createWaitConditionsSummary(
             List<ConditionWait> conditionWaits, boolean generateMainMessage) {
-        String firstUnfulfilledConditionString = null;
-        int unfulfilledConditionCount = 0;
+        String firstFailedConditionString = null;
+        int failedConditionCount = 0;
         StringBuilder detailsString = new StringBuilder();
         int i = 1;
         for (ConditionWait conditionWait : conditionWaits) {
@@ -576,7 +663,14 @@ public class ConditionWaiter {
 
             String verdictString;
             if (conditionWait.isFulfilled()) {
-                if (conditionWait.getStatusStore().anyErrorsReported()) {
+                if (conditionWait.isTimedOut()) {
+                    verdictString = "[LATE]";
+                    marker = "->";
+                    if (firstFailedConditionString == null) {
+                        firstFailedConditionString = indexString + " " + conditionDescription;
+                    }
+                    failedConditionCount++;
+                } else if (conditionWait.getStatusStore().anyErrorsReported()) {
                     verdictString = "[OK* ]";
                 } else {
                     verdictString = "[OK  ]";
@@ -588,10 +682,10 @@ public class ConditionWaiter {
                     verdictString = "[FAIL]";
                 }
                 marker = "->";
-                if (firstUnfulfilledConditionString == null) {
-                    firstUnfulfilledConditionString = indexString + " " + conditionDescription;
+                if (firstFailedConditionString == null) {
+                    firstFailedConditionString = indexString + " " + conditionDescription;
                 }
-                unfulfilledConditionCount++;
+                failedConditionCount++;
             }
 
             StringBuilder historyString = new StringBuilder();
@@ -607,14 +701,39 @@ public class ConditionWaiter {
             String fulfilledString;
             if (conditionWait.isFulfilled()) {
                 Pair<Long, Long> timeToFulfill = conditionWait.getTimeToFulfill();
-                fulfilledString =
-                        String.format(
-                                "{fulfilled after %d~%d ms}",
-                                timeToFulfill.first, timeToFulfill.second);
+                if (conditionWait.isTimedOut()) {
+                    if (conditionWait.hasCustomTimeout()) {
+                        fulfilledString =
+                                String.format(
+                                        "{fulfilled LATE after %d~%d ms, timeout was %d ms}",
+                                        timeToFulfill.first,
+                                        timeToFulfill.second,
+                                        conditionWait.getScaledTimeoutMs());
+                    } else {
+                        fulfilledString =
+                                String.format(
+                                        "{fulfilled LATE after %d~%d ms}",
+                                        timeToFulfill.first, timeToFulfill.second);
+                    }
+                } else {
+                    fulfilledString =
+                            String.format(
+                                    "{fulfilled after %d~%d ms}",
+                                    timeToFulfill.first, timeToFulfill.second);
+                }
             } else {
-                fulfilledString =
-                        String.format(
-                                "{unfulfilled after %d ms}", conditionWait.getTimeUnfulfilled());
+                if (conditionWait.hasCustomTimeout()) {
+                    fulfilledString =
+                            String.format(
+                                    "{unfulfilled after %d ms, timeout was %d ms}",
+                                    conditionWait.getTimeUnfulfilled(),
+                                    conditionWait.getScaledTimeoutMs());
+                } else {
+                    fulfilledString =
+                            String.format(
+                                    "{unfulfilled after %d ms}",
+                                    conditionWait.getTimeUnfulfilled());
+                }
             }
 
             detailsString
@@ -637,18 +756,17 @@ public class ConditionWaiter {
         }
 
         if (generateMainMessage) {
-            if (unfulfilledConditionCount == 0) {
+            if (failedConditionCount == 0) {
                 return String.format("all Conditions fulfilled:\n%s", detailsString);
-            } else if (unfulfilledConditionCount == 1) {
+            } else if (failedConditionCount == 1) {
                 return String.format(
-                        "missing 1 Condition :%s\n%s",
-                        firstUnfulfilledConditionString, detailsString);
+                        "failed 1 Condition: %s\n%s", firstFailedConditionString, detailsString);
             } else {
                 return String.format(
-                        "missing %d Conditions: %s (+%d more)\n%s",
-                        unfulfilledConditionCount,
-                        firstUnfulfilledConditionString,
-                        unfulfilledConditionCount - 1,
+                        "failed %d Conditions: %s (+%d more)\n%s",
+                        failedConditionCount,
+                        firstFailedConditionString,
+                        failedConditionCount - 1,
                         detailsString);
             }
         } else {
