@@ -84,6 +84,13 @@ public interface SuggestionHost {
      */
     void setOmniboxEditingText(String text);
 
+    /**
+     * Triggered when the user focuses the omnibox suggestion via keyboard.
+     *
+     * @param suggestion Focused Suggestion.
+     */
+    void onSuggestionFocused(AutocompleteMatch suggestion);
+
     /** Clear focus, close the suggestions list and complete the interaction with the Omnibox. */
     void finishInteraction();
 }

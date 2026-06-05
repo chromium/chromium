@@ -744,6 +744,35 @@ class AutocompleteMediator
         return mAutocompleteResult != null ? mAutocompleteResult.getNativeObjectRef() : 0L;
     }
 
+    private boolean maybeEnterKeywordMode(AutocompleteMatch suggestion) {
+        if (!isInInputSession()) return false;
+        // Other suggestions with an associated keyword (e.g. SEARCH_OTHER_ENGINE) represent
+        // actual searches that should trigger a navigation.
+        if (suggestion.getType() != OmniboxSuggestionType.STARTER_PACK) return false;
+
+        String keyword = suggestion.getAssociatedKeyword();
+        if (keyword == null) return false;
+
+        if (mSessionState.getProfile() == null) {
+            return false;
+        }
+
+        TemplateUrlService service =
+                TemplateUrlServiceFactory.getForProfile(mSessionState.getProfile());
+        if (service == null || !service.isLoaded()) return false;
+
+        String name = service.getFullNameFromTemplateUrl(keyword);
+        if (name == null) return false;
+
+        onKeywordModeEntered(
+                new SiteSearchData(
+                        keyword,
+                        name,
+                        /* enteredViaSpace= */ false,
+                        suggestion.getStarterPackId()));
+        return true;
+    }
+
     /**
      * Triggered when the user selects one of the omnibox suggestions to navigate to.
      *
@@ -777,6 +806,10 @@ class AutocompleteMediator
                     return;
                 }
             }
+        }
+
+        if (maybeEnterKeywordMode(suggestion)) {
+            return;
         }
 
         loadUrlForOmniboxMatch(
@@ -1040,6 +1073,20 @@ class AutocompleteMediator
         // - the user accepts the input (by pressing Enter).
         // for that reason this logic should not apply UserText.
         mDelegate.setOmniboxEditingText(stripKeywordIfNecessary(text));
+    }
+
+    @Override
+    public void onSuggestionFocused(AutocompleteMatch suggestion) {
+        if (!isInInputSession()) return;
+
+        if (!maybeEnterKeywordMode(suggestion)) {
+            // Clear keyword mode only if it was a temporary preview triggered by highlighting
+            // a starter pack. hasPreviewText() prevents clearing explicitly typed keyword modes.
+            if (mAutocompleteInput != null && mAutocompleteInput.hasPreviewText()) {
+                onKeywordModeEntered(null);
+            }
+            setOmniboxEditingText(suggestion.getFillIntoEdit());
+        }
     }
 
     /**

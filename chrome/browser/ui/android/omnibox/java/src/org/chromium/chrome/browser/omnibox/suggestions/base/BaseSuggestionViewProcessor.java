@@ -245,7 +245,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 () -> onSuggestionLongClicked(suggestion));
         model.set(
                 BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
-                () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
+                () -> mSuggestionHost.onSuggestionFocused(suggestion));
         setActionButtons(model, null);
 
         model.set(BaseSuggestionViewProperties.USE_LARGE_DECORATION, false);

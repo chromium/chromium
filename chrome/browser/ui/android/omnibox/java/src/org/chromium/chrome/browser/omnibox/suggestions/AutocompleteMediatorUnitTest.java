@@ -882,6 +882,120 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void onSuggestionClicked_starterPack_extractsHintFromTemplateUrlService() {
+        mMediator.onNativeInitialized();
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn("Chat with Gemini")
+                .when(mTemplateUrlService)
+                .getFullNameFromTemplateUrl("@gemini");
+
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.STARTER_PACK)
+                        .setAssociatedKeyword("@gemini")
+                        .setDescription("Search @gemini Chat with Gemini")
+                        .setStarterPackId(StarterPackId.NONE)
+                        .build();
+
+        mMediator.onSuggestionClicked(match, 0, JUnitTestGURLs.BLUE_1);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        SiteSearchData siteSearchData = session.getAutocompleteInput().getSiteSearchData();
+        assertNotNull(siteSearchData);
+        assertEquals("@gemini", siteSearchData.keyword);
+        assertEquals("Chat with Gemini", siteSearchData.fullName);
+        verify(mAutocompleteDelegate, never()).loadUrl(any());
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionFocused_starterPack_entersKeywordMode() {
+        mMediator.onNativeInitialized();
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        assertTrue("Session should be active", mMediator.isInInputSession());
+        mMediator.allowPendingItemSelection();
+
+        doReturn(true).when(mTemplateUrlService).isLoaded();
+        doReturn("Chat with Gemini")
+                .when(mTemplateUrlService)
+                .getFullNameFromTemplateUrl("@gemini");
+
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.STARTER_PACK)
+                        .setAssociatedKeyword("@gemini")
+                        .setFillIntoEdit("@gemini")
+                        .setStarterPackId(StarterPackId.NONE)
+                        .build();
+
+        mMediator.onSuggestionFocused(match);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        SiteSearchData siteSearchData = session.getAutocompleteInput().getSiteSearchData();
+        assertNotNull(siteSearchData);
+        assertEquals("@gemini", siteSearchData.keyword);
+        assertEquals("Chat with Gemini", siteSearchData.fullName);
+        verify(mAutocompleteDelegate).setOmniboxEditingText("");
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionFocused_nonStarterPack_doesNotEnterKeywordMode() {
+        mMediator.onNativeInitialized();
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        assertTrue("Session should be active", mMediator.isInInputSession());
+        mMediator.allowPendingItemSelection();
+
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setFillIntoEdit("something")
+                        .build();
+
+        mMediator.onSuggestionFocused(match);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertTrue(session.getAutocompleteInput().getSiteSearchData() == null);
+        verify(mAutocompleteDelegate).setOmniboxEditingText("something");
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionFocused_nonStarterPack_clearsPreview() {
+        mMediator.onNativeInitialized();
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        assertTrue("Session should be active", mMediator.isInInputSession());
+        mMediator.allowPendingItemSelection();
+
+        session.getAutocompleteInput().setPreviewText("preview");
+        session.getAutocompleteInput().setSiteSearchData(
+                new SiteSearchData("kw", "name", false, StarterPackId.NONE));
+
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder()
+                        .setType(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setFillIntoEdit("something")
+                        .build();
+
+        mMediator.onSuggestionFocused(match);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        assertTrue(session.getAutocompleteInput().getSiteSearchData() == null);
+        verify(mAutocompleteDelegate).setOmniboxEditingText("something");
+    }
+
+    @Test
+    @SmallTest
     public void onSuggestionClicked_TabsStarterPack() {
         mMediator.onNativeInitialized();
         mMediator.beginInput(createEmptySession());
