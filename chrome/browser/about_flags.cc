@@ -7439,6 +7439,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(safe_browsing::kAutoRevokeSuspiciousNotification)},
 
+    {"use-p-link-in-help", flag_descriptions::kUsePLinkInHelpName,
+     flag_descriptions::kUsePLinkInHelpDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kUsePLinkInHelp)},
+
     {"user-feedback-allowed-policy",
      flag_descriptions::kUserFeedbackAllowedPolicyName,
      flag_descriptions::kUserFeedbackAllowedPolicyDescription, kOsAndroid,

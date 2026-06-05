@@ -13307,6 +13307,7 @@ from previous Chrome versions.
   <int value="-343314036" label="WebBluetooth:enabled"/>
   <int value="-342421456" label="EnableOverviewRoundedCorners:disabled"/>
   <int value="-342243498" label="EnableWebHidInWebView:enabled"/>
+  <int value="-340957381" label="UsePLinkInHelp:disabled"/>
   <int value="-340622848" label="disable-javascript-harmony-shipping"/>
   <int value="-340255045" label="allow-nacl-socket-api"/>
   <int value="-340183901"
@@ -18201,6 +18202,7 @@ from previous Chrome versions.
       label="SyncPseudoUSSHistoryDeleteDirectives:disabled"/>
   <int value="1259760596" label="ByDateHistoryInSidePanel:enabled"/>
   <int value="1259798038" label="AllowAmbientEQ:disabled"/>
+  <int value="1259861362" label="UsePLinkInHelp:enabled"/>
   <int value="1260186484" label="spurious-power-button-screen-accel"/>
   <int value="1260234477" label="(Obsolete) ExplicitLanguageAsk:enabled"/>
   <int value="1260878896"

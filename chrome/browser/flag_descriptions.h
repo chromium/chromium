@@ -4943,6 +4943,12 @@ inline constexpr char kUsePersistentCacheForCodeCacheDescription[] =
     "Use PersistentCache backend for code cache for JavaScript and "
     "WebAssembly.";
 
+inline constexpr char kUsePLinkInHelpName[] =
+    "Use P-links for Google Help Pages";
+inline constexpr char kUsePLinkInHelpDescription[] =
+    "When enabled, Open-to-Content and P-links are used for Google help pages; "
+    "Otherwise, the deprecated Open-to-Article is used";
+
 inline constexpr char kUsePrimaryAndTonalButtonsForPromosName[] =
     "Use primary and tonal buttons for promos";
 inline constexpr char kUsePrimaryAndTonalButtonsForPromosDescription[] =
