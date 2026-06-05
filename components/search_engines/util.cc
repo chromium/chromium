@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "components/country_codes/country_codes.h"
 #include "components/google/core/common/google_util.h"
+#include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_url_utils.h"
@@ -149,10 +150,13 @@ GURL GetBaseSearchUrl(TemplateURLService* turl_service,
       result_url, kClientUploadDurationQueryParameter,
       base::NumberToString(
           (query_submission_time - query_start_time).InMilliseconds()));
-  result_url = net::AppendOrReplaceQueryParameter(
-      result_url, kQuerySubmissionTimeQueryParameter,
-      base::NumberToString(
-          query_submission_time.InMillisecondsSinceUnixEpoch()));
+  if (base::FeatureList::IsEnabled(
+          lens::features::kLensSendQuerySubmissionTime)) {
+    result_url = net::AppendOrReplaceQueryParameter(
+        result_url, kQuerySubmissionTimeQueryParameter,
+        base::NumberToString(
+            query_submission_time.InMillisecondsSinceUnixEpoch()));
+  }
   return result_url;
 }
 

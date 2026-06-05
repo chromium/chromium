@@ -7,9 +7,12 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/lens/lens_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_test_util.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using SearchEngineUtilTest = testing::Test;
@@ -129,4 +132,23 @@ TEST_F(SearchEngineUtilTest, IsAimURL) {
 
   // Missing udm=50 should be rejected.
   EXPECT_FALSE(IsAimURL(GURL("https://www.google.com/search?q=test")));
+}
+
+TEST_F(SearchEngineUtilTemplateUrlTest, GetUrlForAim_QsubtsFlag) {
+  TemplateURLService* service = &template_url_service();
+
+  // By default, flag is disabled, so qsubts should NOT be present.
+  GURL url = GetUrlForAim(service, omnibox::ChromeAimEntryPoint(0),
+                          base::Time::Now(), u"test", std::nullopt, {});
+  std::string qsubts;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "qsubts", &qsubts));
+
+  // Enable the flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      lens::features::kLensSendQuerySubmissionTime);
+
+  url = GetUrlForAim(service, omnibox::ChromeAimEntryPoint(0),
+                     base::Time::Now(), u"test", std::nullopt, {});
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "qsubts", &qsubts));
 }
