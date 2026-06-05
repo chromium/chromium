@@ -176,6 +176,8 @@ void ContextualSearchSessionHandle::StartFileContextUploadFlow(
       std::make_unique<lens::ContextualInputData>();
   input_data->context_input = std::vector<lens::ContextualInput>();
   input_data->primary_content_type = mime_type;
+  input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
   input_data->file_name = file_name;
   // For manual file uploads, the file name is also set in the page_title field.
   input_data->page_title = file_name;
@@ -227,6 +229,13 @@ void ContextualSearchSessionHandle::StartTabContextUploadFlow(
   }
 
   if (auto* controller = GetController()) {
+    if (!contextual_input_data->upload_type.has_value()) {
+      // If the input data did not already have an upload type (e.g.
+      // auto-context) then it was the result of an explicit user upload.
+      contextual_input_data->upload_type =
+          lens::LensOverlayContextualInputUploadType::
+              CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+    }
     controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), image_options);
   }
@@ -271,6 +280,9 @@ void ContextualSearchSessionHandle::StartDriveContextUploadFlow(
     contextual_input_data->resource_key = resource_key;
     contextual_input_data->mime_type_string = mime_type_string;
     contextual_input_data->primary_content_type = lens::MimeType::kUnknown;
+    contextual_input_data->upload_type =
+        lens::LensOverlayContextualInputUploadType::
+            CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
     context_controller->StartFileUploadFlow(
         file_token, std::move(contextual_input_data), std::nullopt);
   }

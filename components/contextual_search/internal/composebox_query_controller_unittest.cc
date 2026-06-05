@@ -128,14 +128,17 @@ class ComposeboxQueryControllerTest
       bool prioritize_suggestions_for_the_first_attached_document = false,
       bool attach_page_title_and_url_to_suggest_requests = false,
       bool enable_send_vit_for_single_context_next_queries = true,
-      bool enable_send_raw_file_media_types = false) {
+      bool enable_send_raw_file_media_types = false,
+      bool enable_send_contextual_input_upload_type = false,
+      bool send_contextual_input_upload_type_in_search_url = true,
+      bool send_contextual_input_upload_type_in_aim_request = true) {
     scoped_feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     if (use_separate_request_ids_for_viewport_images) {
       enabled_features.push_back(
-          lens::features::kLensUseSeparateRequestIdForViewportImages);
+          {lens::features::kLensUseSeparateRequestIdForViewportImages, {}});
     } else {
       disabled_features.push_back(
           lens::features::kLensUseSeparateRequestIdForViewportImages);
@@ -143,18 +146,33 @@ class ComposeboxQueryControllerTest
 
     if (enable_send_vit_for_single_context_next_queries) {
       enabled_features.push_back(
-          lens::features::kLensSendVitForSingleContextNextQueries);
+          {lens::features::kLensSendVitForSingleContextNextQueries, {}});
     } else {
       disabled_features.push_back(
           lens::features::kLensSendVitForSingleContextNextQueries);
     }
 
     if (enable_send_raw_file_media_types) {
-      enabled_features.push_back(lens::features::kLensSendRawFileMediaTypes);
+      enabled_features.push_back(
+          {lens::features::kLensSendRawFileMediaTypes, {}});
     } else {
       disabled_features.push_back(lens::features::kLensSendRawFileMediaTypes);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    if (enable_send_contextual_input_upload_type) {
+      base::FieldTrialParams params;
+      params["send_in_search_url"] =
+          send_contextual_input_upload_type_in_search_url ? "true" : "false";
+      params["send_in_aim_request"] =
+          send_contextual_input_upload_type_in_aim_request ? "true" : "false";
+      enabled_features.push_back(
+          {contextual_tasks::kContextualTasksSendContextualInputUploadType,
+           params});
+    } else {
+      disabled_features.push_back(
+          contextual_tasks::kContextualTasksSendContextualInputUploadType);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
 
     // Create the config params.
     auto config_params =
@@ -247,6 +265,8 @@ class ComposeboxQueryControllerTest
     input_data->context_input->push_back(
         lens::ContextualInput(file_data, lens::MimeType::kPdf));
     input_data->context_id = context_id;
+    input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+        CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
 
     controller().StartFileUploadFlow(file_token, std::move(input_data),
                                      /*image_options=*/std::nullopt);
@@ -264,6 +284,8 @@ class ComposeboxQueryControllerTest
     input_data->context_input->push_back(
         lens::ContextualInput(file_data, lens::MimeType::kImage));
     input_data->context_id = context_id;
+    input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+        CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
 
     controller().StartFileUploadFlow(file_token, std::move(input_data),
                                      image_options);
@@ -6499,4 +6521,157 @@ TEST_F(ComposeboxQueryControllerTest, BackgroundUploadTaskCleanup) {
       0, base::ios::ScopedCriticalAction::GetNumActiveBackgroundTasksForTest());
 #endif
 }
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_SendsUploadType_SingleInput) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksSendContextualInputUploadType);
+
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Set up search request.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token);
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kAim;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Verify that cinpts is present and contains the upload type.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(aim_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 1);
+  EXPECT_EQ(contextual_inputs.inputs(0).upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateClientToAimRequest_SendsUploadType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      contextual_tasks::kContextualTasksSendContextualInputUploadType);
+
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify lens_image_query_data has upload_type set.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_EQ(lens_image_query_data.contextual_input_upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_DoesNotSendUploadType_WhenSearchUrlParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["send_in_search_url"] = "false";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasksSendContextualInputUploadType, params);
+
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token_1 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_1, /*file_data=*/std::vector<uint8_t>());
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token_1, lens::MimeType::kPdf);
+
+  const base::UnguessableToken file_token_2 = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token_2, /*file_data=*/std::vector<uint8_t>());
+  WaitForFileUpload(file_token_2, lens::MimeType::kPdf);
+
+  // Set up search request.
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "hello";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->file_tokens.push_back(file_token_1);
+  search_url_request_info->file_tokens.push_back(file_token_2);
+  search_url_request_info->search_url_type =
+      ComposeboxQueryController::SearchUrlType::kAim;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  // Verify that cinpts is present but does NOT contain the upload type.
+  lens::LensOverlayContextualInputs contextual_inputs =
+      GetContextualInputsFromUrl(aim_url.spec());
+  EXPECT_EQ(contextual_inputs.inputs_size(), 2);
+  EXPECT_EQ(contextual_inputs.inputs(0).upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_UNSPECIFIED);
+  EXPECT_EQ(contextual_inputs.inputs(1).upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_UNSPECIFIED);
+}
+
+TEST_F(
+    ComposeboxQueryControllerTest,
+    CreateClientToAimRequest_DoesNotSendUploadType_WhenAimRequestParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["send_in_aim_request"] = "false";
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      contextual_tasks::kContextualTasksSendContextualInputUploadType, params);
+
+  controller().InitializeIfNeeded();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token, /*file_data=*/std::vector<uint8_t>());
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Create ClientToAimRequest.
+  auto create_client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  create_client_to_aim_request_info->query_text = "test query";
+  create_client_to_aim_request_info->file_tokens = {file_token};
+
+  auto client_to_aim_message = controller().CreateClientToAimRequest(
+      std::move(create_client_to_aim_request_info));
+
+  // Verify lens_image_query_data does NOT have upload_type set.
+  ASSERT_EQ(client_to_aim_message.submit_query()
+                .payload()
+                .lens_image_query_data_size(),
+            1);
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_EQ(lens_image_query_data.contextual_input_upload_type(),
+            lens::LensOverlayContextualInputUploadType::
+                CONTEXTUAL_INPUT_UPLOAD_TYPE_UNSPECIFIED);
+}
+
 }  // namespace contextual_search

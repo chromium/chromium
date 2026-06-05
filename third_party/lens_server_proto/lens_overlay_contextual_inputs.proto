@@ -10,13 +10,40 @@ package lens;
 
 import "lens_overlay_request_id.proto";
 
+// Represents the possible upload types for contextual inputs.
+enum LensOverlayContextualInputUploadType {
+  CONTEXTUAL_INPUT_UPLOAD_TYPE_UNSPECIFIED = 0;
+
+  // The user explicitly selected the context for upload, such as via the
+  // compose box context menu.
+  CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT = 1;
+
+  // The user uploaded an auto-suggested tab context chip.
+  CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP = 2;
+
+  // The user uploaded a smart-selected tab.
+  CONTEXTUAL_INPUT_UPLOAD_TYPE_SMART_TAB_SELECTION = 3;
+
+  // The user submitted a followup query with updated tab context.
+  CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION = 4;
+
+  // The user uploaded the context as part of an initial query from the
+  // contextual searchbox.
+  CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY = 5;
+}
+
 // A container for lens inputs sent into search. Each LensOverlayContextualInput
 // represents one input file, such as an image or pdf.
 message LensOverlayContextualInputs {
   repeated LensOverlayContextualInput inputs = 1;
 
-  // Next ID: 2
+  // Next ID: 4
   message LensOverlayContextualInput {
     LensOverlayRequestId request_id = 1;
+
+    reserved 2;
+
+    // The upload type associated with the contextual input.
+    LensOverlayContextualInputUploadType upload_type = 3;
   }
 }

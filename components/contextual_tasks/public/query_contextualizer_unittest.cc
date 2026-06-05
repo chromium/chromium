@@ -1820,4 +1820,211 @@ TEST_F(QueryContextualizerTest,
   CompleteAllUploads();
 }
 
+TEST_F(QueryContextualizerTest,
+       Contextualize_AutoSuggestedTabSetsAutoTabChipUploadType) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+
+  ContextualTask task(task_id);
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect GetPageContext call.
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](
+                    QueryContextualizer::TabId id,
+                    base::OnceCallback<void(
+                        std::unique_ptr<lens::ContextualInputData>)> callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->tab_session_id = session_id;
+        data->page_url = GURL("about:blank");
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call and check upload_type.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_TRUE(data->upload_type.has_value());
+        EXPECT_EQ(*data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_AUTO_TAB_CHIP);
+      });
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
+  EXPECT_CALL(done_callback, Run(testing::_));
+
+  // Pass tab_id in tabs_to_force_contextualize.
+  contextualizer_->Contextualize(task_id, "test query", {}, {tab_id},
+                                 base::DoNothing(), base::DoNothing(),
+                                 done_callback.Get(),
+                                 /*enable_smart_tab_selection=*/false);
+  CompleteAllUploads();
+}
+
+TEST_F(QueryContextualizerTest,
+       Contextualize_RecontextualizedTabSetsRecontextualizationUploadType) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with expired tab.
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // Setup FileInfo with expired status so it recontextualizes.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = session_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadExpired;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
+  file_info_list.push_back(&file_info);
+
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect GetPageContext call.
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](
+                    QueryContextualizer::TabId id,
+                    base::OnceCallback<void(
+                        std::unique_ptr<lens::ContextualInputData>)> callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->tab_session_id = session_id;
+        data->page_url = GURL("about:blank");
+        data->page_title = "about:blank";
+        data->context_id = 12345;
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Expect IsTabValid call.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow call and check upload_type.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_TRUE(data->upload_type.has_value());
+        EXPECT_EQ(*data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_RECONTEXTUALIZATION);
+      });
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
+  EXPECT_CALL(done_callback, Run(testing::_));
+
+  // Pass tab_id in tabs_to_recontextualize.
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 base::DoNothing(), base::DoNothing(),
+                                 done_callback.Get(),
+                                 /*enable_smart_tab_selection=*/false);
+  CompleteAllUploads();
+}
+
+TEST_F(QueryContextualizerTest,
+       Contextualize_SmartTabSetsSmartTabSelectionUploadType) {
+  std::string query = "query";
+  int32_t tab_id = 1;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+
+  EXPECT_CALL(*delegate_,
+              GetRelevantTabsForQuery(query, testing::_, testing::_))
+      .WillOnce([tab_id](const auto& query, const auto& urls, auto callback) {
+        std::move(callback).Run({tab_id});
+      });
+
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(GURL("http://tab1.com")));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](auto id, auto callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->tab_session_id = session_id;
+        data->page_url = GURL("http://tab1.com");
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Expect StartTabContextUploadFlow call and check upload_type.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_TRUE(data->upload_type.has_value());
+        EXPECT_EQ(*data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_SMART_TAB_SELECTION);
+      });
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_)).Times(1);
+
+  contextualizer_->Contextualize(std::nullopt, query, {}, {}, base::DoNothing(),
+                                 base::DoNothing(), callback.Get(),
+                                 /*enable_smart_tab_selection=*/true);
+
+  CompleteAllUploads();
+}
+
 }  // namespace contextual_tasks

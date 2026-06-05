@@ -63,6 +63,9 @@ TEST_F(ContextualSearchSessionHandleTest,
                    std::unique_ptr<lens::ContextualInputData> input_data,
                    std::optional<lens::ImageEncodingOptions> image_options) {
         EXPECT_EQ(input_data->primary_content_type, lens::MimeType::kUnknown);
+        EXPECT_EQ(input_data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
       });
 
   mojo_base::BigBuffer buffer;
@@ -106,6 +109,9 @@ TEST_F(ContextualSearchSessionHandleTest,
         EXPECT_EQ(input_data->drive_id, test_drive_id);
         EXPECT_EQ(input_data->resource_key, test_resource_key);
         EXPECT_EQ(input_data->mime_type_string, test_mime_type);
+        EXPECT_EQ(input_data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
       });
 
   handle_->StartDriveContextUploadFlow(token, test_drive_id, test_resource_key,
@@ -119,6 +125,38 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _)).Times(0);
 
   handle_->StartDriveContextUploadFlow(token, "id", "key", "type");
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartUrlContextUploadFlow_DoesNotSetUploadType) {
+  base::UnguessableToken token = handle_->CreateContextToken();
+  std::string test_url = "https://www.google.com";
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([&](const base::UnguessableToken& file_token,
+                    std::unique_ptr<lens::ContextualInputData> input_data,
+                    std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(input_data->primary_content_type, lens::MimeType::kUnknown);
+        EXPECT_EQ(input_data->parsed_url, test_url);
+        EXPECT_FALSE(input_data->upload_type.has_value());
+      });
+
+  handle_->StartUrlContextUploadFlow(token, test_url);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartModalityChipUploadFlow_DoesNotSetUploadType) {
+  base::UnguessableToken token = handle_->CreateContextToken();
+  auto modality_chip_props = std::make_unique<lens::ModalityChipProps>();
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([&](const base::UnguessableToken& file_token,
+                    std::unique_ptr<lens::ContextualInputData> input_data,
+                    std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_FALSE(input_data->upload_type.has_value());
+      });
+
+  handle_->StartModalityChipUploadFlow(token, std::move(modality_chip_props));
 }
 
 }  // namespace contextual_search

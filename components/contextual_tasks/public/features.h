@@ -48,6 +48,10 @@ BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
 // requests initiated from within an embedded Co-Browse <webview>.
 BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
 
+// If enabled, AIM will send the ContextualInputUploadType enum on
+// ContextualInputs.
+BASE_DECLARE_FEATURE(kContextualTasksSendContextualInputUploadType);
+
 // When contextual tasks is disabled and this flag is enabled, intecept the
 // contextual tasks URL and redirect to aim URL.
 BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
@@ -124,6 +128,13 @@ extern const base::FeatureParam<std::string> kQueryEmbeddingTask;
 // The sample rate for logging contextual tasks context quality.
 extern const base::FeatureParam<double>
     kContextualTasksContextLoggingSampleRate;
+
+// Controls whether we set the upload type in CreateSearchUrl.
+extern const base::FeatureParam<bool> kSendContextualInputUploadTypeInSearchUrl;
+
+// Controls whether we set the upload type in CreateClientToAimRequest.
+extern const base::FeatureParam<bool>
+    kSendContextualInputUploadTypeInAimRequest;
 
 // Controls whether the contextual task page action should show
 extern const base::FeatureParam<EntryPointOption, true> kShowEntryPoint;
