@@ -120,7 +120,7 @@ CompositeEditCommand::CompositeEditCommand(Document& document,
   FrameSelection& frame_selection = document.GetFrame()->Selection();
   // Legacy lane: VP-canonicalized at command birth (unchanged behavior).
   const VisibleSelection& visible_selection =
-      frame_selection.ComputeVisibleSelectionInDOMTreeDeprecated();
+      frame_selection.ComputeVisibleSelectionInDomTreeDeprecated();
   SetStartingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
   SetEndingSelection(starting_selection_);

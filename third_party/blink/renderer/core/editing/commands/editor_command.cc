@@ -345,18 +345,17 @@ static EditingTriState SelectionListState(LocalFrame& frame,
   }
 
   const FrameSelection& selection = frame.Selection();
-  if (selection.ComputeVisibleSelectionInDOMTreeDeprecated().IsCaret()) {
-    if (EnclosingElementWithTag(
-            selection.ComputeVisibleSelectionInDOMTreeDeprecated().Start(),
-            tag_name)) {
+  auto visible_selection =
+      selection.ComputeVisibleSelectionInDomTreeDeprecated();
+  if (visible_selection.IsCaret()) {
+    if (EnclosingElementWithTag(visible_selection.Start(), tag_name)) {
       return EditingTriState::kTrue;
     }
-  } else if (selection.ComputeVisibleSelectionInDOMTreeDeprecated().IsRange()) {
-    Element* start_element = EnclosingElementWithTag(
-        selection.ComputeVisibleSelectionInDOMTreeDeprecated().Start(),
-        tag_name);
-    Element* end_element = EnclosingElementWithTag(
-        selection.ComputeVisibleSelectionInDOMTreeDeprecated().End(), tag_name);
+  } else if (visible_selection.IsRange()) {
+    Element* start_element =
+        EnclosingElementWithTag(visible_selection.Start(), tag_name);
+    Element* end_element =
+        EnclosingElementWithTag(visible_selection.End(), tag_name);
 
     if (start_element && end_element && start_element == end_element) {
       // If the selected list has the different type of list as child, return
@@ -481,7 +480,7 @@ static bool DeleteWithDirection(LocalFrame& frame,
   }
 
   if (frame.Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
+          .ComputeVisibleSelectionInDomTreeDeprecated()
           .IsRange() &&
       !is_typing_action) {
     if (kill_ring) {
@@ -948,7 +947,7 @@ static bool ExecuteSwapWithMark(LocalFrame& frame,
                                 const String&) {
   const VisibleSelection mark(frame.GetEditor().Mark());
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
+      frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated();
   const bool mark_is_directional = frame.GetEditor().MarkIsDirectional();
   if (mark.IsNone() || selection.IsNone()) {
     return false;
@@ -1281,12 +1280,9 @@ static bool EnabledRangeInEditableText(LocalFrame& frame,
       !frame.Selection().SelectionHasFocus()) {
     return false;
   }
-  return frame.Selection()
-             .ComputeVisibleSelectionInDOMTreeDeprecated()
-             .IsRange() &&
-         frame.Selection()
-             .ComputeVisibleSelectionInDOMTreeDeprecated()
-             .IsContentEditable();
+  auto visible_selection =
+      frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated();
+  return visible_selection.IsRange() && visible_selection.IsContentEditable();
 }
 
 static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
@@ -1466,7 +1462,7 @@ static String ValueFormatBlock(const EditorInternalCommand&,
                                LocalFrame& frame,
                                Event*) {
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
+      frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated();
   if (selection.IsNone() || !selection.IsValidFor(*(frame.GetDocument())) ||
       !selection.IsContentEditable()) {
     return "";

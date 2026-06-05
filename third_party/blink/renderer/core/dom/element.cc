@@ -8513,7 +8513,7 @@ void Element::UpdateSelectionOnFocus(
     // When focusing an editable element in an iframe, don't reset the selection
     // if it already contains a selection.
     if (this == frame->Selection()
-                    .ComputeVisibleSelectionInDOMTreeDeprecated()
+                    .ComputeVisibleSelectionInDomTreeDeprecated()
                     .RootEditableElement()) {
       if (!options->preventScroll()) {
         frame->Selection().RevealSelection();

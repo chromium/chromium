@@ -1052,7 +1052,7 @@ bool SelectionController::HandleDoubleClick(
   if (event.Event().button != WebPointerProperties::Button::kLeft)
     return false;
 
-  if (Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange()) {
+  if (Selection().ComputeVisibleSelectionInDomTreeDeprecated().IsRange()) {
     // A double-click when range is already selected
     // should not change the selection.  So, do not call
     // SelectClosestWordFromMouseEvent, but do set
@@ -1156,7 +1156,7 @@ bool SelectionController::HandleMousePressEvent(
     mouse_down_allows_multi_click_ =
         !event.Event().FromTouch() ||
         IsEditablePosition(
-            Selection().ComputeVisibleSelectionInDOMTreeDeprecated().Start());
+            Selection().ComputeVisibleSelectionInDomTreeDeprecated().Start());
   }
 
   if (event.Event().click_count >= 3)
@@ -1223,7 +1223,7 @@ bool SelectionController::HandleMouseReleaseEvent(
       selection_state_ != SelectionState::kExtendedSelection &&
       drag_start_pos == PhysicalOffset(gfx::ToFlooredPoint(
                             event.Event().PositionInRootFrame())) &&
-      Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange() &&
+      Selection().ComputeVisibleSelectionInDomTreeDeprecated().IsRange() &&
       event.Event().button != WebPointerProperties::Button::kRight) {
     // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -1370,7 +1370,7 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
       // easier to use the contextual menu items available for text selections.
       // But only if we're above text.
       !(Selection()
-            .ComputeVisibleSelectionInDOMTreeDeprecated()
+            .ComputeVisibleSelectionInDomTreeDeprecated()
             .IsContentEditable() ||
         (hit_test_result.InnerNode() &&
          hit_test_result.InnerNode()->IsTextNode()))) {

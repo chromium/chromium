@@ -58,7 +58,7 @@ void StyleCommands::ApplyStyle(LocalFrame& frame,
                                CSSPropertyValueSet* style,
                                InputEvent::InputType input_type) {
   const VisibleSelection& selection =
-      frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated();
+      frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated();
   if (selection.IsNone())
     return;
   if (selection.IsCaret()) {
@@ -219,7 +219,7 @@ bool StyleCommands::SelectionStartHasStyle(LocalFrame& frame,
       property_id, value, secure_context_mode);
   EditingStyle* const style_at_start =
       EditingStyleUtilities::CreateStyleAtSelectionStart(
-          frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
+          frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated(),
           property_id == CSSPropertyID::kBackgroundColor,
           style_to_check->Style());
   return style_to_check->TriStateOfStyle(frame.DomWindow(), style_at_start,
@@ -583,7 +583,7 @@ EditingTriState StyleCommands::StateTextWritingDirection(
   bool has_nested_or_multiple_embeddings;
   mojo_base::mojom::blink::TextDirection selection_direction =
       TextDirectionForSelection(
-          frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
+          frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated(),
           frame.GetEditor().TypingStyle(), has_nested_or_multiple_embeddings);
   // TODO(editing-dev): We should be returning MixedTriState when
   // selectionDirection == direction && hasNestedOrMultipleEmbeddings
@@ -625,7 +625,7 @@ String StyleCommands::SelectionStartCssPropertyValue(
     CSSPropertyID property_id) {
   EditingStyle* const selection_style =
       EditingStyleUtilities::CreateStyleAtSelectionStart(
-          frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated(),
+          frame.Selection().ComputeVisibleSelectionInDomTreeDeprecated(),
           property_id == CSSPropertyID::kBackgroundColor);
   if (!selection_style || !selection_style->Style())
     return String();

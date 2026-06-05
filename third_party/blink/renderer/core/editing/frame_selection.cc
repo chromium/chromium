@@ -176,7 +176,7 @@ wtf_size_t FrameSelection::CharacterIndexForPoint(
   return plain_text_range.Start();
 }
 
-VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
+VisibleSelection FrameSelection::ComputeVisibleSelectionInDomTreeDeprecated()
     const {
   // TODO(editing-dev): Hoist UpdateStyleAndLayout
   // to caller. See http://crbug.com/590369 for more details.

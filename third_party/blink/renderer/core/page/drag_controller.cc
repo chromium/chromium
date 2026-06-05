@@ -218,12 +218,14 @@ static DocumentFragment* DocumentFragmentFromDragData(
 
 bool DragController::DragIsMove(FrameSelection& selection,
                                 DragData* drag_data) {
-  return document_under_mouse_ ==
-             (drag_initiator_ ? drag_initiator_->document() : nullptr) &&
-         selection.SelectionHasFocus() &&
-         selection.ComputeVisibleSelectionInDOMTreeDeprecated()
-             .IsContentEditable() &&
-         selection.ComputeVisibleSelectionInDOMTreeDeprecated().IsRange() &&
+  if (document_under_mouse_ !=
+          (drag_initiator_ ? drag_initiator_->document() : nullptr) ||
+      !selection.SelectionHasFocus()) {
+    return false;
+  }
+  auto visible_selection =
+      selection.ComputeVisibleSelectionInDomTreeDeprecated();
+  return visible_selection.IsContentEditable() && visible_selection.IsRange() &&
          !IsCopyKeyDown(drag_data);
 }
 
@@ -665,7 +667,7 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
   Range* range = CreateRange(drag_caret.ToNormalizedEphemeralRange());
   Element* root_editable_element =
       inner_frame->Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
+          .ComputeVisibleSelectionInDomTreeDeprecated()
           .RootEditableElement();
 
   // For range to be null a WebKit client must have done something bad while
@@ -711,7 +713,7 @@ bool DragController::ConcludeEditDrag(DragData* drag_data) {
               FindEventTargetFrom(
                   *inner_frame,
                   inner_frame->Selection()
-                      .ComputeVisibleSelectionInDOMTreeDeprecated()),
+                      .ComputeVisibleSelectionInDomTreeDeprecated()),
               delete_mode, drag_caret.Anchor())) {
         return false;
       }
@@ -1215,8 +1217,11 @@ gfx::RectF DragController::ClippedSelection(const LocalFrame& frame) {
 std::unique_ptr<DragImage> DragController::DragImageForSelection(
     LocalFrame& frame,
     float opacity) {
-  if (!frame.Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange())
+  if (!frame.Selection()
+           .ComputeVisibleSelectionInDomTreeDeprecated()
+           .IsRange()) {
     return nullptr;
+  }
 
   frame.View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kDragImage);
@@ -1244,19 +1249,13 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
 namespace {
 
 void SelectEnclosingAnchorIfContentEditable(LocalFrame* frame) {
-  if (frame->Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .IsCaret() &&
-      frame->Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .IsContentEditable()) {
+  auto visible_selection =
+      frame->Selection().ComputeVisibleSelectionInDomTreeDeprecated();
+  if (visible_selection.IsCaret() && visible_selection.IsContentEditable()) {
     // A user can initiate a drag on a link without having any text
     // selected.  In this case, we should expand the selection to
     // the enclosing anchor element.
-    if (Node* anchor = EnclosingAnchorElement(
-            frame->Selection()
-                .ComputeVisibleSelectionInDOMTreeDeprecated()
-                .Anchor())) {
+    if (Node* anchor = EnclosingAnchorElement(visible_selection.Anchor())) {
       frame->Selection().SetSelection(
           SelectionInDOMTree::Builder().SelectAllChildren(*anchor).Build(),
           SetSelectionOptions());

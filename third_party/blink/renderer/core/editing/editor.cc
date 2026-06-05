@@ -237,17 +237,15 @@ bool Editor::HandleTextEvent(TextEvent* event) {
 }
 
 bool Editor::CanEdit() const {
-  return GetFrame()
-      .Selection()
-      .ComputeVisibleSelectionInDOMTreeDeprecated()
+  return GetFrameSelection()
+      .ComputeVisibleSelectionInDomTreeDeprecated()
       .RootEditableElement();
 }
 
 bool Editor::CanEditRichly() const {
   return IsRichlyEditablePosition(
-      GetFrame()
-          .Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
+      GetFrameSelection()
+          .ComputeVisibleSelectionInDomTreeDeprecated()
           .Anchor());
 }
 
@@ -275,7 +273,7 @@ bool Editor::CanPaste() const {
 
 bool Editor::CanDelete() const {
   FrameSelection& selection = GetFrameSelection();
-  return selection.ComputeVisibleSelectionInDOMTreeDeprecated().IsRange() &&
+  return selection.ComputeVisibleSelectionInDomTreeDeprecated().IsRange() &&
          selection.ComputeVisibleSelectionInDOMTree().RootEditableElement();
 }
 
@@ -295,11 +293,11 @@ void Editor::DeleteSelectionWithSmartDelete(
     DeleteMode delete_mode,
     InputEvent::InputType input_type,
     const Position& reference_move_position) {
-  if (GetFrame()
-          .Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .IsNone())
+  if (GetFrameSelection()
+          .ComputeVisibleSelectionInDomTreeDeprecated()
+          .IsNone()) {
     return;
+  }
 
   DCHECK(GetFrame().GetDocument());
   MakeGarbageCollected<DeleteSelectionCommand>(
@@ -454,9 +452,8 @@ bool Editor::ReplaceSelectionAfterDraggingWithEvents(
 }
 
 EphemeralRange Editor::SelectedRange() {
-  return GetFrame()
-      .Selection()
-      .ComputeVisibleSelectionInDOMTreeDeprecated()
+  return GetFrameSelection()
+      .ComputeVisibleSelectionInDomTreeDeprecated()
       .ToNormalizedEphemeralRange();
 }
 
@@ -491,12 +488,12 @@ void Editor::RegisterCommandGroup(CompositeEditCommand* command_group_wrapper) {
 
 void Editor::ApplyParagraphStyle(CSSPropertyValueSet* style,
                                  InputEvent::InputType input_type) {
-  if (GetFrame()
-          .Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
+  if (GetFrameSelection()
+          .ComputeVisibleSelectionInDomTreeDeprecated()
           .IsNone() ||
-      !style)
+      !style) {
     return;
+  }
   DCHECK(GetFrame().GetDocument());
   MakeGarbageCollected<ApplyStyleCommand>(
       *GetFrame().GetDocument(), MakeGarbageCollected<EditingStyle>(style),
@@ -826,9 +823,8 @@ void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
   else
     typing_style_ = MakeGarbageCollected<EditingStyle>(style);
 
-  const Position& position = GetFrame()
-                                 .Selection()
-                                 .ComputeVisibleSelectionInDOMTreeDeprecated()
+  const Position& position = GetFrameSelection()
+                                 .ComputeVisibleSelectionInDomTreeDeprecated()
                                  .VisibleStart()
                                  .DeepEquivalent();
   if (position.IsNull())

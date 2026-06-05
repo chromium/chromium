@@ -155,10 +155,10 @@ class CORE_EXPORT FrameSelection final
   VisibleSelectionInFlatTree ComputeVisibleSelectionInFlatTree() const;
 
   // TODO(editing-dev): We should replace
-  // |computeVisibleSelectionInDOMTreeDeprecated()| with update layout and
-  // |computeVisibleSelectionInDOMTree()| to increase places hoisting update
+  // |ComputeVisibleSelectionInDomTreeDeprecated()| with update layout and
+  // |ComputeVisibleSelectionInDOMTree()| to increase places hoisting update
   // layout.
-  VisibleSelection ComputeVisibleSelectionInDOMTreeDeprecated() const;
+  VisibleSelection ComputeVisibleSelectionInDomTreeDeprecated() const;
 
   void SetSelection(const SelectionInDOMTree&, const SetSelectionOptions&);
   void SetSelectionAndEndTyping(const SelectionInDOMTree&);
