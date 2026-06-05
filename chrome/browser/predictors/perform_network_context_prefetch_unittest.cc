@@ -182,12 +182,7 @@ TEST_F(PerformNetworkContextPrefetchRecorderTest, Script) {
   EXPECT_THAT(request.headers, HasHeader("Accept", "*/*"));
   EXPECT_THAT(request.headers, HasHeader("Accept-Language", "en"));
 
-  // When feature is enabled, legacy Purpose header should be removed
-  EXPECT_THAT(request.headers,
-              Not(HasHeader(blink::kPurposeHeaderName,
-                            blink::kSecPurposePrefetchHeaderValue)));
-
-  // Sec-Purpose header should always be present regardless of feature flag
+  // Sec-Purpose header should always be present.
   EXPECT_THAT(request.headers,
               HasHeader(blink::kSecPurposeHeaderName,
                         blink::kSecPurposePrefetchHeaderValue));

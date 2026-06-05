@@ -1114,31 +1114,6 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchLoadFlag) {
   EXPECT_TRUE(script_request->load_flags & net::LOAD_PREFETCH);
 }
 
-// Check that prefetched resources and subresources set the 'Purpose: prefetch'
-// header.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PurposeHeaderIsSet) {
-  GURL prefetch_page = src_server()->GetURL(kPrefetchPage);
-  GURL prefetch_script = src_server()->GetURL(kPrefetchScript);
-
-  content::URLLoaderMonitor monitor({prefetch_page, prefetch_script});
-
-  std::unique_ptr<TestPrerender> test_prerender =
-      PrefetchFromFile(kPrefetchPage, FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
-  WaitForRequestCount(prefetch_page, 1);
-  WaitForRequestCount(prefetch_script, 1);
-  monitor.WaitForUrls();
-  for (const GURL& url : {prefetch_page, prefetch_script}) {
-    std::optional<network::ResourceRequest> request =
-        monitor.GetRequestInfo(url);
-    EXPECT_TRUE(request->load_flags & net::LOAD_PREFETCH);
-
-    // Legacy Purpose header should be removed.
-    EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
-    EXPECT_FALSE(
-        request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
-  }
-}
-
 // Check that prefetched resources and subresources set the 'Sec-Purpose:
 // prefetch' header.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, SecPurposeHeaderIsSet) {
@@ -1163,9 +1138,10 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, SecPurposeHeaderIsSet) {
   }
 }
 
-// Check that on normal navigations the 'Purpose: prefetch' header is not set.
+// Check that on normal navigations the 'Sec-Purpose: prefetch' header is not
+// set.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       PurposeHeaderNotSetWhenNotPrefetching) {
+                       SecPurposeHeaderNotSetWhenNotPrefetching) {
   GURL prefetch_page = src_server()->GetURL(kPrefetchPage);
   GURL prefetch_script = src_server()->GetURL(kPrefetchScript);
   GURL prefetch_script2 = src_server()->GetURL(kPrefetchScript2);
@@ -1182,9 +1158,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
     std::optional<network::ResourceRequest> request =
         monitor.GetRequestInfo(url);
     EXPECT_FALSE(request->load_flags & net::LOAD_PREFETCH);
-    EXPECT_FALSE(request->headers.HasHeader(blink::kPurposeHeaderName));
+    EXPECT_FALSE(request->headers.HasHeader(blink::kSecPurposeHeaderName));
     EXPECT_FALSE(
-        request->cors_exempt_headers.HasHeader(blink::kPurposeHeaderName));
+        request->cors_exempt_headers.HasHeader(blink::kSecPurposeHeaderName));
   }
 }
 

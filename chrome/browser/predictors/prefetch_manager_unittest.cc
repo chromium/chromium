@@ -119,9 +119,6 @@ class PrefetchManagerTest : public testing::TestWithParam<bool> {
   }
 
   void CheckHeaders(network::ResourceRequest& request) {
-    // Legacy Purpose header should be removed
-    EXPECT_FALSE(request.headers.HasHeader(blink::kPurposeHeaderName));
-
     EXPECT_THAT(
         request.headers.GetHeader(blink::kSecPurposeHeaderName),
         testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));

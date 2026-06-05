@@ -54,9 +54,6 @@ inline constexpr char kSecPurposePrefetchPrerenderHeaderValue[] =
 inline constexpr char kSecPurposePrefetchPrerenderPreviewHeaderValue[] =
     "prefetch;prerender;preview";
 
-// The Chromium specific header equivalent for 'Sec-Purpose':
-inline constexpr char kPurposeHeaderName[] = "Purpose";
-
 // For more info see
 // https://wicg.github.io/nav-speculation/prefetch.html#sec-speculation-tags-header
 inline constexpr char kSecSpeculationTagsHeaderName[] = "Sec-Speculation-Tags";

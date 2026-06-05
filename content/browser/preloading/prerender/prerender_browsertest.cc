@@ -14348,12 +14348,6 @@ class PrerenderSpecificRequestHeadersBrowserTest : public PrerenderBrowserTest {
   bool TestSecPurposePrefetchHeader(const GURL& url) {
     net::test_server::HttpRequest::HeaderMap headers = GetRequestHeaders(url);
 
-    // Test Purpose headers based on feature flag state
-    auto purpose_it = headers.find(blink::kPurposeHeaderName);
-    // Legacy Purpose header should be removed
-    EXPECT_EQ(headers.end(), purpose_it)
-        << "Purpose header should not be present when feature is enabled";
-
     auto sec_purpose_it = headers.find(blink::kSecPurposeHeaderName);
     if (sec_purpose_it == headers.end()) {
       return false;
