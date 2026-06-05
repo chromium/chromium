@@ -14,14 +14,14 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -96,7 +96,6 @@ void HeaderDirectFromSellerSignals::ParseAndFind(
 }
 
 void HeaderDirectFromSellerSignals::AddWitnessForOrigin(
-    data_decoder::DataDecoder& decoder,
     const url::Origin& origin,
     const std::string& response,
     AddWitnessForOriginCompletedCallback callback) {
@@ -114,8 +113,7 @@ void HeaderDirectFromSellerSignals::AddWitnessForOrigin(
   if (!add_witness_for_origin_completed_callback_) {
     add_witness_for_origin_completed_callback_ = std::move(callback);
     last_round_started_time_ = base::TimeTicks::Now();
-    DecodeNextResponse(decoder,
-                       /*errors=*/std::vector<std::string>());
+    DecodeNextResponse(/*errors=*/std::vector<std::string>());
   }
 }
 
@@ -158,14 +156,15 @@ void HeaderDirectFromSellerSignals::ParseAndFindCompleted(
 }
 
 void HeaderDirectFromSellerSignals::ProcessOneResponse(
-    const data_decoder::DataDecoder::ValueOrError& result,
+    const base::JSONReader::Result& result,
     const UnprocessedResponse& unprocessed_response,
     std::vector<std::string>& errors) {
   if (!result.has_value()) {
     errors.push_back(base::StringPrintf(
         "directFromSellerSignalsHeaderAdSlot: encountered invalid JSON: '%s' "
         "for Ad-Auction-Signals=%s",
-        result.error().c_str(), unprocessed_response.response_json.c_str()));
+        result.error().message.c_str(),
+        unprocessed_response.response_json.c_str()));
     return;
   }
 
@@ -277,12 +276,14 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
       num_ad_slots);
 }
 
-void HeaderDirectFromSellerSignals::OnJsonDecoded(
-    data_decoder::DataDecoder& decoder,
+void HeaderDirectFromSellerSignals::DecodeResponse(
     UnprocessedResponse current_unprocessed_response,
     std::vector<std::string> errors,
-    base::TimeTicks parse_start_time,
-    data_decoder::DataDecoder::ValueOrError result) {
+    base::TimeTicks parse_start_time) {
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(
+          current_unprocessed_response.response_json, base::JSON_PARSE_RFC);
+
   ProcessOneResponse(result, current_unprocessed_response, errors);
   base::UmaHistogramTimes(
       "Ads.InterestGroup.NetHeaderResponse.HeaderDirectFromSellerSignals."
@@ -308,11 +309,10 @@ void HeaderDirectFromSellerSignals::OnJsonDecoded(
     return;
   }
 
-  DecodeNextResponse(decoder, std::move(errors));
+  DecodeNextResponse(std::move(errors));
 }
 
 void HeaderDirectFromSellerSignals::DecodeNextResponse(
-    data_decoder::DataDecoder& decoder,
     std::vector<std::string> errors) {
   CHECK(!unprocessed_header_responses_.empty());
 
@@ -321,15 +321,11 @@ void HeaderDirectFromSellerSignals::DecodeNextResponse(
   unprocessed_header_responses_.pop();
   processed_bytes_per_round_ += next_unprocessed_response.response_json.size();
 
-  // NOTE: The class comment for HeaderDirectFromSellerSignals requires that the
-  // DataDecoder instances passed to AddWitnessForOrigin() be destroyed before
-  // this HeaderDirectFromSellerSignals, so base::Unretained() below is safe.
-  decoder.ParseJson(
-      next_unprocessed_response.response_json,
-      base::BindOnce(&HeaderDirectFromSellerSignals::OnJsonDecoded,
-                     base::Unretained(this), std::ref(decoder),
-                     next_unprocessed_response, std::move(errors),
-                     base::TimeTicks::Now()));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&HeaderDirectFromSellerSignals::DecodeResponse,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                std::move(next_unprocessed_response),
+                                std::move(errors), base::TimeTicks::Now()));
 }
 
 }  // namespace content

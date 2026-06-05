@@ -15,19 +15,18 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "url/origin.h"
 
 namespace content {
 
 // Parses the results of Ad-Auction-Signals header values, as provided to
 // AddWitnessForOrigin().
-//
-// NOTE: The DataDecoder instances passed to AddWitnessForOrigin() should be
-// destroyed before destroying this class.
 //
 // JSON format is described in https://github.com/WICG/turtledove/pull/695.
 class CONTENT_EXPORT HeaderDirectFromSellerSignals {
@@ -95,17 +94,11 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   // matches the adSlot specified by `ad_slot` from the origin `origin`. Results
   // are provided to `callback` -- if no match is found, null will be passed.
   //
-  // NOTE: No decoder need be passed since parsing of received JSON responses
-  // starts as soon as they are received, in AddWitnessForOrigin() --
-  // ParseAndFind() waits until such parsing is done, if it hasn't already
-  // completed.
+  // NOTE: Parsing of received JSON responses starts as soon as they are
+  // received, in AddWitnessForOrigin().
   //
   // NOTE: This method may return synchronously if all received responses have
   // already been parsed before the ParseAndFind() call begins.
-  //
-  // NOTE: `callback` will not be invoked if a DataDecoder passed to
-  // AddWitnessForOrigin() is destroyed before parsing using that decoder
-  // completes.
   void ParseAndFind(const url::Origin& origin,
                     const std::string& ad_slot,
                     ParseAndFindCompletedCallback callback);
@@ -113,11 +106,9 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   // Called every time an Ad-Auction-Signals response `response` is captured,
   // where `origin` is origin that served the response.
   //
-  // NOTE: `callback` will not be invoked if DataDecoder is destroyed during
-  // processing. Also, if multiple AddWitnessForOrigin() calls are in-flight at
-  // the same time, only the `callback` for the first call will be invoked.
-  void AddWitnessForOrigin(data_decoder::DataDecoder& decoder,
-                           const url::Origin& origin,
+  // NOTE: If multiple AddWitnessForOrigin() calls are in-flight at the same
+  // time, only the `callback` for the first call will be invoked.
+  void AddWitnessForOrigin(const url::Origin& origin,
                            const std::string& response,
                            AddWitnessForOriginCompletedCallback callback);
 
@@ -168,24 +159,20 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
   //
   // Errors, if encountered, are appended to `errors`. Errors may be
   // encountered even if some valid signals are added to `results_`.
-  void ProcessOneResponse(const data_decoder::DataDecoder::ValueOrError& result,
+  void ProcessOneResponse(const base::JSONReader::Result& result,
                           const UnprocessedResponse& unprocessed_response,
                           std::vector<std::string>& errors);
 
   // Calls ProcessOneResponse(), runs callbacks on completion, and otherwise
   // calls DecodeNextResponse() to continue parsing the next
   // UnprocessedResponse, if there is one.
-  void OnJsonDecoded(data_decoder::DataDecoder& decoder,
-                     UnprocessedResponse current_unprocessed_response,
-                     std::vector<std::string> errors,
-                     base::TimeTicks parse_start_time,
-                     data_decoder::DataDecoder::ValueOrError result);
+  void DecodeResponse(UnprocessedResponse current_unprocessed_response,
+                      std::vector<std::string> errors,
+                      base::TimeTicks parse_start_time);
 
   // Start decoding the next UnprocessedResponse in `unprocessed_responses_`
-  // (CHECK()s that at least one is there). OnJsonDecoded() will be called when
-  // decoding completes.
-  void DecodeNextResponse(data_decoder::DataDecoder& decoder,
-                          std::vector<std::string> errors);
+  // (CHECK()s that at least one is there).
+  void DecodeNextResponse(std::vector<std::string> errors);
 
   // A raw queue of responses added by AddAuctionSignalsWitnessForOrigin(). Upon
   // insertion into this queue, the unprocessed raw responses are removed and
@@ -234,6 +221,8 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
 
   // For metrics -- the number of ParseAndFind() calls.
   size_t parse_and_find_calls_ = 0u;
+
+  base::WeakPtrFactory<HeaderDirectFromSellerSignals> weak_ptr_factory_{this};
 };
 
 }  // namespace content

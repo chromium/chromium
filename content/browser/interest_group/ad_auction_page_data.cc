@@ -73,7 +73,7 @@ void AdAuctionPageData::AddAuctionSignalsWitnessForOrigin(
     const url::Origin& origin,
     const std::string& response) {
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      *GetDecoderFor(origin), origin, response,
+      origin, response,
       base::BindOnce(
           &AdAuctionPageData::OnAddAuctionSignalsWitnessForOriginCompleted,
           base::Unretained(this)));

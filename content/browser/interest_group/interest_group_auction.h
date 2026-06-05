@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -1076,9 +1077,8 @@ class CONTENT_EXPORT InterestGroupAuction
   void DecodeAdditionalBidsIfReady();
 
   // Processes a single signed additional bid.
-  void HandleDecodedSignedAdditionalBid(
-      std::optional<std::string> seller_nonce,
-      data_decoder::DataDecoder::ValueOrError result);
+  void HandleDecodedSignedAdditionalBid(std::optional<std::string> seller_nonce,
+                                        base::JSONReader::Result result);
 
   // Processes payload of a single additionalBids entry.
   // `signatures` are the signatures it was supposedly signed with.
@@ -1090,7 +1090,7 @@ class CONTENT_EXPORT InterestGroupAuction
       const std::vector<SignedAdditionalBidSignature>& signatures,
       const std::vector<size_t>& valid_signatures,
       std::optional<std::string> seller_nonce,
-      data_decoder::DataDecoder::ValueOrError result);
+      const base::JSONReader::Result& result);
 
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
   // a SellerWorklet has been provided. Results in auction immediately

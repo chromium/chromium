@@ -16,8 +16,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -66,7 +64,7 @@ class HeaderDirectFromSellerSignalsTest : public ::testing::Test {
     for (const std::string& response : responses) {
       base::RunLoop run_loop;
       header_direct_from_seller_signals_.AddWitnessForOrigin(
-          data_decoder_, origin, response,
+          origin, response,
           base::BindLambdaForTesting(
               [&all_errors, &run_loop](std::vector<std::string> errors) {
                 all_errors.reserve(all_errors.size() + errors.size());
@@ -84,8 +82,6 @@ class HeaderDirectFromSellerSignalsTest : public ::testing::Test {
 
   HeaderDirectFromSellerSignals header_direct_from_seller_signals_;
   base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder data_decoder_provider_;
-  data_decoder::DataDecoder data_decoder_;
 };
 
 TEST_F(HeaderDirectFromSellerSignalsTest, DefaultConstruct) {
@@ -324,7 +320,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
 
   base::RunLoop add_witness1_run_loop;
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse1,
+      kOriginA, kResponse1,
       base::BindLambdaForTesting(
           [&add_witness1_run_loop](std::vector<std::string> errors) {
             EXPECT_THAT(errors, IsEmpty());
@@ -332,7 +328,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
           }));
 
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse2,
+      kOriginA, kResponse2,
       base::BindLambdaForTesting([](std::vector<std::string> errors) {
         // Only the first AddWitnessForOrigin() should be called -- it's given
         // all errors, if any.
@@ -365,7 +361,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
 
   base::RunLoop add_witness_run_loop;
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse,
+      kOriginA, kResponse,
       base::BindLambdaForTesting(
           [&add_witness_run_loop](std::vector<std::string> errors) {
             EXPECT_THAT(errors, IsEmpty());
@@ -399,7 +395,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
 
   base::RunLoop add_witness1_run_loop;
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse1,
+      kOriginA, kResponse1,
       base::BindLambdaForTesting(
           [&add_witness1_run_loop](std::vector<std::string> errors) {
             EXPECT_THAT(errors, IsEmpty());
@@ -407,7 +403,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
           }));
 
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse2,
+      kOriginA, kResponse2,
       base::BindLambdaForTesting([](std::vector<std::string> errors) {
         // Only the first AddWitnessForOrigin() should be called -- it's given
         // all errors, if any.
@@ -441,7 +437,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
 
   base::RunLoop add_witness1_run_loop;
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse1,
+      kOriginA, kResponse1,
       base::BindLambdaForTesting(
           [&add_witness1_run_loop](std::vector<std::string> errors) {
             EXPECT_THAT(errors, IsEmpty());
@@ -459,7 +455,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
           }));
 
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse2,
+      kOriginA, kResponse2,
       base::BindLambdaForTesting([](std::vector<std::string> errors) {
         // Only the first AddWitnessForOrigin() should be called -- it's given
         // all errors, if any.
@@ -479,7 +475,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
 
   base::RunLoop add_witness1_run_loop;
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse1,
+      kOriginA, kResponse1,
       base::BindLambdaForTesting(
           [&add_witness1_run_loop](std::vector<std::string> errors) {
             EXPECT_THAT(
@@ -495,7 +491,7 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
           }));
 
   header_direct_from_seller_signals_.AddWitnessForOrigin(
-      data_decoder_, kOriginA, kResponse2,
+      kOriginA, kResponse2,
       base::BindLambdaForTesting([](std::vector<std::string> errors) {
         // Only the first AddWitnessForOrigin() should be called -- it's given
         // all errors, if any.
@@ -514,32 +510,6 @@ TEST_F(HeaderDirectFromSellerSignalsTest,
 
   add_witness1_run_loop.Run();
   parse_and_find_run_loop.Run();
-}
-
-TEST_F(HeaderDirectFromSellerSignalsTest,
-       AsyncOrder_DeleteDecoderDuringParsing) {
-  constexpr char kResponse[] = R"([{
-    "adSlot": "slot1",
-    "sellerSignals": "abc"
-  }])";
-  std::optional<data_decoder::DataDecoder> data_decoder;
-  data_decoder.emplace();
-
-  header_direct_from_seller_signals_.AddWitnessForOrigin(
-      *data_decoder, kOriginA, kResponse,
-      base::BindLambdaForTesting([](std::vector<std::string> errors) {
-        EXPECT_THAT(errors, IsEmpty());
-        ADD_FAILURE() << "Shouldn't be called";
-      }));
-
-  header_direct_from_seller_signals_.ParseAndFind(
-      kOriginA, "slot1",
-      base::BindLambdaForTesting(
-          [](scoped_refptr<HeaderDirectFromSellerSignals::Result> result) {
-            ADD_FAILURE() << "Shouldn't be called";
-          }));
-  data_decoder.reset();
-  task_environment_.RunUntilIdle();
 }
 
 }  // namespace

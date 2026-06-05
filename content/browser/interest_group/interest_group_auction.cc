@@ -26,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -5466,11 +5467,15 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
                                "Page in shutdown.");
       continue;
     }
-    data_decoder->ParseJson(
-        signed_additional_bid_data,
+    base::JSONReader::Result result =
+        base::JSONReader::ReadAndReturnValueWithError(
+            signed_additional_bid_data, base::JSON_PARSE_RFC);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
         base::BindOnce(&InterestGroupAuction::HandleDecodedSignedAdditionalBid,
                        weak_ptr_factory_.GetWeakPtr(),
-                       std::move(encoded_signed_bid.seller_nonce)));
+                       std::move(encoded_signed_bid.seller_nonce),
+                       std::move(result)));
   }
   encoded_signed_additional_bids_.clear();
   currently_decoding_additional_bids_ = true;
@@ -5478,12 +5483,13 @@ void InterestGroupAuction::DecodeAdditionalBidsIfReady() {
 
 void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
     std::optional<std::string> seller_nonce,
-    data_decoder::DataDecoder::ValueOrError result) {
+    base::JSONReader::Result result) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
     HandleAdditionalBidError(
         AdditionalBidResult::kRejectedDueToSignedBidJsonParseError,
-        "Unable to parse signed additional bid as JSON: " + result.error());
+        "Unable to parse signed additional bid as JSON: " +
+            result.error().message);
     return;
   }
 
@@ -5499,32 +5505,36 @@ void InterestGroupAuction::HandleDecodedSignedAdditionalBid(
 
   auto valid_signatures = maybe_signed_additional_bid->VerifySignatures();
 
-  data_decoder::DataDecoder* data_decoder =
-      get_data_decoder_callback_.Run(config_->seller);
-  if (!data_decoder) {
+  if (!get_data_decoder_callback_.Run(config_->seller)) {
     HandleAdditionalBidError(AdditionalBidResult::kRejectedDecoderShutDown,
                              "Page in shutdown");
     return;
   }
 
-  data_decoder->ParseJson(
-      maybe_signed_additional_bid->additional_bid_json,
+  base::JSONReader::Result result2 =
+      base::JSONReader::ReadAndReturnValueWithError(
+          maybe_signed_additional_bid->additional_bid_json,
+          base::JSON_PARSE_RFC);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
       base::BindOnce(&InterestGroupAuction::HandleDecodedAdditionalBid,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(maybe_signed_additional_bid->signatures),
-                     std::move(valid_signatures), std::move(seller_nonce)));
+                     std::move(valid_signatures), std::move(seller_nonce),
+                     std::move(result2)));
 }
 
 void InterestGroupAuction::HandleDecodedAdditionalBid(
     const std::vector<SignedAdditionalBidSignature>& signatures,
     const std::vector<size_t>& valid_signatures,
     std::optional<std::string> seller_nonce,
-    data_decoder::DataDecoder::ValueOrError result) {
+    const base::JSONReader::Result& result) {
   DCHECK_EQ(bidding_and_scoring_phase_state_, PhaseState::kDuring);
   if (!result.has_value()) {
     HandleAdditionalBidError(
         AdditionalBidResult::kRejectedDueToJsonParseError,
-        "Unable to parse additional bid as JSON: " + result.error());
+        "Unable to parse additional bid as JSON: " + result.error().message);
     return;
   }
 
