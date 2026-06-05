@@ -3,3 +3,5 @@ tguilbert@chromium.org
 
 # backup reviewers
 mfoltz@chromium.org
+
+file://media/OWNERS  #{LAST_RESORT_SUGGESTION}
