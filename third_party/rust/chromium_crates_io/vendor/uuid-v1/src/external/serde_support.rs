@@ -476,7 +476,12 @@ pub mod simple {
                     Token::BorrowedStr(HYPHENATED_UUID_STR),
                     Token::TupleStructEnd,
                 ],
-                &format!("{}", de::value::Error::custom("UUID parsing failed: invalid group length in group 4: expected 12, found 12")),
+                &format!(
+                    "{}",
+                    de::value::Error::custom(
+                        "UUID parsing failed: invalid character: found `-` at 8"
+                    )
+                ),
             );
         }
     }
@@ -599,7 +604,12 @@ pub mod braced {
                     Token::BorrowedStr(HYPHENATED_UUID_STR),
                     Token::TupleStructEnd,
                 ],
-                &format!("{}", de::value::Error::custom("UUID parsing failed: invalid group length in group 4: expected 12, found 12")),
+                &format!(
+                    "{}",
+                    de::value::Error::custom(
+                        "UUID parsing failed: invalid character: found `f` at 0"
+                    )
+                ),
             );
         }
     }
@@ -723,7 +733,12 @@ pub mod hyphenated {
                     Token::BorrowedStr(BRACED_UUID_STR),
                     Token::TupleStructEnd,
                 ],
-                &format!("{}", de::value::Error::custom("UUID parsing failed: invalid group length in group 4: expected 12, found 14")),
+                &format!(
+                    "{}",
+                    de::value::Error::custom(
+                        "UUID parsing failed: invalid character: found `{` at 0"
+                    )
+                ),
             );
         }
     }
@@ -845,7 +860,12 @@ pub mod urn {
                     Token::BorrowedStr(HYPHENATED_UUID_STR),
                     Token::TupleStructEnd,
                 ],
-                &format!("{}", de::value::Error::custom("UUID parsing failed: invalid group length in group 4: expected 12, found 12")),
+                &format!(
+                    "{}",
+                    de::value::Error::custom(
+                        "UUID parsing failed: invalid character: found `f` at 0"
+                    )
+                ),
             );
         }
     }
@@ -950,7 +970,7 @@ mod serde_tests {
     fn test_de_failure() {
         serde_test::assert_de_tokens_error::<Readable<Uuid>>(
             &[Token::Str("hello_world")],
-            "UUID parsing failed: invalid character: found `h` at 1",
+            "UUID parsing failed: invalid character: found `h` at 0",
         );
 
         serde_test::assert_de_tokens_error::<Compact<Uuid>>(
