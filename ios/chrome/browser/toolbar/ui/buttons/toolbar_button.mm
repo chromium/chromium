@@ -49,7 +49,7 @@ UIColor* NormalTintColor() {
 
     [NSLayoutConstraint activateConstraints:@[
       [self.widthAnchor constraintEqualToConstant:kToolbarButtonSize],
-      [self.heightAnchor constraintEqualToConstant:kToolbarButtonSize],
+      [self.heightAnchor constraintEqualToAnchor:self.widthAnchor],
     ]];
 
     _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
