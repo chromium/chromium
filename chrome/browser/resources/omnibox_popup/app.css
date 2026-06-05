@@ -76,17 +76,18 @@
 }
 
 /* Keeps the hover state color for entrypoint button when the menu is open. */
-#context.menu-open::part(entrypoint-button) {
+#context.menu-open:not([apply-context-button-background])::part(entrypoint-button) {
   background-color: var(
     --color-composebox-context-entrypoint-hover-background);
 }
 
-#context[apply-context-button-background].menu-open::part(entrypoint-button) {
-  background-color: color-mix(
-      in srgb,
-      var(--color-composebox-context-entrypoint-hover-background),
-      var(--color-searchbox-results-foreground) 10%);
+#context[apply-context-button-background]::part(context-menu-entrypoint-icon) {
+  --cr-composebox-entrypoint-background-color: var(
+    --color-omnibox-composebox-context-entrypoint-background);
+  --cr-icon-button-hover-background-color: var(
+      --cr-active-neutral-on-subtle-background-color);
 }
+
 
 .context-menu-container {
   --omnibox-context-menu-container-margin-top: 0px;

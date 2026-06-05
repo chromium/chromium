@@ -218,3 +218,10 @@
   left: unset;
   right: 12px;
 }
+
+#composebox[apply-context-button-background]::part(context-menu-entrypoint-icon) {
+  --cr-composebox-entrypoint-background-color: var(
+    --color-omnibox-composebox-context-entrypoint-background);
+  --cr-icon-button-hover-background-color: var(
+      --cr-active-neutral-on-subtle-background-color);
+}

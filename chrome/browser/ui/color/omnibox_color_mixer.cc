@@ -312,8 +312,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast(kColorOmniboxResultsTextSelected),
       gfx::kGoogleGreyAlpha200);
   mixer[kColorOmniboxResultsChipBackground] = {ui::kColorSysNeutralContainer};
-  mixer[kColorOmniboxComposeboxContextEntrypointBackground] = {
-      ui::kColorSysNeutralContainer};
+  mixer[kColorOmniboxComposeboxContextEntrypointBackground] =
+      ui::AlphaBlend({ui::kColorSysStateHoverOnSubtle},
+                     {kColorOmniboxResultsBackground}, 0xFF);
   mixer[kColorOmniboxResultsButtonBorder] = ui::BlendTowardMaxContrast(
       kColorToolbarBackgroundSubtleEmphasis, gfx::kGoogleGreyAlpha400);
   mixer[kColorOmniboxResultsButtonIcon] = {kColorOmniboxResultsIcon};
