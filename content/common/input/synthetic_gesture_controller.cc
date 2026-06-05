@@ -237,9 +237,10 @@ void SyntheticGestureController::StartGesture() {
 
   {
     DCHECK(!pending_gesture_queue_.IsEmpty());
-    TRACE_EVENT_BEGIN(
-        "input,benchmark", "SyntheticGestureController::running",
-        perfetto::Track::FromPointer(pending_gesture_queue_.FrontGesture()));
+    TRACE_EVENT_BEGIN("input,benchmark", "SyntheticGestureController::running",
+                      perfetto::NamedTrack::FromPointer(
+                          "content::SyntheticGestureController",
+                          pending_gesture_queue_.FrontGesture()));
     StartOrUpdateTimer();
   }
 }
@@ -248,7 +249,9 @@ void SyntheticGestureController::StopGesture(const SyntheticGesture& gesture,
                                              SyntheticGesture::Result result,
                                              bool complete_immediately) {
   DCHECK_NE(result, SyntheticGesture::GESTURE_RUNNING);
-  TRACE_EVENT_END("input,benchmark", perfetto::Track::FromPointer(&gesture));
+  TRACE_EVENT_END("input,benchmark",
+                  perfetto::NamedTrack::FromPointer(
+                      "content::SyntheticGestureController", &gesture));
 
   dispatch_timer_.Stop();
 
