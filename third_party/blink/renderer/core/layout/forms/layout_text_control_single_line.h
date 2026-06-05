@@ -41,8 +41,6 @@ class LayoutTextControlSingleLine final : public LayoutBlockFlow {
                    const HitTestLocation& hit_test_location,
                    const PhysicalOffset& accumulated_offset,
                    HitTestPhase phase) override;
-
-  bool RespectsCSSOverflow() const override;
 };
 
 }  // namespace blink

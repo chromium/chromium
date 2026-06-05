@@ -64,10 +64,4 @@ bool LayoutTextControlSingleLine::NodeAtPoint(
   return stop_hit_testing;
 }
 
-bool LayoutTextControlSingleLine::RespectsCSSOverflow() const {
-  NOT_DESTROYED();
-  // Do not show scrollbars even if overflow:scroll is specified.
-  return false;
-}
-
 }  // namespace blink

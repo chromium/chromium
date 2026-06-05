@@ -462,7 +462,6 @@ TEST_F(LayoutBoxTest, ControlClip) {
     <input id='target' type='button' value='some text'/>
   )HTML");
   LayoutBox* target = GetLayoutBoxByElementId("target");
-  EXPECT_TRUE(target->HasControlClip());
   EXPECT_TRUE(target->HasClipRelatedProperty());
   EXPECT_TRUE(target->ShouldClipOverflowAlongEitherAxis());
   EXPECT_EQ(PhysicalRect(2, 2, 96, 46), target->ClippingRect(PhysicalOffset()));

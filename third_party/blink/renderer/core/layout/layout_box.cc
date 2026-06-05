@@ -2466,15 +2466,7 @@ PhysicalRect LayoutBox::OverflowClipRect(
                       kExcludeScrollbarGutter);
   }
 
-  if (IsA<HTMLInputElement>(GetNode())) [[unlikely]] {
-    // We only apply a clip to <input> buttons, and not regular <button>s.
-    if (IsTextField() || IsInputButton()) {
-      DCHECK(HasControlClip());
-      PhysicalRect control_clip = PhysicalPaddingBoxRect();
-      control_clip.Move(location);
-      clip_rect.Intersect(control_clip);
-    }
-  } else if (IsAppearanceAutoMenuList(*this)) [[unlikely]] {
+  if (IsAppearanceAutoMenuList(*this)) [[unlikely]] {
     DCHECK(HasControlClip());
     PhysicalRect control_clip = PhysicalContentBoxRect();
     control_clip.Move(location);
@@ -2493,11 +2485,7 @@ PhysicalRect LayoutBox::OverflowClipRectForScrollNode(
 
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
-  if (IsTextField() || IsAppearanceAutoMenuList(*this) || IsInputButton())
-      [[unlikely]] {
-    return true;
-  }
-  return false;
+  return IsAppearanceAutoMenuList(*this);
 }
 
 void LayoutBox::ExcludeScrollbars(
