@@ -13,6 +13,21 @@ namespace media {
 
 namespace {
 
+// Versions and layers as defined in ISO/IEC 11172-3.
+enum Version : uint8_t {
+  kVersion1 = 3,
+  kVersion2 = 2,
+  kVersionReserved = 1,
+  kVersion2_5 = 0,
+};
+
+enum Layer : uint8_t {
+  kLayer1 = 3,
+  kLayer2 = 2,
+  kLayer3 = 1,
+  kLayerReserved = 0,
+};
+
 constexpr uint32_t kMPEG1StartCodeMask = 0xffe00000;
 
 // Maps version and layer information in the frame header
@@ -76,8 +91,8 @@ constexpr int kCodecDelay = 529;
 }  // namespace
 
 // static
-bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
-                                         Header* header) {
+std::optional<MPEG1AudioStreamParser::Header>
+MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data) {
   BitReader reader(data.first<kHeaderSize>());
   uint16_t sync;
   uint8_t version;
@@ -96,7 +111,7 @@ bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
       !reader.ReadBits(2, &sample_rate_index) ||
       !reader.ReadBits(1, &has_padding) || !reader.ReadBits(1, &is_private) ||
       !reader.ReadBits(2, &channel_mode) || !reader.ReadBits(6, &other_flags)) {
-    return false;
+    return std::nullopt;
   }
 
   DVLOG(2) << "Header data :" << std::hex << " sync 0x" << sync << " version 0x"
@@ -107,7 +122,7 @@ bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
   if (sync != 0x7ff || version == kVersionReserved || layer == kLayerReserved ||
       bitrate_index == kBitrateFree || bitrate_index == kBitrateBad ||
       sample_rate_index == kSampleRateReserved) {
-    return false;
+    return std::nullopt;
   }
 
   // Note: For MPEG2 we don't check if a given bitrate or channel layout is
@@ -115,12 +130,12 @@ bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
 
   int bitrate = kBitrateMap[bitrate_index][kVersionLayerMap[version][layer]];
   if (bitrate == 0) {
-    return false;
+    return std::nullopt;
   }
 
   int frame_sample_rate = kSampleRateMap[sample_rate_index][version];
   if (frame_sample_rate == 0) {
-    return false;
+    return std::nullopt;
   }
 
   // http://teslabs.com/openplayer/docs/docs/specs/mp3_structure2.pdf
@@ -144,14 +159,12 @@ bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
       break;
 
     default:
-      return false;
+      return std::nullopt;
   }
 
-  if (!header)
-    return true;
-
-  header->sample_rate = frame_sample_rate;
-  header->sample_count = samples_per_frame;
+  Header header;
+  header.sample_rate = frame_sample_rate;
+  header.sample_count = samples_per_frame;
 
   // http://teslabs.com/openplayer/docs/docs/specs/mp3_structure2.pdf
   // Text just below Table 2.1.5.
@@ -160,24 +173,42 @@ bool MPEG1AudioStreamParser::ParseHeader(base::span<const uint8_t> data,
     // but has slightly different truncation characteristics to deal
     // with the fact that Layer 1 has 4 byte "slots" instead of single
     // byte ones.
-    header->frame_size = 4 * (12 * bitrate * 1000 / frame_sample_rate);
+    header.frame_size = 4 * (12 * bitrate * 1000 / frame_sample_rate);
   } else {
-    header->frame_size =
+    header.frame_size =
         ((samples_per_frame / 8) * bitrate * 1000) / frame_sample_rate;
   }
 
-  if (has_padding)
-    header->frame_size += (layer == kLayer1) ? 4 : 1;
+  if (has_padding) {
+    header.frame_size += (layer == kLayer1) ? 4 : 1;
+  }
 
   // Map Stereo(0), Joint Stereo(1), and Dual Channel (2) to
   // CHANNEL_LAYOUT_STEREO and Single Channel (3) to CHANNEL_LAYOUT_MONO.
-  header->channel_layout =
+  header.channel_layout =
       (channel_mode == 3) ? CHANNEL_LAYOUT_MONO : CHANNEL_LAYOUT_STEREO;
 
-  header->version = static_cast<Version>(version);
-  header->layer = static_cast<Layer>(layer);
-  header->channel_mode = channel_mode;
-  return true;
+  // XING header detection (MPEG-1 Layer 3 only)
+  if (layer == kLayer3) {
+    const int xing_header_index =
+        kXingHeaderMap[version == kVersion2 || version == kVersion2_5]
+                      [channel_mode == 3];
+    const size_t tag_size = 4;
+    const size_t needed_data = kHeaderSize + xing_header_index + tag_size;
+
+    if (data.size() >= needed_data) {
+      BitReader xing_reader(data.subspan(kHeaderSize));
+      uint32_t tag = 0;
+      if (xing_reader.SkipBits(xing_header_index * 8) &&
+          xing_reader.ReadBits(tag_size * 8, &tag)) {
+        if (tag == 0x496e666f || tag == 0x58696e67) {
+          header.metadata_frame = true;
+        }
+      }
+    }
+  }
+
+  return header;
 }
 
 MPEG1AudioStreamParser::MPEG1AudioStreamParser()
@@ -201,56 +232,28 @@ int MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
     return 0;
   }
 
-  Header header;
-  if (!ParseHeader(data, &header)) {
+  const auto header = ParseHeader(data);
+  if (!header) {
     LIMITED_MEDIA_LOG(DEBUG, media_log(), mp3_parse_error_limit_, 5)
         << "Invalid MP3 header.";
     return -1;
   }
 
-  *frame_size = header.frame_size;
-  if (sample_rate)
-    *sample_rate = header.sample_rate;
-  if (sample_count)
-    *sample_count = header.sample_count;
-  if (channel_layout)
-    *channel_layout = header.channel_layout;
-  if (metadata_frame)
-    *metadata_frame = false;
-
-  const size_t header_bytes_read = kHeaderSize;
-  if (header.layer != kLayer3)
-    return header_bytes_read;
-
-  // Check if this is a XING frame and tell the base parser to skip it if so.
-  const int xing_header_index =
-      kXingHeaderMap[header.version == kVersion2 ||
-                     header.version == kVersion2_5][header.channel_mode == 3];
-  uint32_t tag = 0;
-
-  // It's not a XING frame if the frame isn't big enough to be one.
-  if (*frame_size <
-      header_bytes_read + xing_header_index + static_cast<int>(sizeof(tag))) {
-    return header_bytes_read;
+  *frame_size = header->frame_size;
+  if (sample_rate) {
+    *sample_rate = header->sample_rate;
+  }
+  if (sample_count) {
+    *sample_count = header->sample_count;
+  }
+  if (channel_layout) {
+    *channel_layout = header->channel_layout;
+  }
+  if (metadata_frame) {
+    *metadata_frame = header->metadata_frame;
   }
 
-  // If we don't have enough data available to check, return 0 so frame parsing
-  // will be retried once more data is available.
-  BitReader reader(data.subspan(header_bytes_read));
-  if (!reader.SkipBits(xing_header_index * 8) ||
-      !reader.ReadBits(sizeof(tag) * 8, &tag)) {
-    return 0;
-  }
-
-  // Check to see if the tag contains 'Xing' or 'Info'
-  if (tag == 0x496e666f || tag == 0x58696e67) {
-    if (metadata_frame)
-      *metadata_frame = true;
-    return header_bytes_read + reader.bits_read() / 8;
-  }
-
-  // If it wasn't a XING frame, just return the number consumed bytes.
-  return header_bytes_read;
+  return header->metadata_frame ? header->frame_size : kHeaderSize;
 }
 
 }  // namespace media

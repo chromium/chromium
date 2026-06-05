@@ -4,6 +4,7 @@
 
 #include "media/formats/mp2t/es_parser_mpeg1audio.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -63,8 +64,9 @@ bool EsParserMpeg1Audio::ParseFromEsQueue() {
     // Get the PTS & the duration of this access unit.
     TimingDesc current_timing_desc =
         GetTimingDescriptor(mpeg1audio_frame.queue_offset);
-    if (current_timing_desc.pts != kNoTimestamp)
+    if (current_timing_desc.pts != kNoTimestamp) {
       audio_timestamp_helper_->SetBaseTimestamp(current_timing_desc.pts);
+    }
 
     if (!audio_timestamp_helper_->base_timestamp()) {
       DVLOG(1) << "Skipping audio frame with unknown timestamp";
@@ -107,30 +109,27 @@ void EsParserMpeg1Audio::ResetInternal() {
 
 bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     Mpeg1AudioFrame* mpeg1audio_frame) {
-  int es_size = es_queue_->Data().size();
   base::span<const uint8_t> es = es_queue_->Data();
 
-  int max_offset = es_size - MPEG1AudioStreamParser::kHeaderSize;
-  if (max_offset <= 0)
+  if (es.size() < MPEG1AudioStreamParser::kHeaderSize) {
     return false;
+  }
 
-  for (int offset = 0; offset < max_offset; offset++) {
-    base::span<const uint8_t> cur_buf =
-        es.subspan(base::checked_cast<size_t>(offset));
-    if (cur_buf[0] != 0xff)
+  size_t max_offset = es.size() - MPEG1AudioStreamParser::kHeaderSize;
+  for (size_t offset = 0; offset < max_offset; offset++) {
+    base::span<const uint8_t> cur_buf = es.subspan(offset);
+    if (cur_buf[0] != 0xff) {
       continue;
+    }
 
-    int remaining_size = es_size - offset;
-    DCHECK_GE(base::checked_cast<size_t>(remaining_size),
-              MPEG1AudioStreamParser::kHeaderSize);
-    MPEG1AudioStreamParser::Header header;
-    if (!MPEG1AudioStreamParser::ParseHeader(cur_buf, &header)) {
+    const auto header = MPEG1AudioStreamParser::ParseHeader(cur_buf);
+    if (!header) {
       LIMITED_MEDIA_LOG(DEBUG, media_log_, mp3_parse_error_limit_, 5)
           << "Invalid MP3 header data";
       continue;
     }
 
-    if (remaining_size < header.frame_size) {
+    if (cur_buf.size() < header->frame_size) {
       // Not a full frame: will resume when we have more data.
       // Remove all the bytes located before the frame header,
       // these bytes will not be used anymore.
@@ -140,17 +139,16 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
 
     // Check whether there is another frame
     // |frame_size| apart from the current one.
-    if (remaining_size >= header.frame_size + 1 &&
-        cur_buf[header.frame_size] != 0xff) {
+    if (cur_buf.size() >= header->frame_size + 1 &&
+        cur_buf[header->frame_size] != 0xff) {
       continue;
     }
 
     es_queue_->Pop(offset);
-    mpeg1audio_frame->data =
-        es_queue_->Data().first(base::checked_cast<size_t>(header.frame_size));
-    es_size = es_queue_->Data().size();
+    mpeg1audio_frame->data = es_queue_->Data().first(header->frame_size);
+
     mpeg1audio_frame->queue_offset = es_queue_->head();
-    mpeg1audio_frame->sample_count = header.sample_count;
+    mpeg1audio_frame->sample_count = header->sample_count;
     DVLOG(LOG_LEVEL_ES) << "MPEG1 audio syncword @ pos="
                         << mpeg1audio_frame->queue_offset
                         << " frame_size=" << mpeg1audio_frame->data.size();
@@ -166,8 +164,8 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
 
 bool EsParserMpeg1Audio::UpdateAudioConfiguration(
     base::span<const uint8_t> mpeg1audio_header) {
-  MPEG1AudioStreamParser::Header header;
-  if (!MPEG1AudioStreamParser::ParseHeader(mpeg1audio_header, &header)) {
+  const auto header = MPEG1AudioStreamParser::ParseHeader(mpeg1audio_header);
+  if (!header) {
     LIMITED_MEDIA_LOG(DEBUG, media_log_, mp3_parse_error_limit_, 5)
         << "Invalid MP3 header data";
     return false;
@@ -177,8 +175,8 @@ bool EsParserMpeg1Audio::UpdateAudioConfiguration(
   // field for Mpeg1 audio. If yes, we should generate this field.
   AudioDecoderConfig audio_decoder_config(
       AudioCodec::kMP3, kSampleFormatS16,
-      ChannelLayoutConfig::FromLayout(header.channel_layout),
-      header.sample_rate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+      ChannelLayoutConfig::FromLayout(header->channel_layout),
+      header->sample_rate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "
@@ -187,17 +185,17 @@ bool EsParserMpeg1Audio::UpdateAudioConfiguration(
   }
 
   if (!audio_decoder_config.Matches(last_audio_decoder_config_)) {
-    DVLOG(1) << "Sampling frequency: " << header.sample_rate;
-    DVLOG(1) << "Channel layout: " << header.channel_layout;
+    DVLOG(1) << "Sampling frequency: " << header->sample_rate;
+    DVLOG(1) << "Channel layout: " << header->channel_layout;
     // Reset the timestamp helper to use a new time scale.
     if (audio_timestamp_helper_ && audio_timestamp_helper_->base_timestamp()) {
       base::TimeDelta base_timestamp = audio_timestamp_helper_->GetTimestamp();
-      audio_timestamp_helper_.reset(
-        new AudioTimestampHelper(header.sample_rate));
+      audio_timestamp_helper_ =
+          std::make_unique<AudioTimestampHelper>(header->sample_rate);
       audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);
     } else {
-      audio_timestamp_helper_.reset(
-          new AudioTimestampHelper(header.sample_rate));
+      audio_timestamp_helper_ =
+          std::make_unique<AudioTimestampHelper>(header->sample_rate);
     }
     // Audio config notification.
     last_audio_decoder_config_ = audio_decoder_config;

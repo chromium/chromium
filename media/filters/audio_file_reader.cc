@@ -366,7 +366,7 @@ bool AudioFileReader::ReadPacket(AVPacket* output_packet) {
     packet_data = packet_data.subspan(trim_count);
 
     if (packet_data.size() < MPEG1AudioStreamParser::kHeaderSize ||
-        !MPEG1AudioStreamParser::ParseHeader(packet_data, nullptr)) {
+        !MPEG1AudioStreamParser::ParseHeader(packet_data)) {
       av_packet_unref(output_packet);
       continue;
     }

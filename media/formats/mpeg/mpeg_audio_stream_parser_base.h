@@ -24,6 +24,13 @@ namespace media {
 
 class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
  public:
+  struct Header {
+    size_t frame_size = 0;
+    int sample_rate = 0;
+    ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
+    int sample_count = 0;
+    bool metadata_frame = false;
+  };
   // |start_code_mask| is used to find the start of each frame header.  Also
   // referred to as the sync code in the MP3 and ADTS header specifications.
   // |codec_delay| is the number of samples the decoder will output before the
