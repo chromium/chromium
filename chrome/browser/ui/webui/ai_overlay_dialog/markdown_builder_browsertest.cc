@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -22,6 +23,11 @@ namespace {
 class MarkdownBuilderBrowserTest : public InProcessBrowserTest {
  public:
   std::string GetMarkdownFromHtml(const std::string& html) {
+    return GetMarkdownFromHtmlAndUrl(html, GURL("data:text/html," + html));
+  }
+
+  std::string GetMarkdownFromHtmlAndUrl(const std::string& html,
+                                        const GURL& page_url) {
     content::WebContents* web_contents =
         chrome_test_utils::GetActiveTab(this)->GetContents();
     GURL url("data:text/html," + html);
@@ -39,16 +45,24 @@ class MarkdownBuilderBrowserTest : public InProcessBrowserTest {
       return "";
     }
 
-    MarkdownBuilder builder(result->proto);
+    MarkdownBuilder builder(result->proto, page_url);
     return builder.Build();
   }
 
   void RunTest(const std::string& html, const std::string& expected) {
+    RunTestWithUrl(html, GURL("data:text/html," + html), expected);
+  }
+
+  void RunTestWithUrl(const std::string& html,
+                      const GURL& page_url,
+                      const std::string& expected) {
     std::string trimmed_html;
     base::TrimWhitespaceASCII(html, base::TRIM_ALL, &trimmed_html);
     std::string trimmed_expected;
     base::TrimWhitespaceASCII(expected, base::TRIM_ALL, &trimmed_expected);
-    EXPECT_EQ(GetMarkdownFromHtml(trimmed_html), trimmed_expected);
+    std::string actual = GetMarkdownFromHtmlAndUrl(trimmed_html, page_url);
+    re2::RE2::GlobalReplace(&actual, "\\{#\\d+\\}", "");
+    EXPECT_EQ(actual, trimmed_expected);
   }
 };
 
@@ -192,13 +206,42 @@ IN_PROC_BROWSER_TEST_F(MarkdownBuilderBrowserTest, Links) {
   // 2. Images inside anchors only output their caption/alt text.
   // 3. Nested anchors: are correctly handled as separate links.
   const std::string expected = R"EXPECTED(
-[Simple Link](https://google.com/)
-[Link with nested DOM](https://example.com/)
-[Chromium Logo](https://chromium.org/)
-[Parent Link](https://parent.com/) [Child Link](https://child.com/)
+[Simple Link (google.com)]
+[Link with nested DOM (example.com)]
+[Chromium Logo (chromium.org)]
+[Parent Link (parent.com)] [Child Link (child.com)]
 )EXPECTED";
   // clang-format on
   RunTest(html, expected);
+}
+
+IN_PROC_BROWSER_TEST_F(MarkdownBuilderBrowserTest, OrderedList) {
+  // clang-format off
+  const std::string html = R"HTML(
+<ol>
+  <li>First</li>
+  <li>Second</li>
+</ol>
+)HTML";
+  const std::string expected = R"EXPECTED(
+1. First
+2. Second
+)EXPECTED";
+  // clang-format on
+  RunTest(html, expected);
+}
+
+IN_PROC_BROWSER_TEST_F(MarkdownBuilderBrowserTest, LinksSameAndDifferentHost) {
+  // clang-format off
+  const std::string html = R"HTML(
+<p>
+  <a href="https://google.com/page1">Same Domain</a>
+  <a href="https://example.com/page2">Different Domain</a>
+</p>
+)HTML";
+  // clang-format on
+  RunTestWithUrl(html, GURL("https://google.com/home"),
+                 "[Same Domain] [Different Domain (example.com)]");
 }
 
 }  // namespace

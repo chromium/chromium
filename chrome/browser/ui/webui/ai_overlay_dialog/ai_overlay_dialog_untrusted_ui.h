@@ -54,9 +54,12 @@ class AiOverlayDialogUntrustedUI
   WEB_UI_CONTROLLER_TYPE_DECL();
 
   std::unique_ptr<AiOverlayDialogPageHandler> page_handler_;
-  std::unique_ptr<AiOverlayTools> tools_;
 
+  // `page_context_monitor_` must be declared before `tools_` so that `tools_`
+  // (which holds a raw pointer to it) is destroyed first to prevent a dangling
+  // pointer during destruction.
   std::unique_ptr<PageContextMonitor> page_context_monitor_;
+  std::unique_ptr<AiOverlayTools> tools_;
 
   mojo::Receiver<ai_overlay_dialog::mojom::PageHandlerFactory>
       page_handler_factory_receiver_{this};

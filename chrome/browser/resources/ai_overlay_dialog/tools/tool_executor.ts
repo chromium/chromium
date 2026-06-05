@@ -17,6 +17,10 @@ interface OpenUrlArgs {
   new_tab: boolean;
 }
 
+interface FollowLinkArgs {
+  id: string;
+}
+
 interface PerformSearchArgs {
   query: string;
   new_tab: boolean;
@@ -48,6 +52,7 @@ interface InvokeGlicArgs {
 }
 
 type ToolCall =|{name: 'open_url', args: OpenUrlArgs}|
+    {name: 'follow_link', args: FollowLinkArgs}|
     {name: 'perform_search', args: PerformSearchArgs}|
     {name: 'switch_tab', args: SwitchTabArgs}|
     {name: 'find_and_highlight', args: FindAndHighlightArgs}|
@@ -107,6 +112,10 @@ export class ToolExecutor {
       switch (call.name) {
         case 'open_url': {
           await this.toolsRemote.openUrl(call.args.url, call.args.new_tab);
+          break;
+        }
+        case 'follow_link': {
+          await this.toolsRemote.followLink(call.args.id);
           break;
         }
         case 'perform_search': {

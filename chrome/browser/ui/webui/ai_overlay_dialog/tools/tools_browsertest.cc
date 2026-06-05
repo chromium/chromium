@@ -7,12 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "base/hash/hash.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/language_state.h"
@@ -41,6 +45,29 @@ using GoBackResult = base::expected<std::monostate, std::string>;
 using GoForwardResult = base::expected<std::monostate, std::string>;
 using ReloadResult = base::expected<std::monostate, std::string>;
 using TranslatePageResult = base::expected<std::monostate, std::string>;
+using FollowLinkResult = base::expected<std::monostate, std::string>;
+
+class FakePage : public ai_overlay_dialog::mojom::Page {
+ public:
+  FakePage() = default;
+  ~FakePage() override = default;
+
+  mojo::PendingRemote<ai_overlay_dialog::mojom::Page> BindAndGetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // ai_overlay_dialog::mojom::Page:
+  void DidChangePage(const std::string& url,
+                     const std::optional<std::string>& title,
+                     const std::optional<std::string>& content) override {}
+  void UpdateCurrentPageContext(const std::string& page_title,
+                                const std::string& page_content) override {}
+  void SetCaptionsVisible(bool visible) override {}
+  void SetUsePersona(bool use_persona) override {}
+
+ private:
+  mojo::Receiver<ai_overlay_dialog::mojom::Page> receiver_{this};
+};
 
 class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
  public:
@@ -61,17 +88,30 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
         &AiOverlayToolsBrowserTest::HandleRequest, base::Unretained(this)));
     embedded_test_server()->StartAcceptingConnections();
 
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler>
+        handler_receiver;
+    page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
+        std::move(handler_receiver), fake_page_.BindAndGetRemote(), browser());
+    page_context_monitor_ =
+        std::make_unique<PageContextMonitor>(*browser(), *page_handler_);
+
     mojo::PendingRemote<ai_overlay_dialog::mojom::AiOverlayTools> remote;
     tools_ = std::make_unique<AiOverlayTools>(
-        remote.InitWithNewPipeAndPassReceiver(), browser());
+        remote.InitWithNewPipeAndPassReceiver(), browser(),
+        page_context_monitor_.get());
   }
 
   void TearDownOnMainThread() override {
     tools_.reset();
+    page_context_monitor_.reset();
+    page_handler_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
   AiOverlayTools* tools() { return tools_.get(); }
+  PageContextMonitor* page_context_monitor() {
+    return page_context_monitor_.get();
+  }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
@@ -118,6 +158,9 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  FakePage fake_page_;
+  std::unique_ptr<AiOverlayDialogPageHandler> page_handler_;
+  std::unique_ptr<PageContextMonitor> page_context_monitor_;
   std::unique_ptr<AiOverlayTools> tools_;
 };
 
@@ -473,6 +516,68 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, TranslatePageSpecificTarget) {
       ChromeTranslateClient::FromWebContents(contents);
   ASSERT_TRUE(translate_client);
   EXPECT_EQ("fr", translate_client->GetLanguageState().current_language());
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FollowLink) {
+  GURL target_url = embedded_test_server()->GetURL("/empty.html?target");
+  std::string html = "<a href=\"" + target_url.spec() + "\">Click Link</a>";
+  GURL page_url("data:text/html," + html);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Wait for the context monitor to fetch page content.
+  while (!page_context_monitor()->last_page_content().has_value()) {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
+
+  int hash = base::PersistentHash(target_url.spec()) % 10000;
+  std::string hash_str = base::NumberToString(hash);
+
+  ui_test_utils::UrlLoadObserver load_observer(target_url);
+
+  base::test::TestFuture<FollowLinkResult> future;
+  tools()->FollowLink(hash_str, future.GetCallback());
+  EXPECT_TRUE(future.Get().has_value());
+
+  load_observer.Wait();
+  EXPECT_EQ(target_url, browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, FollowLinkWithHashSymbol) {
+  GURL target_url = embedded_test_server()->GetURL("/empty.html?target");
+  std::string html = "<a href=\"" + target_url.spec() + "\">Click Link</a>";
+  GURL page_url("data:text/html," + html);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Wait for the context monitor to fetch page content.
+  while (!page_context_monitor()->last_page_content().has_value()) {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+    run_loop.Run();
+  }
+
+  int hash = base::PersistentHash(target_url.spec()) % 10000;
+  std::string hash_str = "#" + base::NumberToString(hash);
+
+  ui_test_utils::UrlLoadObserver load_observer(target_url);
+
+  base::test::TestFuture<FollowLinkResult> future;
+  tools()->FollowLink(hash_str, future.GetCallback());
+  EXPECT_TRUE(future.Get().has_value());
+
+  load_observer.Wait();
+  EXPECT_EQ(target_url, browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetLastCommittedURL());
 }
 
 }  // namespace

@@ -105,10 +105,11 @@ void AiOverlayDialogUntrustedUI::CreatePageHandler(
   page_handler_ = std::make_unique<AiOverlayDialogPageHandler>(
       std::move(receiver), std::move(remote), bwi);
 
-  tools_ = std::make_unique<AiOverlayTools>(std::move(tools), bwi);
-
   page_context_monitor_ =
       std::make_unique<PageContextMonitor>(*bwi, *page_handler_);
+
+  tools_ = std::make_unique<AiOverlayTools>(std::move(tools), bwi,
+                                            page_context_monitor_.get());
 }
 
 }  // namespace ttc

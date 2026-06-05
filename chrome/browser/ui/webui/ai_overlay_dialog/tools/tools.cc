@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -89,8 +90,11 @@ namespace ttc {
 
 AiOverlayTools::AiOverlayTools(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
-    BrowserWindowInterface* browser)
-    : receiver_(this, std::move(receiver)), browser_(browser) {}
+    BrowserWindowInterface* browser,
+    PageContextMonitor* page_context_monitor)
+    : receiver_(this, std::move(receiver)),
+      browser_(browser),
+      page_context_monitor_(page_context_monitor) {}
 
 AiOverlayTools::~AiOverlayTools() = default;
 
@@ -109,6 +113,21 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
               : WindowOpenDisposition::CURRENT_TAB;
   browser_->OpenGURL(url, disposition);
   std::move(callback).Run(std::monostate());
+}
+
+void AiOverlayTools::FollowLink(const std::string& id,
+                                FollowLinkCallback callback) {
+  RecordToolCallInvoked("FollowLink");
+  CHECK(page_context_monitor_);
+
+  std::string url = page_context_monitor_->GetUrlForHash(id);
+  if (url.empty()) {
+    std::move(callback).Run(
+        base::unexpected(base::StrCat({"No link found for id ", id})));
+    return;
+  }
+
+  OpenUrl(url, /*new_tab=*/false, std::move(callback));
 }
 
 void AiOverlayTools::PerformSearch(const std::string& query,

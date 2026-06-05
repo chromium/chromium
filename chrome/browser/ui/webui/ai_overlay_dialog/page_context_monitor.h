@@ -28,6 +28,13 @@ class PageContextMonitor : public content::WebContentsObserver {
   void PrimaryPageChanged(content::Page& page) override;
   void DidStopLoading() override;
 
+  std::string GetUrlForHash(const std::string& hash) const;
+
+  const std::optional<optimization_guide::proto::AnnotatedPageContent>&
+  last_page_content() const {
+    return last_page_content_;
+  }
+
  private:
   void OnActiveTabChanged(BrowserWindowInterface* window);
   void StartNewFetch();
@@ -43,6 +50,9 @@ class PageContextMonitor : public content::WebContentsObserver {
   bool did_retry_first_fetch_ = false;
 
   std::unique_ptr<page_content_annotations::PageContextFetcher> fetcher_;
+
+  std::optional<optimization_guide::proto::AnnotatedPageContent>
+      last_page_content_;
 
   base::WeakPtrFactory<PageContextMonitor> weak_ptr_factory_{this};
 };

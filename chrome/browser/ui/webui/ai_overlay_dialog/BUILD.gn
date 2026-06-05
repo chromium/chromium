@@ -62,7 +62,7 @@ source_set("ai_overlay_dialog") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = []
+  sources = [ "markdown_builder_unittest.cc" ]
   deps = [
     ":ai_overlay_dialog",
     "//base",

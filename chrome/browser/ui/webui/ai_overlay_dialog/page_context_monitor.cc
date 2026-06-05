@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/page_content_annotations/page_content_screenshot_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +35,7 @@ PageContextMonitor::PageContextMonitor(BrowserWindowInterface& window,
 PageContextMonitor::~PageContextMonitor() = default;
 
 void PageContextMonitor::PrimaryPageChanged(content::Page& page) {
+  last_page_content_.reset();
   page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
                                web_contents()->GetTitle(), std::nullopt);
   did_retry_first_fetch_ = false;
@@ -50,11 +52,13 @@ void PageContextMonitor::OnActiveTabChanged(BrowserWindowInterface* window) {
   CHECK_EQ(window, &window_.get());
 
   tabs::TabInterface* active_tab = window_->GetActiveTabInterface();
+  Observe(active_tab ? active_tab->GetContents() : nullptr);
+  last_page_content_.reset();
+
   if (!active_tab) {
     return;
   }
 
-  Observe(active_tab->GetContents());
   page_handler_->DidChangePage(web_contents()->GetLastCommittedURL(),
                                web_contents()->GetTitle(), std::nullopt);
   StartNewFetch();
@@ -102,8 +106,10 @@ void PageContextMonitor::OnFetchComplete(
       **result;
 
   if (fetch_result.annotated_page_content_result.has_value()) {
-    MarkdownBuilder markdown_builder(
-        fetch_result.annotated_page_content_result.value().proto);
+    last_page_content_ =
+        fetch_result.annotated_page_content_result.value().proto;
+    MarkdownBuilder markdown_builder(*last_page_content_,
+                                     web_contents()->GetLastCommittedURL());
     std::string markdown_content = markdown_builder.Build();
 
     // TODO(bokan): More sophisticated truncation.
@@ -125,6 +131,32 @@ void PageContextMonitor::OnFetchComplete(
     page_handler_->UpdateCurrentPageContext(web_contents()->GetTitle(),
                                             markdown_content_truncated);
   }
+}
+
+std::string PageContextMonitor::GetUrlForHash(
+    const std::string& hash_str) const {
+  if (!last_page_content_.has_value()) {
+    return "";
+  }
+  std::string_view hash_sv(hash_str);
+  while (!hash_sv.empty() &&
+         (hash_sv.front() == '{' || hash_sv.front() == '#')) {
+    hash_sv.remove_prefix(1);
+  }
+  while (!hash_sv.empty() && hash_sv.back() == '}') {
+    hash_sv.remove_suffix(1);
+  }
+  int target_hash;
+  if (!base::StringToInt(hash_sv, &target_hash)) {
+    return "";
+  }
+  auto hashes = MarkdownBuilder::GenerateUrlHashes(*last_page_content_);
+  for (const auto& [url, hash] : hashes) {
+    if (hash == target_hash) {
+      return url;
+    }
+  }
+  return "";
 }
 
 }  // namespace ttc

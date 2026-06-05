@@ -20,11 +20,14 @@ class BrowserWindowInterface;
 
 namespace ttc {
 
+class PageContextMonitor;
+
 class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
  public:
   AiOverlayTools(
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
-      BrowserWindowInterface* browser);
+      BrowserWindowInterface* browser,
+      PageContextMonitor* page_context_monitor);
   ~AiOverlayTools() override;
   AiOverlayTools(const AiOverlayTools&) = delete;
   AiOverlayTools& operator=(const AiOverlayTools&) = delete;
@@ -33,6 +36,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
   void OpenUrl(const std::string& url,
                bool new_tab,
                OpenUrlCallback callback) override;
+  void FollowLink(const std::string& id, FollowLinkCallback callback) override;
   void PerformSearch(const std::string& query,
                      bool new_tab,
                      PerformSearchCallback callback) override;
@@ -80,6 +84,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools {
 
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver_;
   raw_ptr<BrowserWindowInterface> browser_;
+  // `page_context_monitor_` is owned by `AiOverlayDialogUntrustedUI` and must
+  // outlive `AiOverlayTools`.
+  raw_ptr<PageContextMonitor> page_context_monitor_;
 
   std::unique_ptr<AnnotationTask> annotation_task_;
   content::WeakDocumentPtr annotation_document_;

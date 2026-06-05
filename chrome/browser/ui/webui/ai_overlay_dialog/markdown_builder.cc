@@ -8,11 +8,15 @@
 #include <cstddef>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "base/containers/adapters.h"
+#include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -45,18 +49,7 @@ bool IsSectionHeader(const ContentNode& node) {
   return false;
 }
 
-// TODO(b/513007633): This is a temporary hack intended to prevent super-long
-// URLs from blowing up the model's context window which is limited. This should
-// be removed ASAP and replaced with a better approach to context management in
-// AiOverlayDialog.
-std::string FilterEnormousUrls(const std::string& url) {
-  constexpr std::size_t kMaximumUrlLength = 2000;
-  if (url.length() > kMaximumUrlLength) {
-    return "";
-  }
 
-  return url;
-}
 
 std::string GetEmphasisSyntax(
     const optimization_guide::proto::TextInfo& text_info) {
@@ -149,20 +142,79 @@ bool ShouldRedactNode(const ContentNode& node) {
   return IsPasswordInput(node) || IsCreditCardFormControl(node);
 }
 
+std::string EscapeLinkIdentifiers(const std::string& input) {
+  std::string result;
+  result.reserve(input.size());
+  for (size_t i = 0; i < input.size(); ++i) {
+    if (input[i] == '{' && i + 1 < input.size() && input[i + 1] == '#') {
+      size_t j = i + 2;
+      while (j < input.size() &&
+             std::isdigit(static_cast<unsigned char>(input[j]))) {
+        j++;
+      }
+      if (j < input.size() && input[j] == '}' && j > i + 2) {
+        result += "\\{#";
+        result += input.substr(i + 2, j - (i + 2));
+        result += "\\}";
+        i = j;
+        continue;
+      }
+    }
+    result += input[i];
+  }
+  return result;
+}
+
+void WalkForHashes(const ContentNode& node,
+                   std::unordered_map<std::string, int>& url_to_hash,
+                   std::unordered_set<int>& used_hashes) {
+  if (!node.has_content_attributes()) {
+    return;
+  }
+
+  if (node.content_attributes().attribute_type() ==
+          ContentAttributeType::CONTENT_ATTRIBUTE_ANCHOR &&
+      node.content_attributes().anchor_data().has_url()) {
+    std::string url = node.content_attributes().anchor_data().url();
+    if (!url_to_hash.contains(url)) {
+      int hash = base::PersistentHash(url) % 10000;
+      while (used_hashes.contains(hash)) {
+        hash = (hash + 1) % 10000;
+      }
+      url_to_hash[url] = hash;
+      used_hashes.insert(hash);
+    }
+  }
+
+  for (const auto& child : node.children_nodes()) {
+    WalkForHashes(child, url_to_hash, used_hashes);
+  }
+}
+
 }  // namespace
 
 namespace ttc {
+
+std::unordered_map<std::string, int> MarkdownBuilder::GenerateUrlHashes(
+    const optimization_guide::proto::AnnotatedPageContent& page_content) {
+  std::unordered_map<std::string, int> url_to_hash;
+  std::unordered_set<int> used_hashes;
+  WalkForHashes(page_content.root_node(), url_to_hash, used_hashes);
+  return url_to_hash;
+}
 
 MarkdownBuilder::WalkState::WalkState() = default;
 MarkdownBuilder::WalkState::~WalkState() = default;
 
 MarkdownBuilder::MarkdownBuilder(
-    const optimization_guide::proto::AnnotatedPageContent& page_content)
-    : page_content_(page_content) {}
+    const optimization_guide::proto::AnnotatedPageContent& page_content,
+    const GURL& page_url)
+    : page_content_(page_content), page_url_(page_url) {}
 
 MarkdownBuilder::~MarkdownBuilder() = default;
 
 std::string MarkdownBuilder::Build() {
+  url_to_hash_ = GenerateUrlHashes(*page_content_);
   std::vector<const ContentNode*> parent_chain;
   WalkContentNodes(parent_chain, page_content_->root_node(),
                    page_content_->main_frame_data().document_identifier());
@@ -329,13 +381,22 @@ void MarkdownBuilder::AddMarkdownAfterSubtree(const ContentNode& node) {
       break;
     case ContentAttributeType::CONTENT_ATTRIBUTE_ANCHOR:
       if (node.content_attributes().anchor_data().has_url()) {
-        walk_state_.lines.back() +=
-            "](" +
-            FilterEnormousUrls(node.content_attributes().anchor_data().url()) +
-            ")";
-      } else {
-        walk_state_.lines.back() += "]";
+        std::string anchor_url_str =
+            node.content_attributes().anchor_data().url();
+        GURL anchor_url(anchor_url_str);
+        if (anchor_url.is_valid() && !anchor_url.host().empty() &&
+            page_url_.is_valid() && anchor_url.host() != page_url_.host()) {
+          walk_state_.lines.back() +=
+              base::StrCat({" (", anchor_url.host(), ")"});
+        }
+        auto it = url_to_hash_.find(anchor_url_str);
+        if (it != url_to_hash_.end()) {
+          walk_state_.lines.back() +=
+              "]{#" + base::NumberToString(it->second) + "}";
+          break;
+        }
       }
+      walk_state_.lines.back() += "]";
       break;
     case ContentAttributeType::CONTENT_ATTRIBUTE_FORM_CONTROL:
       switch (
@@ -403,8 +464,8 @@ std::string MarkdownBuilder::GetContent(
 std::string MarkdownBuilder::FormatText(
     const optimization_guide::proto::TextInfo& text_info,
     const std::vector<const ContentNode*>& parent_chain) {
-  std::string text =
-      base::CollapseWhitespaceASCII(text_info.text_content(), false);
+  std::string text = EscapeLinkIdentifiers(
+      base::CollapseWhitespaceASCII(text_info.text_content(), false));
   if (text.empty()) {
     return text;
   }

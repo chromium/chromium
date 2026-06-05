@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_MARKDOWN_BUILDER_H_
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "url/gurl.h"
 
 namespace ttc {
 
@@ -18,8 +21,12 @@ namespace ttc {
 // generator.
 class MarkdownBuilder {
  public:
-  explicit MarkdownBuilder(
+  static std::unordered_map<std::string, int> GenerateUrlHashes(
       const optimization_guide::proto::AnnotatedPageContent& page_content);
+
+  MarkdownBuilder(
+      const optimization_guide::proto::AnnotatedPageContent& page_content,
+      const GURL& page_url);
   ~MarkdownBuilder();
 
   MarkdownBuilder(const MarkdownBuilder&) = delete;
@@ -102,6 +109,8 @@ class MarkdownBuilder {
   const raw_ref<const optimization_guide::proto::AnnotatedPageContent>
       page_content_;
   WalkState walk_state_;
+  GURL page_url_;
+  std::unordered_map<std::string, int> url_to_hash_;
 };
 
 }  // namespace ttc

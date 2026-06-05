@@ -37,16 +37,24 @@ enum ScrollGranularity {
 interface AiOverlayTools {
   // Browser tools
 
-  // Open a URL. Use when the user wants to follow/open a link or go to a page.
-  // When following a link, extract the exact URL from the page markdown
-  // content where links are of the format: `[text](url)`
+  // Open a URL. Use when the user wants to go to a page by providing the URL
+  // directly.
+  //
+  // Use FollowLink to navigate when the link is visible on the
+  // current page.
   //
   // url: Exact URL. Use PerformSearch to find a page instead of guessing a URL.
   OpenUrl(string url, bool new_tab) => result<mojo_base.mojom.Empty, string>;
 
+  // Follow/click a link by its ID.
+  //
+  // id: The ID of the link to follow, as represented in the
+  // markdown (e.g. `{#9821}`).
+  FollowLink(string id) => result<mojo_base.mojom.Empty, string>;
+
   // Search using the default search engine.
-  PerformSearch(
-      string query, bool new_tab) => result<mojo_base.mojom.Empty, string>;
+  PerformSearch(string query, bool new_tab)
+      => result<mojo_base.mojom.Empty, string>;
 
   // Switch to another open tab by fuzzy matching name or URL.
   //
@@ -97,8 +105,8 @@ interface AiOverlayTools {
   //
   // target_language: Target language code (e.g. "en", "es", "fr").
   //                  If empty, translates to the user's default language.
-  TranslatePage(
-      string target_language) => result<mojo_base.mojom.Empty, string>;
+  TranslatePage(string target_language)
+      => result<mojo_base.mojom.Empty, string>;
 
   // @NON_BLOCKING
   // Use for tasks taking >1s to process, email, or to generate images, audio,
