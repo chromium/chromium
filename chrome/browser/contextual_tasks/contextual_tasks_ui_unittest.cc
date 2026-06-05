@@ -171,6 +171,11 @@ std::unique_ptr<content::MockNavigationHandle> CreateMockNavigationHandle(
 
 class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
  public:
+  ContextualTasksUiTest() {
+    feature_list_.InitAndDisableFeature(
+        contextual_tasks::kEnableNotifyZeroStateRenderedCapability);
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -268,6 +273,7 @@ class ContextualTasksUiTest : public ChromeRenderViewHostTestHarness {
       contextual_tasks_service_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(ContextualTasksUiTest, ContextualTasksServiceUpdatedOnUrlChange) {
@@ -1048,6 +1054,40 @@ TEST_F(ContextualTasksUiTest, OnWebUIReadyCalledOnInitComplete) {
   mojo::PendingReceiver<mojom::PageHandler> handler_receiver;
   controller.CreatePageHandler(page.BindAndGetRemote(),
                                std::move(handler_receiver));
+}
+
+TEST_F(ContextualTasksUiTest, CreatePageHandler_PushesTaskDetailsToPage) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL url(chrome::kChromeUIContextualTasksURL);
+  url = net::AppendQueryParameter(url, kTaskQueryParam,
+                                  task_id.AsLowercaseString());
+  content::WebContentsTester::For(embedded_web_contents_.get())
+      ->NavigateAndCommit(url);
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+
+  ContextualTasksUI controller(&web_ui);
+
+  testing::NiceMock<MockContextualTasksPage> page;
+
+  // Mock the creation URL fallback since inner frame is empty in this test.
+  GURL creation_url("https://google.com/ai_url");
+  EXPECT_CALL(*service_for_nav_, GetCreationUrlForTask(task_id))
+      .WillOnce(Return(creation_url));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(page, SetTaskDetails(task_id, creation_url,
+                                   /*replace_navigation_entry=*/true))
+      .WillOnce([&run_loop](const base::Uuid&, const GURL&, bool) {
+        run_loop.Quit();
+      });
+
+  mojo::PendingReceiver<mojom::PageHandler> handler_receiver;
+  controller.CreatePageHandler(page.BindAndGetRemote(),
+                               std::move(handler_receiver));
+
+  run_loop.Run();
 }
 
 class MockMPArchNavigationHandle : public content::MockNavigationHandle {

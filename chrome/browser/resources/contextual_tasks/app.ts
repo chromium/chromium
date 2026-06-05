@@ -134,11 +134,17 @@ function updateTaskDetailsInUrl(
   }
 
   // Add all the params from the aim URL, except host.
-  new URL(aimUrl).searchParams.forEach((value, key) => {
-    if (key !== CHROME_HOST_PARAM_KEY) {
-      url.searchParams.set(key, value);
+  if (aimUrl) {
+    try {
+      new URL(aimUrl).searchParams.forEach((value, key) => {
+        if (key !== CHROME_HOST_PARAM_KEY) {
+          url.searchParams.set(key, value);
+        }
+      });
+    } catch (e) {
+      console.error('Failed to parse AI thread URL:', aimUrl, e);
     }
-  });
+  }
 
   // Add the task ID to the params.
   if (taskId) {

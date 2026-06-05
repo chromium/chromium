@@ -721,6 +721,18 @@ void ContextualTasksUI::CreatePageHandler(
     }
   }
 #endif
+  // If a task is already active when the page handler is created (e.g., on
+  // page reload), restore the WebUI state by pushing the task details. If the
+  // inner frame URL is not yet available, fallback to the task's creation URL.
+  if (task_id_ && web_ui() && web_ui()->GetWebContents()) {
+    GURL url = GetInnerFrameUrl();
+    if (url.is_empty() && ui_service_) {
+      url =
+          ui_service_->GetCreationUrlForTask(task_id_.value()).value_or(GURL());
+    }
+    PushTaskDetailsToPage(task_id_, url,
+                          /*replace_navigation_entry=*/true);
+  }
   OnInitComplete();
 }
 
