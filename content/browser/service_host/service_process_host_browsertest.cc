@@ -18,6 +18,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/blink_buildflags.h"
+#include "build/build_config.h"
 #include "content/public/browser/service_process_observer_hub.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -34,7 +36,7 @@
 #include "content/public/browser/service_process_host_passkeys.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)))
 #include "content/public/browser/browser_child_process_host.h"
 #endif
 
@@ -695,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, Priority) {
           .Pass());
   observer.WaitForLaunch();
   base::Process::Priority priority = observer.process().GetPriority(
-#if BUILDFLAG(IS_MAC)
+#if (BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)))
       content::BrowserChildProcessHost::GetPortProvider()
 #endif
   );
