@@ -439,13 +439,11 @@ class CONTENT_EXPORT PrefetchContainer
   // - `SimulatePrefetchEligibleForTest()`
   // - `SimulatePrefetchStartedForTest()`
   // - `SetStreamingURLLoader()`
-  // - `SimulatePrefetchCompletedForTest()`
   void SimulatePrefetchEligibleForTest();
   void SimulatePrefetchStartedForTest();
   void SimulatePrefetchRedirectedForTest(
       const GURL& redirect_url,
       PreloadingEligibility eligibility = PreloadingEligibility::kEligible);
-  void SimulatePrefetchCompletedForTest();
 
   // Simulates a prefetch container that failed at the eligibility check
   // (`LoadState::FailedIneligible`).

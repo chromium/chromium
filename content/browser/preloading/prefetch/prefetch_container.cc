@@ -1652,10 +1652,6 @@ void PrefetchContainer::SimulatePrefetchRedirectedForTest(  // IN-TEST
   UpdateResourceRequest(redirect_info, std::move(headers_update_params));
 }
 
-void PrefetchContainer::SimulatePrefetchCompletedForTest() {
-  SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-}
-
 void PrefetchContainer::SimulatePrefetchFailedIneligibleForTest(
     PreloadingEligibility eligibility) {
   CHECK_NE(PreloadingEligibility::kEligible, eligibility);

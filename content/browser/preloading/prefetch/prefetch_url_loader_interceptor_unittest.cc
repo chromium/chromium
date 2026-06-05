@@ -447,7 +447,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Simulate the cookie copy process starting and finishing before
   // |MaybeCreateLoader| is called.
@@ -500,7 +499,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Simulate the cookie copy process starting, but not finishing until after
   // |MaybeCreateLoader| is called.
@@ -564,7 +562,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
       std::make_unique<TestPrefetchOriginProber>(
@@ -614,7 +611,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
       std::make_unique<TestPrefetchOriginProber>(
@@ -693,8 +689,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container_speculation_rules_diff_url.get(),
       SuccessfulPrefetchResponseHeadForTesting(), "test body");
-  prefetch_container_speculation_rules_diff_url
-      ->SimulatePrefetchCompletedForTest();
 
   // Creates a speculation rules prefetch that has a different DocumentToken
   // from the current main document's.
@@ -708,8 +702,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container_speculation_rules_diff_token.get(),
       SuccessfulPrefetchResponseHeadForTesting(), "test body");
-  prefetch_container_speculation_rules_diff_token
-      ->SimulatePrefetchCompletedForTest();
 
   // Creates an embedder prefetch, whose DocumentToken will be nullopt.
   auto prefetch_container_embedder = CreateEmbedderPrefetchContainer(
@@ -720,7 +712,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container_embedder.get(),
       SuccessfulPrefetchResponseHeadForTesting(), "test body");
-  prefetch_container_embedder->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
       std::make_unique<TestPrefetchOriginProber>(
@@ -785,7 +776,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Advance time enough so that the response is considered stale.
   task_environment()->FastForwardBy(2 * PrefetchCacheableDuration());
@@ -824,7 +814,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
   // no longer be served.
@@ -895,7 +884,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   SimulateCookieCopyProcess(*prefetch_container);
 
@@ -932,7 +920,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   SimulateCookieCopyProcess(*prefetch_container);
 
@@ -988,7 +975,6 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
 
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   {
@@ -1085,7 +1071,11 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
   switch (GetParam()) {
     case NotServableReason::kOnCompleteFailure:
       EXPECT_FALSE(was_intercepted(kTestUrl).value());
-      ExpectCorrectUkmLogs({.is_accurate = true}, kTestUrl);
+      ExpectCorrectUkmLogs({.outcome = PreloadingTriggeringOutcome::kFailure,
+                            .failure = ToPreloadingFailureReason(
+                                PrefetchStatus::kPrefetchFailedNetError),
+                            .is_accurate = true},
+                           kTestUrl);
       break;
 
     case NotServableReason::kAnotherRequest:
@@ -1147,7 +1137,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
 
   MakeServableStreamingURLLoaderWithRedirectForTest(prefetch_container.get(),
                                                     kTestUrl, kRedirectUrl);
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
       std::make_unique<TestPrefetchOriginProber>(
@@ -1220,7 +1209,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container.get(), kTestUrl, kRedirectUrl);
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
       std::make_unique<TestPrefetchOriginProber>(
@@ -1284,7 +1272,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   MakeServableStreamingURLLoaderWithRedirectForTest(prefetch_container.get(),
                                                     kTestUrl, kRedirectUrl);
-  prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
       std::make_unique<TestPrefetchOriginProber>(
