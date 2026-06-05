@@ -5676,6 +5676,7 @@
       // on performance.speculations.
       name: "SpeculationMeasurement",
       origin_trial_feature_name: "SpeculationMeasurement",
+      origin_trial_allows_third_party: true,
       status: "experimental",
     },
     {
