@@ -488,6 +488,11 @@ void Tab::Layout(PassKey) {
 
   // Size the title to fill the remaining width and use all available height.
   bool show_title = ShouldRenderAsNormalTab();
+
+  if (features::IsTabStripDeclutterEnabled() && center_icon_) {
+    show_title = false;
+  }
+
   if (show_title) {
     int title_left = start;
     if (showing_icon_) {
@@ -1210,16 +1215,14 @@ void Tab::UpdateIconVisibility() {
   }
 
   if (!closing_ && features::IsTabStripDeclutterEnabled()) {
-    const int title_padding =
-        showing_icon_ ? GetLayoutConstant(LayoutConstant::kTabPreTitlePadding)
-                      : 0;
-    const int title_width =
-        available_width - title_padding -
+    const int max_width_to_center_icon =
+        GetLayoutConstant(LayoutConstant::kTabPreTitlePadding) +
         GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
-    const bool show_title = ShouldRenderAsNormalTab() && title_width > 0;
-    const int num_elements = showing_icon_ + showing_alert_indicator_ +
-                             showing_close_button_ + show_title;
-    if (num_elements == 1) {
+
+    const int num_icons_showing =
+        showing_icon_ + showing_alert_indicator_ + showing_close_button_;
+
+    if (available_width < max_width_to_center_icon && num_icons_showing == 1) {
       center_icon_ = true;
     }
   }
