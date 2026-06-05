@@ -8327,7 +8327,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6798420440063423019">La clé de sécurité est verrouillée, car vous avez saisi un code erroné trop de fois. Vous devez la réinitialiser.</translation>
 <translation id="679845623837196966">Afficher la liste de lecture</translation>
 <translation id="6798578729981748444">Pour terminer l'importation, fermez toutes les fenêtres Firefox.</translation>
-<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini a terminé votre tâche. Vous pouvez la consulter dans Chrome.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini a terminé la tâche. Vous pouvez la consulter dans Chrome.</translation>
 <translation id="6798780071646309401">touche de verrouillage des majuscules activée</translation>
 <translation id="679905836499387150">Boutons masqués de la barre d'outils</translation>
 <translation id="6800893479155997609">Meilleures applis pour votre <ph name="DEVICE_TYPE" /></translation>

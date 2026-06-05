@@ -2399,7 +2399,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4761326898079498987">Granska för mer information</translation>
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
 <translation id="4762097990764616058">Vill du fortsätta betala med <ph name="BNPL_ISSUER_NAME" />?</translation>
-<translation id="4763196677855776703">Användarvillkoren tillhandahålls av <ph name="URL" /></translation>
+<translation id="4763196677855776703">Villkoren tillhandahålls av <ph name="URL" /></translation>
 <translation id="4764680219299728632">Spishällar, gasspisar och ugnar</translation>
 <translation id="4764776831041365478">Webbsidan på <ph name="URL" /> kan ligga nere för tillfället eller kan ha flyttats permanent till en ny webbadress.</translation>
 <translation id="4766713847338118463">Två häftklamrar längst ned</translation>
@@ -2981,7 +2981,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="563324245173044180">Bedrägligt innehåll har blockerats.</translation>
 <translation id="563371367637259496">Mobilt</translation>
-<translation id="5635478143789726479">Säljarens användarvillkor</translation>
+<translation id="5635478143789726479">Säljarens villkor</translation>
 <translation id="5640474731385449758">Tillägget <ph name="EXTENSION_NAME" /> vill öppna <ph name="PROTOCOL" />-länkar i <ph name="ORIGIN" /> via <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereosystem och -komponenter</translation>
@@ -4535,7 +4535,7 @@ Mer information.
 <translation id="8038182528865038593">Röd 2</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
 <translation id="8041940743680923270">Använd global standardinställning (Fråga)</translation>
-<translation id="8043255123207491407">Läs säljarens användarvillkor</translation>
+<translation id="8043255123207491407">Läs säljarens villkor</translation>
 <translation id="8044986521421349135">Din senaste flik</translation>
 <translation id="8046360364391076336">Industriella material och utrustning</translation>
 <translation id="8052898407431791827">Kopierat till urklipp</translation>

@@ -1774,7 +1774,7 @@
 <translation id="221297410904507041">履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2213410656650624348">適度</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
-<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
+<translation id="2214453882118345682">カメラを使って、写っているものを購入、翻訳、特定できます。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 行が非表示です&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> 行が非表示です&gt;}}</translation>
 <translation id="2215070081105889450">音声を共有するには、タブまたは画面を共有してください</translation>
 <translation id="2217208085547223783">信頼状態</translation>
@@ -11252,7 +11252,7 @@
 <translation id="881799181680267069">ほかを隠す</translation>
 <translation id="8818152010000655963">壁紙</translation>
 <translation id="8818988764764862764">ウィンドウを左に移動しました</translation>
-<translation id="8819155700324279105">オンラインの脅威に対する保護を強化</translation>
+<translation id="8819155700324279105">オンラインの脅威からの保護を強化します</translation>
 <translation id="8819510664278523111">デバイスの EID は <ph name="EID_NUMBER" />、デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8821045908425223359">IP アドレスを自動的に設定</translation>

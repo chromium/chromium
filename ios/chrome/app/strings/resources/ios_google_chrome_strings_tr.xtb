@@ -110,7 +110,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="322254490661677575">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
 <translation id="3303503998967553377">iOS'te Chrome işlemler özelliğini kullanın</translation>
 <translation id="3348862487678490430">Okuma listesi öğesini Chrome'a ekle</translation>
-<translation id="3357827134511189025">Otomatik doldurma için Chrome'u kullanarak kayıtlı şifreleriniz ve geçiş anahtarlarınızla tüm uygulamalardan oturum açın</translation>
+<translation id="3357827134511189025">Chrome’da otomatik doldurmayı kullanarak kayıtlı şifreler ve geçiş anahtarlarıyla uygulamalardan oturum açın</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Bu işlem, Chrome {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir}other{Bu işlem, Chrome {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir}}</translation>
 <translation id="3367797402528056312">Chrome kurulumunu tamamlayın</translation>
 <translation id="3371064404604898522">Chrome'u varsayılan tarayıcı olarak ayarla</translation>
@@ -369,7 +369,7 @@ Verileriniz <ph name="TIME" /> tarihinde parolanızla şifrelendi. Chrome verile
 <translation id="9004772704776174843">Chrome oturumu kapatıldı</translation>
 <translation id="9068336935206019333">Chrome Gizli modda aç</translation>
 <translation id="9082304295862405388">Gemini, Chrome'a verdiğiniz izne bağlı olarak tam konumunuzu kullanabilir</translation>
-<translation id="909127538042363610">Chrome’un en güçlü güvenlik özelliklerinden faydalanın</translation>
+<translation id="909127538042363610">Chrome’da en sağlam güvenlik</translation>
 <translation id="9122931302567044771">Bu durumda Chrome her seferinde masaüstü siteyi ister.</translation>
 <translation id="9176561303811134420">Chrome'daki ödeme yöntemlerini yönet</translation>
 <translation id="9181628561061032322">Chrome'daki Son Sekmeleri Açar.</translation>

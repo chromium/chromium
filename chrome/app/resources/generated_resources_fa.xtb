@@ -4765,7 +4765,7 @@
 <translation id="4263223596040212967">جانمایی صفحه‌کلید را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="4263470758446311292">به میزان حداکثری در حافظه صرفه‌جویی می‌شود. زبانه‌ها بعداز گذشت مدت زمان کوتاه‌تری غیرفعال می‌شود.</translation>
 <translation id="4263824086525632">شفق شمالی</translation>
-<translation id="4265096510956307240">تأیید هویت</translation>
+<translation id="4265096510956307240">درستی‌سنجی کردن هویت</translation>
 <translation id="4265301768135164545">همچنین می‌توانید نمایه سیم‌کارت داخلی را <ph name="BEGIN_LINK" />به‌صورت دستی<ph name="END_LINK" /> راه‌اندازی کنید</translation>
 <translation id="426564820080660648">‏برای بررسی موارد به‌روز لطفاً از کابل شبکه، Wi-Fi یا داده‌های تلفن همراه استفاده کنید.</translation>
 <translation id="426652736638196239">‏این IBAN فقط در این دستگاه ذخیره خواهد شد</translation>
@@ -5265,7 +5265,7 @@
 <translation id="4617001782309103936">بسیار کوتاه</translation>
 <translation id="4617270414136722281">گزینه‌های افزونه</translation>
 <translation id="4617880081511131945">امکان برقراری اتصال وجود ندارد</translation>
-<translation id="4619564267100705184">هویتتان را درستی‌سنجی کنید</translation>
+<translation id="4619564267100705184">درستی‌سنجی کردن هویت</translation>
 <translation id="4619615317237390068">زبانه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620757807254334872">موشواره</translation>
 <translation id="4620809267248568679">این تنظیم توسط یک برنامهٔ افزودنی به اجرا گذاشته می‌شود.</translation>
@@ -9121,7 +9121,7 @@
 <translation id="7350327333026851413">{COUNT,plural, =1{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}one{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}other{‫{COUNT} گذرواژه فقط در این دستگاه ذخیره شده است}}</translation>
 <translation id="7352651011704765696">مشکلی پیش آمد</translation>
 <translation id="7353261921908507769">وقتی مخاطبینتان نزدیک شما باشند می‌توانند با شما هم‌رسانی کنند. تا درخواست را نپذیرید، انتقال شروع نخواهد شد.</translation>
-<translation id="7353432112255316844">تأیید کنید هویتتان</translation>
+<translation id="7353432112255316844">درستی‌سنجی کردن هویت</translation>
 <translation id="735361434055555355">‏درحال نصب Linux…</translation>
 <translation id="7356506068433555887">درخت نخل</translation>
 <translation id="7356696499551368971">اجازه‌های انتخابی‌تان برداشته خواهد شد</translation>
