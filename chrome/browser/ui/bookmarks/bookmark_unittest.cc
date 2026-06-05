@@ -438,6 +438,65 @@ TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefUpdated) {
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
 }
 
+// Ensures that when `kBookmarkBarVisibilityState` is set to `kAlwaysHide`, the
+// bookmarks bar successfully hides on the New Tab Page (NTP).
+TEST_F(BookmarkTest, NtpSimplificationAlwaysHideWorksOnNTP) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+  bookmarks::AddIfNotBookmarked(bookmark_model, GURL("https://www.test.com"),
+                                std::u16string());
+
+  profile()->GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  tab_strip_model_->AppendWebContents(std::move(web_contents),
+                                      /*foreground=*/true);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      tab_strip_model_->GetActiveWebContents(),
+      chrome::ChromeUINewTabURLAsGURL());
+
+  EXPECT_EQ(BookmarkBar::HIDDEN, controller.bookmark_bar_state());
+}
+
+// Ensures that when `kBookmarkBarVisibilityState` changes while the bookmark
+// bar simplification feature is enabled, `kShowBookmarkBar` is kept
+// synchronized.
+TEST_F(BookmarkTest, NtpSimplificationVisibilityPrefSyncsShowBookmarkBar) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ntp_features::kNtpSimplificationBookmarkBar);
+
+  profile()->GetPrefs()->SetBoolean(bookmarks::prefs::kShowBookmarkBar, false);
+
+  BookmarkBarController controller(mock_browser_window_interface_,
+                                   *tab_strip_model_);
+
+  // Transition to kAlwaysShow should sync kShowBookmarkBar to true.
+  profile()->GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+
+  // Transition to kAlwaysHide should sync kShowBookmarkBar to false.
+  profile()->GetPrefs()->SetInteger(
+      bookmarks::prefs::kBookmarkBarVisibilityState,
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar));
+}
+
 class BookmarkBarTabGroupsTest : public BookmarkTest {
  public:
   TestingProfile::TestingFactories GetTestingFactories() const override {

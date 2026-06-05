@@ -101,10 +101,38 @@ BookmarkBarController::BookmarkBarController(BrowserWindowInterface& browser,
           bookmarks::prefs::kBookmarkBarVisibilityState,
           static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
     }
+
+    pref_change_registrar_.Add(
+        bookmarks::prefs::kBookmarkBarVisibilityState,
+        base::BindRepeating(
+            &BookmarkBarController::OnBookmarkBarVisibilityStateChanged,
+            base::Unretained(this)));
+
+    // Synchronize kShowBookmarkBar with kBookmarkBarVisibilityState at startup.
+    OnBookmarkBarVisibilityStateChanged();
   }
 
   // Initialize the bookmark bar state.
   UpdateBookmarkBarState(StateChangeReason::kInit);
+}
+
+// Handles changes to `kBookmarkBarVisibilityState` when the NTP Simplification
+// experiment is active.
+//
+// TODO(crbug.com/490504998): Currently, many legacy call sites still rely on
+// `kShowBookmarkBar` directly. To prevent regressions, we automatically keep
+// `kShowBookmarkBar` synchronized with `kBookmarkBarVisibilityState`.
+// Once `kNtpSimplificationBookmarkBar` fully launches, `kShowBookmarkBar`
+// should be deprecated and removed entirely.
+void BookmarkBarController::OnBookmarkBarVisibilityStateChanged() {
+  Profile* profile = browser_->GetProfile();
+  PrefService* prefs = profile->GetPrefs();
+  bool always_show =
+      prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+      static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow);
+  prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, always_show);
+
+  UpdateBookmarkBarState(StateChangeReason::kPrefChange);
 }
 
 BookmarkBarController::~BookmarkBarController() = default;
@@ -181,8 +209,16 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
     return false;
   }
 
-  if (browser_defaults::bookmarks_enabled &&
-      profile->GetPrefs()->GetBoolean(bookmarks::prefs::kShowBookmarkBar) &&
+  PrefService* prefs = profile->GetPrefs();
+  bool should_show_bar =
+      base::FeatureList::IsEnabled(ntp_features::kNtpSimplificationBookmarkBar)
+          ? static_cast<bookmarks::BookmarkBarVisibilityState>(
+                prefs->GetInteger(
+                    bookmarks::prefs::kBookmarkBarVisibilityState)) ==
+                bookmarks::BookmarkBarVisibilityState::kAlwaysShow
+          : prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
+
+  if (browser_defaults::bookmarks_enabled && should_show_bar &&
       !BrowserWindowFullscreenController::From(base::to_address(browser_))
            ->ShouldHideUIForFullscreen()) {
     return true;
@@ -196,10 +232,17 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
     return false;
   }
 
-  PrefService* prefs = profile->GetPrefs();
-  if (prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar) &&
-      !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar)) {
-    return false;
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpSimplificationBookmarkBar)) {
+    if (prefs->GetInteger(bookmarks::prefs::kBookmarkBarVisibilityState) ==
+        static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide)) {
+      return false;
+    }
+  } else {
+    if (prefs->IsManagedPreference(bookmarks::prefs::kShowBookmarkBar) &&
+        !prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar)) {
+      return false;
+    }
   }
 
   std::vector<tabs::TabInterface*> tabs = tab_strip_model_->GetForegroundTabs();
