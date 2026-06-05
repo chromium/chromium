@@ -34,6 +34,9 @@ class PassageEmbedderMock : public passage_embeddings::TestEmbedder {
     return last_passages_;
   }
 
+ protected:
+  uint64_t next_job_id_ = 1;
+
  private:
   passage_embeddings::ComputeEmbeddingsStatus status_ =
       passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
@@ -76,9 +79,10 @@ class DelayedPassageEmbedderMock : public PassageEmbedderMock {
   // the results to the original callback and quits the run loop to unblock the
   // test execution that called `ReleaseCallback`.
   void ComputePassageEmbeddingsCallbackWrapper(
+      uint64_t expected_job_id,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
-      TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // An internal helper method that is bound as a callback and executed when

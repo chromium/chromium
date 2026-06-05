@@ -162,7 +162,7 @@ class PageEmbeddingsService : public KeyedService,
       base::WeakPtr<content::Page> page,
       std::vector<std::string> passage_strings,
       std::vector<passage_embeddings::Embedding> embeddings,
-      passage_embeddings::Embedder::TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   static Priority GetActivePriority(

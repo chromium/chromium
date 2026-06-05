@@ -188,7 +188,7 @@ class ContextualTasksContextService
       int64_t request_id,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
-      passage_embeddings::Embedder::TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Callback invoked when the request has timed out.

@@ -225,7 +225,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     service_->OnPassagesEmbeddingsComputed(std::move(url_passages),
                                            std::move(passages),
                                            std::move(passages_embeddings),
-                                           /*task_id=*/0, status);
+                                           /*job_id=*/0, status);
   }
 
   void SetMetadataScoreThreshold(double threshold) {

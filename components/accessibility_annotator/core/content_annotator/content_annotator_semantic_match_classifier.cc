@@ -35,7 +35,7 @@ void OnEmbeddingsReady(SemanticMatchRulesMap rules,
                        SemanticMatchEmbeddingsCallback callback,
                        std::vector<std::string> passages,
                        std::vector<passage_embeddings::Embedding> embeddings,
-                       passage_embeddings::Embedder::TaskId task_id,
+                       uint64_t job_id,
                        passage_embeddings::ComputeEmbeddingsStatus status) {
   std::move(callback).Run(std::move(rules), std::move(embeddings), status);
 }

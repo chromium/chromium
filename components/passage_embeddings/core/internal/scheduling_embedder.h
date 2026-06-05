@@ -57,9 +57,9 @@ class SchedulingEmbedder
 
  protected:
   // Embedder:
-  void ReprioritizeTasks(PassagePriority priority,
-                         const std::set<TaskId>& tasks) override;
-  bool TryCancel(TaskId task_id) override;
+  void ReprioritizeJobs(PassagePriority priority,
+                        const std::set<uint64_t>& job_ids) override;
+  bool TryCancel(uint64_t job_id) override;
 
  private:
   // A job consists of multiple passages, and each passage must have its
@@ -69,7 +69,7 @@ class SchedulingEmbedder
   // down so that partial progress is made across multiple work submissions.
   struct Job {
     Job(PassagePriority priority,
-        TaskId task_id,
+        uint64_t job_id,
         std::vector<std::string> passages,
         ComputePassagesEmbeddingsCallback callback);
     ~Job();
@@ -80,7 +80,7 @@ class SchedulingEmbedder
 
     // Data for the job is saved from calls to `ComputePassagesEmbeddings`.
     PassagePriority priority;
-    TaskId task_id;
+    uint64_t job_id;
     std::vector<std::string> passages;
     ComputePassagesEmbeddingsCallback callback;
 
@@ -134,7 +134,7 @@ class SchedulingEmbedder
   std::deque<Job> jobs_;
 
   // ID to assign to the next Job.
-  TaskId next_task_id_ = 1;
+  uint64_t next_job_id_ = 1;
 
   // Whether the embedder is currently working on some passages. Note, this
   // is not the same concept as having a job in progress since multiple

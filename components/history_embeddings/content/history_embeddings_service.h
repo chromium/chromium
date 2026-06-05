@@ -241,7 +241,7 @@ class HistoryEmbeddingsService
       UrlData url_passages,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
-      passage_embeddings::Embedder::TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
@@ -251,7 +251,7 @@ class HistoryEmbeddingsService
       SearchResult result,
       std::vector<std::string> query_passages,
       std::vector<passage_embeddings::Embedding> query_embedding,
-      passage_embeddings::Embedder::TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Finishes a search result by combining found data with additional data from
@@ -364,16 +364,16 @@ class HistoryEmbeddingsService
   // A thread-safe invalidation mechanism to halt searches for stale queries:
   // Each query is run with the current `query_id_` and a weak pointer to the
   // atomic value itself. When it changes, any queries other than the latest
-  // can be halted. Note this is not task cancellation, it breaks the inner
+  // can be halted. Note this is not job cancellation, it breaks the inner
   // search loop while running so the atomic is needed for thread safety.
   std::atomic<size_t> query_id_ = 0u;
 
   // A list of in-flight jobs for rebuilding absent embeddings.
   base::flat_set<passage_embeddings::Embedder::Job,
-                 passage_embeddings::Embedder::JobTaskIdComparator>
+                 passage_embeddings::Embedder::JobIdComparator>
       rebuild_jobs_;
 
-  // Used to cancel the in-flight embedding task for the previous stale query.
+  // Used to cancel the in-flight embedding job for the previous stale query.
   std::optional<passage_embeddings::Embedder::Job> query_embedding_job_;
 
   base::ScopedObservation<

@@ -61,11 +61,11 @@ void RecordStatusHistograms(PassagePriority priority,
 }  // namespace
 
 SchedulingEmbedder::Job::Job(PassagePriority priority,
-                             TaskId task_id,
+                             uint64_t job_id,
                              std::vector<std::string> passages,
                              ComputePassagesEmbeddingsCallback callback)
     : priority(priority),
-      task_id(task_id),
+      job_id(job_id),
       passages(std::move(passages)),
       callback(std::move(callback)) {}
 
@@ -113,7 +113,7 @@ Embedder::Job SchedulingEmbedder::ComputePassagesEmbeddings(
             return sum + job.passages.size() - job.embeddings.size();
           }));
 
-  const TaskId task_id = next_task_id_++;
+  const uint64_t job_id = next_job_id_++;
 
   // Zero size jobs are expected, and can be called back immediately
   // instead of waiting in line for nothing.
@@ -121,9 +121,9 @@ Embedder::Job SchedulingEmbedder::ComputePassagesEmbeddings(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::vector<std::string>(),
-                       std::vector<Embedding>(), task_id,
+                       std::vector<Embedding>(), job_id,
                        ComputeEmbeddingsStatus::kSuccess));
-    return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), task_id);
+    return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), job_id);
   }
 
   // Limit the number of jobs accepted to avoid high memory use when
@@ -134,12 +134,12 @@ Embedder::Job SchedulingEmbedder::ComputePassagesEmbeddings(
     FinishJob(std::move(canceled_job), ComputeEmbeddingsStatus::kCanceled);
   }
 
-  jobs_.emplace_back(priority, task_id, std::move(passages),
+  jobs_.emplace_back(priority, job_id, std::move(passages),
                      std::move(callback));
 
   SubmitWorkToEmbedder();
 
-  return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), task_id);
+  return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), job_id);
 }
 
 base::WeakPtr<Embedder> SchedulingEmbedder::GetWeakPtr() {
@@ -225,11 +225,11 @@ bool SchedulingEmbedder::IsPerformanceScenarioReady() {
          input_scenario == InputScenario::kNoInput;
 }
 
-void SchedulingEmbedder::ReprioritizeTasks(PassagePriority priority,
-                                           const std::set<TaskId>& tasks) {
+void SchedulingEmbedder::ReprioritizeJobs(PassagePriority priority,
+                                          const std::set<uint64_t>& job_ids) {
   for (Job& job : jobs_) {
-    const auto loc = tasks.find(job.task_id);
-    if (loc != tasks.end()) {
+    const auto loc = job_ids.find(job.job_id);
+    if (loc != job_ids.end()) {
       job.priority = priority;
     }
   }
@@ -238,10 +238,10 @@ void SchedulingEmbedder::ReprioritizeTasks(PassagePriority priority,
   // next call to SubmitWorkToEmbedder().
 }
 
-bool SchedulingEmbedder::TryCancel(TaskId task_id) {
+bool SchedulingEmbedder::TryCancel(uint64_t job_id) {
   for (auto itr = jobs_.begin(); itr < jobs_.end(); itr++) {
     Job& job = *itr;
-    if (task_id == job.task_id && !job.in_progress) {
+    if (job_id == job.job_id && !job.in_progress) {
       VLOG(2) << "Aborted embedding work for " << job.passages.size()
               << " passages starting with `"
               << (job.passages.empty() ? "" : job.passages[0]) << "`";
@@ -249,7 +249,7 @@ bool SchedulingEmbedder::TryCancel(TaskId task_id) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(job.callback), std::move(job.passages),
-                         std::vector<Embedding>(), job.task_id,
+                         std::vector<Embedding>(), job.job_id,
                          ComputeEmbeddingsStatus::kCanceled));
       RecordStatusHistograms(job.priority, ComputeEmbeddingsStatus::kCanceled);
       jobs_.erase(itr);
@@ -346,7 +346,7 @@ void SchedulingEmbedder::FinishJob(Job job, ComputeEmbeddingsStatus status) {
     job.embeddings.clear();
   }
   std::move(job.callback)
-      .Run(std::move(job.passages), std::move(job.embeddings), job.task_id,
+      .Run(std::move(job.passages), std::move(job.embeddings), job.job_id,
            status);
   if (status == ComputeEmbeddingsStatus::kSuccess) {
     RecordDurationHistograms(job.priority, job.timer.Elapsed());

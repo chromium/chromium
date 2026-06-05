@@ -488,7 +488,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     int64_t request_id,
     std::vector<std::string> passages,
     std::vector<passage_embeddings::Embedding> embeddings,
-    passage_embeddings::Embedder::TaskId task_id,
+    uint64_t job_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   base::UmaHistogramTimes("ContextualTasks.Context.QueryEmbeddingLatency",
                           tick_clock_->NowTicks() - start_time);

@@ -55,7 +55,7 @@ class ControllableTestEmbedder : public passage_embeddings::TestEmbedder {
       passage_embeddings::PassagePriority priority,
       std::vector<std::string> passages,
       ComputePassagesEmbeddingsCallback callback) override {
-    TaskId id = next_task_id_++;
+    uint64_t id = next_job_id_++;
     callbacks_.emplace(id, std::move(callback));
     passages_.emplace(std::move(passages));
     return Job(GetWeakPtr(), id);
@@ -63,9 +63,8 @@ class ControllableTestEmbedder : public passage_embeddings::TestEmbedder {
 
   void FireNextCallback(passage_embeddings::ComputeEmbeddingsStatus status) {
     ASSERT_FALSE(callbacks_.empty());
-    std::pair<passage_embeddings::Embedder::TaskId,
-              ComputePassagesEmbeddingsCallback>
-        callback_info = std::move(callbacks_.front());
+    std::pair<uint64_t, ComputePassagesEmbeddingsCallback> callback_info =
+        std::move(callbacks_.front());
     std::vector<std::string> passages = std::move(passages_.front());
     callbacks_.pop();
     passages_.pop();
@@ -80,10 +79,8 @@ class ControllableTestEmbedder : public passage_embeddings::TestEmbedder {
   }
 
  private:
-  passage_embeddings::Embedder::TaskId next_task_id_ = 1;
-  std::queue<std::pair<passage_embeddings::Embedder::TaskId,
-                       ComputePassagesEmbeddingsCallback>>
-      callbacks_;
+  uint64_t next_job_id_ = 1;
+  std::queue<std::pair<uint64_t, ComputePassagesEmbeddingsCallback>> callbacks_;
   std::queue<std::vector<std::string>> passages_;
 };
 

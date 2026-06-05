@@ -24,9 +24,8 @@ namespace {
 using ::testing::_;
 
 using Embedding = passage_embeddings::Embedding;
-using TaskId = passage_embeddings::Embedder::TaskId;
 
-constexpr TaskId kTaskId = 1;
+constexpr uint64_t kJobId = 1;
 
 class MockEmbedder : public passage_embeddings::TestEmbedder {
  public:
@@ -93,10 +92,10 @@ class ContentAnnotatorSemanticMatchClassifierTest : public testing::Test {
                 embeddings.emplace_back(it->second);
               }
               std::move(callback).Run(
-                  passages, std::move(embeddings), kTaskId,
+                  passages, std::move(embeddings), kJobId,
                   passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
               return passage_embeddings::Embedder::Job(
-                  mock_embedder_->GetWeakPtr(), kTaskId);
+                  mock_embedder_->GetWeakPtr(), kJobId);
             });
   }
 
@@ -125,10 +124,10 @@ TEST_F(ContentAnnotatorSemanticMatchClassifierTest,
                  passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
                      callback) {
             std::move(callback).Run(
-                passages, {}, kTaskId,
+                passages, {}, kJobId,
                 passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
             return passage_embeddings::Embedder::Job(
-                mock_embedder_->GetWeakPtr(), kTaskId);
+                mock_embedder_->GetWeakPtr(), kJobId);
           });
 
   auto classifier = CreateClassifier(kRules);

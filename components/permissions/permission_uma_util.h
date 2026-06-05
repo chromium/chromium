@@ -933,11 +933,11 @@ class PermissionUmaUtil {
   // call before starting a new one.
   static void RecordTryCancelPreviousEmbeddingsModelExecution(
       PredictionModelType model_type,
-      bool cancel_previous_task);
+      bool cancel_previous_job);
 
-  // Records whether the returning passage embedder task is outdated (a new
-  // passage embedder task has started).
-  static void RecordFinishedPassageEmbeddingsTaskOutdated(
+  // Records whether the returning passage embedder job is outdated (a new
+  // passage embedder job has started).
+  static void RecordFinishedPassageEmbeddingsJobOutdated(
       PredictionModelType model_type,
       bool outdated);
 

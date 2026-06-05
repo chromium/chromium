@@ -2429,18 +2429,18 @@ void PermissionUmaUtil::RecordRenderedTextAcquireSuccessForAivX(
 // static
 void PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
     PredictionModelType model_type,
-    bool cancel_previous_task) {
+    bool cancel_previous_job) {
   // Only the AIv4 model requires the passage embedding model.
   DCHECK_EQ(model_type, PredictionModelType::kOnDeviceAiV4Model);
 
   std::string success_histogram_name =
       base::StrCat({"Permissions.", GetPredictionModelString(model_type),
                     ".TryCancelPreviousEmbeddingsModelExecution"});
-  base::UmaHistogramBoolean(success_histogram_name, cancel_previous_task);
+  base::UmaHistogramBoolean(success_histogram_name, cancel_previous_job);
 }
 
 // static
-void PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
+void PermissionUmaUtil::RecordFinishedPassageEmbeddingsJobOutdated(
     PredictionModelType model_type,
     bool outdated) {
   // Only the AIv4 model requires the passage embedding model.

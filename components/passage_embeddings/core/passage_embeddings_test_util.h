@@ -37,12 +37,12 @@ class TestEmbedder : public Embedder {
   base::WeakPtr<Embedder> GetWeakPtr() override;
 
  protected:
-  void ReprioritizeTasks(PassagePriority priority,
-                         const std::set<TaskId>& tasks) override;
-  bool TryCancel(TaskId task_id) override;
+  void ReprioritizeJobs(PassagePriority priority,
+                        const std::set<uint64_t>& job_ids) override;
+  bool TryCancel(uint64_t job_id) override;
 
  private:
-  TaskId next_task_id_ = 1;
+  uint64_t next_job_id_ = 1;
   base::WeakPtrFactory<TestEmbedder> weak_ptr_factory_{this};
 };
 

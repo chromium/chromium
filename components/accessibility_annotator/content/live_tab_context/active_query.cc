@@ -231,11 +231,11 @@ void ActiveQuery::PageSearch::Finish(std::vector<ScoredPassage> results) {
 void ActiveQuery::OnQueryEmbeddingComputed(
     std::vector<std::string> /*query_passages*/,
     std::vector<passage_embeddings::Embedding> query_embeddings,
-    passage_embeddings::Embedder::TaskId task_id,
+    uint64_t job_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   DCHECK(query_embedding_job_.has_value());
-  DCHECK_EQ(query_embedding_job_->task_id(), task_id);
-  query_embedding_job_.reset();  // Indicates that task is completed.
+  DCHECK_EQ(query_embedding_job_->id(), job_id);
+  query_embedding_job_.reset();  // Indicates that job is completed.
 
   std::optional<passage_embeddings::Embedding> query_embedding;
   if (status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess &&

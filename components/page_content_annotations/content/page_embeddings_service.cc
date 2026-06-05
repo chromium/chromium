@@ -379,7 +379,7 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
     base::WeakPtr<content::Page> page,
     std::vector<std::string> passage_strings,
     std::vector<passage_embeddings::Embedding> embeddings,
-    passage_embeddings::Embedder::TaskId task_id,
+    uint64_t job_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   if (!web_contents) {
     // The web contents was destroyed while computing the embeddings.
@@ -398,13 +398,13 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
   const auto loc = web_contents_states_.find(web_contents.get());
   DCHECK(loc != web_contents_states_.end());
 
-  // Ignore stale embeddings from previously cancelled tasks or old pages.
+  // Ignore stale embeddings from previously cancelled jobs or old pages.
   if (loc->second.page.get() != page.get()) {
     return;
   }
 
   auto* computing = std::get_if<Computing>(&loc->second.embeddings_state);
-  if (!computing || computing->job.task_id() != task_id) {
+  if (!computing || computing->job.id() != job_id) {
     return;
   }
 
@@ -457,16 +457,16 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
 
   current_priority_ = priority;
 
-  std::set<passage_embeddings::Embedder::TaskId> tasks;
+  std::set<uint64_t> job_ids;
   for (const auto& [web_contents, web_contents_state] : web_contents_states_) {
     if (auto* computing =
             std::get_if<Computing>(&web_contents_state.embeddings_state)) {
-      tasks.insert(computing->job.task_id());
+      job_ids.insert(computing->job.id());
     }
   }
 
-  if (!tasks.empty()) {
-    embedder_->ReprioritizeTasks(ConvertToPassagePriority(priority), tasks);
+  if (!job_ids.empty()) {
+    embedder_->ReprioritizeJobs(ConvertToPassagePriority(priority), job_ids);
   }
 }
 

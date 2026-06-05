@@ -15,7 +15,7 @@ namespace permissions {
 
 // A delegate class that computes passage embeddings from rendered text.
 // This class is responsible for interacting with the passage embedder model,
-// handling timeouts, and managing the lifecycle of embedding tasks.
+// handling timeouts, and managing the lifecycle of embedding jobs.
 class PassageEmbedderDelegate {
  public:
   explicit PassageEmbedderDelegate(Profile* profile);
@@ -33,7 +33,7 @@ class PassageEmbedderDelegate {
   // Computes passage embeddings from the given `text`.
   // The `text` is split into `passage_count` chunks, each of size
   // `kPageContentMaxLength`.
-  // This function will cancel any pending embedding tasks before starting a new
+  // This function will cancel any pending embedding jobs before starting a new
   // one. On success, `callback` is invoked with the computed averaged
   // embedding. If the computation fails or times out, `fallback_callback` is
   // invoked.
@@ -43,7 +43,7 @@ class PassageEmbedderDelegate {
       PassageEmbeddingsComputedCallback callback,
       base::OnceCallback<void()> fallback_callback);
 
-  // Clears the task ID.
+  // Clears the job ID.
   void Reset();
 
  protected:
@@ -53,21 +53,21 @@ class PassageEmbedderDelegate {
   // Callback for the passage embeddings model.
   // This function is called when the passage embedder model has finished its
   // computation. It handles the result, including checking for success,
-  // managing task IDs, and invoking the appropriate callback.
+  // managing job IDs, and invoking the appropriate callback.
   void OnPassageEmbeddingsComputed(
       base::TimeTicks model_inquire_start_time,
       std::vector<std::string> passages,
       std::vector<passage_embeddings::Embedding> embeddings,
-      passage_embeddings::Embedder::TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   // Called when the passage embedding computation times out.
   // This will invoke the `fallback_callback_`.
   void OnTimeout();
 
-  // The handle for the current passage embedding task. This is used to
-  // automatically cancel a still running embedding task for a previous,
-  // stale query when it is reset or replaced by a new task.
+  // The handle for the current passage embedding job. This is used to
+  // automatically cancel a still running embedding job for a previous,
+  // stale query when it is reset or replaced by a new job.
   std::optional<passage_embeddings::Embedder::Job> passage_embeddings_job_;
 
   // The profile used to access the passage embedder model.

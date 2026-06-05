@@ -59,29 +59,29 @@ Embedder::Job TestEmbedder::ComputePassagesEmbeddings(
     PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
-  TaskId task_id = next_task_id_++;
+  uint64_t job_id = next_job_id_++;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](std::vector<std::string> passages, TaskId task_id,
+                     [](std::vector<std::string> passages, uint64_t job_id,
                         ComputePassagesEmbeddingsCallback callback) {
                        std::vector<Embedding> embeddings(
                            passages.size(), Embedding({1.0f, 0.0f, 0.0f}));
                        std::move(callback).Run(
-                           passages, std::move(embeddings), task_id,
+                           passages, std::move(embeddings), job_id,
                            ComputeEmbeddingsStatus::kSuccess);
                      },
-                     passages, task_id, std::move(callback)));
-  return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), task_id);
+                     passages, job_id, std::move(callback)));
+  return Embedder::Job(weak_ptr_factory_.GetWeakPtr(), job_id);
 }
 
 base::WeakPtr<Embedder> TestEmbedder::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void TestEmbedder::ReprioritizeTasks(PassagePriority priority,
-                                     const std::set<TaskId>& tasks) {}
+void TestEmbedder::ReprioritizeJobs(PassagePriority priority,
+                                    const std::set<uint64_t>& job_ids) {}
 
-bool TestEmbedder::TryCancel(TaskId task_id) {
+bool TestEmbedder::TryCancel(uint64_t job_id) {
   return false;
 }
 

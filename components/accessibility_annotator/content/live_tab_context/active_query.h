@@ -95,7 +95,7 @@ class ActiveQuery
   void OnQueryEmbeddingComputed(
       std::vector<std::string> query_passages,
       std::vector<passage_embeddings::Embedding> query_embeddings,
-      passage_embeddings::Embedder::TaskId task_id,
+      uint64_t job_id,
       passage_embeddings::ComputeEmbeddingsStatus status);
 
   void OnQueryTimeout();
