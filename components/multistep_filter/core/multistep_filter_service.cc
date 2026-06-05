@@ -214,9 +214,19 @@ void MultistepFilterService::OnHistoryDeletions(
     deleted_domains.push_back(GetEtldPlusOne(url_row.url()));
   }
 
+  // If the time range is invalid (e.g., when specific URLs are deleted from
+  // history), fall back to clearing the domains for all time. Reusing the
+  // existing parameterized query with minimum/maximum boundaries avoids the
+  // need to compile and index a separate no-time-range SQL query.
+  base::Time begin_time = deletion_info.time_range().IsValid()
+                              ? deletion_info.time_range().begin()
+                              : base::Time();
+  base::Time end_time = deletion_info.time_range().IsValid()
+                            ? deletion_info.time_range().end()
+                            : base::Time::Max();
+
   filter_store_->DeleteAnnotationsForDomains(
-      std::move(deleted_domains), deletion_info.time_range().begin(),
-      deletion_info.time_range().end(),
+      std::move(deleted_domains), begin_time, end_time,
       base::BindOnce(&LogHistoryDeleted, log_router_,
                      /*is_all_history=*/false));
 }

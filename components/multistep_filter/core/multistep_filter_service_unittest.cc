@@ -337,4 +337,16 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions_MsbbDisabled) {
                                       mock_callback.Get());
 }
 
+TEST_F(MultistepFilterServiceTest,
+       OnHistoryDeletions_InvalidTimeRangeDoesNotCrash) {
+  CreateService();
+  history::DeletionInfo deletion_info = history::DeletionInfo::ForUrls(
+      {history::URLRow(GURL("https://example.com"))},
+      /*favicon_urls=*/{});
+
+  // Call OnHistoryDeletions. Since the time_range is invalid, it historically
+  // crashed. With the fix, it should succeed without crashing.
+  service_->OnHistoryDeletions(/*history_service=*/nullptr, deletion_info);
+}
+
 }  // namespace multistep_filter
