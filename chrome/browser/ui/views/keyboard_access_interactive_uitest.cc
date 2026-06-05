@@ -8,12 +8,14 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -24,6 +26,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/test/ui_controls.h"
@@ -141,7 +144,9 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
 
 class KeyboardAccessTest : public InProcessBrowserTest {
  public:
-  KeyboardAccessTest() = default;
+  KeyboardAccessTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kMenuSimplification);
+  }
 
   KeyboardAccessTest(const KeyboardAccessTest&) = delete;
   KeyboardAccessTest& operator=(const KeyboardAccessTest&) = delete;
@@ -189,6 +194,9 @@ class KeyboardAccessTest : public InProcessBrowserTest {
   // It verifies that the menu when dismissed by sending the ESC key it does
   // not display twice.
   void TestMenuKeyboardAccessAndDismiss();
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
@@ -545,5 +553,63 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, BackForwardKeys) {
   }
 }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+class KeyboardAccessSimplificationKombuchaTest : public InteractiveBrowserTest {
+ public:
+  KeyboardAccessSimplificationKombuchaTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kMenuSimplification);
+  }
+  ~KeyboardAccessSimplificationKombuchaTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(KeyboardAccessSimplificationKombuchaTest,
+                       TestSystemMenuWithKeyboard) {
+  RunTestSequence(
+      Do([this]() {
+        ASSERT_TRUE(
+            ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+      }),
+      SendKeyPress(kBrowserViewElementId, ui::KeyboardCode::VKEY_SPACE,
+                   ui::EF_ALT_DOWN),
+      WaitForShow(kSystemMenuNewTabElementId),
+      SelectMenuItem(kSystemMenuNewTabElementId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          1));
+}
+
+IN_PROC_BROWSER_TEST_F(KeyboardAccessSimplificationKombuchaTest,
+                       TestSystemMenuReopenClosedTabWithKeyboard) {
+  RunTestSequence(
+      Do([this]() {
+        ASSERT_TRUE(
+            ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+        ui_test_utils::NavigateToURLWithDisposition(
+            browser(), GURL("chrome://version/"),
+            WindowOpenDisposition::NEW_FOREGROUND_TAB,
+            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+        ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+        browser()->tab_strip_model()->CloseSelectedTabs();
+        ASSERT_EQ(1, browser()->tab_strip_model()->count());
+        ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+      }),
+      SendKeyPress(kBrowserViewElementId, ui::KeyboardCode::VKEY_SPACE,
+                   ui::EF_ALT_DOWN),
+      WaitForShow(kSystemMenuRestoreTabElementId),
+      SelectMenuItem(kSystemMenuRestoreTabElementId),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2),
+      CheckResult(
+          [this]() { return browser()->tab_strip_model()->active_index(); },
+          1));
+}
+
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace

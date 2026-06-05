@@ -141,7 +141,12 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddSeparator(ui::NORMAL_SEPARATOR);
 #endif
   model->AddItemWithStringId(IDC_NEW_TAB, IDS_NEW_TAB);
+  model->SetElementIdentifierAt(model->GetIndexOfCommandId(IDC_NEW_TAB).value(),
+                                kSystemMenuNewTabElementId);
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
+  model->SetElementIdentifierAt(
+      model->GetIndexOfCommandId(IDC_RESTORE_TAB).value(),
+      kSystemMenuRestoreTabElementId);
 
   if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
     model->AddItemWithStringId(IDC_GROUP_UNGROUPED_TABS,
