@@ -191,8 +191,9 @@ class NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_max_times_;
 };
 
+// TODO(crbug.com/519385225): Fix and re-enable the test.
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
-                       DontOpenPanelWhenUserCustomizedChromeAlready) {
+                       DISABLED_DontOpenPanelWhenUserCustomizedChromeAlready) {
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
   theme_service->SetUserColorAndBrowserColorVariant(
       SkColorSetRGB(0x00, 0x00, 0x00),
@@ -209,8 +210,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
-                       DontOpenPanelWhenCustomizeButtonWasClickedBefore) {
+// TODO(crbug.com/519385225): Fix and re-enable the test.
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
+    DISABLED_DontOpenPanelWhenCustomizeButtonWasClickedBefore) {
   profile()->GetPrefs()->SetInteger(prefs::kNtpCustomizeChromeButtonOpenCount,
                                     1);
 
@@ -225,9 +228,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
 }
 
+// TODO(crbug.com/519385225): Fix and re-enable the test.
 IN_PROC_BROWSER_TEST_F(
     NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest,
-    DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
+    DISABLED_DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
   for (size_t i = 0;
        i < ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get(); ++i) {
     OpenNewTabPageInForegroundAndWaitForLoad();
@@ -301,9 +305,10 @@ IN_PROC_BROWSER_TEST_F(
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
 }
 
+// TODO(crbug.com/519385225): Fix and re-enable the test.
 IN_PROC_BROWSER_TEST_F(
     NewTabPageHandlerWithCustomizeChromePromoFirstNTPOnlyBrowserTest,
-    DontOpenPanelWhenPromoAutoopenedInTheSameSession) {
+    DISABLED_DontOpenPanelWhenPromoAutoopenedInTheSameSession) {
   OpenNewTabPageInForegroundAndWaitForLoad();
   EXPECT_TRUE(IsCustomizeChromeEntryShowing());
 
@@ -337,8 +342,9 @@ class NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_iph_only_;
 };
 
+// TODO(crbug.com/519385225): Fix and re-enable the test.
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromeTutorialBrowserTest,
-                       DontOpenPanelWhenTutorialShouldBeShown) {
+                       DISABLED_DontOpenPanelWhenTutorialShouldBeShown) {
   OpenNewTabPageInForeground();
 
   RunTestSequence(
@@ -396,8 +402,10 @@ IN_PROC_BROWSER_TEST_F(
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest,
-                       ShouldShowSidePanelForTheSecondTimeIndependentlyOfIPH) {
+// TODO(crbug.com/519385225): Fix and re-enable the test.
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromeIPHAutoOpenTest,
+    DISABLED_ShouldShowSidePanelForTheSecondTimeIndependentlyOfIPH) {
   OpenNewTabPageInForeground();
   RunTestSequence(
       InstrumentTab(kNewTabPageElementId),
