@@ -85,6 +85,14 @@ PossibleDeadline& PossibleDeadline::operator=(const PossibleDeadline& other) =
 PossibleDeadline& PossibleDeadline::operator=(PossibleDeadline&& other) =
     default;
 
+void PossibleDeadline::SetTraceTimelineData(
+    perfetto::protos::pbzero::
+        AndroidChoreographerFrameCallbackData_FrameTimeline& timeline) const {
+  timeline.set_vsync_id(vsync_id);
+  timeline.set_latch_delta_us(latch_delta.InMicroseconds());
+  timeline.set_present_delta_us(present_delta.InMicroseconds());
+}
+
 PossibleDeadlines::PossibleDeadlines(size_t os_preferred_index)
     : os_preferred_index(os_preferred_index) {}
 PossibleDeadlines::PossibleDeadlines(const PossibleDeadlines& other) = default;

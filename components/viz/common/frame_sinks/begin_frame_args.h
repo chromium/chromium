@@ -20,6 +20,7 @@ namespace perfetto {
 class EventContext;
 namespace protos {
 namespace pbzero {
+class AndroidChoreographerFrameCallbackData_FrameTimeline;
 class BeginFrameArgsV2;
 }
 }  // namespace protos
@@ -94,6 +95,10 @@ struct VIZ_COMMON_EXPORT PossibleDeadline {
   // be presented to the user. This would be the present time if viz finished
   // its work before `latch_delta` and subsequent stages were also on time.
   base::TimeDelta present_delta;
+
+  void SetTraceTimelineData(
+      perfetto::protos::pbzero::
+          AndroidChoreographerFrameCallbackData_FrameTimeline& timeline) const;
 };
 
 struct VIZ_COMMON_EXPORT PossibleDeadlines {
