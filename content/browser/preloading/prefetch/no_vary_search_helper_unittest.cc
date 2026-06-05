@@ -106,7 +106,6 @@ class NoVarySearchHelperTester final {
                 PreloadPipelineInfo::Create(/*planned_max_preloading_type=*/
                                             PreloadingType::kPrefetch)));
 
-    prefetch_container->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
     auto weak_prefetch_container = prefetch_container->GetWeakPtr();

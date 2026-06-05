@@ -229,6 +229,7 @@ void MakeServableStreamingURLLoaderForTest(
     network::mojom::URLResponseHeadPtr head,
     const std::string body,
     network::URLLoaderCompletionStatus status) {
+  prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
 
   const GURL kTestUrl = GURL("https://test.com");
@@ -268,6 +269,7 @@ void MakeServableStreamingURLLoaderForTest(
 network::TestURLLoaderFactory::PendingRequest
 MakeManuallyServableStreamingURLLoaderForTest(
     PrefetchContainer* prefetch_container) {
+  prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
 
   const GURL kTestUrl = GURL("https://test.com");
@@ -294,6 +296,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
     PrefetchContainer* prefetch_container,
     const GURL& original_url,
     const GURL& redirect_url) {
+  prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
 
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -358,6 +361,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
     PrefetchContainer* prefetch_container,
     const GURL& original_url,
     const GURL& redirect_url) {
+  prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
 
   network::TestURLLoaderFactory test_url_loader_factory;

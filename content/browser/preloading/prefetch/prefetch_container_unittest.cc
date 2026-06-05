@@ -427,7 +427,6 @@ TEST_P(PrefetchContainerTest, Servable) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
-  prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoaderForTest(
       prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
       "test body");
@@ -687,8 +686,6 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
 TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
-
-  prefetch_container->SimulatePrefetchEligibleForTest();
 
   network::URLLoaderCompletionStatus completion_status;
   completion_status.encoded_data_length = 100;
@@ -1267,7 +1264,6 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
 
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
-  prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoaderWithRedirectForTest(
       prefetch_container.get(), GURL("https://test.com"),
       GURL("https://redirect1.com"));
@@ -1380,7 +1376,6 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
             PrefetchServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
-  prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container.get(), kTestUrl1, kTestUrl2);
   EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
@@ -1464,7 +1459,6 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   base::HistogramTester histogram_tester;
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
-  prefetch_container->SimulatePrefetchEligibleForTest();
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());
 
@@ -1572,8 +1566,6 @@ class PrefetchContainerLifetimeTest
 TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
-
-  prefetch_container->SimulatePrefetchEligibleForTest();
 
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());

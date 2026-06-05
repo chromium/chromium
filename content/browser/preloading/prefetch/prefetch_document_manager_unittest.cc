@@ -108,7 +108,6 @@ class PrefetchDocumentManagerTest : public PrefetchingMetricsTestBase {
     head->parsed_headers->no_vary_search_with_parse_error =
         network::mojom::NoVarySearchWithParseError::NewParseError(parse_error);
 
-    GetPrefetches()[0]->SimulatePrefetchEligibleForTest();
     MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
                                           std::move(head), "empty");
 
