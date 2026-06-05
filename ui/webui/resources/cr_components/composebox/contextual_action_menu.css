@@ -17,11 +17,28 @@
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--color-composebox-context-entrypoint-hover-background);
-  --cr-action-menu-overflow: visible;
+  --cr-action-menu-overflow: auto;
 }
 
 #menu::part(dialog) {
-  max-height: none;
+  max-height: min(540px, 100vh - 16px);
+  min-height: 144px;
+}
+
+#menu::part(dialog)::-webkit-scrollbar {
+  width: 12px;
+}
+
+#menu::part(dialog)::-webkit-scrollbar-thumb {
+  background-color: var(--color-sys-surface-variant, #E1E3E1);
+  background-clip: padding-box;
+  border: 4px solid transparent;
+  border-radius: 100px;
+}
+
+#menu::part(dialog)::-webkit-scrollbar-track {
+  margin-bottom: 15px;
+  margin-top: 15px;
 }
 
 .suggestion-container {
