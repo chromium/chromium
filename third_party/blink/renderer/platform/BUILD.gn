@@ -200,6 +200,7 @@ config("blink_platform_config") {
   configs = [
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer:narrowing",
   ]
 }
 
@@ -2089,6 +2090,7 @@ static_library("test_support") {
     ":blink_platform_pch",
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer:narrowing",
     "//third_party/blink/renderer:non_test_config",
   ]
 
@@ -2458,6 +2460,7 @@ source_set("blink_platform_unittests_sources") {
     ":blink_platform_pch",
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:narrowing",
   ]
 
   deps = [

@@ -52,9 +52,7 @@ BLINK_COMMON_EXPORT bool operator==(const WebMediaDeviceInfo& first,
                                     const WebMediaDeviceInfo& second);
 
 inline bool IsValidMediaDeviceType(mojom::MediaDeviceType type) {
-  return static_cast<size_t>(type) >= 0 &&
-         static_cast<size_t>(type) <
-             static_cast<size_t>(mojom::MediaDeviceType::kNumMediaDeviceTypes);
+  return mojom::IsKnownEnumValue(type);
 }
 
 }  // namespace blink

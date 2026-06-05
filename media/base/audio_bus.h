@@ -17,6 +17,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -203,7 +204,7 @@ class MEDIA_EXPORT AudioBus {
   // Note: for bitstream formats, use GetBitstreamFrames() to get the actual
   // number of encoded frames. However, `frames()` remains useful in determining
   // the amount of `reserved_memory_` this bus has.
-  int frames() const { return frames_; }
+  int frames() const { return base::checked_cast<int>(frames_); }
 
   // Helper method for zeroing out all channels of audio data.
   void Zero();
@@ -311,7 +312,8 @@ void AudioBus::FromInterleaved(
 
   // If not using `zero_remaining_frames`, `source` should have the exact size.
   CHECK(zero_remaining_frames);
-  ZeroFramesPartial(source_frame_count, remaining_frames);
+  ZeroFramesPartial(base::checked_cast<int>(source_frame_count),
+                    base::checked_cast<int>(remaining_frames));
 }
 
 template <class SourceSampleTypeTraits>
@@ -360,7 +362,8 @@ void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
   CHECK_LE(total_offset, static_cast<size_t>(dest->frames()));
 
   for (size_t ch = 0; ch < channels; ++ch) {
-    auto channel_data = dest->channel(ch).subspan(write_offset, frame_count);
+    auto channel_data =
+        dest->channel(static_cast<int>(ch)).subspan(write_offset, frame_count);
     for (size_t dest_idx = 0, src_idx = ch; dest_idx < frame_count;
          ++dest_idx, src_idx += channels) {
       auto source_sample = source[src_idx];
@@ -381,7 +384,8 @@ void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
   CHECK_LE(total_offset, static_cast<size_t>(source->frames()));
 
   for (size_t ch = 0; ch < channels; ++ch) {
-    auto channel_data = source->channel(ch).subspan(read_offset, frame_count);
+    auto channel_data =
+        source->channel(static_cast<int>(ch)).subspan(read_offset, frame_count);
     for (size_t src_idx = 0, dest_idx = ch; src_idx < frame_count;
          ++src_idx, dest_idx += channels) {
       float source_sample = channel_data[src_idx];

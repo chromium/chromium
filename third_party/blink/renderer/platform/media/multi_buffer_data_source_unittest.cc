@@ -13,6 +13,7 @@
 #include "base/containers/heap_array.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1111,7 +1112,8 @@ TEST_F(MultiBufferDataSourceTest, Http_ShareData_AtLeastOneProgress) {
   EXPECT_CALL(host_, AddBufferedByteRange(0, testing::Ge(total_bytes)))
       .Times(testing::AtLeast(1));
 
-  auto data = base::HeapArray<char>::Uninit(total_bytes);
+  auto data =
+      base::HeapArray<char>::Uninit(base::checked_cast<size_t>(total_bytes));
   std::ranges::fill(data, 0xA5);  // Arbitrary non-zero value.
   provider1->DidReceiveData(data);
   provider1->DidFinishLoading();

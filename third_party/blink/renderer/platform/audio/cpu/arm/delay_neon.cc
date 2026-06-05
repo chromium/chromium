@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/delay.h"
 
@@ -66,7 +67,8 @@ std::tuple<size_t, size_t> Delay::ProcessARateVector(
   // The buffer length as a float and as an int so we don't need to constant
   // convert from one to the other.
   const float32x4_t v_buffer_length_float = vdupq_n_f32(buffer_length);
-  const int32x4_t v_buffer_length_int = vdupq_n_s32(buffer_length);
+  const int32x4_t v_buffer_length_int =
+      vdupq_n_s32(base::checked_cast<int32_t>(buffer_length));
 
   // How much to increment the write index each time through the loop.
   const int32x4_t v_incr = vdupq_n_s32(4);
@@ -86,7 +88,7 @@ std::tuple<size_t, size_t> Delay::ProcessARateVector(
       static_cast<int32_t>(w_index + 2), static_cast<int32_t>(w_index + 3)};
   v_write_index = WrapIndexVector(v_write_index, v_buffer_length_int);
 
-  int number_of_loops = frames_to_process / 4;
+  int number_of_loops = base::checked_cast<int>(frames_to_process / 4);
   size_t k = 0;
 
   for (int n = 0; n < number_of_loops; ++n, k += 4) {
@@ -149,7 +151,7 @@ void Delay::HandleNaN(base::span<float> delay_times,
                       size_t frames_to_process,
                       float max_time) {
   unsigned k = 0;
-  int number_of_loops = frames_to_process / 4;
+  int number_of_loops = base::checked_cast<int>(frames_to_process / 4);
 
   float32x4_t v_max_time = vdupq_n_f32(max_time);
 

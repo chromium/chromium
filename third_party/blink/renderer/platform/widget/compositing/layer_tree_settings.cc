@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -171,8 +172,8 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   // Cap the memory size to one fourth of the total system memory so it won't
   // consume too much of the system memory. Still keep the minimum to the
   // default of 512MB.
-  size_t memory_cap_mb =
-      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() / 4;
+  size_t memory_cap_mb = base::checked_cast<size_t>(
+      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() / 4);
   if (mb_limit_when_visible > memory_cap_mb) {
     mb_limit_when_visible = memory_cap_mb;
   } else if (mb_limit_when_visible < kDefaultMemoryMB) {

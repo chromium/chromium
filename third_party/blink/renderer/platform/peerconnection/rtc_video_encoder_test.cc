@@ -1701,14 +1701,15 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
             Invoke(this,
                    &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
             [&event]() { event.Signal(); }));
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_rtp_timestamp(i)
-                                       .set_timestamp_us(i)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types));
+    EXPECT_EQ(
+        WEBRTC_VIDEO_CODEC_OK,
+        rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                 .set_video_frame_buffer(buffer)
+                                 .set_rtp_timestamp(static_cast<uint32_t>(i))
+                                 .set_timestamp_us(i)
+                                 .set_rotation(webrtc::kVideoRotation_0)
+                                 .build(),
+                             &frame_types));
     event.Wait();
   }
   sl_verifier.Wait();
@@ -1769,14 +1770,15 @@ TEST_F(RTCVideoEncoderEncodeTest, EndOfPictureSetsEndOfTemporalUnit) {
             Invoke(this,
                    &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
             [&event]() { event.Signal(); }));
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_rtp_timestamp(i)
-                                       .set_timestamp_us(i)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types));
+    EXPECT_EQ(
+        WEBRTC_VIDEO_CODEC_OK,
+        rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                 .set_video_frame_buffer(buffer)
+                                 .set_rtp_timestamp(static_cast<uint32_t>(i))
+                                 .set_timestamp_us(i)
+                                 .set_rotation(webrtc::kVideoRotation_0)
+                                 .build(),
+                             &frame_types));
     event.Wait();
   }
   sl_verifier.Wait();
@@ -1872,14 +1874,15 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
                      &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
               [&event]() { event.Signal(); }));
     }
-    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
-                                       .set_video_frame_buffer(buffer)
-                                       .set_rtp_timestamp(i)
-                                       .set_timestamp_us(i)
-                                       .set_rotation(webrtc::kVideoRotation_0)
-                                       .build(),
-                                   &frame_types));
+    EXPECT_EQ(
+        WEBRTC_VIDEO_CODEC_OK,
+        rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                 .set_video_frame_buffer(buffer)
+                                 .set_rtp_timestamp(static_cast<uint32_t>(i))
+                                 .set_timestamp_us(i)
+                                 .set_rotation(webrtc::kVideoRotation_0)
+                                 .build(),
+                             &frame_types));
     event.Wait();
   }
   RunUntilIdle();

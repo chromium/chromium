@@ -24,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -674,8 +675,9 @@ void WebMediaPlayerImpl::Shutdown() {
   pipeline_controller_->Stop();
 
   if (last_reported_memory_usage_) {
-    external_memory_accounter_.Decrease(isolate_.get(),
-                                        last_reported_memory_usage_);
+    external_memory_accounter_.Decrease(
+        isolate_.get(),
+        base::checked_cast<size_t>(last_reported_memory_usage_));
   }
 
   // Destruct compositor resources in the proper order.
@@ -4077,7 +4079,8 @@ void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time,
 
   media::PipelineStatistics ps = GetPipelineStatistics();
   if (client_) {
-    client_->OnFirstFrame(frame_time, ps.video_bytes_decoded);
+    client_->OnFirstFrame(frame_time,
+                          base::checked_cast<size_t>(ps.video_bytes_decoded));
 
     // Needed to signal HTMLVideoElement that it should remove the poster image.
     if (has_poster_) {

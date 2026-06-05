@@ -98,7 +98,8 @@ int64_t MultiBufferReader::TryReadAt(int64_t pos, base::span<uint8_t> data) {
     if (buffer->end_of_stream()) {
       break;
     }
-    const size_t offset = pos & ((1LL << multibuffer_->block_size_shift()) - 1);
+    const size_t offset = base::checked_cast<size_t>(
+        pos & ((1LL << multibuffer_->block_size_shift()) - 1));
     if (offset > buffer->size()) {
       break;
     }

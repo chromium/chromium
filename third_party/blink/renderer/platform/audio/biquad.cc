@@ -35,6 +35,7 @@
 #include <limits>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
@@ -212,7 +213,8 @@ void Biquad::ProcessFast(base::span<const float> source,
     }
 
     ProcessSliceFast(input_buffer_.as_span(), output_buffer_.as_span(),
-                     filter_coefficients, frames_this_time);
+                     filter_coefficients,
+                     base::checked_cast<uint32_t>(frames_this_time));
 
     // Copy output buffer to output (converts float -> double).
     for (size_t i = 0; i < frames_this_time; ++i) {

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -416,8 +417,8 @@ void ResourceMultiBufferDataProvider::DidReceiveData(
 
   auto bytes_data = base::as_bytes(data);
   if (bytes_to_discard_) {
-    const auto discard_length =
-        std::min<size_t>(bytes_to_discard_, bytes_data.size());
+    const auto discard_length = std::min<size_t>(
+        base::checked_cast<size_t>(bytes_to_discard_), bytes_data.size());
     bytes_data = bytes_data.subspan(discard_length);
     bytes_to_discard_ -= discard_length;
     if (bytes_data.empty()) {

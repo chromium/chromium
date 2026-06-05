@@ -107,7 +107,7 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
   size_t length = url.GetString().length();
   base::UmaHistogramCounts10M("Blink.Network.DataUrlLength",
                               static_cast<int>(length));
-  if (length >= 0 && length < 1000) {
+  if (length < 1000) {
     base::UmaHistogramMicrosecondsTimes(
         "Blink.Network.ParseDataURLTime.Under1000Char", elapsed);
   } else if (length >= 1000 && length < 100000) {
@@ -123,7 +123,7 @@ std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(
                                 static_cast<int>(length));
     base::UmaHistogramMicrosecondsTimes("Blink.Network.ParseDataURLTime.Image",
                                         elapsed);
-    if (length >= 0 && length < 1000) {
+    if (length < 1000) {
       base::UmaHistogramMicrosecondsTimes(
           "Blink.Network.ParseDataURLTime.Image.Under1000Char", elapsed);
     } else if (length >= 1000 && length < 100000) {

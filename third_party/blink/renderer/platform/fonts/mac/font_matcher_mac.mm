@@ -37,6 +37,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -175,7 +176,9 @@ BOOL BetterChoice(NSFontTraitMask desired_traits,
   constexpr NSInteger kAppKitLowerThreshold = 5;  // CSS 400
   constexpr NSInteger kAppKitUpperThreshold = 6;  // CSS 500
 
-  return BetterWeightMatch(desired_weight, chosen_weight, candidate_weight,
+  return BetterWeightMatch(base::checked_cast<int>(desired_weight),
+                           base::checked_cast<int>(chosen_weight),
+                           base::checked_cast<int>(candidate_weight),
                            kAppKitLowerThreshold, kAppKitUpperThreshold);
 }
 

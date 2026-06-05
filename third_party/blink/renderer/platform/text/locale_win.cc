@@ -38,6 +38,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/win/web_sandbox_support.h"
@@ -72,7 +73,7 @@ String GetLocaleInfoString(LCID lcid, LCTYPE type, bool defaults_for_locale) {
   StringBuffer<UChar> buffer(buffer_size_with_nul);
   auto span = buffer.Span();
   ::GetLocaleInfo(lcid, type, base::as_writable_wcstr(span.data()),
-                  span.size());
+                  base::checked_cast<int>(span.size()));
   buffer.Shrink(buffer_size_with_nul - 1);
   return String::Adopt(buffer);
 }
@@ -85,7 +86,7 @@ Vector<String> GetLocaleInfoStrings(LCID lcid,
                                     bool defaults_for_locale,
                                     bool allow_empty) {
   Vector<String> result;
-  result.reserve(types.size());
+  result.reserve(base::checked_cast<wtf_size_t>(types.size()));
   for (const auto& type : types) {
     result.push_back(GetLocaleInfoString(lcid, type, defaults_for_locale));
     if (result.back().empty() && !allow_empty) {

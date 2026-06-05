@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/base/fake_single_thread_task_runner.h"
@@ -287,7 +288,7 @@ TEST_F(MultiBufferTest, ReadAll) {
       EXPECT_EQ(buffer[17], 17);
       for (int64_t i = 0; i < bytes_read; i++) {
         uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-        EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+        EXPECT_EQ(expected, buffer[static_cast<size_t>(i)]) << " pos = " << pos;
         pos++;
       }
     } else {
@@ -318,7 +319,7 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst) {
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+      EXPECT_EQ(expected, buffer[static_cast<size_t>(i)]) << " pos = " << pos;
       pos++;
     }
   }
@@ -349,7 +350,7 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer) {
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+      EXPECT_EQ(expected, buffer[static_cast<size_t>(i)]) << " pos = " << pos;
       pos++;
     }
   }
@@ -381,7 +382,7 @@ TEST_F(MultiBufferTest, ReadAllAdvanceFirst_NeverDefer2) {
     EXPECT_EQ(buffer[17], 17);
     for (int64_t i = 0; i < bytes; i++) {
       uint8_t expected = static_cast<uint8_t>((pos * 15485863) >> 16);
-      EXPECT_EQ(expected, buffer[i]) << " pos = " << pos;
+      EXPECT_EQ(expected, buffer[static_cast<size_t>(i)]) << " pos = " << pos;
       pos++;
     }
   }
@@ -526,7 +527,8 @@ class ReadHelper {
     if (bytes_read) {
       for (int64_t i = 0; i < bytes_read; i++) {
         unsigned char expected = (pos_ * 15485863) >> 16;
-        EXPECT_EQ(expected, buffer[i]) << " pos = " << pos_;
+        EXPECT_EQ(expected, buffer[static_cast<size_t>(i)])
+            << " pos = " << pos_;
         pos_++;
       }
       CHECK_EQ(pos_, reader_.Tell());

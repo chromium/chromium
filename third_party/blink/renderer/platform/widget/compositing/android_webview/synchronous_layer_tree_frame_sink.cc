@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
@@ -29,7 +30,6 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
-#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
@@ -42,6 +42,13 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+
+// gpu/command_buffer/common/gles2_cmd_format_autogen.h included from
+// frame_sink_manager_impl.h has truncation issues, and it's not easy to fix.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#pragma clang diagnostic pop
 
 namespace blink {
 
@@ -545,7 +552,8 @@ void SynchronousLayerTreeFrameSink::
 void SynchronousLayerTreeFrameSink::SetMemoryPolicy(size_t bytes_limit) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  bytes_limit = gpu_memory_override_in_bytes_.value_or(bytes_limit);
+  bytes_limit = base::checked_cast<size_t>(
+      gpu_memory_override_in_bytes_.value_or(bytes_limit));
 
   bool became_zero = memory_policy_.bytes_limit_when_visible && !bytes_limit;
   bool became_non_zero =
