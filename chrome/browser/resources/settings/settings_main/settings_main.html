@@ -157,7 +157,7 @@
   <template is="dom-if" if="[[showPage_(pageVisibility_.onStartup)]]">
     <div slot="view" id="onStartup">
       <template is="dom-if" if="[[renderPlugin_(
-          routes_.ON_STARTUP, lastRoute_, inSearchMode_)]]">
+          routes_.ON_STARTUP, lastRoute_, inSearchMode_)]]" update-when-false>
         <settings-on-startup-page prefs="{{prefs}}">
         </settings-on-startup-page>
       </template>
