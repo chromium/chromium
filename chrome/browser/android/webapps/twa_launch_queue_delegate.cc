@@ -16,21 +16,6 @@ namespace webapps {
 namespace {
 
 bool IsSensitivePath(const base::FilePath& path) {
-  if (path.empty()) {
-    return true;
-  }
-
-  // Block all absolute paths. Legitimate file launching on Android should
-  // use Content URIs.
-  if (path.IsAbsolute()) {
-    return true;
-  }
-
-  if (path.ReferencesParent()) {
-    return true;
-  }
-
-  // Check Content URIs
   if (path.IsContentUri()) {
     // Block Chrome's own Content URIs
     std::string package_name = base::android::apk_info::package_name();
@@ -40,13 +25,9 @@ bool IsSensitivePath(const base::FilePath& path) {
                             base::CompareCase::INSENSITIVE_ASCII);
   }
 
-  // Block file:// URIs as they can be used to specify absolute paths
-  if (base::StartsWith(path.value(), "file://",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return true;
-  }
-
-  return false;
+  // Block everything else. Legitimate file launching on Android should
+  // use Content URIs.
+  return true;
 }
 
 }  // namespace

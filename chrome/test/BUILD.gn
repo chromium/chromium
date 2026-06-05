@@ -7430,6 +7430,7 @@ test("unit_tests") {
       "../browser/android/webapk/webapk_helpers_unittest.cc",
       "../browser/android/webapk/webapk_restore_manager_unittest.cc",
       "../browser/android/webapk/webapk_sync_bridge_unittest.cc",
+      "../browser/android/webapps/twa_launch_queue_delegate_unittest.cc",
       "../browser/autofill/android/attribute_instance_android_unittest.cc",
       "../browser/autofill/android/autofill_ai_save_update_entity_prompt_controller_unittest.cc",
       "../browser/autofill/android/entity_data_manager_android_unittest.cc",
