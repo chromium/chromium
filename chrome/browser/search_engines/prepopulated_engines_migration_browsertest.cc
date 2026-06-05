@@ -1042,6 +1042,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
 
 // -- Extended Cross-Region Migration : DSE with user modifications -----------
 
+// Regression test for https://crbug.com/480071119.
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
                        PRE_PRE_PRE_PRE_PRE_UserModifiedDse) {
   // Sets up the environment, customising `android_codesearch` and setting it as
@@ -1066,37 +1067,32 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
        u"Searchy Search"}};
   EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
-  // TODO(crbug.com/480071119): Prefs match the state of the engine when it was
-  // set as DSE, do not take the changes since into account.
   EXPECT_EQ(GetSearchProviderFromPrefs(
                 DefaultSearchManager::kDefaultSearchProviderDataPrefName),
             (SearchProviderSummary{.id = generic_id,
                                    .keyword = custom_keyword,
-                                   .name = android_codesearch.name}));
+                                   .name = u"Searchy Search"}));
   EXPECT_EQ(
       GetSearchProviderFromPrefs(
           DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName),
       (SearchProviderSummary{.id = generic_id,
                              .keyword = custom_keyword,
-                             .name = android_codesearch.name}));
+                             .search_url = android_codesearch.search_url,
+                             .name = u"Searchy Search"}));
 }
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
                        PRE_PRE_PRE_PRE_UserModifiedDse) {
-  // The region changed from the "android" one to the "chrome" one. The DSE
-  // changes to be the "chrome" codesearch variant but keeps the
-  // "android"-specific name. This issue persists throughout the test, see
-  // crbug.com/480071119.
   ASSERT_EQ(active_engines_config_, chrome_region_engines);
 
   std::vector<SearchProviderSummary> expectations = {
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       // Since the keyword was changed, the entry is not `safe_for_autoreplace`
-      // anymore. So the name of the android variant is being applied to the
-      // chrome variant.
+      // anymore. So the variant is switched to the "chrome" one, but keeping
+      // the custom name.
       {generic_id, custom_keyword, true, chrome_codesearch.search_url,
-       android_codesearch.name}};
+       u"Searchy Search"}};
 
   EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
@@ -1104,7 +1100,8 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
                 DefaultSearchManager::kDefaultSearchProviderDataPrefName),
             (SearchProviderSummary{.id = generic_id,
                                    .keyword = custom_keyword,
-                                   .name = android_codesearch.name}));
+                                   .search_url = android_codesearch.search_url,
+                                   .name = u"Searchy Search"}));
 }
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
@@ -1119,7 +1116,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, custom_keyword, true,
-       android_codesearch.search_url, android_codesearch.name}};
+       android_codesearch.search_url, u"Searchy Search"}};
 
   EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
@@ -1128,7 +1125,8 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
             (SearchProviderSummary{
                 .id = IsParamFeatureEnabled() ? new_id : generic_id,
                 .keyword = custom_keyword,
-                .name = android_codesearch.name}));
+                .search_url = android_codesearch.search_url,
+                .name = u"Searchy Search"}));
 }
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
@@ -1141,7 +1139,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, custom_keyword, true,
-       android_codesearch.search_url, android_codesearch.name}};
+       android_codesearch.search_url, u"Searchy Search"}};
 
   EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
@@ -1150,7 +1148,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
             (SearchProviderSummary{
                 .id = IsParamFeatureEnabled() ? new_id : generic_id,
                 .keyword = custom_keyword,
-                .name = android_codesearch.name}));
+                .name = u"Searchy Search"}));
 }
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
@@ -1170,7 +1168,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
     // DSE reconciled from prefs with `android_codesearch_next`
     expectations.push_back({new_id, custom_keyword, true,
                             android_codesearch_next.search_url,
-                            android_codesearch_next.name});
+                            u"Searchy Search"});
 
     // New engine from prepopulated entries
     expectations.push_back({generic_id, chrome_codesearch.keyword, false,
@@ -1178,8 +1176,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
                             chrome_codesearch.name});
   } else {
     expectations.push_back({generic_id, custom_keyword, true,
-                            chrome_codesearch.search_url,
-                            android_codesearch.name});
+                            chrome_codesearch.search_url, u"Searchy Search"});
   }
 
   EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
@@ -1189,7 +1186,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
             (SearchProviderSummary{
                 .id = IsParamFeatureEnabled() ? new_id : generic_id,
                 .keyword = custom_keyword,
-                .name = android_codesearch.name}));
+                .name = u"Searchy Search"}));
 }
 
 IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
@@ -1202,7 +1199,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
       {google.id, google.keyword, false},
       {bing.id, bing.keyword, false},
       {IsParamFeatureEnabled() ? new_id : generic_id, custom_keyword, true,
-       android_codesearch.search_url, android_codesearch.name}};
+       android_codesearch.search_url, u"Searchy Search"}};
 
   EXPECT_THAT(GetServiceSearchProviders(), ElementsAreArray(expectations));
 
@@ -1211,7 +1208,7 @@ IN_PROC_BROWSER_TEST_P(PrepopulatedEnginesExtendedCrossRegionsBrowserTest,
             (SearchProviderSummary{
                 .id = IsParamFeatureEnabled() ? new_id : generic_id,
                 .keyword = custom_keyword,
-                .name = android_codesearch.name}));
+                .name = u"Searchy Search"}));
 }
 
 // -- Prepopulated Engines interactions with Search Provider Overrides --------

@@ -124,6 +124,44 @@ TEST_F(TemplateURLServiceUnitTest, SessionToken) {
   EXPECT_GE(expiration_time_2, expiration_time_1 + kSmallDelta);
 }
 
+TEST_F(TemplateURLServiceUnitTest, UpdateUserSelectedDefaultSearchEnginePref) {
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
+
+  // Add a new search engine.
+  TemplateURLData data;
+  data.SetShortName(u"custom");
+  data.SetKeyword(u"custom");
+  data.SetURL("https://custom.com/search?q={searchTerms}");
+  data.sync_guid = "custom-guid";
+
+  TemplateURL* turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(data));
+
+  // Make it the default search provider.
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      turl, search_engines::ChoiceMadeLocation::kOther);
+
+  EXPECT_EQ("https://custom.com/search?q={searchTerms}",
+            template_url_service().GetDefaultSearchProvider()->url());
+
+  // Update the search engine URL.
+  template_url_service().ResetTemplateURL(
+      turl, u"custom2", u"custom2",
+      "https://custom2.com/search2?q={searchTerms}");
+
+  // Verify the updated URL in the TemplateURLService.
+  EXPECT_EQ("https://custom2.com/search2?q={searchTerms}",
+            template_url_service().GetDefaultSearchProvider()->url());
+
+  // Verify the updated URL in the preferences.
+  const auto& dict = pref_service().GetDict(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  const std::string* pref_url = dict.FindString(DefaultSearchManager::kURL);
+  ASSERT_TRUE(pref_url);
+  EXPECT_EQ("https://custom2.com/search2?q={searchTerms}", *pref_url);
+}
+
 TEST_F(TemplateURLServiceUnitTest, GenerateSearchURL) {
   // Set the default search provider to a custom one.
   TemplateURLData template_url_data;

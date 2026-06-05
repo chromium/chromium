@@ -2850,6 +2850,13 @@ bool TemplateURLService::Update(TemplateURL* existing_turl,
       ProcessTemplateURLChange(FROM_HERE, existing_turl,
                                syncer::SyncChange::ACTION_UPDATE);
     }
+
+    if (!applying_default_search_engine_change_ &&
+        GetDefaultSearchProvider() == existing_turl &&
+        default_search_provider_source_ == DefaultSearchManager::FROM_USER) {
+      default_search_manager_.SetUserSelectedDefaultSearchEngine(
+          existing_turl->data());
+    }
   }
 
   return true;
