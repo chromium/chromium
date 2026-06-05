@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/file_util_icu.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -92,6 +93,40 @@ using storage::FileSystemContext;
 using HandleType = FileSystemAccessPermissionContext::HandleType;
 
 namespace {
+
+// Holds resolved and validated frame objects. All pointers are guaranteed to be
+// non-null and active if this struct is returned.
+struct ResolvedFrame {
+  raw_ptr<RenderFrameHost> rfh;
+  raw_ptr<WebContents> web_contents;
+  raw_ptr<RenderFrameHost> outermost_rfh;
+};
+
+// Resolves `frame_id` to its corresponding `RenderFrameHost`, `WebContents`,
+// and outermost `RenderFrameHost`, and validates that they are all non-null
+// and active.
+// Returns a `ResolvedFrame` struct if ALL resolved objects are valid and
+// active, i.e. non-null; otherwise, returns `std::nullopt`.
+//
+// This check is critical because intermediate operations, like permission
+// checks or security prompts, can run nested message loops during which the
+// calling frame or WebContents can be destroyed or navigated.
+std::optional<ResolvedFrame> ResolveAndValidateFrame(
+    GlobalRenderFrameHostId frame_id) {
+  RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
+  if (!rfh || !rfh->IsActive()) {
+    return std::nullopt;
+  }
+  WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents) {
+    return std::nullopt;
+  }
+  RenderFrameHost* outermost_rfh = rfh->GetOutermostMainFrame();
+  if (!outermost_rfh || !outermost_rfh->IsActive()) {
+    return std::nullopt;
+  }
+  return ResolvedFrame{rfh, web_contents, outermost_rfh};
+}
 
 #if BUILDFLAG(IS_ANDROID)
 // Adaptor between FileSystemChooser::ResultCallback and FileSelectListener
@@ -201,6 +236,18 @@ void ShowFilePickerOnUIThread(
                           {});
                       return;
                     });
+    // `CanShowFilePicker()` runs nested message loops during which the frame
+    // could be destroyed or navigated. Re-resolve and re-validate the frame.
+    auto re_resolved = ResolveAndValidateFrame(frame_id);
+    if (!re_resolved) {
+      std::move(callback).Run(file_system_access_error::FromStatus(
+                                  FileSystemAccessStatus::kOperationAborted),
+                              {});
+      return;
+    }
+    rfh = re_resolved->rfh;
+    web_contents = re_resolved->web_contents;
+    outermost_rfh = re_resolved->outermost_rfh;
   }
 
 #if BUILDFLAG(IS_ANDROID)
