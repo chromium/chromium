@@ -76,7 +76,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   //
   // Use a round number of bytes to mint a span of `UChar` (required
   // to call `reinterpret_span()`).
-  const size_t round_number_of_bytes = (size / sizeof(UChar)) * sizeof(UChar);
+  const size_t round_number_of_bytes =
+      (byte_span.size() / sizeof(UChar)) * sizeof(UChar);
   base::span<const UChar> uchars = base::subtle::reinterpret_span<const UChar>(
       byte_span.first(round_number_of_bytes));
   std::unique_ptr<blink::TextCodec> uchar_codec = NewTextCodec(encoding);
