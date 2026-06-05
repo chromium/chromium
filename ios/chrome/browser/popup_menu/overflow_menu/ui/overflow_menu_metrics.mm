@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/overflow_menu_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/public/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/overflow_menu/ui/ui_swift.h"
 

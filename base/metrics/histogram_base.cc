@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_samples.h"

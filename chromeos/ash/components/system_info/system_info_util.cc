@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/system_info/cpu_usage_data.h"

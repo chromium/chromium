@@ -17,7 +17,7 @@
 
 #include "base/atomicops.h"
 #include "base/base_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/strings/durable_string_view.h"
 #include "base/time/time.h"
 #include "base/values.h"
