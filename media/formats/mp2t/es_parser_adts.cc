@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -114,7 +115,6 @@ EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
                            bool sbr_in_mimetype)
     : new_audio_config_cb_(std::move(new_audio_config_cb)),
       emit_buffer_cb_(std::move(emit_buffer_cb)),
-      get_decrypt_config_cb_(),
       init_encryption_scheme_(EncryptionScheme::kUnencrypted),
       sbr_in_mimetype_(sbr_in_mimetype) {}
 
@@ -226,12 +226,8 @@ void EsParserAdts::ResetInternal() {
 
 bool EsParserAdts::UpdateAudioConfiguration(
     base::span<const uint8_t> adts_header) {
-  size_t orig_sample_rate;
-  ChannelLayout channel_layout;
-  std::vector<uint8_t> extra_data;
-  if (adts_parser_.ParseFrameHeader(adts_header, nullptr, &orig_sample_rate,
-                                    &channel_layout, nullptr, nullptr,
-                                    &extra_data) <= 0) {
+  const auto header = ADTSStreamParser::ParseHeader(adts_header);
+  if (!header) {
     return false;
   }
 
@@ -240,12 +236,12 @@ bool EsParserAdts::UpdateAudioConfiguration(
   // to SBR doubling the AAC sample rate.)
   // TODO(damienv) : Extend sample rate cap to 96kHz for Level 5 content.
   const int extended_samples_per_second =
-      sbr_in_mimetype_ ? std::min<int>(2 * orig_sample_rate, 48000)
-                       : orig_sample_rate;
+      sbr_in_mimetype_ ? std::min<int>(2 * header->sample_rate, 48000)
+                       : header->sample_rate;
   AudioDecoderConfig audio_decoder_config(
       AudioCodec::kAAC, kSampleFormatS16,
-      ChannelLayoutConfig::FromLayout(channel_layout),
-      extended_samples_per_second, extra_data, init_encryption_scheme_);
+      ChannelLayoutConfig::FromLayout(header->channel_layout),
+      extended_samples_per_second, header->extra_data, init_encryption_scheme_);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "
@@ -267,10 +263,12 @@ bool EsParserAdts::UpdateAudioConfiguration(
     // Reset the timestamp helper to use a new time scale.
     if (audio_timestamp_helper_ && audio_timestamp_helper_->base_timestamp()) {
       base::TimeDelta base_timestamp = audio_timestamp_helper_->GetTimestamp();
-      audio_timestamp_helper_.reset(new AudioTimestampHelper(orig_sample_rate));
+      audio_timestamp_helper_ =
+          std::make_unique<AudioTimestampHelper>(header->sample_rate);
       audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);
     } else {
-      audio_timestamp_helper_.reset(new AudioTimestampHelper(orig_sample_rate));
+      audio_timestamp_helper_ =
+          std::make_unique<AudioTimestampHelper>(header->sample_rate);
     }
     // Audio config notification.
     last_audio_decoder_config_ = audio_decoder_config;

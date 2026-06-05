@@ -56,10 +56,7 @@ static int LocateEndOfHeaders(const uint8_t* buf, int buf_len, int i) {
 MPEGAudioStreamParserBase::MPEGAudioStreamParserBase(uint32_t start_code_mask,
                                                      AudioCodec audio_codec,
                                                      int codec_delay)
-    : state_(UNINITIALIZED),
-      media_log_(nullptr),
-      in_media_segment_(false),
-      start_code_mask_(start_code_mask),
+    : start_code_mask_(start_code_mask),
       audio_codec_(audio_codec),
       codec_delay_(codec_delay) {}
 
@@ -250,31 +247,28 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
                                           BufferQueue* buffers) {
   DVLOG(2) << __func__ << "(" << data.size() << ")";
 
-  size_t sample_rate;
-  ChannelLayout channel_layout;
-  size_t frame_size;
-  size_t sample_count;
-  bool metadata_frame = false;
-  std::vector<uint8_t> extra_data;
-  int bytes_read =
-      ParseFrameHeader(data, &frame_size, &sample_rate, &channel_layout,
-                       &sample_count, &metadata_frame, &extra_data);
-
-  if (bytes_read <= 0)
-    return bytes_read;
-
-  // Make sure data contains the entire frame.
-  if (data.size() < frame_size) {
+  if (data.size() < GetMinHeaderSize()) {
     return 0;
   }
 
-  DVLOG(2) << " sample_rate " << sample_rate << " channel_layout "
-           << channel_layout << " frame_size " << frame_size << " sample_count "
-           << sample_count;
+  const auto header = ParseFrameHeader(data);
+  if (!header) {
+    return -1;
+  }
+
+  // Make sure data contains the entire frame.
+  if (data.size() < header->frame_size) {
+    return 0;
+  }
+
+  DVLOG(2) << " sample_rate " << header->sample_rate << " channel_layout "
+           << header->channel_layout << " frame_size " << header->frame_size
+           << " sample_count " << header->sample_count;
 
   if (config_.IsValidConfig() &&
-      (config_.samples_per_second() != base::checked_cast<int>(sample_rate) ||
-       config_.channel_layout() != channel_layout)) {
+      (config_.samples_per_second() !=
+           base::checked_cast<int>(header->sample_rate) ||
+       config_.channel_layout() != header->channel_layout)) {
     // Clear config data so that a config change is initiated.
     config_ = AudioDecoderConfig();
 
@@ -285,9 +279,10 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
 
   if (!config_.IsValidConfig()) {
     config_.Initialize(audio_codec_, kSampleFormatF32,
-                       ChannelLayoutConfig::FromLayout(channel_layout),
-                       sample_rate, extra_data, EncryptionScheme::kUnencrypted,
-                       base::TimeDelta(), codec_delay_);
+                       ChannelLayoutConfig::FromLayout(header->channel_layout),
+                       header->sample_rate, header->extra_data,
+                       EncryptionScheme::kUnencrypted, base::TimeDelta(),
+                       codec_delay_);
     if (audio_codec_ == AudioCodec::kAAC)
       config_.disable_discard_decoder_delay();
 
@@ -295,10 +290,11 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
     if (timestamp_helper_)
       base_timestamp = timestamp_helper_->GetTimestamp();
 
-    timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate);
+    timestamp_helper_ =
+        std::make_unique<AudioTimestampHelper>(header->sample_rate);
     timestamp_helper_->SetBaseTimestamp(base_timestamp);
 
-    std::unique_ptr<MediaTracks> media_tracks(new MediaTracks());
+    auto media_tracks = std::make_unique<MediaTracks>();
     if (config_.IsValidConfig()) {
       media_tracks->AddAudioTrack(config_, true, kMpegAudioTrackId,
                                   MediaTrack::Kind("main"), MediaTrack::Label(),
@@ -315,21 +311,24 @@ int MPEGAudioStreamParserBase::ParseFrame(base::span<const uint8_t> data,
     }
   }
 
-  if (metadata_frame)
-    return frame_size;
+  if (header->metadata_frame) {
+    return header->frame_size;
+  }
 
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple audio tracks, if applicable. See
   // https://crbug.com/341581.
-  scoped_refptr<StreamParserBuffer> buffer = StreamParserBuffer::CopyFrom(
-      data.first(frame_size), true, DemuxerStream::AUDIO, kMpegAudioTrackId);
+  scoped_refptr<StreamParserBuffer> buffer =
+      StreamParserBuffer::CopyFrom(data.first(header->frame_size), true,
+                                   DemuxerStream::AUDIO, kMpegAudioTrackId);
   buffer->set_timestamp(timestamp_helper_->GetTimestamp());
-  buffer->set_duration(timestamp_helper_->GetFrameDuration(sample_count));
+  buffer->set_duration(
+      timestamp_helper_->GetFrameDuration(header->sample_count));
   buffers->push_back(buffer);
 
-  timestamp_helper_->AddFrames(sample_count);
+  timestamp_helper_->AddFrames(header->sample_count);
 
-  return frame_size;
+  return header->frame_size;
 }
 
 int MPEGAudioStreamParserBase::ParseIcecastHeader(const uint8_t* data,
@@ -438,19 +437,16 @@ int MPEGAudioStreamParserBase::FindNextValidStartCode(const uint8_t* data,
     // the probability of false positives.
     for (int i = 0; i < 3; ++i) {
       int sync_size = end - sync;
-      size_t frame_size;
-      int sync_bytes = ParseFrameHeader(
-          UNSAFE_TODO(base::span(sync, base::checked_cast<size_t>(sync_size))),
-          &frame_size, nullptr, nullptr, nullptr, nullptr, nullptr);
-
-      if (sync_bytes == 0)
+      if (base::checked_cast<size_t>(sync_size) < GetMinHeaderSize()) {
         return 0;
+      }
 
-      if (sync_bytes > 0) {
-        DCHECK_LE(sync_bytes, sync_size);
+      const auto header = ParseFrameHeader(
+          UNSAFE_TODO(base::span(sync, base::checked_cast<size_t>(sync_size))));
 
+      if (header) {
         // Skip over this frame so we can check the next one.
-        UNSAFE_TODO(sync += frame_size);
+        UNSAFE_TODO(sync += header->frame_size);
 
         // Make sure the next frame starts inside the buffer.
         if (sync >= end)

@@ -218,42 +218,18 @@ MPEG1AudioStreamParser::MPEG1AudioStreamParser()
 
 MPEG1AudioStreamParser::~MPEG1AudioStreamParser() = default;
 
-int MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
-                                             size_t* frame_size,
-                                             size_t* sample_rate,
-                                             ChannelLayout* channel_layout,
-                                             size_t* sample_count,
-                                             bool* metadata_frame,
-                                             std::vector<uint8_t>* extra_data) {
-  DCHECK(!data.empty());
-  DCHECK(frame_size);
+size_t MPEG1AudioStreamParser::GetMinHeaderSize() const {
+  return kHeaderSize;
+}
 
-  if (data.size() < kHeaderSize) {
-    return 0;
-  }
-
-  const auto header = ParseHeader(data);
+std::optional<MPEG1AudioStreamParser::Header>
+MPEG1AudioStreamParser::ParseFrameHeader(base::span<const uint8_t> data) {
+  auto header = ParseHeader(data);
   if (!header) {
     LIMITED_MEDIA_LOG(DEBUG, media_log(), mp3_parse_error_limit_, 5)
         << "Invalid MP3 header.";
-    return -1;
   }
-
-  *frame_size = header->frame_size;
-  if (sample_rate) {
-    *sample_rate = header->sample_rate;
-  }
-  if (sample_count) {
-    *sample_count = header->sample_count;
-  }
-  if (channel_layout) {
-    *channel_layout = header->channel_layout;
-  }
-  if (metadata_frame) {
-    *metadata_frame = header->metadata_frame;
-  }
-
-  return header->metadata_frame ? header->frame_size : kHeaderSize;
+  return header;
 }
 
 }  // namespace media

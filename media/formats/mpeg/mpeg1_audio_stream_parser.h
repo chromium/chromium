@@ -39,13 +39,9 @@ class MEDIA_EXPORT MPEG1AudioStreamParser : public MPEGAudioStreamParserBase {
 
  private:
   // MPEGAudioStreamParserBase overrides.
-  int ParseFrameHeader(base::span<const uint8_t> data,
-                       size_t* frame_size,
-                       size_t* sample_rate,
-                       ChannelLayout* channel_layout,
-                       size_t* sample_count,
-                       bool* metadata_frame,
-                       std::vector<uint8_t>* extra_data) override;
+  size_t GetMinHeaderSize() const override;
+  std::optional<Header> ParseFrameHeader(
+      base::span<const uint8_t> data) override;
 
   size_t mp3_parse_error_limit_ = 0;
 };

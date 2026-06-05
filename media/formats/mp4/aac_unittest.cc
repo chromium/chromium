@@ -253,24 +253,14 @@ TEST_F(AACTest, CreateAdtsFromEsds) {
   // Verify the packet data.
   EXPECT_EQ(adts_packet.subspan(adts_header_size), base::span(packet));
 
-  ADTSStreamParser adts_parser;
-
   // Verify the header data.
-  size_t frame_size = 0;
-  size_t sample_rate = 0;
-  ChannelLayout channel_layout;
-  size_t sample_count = 0;
-  bool metadata_frame;
-  std::vector<uint8_t> extra_data;
-
-  adts_parser.ParseFrameHeader(adts_packet.first(total_size), &frame_size,
-                               &sample_rate, &channel_layout, &sample_count,
-                               &metadata_frame, &extra_data);
-
-  EXPECT_EQ(frame_size, total_size);
-  EXPECT_EQ(sample_rate, 44100u);
-  EXPECT_EQ(channel_layout, ChannelLayout::CHANNEL_LAYOUT_STEREO);
-  EXPECT_EQ(base::span(extra_data), base::span(codec_desc));
+  const auto header =
+      ADTSStreamParser::ParseHeader(adts_packet.first(total_size));
+  ASSERT_TRUE(header);
+  EXPECT_EQ(header->frame_size, total_size);
+  EXPECT_EQ(header->sample_rate, 44100);
+  EXPECT_EQ(header->channel_layout, ChannelLayout::CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(base::span(header->extra_data), base::span(codec_desc));
 }
 
 TEST_F(AACTest, FitsInAdts_ExplicitFrequencyReturnsFalse) {

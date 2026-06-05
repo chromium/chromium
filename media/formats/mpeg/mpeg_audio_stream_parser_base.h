@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -25,11 +26,25 @@ namespace media {
 class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
  public:
   struct Header {
+    // Size of the frame in bytes, including the frame header.
     size_t frame_size = 0;
+
+    // Sample rate of the frame in Hz.
     int sample_rate = 0;
+
+    // Channel layout configuration.
     ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
+
+    // Number of samples per frame.
     int sample_count = 0;
+
+    // Set to true if the frame has valid header values, but no usable
+    // encoded data (e.g., silent XING metadata frames). If true, the
+    // base parser will discard the frame after consuming its metadata.
     bool metadata_frame = false;
+
+    // Subclass-specific extra data configurations (e.g., AudioSpecificConfig).
+    std::vector<uint8_t> extra_data;
   };
   // |start_code_mask| is used to find the start of each frame header.  Also
   // referred to as the sync code in the MP3 and ADTS header specifications.
@@ -60,43 +75,12 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_inspect) override;
 
  protected:
-  // Subclasses implement this method to parse format specific frame headers.
-  // |data| & |size| describe the data available for parsing.
-  //
-  // Implementations are expected to consume an entire frame header.  It should
-  // only return a value greater than 0 when |data| has enough bytes to
-  // successfully parse & consume the entire frame header.
-  //
-  // |frame_size| - Required parameter that is set to the size of the frame, in
-  // bytes, including the frame header if the function returns a value > 0.
-  // |sample_rate| - Optional parameter that is set to the sample rate
-  // of the frame if this function returns a value > 0.
-  // |channel_layout| - Optional parameter that is set to the channel_layout
-  // of the frame if this function returns a value > 0.
-  // |sample_count| - Optional parameter that is set to the number of samples
-  // in the frame if this function returns a value > 0.
-  // |metadata_frame| - Optional parameter that is set to true if the frame has
-  // valid values for the above parameters, but no usable encoded data; only set
-  // to true if this function returns a value > 0.
-  //
-  // |sample_rate|, |channel_layout|, |sample_count|, |metadata_frame| may be
-  // NULL if the caller is not interested in receiving these values from the
-  // frame header.
-  //
-  // If |metadata_frame| is true, the MPEGAudioStreamParserBase will discard the
-  // frame after consuming the metadata values above.
-  //
-  // Returns:
-  // > 0 : The number of bytes parsed.
-  //   0 : If more data is needed to parse the entire frame header.
-  // < 0 : An error was encountered during parsing.
-  virtual int ParseFrameHeader(base::span<const uint8_t> data,
-                               size_t* frame_size,
-                               size_t* sample_rate,
-                               ChannelLayout* channel_layout,
-                               size_t* sample_count,
-                               bool* metadata_frame,
-                               std::vector<uint8_t>* extra_data) = 0;
+  // Returns the minimum header size required to parse a frame header.
+  virtual size_t GetMinHeaderSize() const = 0;
+
+  // Parses the frame header. Returns std::nullopt if parsing failed.
+  virtual std::optional<Header> ParseFrameHeader(
+      base::span<const uint8_t> data) = 0;
 
   MediaLog* media_log() const { return media_log_.get(); }
 
@@ -147,7 +131,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   // Returns true if the buffers are sent successfully.
   bool SendBuffers(BufferQueue* buffers, bool end_of_segment);
 
-  State state_;
+  State state_ = UNINITIALIZED;
 
   InitCB init_cb_;
   NewConfigCB config_cb_;
@@ -168,7 +152,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
 
   AudioDecoderConfig config_;
   std::unique_ptr<AudioTimestampHelper> timestamp_helper_;
-  bool in_media_segment_;
+  bool in_media_segment_ = false;
   const uint32_t start_code_mask_;
   const AudioCodec audio_codec_;
   const int codec_delay_;

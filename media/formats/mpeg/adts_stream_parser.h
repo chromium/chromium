@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "media/base/media_export.h"
 #include "media/formats/mpeg/mpeg_audio_stream_parser_base.h"
 
@@ -14,6 +16,10 @@ namespace media {
 
 class MEDIA_EXPORT ADTSStreamParser : public MPEGAudioStreamParserBase {
  public:
+  using Header = MPEGAudioStreamParserBase::Header;
+
+  static std::optional<Header> ParseHeader(base::span<const uint8_t> data);
+
   ADTSStreamParser();
 
   ADTSStreamParser(const ADTSStreamParser&) = delete;
@@ -21,16 +27,12 @@ class MEDIA_EXPORT ADTSStreamParser : public MPEGAudioStreamParserBase {
 
   ~ADTSStreamParser() override;
 
-  // MPEGAudioStreamParserBase overrides.
-  int ParseFrameHeader(base::span<const uint8_t> data,
-                       size_t* frame_size,
-                       size_t* sample_rate,
-                       ChannelLayout* channel_layout,
-                       size_t* sample_count,
-                       bool* metadata_frame,
-                       std::vector<uint8_t>* extra_data) override;
-
  private:
+  // MPEGAudioStreamParserBase overrides.
+  size_t GetMinHeaderSize() const override;
+  std::optional<Header> ParseFrameHeader(
+      base::span<const uint8_t> data) override;
+
   size_t adts_parse_error_limit_ = 0;
 };
 

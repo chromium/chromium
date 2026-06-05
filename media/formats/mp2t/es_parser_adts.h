@@ -91,8 +91,6 @@ class MEDIA_EXPORT EsParserAdts : public EsParser {
 
   // Last audio config.
   AudioDecoderConfig last_audio_decoder_config_;
-
-  ADTSStreamParser adts_parser_;
 };
 
 }  // namespace mp2t

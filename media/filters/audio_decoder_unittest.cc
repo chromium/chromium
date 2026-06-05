@@ -272,17 +272,12 @@ class AudioDecoderTest
     if ((decoder_type_ == AudioDecoderType::kMediaCodec ||
          decoder_type_ == AudioDecoderType::kMediaFoundation) &&
         params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
-      size_t sample_rate;
-      ChannelLayout channel_layout;
-      std::vector<uint8_t> extra_data;
-      ASSERT_GT(ADTSStreamParser().ParseFrameHeader(
-                    AVPacketData(*packet), nullptr, &sample_rate,
-                    &channel_layout, nullptr, nullptr, &extra_data),
-                0);
+      const auto header = ADTSStreamParser::ParseHeader(AVPacketData(*packet));
+      ASSERT_TRUE(header.has_value());
       config.Initialize(AudioCodec::kAAC, kSampleFormatS16,
-                        ChannelLayoutConfig::FromLayout(channel_layout),
-                        sample_rate, extra_data, EncryptionScheme::kUnencrypted,
-                        base::TimeDelta(), 0);
+                        ChannelLayoutConfig::FromLayout(header->channel_layout),
+                        header->sample_rate, header->extra_data,
+                        EncryptionScheme::kUnencrypted, base::TimeDelta(), 0);
       ASSERT_FALSE(config.extra_data().empty());
     }
 #endif
