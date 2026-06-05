@@ -91,20 +91,10 @@ const gfx::FontList* TabSimpleMenuModel::GetLabelFontListAt(
   if (GetTypeAt(index) == ui::MenuModel::TYPE_TITLE) {
     return ui::SimpleMenuModel::GetLabelFontListAt(index);
   }
-  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
-      base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
-    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
-        ui::ResourceBundle::SmallFont);
-  }
-  int command_id = GetCommandIdAt(index);
-  // Check if the command ID belongs to the tabs section/submenu. Tabs have
-  // commands starting at `kMinOmniboxContextMenuRecentTabsCommandId`.
-  if (controller_->IsTabCommandId(command_id)) {
-    // Make the font smaller for "current tab" and 'tab name' minor text.
-    return &ui::ResourceBundle::GetSharedInstance().GetFontList(
-        ui::ResourceBundle::SmallFont);
-  }
-  return ui::SimpleMenuModel::GetLabelFontListAt(index);
+
+  // Explicitly force the standard font for all interactive items.
+  return &ui::ResourceBundle::GetSharedInstance().GetFontList(
+      ui::ResourceBundle::BaseFont);
 }
 
 namespace {
