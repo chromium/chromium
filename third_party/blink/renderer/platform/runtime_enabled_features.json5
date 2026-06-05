@@ -328,11 +328,9 @@
     },
     {
       name: "AIEmbeddingsAPI",
-      public: true,
     },
     {
       name: "AIEmbeddingsAPIForWorkers",
-      public: true,
     },
     // Strip actionability from content that is positioned offscreen
     // via position:fixed and cannot be reached by scrolling.
