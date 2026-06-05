@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {TabSearchSplitItemElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {SplitTabLayout, SplitViewData, TabGroupColor} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {sampleToken} from './tab_search_test_data.js';
+import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 
 suite('TabSearchSplitItemTest', () => {
   let tabSearchSplitItem: TabSearchSplitItemElement;
 
-  function setupTest(data: SplitViewData) {
+  function setupTest(
+      data: SplitViewData,
+      loadTimeOverriddenData?: {[key: string]: number|string|boolean}) {
+    initLoadTimeDataWithDefaults(loadTimeOverriddenData);
     tabSearchSplitItem = document.createElement('tab-search-split-item');
     tabSearchSplitItem.data = data;
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -116,8 +121,14 @@ suite('TabSearchSplitItemTest', () => {
     const groupSvgElement =
         tabSearchSplitItem.shadowRoot.querySelector<HTMLElement>('#groupSvg')!;
     assertNotEquals(null, groupSvgElement);
+
+    const useColorRefresh = loadTimeData.getBoolean('useTabGroupColorRefresh');
+    const expectedColorVar = useColorRefresh ?
+        'var(--tab-group-refresh-color-blue)' :
+        'var(--tab-group-color-blue)';
+
     assertEquals(
-        'var(--tab-group-color-blue)',
+        expectedColorVar,
         groupSvgElement.style.getPropertyValue('--group-dot-color'));
   });
 });
