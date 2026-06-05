@@ -277,10 +277,12 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     HTMLFormMcpTool(HTMLFormElement& form,
                     String tool_name,
                     String tool_description,
-                    String tool_title)
+                    String tool_title,
+                    bool has_toolautosubmit)
         : tool_name_(tool_name),
           tool_description_(tool_description),
           tool_title_(tool_title),
+          has_toolautosubmit_(has_toolautosubmit),
           form_(form) {
       CHECK(!tool_name.IsNull() && !tool_description.IsNull());
     }
@@ -302,6 +304,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
         const String& input_arguments,
         bool require_submit_button,
         HTMLFormControlElement** submit_button);
+    bool HasToolautosubmit() const { return has_toolautosubmit_; }
     const String& LastComputedSchema() const { return last_computed_schema_; }
     void SetLastComputedSchema(String schema) {
       last_computed_schema_ = schema;
@@ -336,6 +339,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     String tool_name_;
     String tool_description_;
     String tool_title_;
+    const bool has_toolautosubmit_ = false;
     String last_computed_schema_;
     Member<HTMLFormElement> form_;
     Member<HTMLFormControlElement> active_submit_button_;

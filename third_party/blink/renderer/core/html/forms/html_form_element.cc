@@ -399,6 +399,8 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
   String name = FastGetAttribute(html_names::kToolnameAttr);
   String description = FastGetAttribute(html_names::kTooldescriptionAttr);
   String title = FastGetAttribute(html_names::kTooltitleAttr);
+  const bool has_toolautosubmit =
+      FastHasAttribute(html_names::kToolautosubmitAttr);
   // We check that `this` is "still" a valid declarative WebMCP form because
   // last we checked when this method was queued, it was, but that could've
   // changed.
@@ -420,8 +422,8 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
     bool tool_attributes_changed =
         active_webmcp_tool_->ToolName() != name ||
         active_webmcp_tool_->ToolDescription() != description ||
-        active_webmcp_tool_->ToolTitle() != title;
-
+        active_webmcp_tool_->ToolTitle() != title ||
+        active_webmcp_tool_->HasToolautosubmit() != has_toolautosubmit;
     bool schema_changed =
         active_webmcp_tool_->LastComputedSchema() != new_schema;
 
@@ -441,8 +443,8 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
     active_webmcp_tool_ = nullptr;
   }
 
-  active_webmcp_tool_ =
-      MakeGarbageCollected<HTMLFormMcpTool>(*this, name, description, title);
+  active_webmcp_tool_ = MakeGarbageCollected<HTMLFormMcpTool>(
+      *this, name, description, title, has_toolautosubmit);
   active_webmcp_tool_->SetLastComputedSchema(
       active_webmcp_tool_->ComputeInputSchema());
 
@@ -1113,7 +1115,8 @@ void HTMLFormElement::AttributeChanged(
   HTMLElement::AttributeChanged(params);
   if ((name == html_names::kToolnameAttr ||
        name == html_names::kTooldescriptionAttr ||
-       name == html_names::kTooltitleAttr) &&
+       name == html_names::kTooltitleAttr ||
+       name == html_names::kToolautosubmitAttr) &&
       (params.old_value != params.new_value)) {
     ScheduleDeclarativeWebMCPToolRegistration();
   }

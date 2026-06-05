@@ -1,0 +1,10 @@
+Tests that WebMCP toolautosubmit attribute changes are tracked.
+Enabling WebMCP...
+Tool added: declarative_tool, autosubmit=false
+Adding toolautosubmit attribute...
+Tool removed: declarative_tool
+Tool added: declarative_tool, autosubmit=true
+Removing toolautosubmit attribute...
+Tool removed: declarative_tool
+Tool added: declarative_tool, autosubmit=false
+
