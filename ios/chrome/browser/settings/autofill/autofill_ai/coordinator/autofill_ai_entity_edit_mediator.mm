@@ -146,10 +146,18 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
 
   [self updateTitle];
 
-  [consumer setEditingAllowed:!_entityInstance->are_attributes_read_only()];
-  [consumer setIsServerWalletItem:
-                (_entityInstance->record_type() ==
-                 autofill::EntityInstance::RecordType::kServerWallet)];
+  BOOL editingAllowed = !_entityInstance->are_attributes_read_only();
+  BOOL isServerWalletItem = _entityInstance->record_type() ==
+                            autofill::EntityInstance::RecordType::kServerWallet;
+  // TODO(crbug.com/519241746): Remove this check when are_attributes_read_only
+  // returns correct value for kOrder and kShipment.
+  if (isServerWalletItem &&
+      (_entityInstance->type().name() == autofill::EntityTypeName::kOrder ||
+       _entityInstance->type().name() == autofill::EntityTypeName::kShipment)) {
+    editingAllowed = NO;
+  }
+  [consumer setEditingAllowed:editingAllowed];
+  [consumer setIsServerWalletItem:isServerWalletItem];
   [consumer setUserEmail:_userEmail];
 
   [self updateEditItemsWithAllAttributes:NO];

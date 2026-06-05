@@ -89,20 +89,21 @@
 
 namespace {
 
-// Entity types go into the "Identity docs" section of Settings.
-// This set must be mutually exclusive with kTravel.
+// Entity types go into sections of Settings.
+// All sections must be mutually exclusive.
 static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
     autofill::EntityTypeName::kDriversLicense,
     autofill::EntityTypeName::kNationalIdCard,
     autofill::EntityTypeName::kPassport};
 
-// Entity types go into the "Travel" section of Settings.
-// This set must be mutually exclusive with kIdentityDocs.
 static constexpr autofill::DenseSet<autofill::EntityTypeName> kTravel = {
     autofill::EntityTypeName::kFlightReservation,
     autofill::EntityTypeName::kKnownTravelerNumber,
     autofill::EntityTypeName::kRedressNumber,
     autofill::EntityTypeName::kVehicle};
+
+static constexpr autofill::DenseSet<autofill::EntityTypeName> kShopping = {
+    autofill::EntityTypeName::kOrder, autofill::EntityTypeName::kShipment};
 
 // TODO(crbug.com/480934103): Update this URL.
 constexpr std::string_view kWalletUrlString =
@@ -119,6 +120,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierWalletPromo,
   SectionIdentifierIdentityDocs,
   SectionIdentifierTravel,
+  SectionIdentifierShopping,
   SectionIdentifierOther
 };
 
@@ -138,6 +140,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIdentityDocHeader,
   ItemTypeTravel,
   ItemTypeTravelHeader,
+  ItemTypeShopping,
+  ItemTypeShoppingHeader,
   ItemTypeOther,
   ItemTypeOtherHeader
 };
@@ -163,10 +167,10 @@ NSString* GetFallbackDetailTextForLocalProfile(
   return @"";
 }
 
-// Returns true if the item type is not user deletable.
+// Returns true if the item type is user deletable.
 bool CanDeleteItemType(NSInteger itemType) {
   return itemType == ItemTypeAddress || itemType == ItemTypeIdentityDoc ||
-         itemType == ItemTypeTravel;
+         itemType == ItemTypeTravel || itemType == ItemTypeShopping;
 }
 
 ItemType ItemTypeForEntitySection(SectionIdentifier section_identifier) {
@@ -175,6 +179,8 @@ ItemType ItemTypeForEntitySection(SectionIdentifier section_identifier) {
       return ItemTypeIdentityDoc;
     case SectionIdentifierTravel:
       return ItemTypeTravel;
+    case SectionIdentifierShopping:
+      return ItemTypeShopping;
     case SectionIdentifierOther:
     default:
       return ItemTypeOther;
@@ -187,6 +193,8 @@ NSString* HeaderTextForEntitySection(SectionIdentifier section_identifier) {
       return l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
     case SectionIdentifierTravel:
       return l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
+    case SectionIdentifierShopping:
+      return l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE);
     case SectionIdentifierOther:
     default:
       return l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_OTHER_TITLE);
@@ -199,6 +207,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       return ItemTypeIdentityDocHeader;
     case SectionIdentifierTravel:
       return ItemTypeTravelHeader;
+    case SectionIdentifierShopping:
+      return ItemTypeShoppingHeader;
     case SectionIdentifierOther:
     default:
       return ItemTypeOtherHeader;
@@ -283,6 +293,18 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 @end
 
 @implementation AutofillProfileTableViewController
+
++ (autofill::DenseSet<autofill::EntityTypeName>)identityDocsForTesting {
+  return kIdentityDocs;
+}
+
++ (autofill::DenseSet<autofill::EntityTypeName>)travelForTesting {
+  return kTravel;
+}
+
++ (autofill::DenseSet<autofill::EntityTypeName>)shoppingForTesting {
+  return kShopping;
+}
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
@@ -396,6 +418,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   std::vector<const autofill::EntityInstance*> identityDocs;
   std::vector<const autofill::EntityInstance*> travelDocs;
+  std::vector<const autofill::EntityInstance*> shopping;
   std::vector<const autofill::EntityInstance*> other;
 
   for (const auto& instance : instances) {
@@ -403,6 +426,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       identityDocs.push_back(&instance);
     } else if (kTravel.contains(instance.type().name())) {
       travelDocs.push_back(&instance);
+    } else if (kShopping.contains(instance.type().name())) {
+      shopping.push_back(&instance);
     } else {
       other.push_back(&instance);
     }
@@ -410,6 +435,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
   [self addEntities:identityDocs toSection:SectionIdentifierIdentityDocs];
   [self addEntities:travelDocs toSection:SectionIdentifierTravel];
+  [self addEntities:shopping toSection:SectionIdentifierShopping];
   [self addEntities:other toSection:SectionIdentifierOther];
 }
 
@@ -904,6 +930,7 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
     }
     case ItemTypeIdentityDoc:
     case ItemTypeTravel:
+    case ItemTypeShopping:
     case ItemTypeOther: {
       AutofillAIEntityItem* item =
           base::apple::ObjCCastStrict<AutofillAIEntityItem>(
@@ -1521,6 +1548,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
                                 SectionIdentifierIdentityDocs];
                   [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
                                 SectionIdentifierTravel];
+                  [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
+                                SectionIdentifierShopping];
                   [weakSelf dismissDeletionSheet];
                 }
                  style:UIAlertActionStyleDestructive];

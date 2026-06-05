@@ -407,4 +407,25 @@ TEST_F(AutofillProfileTableViewControllerTest,
   EXPECT_TRUE(cellNonEditing2.userInteractionEnabled);
 }
 
+// Tests that all entity sections are mutually exclusive.
+TEST_F(AutofillProfileTableViewControllerTest,
+       EntitySectionsAreMutuallyExclusive) {
+  std::map<autofill::EntityTypeName, int> type_counts;
+  std::vector<autofill::DenseSet<autofill::EntityTypeName>> sections = {
+      [AutofillProfileTableViewController identityDocsForTesting],
+      [AutofillProfileTableViewController travelForTesting],
+      [AutofillProfileTableViewController shoppingForTesting]};
+
+  for (const auto& section : sections) {
+    for (autofill::EntityTypeName type : section) {
+      type_counts[type]++;
+    }
+  }
+
+  for (const auto& [type, count] : type_counts) {
+    EXPECT_EQ(count, 1) << "Type " << autofill::EntityType(type)
+                        << " appeared in more than one category";
+  }
+}
+
 }  // namespace
