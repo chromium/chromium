@@ -1113,6 +1113,9 @@ try_.orchestrator_builder(
         "chromium.enable_cleandead": 100,
     },
     main_list_view = "try",
+    # TODO(crbug.com/20485794): Experimentally disabled. Enable after getting
+    # data from experiment.
+    siso_remote_linking = False,
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
