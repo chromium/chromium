@@ -18,6 +18,7 @@
 
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                              identity:(id<SystemIdentity>)identity
+                   targetAccountEmail:(NSString*)targetAccountEmail
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
                            completion:
@@ -28,9 +29,13 @@
   if ((self = [super init])) {
     // Only `InstantSignin` can be opened with an identity selected.
     DCHECK(operation == AuthenticationOperation::kInstantSignin || !identity);
+    // Only `DeepLinkSignin` can be opened with a target account email.
+    DCHECK(operation == AuthenticationOperation::kDeepLinkSignin ||
+           !targetAccountEmail);
     CHECK(provider);
     _operation = operation;
     _identity = identity;
+    _targetAccountEmail = [targetAccountEmail copy];
     _accessPoint = accessPoint;
     _promoAction = promoAction;
     _completion = [completion copy];
@@ -52,6 +57,7 @@
         (const ChangeProfileContinuationProvider&)provider {
   return [self initWithOperation:operation
                                identity:identity
+                     targetAccountEmail:nil
                             accessPoint:accessPoint
                             promoAction:promoAction
                              completion:completion
@@ -118,6 +124,20 @@
                             promoAction:signin_metrics::PromoAction::
                                             PROMO_ACTION_NO_SIGNIN_PROMO
                              completion:nil
+      changeProfileContinuationProvider:DoNothingContinuationProvider()];
+}
+
+- (instancetype)initWithOperation:(AuthenticationOperation)operation
+               targetAccountEmail:(NSString*)targetAccountEmail
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      promoAction:(signin_metrics::PromoAction)promoAction {
+  return [self initWithOperation:operation
+                               identity:nil
+                     targetAccountEmail:targetAccountEmail
+                            accessPoint:accessPoint
+                            promoAction:promoAction
+                             completion:nil
+                   prepareChangeProfile:nil
       changeProfileContinuationProvider:DoNothingContinuationProvider()];
 }
 

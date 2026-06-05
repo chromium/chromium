@@ -115,7 +115,10 @@ source_set("signin_screen_provider") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "signin_utils_unittest.mm" ]
+  sources = [
+    "deeplink_signin/cross_device_signin_url_interceptor_unittest.mm",
+    "signin_utils_unittest.mm",
+  ]
   deps = [
     ":features",
     ":signin_impl",
@@ -129,6 +132,7 @@ source_set("unit_tests") {
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
@@ -144,6 +148,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//net",

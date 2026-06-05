@@ -77,11 +77,11 @@
   }
 }
 
-- (void)stop {
+- (void)stopAnimated:(BOOL)animated {
   [self stopChildCoordinator];
   _changeProfileContinuationProvider.Reset();
   _accountManagerService = nullptr;
-  [super stop];
+  [super stopAnimated:animated];
 }
 
 #pragma mark - Private

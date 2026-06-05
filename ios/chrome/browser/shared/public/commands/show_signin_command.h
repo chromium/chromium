@@ -42,6 +42,8 @@ enum class AuthenticationOperation {
   // It is a CHECK failure if history_sync::GetSkipReason does not return
   // `history_sync::HistorySyncSkipReason::kNone`.
   kHistorySync,
+  // Operation to trigger the deep link sign-in flow.
+  kDeepLinkSignin,
 };
 
 // A command to perform a sign in operation.
@@ -57,6 +59,7 @@ enum class AuthenticationOperation {
 // `completion` if its non-nil.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                              identity:(id<SystemIdentity>)identity
+                   targetAccountEmail:(NSString*)targetAccountEmail
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                           promoAction:(signin_metrics::PromoAction)promoAction
                            completion:
@@ -108,6 +111,12 @@ enum class AuthenticationOperation {
     changeProfileContinuationProvider:
         (const ChangeProfileContinuationProvider&)provider;
 
+// Initializes a ShowSigninCommand for deep link sign-in operation.
+- (instancetype)initWithOperation:(AuthenticationOperation)operation
+               targetAccountEmail:(NSString*)targetAccountEmail
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      promoAction:(signin_metrics::PromoAction)promoAction;
+
 // Replaces `self.completion` by a function calling both `self.completion` and
 // `completion`.
 - (void)addSigninCompletion:(SigninCoordinatorCompletionCallback)completion;
@@ -126,6 +135,12 @@ enum class AuthenticationOperation {
 
 // The operation to perform during the sign-in flow.
 @property(nonatomic, readonly) AuthenticationOperation operation;
+
+// Prefilled email for the sign-in flow (e.g. for deep link flow). This is
+// distinct from the `identity` parameter: if the account is not yet present on
+// the device, `identity` will be nil, but `targetAccountEmail` is still used to
+// prefill the sign-in/add-account flow.
+@property(nonatomic, copy, readonly) NSString* targetAccountEmail;
 
 // Customize content on sign-in and history sync screens.
 // Default: `kDefault`.
