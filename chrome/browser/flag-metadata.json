@@ -9428,7 +9428,7 @@
   {
     "name": "use-passthrough-command-decoder",
     "owners": [ "//third_party/angle/OWNERS" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 156
   },
   {
     "name": "use-persistent-cache-for-code-cache",
