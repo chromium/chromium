@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -56,6 +57,15 @@ class MockEmailVerificationRequest : public EmailVerificationRequest {
                const std::string&,
                EmailVerifier::OnEmailVerifiedCallback),
               (override));
+  void AddObserver(Observer* observer) override {
+    captured_observer_ = observer;
+    EmailVerificationRequest::AddObserver(observer);
+  }
+
+  Observer* captured_observer() { return captured_observer_; }
+
+ private:
+  raw_ptr<Observer> captured_observer_ = nullptr;
 };
 
 class MockRequestBuilder {
@@ -142,10 +152,9 @@ TEST_F(EmailVerifierImplTest, TestStatefulFlow) {
   issuer.issuance_endpoint = kIssuanceEndpoint;
 
   EXPECT_CALL(*request_ptr_iv, CheckIfVerifiable(kEmail, _))
-      .WillOnce(testing::WithArgs<1>(
-          [&](EmailVerifier::IsVerifiableCallback callback) {
-            std::move(callback).Run(issuer);
-          }));
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
+        std::move(callback).Run(issuer);
+      }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> verifiable_cb;
   verifier.CheckIfVerifiable(kEmail, verifiable_cb.GetCallback());
@@ -153,8 +162,8 @@ TEST_F(EmailVerifierImplTest, TestStatefulFlow) {
   EXPECT_EQ(verifiable_cb.Get(), issuer);
 
   EXPECT_CALL(*request_ptr_v, Verify(_, "nonce", _))
-      .WillOnce(testing::WithArgs<2>(
-          [&](EmailVerifier::OnEmailVerifiedCallback callback) {
+      .WillOnce(
+          WithArgs<2>([&](EmailVerifier::OnEmailVerifiedCallback callback) {
             std::move(callback).Run("token");
           }));
 
@@ -204,16 +213,14 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
 
   // Set up expectations and capture callbacks for the two requests.
   EXPECT_CALL(*request_ptr_iv1, CheckIfVerifiable("test1@example.com", _))
-      .WillOnce(testing::WithArgs<1>(
-          [&](EmailVerifier::IsVerifiableCallback callback) {
-            std::move(callback).Run(issuer1);
-          }));
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
+        std::move(callback).Run(issuer1);
+      }));
 
   EXPECT_CALL(*request_ptr_iv2, CheckIfVerifiable("test2@example.com", _))
-      .WillOnce(testing::WithArgs<1>(
-          [&](EmailVerifier::IsVerifiableCallback callback) {
-            std::move(callback).Run(issuer2);
-          }));
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
+        std::move(callback).Run(issuer2);
+      }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> verifiable_cb1;
   verifier.CheckIfVerifiable("test1@example.com", verifiable_cb1.GetCallback());
@@ -255,6 +262,67 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
   // Complete in reverse order to test concurrency.
   std::move(callback2).Run("token2");
   std::move(callback1).Run("token1");
+}
+
+TEST_F(EmailVerifierImplTest, TimingHistograms) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<StrictMock<MockEmailVerificationRequest>> request_iv =
+      std::make_unique<StrictMock<MockEmailVerificationRequest>>(*main_rfh());
+  StrictMock<MockEmailVerificationRequest>* request_ptr_iv = request_iv.get();
+  EXPECT_CALL(*request_ptr_iv, Destroy());
+
+  std::unique_ptr<StrictMock<MockEmailVerificationRequest>> request_v =
+      std::make_unique<StrictMock<MockEmailVerificationRequest>>(*main_rfh());
+  StrictMock<MockEmailVerificationRequest>* request_ptr_v = request_v.get();
+  EXPECT_CALL(*request_ptr_v, Destroy());
+
+  MockRequestBuilder builder;
+  EXPECT_CALL(builder, Run)
+      .WillOnce(Return(ByMove(std::move(request_iv))))
+      .WillOnce(Return(ByMove(std::move(request_v))));
+
+  EmailVerifierImpl verifier(base::BindRepeating(&MockRequestBuilder::Run,
+                                                 base::Unretained(&builder)));
+
+  const std::string kEmail = "test@example.com";
+  const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+
+  EmailVerifier::Result issuer;
+  issuer.email = kEmail;
+  issuer.issuer_site = net::SchemefulSite(GURL("https://example.com"));
+  issuer.issuance_endpoint = kIssuanceEndpoint;
+
+  EXPECT_CALL(*request_ptr_iv, CheckIfVerifiable(kEmail, _))
+      .WillOnce(WithArgs<1>([&](EmailVerifier::IsVerifiableCallback callback) {
+        request_ptr_iv->captured_observer()->OnIsVerifiableStart(
+            request_ptr_iv);
+        request_ptr_iv->captured_observer()->OnIsVerifiableComplete(
+            request_ptr_iv,
+            blink::mojom::EmailVerificationRequestResult::kSuccess);
+        std::move(callback).Run(issuer);
+      }));
+
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> verifiable_cb;
+  verifier.CheckIfVerifiable(kEmail, verifiable_cb.GetCallback());
+  EXPECT_EQ(verifiable_cb.Get(), issuer);
+
+  EXPECT_CALL(*request_ptr_v, Verify(_, "nonce", _))
+      .WillOnce(
+          WithArgs<2>([&](EmailVerifier::OnEmailVerifiedCallback callback) {
+            request_ptr_v->captured_observer()->OnVerifyStart(request_ptr_v);
+            request_ptr_v->captured_observer()->OnVerifyComplete(
+                request_ptr_v,
+                blink::mojom::EmailVerificationRequestResult::kSuccess);
+            std::move(callback).Run("token");
+          }));
+
+  base::MockCallback<EmailVerifier::OnEmailVerifiedCallback> verified_cb;
+  EXPECT_CALL(verified_cb, Run(Optional(std::string("token"))));
+  verifier.Verify(issuer, "nonce", verified_cb.Get());
+
+  histogram_tester.ExpectTotalCount("Blink.Evp.Timing.IsVerifiable", 1);
+  histogram_tester.ExpectTotalCount("Blink.Evp.Timing.Verify", 1);
 }
 
 }  // namespace content::webid

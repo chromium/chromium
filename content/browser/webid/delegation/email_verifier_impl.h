@@ -9,9 +9,12 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "content/browser/webid/delegation/email_verification_request.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/email_verifier.h"
 
@@ -26,8 +29,6 @@ namespace content {
 class RenderFrameHostImpl;
 
 namespace webid {
-
-class EmailVerificationRequest;
 
 class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
  public:
@@ -49,13 +50,42 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
   void Verify(const EmailVerifier::Result& result,
               const std::string& nonce,
               EmailVerifier::OnEmailVerifiedCallback callback) override;
-
  private:
+  class PerformanceMetricsObserver : public EmailVerificationRequest::Observer {
+   public:
+    PerformanceMetricsObserver();
+    ~PerformanceMetricsObserver() override;
+
+    void OnIsVerifiableStart(EmailVerificationRequest* request) override;
+    void OnIsVerifiableComplete(
+        EmailVerificationRequest* request,
+        blink::mojom::EmailVerificationRequestResult status) override;
+    void OnVerifyStart(EmailVerificationRequest* request) override;
+    void OnVerifyComplete(
+        EmailVerificationRequest* request,
+        blink::mojom::EmailVerificationRequestResult status) override;
+    void OnRequestDestroyed(EmailVerificationRequest* request) override;
+
+   private:
+    // Maps request pointers to their corresponding start times. We use maps
+    // (instead of scalar members) because multiple requests can execute
+    // concurrently, and using the request pointer as a key guarantees timing
+    // isolation. Request lifetimes are safely tracked, and entries are erased
+    // either on completion, or inside `OnRequestDestroyed()` if a request is
+    // cancelled or destroyed prematurely.
+    base::flat_map<EmailVerificationRequest*, base::TimeTicks>
+        is_verifiable_start_times_;
+    base::flat_map<EmailVerificationRequest*, base::TimeTicks>
+        verify_start_times_;
+  };
+
   void OnRequestComplete(std::unique_ptr<EmailVerificationRequest> request,
                          EmailVerifier::OnEmailVerifiedCallback callback,
                          std::optional<std::string> result);
 
   RequestBuilder request_builder_;
+
+  PerformanceMetricsObserver performance_metrics_observer_;
 
   base::WeakPtrFactory<EmailVerifierImpl> weak_ptr_factory_{this};
 };
