@@ -130,6 +130,15 @@ class TabBottomSheetPeekView extends RelativeLayout {
     }
 
     /**
+     * Sets the action button content description.
+     *
+     * @param contentDescription The content description for accessibility.
+     */
+    public void setActionButtonContentDescription(@Nullable String contentDescription) {
+        mActionButton.setContentDescription(contentDescription);
+    }
+
+    /**
      * Sets the click listener for the action button.
      *
      * @param listener The callback to be invoked.

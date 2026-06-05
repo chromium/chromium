@@ -47,6 +47,9 @@ class TabBottomSheetPeekViewBinder {
         } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING == propertyKey) {
             view.setActionButtonHorizontalPadding(
                     model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_HORIZONTAL_PADDING));
+        } else if (TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
+            view.setActionButtonContentDescription(
+                    model.get(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION));
         } else if (TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED == propertyKey) {
             view.setActionButtonClickListener(
                     v -> model.get(TabBottomSheetPeekProperties.ON_ACTION_BUTTON_CLICKED).run());

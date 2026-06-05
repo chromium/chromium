@@ -143,6 +143,12 @@ public class TabBottomSheetPeekViewBinderTest {
     }
 
     @Test
+    public void testActionButtonContentDescription() {
+        mModel.set(TabBottomSheetPeekProperties.ACTION_BUTTON_CONTENT_DESCRIPTION, TEST_STRING);
+        verify(mView).setActionButtonContentDescription(TEST_STRING);
+    }
+
+    @Test
     public void testOnActionButtonClicked() {
         mClicked = false;
         mModel =
