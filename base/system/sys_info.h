@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
