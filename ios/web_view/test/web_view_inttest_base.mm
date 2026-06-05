@@ -109,11 +109,14 @@ WebViewInttestBase::WebViewInttestBase() : WebViewInttestBase(nil) {}
 
 WebViewInttestBase::WebViewInttestBase(CWVEarlyInitFlags* flags) {
   // Explicitly start global state machinery before accessing any CWV APIs.
-  if (flags) {
-    [[CWVGlobalState sharedInstance] earlyInitWithFlags:flags];
-  } else {
-    [[CWVGlobalState sharedInstance] earlyInit];
+  if (!flags) {
+    flags = [[CWVEarlyInitFlags alloc] init];
+    // TODO(crbug.com/520177478): Remove when this option is enabled by default,
+    // or when there is an alternate solution for setting CWVEarlyInitFlags
+    // in unittests.
+    flags.autofillAcrossIframesEnabled = YES;
   }
+  [[CWVGlobalState sharedInstance] earlyInitWithFlags:flags];
   [[CWVGlobalState sharedInstance] start];
 
   [CWVWebView setWebInspectorEnabled:YES];

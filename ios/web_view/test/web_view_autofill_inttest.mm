@@ -27,15 +27,6 @@ using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-namespace {
-
-CWVEarlyInitFlags* GetInitFlags() {
-  CWVEarlyInitFlags* flags = [[CWVEarlyInitFlags alloc] init];
-  flags.autofillAcrossIframesEnabled = YES;
-  return flags;
-}
-
-}  // namespace
 
 // A stub object that observes the |webViewDidFinishNavigation| event of
 // CWVNavigationDelegate. CWVNavigationDelegate is also used as navigation
@@ -100,8 +91,7 @@ NSString* const kTestFormHtml =
 class WebViewAutofillTest : public WebViewInttestBase {
  protected:
   WebViewAutofillTest()
-      : WebViewInttestBase(GetInitFlags()),
-        autofill_controller_delegate_(
+      : autofill_controller_delegate_(
             OCMProtocolMock(@protocol(CWVAutofillControllerDelegate))) {
     data_source_ =
         OCMStrictProtocolMock(@protocol(CWVSyncControllerDataSource));
