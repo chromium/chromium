@@ -796,7 +796,7 @@ void ExecutionEngine::KickOffNextAction() {
 
 void ExecutionEngine::SafetyChecksForNextAction() {
   TRACE_EVENT0("actor", "ExecutionEngine::SafetyChecksForNextAction");
-  tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
+  tabs::TabInterface* tab = GetNextAction().GetTabForValidation().Get();
 
   if (!tab) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
@@ -882,7 +882,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!action_sequence_.empty());
 
-  tabs::TabInterface* tab = GetNextAction().GetTabHandle().Get();
+  tabs::TabInterface* tab = GetNextAction().GetTabForValidation().Get();
   if (!tab) {
     journal_->Log(GURL::EmptyGURL(), task_->id(), "Act Failed",
                   JournalDetailsBuilder()
@@ -931,13 +931,17 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
 }
 
 void ExecutionEngine::FailedOnTabBeforeToolCreation() {
-  tabs::TabHandle tab = GetNextAction().GetTabHandle();
-  journal_->Log(GetNextAction().GetURLForJournal(), task_->id(), "Act Failed",
-                JournalDetailsBuilder()
-                    .Add("tabId", tab.raw_value())
-                    .AddError("Associating tab for failed action")
-                    .Build());
-  task_->AddTab(tab, /*stop_task_on_detach=*/true, base::DoNothing());
+  journal_->Log(
+      GetNextAction().GetURLForJournal(), task_->id(), "Act Failed",
+      JournalDetailsBuilder()
+          .Add("tabId", GetNextAction().GetTabForValidation().raw_value())
+          .AddError("Associating tab for failed action")
+          .Build());
+  tabs::TabHandle actuation_tab = GetNextAction().GetTabHandle();
+  if (actuation_tab != tabs::TabHandle::Null()) {
+    task_->AddTab(actuation_tab, /*stop_task_on_detach=*/true,
+                  base::DoNothing());
+  }
 }
 
 void ExecutionEngine::ExecuteNextAction() {
@@ -1026,12 +1030,12 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   RecordToolTimings(GetInProgressAction().Name(), end_time - action_start_time_,
                     end_time - *result->execution_end_time);
 
-  if (GetInProgressAction().GetTabHandle() != tabs::TabHandle::Null()) {
+  if (GetInProgressAction().GetTabForValidation() != tabs::TabHandle::Null()) {
     observation_strategy_.VoteForScreenshot(
-        GetInProgressAction().GetTabHandle(),
+        GetInProgressAction().GetTabForValidation(),
         static_cast<ScreenshotPolicy>(result->screenshot_policy));
     observation_strategy_.VoteForPageContentExtraction(
-        GetInProgressAction().GetTabHandle(),
+        GetInProgressAction().GetTabForValidation(),
         static_cast<PageContentExtractionPolicy>(result->page_content_policy));
   }
 

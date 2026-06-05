@@ -58,6 +58,10 @@ class ToolRequest {
   // navigate tool is tab scoped but navigates *away* from the current URL.
   virtual bool RequiresUrlCheckInCurrentTab() const;
 
+  // Returns the tab handle that should be used for safety checks, if any.
+  // By default, this is the target tab of the request (GetTabHandle()).
+  virtual tabs::TabHandle GetTabForValidation() const;
+
   // Returns the name to use for the journal when recording entries for this
   // request. This should only be overridden if Name() isn't descriptive enough.
   virtual std::string JournalEvent() const;

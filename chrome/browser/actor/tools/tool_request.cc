@@ -60,6 +60,10 @@ bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
   return IsTabScoped();
 }
 
+tabs::TabHandle ToolRequest::GetTabForValidation() const {
+  return GetTabHandle();
+}
+
 std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {
   return std::nullopt;
 }

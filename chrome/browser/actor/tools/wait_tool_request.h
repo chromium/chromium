@@ -30,6 +30,8 @@ class WaitToolRequest : public ToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
+  bool RequiresUrlCheckInCurrentTab() const override;
+  tabs::TabHandle GetTabForValidation() const override;
 
  private:
   base::TimeDelta wait_duration_;

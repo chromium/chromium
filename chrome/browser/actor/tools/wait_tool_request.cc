@@ -33,4 +33,12 @@ std::string_view WaitToolRequest::Name() const {
   return kName;
 }
 
+bool WaitToolRequest::RequiresUrlCheckInCurrentTab() const {
+  return observe_tab_handle_ != tabs::TabHandle::Null();
+}
+
+tabs::TabHandle WaitToolRequest::GetTabForValidation() const {
+  return observe_tab_handle_;
+}
+
 }  // namespace actor
