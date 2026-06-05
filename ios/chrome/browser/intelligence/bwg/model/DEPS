@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/actor/public/mojom",
   "+ios/chrome/browser/app_bar/ui",
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/fullscreen/model",

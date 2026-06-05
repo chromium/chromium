@@ -67,12 +67,6 @@ enum class ActorTaskStoppedReason {
   kUserStartedNewChat = 6
 };
 
-// Represents the result code for actions execution.
-enum ActionResultCode {
-  kActionResultSuccess = 0,
-  kActionResultFailure = 1,
-};
-
 // Represents the result of an action execution.
 // TODO(crbug.com/505085267): Add latency and stabilization information.
 struct ActionResult {

@@ -4,43 +4,27 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
 namespace {
-
-class TestTool : public actor::ActorTool {
- public:
-  TestTool(base::WeakPtr<web::WebState> web_state) : web_state_(web_state) {}
-  ~TestTool() override = default;
-
-  void Execute(actor::ToolExecutionCallback callback) override {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), actor::ToolExecutionResult::Ok()));
-  }
-
-  base::WeakPtr<web::WebState> GetTargetWebState() const override {
-    return web_state_;
-  }
-
- private:
-  base::WeakPtr<web::WebState> web_state_;
-};
 
 class GeminiActuationHandlerTest : public PlatformTest {
  public:
@@ -114,7 +98,9 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_InvalidProto) {
       optimization_guide::proto::ActionsResult actions_result;
       EXPECT_TRUE(actions_result.ParseFromArray(
           [serializedActionsResult bytes], [serializedActionsResult length]));
-      EXPECT_EQ(actions_result.action_result(), actor::kActionResultFailure);
+      EXPECT_EQ(actions_result.action_result(),
+                static_cast<int32_t>(
+                    actor::mojom::ActionResultCode::kArgumentsInvalid));
       EXPECT_EQ(actions_result.error_message(), "Failed to parse action proto");
     }
   };
@@ -143,7 +129,8 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_EmptyProtos) {
       optimization_guide::proto::ActionsResult actions_result;
       EXPECT_TRUE(actions_result.ParseFromArray(
           [serializedActionsResult bytes], [serializedActionsResult length]));
-      EXPECT_EQ(actions_result.action_result(), actor::kActionResultSuccess);
+      EXPECT_EQ(actions_result.action_result(),
+                static_cast<int32_t>(actor::mojom::ActionResultCode::kOk));
       EXPECT_EQ(actions_result.tabs_size(), 1);
       EXPECT_EQ(actions_result.tabs(0).id(), 123);
     }
@@ -184,7 +171,9 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_MultipleProtos) {
       optimization_guide::proto::ActionsResult actions_result;
       EXPECT_TRUE(actions_result.ParseFromArray(
           [serializedActionsResult bytes], [serializedActionsResult length]));
-      EXPECT_NE(actions_result.action_result(), 0);
+      EXPECT_EQ(
+          actions_result.action_result(),
+          static_cast<int32_t>(actor::mojom::ActionResultCode::kToolUnknown));
     }
   };
 
@@ -346,7 +335,9 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_UnmappedTaskId) {
     optimization_guide::proto::ActionsResult actions_result;
     EXPECT_TRUE(actions_result.ParseFromArray(
         [serializedActionsResult bytes], [serializedActionsResult length]));
-    EXPECT_EQ(actions_result.action_result(), actor::kActionResultFailure);
+    EXPECT_EQ(
+        actions_result.action_result(),
+        static_cast<int32_t>(actor::mojom::ActionResultCode::kTaskWentAway));
     EXPECT_EQ(actions_result.error_message(),
               "Failed to perform actions: Task ID not found.");
   };
@@ -356,6 +347,58 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_UnmappedTaskId) {
              serializedActionProtos:@[ data ]
                     completionBlock:completionBlock];
   EXPECT_TRUE(callback_called);
+}
+
+// Tests that performActions correctly sets the error code returned by the tool
+// execution.
+TEST_F(GeminiActuationHandlerTest, PerformActions_FailureCodePropagated) {
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
+  // Mark the tab as unrealized so that NavigateTool execution fails.
+  fake_web_state_->SetIsRealized(false);
+
+  GeminiActuationHandler* handler = [[GeminiActuationHandler alloc]
+      initWithActorService:actor_service_
+              webStateList:browser_->GetWebStateList()];
+
+  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
+
+  optimization_guide::proto::Action action;
+  auto* navigate = action.mutable_navigate();
+  navigate->set_tab_id(123);
+  navigate->set_url("https://example.com");
+
+  std::string serialized;
+  action.SerializeToString(&serialized);
+  NSData* data = [NSData dataWithBytes:serialized.data()
+                                length:serialized.size()];
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  __block BOOL callback_called = NO;
+  auto completionBlock = ^(NSData* serializedActionsResult) {
+    callback_called = YES;
+    if (serializedActionsResult) {
+      optimization_guide::proto::ActionsResult actions_result;
+      EXPECT_TRUE(actions_result.ParseFromArray(
+          [serializedActionsResult bytes], [serializedActionsResult length]));
+      EXPECT_EQ(actions_result.action_result(),
+                static_cast<int32_t>(
+                    actor::mojom::ActionResultCode::kNavigateFailedToStart));
+      EXPECT_EQ(actions_result.index_of_failed_action(), 0);
+    }
+    quit_closure.Run();
+  };
+
+  [handler performActionsWithTaskID:task_id
+                         taskUpdate:@"Update"
+             serializedActionProtos:@[ data ]
+                    completionBlock:completionBlock];
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  [handler stopTaskWithID:task_id
+                   reason:actor::ActorTaskStoppedReason::kTaskComplete];
 }
 
 }  // namespace
