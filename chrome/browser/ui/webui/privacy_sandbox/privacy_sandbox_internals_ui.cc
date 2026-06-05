@@ -50,24 +50,6 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
   source->AddBoolean("isPrivacySandboxInternalsDevUIEnabled",
                      base::FeatureList::IsEnabled(
                          privacy_sandbox::kPrivacySandboxInternalsDevUI));
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
-    source->AddResourcePath("private-state-tokens",
-                            IDR_PRIVATE_STATE_TOKENS_PRIVATE_STATE_TOKENS_HTML);
-  }
-
-  static constexpr webui::LocalizedString pstDevUiPageStrings[] = {
-      // Localized Strings
-      {"privateStateTokensDescriptionLabel",
-       IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL},
-      {"privateStateTokensHeadingLabel",
-       IDS_PRIVATE_STATE_TOKENS_HEADING_LABEL},
-      {"privateStateTokensExternalLinkLabel", IDS_LEARN_MORE}};
-
-  source->AddLocalizedStrings(pstDevUiPageStrings);
-
-#endif
 }
 
 PrivacySandboxInternalsUI::~PrivacySandboxInternalsUI() = default;
