@@ -345,6 +345,11 @@ void RendererWebAudioDeviceImpl::Resume() {
 void RendererWebAudioDeviceImpl::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
   SendLogMessage(base::StringPrintf("%s", __func__));
+  // If active, pause the silent sink suspender before stopping the sink to
+  // ensure no callbacks are executed during teardown.
+  if (silent_sink_suspender_) {
+    silent_sink_suspender_->OnPaused();
+  }
   if (sink_) {
     sink_->Stop();
     sink_ = nullptr;
