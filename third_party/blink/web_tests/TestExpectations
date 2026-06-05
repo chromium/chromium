@@ -2878,7 +2878,6 @@ crbug.com/504770562 external/wpt/mixed-content/gen/sharedworker-module.http-rp/u
 crbug.com/504770562 [ Win ] external/wpt/mixed-content/gen/srcdoc-inherit.http-rp/opt-in/worklet-animation.https.html [ Pass Timeout ]
 crbug.com/504769883 external/wpt/webdriver/tests/bidi/browsing_context/reload/frame.py [ Failure ]
 crbug.com/504768645 virtual/jxl-enabled/external/wpt/jpegxl/progressive-lf.html [ Failure ]
-crbug.com/503879985 [ Win ] external/wpt/css/css-flexbox/getcomputedstyle/first-line-computed-style.html [ Pass Timeout ]
 crbug.com/503526631 external/wpt/webdriver/tests/bidi/network/before_request_sent/before_request_sent.py [ Failure ]
 crbug.com/503526631 external/wpt/webdriver/tests/bidi/network/get_data/request.py [ Failure ]
 crbug.com/503526631 external/wpt/webdriver/tests/bidi/script/get_realms/type.py [ Failure ]
