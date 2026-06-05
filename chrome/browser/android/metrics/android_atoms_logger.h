@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
@@ -66,6 +67,7 @@ class AndroidAtomsLogger {
 
   bool metrics_reporting_enabled_ = true;
   PrefChangeRegistrar pref_change_registrar_;
+  base::CallbackListSubscription consent_change_subscription_;
   std::vector<
       std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
       observers_;

@@ -14,6 +14,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace chrome::android::westworld {
@@ -76,8 +78,22 @@ void AndroidAtomsLogger::InitializePrefRegistrar() {
   DCHECK(g_browser_process);
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  // TODO: crbug.com/516867526 - Migrate to
-  // metrics::MetricsReportingChoiceService when it's available to be used.
+
+  if (metrics::MetricsReportingChoiceService::
+          IsMetricsConsentRestructureFeatureEnabled(local_state)) {
+    metrics::MetricsReportingChoiceService* service =
+        g_browser_process->GetMetricsServicesManager()
+            ->GetMetricsReportingChoiceService();
+    metrics_reporting_enabled_ =
+        metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
+            local_state);
+    consent_change_subscription_ =
+        service->AddOnMetricsReportingLevelChangedCallback(
+            base::BindRepeating(&AndroidAtomsLogger::OnMetricsConsentChanged,
+                                base::Unretained(this)));
+    return;
+  }
+
   metrics_reporting_enabled_ =
       local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 
@@ -89,10 +105,18 @@ void AndroidAtomsLogger::InitializePrefRegistrar() {
 }
 
 void AndroidAtomsLogger::OnMetricsConsentChanged() {
-  // TODO: crbug.com/516867526 - Migrate to
-  // metrics::MetricsReportingChoiceService when it's available to be used.
-  metrics_reporting_enabled_ = g_browser_process->local_state()->GetBoolean(
-      metrics::prefs::kMetricsReportingEnabled);
+  PrefService* local_state = g_browser_process->local_state();
+
+  if (metrics::MetricsReportingChoiceService::
+          IsMetricsConsentRestructureFeatureEnabled(local_state)) {
+    metrics_reporting_enabled_ =
+        metrics::MetricsReportingChoiceService::IsBasicMetricsReportingEnabled(
+            local_state);
+    return;
+  }
+
+  metrics_reporting_enabled_ =
+      local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
 }
 
 void AndroidAtomsLogger::OnHistogramSample(
