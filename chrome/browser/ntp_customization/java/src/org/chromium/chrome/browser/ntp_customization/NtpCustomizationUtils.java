@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN;
@@ -331,7 +332,11 @@ public class NtpCustomizationUtils {
             }
             return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
         } else if (imageType == NtpBackgroundType.COLOR_FROM_HEX) {
-            color = getCustomizedPrimaryColorFromSharedPreference();
+            boolean isNightMode = ColorUtils.inNightMode(context);
+            color =
+                    isNightMode
+                            ? getCustomizedPrimaryColorDarkFromSharedPreference()
+                            : getCustomizedPrimaryColorFromSharedPreference();
         } else if (imageType == NtpBackgroundType.THEME_COLLECTION) {
             if (checkDailyRefresh) {
                 ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForThemeCollection();
@@ -717,6 +722,21 @@ public class NtpCustomizationUtils {
         prefs.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH);
     }
 
+    /** Saves the colors of the given NtpThemeColorFromHexInfo to the ShardPreference. */
+    public static void saveThemeColorFromHexInfoToSharedPreference(
+            NtpThemeColorFromHexInfo colorInfo) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR,
+                colorInfo.backgroundColorLight);
+        prefsManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK,
+                colorInfo.backgroundColorDark);
+        prefsManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR, colorInfo.primaryColorLight);
+        prefsManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, colorInfo.primaryColorDark);
+    }
+
     /**
      * Sets the NTP's background color to the SharedPreference.
      *
@@ -732,6 +752,14 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, defaultColor);
+    }
+
+    /** Gets the NTP's background color in dark mode from the SharedPreference. */
+    public static @ColorInt int getBackgroundColorDarkFromSharedPreference(
+            @ColorInt int defaultColor) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK, defaultColor);
     }
 
     /**
@@ -801,6 +829,13 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 NTP_CUSTOMIZATION_PRIMARY_COLOR, NtpThemeColorInfo.COLOR_NOT_SET);
+    }
+
+    /** Gets the customized primary color in dark mode from the SharedPreference. */
+    public static @ColorInt int getCustomizedPrimaryColorDarkFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readInt(
+                NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, NtpThemeColorInfo.COLOR_NOT_SET);
     }
 
     /**
@@ -949,6 +984,7 @@ public class NtpCustomizationUtils {
     static void resetCustomizedColors() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
+        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
         prefsManager.removeKey(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
@@ -958,6 +994,7 @@ public class NtpCustomizationUtils {
     static void resetCustomizedImage() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
         prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO);
         prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH);

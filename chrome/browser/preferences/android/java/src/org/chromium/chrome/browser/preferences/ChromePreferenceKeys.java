@@ -212,9 +212,17 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_BACKGROUND_COLOR =
             "Chrome.NtpCustomization.NtpBackgroundColor";
 
+    /** The background color of NTP in dark mode. */
+    public static final String NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK =
+            "Chrome.NtpCustomization.NtpBackgroundColorDark";
+
     /** The primary color for customizing NTP. */
     public static final String NTP_CUSTOMIZATION_PRIMARY_COLOR =
             "Chrome.NtpCustomization.NtpCustomizationPrimaryColor";
+
+    /** The primary color for customizing NTP in dark mode. */
+    public static final String NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK =
+            "Chrome.NtpCustomization.NtpCustomizationPrimaryColorDark";
 
     /** The NtpThemeColorId of customized color for NTP. */
     public static final String NTP_CUSTOMIZATION_THEME_COLOR_ID =
@@ -1192,7 +1200,9 @@ public final class ChromePreferenceKeys {
                 NTP_CUSTOMIZATION_BACKGROUND_TYPE,
                 NTP_CUSTOMIZATION_THEME_COLOR_ID,
                 NTP_CUSTOMIZATION_BACKGROUND_COLOR,
+                NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK,
                 NTP_CUSTOMIZATION_PRIMARY_COLOR,
+                NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK,
                 NTP_BACKGROUND_IMAGE_PORTRAIT_INFO,
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO,
                 NTP_CUSTOMIZATION_BACKGROUND_INFO,
