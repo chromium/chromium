@@ -113,17 +113,13 @@ class ShowInstanceTask : public GlicInvokeTask {
 // Task that sets up the instance for a hidden panel.
 class SetupHiddenPanelTask : public GlicInvokeTask {
  public:
-  SetupHiddenPanelTask(
-      GlicInstanceImpl* instance,
-      tabs::TabInterface* tab,
-      std::optional<mojom::InvocationSource> invocation_source = std::nullopt);
+  SetupHiddenPanelTask(GlicInstanceImpl* instance, tabs::TabInterface* tab);
   ~SetupHiddenPanelTask() override;
   void Start(base::OnceClosure done_callback) override;
 
  private:
   raw_ptr<GlicInstanceImpl> instance_;
   raw_ptr<tabs::TabInterface> tab_;
-  std::optional<mojom::InvocationSource> invocation_source_;
 };
 
 class MaybeInitializeHiddenClientTask : public GlicInvokeTask {

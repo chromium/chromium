@@ -347,8 +347,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest, FocusedTabChange) {
   EXPECT_TRUE(underline2->IsShowing());
 
   GetTabListInterface()->ActivateTab(tab1->GetHandle());
-  instance->Show(ShowOptions::ForSidePanel(
-      *tab1, mojom::InvocationSource::kTopChromeButton));
+  instance->Show(ShowOptions::ForSidePanel(*tab1));
   EXPECT_TRUE(underline1->IsShowing());
   EXPECT_TRUE(underline2->IsShowing());
 }
@@ -367,8 +366,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
   ASSERT_OK(WaitForGlicClient(instance));
   instance->host().SetContextAccessIndicator(true);
-  instance->Show(ShowOptions::ForSidePanel(
-      *tab1, mojom::InvocationSource::kTopChromeButton));
+  instance->Show(ShowOptions::ForSidePanel(*tab1));
 
   // Underlines of all pinned tabs should show when the glic window is opened.
   if (!underline1->IsShowing()) {

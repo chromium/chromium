@@ -498,8 +498,7 @@ void GlicFloatingUi::SwitchConversation(
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   // NOTE: `this` may be destroyed after this call.
   delegate_->SwitchConversation(
-      ShowOptions::ForFloating(GetGlicWidget()->GetWindowBoundsInScreen(),
-                               mojom::InvocationSource::kConversationSwitch),
+      ShowOptions::ForFloating(GetGlicWidget()->GetWindowBoundsInScreen()),
       std::move(info), std::move(callback));
 }
 

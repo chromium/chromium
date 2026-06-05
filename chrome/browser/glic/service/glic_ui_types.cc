@@ -26,6 +26,8 @@ std::string DescribeEmbedderKeyForTesting(const EmbedderKey& key) {
                     key);
 }
 
+ShowOptions::ShowOptions(EmbedderOptions embedder_options_in)
+    : embedder_options(embedder_options_in) {}
 ShowOptions::ShowOptions(EmbedderOptions embedder_options_in,
                          mojom::InvocationSource source_in)
     : invocation_source(source_in), embedder_options(embedder_options_in) {}
@@ -36,7 +38,6 @@ ShowOptions::~ShowOptions() = default;
 
 // static
 ShowOptions ShowOptions::ForFloating(tabs::TabInterface::Handle source_tab,
-                                     mojom::InvocationSource invocation_source,
                                      mojom::WebClientMode initial_mode) {
 // TODO:  Use an abstraction for the initial bounds and default size that can
 // work for android and desktop. Also note that `GetBrowserWindowInterface`
@@ -49,28 +50,28 @@ ShowOptions ShowOptions::ForFloating(tabs::TabInterface::Handle source_tab,
   return ShowOptions{
       FloatingShowOptions{GlicWidget::GetInitialBounds(
                               anchor_browser, GlicFloatingUi::GetDefaultSize()),
-                          source_tab, initial_mode},
-      invocation_source};
+                          source_tab, initial_mode}};
 #else
   return ShowOptions{FloatingShowOptions{.source_tab = source_tab,
-                                         .initial_mode = initial_mode},
-                     invocation_source};
+                                         .initial_mode = initial_mode}};
 #endif
 }
 
 ShowOptions ShowOptions::ForFloating(gfx::Rect initial_bounds,
-                                     mojom::InvocationSource invocation_source,
                                      mojom::WebClientMode initial_mode) {
-  return ShowOptions{
-      FloatingShowOptions{initial_bounds, tabs::TabInterface::Handle::Null(),
-                          initial_mode},
-      invocation_source};
+  return ShowOptions{FloatingShowOptions{
+      initial_bounds, tabs::TabInterface::Handle::Null(), initial_mode}};
 }
 
-ShowOptions ShowOptions::ForSidePanel(
-    tabs::TabInterface& bound_tab,
-    mojom::InvocationSource invocation_source) {
-  return ShowOptions{SidePanelShowOptions{bound_tab}, invocation_source};
+ShowOptions ShowOptions::ForSidePanel(tabs::TabInterface& bound_tab) {
+  return ShowOptions{SidePanelShowOptions{bound_tab}};
+}
+
+ShowOptions ShowOptions::ForSidePanel(tabs::TabInterface& bound_tab,
+                                      GlicPinTrigger pin_trigger) {
+  SidePanelShowOptions side_panel_options{bound_tab};
+  side_panel_options.pin_trigger = pin_trigger;
+  return ShowOptions{side_panel_options};
 }
 
 ShowOptions ShowOptions::ForSidePanel(

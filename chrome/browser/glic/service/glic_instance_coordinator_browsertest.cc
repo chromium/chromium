@@ -60,8 +60,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 
-#include "base/android/device_info.h"
-#include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -74,21 +72,6 @@
 #endif
 
 namespace glic {
-
-namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-void ForceExpandGlicSidePanel(tabs::TabInterface* tab) {
-  if (!base::android::device_info::is_desktop()) {
-    auto* coordinator = static_cast<GlicSidePanelCoordinatorAndroid*>(
-        GlicSidePanelCoordinator::GetForTab(tab));
-    CHECK(coordinator);
-    coordinator->OnOpened(true);
-  }
-}
-#endif
-
-}  // namespace
 
 class GlicInstanceCoordinatorBrowserTest
     : public GlicBrowserTestMixin<PlatformBrowserTest> {
@@ -406,11 +389,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
 
   base::test::TestFuture<std::optional<mojom::SwitchConversationErrorReason>>
       switch_future;
-  coordinator().SwitchConversation(
-      *instance,
-      ShowOptions::ForSidePanel(*tab2,
-                                mojom::InvocationSource::kConversationSwitch),
-      std::move(info), switch_future.GetCallback());
+  coordinator().SwitchConversation(*instance, ShowOptions::ForSidePanel(*tab2),
+                                   std::move(info),
+                                   switch_future.GetCallback());
   EXPECT_EQ(switch_future.Get(), std::nullopt);
 
   // Verify BOTH tab1 and tab2 triggers are updated to kConversationChange.
@@ -498,31 +479,15 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        CreateConversationForTabs) {
-  base::HistogramTester histogram_tester;
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   tabs::TabInterface* tab2 = CreateAndActivateTab(GURL("about:blank"));
-  CreateAndActivateTab(GURL("about:blank"));
 
   coordinator().CreateNewConversationForTabs({tab1, tab2});
 
-  EXPECT_TRUE(coordinator().GetInstanceForTab(tab1));
-  EXPECT_EQ(coordinator().GetInstanceForTab(tab1),
-            coordinator().GetInstanceForTab(tab2));
-
-  auto* instance = coordinator().GetInstanceImplForTab(tab2);
-  ASSERT_TRUE(instance);
-
-  ActivateTab(tab2);
-#if BUILDFLAG(IS_ANDROID)
-  ForceExpandGlicSidePanel(tab2);
-#endif
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(instance, tab2));
-
-  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_TRUE(GetInstanceForTab(tab1));
+  EXPECT_EQ(GetInstanceForTab(tab1), GetInstanceForTab(tab2));
+  EXPECT_TRUE(GetInstanceForTab(tab1)->IsShowing());
   EXPECT_FALSE(coordinator().GetInstancesForTesting().empty());
-
-  histogram_tester.ExpectUniqueSample("Glic.Instance.InitialInvocationSource",
-                                      mojom::InvocationSource::kSharedTab, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -530,12 +495,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
 
-  GlicHistogramTester histogram_tester;
-
   ASSERT_OK(OpenGlicForActiveTab());
 
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
-  ActivateTab(tab1);
   tabs::TabInterface* tab2 = CreateUserInitiatedTab(GURL("about:blank"));
 
   EXPECT_TRUE(GetInstanceForTab(tab1));
@@ -543,13 +505,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(tab2_instance);
   EXPECT_NE(GetInstanceForTab(tab1), tab2_instance);
   EXPECT_OK(WaitForEmbedderActivationOrPeek(tab2_instance, tab2));
-#if BUILDFLAG(IS_ANDROID)
-  ForceExpandGlicSidePanel(tab2);
-  EXPECT_OK(WaitForActiveEmbedderToMatchTab(tab2_instance, tab2));
-#endif
-
-  histogram_tester.ExpectBucketCount("Glic.Instance.InitialInvocationSource",
-                                     mojom::InvocationSource::kDaisyChain, 1);
 
   GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
@@ -1480,4 +1435,5 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, HotkeyTriggersOpen) {
 
   ASSERT_OK(WaitForGlicOpen());
 }
+
 }  // namespace glic

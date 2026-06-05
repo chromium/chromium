@@ -216,8 +216,7 @@ TEST_F(GlicInstanceMetricsTest, OnUserInputSubmitted_WhileHidden_LogsError) {
 }
 
 TEST_F(GlicInstanceMetricsTest, OnShowInFloaty_WhileAlreadyOpen_LogsError) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnShowInFloaty(show_options);
   metrics_.OnShowInFloaty(show_options);
   histogram_tester_.ExpectUniqueSample(
@@ -227,8 +226,8 @@ TEST_F(GlicInstanceMetricsTest, OnShowInFloaty_WhileAlreadyOpen_LogsError) {
 
 TEST_F(GlicInstanceMetricsTest, OnShowInSidePanel_WhileAlreadyOpen_LogsError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kSidePanelOpenedWhileAlreadyOpen, 1);
@@ -267,8 +266,7 @@ TEST_F(GlicInstanceMetricsTest, OnUserResizeEnded) {
 }
 
 TEST_F(GlicInstanceMetricsTest, ValidFloatyFlow_DoesNotLogError) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnShowInFloaty(show_options);
   metrics_.OnFloatyClosed();
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
@@ -276,29 +274,26 @@ TEST_F(GlicInstanceMetricsTest, ValidFloatyFlow_DoesNotLogError) {
 
 TEST_F(GlicInstanceMetricsTest, ValidSidePanelFlow_DoesNotLogError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   metrics_.OnSidePanelClosed(
       &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
 }
 
 TEST_F(GlicInstanceMetricsTest, OnOpen_DoesNotOverrideInitialEntrypoint) {
-  ShowOptions show_options1{FloatingShowOptions{},
-                            mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options1{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options1);
   EXPECT_EQ(metrics_.initial_invocation_source_for_testing(),
             mojom::InvocationSource::kTopChromeButton);
 
-  ShowOptions show_options2{FloatingShowOptions{},
-                            mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options2{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options2);
   EXPECT_EQ(metrics_.initial_invocation_source_for_testing(),
             mojom::InvocationSource::kTopChromeButton);
 }
 
 TEST_F(GlicInstanceMetricsTest, InitialInvocationSource_OnlyRecordedOnce) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.InitialInvocationSource",
@@ -314,10 +309,9 @@ TEST_F(GlicInstanceMetricsTest, InitialInvocationSource_OnlyRecordedOnce) {
 TEST_F(GlicInstanceMetricsTest, SidePanelFirstOpenDuration_LoggedOnFirstClose) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
 
-  ShowOptions show_options{SidePanelShowOptions{mock_tab_},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(5));
 
   metrics_.OnSidePanelClosed(
@@ -333,10 +327,9 @@ TEST_F(GlicInstanceMetricsTest,
        SidePanelFirstOpenDuration_NotLoggedOnSecondClose) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
 
-  ShowOptions show_options{SidePanelShowOptions{mock_tab_},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{SidePanelShowOptions{mock_tab_}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
 
   task_environment_.FastForwardBy(base::Minutes(5));
   metrics_.OnSidePanelClosed(
@@ -347,7 +340,7 @@ TEST_F(GlicInstanceMetricsTest,
       "Glic.InvocationSource.TopChromeButton.SidePanelFirstOpenDuration", 1);
 
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(2));
   metrics_.OnSidePanelClosed(
       static_cast<tabs::TabInterface*>(&mock_tab_),
@@ -361,7 +354,7 @@ TEST_F(GlicInstanceMetricsTest,
 
 TEST_F(GlicInstanceMetricsTest,
        SidePanelFirstOpenDuration_ShownWithoutToggleCall) {
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   task_environment_.FastForwardBy(base::Minutes(5));
   metrics_.OnSidePanelClosed(
       static_cast<tabs::TabInterface*>(&mock_tab_),
@@ -373,8 +366,7 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest, FloatyFirstOpenDuration_LoggedOnFirstClose) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInFloaty(show_options);
   task_environment_.FastForwardBy(base::Minutes(5));
@@ -388,8 +380,7 @@ TEST_F(GlicInstanceMetricsTest, FloatyFirstOpenDuration_LoggedOnFirstClose) {
 
 TEST_F(GlicInstanceMetricsTest,
        FloatyFirstOpenDuration_NotLoggedOnSecondClose) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInFloaty(show_options);
 
@@ -412,8 +403,7 @@ TEST_F(GlicInstanceMetricsTest,
 
 TEST_F(GlicInstanceMetricsTest,
        FloatyFirstOpenDuration_ShownWithoutToggleCall) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnShowInFloaty(show_options);
   task_environment_.FastForwardBy(base::Minutes(5));
   metrics_.OnFloatyClosed();
@@ -424,8 +414,7 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest, FloatyFirstOpenDuration_LoggedOnUnbind) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnShowInFloaty(show_options);
   task_environment_.FastForwardBy(base::Minutes(5));
@@ -442,8 +431,7 @@ TEST_F(GlicInstanceMetricsTest, FloatyFirstOpenDuration_LoggedOnUnbind) {
 }
 
 TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
 
   // This causes a GlicInstanceEvent::kTurnCompleted to be logged.
@@ -478,8 +466,7 @@ TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
 }
 
 TEST_F(GlicInstanceMetricsTest, InstanceEvents_Open) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
 
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
 
@@ -515,8 +502,7 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
-  ShowOptions show_options1{FloatingShowOptions{},
-                            mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options1{FloatingShowOptions{}};
   // First toggle open with TopChromeButton.
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options1);
 
@@ -532,8 +518,7 @@ TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
       GlicInstanceEvent::kTurnCompleted, 1);
 
   // Simulate toggling with a different source later on.
-  ShowOptions show_options2{FloatingShowOptions{},
-                            mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options2{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options2);
 
   // Another turn completed event.
@@ -557,8 +542,7 @@ TEST_F(GlicInstanceMetricsTest, LogEvent_LogsUnderInitialEntrypointIfReopened) {
 }
 
 TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Visible) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   metrics_.OnVisibilityChanged(true);
 
@@ -574,8 +558,7 @@ TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Visible) {
 }
 
 TEST_F(GlicInstanceMetricsTest, WebUiLoadTime_Nonvisible) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
   // Do not call OnVisibilityChanged(true) so it defaults to nonvisible.
 
@@ -682,8 +665,7 @@ TEST_F(GlicInstanceMetricsTest, ScrollToMetrics) {
 }
 
 TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnShowInFloaty(show_options);
   metrics_.OnFloatyClosed();
   metrics_.OnFloatyClosed();
@@ -694,7 +676,7 @@ TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {
 
 TEST_F(GlicInstanceMetricsTest, SidePanel_OpenCloseClose_LogsError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   metrics_.OnSidePanelClosed(
       &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
   metrics_.OnSidePanelClosed(
@@ -735,10 +717,9 @@ TEST_F(GlicInstanceMetricsTest,
 }
 
 TEST_F(GlicInstanceMetricsTest, TurnSegmentation_OsButtonAttachedText) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_.OnResponseStarted();
@@ -749,8 +730,7 @@ TEST_F(GlicInstanceMetricsTest, TurnSegmentation_OsButtonAttachedText) {
 }
 
 TEST_F(GlicInstanceMetricsTest, TurnSegmentation_3DotsMenuDetachedAudio) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kThreeDotsMenu, show_options);
   metrics_.OnShowInFloaty(show_options);
   metrics_.OnVisibilityChanged(true);
@@ -763,10 +743,9 @@ TEST_F(GlicInstanceMetricsTest, TurnSegmentation_3DotsMenuDetachedAudio) {
 }
 
 TEST_F(GlicInstanceMetricsTest, TurnUkm) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
+  ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
-  metrics_.OnShowInSidePanel(&mock_tab_, mojom::InvocationSource::kUnsupported);
+  metrics_.OnShowInSidePanel(&mock_tab_);
   metrics_.OnVisibilityChanged(true);
   metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_.OnResponseStarted();
@@ -850,15 +829,6 @@ TEST_F(GlicInstanceMetricsTest, ZoomChangeCount) {
   }  // Destructor calls OnInstanceDestroyed
 
   histogram_tester_.ExpectUniqueSample("Glic.Instance.ZoomChangeCount", 3, 1);
-}
-
-TEST_F(GlicInstanceMetricsTest, OnOpen_LogsConversationSwitch) {
-  ShowOptions show_options{FloatingShowOptions{},
-                           mojom::InvocationSource::kUnsupported};
-  metrics_.OnOpen(mojom::InvocationSource::kConversationSwitch, show_options);
-  histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.InitialInvocationSource",
-      mojom::InvocationSource::kConversationSwitch, 1);
 }
 
 }  // namespace glic

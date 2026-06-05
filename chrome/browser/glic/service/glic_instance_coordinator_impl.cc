@@ -762,8 +762,7 @@ void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
   for (tabs::TabInterface* tab : tabs) {
     SidePanelShowOptions side_panel_options(*tab);
     side_panel_options.pin_trigger = pin_trigger;
-    ShowOptions show_opts(side_panel_options,
-                          mojom::InvocationSource::kSharedTab);
+    ShowOptions show_opts(side_panel_options);
     show_opts.focus_on_show =
         IsActive(tab->GetBrowserWindowInterface()) && tab->IsActivated();
     // Explicitly pin the tabs for the context menu trigger.
@@ -802,7 +801,7 @@ void GlicInstanceCoordinatorImpl::ToggleFloaty(
     glic::mojom::InvocationSource source) {
   CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
   GetOrCreateInstanceImplForFloaty()->Toggle(
-      ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null(), source),
+      ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
       prevent_close, source);
 }
 
@@ -1103,8 +1102,7 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(
   SidePanelShowOptions side_panel_options{*creation_event.new_tab};
   side_panel_options.suppress_opening_animation = true;
   side_panel_options.pin_trigger = GlicPinTrigger::kNewTabDaisyChain;
-  instance->Show(
-      ShowOptions{side_panel_options, mojom::InvocationSource::kDaisyChain});
+  instance->Show(ShowOptions{side_panel_options});
 
   instance->instance_metrics().OnDaisyChain(
       DaisyChainSource::kNewTab,
@@ -1196,12 +1194,10 @@ void GlicInstanceCoordinatorImpl::RestoreTab(
       side_panel_options.suppress_opening_animation = true;
       side_panel_options.pin_on_bind = false;
       side_panel_options.prefer_peek = true;
-      bound_instance->Show(ShowOptions{side_panel_options,
-                                       state.bound_instance.invocation_source});
+      bound_instance->Show(ShowOptions{side_panel_options});
     } else {
-      bound_instance->BindTabWithoutShowing(
-          tab, GlicPinTrigger::kUnknown,
-          /*pin_on_bind=*/false, state.bound_instance.invocation_source);
+      bound_instance->BindTabWithoutShowing(tab, GlicPinTrigger::kUnknown,
+                                            /*pin_on_bind=*/false);
     }
   }
 

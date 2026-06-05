@@ -392,13 +392,9 @@ TEST_F(GlicMetricsSessionManagerTest,
 TEST_F(GlicMetricsSessionManagerTest, Session_ToggleCount_RecordedCorrectly) {
   StartSession();
   metrics_->OnToggle(mojom::InvocationSource::kOsHotkey,
-                     ShowOptions::ForFloating(
-                         gfx::Rect(), mojom::InvocationSource::kUnsupported),
-                     true);
+                     ShowOptions::ForFloating(gfx::Rect()), true);
   metrics_->OnToggle(mojom::InvocationSource::kOsButton,
-                     ShowOptions::ForFloating(
-                         gfx::Rect(), mojom::InvocationSource::kUnsupported),
-                     true);
+                     ShowOptions::ForFloating(gfx::Rect()), true);
 
   metrics_.reset();  // End session
 
@@ -410,9 +406,7 @@ TEST_F(GlicMetricsSessionManagerTest, Events_NotRecordedBeforeSessionStarts) {
   metrics_->OnVisibilityChanged(true);
   // Session pending, not started.
   metrics_->OnToggle(mojom::InvocationSource::kOsHotkey,
-                     ShowOptions::ForFloating(
-                         gfx::Rect(), mojom::InvocationSource::kUnsupported),
-                     true);
+                     ShowOptions::ForFloating(gfx::Rect()), true);
   metrics_->OnCreateTab();
 
   // End session before it starts (e.g. by hiding)

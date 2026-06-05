@@ -156,19 +156,7 @@ enum class ResponseSegmentation {
   kPromotionPageAttachedAudio = 138,
   kPromotionPageDetachedText = 139,
   kPromotionPageDetachedAudio = 140,
-  kDaisyChainAttachedText = 141,
-  kDaisyChainAttachedAudio = 142,
-  kDaisyChainDetachedText = 143,
-  kDaisyChainDetachedAudio = 144,
-  kConversationSwitchAttachedText = 145,
-  kConversationSwitchAttachedAudio = 146,
-  kConversationSwitchDetachedText = 147,
-  kConversationSwitchDetachedAudio = 148,
-  kDetachAttachButtonAttachedText = 149,
-  kDetachAttachButtonAttachedAudio = 150,
-  kDetachAttachButtonDetachedText = 151,
-  kDetachAttachButtonDetachedAudio = 152,
-  kMaxValue = kDetachAttachButtonDetachedAudio,
+  kMaxValue = kPromotionPageDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

@@ -37,8 +37,6 @@ class GlicInstanceHelper {
     virtual const InstanceId& id() const = 0;
     virtual std::optional<std::string> conversation_id() const = 0;
     virtual std::string conversation_title() const = 0;
-    virtual std::optional<mojom::InvocationSource> initial_invocation_source()
-        const = 0;
   };
 
   explicit GlicInstanceHelper(tabs::TabInterface* tab);
@@ -49,7 +47,6 @@ class GlicInstanceHelper {
 
   std::optional<std::string> GetConversationId() const;
   std::string GetConversationTitle() const;
-  std::optional<mojom::InvocationSource> GetInitialInvocationSource() const;
 
   void OnPinnedByInstance(Instance* instance);
   void OnUnpinnedByInstance(Instance* instance);

@@ -1717,12 +1717,6 @@ enum InvocationSource {
   [MinVersion=24] kWebDragDrop = 33,
   // From the promotion page.
   [MinVersion=25] kPromotionPage = 34,
-  // User kept the side panel open on a new tab or follow-link.
-  [MinVersion=26] kDaisyChain = 35,
-  // User switched conversation.
-  [MinVersion=26] kConversationSwitch = 36,
-  // User detached or attached the panel.
-  [MinVersion=26] kDetachAttachButton = 37,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

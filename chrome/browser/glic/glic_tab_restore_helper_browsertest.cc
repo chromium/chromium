@@ -22,27 +22,18 @@ namespace {
 
 class MockInstance : public GlicInstanceHelper::Instance {
  public:
-  MockInstance(InstanceId id,
-               std::optional<std::string> conversation_id,
-               std::optional<mojom::InvocationSource> invocation_source)
-      : id_(std::move(id)),
-        conversation_id_(std::move(conversation_id)),
-        invocation_source_(invocation_source) {}
+  MockInstance(InstanceId id, std::optional<std::string> conversation_id)
+      : id_(std::move(id)), conversation_id_(std::move(conversation_id)) {}
 
   const InstanceId& id() const override { return id_; }
   std::optional<std::string> conversation_id() const override {
     return conversation_id_;
-  }
-  std::optional<mojom::InvocationSource> initial_invocation_source()
-      const override {
-    return invocation_source_;
   }
   std::string conversation_title() const override { return ""; }
 
  private:
   InstanceId id_;
   std::optional<std::string> conversation_id_;
-  std::optional<mojom::InvocationSource> invocation_source_;
 };
 
 using GlicTabRestoreHelperBrowserTest = GlicBrowserTest;
@@ -56,13 +47,12 @@ IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
 
   std::string instance_id_str = InstanceId::Create(123, 1).value();
   std::string conversation_id = "conversation1";
-  MockInstance bound_instance(InstanceId(instance_id_str), conversation_id,
-                              mojom::InvocationSource::kTopChromeButton);
+  MockInstance bound_instance(InstanceId(instance_id_str), conversation_id);
   helper->SetBoundInstance(&bound_instance);
 
   std::string pinned_instance_id_str = InstanceId::Create(123, 2).value();
-  MockInstance pinned_instance(InstanceId(pinned_instance_id_str), std::nullopt,
-                               mojom::InvocationSource::kSharedTab);
+  MockInstance pinned_instance(InstanceId(pinned_instance_id_str),
+                               std::nullopt);
   helper->OnPinnedByInstance(&pinned_instance);
 
   // 2. Populate extra_data
@@ -90,12 +80,8 @@ IN_PROC_BROWSER_TEST_F(GlicTabRestoreHelperBrowserTest, PopulateAndRestore) {
 
   EXPECT_EQ(state.bound_instance.instance_id, instance_id_str);
   EXPECT_EQ(state.bound_instance.conversation_id, conversation_id);
-  EXPECT_EQ(state.bound_instance.invocation_source,
-            mojom::InvocationSource::kTopChromeButton);
   ASSERT_EQ(state.pinned_instances.size(), 1u);
   EXPECT_EQ(state.pinned_instances[0].instance_id, pinned_instance_id_str);
-  EXPECT_EQ(state.pinned_instances[0].invocation_source,
-            mojom::InvocationSource::kSharedTab);
 
   // Clean up to avoid dangling pointers since mock instances are on the stack.
   helper->SetBoundInstance(nullptr);

@@ -529,9 +529,6 @@ chromium-metrics-reviews@google.com.
   <int value="32" label="Indigo page action"/>
   <int value="33" label="Web Drag and Drop"/>
   <int value="34" label="From the promotion page"/>
-  <int value="35" label="Daisy chain"/>
-  <int value="36" label="Conversation switch"/>
-  <int value="37" label="Detach or attach to/from Floaty"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -888,18 +885,6 @@ chromium-metrics-reviews@google.com.
   <int value="138" label="From the promotion page, attached, audio mode."/>
   <int value="139" label="From the promotion page, detached, text mode."/>
   <int value="140" label="From the promotion page, detached, audio mode."/>
-  <int value="141" label="Daisy chain, attached, text mode."/>
-  <int value="142" label="Daisy chain, attached, audio mode."/>
-  <int value="143" label="Daisy chain, detached, text mode."/>
-  <int value="144" label="Daisy chain, detached, audio mode."/>
-  <int value="145" label="Conversation switch, attached, text mode."/>
-  <int value="146" label="Conversation switch, attached, audio mode."/>
-  <int value="147" label="Conversation switch, detached, text mode."/>
-  <int value="148" label="Conversation switch, detached, audio mode."/>
-  <int value="149" label="Detach or attach button, attached, text mode."/>
-  <int value="150" label="Detach or attach button, attached, audio mode."/>
-  <int value="151" label="Detach or attach button, detached, text mode."/>
-  <int value="152" label="Detach or attach button, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

@@ -148,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   SidePanelShowOptions side_panel_options{*tab};
   side_panel_options.prefer_peek = true;
 
-  instance->Show(
-      ShowOptions{side_panel_options, mojom::InvocationSource::kUnsupported});
+  instance->Show(ShowOptions{side_panel_options});
 
   // It should still be showing and active.
   EXPECT_TRUE(instance->IsShowing());
@@ -179,9 +178,7 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   // SetState(kClosed) will transition from kPeek to kClosed, synchronously
   // destroying the embedder. GlicInstanceImpl::Show will then call Focus() on
   // the destroyed embedder, causing a SIGSEGV crash.
-  instance->Toggle(ShowOptions::ForSidePanel(
-                       *tab, mojom::InvocationSource::kTopChromeButton),
-                   /*prevent_close=*/false,
+  instance->Toggle(ShowOptions::ForSidePanel(*tab), /*prevent_close=*/false,
                    mojom::InvocationSource::kTopChromeButton);
 
   coordinator_android->SuppressBottomSheetForTesting(false);
@@ -217,8 +214,7 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   // in the first window, its bottom sheet transitions to the peek state.
   SidePanelShowOptions show_options{*tab2};
   show_options.prefer_peek = false;
-  instance->Show(
-      ShowOptions{show_options, mojom::InvocationSource::kTopChromeButton});
+  instance->Show(ShowOptions{show_options});
 
   ASSERT_OK(
       WaitForSidePanelState(tab1, GlicSidePanelCoordinator::State::kPeek));
