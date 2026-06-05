@@ -108,6 +108,14 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
     required_state_ = RequiredExperimentalOptIn::kExperimental;
   }
 
+  source->AddInteger(
+      "glicExperimentalOptInDefaultHeight",
+      (required_state_ == RequiredExperimentalOptIn::kExperimental)
+          ? kGlicExperimentalOptInDefaultHeightExperimental
+          : kGlicExperimentalOptInDefaultHeightGlic);
+  source->AddInteger("glicExperimentalOptInDefaultWidth",
+                     kGlicExperimentalOptInDefaultWidth);
+
   GURL url = GetExperimentalTriggeringOptInURL(profile, required_state_);
   source->AddString("glicExperimentalTriggeringOptInURL", url.spec());
 
