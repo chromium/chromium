@@ -63,6 +63,31 @@ HistogramBase::CountAndBucketData& HistogramBase::CountAndBucketData::operator=(
 
 const HistogramBase::Sample32 HistogramBase::kSampleType_MAX = INT_MAX;
 
+// static
+HistogramBase* HistogramBase::DeserializeInfo(
+    PickleIterator* iter,
+    HistogramBase::NameMapper mapper) {
+  int type;
+  if (!iter->ReadInt(&type)) {
+    return nullptr;
+  }
+
+  switch (type) {
+    case HISTOGRAM:
+      return Histogram::DeserializeInfoImpl(iter, mapper);
+    case LINEAR_HISTOGRAM:
+      return LinearHistogram::DeserializeInfoImpl(iter, mapper);
+    case BOOLEAN_HISTOGRAM:
+      return BooleanHistogram::DeserializeInfoImpl(iter, mapper);
+    case CUSTOM_HISTOGRAM:
+      return CustomHistogram::DeserializeInfoImpl(iter, mapper);
+    case SPARSE_HISTOGRAM:
+      return SparseHistogram::DeserializeInfoImpl(iter, mapper);
+    default:
+      return nullptr;
+  }
+}
+
 HistogramBase::HistogramBase(DurableStringView name)
     : histogram_name_(name->data()),
       histogram_name_length_(base::saturated_cast<uint16_t>(name->length())),
@@ -232,29 +257,6 @@ DurableStringView HistogramBase::GetPermanentName(std::string_view name) {
     it = permanent_names->emplace_hint(it, name);
   }
   return DurableStringView(*it);
-}
-
-HistogramBase* DeserializeHistogramInfo(PickleIterator* iter,
-                                        HistogramBase::NameMapper mapper) {
-  int type;
-  if (!iter->ReadInt(&type)) {
-    return nullptr;
-  }
-
-  switch (type) {
-    case HISTOGRAM:
-      return Histogram::DeserializeInfoImpl(iter, mapper);
-    case LINEAR_HISTOGRAM:
-      return LinearHistogram::DeserializeInfoImpl(iter, mapper);
-    case BOOLEAN_HISTOGRAM:
-      return BooleanHistogram::DeserializeInfoImpl(iter, mapper);
-    case CUSTOM_HISTOGRAM:
-      return CustomHistogram::DeserializeInfoImpl(iter, mapper);
-    case SPARSE_HISTOGRAM:
-      return SparseHistogram::DeserializeInfoImpl(iter, mapper);
-    default:
-      return nullptr;
-  }
 }
 
 }  // namespace base
