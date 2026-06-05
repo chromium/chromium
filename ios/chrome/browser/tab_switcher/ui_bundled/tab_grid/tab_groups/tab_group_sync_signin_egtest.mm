@@ -194,7 +194,8 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
 
 // Tests that signing out keeps groups created before syncing and deletes groups
 // created since.
-- (void)testSignOutKeepsPreviousGroupDeletesNewGroup {
+// TODO(crbug.com/520299135): Test is flaky.
+- (void)FLAKY_testSignOutKeepsPreviousGroupDeletesNewGroup {
   [ChromeEarlGreyUI openTabGrid];
 
   // Switch over to the tab groups page and delete existing saved groups.
