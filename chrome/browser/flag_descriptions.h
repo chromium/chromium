@@ -5348,6 +5348,11 @@ inline constexpr char kAndroidSurfaceColorUpdateName[] =
 inline constexpr char kAndroidSurfaceColorUpdateDescription[] =
     "If enabled, updates the android surface colors for toolbar/omnibox.";
 
+inline constexpr char kAndroidTabstripStartupCaptureBugFixName[] =
+    "Android Tabstrip Startup Capture Bug Fix";
+inline constexpr char kAndroidTabstripStartupCaptureBugFixDescription[] =
+    "Enables the Android Tabstrip Startup Capture Bug Fix feature.";
+
 inline constexpr char kAndroidThemeModuleName[] = "Android Theme Module";
 inline constexpr char kAndroidThemeModuleDescription[] =
     "Enables external theme overlays for Chrome activities when available.";

@@ -207,6 +207,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
     public static final String ANDROID_SHARE_FULL_LINK = "AndroidShareFullLink";
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
+    public static final String ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX =
+            "AndroidTabstripStartupCaptureBugFix";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
@@ -800,6 +802,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
             newCachedFlag(ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH, true, true);
+    public static final CachedFlag sAndroidTabstripStartupCaptureBugFix =
+            newCachedFlag(ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX, true, true);
     public static final CachedFlag sAndroidThemeModule = newCachedFlag(ANDROID_THEME_MODULE, true);
     public static final CachedFlag sAndroidThemeResourceProvider =
             newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
@@ -1268,6 +1272,7 @@ public abstract class ChromeFeatureList {
                     sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,
+                    sAndroidTabstripStartupCaptureBugFix,
                     sAndroidThemeModule,
                     sAndroidThemeResourceProvider,
                     sAndroidUseAdminsForEnterpriseInfo,

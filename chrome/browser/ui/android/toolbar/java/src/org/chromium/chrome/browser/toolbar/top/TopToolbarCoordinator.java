@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopContro
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlVisibility;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -82,6 +83,7 @@ import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.Drawing
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.base.ActivityResultTracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.ResourceManager;
@@ -1052,29 +1054,45 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Toolbar show at the correct spot. The current math here is to reduce the capture size
         // with toolbar height and hairline height.
         int diff = 0;
-        // When switching omnibox from bottom to top, the toolbar capture size may not have been
-        // updated yet (e.g. captureHeight=1 while toolbarLayoutHeight=137). Using a stale capture
-        // height produces a large negative diff that pushes the cc layer below the toolbar,
-        // creating a "ghost view". Only compute diff when capture height is at least as large
-        // as the toolbar, indicating the capture is up-to-date.
-        int toolbarLayoutHeight = mControlContainer.getToolbarHeight();
-        int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
-        int controlContainerHeightExcludingTabStrip =
-                mControlContainer.getControlContainerHeightExcludingTabStrip();
-        // The control container can be larger than toolbarLayoutHeight + tabstrip height, e.g. when
-        // the fusebox is visible. The capture does not always include this expanded height but when
-        // it does, we need to account for it to avoid over-translating by the extra height.
+
         int tabStripHeight = mToolbarLayout.getTabStripHeightFromResource();
-        int maxControlContainerHeightMeasurement =
-                Math.max(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
-        int minControlContainerHeightMeasurement =
-                Math.min(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
-        if (captureHeight >= maxControlContainerHeightMeasurement + tabStripHeight
-                && mTabStripTransitionCoordinator != null) {
-            // Capture includes extra height; use the full height.
-            diff = captureHeight - maxControlContainerHeightMeasurement - hairlineHeight;
-        } else if (captureHeight >= minControlContainerHeightMeasurement) {
-            diff = captureHeight - minControlContainerHeightMeasurement - hairlineHeight;
+        if (ChromeFeatureList.sAndroidTabstripStartupCaptureBugFix.isEnabled()
+                && !ChromeFeatureList.sToolbarSnapshotRefactor.isEnabled()
+                && captureHeight == 0
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mToolbarLayout.getContext())) {
+            // TODO(peilinwang): This is a temporary fix for https://crbug.com/504438014. The
+            // toolbar for tablets is the only UI element where the height of its capture is
+            // different from its actual height, and sometimes the offset and capture don't get
+            // updated at the same time. When that happens, the composited layer will appear to be
+            // in the wrong place. Remove this, and the math for capture diff for the progress bar
+            // and toolbar after ToolbarSnapshotRefactor launches. This assumes that the tabstrip is
+            // always positioned right above the toolbar.
+            diff = tabStripHeight;
+        } else {
+            // When switching omnibox from bottom to top, the toolbar capture size may not have been
+            // updated yet (e.g. captureHeight=1 while toolbarLayoutHeight=137). Using a stale
+            // capture height produces a large negative diff that pushes the cc layer below the
+            // toolbar, creating a "ghost view". Only compute diff when capture height is at least
+            // as large as the toolbar, indicating the capture is up-to-date.
+            int toolbarLayoutHeight = mControlContainer.getToolbarHeight();
+            int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
+            int controlContainerHeightExcludingTabStrip =
+                    mControlContainer.getControlContainerHeightExcludingTabStrip();
+            // The control container can be larger than toolbarLayoutHeight + tabstrip height, e.g.
+            // when the fusebox is visible. The capture does not always include this expanded height
+            // but when it does, we need to account for it to avoid over-translating by the extra
+            // height.
+            int maxControlContainerHeightMeasurement =
+                    Math.max(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
+            int minControlContainerHeightMeasurement =
+                    Math.min(controlContainerHeightExcludingTabStrip, toolbarLayoutHeight);
+            if (captureHeight >= maxControlContainerHeightMeasurement + tabStripHeight
+                    && mTabStripTransitionCoordinator != null) {
+                // Capture includes extra height; use the full height.
+                diff = captureHeight - maxControlContainerHeightMeasurement - hairlineHeight;
+            } else if (captureHeight >= minControlContainerHeightMeasurement) {
+                diff = captureHeight - minControlContainerHeightMeasurement - hairlineHeight;
+            }
         }
 
         // As toolbar hairline is part of the capture, there are times we need to hide the hairline

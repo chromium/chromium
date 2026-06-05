@@ -10445,6 +10445,8 @@ from previous Chrome versions.
   <int value="-1230610048" label="SyncWifiConfigurations:disabled"/>
   <int value="-1230443048"
       label="AndroidWebAppHeaderForStandaloneMode:enabled"/>
+  <int value="-1230067329"
+      label="AndroidTabstripStartupCaptureBugFix:disabled"/>
   <int value="-1229882308" label="DesktopPWAsTabStripCustomizations:disabled"/>
   <int value="-1228782289" label="EventPath:disabled"/>
   <int value="-1228546373"
@@ -15845,6 +15847,7 @@ from previous Chrome versions.
   <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>
   <int value="564811711" label="PersistAcrossRebootsDebugLogs:disabled"/>
+  <int value="564852663" label="AndroidTabstripStartupCaptureBugFix:enabled"/>
   <int value="565002365" label="QuickOfficeForceFileDownload:disabled"/>
   <int value="565254510" label="LensRegionSearchStaticPage:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
