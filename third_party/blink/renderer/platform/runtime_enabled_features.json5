@@ -2049,6 +2049,12 @@
       status: "experimental",
     },
     {
+      // Support resolving naming conficts for scroll and view timeline names
+      // by selecting the last in flat tree order.
+      name: "CSSTimelineNameConflictResolution",
+      status: "experimental",
+    },
+    {
       // Support for the 'all' keyword of the 'timeline-scope' property.
       //
       // https://drafts.csswg.org/scroll-animations-1/#timeline-scope

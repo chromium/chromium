@@ -25,7 +25,7 @@ void DeferredTimeline::AttachTimeline(ScrollTimeline* timeline) {
 
   wtf_size_t insertion_point = attached_timelines_.size();
 
-  if (RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled()) {
+  if (RuntimeEnabledFeatures::CSSTimelineNameConflictResolutionEnabled()) {
     Element* reference_element = timeline->GetReferenceElement();
     // Only named ScrollTimelines and ViewTimelines produced by CSS
     // should be attached, and such timelines always have a reference element.
@@ -90,10 +90,11 @@ DeferredTimeline::TimelineState DeferredTimeline::ComputeTimelineState() const {
 }
 
 ScrollTimeline* DeferredTimeline::EffectiveScrollTimeline() {
-  if (!RuntimeEnabledFeatures::CSSTimelineScopeGlobalEnabled() &&
+  if (!RuntimeEnabledFeatures::CSSTimelineNameConflictResolutionEnabled() &&
       attached_timelines_.size() != 1u) {
     return nullptr;
   }
+
   // The item at back() is the last attached timeline in flat tree order.
   return attached_timelines_.empty() ? nullptr : attached_timelines_.back();
 }
