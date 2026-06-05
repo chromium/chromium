@@ -50,6 +50,7 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
@@ -258,11 +259,11 @@ final class SigninButtonMediator
                         ? UserActionableError.NONE
                         : mSyncService.getUserActionableError();
 
-        CoreAccountInfo coreAccountInfo = assumeNonNull(mIdentityManager).getPrimaryAccountInfo();
-        if (coreAccountInfo != null) {
+        @Nullable AccountInfo accountInfo = assumeNonNull(mIdentityManager).getPrimaryAccountInfo();
+        if (accountInfo != null) {
             assumeNonNull(mProfileDataCache)
                     .setBadge(
-                            coreAccountInfo.getId(),
+                            accountInfo.getId(),
                             mIdentityError == UserActionableError.NONE
                                     ? null
                                     : BadgeConfig.create(R.drawable.ic_error_badge_16dp)
@@ -270,7 +271,7 @@ final class SigninButtonMediator
                                             .build(mContext));
         }
 
-        @Nullable CoreAccountId id = CoreAccountInfo.getIdFrom(coreAccountInfo);
+        @Nullable CoreAccountId id = AccountInfo.getIdFrom(accountInfo);
         DisplayableProfileData profileData =
                 id == null ? null : assumeNonNull(mProfileDataCache).getById(id);
         setButton(profileData);

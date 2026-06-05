@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninPromoAction;
@@ -329,7 +329,7 @@ final class SigninPromoMediator
      * device.
      */
     private @Nullable DisplayableProfileData getVisibleAccount() {
-        @Nullable CoreAccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
+        @Nullable AccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccount != null) {
             return mProfileDataCache.getById(primaryAccount.getId());
         }

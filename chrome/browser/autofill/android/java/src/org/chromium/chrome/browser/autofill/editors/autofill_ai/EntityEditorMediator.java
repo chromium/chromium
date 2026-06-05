@@ -65,7 +65,7 @@ import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.DataType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.RecordType;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -501,8 +501,7 @@ class EntityEditorMediator {
     }
 
     private @Nullable String getUserEmail() {
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
-        return CoreAccountInfo.getEmailFrom(accountInfo);
+        return AccountInfo.getEmailFrom(mIdentityManager.getPrimaryAccountInfo());
     }
 
     private void onOpenHelpAndFeedback(Activity activity) {

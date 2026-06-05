@@ -47,7 +47,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -213,7 +213,7 @@ public class TabUiUtils {
         @Nullable SavedTabGroup savedTabGroup =
                 TabGroupSyncUtils.getSavedTabGroupFromTabId(tabId, tabModel, tabGroupSyncService);
 
-        @Nullable CoreAccountInfo account = identityManager.getPrimaryAccountInfo();
+        @Nullable AccountInfo account = identityManager.getPrimaryAccountInfo();
         if (savedTabGroup == null
                 || TextUtils.isEmpty(savedTabGroup.collaborationId)
                 || account == null) {

@@ -42,7 +42,7 @@ import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.BookmarksLimitExceededHelpClickedSource;
 import org.chromium.components.sync.SyncService;
@@ -386,7 +386,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private void openTrustedVaultKeyRetrievalActivity() {
-        CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
+        @Nullable AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {
             return;
         }
@@ -411,7 +411,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private void openTrustedVaultRecoverabilityDegradedActivity() {
-        CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
+        @Nullable AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {
             return;
         }
@@ -442,7 +442,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     }
 
     private void startUpdateCredentialsFlow(Activity activity) {
-        final CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
+        final @Nullable AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         assert primaryAccountInfo != null;
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(primaryAccountInfo.getId(), activity, null);

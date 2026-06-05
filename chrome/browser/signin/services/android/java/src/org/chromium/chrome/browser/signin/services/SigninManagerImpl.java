@@ -168,15 +168,14 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
             return;
         }
 
-        @Nullable CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
+        @Nullable AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {
             seedThenReloadAllAccountsFromSystem(accounts, null);
             return;
         }
         if (AccountUtils.findAccountByGaiaId(accounts, primaryAccountInfo.getGaiaId()) != null) {
             // The primary account is still on the device, reseed accounts.
-            seedThenReloadAllAccountsFromSystem(
-                    accounts, CoreAccountInfo.getIdFrom(primaryAccountInfo));
+            seedThenReloadAllAccountsFromSystem(accounts, primaryAccountInfo.getId());
             return;
         }
         if (isOperationInProgress()) {
@@ -195,14 +194,14 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
      * to null in case the user is signed out.
      */
     private void maybeUpdateLegacyPrimaryAccountEmail() {
-        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
+        AccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo();
         if (Objects.equals(
-                CoreAccountInfo.getEmailFrom(accountInfo),
+                AccountInfo.getEmailFrom(accountInfo),
                 SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail())) {
             return;
         }
         SigninPreferencesManager.getInstance()
-                .setLegacyPrimaryAccountEmail(CoreAccountInfo.getEmailFrom(accountInfo));
+                .setLegacyPrimaryAccountEmail(AccountInfo.getEmailFrom(accountInfo));
     }
 
     @Override
@@ -289,7 +288,7 @@ class SigninManagerImpl implements SigninManager, AccountsChangeObserver {
     @Override
     public void turnOnSyncForTesting(
             CoreAccountInfo coreAccountInfo, @SigninAccessPoint int accessPoint) {
-        CoreAccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
+        AccountInfo primaryAccountInfo = mIdentityManager.getPrimaryAccountInfo();
         assert primaryAccountInfo != null && primaryAccountInfo.equals(coreAccountInfo)
                 : "Must be signed-in to turn on sync ";
         @PrimaryAccountError

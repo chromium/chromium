@@ -25,7 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.HashMap;
@@ -81,9 +81,9 @@ public abstract class FeedbackCollector<T> implements Runnable {
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager != null) {
-            CoreAccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
-            mAccountInUse = CoreAccountInfo.getAndroidAccountFrom(accountInfo);
-            mAccountEmailInUse = CoreAccountInfo.getEmailFrom(accountInfo);
+            @Nullable AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
+            mAccountInUse = AccountInfo.getAndroidAccountFrom(accountInfo);
+            mAccountEmailInUse = AccountInfo.getEmailFrom(accountInfo);
         }
 
         // Validation check in case a source is added to the wrong list.

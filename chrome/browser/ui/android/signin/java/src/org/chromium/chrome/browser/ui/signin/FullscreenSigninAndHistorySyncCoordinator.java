@@ -39,7 +39,6 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -399,7 +398,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         Profile profile = assumeNonNull(mProfileSupplier.get()).getOriginalProfile();
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        CoreAccountInfo primaryAccount = assumeNonNull(identityManager).getPrimaryAccountInfo();
+        AccountInfo primaryAccount = assumeNonNull(identityManager).getPrimaryAccountInfo();
         if (primaryAccount == null) return false;
 
         // If switching account, being 'signed in' refers specifically to the target account.

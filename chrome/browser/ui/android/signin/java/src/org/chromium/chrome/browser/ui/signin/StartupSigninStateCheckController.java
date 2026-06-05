@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -15,7 +16,7 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -65,7 +66,8 @@ public class StartupSigninStateCheckController implements NativeInitObserver, De
         if (signinManager == null) {
             return;
         }
-        CoreAccountInfo primaryAccount = signinManager.getIdentityManager().getPrimaryAccountInfo();
+        @Nullable AccountInfo primaryAccount =
+                signinManager.getIdentityManager().getPrimaryAccountInfo();
         // If not signed in, there is nothing to check.
         if (primaryAccount == null) {
             return;
@@ -83,7 +85,7 @@ public class StartupSigninStateCheckController implements NativeInitObserver, De
      * signed out.
      */
     private void checkAndRecoverManagementConsent(
-            SigninManager signinManager, CoreAccountInfo primaryAccount) {
+            SigninManager signinManager, AccountInfo primaryAccount) {
         if (signinManager.getUserAcceptedAccountManagement()) {
             return;
         }

@@ -30,7 +30,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPr
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -185,7 +184,7 @@ public abstract class SigninAndHistorySyncCoordinator {
 
             IdentityManager identityManager =
                     IdentityServicesProvider.get().getIdentityManager(profile);
-            CoreAccountInfo primaryAccount = assumeNonNull(identityManager).getPrimaryAccountInfo();
+            AccountInfo primaryAccount = assumeNonNull(identityManager).getPrimaryAccountInfo();
             AccountInfo targetAccount =
                     identityManager.findExtendedAccountInfoByEmailAddress(selectedEmail);
 

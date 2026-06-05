@@ -37,7 +37,7 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
@@ -295,9 +295,9 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         String email = null;
         var identityManager = IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager != null) {
-            CoreAccountInfo coreAccountInfo = identityManager.getPrimaryAccountInfo();
-            if (coreAccountInfo != null) {
-                email = coreAccountInfo.getEmail();
+            @Nullable AccountInfo accountInfo = identityManager.getPrimaryAccountInfo();
+            if (accountInfo != null) {
+                email = accountInfo.getEmail();
                 if (TextUtils.isEmpty(email)) {
                     email = null;
                 }
