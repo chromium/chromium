@@ -96,12 +96,12 @@
                                    kAppBarHeight);
       break;
     case AppBarPosition::kLeft:
-      agent->AddObscuredInsetRange(UIRectEdgeLeft, kAppBarHeight,
-                                   kAppBarHeight);
+      agent->AddObscuredInsetRange(UIRectEdgeLeft, kAppBarHeightLandscape,
+                                   kAppBarHeightLandscape);
       break;
     case AppBarPosition::kRight:
-      agent->AddObscuredInsetRange(UIRectEdgeRight, kAppBarHeight,
-                                   kAppBarHeight);
+      agent->AddObscuredInsetRange(UIRectEdgeRight, kAppBarHeightLandscape,
+                                   kAppBarHeightLandscape);
       break;
     case AppBarPosition::kNone:
       break;
@@ -125,10 +125,10 @@
       break;
     }
     case AppBarPosition::kLeft:
-      agent->AddObscuredInset(UIRectEdgeLeft, kAppBarHeight);
+      agent->AddObscuredInset(UIRectEdgeLeft, kAppBarHeightLandscape);
       break;
     case AppBarPosition::kRight:
-      agent->AddObscuredInset(UIRectEdgeRight, kAppBarHeight);
+      agent->AddObscuredInset(UIRectEdgeRight, kAppBarHeightLandscape);
       break;
     case AppBarPosition::kNone:
       break;
@@ -166,11 +166,9 @@
       break;
   }
 
-  // The App Bar should always be fully visible in landscape orientation.
-  CGFloat fullscreenProgress =
-      position == AppBarPosition::kBottom ? _fullscreenProgress : 1.0;
   self.view.transform = CGAffineTransformMakeRotation(angle);
-  self.view.fullscreenProgress = fullscreenProgress;
+  self.view.fullscreenProgress = _fullscreenProgress;
+  self.view.appBarPosition = position;
   [_appBar updateForAngle:-angle];
 }
 

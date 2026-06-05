@@ -605,11 +605,11 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   UIEdgeInsets insets = UIEdgeInsetsZero;
   switch (position) {
     case AppBarPosition::kLeft:
-      insets.left += kAppBarHeight;
+      insets.left += kAppBarHeightLandscape;
       break;
 
     case AppBarPosition::kRight:
-      insets.right += kAppBarHeight;
+      insets.right += kAppBarHeightLandscape;
       break;
 
     case AppBarPosition::kBottom: {

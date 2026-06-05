@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -43,16 +44,21 @@ class AppBarViewControllerTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    layout_state_ = [[LayoutState alloc] init];
+    layout_state_.appBarPosition = AppBarPosition::kBottom;
     view_controller_ = [[AppBarViewController alloc] init];
+    view_controller_.layoutState = layout_state_;
     [view_controller_ view];
   }
 
   void TearDown() override {
     view_controller_ = nil;
+    layout_state_ = nil;
     PlatformTest::TearDown();
   }
 
   AppBarViewController* view_controller_;
+  LayoutState* layout_state_;
 
   // Helper to access the private `_openNewTabButton` ivar using KVC.
   UIButton* openNewTabButton() {
@@ -133,6 +139,20 @@ TEST_F(AppBarViewControllerTest,
   }
   EXPECT_FALSE(spacer1.hidden);
   EXPECT_FALSE(spacer2.hidden);
+}
+
+// Tests that rotation updates the stack view bottom constraint.
+TEST_F(AppBarViewControllerTest, TestRotationUpdatesStackViewConstraints) {
+  [view_controller_ updateForAngle:0];
+
+  NSLayoutConstraint* bottomConstraint =
+      [view_controller_ valueForKey:@"stackViewBottomConstraint"];
+
+  EXPECT_EQ(bottomConstraint.constant, 0.0);
+
+  [view_controller_ updateForAngle:M_PI_2];
+
+  EXPECT_EQ(bottomConstraint.constant, -8.0);
 }
 
 // Tests that the tab grid button's image color transformer always returns clear
@@ -277,14 +297,7 @@ TEST_F(AppBarViewControllerTest, TestTitleVisibilityDuringContextMenu) {
   // Verify title is hidden initially (alpha = 0).
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
-  UIButtonConfiguration* config = button.configuration;
-  __block CGFloat titleAlpha = -1.0;
-  if (config.titleTextAttributesTransformer) {
-    NSDictionary* attrs = config.titleTextAttributesTransformer(@{});
-    UIColor* color = attrs[NSForegroundColorAttributeName];
-    [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
-  }
-  EXPECT_EQ(titleAlpha, 0.0);
+  EXPECT_EQ(button.titleLabel.alpha, 0.0);
 
   // Simulate long-press gesture triggering context menu configuration.
   UIMenu* dummyMenu = [UIMenu menuWithTitle:@"Test" children:@[]];
@@ -306,14 +319,7 @@ TEST_F(AppBarViewControllerTest, TestTitleVisibilityDuringContextMenu) {
 
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
-  config = button.configuration;
-  titleAlpha = -1.0;
-  if (config.titleTextAttributesTransformer) {
-    NSDictionary* attrs = config.titleTextAttributesTransformer(@{});
-    UIColor* color = attrs[NSForegroundColorAttributeName];
-    [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
-  }
-  EXPECT_EQ(titleAlpha, 1.0);
+  EXPECT_EQ(button.titleLabel.alpha, 1.0);
 
   // Simulate dismissal.
   TestContextMenuInteractionAnimating* animator =
@@ -333,14 +339,7 @@ TEST_F(AppBarViewControllerTest, TestTitleVisibilityDuringContextMenu) {
 
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
-  config = button.configuration;
-  titleAlpha = -1.0;
-  if (config.titleTextAttributesTransformer) {
-    NSDictionary* attrs = config.titleTextAttributesTransformer(@{});
-    UIColor* color = attrs[NSForegroundColorAttributeName];
-    [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
-  }
-  EXPECT_EQ(titleAlpha, 0.0);
+  EXPECT_EQ(button.titleLabel.alpha, 0.0);
 }
 
 // Tests that the assistant button in kAccount state sets the correct image and

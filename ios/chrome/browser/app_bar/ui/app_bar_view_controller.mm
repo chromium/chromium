@@ -178,6 +178,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NSArray<NSLayoutConstraint*>* _buttonWidthConstraints;
   // Stack view for buttons.
   UIStackView* _stackView;
+  // Constraints for vertical positioning of the stack view.
+  NSLayoutConstraint* _stackViewBottomConstraint;
   // Spacers to for button layout in landscape.
   UIView* _leadingSpacer;
   UIView* _trailingSpacer;
@@ -202,7 +204,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 - (void)layoutState:(LayoutState*)layoutState
     didChangeAppBarPosition:(AppBarPosition)appBarPosition {
-  [self updateButtonsTitleAlpha];
+  // Update the alpha with a duration of 0 as it is already in an animation
+  // block.
+  [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
   [self updateTabSwitcherGuide];
 }
 
@@ -210,10 +214,20 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 - (void)setButtonsTitleAlpha:(CGFloat)buttonsTitleAlpha
            animationDuration:(NSTimeInterval)duration {
-  if (buttonsTitleAlpha == _buttonsTitleAlpha) {
+  AppBarPosition appBarPosition = self.layoutState.appBarPosition;
+
+  CGFloat targetAlpha = 1;
+  if (appBarPosition == AppBarPosition::kBottom) {
+    targetAlpha = buttonsTitleAlpha;
+  } else if (appBarPosition == AppBarPosition::kLeft ||
+             appBarPosition == AppBarPosition::kRight) {
+    targetAlpha = 0;
+  }
+
+  if (targetAlpha == _buttonsTitleAlpha) {
     return;
   }
-  _buttonsTitleAlpha = buttonsTitleAlpha;
+  _buttonsTitleAlpha = targetAlpha;
   [self setNeedsUpdateConfiguration:_assistantButton
                   animationDuration:duration];
   [self setNeedsUpdateConfiguration:_openNewTabButton
@@ -243,11 +257,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     [NSLayoutConstraint activateConstraints:_buttonWidthConstraints];
     _leadingSpacer.hidden = NO;
     _trailingSpacer.hidden = NO;
+    _stackViewBottomConstraint.constant =
+        -(kAppBarHeight - kAppBarHeightLandscape);
   } else {
     _stackView.distribution = UIStackViewDistributionFillEqually;
     [NSLayoutConstraint deactivateConstraints:_buttonWidthConstraints];
     _leadingSpacer.hidden = YES;
     _trailingSpacer.hidden = YES;
+    _stackViewBottomConstraint.constant = 0;
   }
   [_stackView setNeedsLayout];
   [_stackView layoutIfNeeded];
@@ -346,6 +363,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   UIView* view = self.view;
   [view addSubview:_stackView];
 
+  _stackViewBottomConstraint =
+      [_stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor];
+
   [NSLayoutConstraint activateConstraints:@[
     [_backgroundView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
     [_backgroundView.trailingAnchor
@@ -360,7 +380,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     [_stackView.trailingAnchor
         constraintEqualToAnchor:view.trailingAnchor
                        constant:-kStackViewHorizontalMargin],
-    [_stackView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
+    _stackViewBottomConstraint,
     [view.heightAnchor constraintEqualToConstant:kAppBarHeight],
   ]];
 
@@ -478,40 +498,23 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
   _fullscreenProgress = progress;
-  [self updateButtonsTitleAlpha];
+  [self setButtonsTitleAlpha:_fullscreenProgress animationDuration:0];
 }
 
 - (void)animateFullscreenWithAnimator:(FullscreenAnimator*)animator {
-  CGFloat targetAlpha =
-      self.layoutState.appBarPosition == AppBarPosition::kBottom
-          ? animator.finalProgress
-          : 1.0;
-  [self setButtonsTitleAlpha:targetAlpha animationDuration:animator.duration];
+  [self setButtonsTitleAlpha:animator.finalProgress
+           animationDuration:animator.duration];
 }
 
 #pragma mark - FullscreenBrowserAgentObserving
 
 - (void)fullscreenWillUpdateState:(FullscreenBrowserAgent*)agent {
   _fullscreenProgress = agent->bottom_progress();
-  CGFloat targetAlpha =
-      self.layoutState.appBarPosition == AppBarPosition::kBottom
-          ? agent->bottom_progress()
-          : 1.0;
-  [self setButtonsTitleAlpha:targetAlpha
+  [self setButtonsTitleAlpha:_fullscreenProgress
            animationDuration:agent->animation_duration().InSecondsF()];
 }
 
 #pragma mark - Private
-
-// Updates the buttons' title alpha based on the current orientation and
-// fullscreen progress.
-- (void)updateButtonsTitleAlpha {
-  CGFloat targetAlpha =
-      self.layoutState.appBarPosition == AppBarPosition::kBottom
-          ? _fullscreenProgress
-          : 1.0;
-  [self setButtonsTitleAlpha:targetAlpha animationDuration:0];
-}
 
 // Conditionally registers the Tab Switcher layout guide.
 // It should only be registered to the App Bar if the App Bar is visible.
@@ -744,23 +747,19 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 }
 
 // Updates the title configuration for buttons.
-- (void)updateButtonTitleConfiguration:(UIButtonConfiguration*)config
-                        highlightAlpha:(CGFloat)highlightAlpha
-                                button:(UIButton*)button {
+- (void)updateTitleAlphaForButton:(UIButton*)button
+                   highlightAlpha:(CGFloat)highlightAlpha {
   // Text fades on highlight/disabled AND scroll.
   CGFloat targetAlpha = (button == _previewedButton) ? 1.0 : _buttonsTitleAlpha;
   CGFloat textAlpha = highlightAlpha * targetAlpha;
 
-  config.titleTextAttributesTransformer =
-      ^NSDictionary<NSAttributedStringKey, id>*(
-          NSDictionary<NSAttributedStringKey, id>* textAttributes) {
-    NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
-    mutableAttributes[NSFontAttributeName] =
-        AssistantButtonFontSize(self.traitCollection);
-    mutableAttributes[NSForegroundColorAttributeName] =
-        [ButtonsForegroundColor() colorWithAlphaComponent:textAlpha];
-    return mutableAttributes;
-  };
+  if (self.layoutState.appBarPosition == AppBarPosition::kLeft ||
+      self.layoutState.appBarPosition == AppBarPosition::kRight) {
+    // Even if the button is highlighted, the text should be hidden.
+    textAlpha = 0;
+  }
+
+  button.titleLabel.alpha = textAlpha;
 }
 
 // Updates the vertical content insets of a button configuration based on the
@@ -804,9 +803,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     };
   }
 
-  [self updateButtonTitleConfiguration:config
-                        highlightAlpha:activeAlpha
-                                button:button];
+  [self updateTitleAlphaForButton:button highlightAlpha:activeAlpha];
 
   [self updateVerticalInsetsForButtonConfiguration:config];
 
@@ -825,9 +822,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
   CGFloat highlightAlpha = ButtonHighlightAlpha(button);
 
-  [self updateButtonTitleConfiguration:config
-                        highlightAlpha:highlightAlpha
-                                button:button];
+  [self updateTitleAlphaForButton:button highlightAlpha:highlightAlpha];
 
   UIColor* symbolColor = ButtonsForegroundColor();
   UIColor* baseLabelColor =
@@ -953,6 +948,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   configuration.image = image;
 
   configuration.baseForegroundColor = ButtonsForegroundColor();
+  configuration.titleTextAttributesTransformer =
+      ^NSDictionary<NSAttributedStringKey, id>*(
+          NSDictionary<NSAttributedStringKey, id>* textAttributes) {
+    NSMutableDictionary* mutableAttributes = [textAttributes mutableCopy];
+    mutableAttributes[NSFontAttributeName] =
+        AssistantButtonFontSize(self.traitCollection);
+    return mutableAttributes;
+  };
 
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalPadding, kButtonHorizontalPadding, kButtonVerticalPadding,
@@ -1085,12 +1088,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                     }
                     completion:nil];
   } else {
-    // Update the color immediately, bypassing UIButtonConfiguration's implicit
-    // animations.
-    [UIView performWithoutAnimation:^{
-      [button setNeedsUpdateConfiguration];
-      [button layoutIfNeeded];
-    }];
+    [button setNeedsUpdateConfiguration];
+    [button layoutIfNeeded];
   }
 }
 

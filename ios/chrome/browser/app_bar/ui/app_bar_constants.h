@@ -10,8 +10,11 @@
 // The width of the app bar when in landscape.
 extern const CGFloat kAppBarHeight;
 
-// The height of the app bar when in fullscreen.
+// The height of the app bar when in fullscreen (portrait).
 extern const CGFloat kAppBarHeightFullscreen;
+
+// The height of the app bar when in landscape.
+extern const CGFloat kAppBarHeightLandscape;
 
 // The corner radius for the app bar and app content view.
 extern const CGFloat kAppBarCornerRadius;
