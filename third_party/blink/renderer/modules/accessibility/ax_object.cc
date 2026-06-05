@@ -913,24 +913,21 @@ bool AXObject::CanHaveChildren(Element& element) {
 }
 
 // static
-HTMLMapElement* AXObject::GetMapForImage(Node* image) {
-  if (!IsA<HTMLImageElement>(image))
+HTMLMapElement* AXObject::GetMapForImage(Node* node) {
+  auto* image = DynamicTo<HTMLImageElement>(node);
+  if (!image || !IsA<LayoutImage>(image->GetLayoutObject())) {
     return nullptr;
-
-  LayoutImage* layout_image = DynamicTo<LayoutImage>(image->GetLayoutObject());
-  if (!layout_image)
+  }
+  HTMLMapElement* map_element = image->GetImageMap();
+  if (!map_element) {
     return nullptr;
-
-  HTMLMapElement* map_element = layout_image->ImageMap();
-  if (!map_element)
-    return nullptr;
-
+  }
   // Don't allow images that are actually children of a map, as this could lead
   // to an infinite loop, where the descendant image points to the ancestor map,
   // yet the descendant image is being returned here as an ancestor.
-  if (Traversal<HTMLMapElement>::FirstAncestor(*image))
+  if (Traversal<HTMLMapElement>::FirstAncestor(*image)) {
     return nullptr;
-
+  }
   // The image has an associated <map> and does not have a <map> ancestor.
   return map_element;
 }

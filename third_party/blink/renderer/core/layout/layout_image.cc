@@ -34,13 +34,10 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/core/html/media/html_video_element.h"
-#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
@@ -369,14 +366,6 @@ bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {
     return false;
 
   return ForegroundIsKnownToBeOpaqueInRect(BackgroundPaintedExtent(), 0);
-}
-
-HTMLMapElement* LayoutImage::ImageMap() const {
-  NOT_DESTROYED();
-  auto* i = DynamicTo<HTMLImageElement>(GetNode());
-  return i ? i->GetTreeScope().GetImageMap(
-                 i->FastGetAttribute(html_names::kUsemapAttr))
-           : nullptr;
 }
 
 bool LayoutImage::NodeAtPoint(HitTestResult& result,

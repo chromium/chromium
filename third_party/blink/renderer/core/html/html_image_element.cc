@@ -857,6 +857,10 @@ void HTMLImageElement::DidMoveToNewDocument(Document& old_document) {
   SelectSourceURL(ImageLoader::kUpdateIgnorePreviousError);
 }
 
+HTMLMapElement* HTMLImageElement::GetImageMap() const {
+  return GetTreeScope().GetImageMap(FastGetAttribute(html_names::kUsemapAttr));
+}
+
 bool HTMLImageElement::IsServerMap() const {
   if (!FastHasAttribute(html_names::kIsmapAttr))
     return false;

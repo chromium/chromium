@@ -322,16 +322,13 @@ HTMLAreaElement* HitTestResult::ImageAreaForImage() const {
           DynamicTo<HTMLImageElement>(inner_node_->OwnerShadowHost());
     }
   }
-
-  if (!image_element || !image_element->GetLayoutObject() ||
-      !image_element->GetLayoutObject()->IsBox())
+  if (!image_element || !IsA<LayoutBox>(image_element->GetLayoutObject())) {
     return nullptr;
-
-  HTMLMapElement* map = image_element->GetTreeScope().GetImageMap(
-      image_element->FastGetAttribute(html_names::kUsemapAttr));
-  if (!map)
+  }
+  HTMLMapElement* map = image_element->GetImageMap();
+  if (!map) {
     return nullptr;
-
+  }
   return map->AreaForPoint(LocalPoint(), image_element->GetLayoutObject());
 }
 

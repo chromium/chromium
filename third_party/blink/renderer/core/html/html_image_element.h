@@ -42,6 +42,7 @@ namespace blink {
 
 class ExceptionState;
 class HTMLFormElement;
+class HTMLMapElement;
 class ImageCandidate;
 
 class CORE_EXPORT HTMLImageElement
@@ -85,6 +86,7 @@ class CORE_EXPORT HTMLImageElement
 
   const String& currentSrc() const;
 
+  HTMLMapElement* GetImageMap() const;
   bool IsServerMap() const;
 
   String AltText() const final;
