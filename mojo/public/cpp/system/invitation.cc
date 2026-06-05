@@ -249,8 +249,10 @@ void OutgoingInvitation::SendAsync(OutgoingInvitation invitation,
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelEndpoint channel_endpoint,
     std::string_view connection_name,
-    base::ProcessHandle target_process) {
+    base::ProcessHandle target_process,
+    MojoSendInvitationFlags invitation_flags) {
   OutgoingInvitation invitation;
+  invitation.set_extra_flags(invitation_flags);
   ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(kIsolatedPipeName);
   SendInvitation(std::move(invitation.handle_), target_process,
@@ -265,8 +267,10 @@ ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
 ScopedMessagePipeHandle OutgoingInvitation::SendIsolated(
     PlatformChannelServerEndpoint server_endpoint,
     std::string_view connection_name,
-    base::ProcessHandle target_process) {
+    base::ProcessHandle target_process,
+    MojoSendInvitationFlags invitation_flags) {
   OutgoingInvitation invitation;
+  invitation.set_extra_flags(invitation_flags);
   ScopedMessagePipeHandle pipe =
       invitation.AttachMessagePipe(kIsolatedPipeName);
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
