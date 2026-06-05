@@ -521,6 +521,12 @@ TEST_F(SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest,
 #define MAYBE_DeprecatedFilterPolicy DeprecatedFilterPolicy
 #endif
 TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
+  // This test will no longer make sense when the feature is enabled, because
+  // kSupervisedUserUseUrlFilteringService feature is removing the web-filtering
+  // related prefs.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSupervisedUserUseUrlFilteringService);
+
   Initialize(InitialSupervisionState::kFamilyLinkDefault);
   ASSERT_EQ(supervised_user_test_environment_->pref_service()->GetInteger(
                 prefs::kDefaultSupervisedUserFilteringBehavior),
