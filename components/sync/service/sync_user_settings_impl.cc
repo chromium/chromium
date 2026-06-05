@@ -357,7 +357,10 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
   DataTypeSet types = UserSelectableTypesToDataTypes(GetSelectedTypes());
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (IsSyncFeatureDisabledViaDashboard()) {
+  if (IsSyncFeatureDisabledViaDashboard() &&
+      (delegate_->GetSyncAccountStateForPrefs() ==
+           SyncPrefs::SyncAccountState::kSyncing ||
+       !IsReplaceSyncPromosWithSignInPromosEnabled())) {
     // If sync is disabled via dashboard, only a minimal set of datatypes should
     // sync. This prevents code changes from causing accidental behavioral
     // differences in this ChromeOS-specific edge case, as a side effect of

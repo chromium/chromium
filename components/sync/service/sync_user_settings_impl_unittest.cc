@@ -752,7 +752,7 @@ TEST_F(SyncUserSettingsImplTest, SyncFeatureDisabledViaDashboard) {
 
 TEST_F(
     SyncUserSettingsImplTest,
-    SetSyncFeatureDisabledViaDashboardDisablesOsTypesWhenFlagEnabledAndNotSyncing) {
+    SetSyncFeatureDisabledViaDashboard_SignedInWithoutSyncConsentWithTheFlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
 
@@ -762,15 +762,22 @@ TEST_F(
 
   // Ensure OS types are enabled by default.
   ASSERT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+  // Ensure browser types are enabled by default.
+  ASSERT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO, PASSWORDS}));
 
   sync_user_settings->SetSyncFeatureDisabledViaDashboard();
 
   EXPECT_FALSE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_TRUE(sync_user_settings->GetSelectedOsTypes().empty());
+  // When the flag is enabled and user is not syncing, the dashboard reset does
+  // NOT clear preferred browser types.
+  EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO, PASSWORDS}));
 }
 
 TEST_F(SyncUserSettingsImplTest,
-       SetSyncFeatureDisabledViaDashboardDoesNotDisableOsTypesWithSyncConsent) {
+       SetSyncFeatureDisabledViaDashboard_SyncingWithTheFlagEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
 
@@ -780,29 +787,47 @@ TEST_F(SyncUserSettingsImplTest,
 
   // Ensure OS types are enabled by default.
   ASSERT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+  // Ensure browser types are enabled by default.
+  ASSERT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO, BOOKMARKS, PASSWORDS}));
 
   sync_user_settings->SetSyncFeatureDisabledViaDashboard();
 
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+  // Even when the feature is enabled, if the user is syncing, the dashboard
+  // reset clears preferred browser types. Only a minimal set of datatypes
+  // should sync.
+  EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO}));
+  EXPECT_FALSE(sync_user_settings->GetPreferredDataTypes().Has(BOOKMARKS));
+  EXPECT_FALSE(sync_user_settings->GetPreferredDataTypes().Has(PASSWORDS));
 }
 
-TEST_F(
-    SyncUserSettingsImplTest,
-    SetSyncFeatureDisabledViaDashboardDoesNotDisableOsTypesWhenFlagDisabled) {
+TEST_F(SyncUserSettingsImplTest,
+       SetSyncFeatureDisabledViaDashboard_SyncingWithTheFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       syncer::kReplaceSyncPromosWithSignInPromos);
 
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSyncing);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
 
   // Ensure OS types are enabled by default.
   ASSERT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+  // Ensure browser types are enabled by default.
+  ASSERT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO, BOOKMARKS, PASSWORDS}));
 
   sync_user_settings->SetSyncFeatureDisabledViaDashboard();
 
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
+  // When the feature is disabled, the dashboard reset clears preferred browser
+  // types.  Only a minimal set of datatypes should sync.
+  EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO}));
+  EXPECT_FALSE(sync_user_settings->GetPreferredDataTypes().Has(BOOKMARKS));
+  EXPECT_FALSE(sync_user_settings->GetPreferredDataTypes().Has(PASSWORDS));
 }
 
 TEST_F(SyncUserSettingsImplTest,
