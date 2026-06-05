@@ -1183,7 +1183,11 @@ void DesktopWindowTreeHostWin::HandleMove() {
   // Adding/removing a monitor, or changing the primary monitor can cause a
   // WM_MOVE message before `OnDisplayChanged()`. Without this call, we would
   // DCHECK due to stale `DisplayInfo`s. See https:://crbug.com/1413940.
+  auto weak_ptr = GetWeakPtr();
   display::win::GetScreenWin()->UpdateDisplayInfosIfNeeded();
+  if (!weak_ptr) {
+    return;
+  }
   CheckForMonitorChange();
   OnHostMovedInPixels();
 }
