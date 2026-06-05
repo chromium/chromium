@@ -6,6 +6,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/work_area_insets.h"
+#include "components/exo/security_delegate.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/zcr_remote_shell_impl.h"
 
@@ -229,6 +230,8 @@ void remote_shell_get_input_method_surface(wl_client* client,
                            "surface has already been assigned a role");
     return;
   }
+
+  CHECK(GetSecurityDelegate(client)->CanAccessRemoteShell());
 
   std::unique_ptr<ClientControlledShellSurface> input_method_surface =
       GetUserDataAs<WaylandRemoteShell>(resource)->CreateInputMethodSurface(
