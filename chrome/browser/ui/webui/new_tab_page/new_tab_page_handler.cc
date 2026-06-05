@@ -24,6 +24,7 @@
 #include "base/i18n/rtl.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -1170,6 +1171,62 @@ void NewTabPageHandler::IncrementComposeButtonShownCount() {
       prefs::kNtpComposeButtonShownCountPrefName);
   profile_->GetPrefs()->SetInteger(prefs::kNtpComposeButtonShownCountPrefName,
                                    shown_count + 1);
+}
+
+void NewTabPageHandler::CanShowRealboxContextMenuAnimation(
+    CanShowRealboxContextMenuAnimationCallback callback) {
+  PrefService* prefs = profile_->GetPrefs();
+  const base::DictValue& state_dict =
+      prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+
+  int lifetime_count = state_dict.FindInt("lifetime_count").value_or(0);
+  if (lifetime_count >= 20) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  base::Time last_impression_time =
+      base::ValueToTime(state_dict.Find("last_impression_time"))
+          .value_or(base::Time());
+  int daily_count = state_dict.FindInt("daily_count").value_or(0);
+
+  base::Time today_time = base::Time::Now().LocalMidnight();
+
+  if (last_impression_time != today_time) {
+    daily_count = 0;
+  }
+
+  bool can_show = daily_count < 5;
+  std::move(callback).Run(can_show);
+}
+
+void NewTabPageHandler::RecordRealboxContextMenuAnimationImpression() {
+  PrefService* prefs = profile_->GetPrefs();
+  const base::DictValue& state_dict =
+      prefs->GetDict(prefs::kRealboxContextMenuAnimationState);
+
+  base::Time last_impression_time =
+      base::ValueToTime(state_dict.Find("last_impression_time"))
+          .value_or(base::Time());
+  int daily_count = state_dict.FindInt("daily_count").value_or(0);
+  int lifetime_count = state_dict.FindInt("lifetime_count").value_or(0);
+
+  base::Time today_time = base::Time::Now().LocalMidnight();
+
+  if (last_impression_time != today_time) {
+    daily_count = 0;
+  }
+
+  if (lifetime_count < 20 && daily_count < 5) {
+    daily_count++;
+    lifetime_count++;
+
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                                prefs::kRealboxContextMenuAnimationState);
+    update->Set("last_impression_time", base::TimeToValue(today_time));
+    update->Set("daily_count", daily_count);
+    update->Set("lifetime_count", lifetime_count);
+  }
 }
 
 void NewTabPageHandler::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {

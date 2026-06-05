@@ -1005,6 +1005,12 @@ inline constexpr char kIPHDesktopRealboxContextualSearchFeatureName[] =
 inline constexpr char kIPHDesktopRealboxContextualSearchFeatureDescription[] =
     "Enables In-Product Help for Desktop Realbox Contextual Search.";
 
+inline constexpr char kRealboxContextMenuAnimationCappingName[] =
+    "Realbox Context Menu Animation Capping";
+inline constexpr char kRealboxContextMenuAnimationCappingDescription[] =
+    "When enabled, the impressions of the realbox context menu animation "
+    "will be capped.";
+
 inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalName[] =
     "Enable retrieval of card info(with CVC) from issuer for enrolled cards";
 inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =

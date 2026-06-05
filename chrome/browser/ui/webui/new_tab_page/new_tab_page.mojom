@@ -281,6 +281,10 @@ interface PageHandler {
   OnPromoLinkClicked();
   // Logs that the <ntp-app> element's |ready| callback method was called.
   OnAppRendered(double time);
+  // Queries whether the Realbox "+" context menu button animation should be shown.
+  CanShowRealboxContextMenuAnimation() => (bool can_show);
+  // Records that the Realbox "+" context menu button animation was shown.
+  RecordRealboxContextMenuAnimationImpression();
 };
 
 // WebUI-side handler for requests from the browser.

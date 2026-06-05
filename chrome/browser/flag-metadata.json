@@ -8180,6 +8180,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "realbox-context-menu-animation-capping",
+    "owners": [
+      "dhruvkathpalia@google.com",
+      "rtatum@google.com"
+    ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "record-web-app-debug-info",
     "owners": [ "pwa-team@google.com" ],
     // This flag is used for in-the-field debugging of preinstalled web apps on

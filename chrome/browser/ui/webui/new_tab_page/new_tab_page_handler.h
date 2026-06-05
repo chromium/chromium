@@ -169,6 +169,9 @@ class NewTabPageHandler
   void OnPromoLinkClicked() override;
   void IncrementComposeButtonShownCount() override;
   void MaybeTriggerAutomaticCustomizeChromePromo() override;
+  void CanShowRealboxContextMenuAnimation(
+      CanShowRealboxContextMenuAnimationCallback callback) override;
+  void RecordRealboxContextMenuAnimationImpression() override;
 
  private:
   // ui::NativeThemeObserver:

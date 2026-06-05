@@ -7095,6 +7095,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          feature_engagement::kIPHDesktopRealboxContextualSearchFeature)},
 
+    {"realbox-context-menu-animation-capping",
+     flag_descriptions::kRealboxContextMenuAnimationCappingName,
+     flag_descriptions::kRealboxContextMenuAnimationCappingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kRealboxContextMenuAnimationCapping)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
     {"ntp-customize-chrome-auto-open",

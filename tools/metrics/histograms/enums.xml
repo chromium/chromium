@@ -17376,6 +17376,7 @@ from previous Chrome versions.
   <int value="1048263286" label="LauncherManateeForKeyboardShortcuts:disabled"/>
   <int value="1048760359"
       label="AccessibilityImproveLiveRegionAnnounce:enabled"/>
+  <int value="1049132310" label="RealboxContextMenuAnimationCapping:disabled"/>
   <int value="1049339770" label="AppMenuMobileSiteOption:enabled"/>
   <int value="1049346775" label="OmniboxDocumentProviderAso:disabled"/>
   <int value="1049885154" label="OfflinePagesPrefetching:disabled"/>
@@ -18958,6 +18959,7 @@ from previous Chrome versions.
       label="ExtensionDisableUnsupportedDeveloper:disabled"/>
   <int value="1550193978" label="PulseaudioLoopbackForCast:enabled"/>
   <int value="1550865563" label="AnimatedImageDragShadow:enabled"/>
+  <int value="1551125621" label="RealboxContextMenuAnimationCapping:enabled"/>
   <int value="1551743170"
       label="WebAuthenticationNewDiscoverableCredentialsUi:disabled"/>
   <int value="1551752543" label="ArcvmSwapoutKeyboardShortcut:disabled"/>

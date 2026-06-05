@@ -2047,6 +2047,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif
 
   registry->RegisterBooleanPref(prefs::kDisableScreenshots, false);
+  registry->RegisterDictionaryPref(prefs::kRealboxContextMenuAnimationState);
   registry->RegisterListPref(
       webauthn::pref_names::kRemoteDesktopAllowedOrigins);
 
