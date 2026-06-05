@@ -2621,6 +2621,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "autofill_ai_model_execution_timeout": "60s",
+                        "autofill_ai_model_send_apc": "true",
+                        "autofill_ai_model_use_cache_results": "true",
+                        "wallet_pass_save_url": "https://wallet1ppasses.pa.googleapis.com"
+                    },
                     "enable_features": [
                         "AutofillAiAvailableByDefault",
                         "AutofillAiDedupeEntities",
