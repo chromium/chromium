@@ -5,7 +5,10 @@
 #ifndef UI_COMPOSITOR_DISPLAY_LINK_MAC_MOJO_H_
 #define UI_COMPOSITOR_DISPLAY_LINK_MAC_MOJO_H_
 
+#include <map>
+#include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
@@ -89,7 +92,13 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
   void ConnectVSyncIpcAndAddDisplayObserver(
       viz::HostFrameSinkManager* host_frame_sink_manager);
 
-  void InitDisplaysOnVSyncThread();
+  void InitDisplaysOnVSyncThread(
+      std::vector<int64_t> display_ids,
+      mojo::Remote<viz::mojom::ExternalBeginFrameController>
+          external_begin_frame_controller,
+      std::unique_ptr<
+          mojo::Receiver<viz::mojom::ExternalBeginFrameControllerClient>>
+          client_receiver);
 
   void OnDisplayLinkVSyncCallback(int64_t display_id, VSyncParamsMac params);
 
