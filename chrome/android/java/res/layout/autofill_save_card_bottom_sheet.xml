@@ -84,6 +84,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textDirection="locale"
             android:layout_marginStart="@dimen/autofill_bottom_sheet_credit_card_spacing"
             android:layout_toEndOf="@id/autofill_save_card_credit_card_icon"
             tools:text="Bobpay 1234" />
@@ -92,6 +93,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+            android:textDirection="locale"
             android:layout_below="@+id/autofill_save_card_credit_card_label"
             android:layout_marginStart="@dimen/autofill_bottom_sheet_credit_card_spacing"
             android:layout_toEndOf="@id/autofill_save_card_credit_card_icon"
