@@ -1815,6 +1815,11 @@ inline constexpr char kSnapshotDownsampleImageDescription[] =
     "Downsamples tab snapshots to half resolution before writing to disk, "
     "reducing storage and I/O while keeping full resolution in memory.";
 
+inline constexpr char kStartSurfaceUserSettingName[] =
+    "Start Surface User Setting";
+inline constexpr char kStartSurfaceUserSettingDescription[] =
+    "Enables the user setting toggle to control the Start Surface.";
+
 inline constexpr char kStrokesAPIEnabledName[] = "Enable Strokes API for Lens";
 inline constexpr char kStrokesAPIEnabledDescription[] =
     "When enabled, Lens will use the Strokes API.";

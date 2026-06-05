@@ -13,4 +13,7 @@ extern NSString* const kTabsSettingsTableViewId;
 // The accessibility identifier of the Inactive tabs setting table view.
 extern NSString* const kInactiveTabsSettingsTableViewId;
 
+// The accessibility identifier of the Start surface setting cell.
+extern NSString* const kSettingsStartSurfaceCellId;
+
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_CONSTANTS_H_

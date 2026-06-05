@@ -693,6 +693,9 @@ inline constexpr char kAutofillBrandingIconDisplayCount[] =
 inline constexpr char kAutomaticallyOpenTabGroupsEnabled[] =
     "ios.settings.automatically_open_tab_groups_enabled";
 
+// A boolean specifying whether the Start Surface is enabled.
+inline constexpr char kStartSurfaceEnabled[] = "ios.start_surface.enabled";
+
 // A boolean used to determine if the Price Tracking UI has been shown.
 inline constexpr char kPriceNotificationsHasBeenShown[] =
     "ios.price_notifications.has_been_shown";

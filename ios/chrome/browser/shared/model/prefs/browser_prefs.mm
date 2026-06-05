@@ -829,6 +829,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kInactiveTabsTimeThreshold, 0);
   registry->RegisterBooleanPref(prefs::kAutomaticallyOpenTabGroupsEnabled,
                                 false);
+  registry->RegisterBooleanPref(prefs::kStartSurfaceEnabled, true);
 
   registry->RegisterDictionaryPref(prefs::kIosPreRestoreAccountInfo);
 

@@ -46,6 +46,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ui/base",
   ]

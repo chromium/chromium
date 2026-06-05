@@ -52,6 +52,7 @@ include_rules = [
   "+ios/chrome/browser/search_engine_choice/ui",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h",
   "+ios/chrome/browser/supervised_user/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/tabs/model/inactive_tabs",

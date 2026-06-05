@@ -8821,6 +8821,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "start-surface-user-setting",
+    "owners": [
+      "pabouchard@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "startup-launch",
     "owners": [
       "top-chrome-desktop-ui@google.com",

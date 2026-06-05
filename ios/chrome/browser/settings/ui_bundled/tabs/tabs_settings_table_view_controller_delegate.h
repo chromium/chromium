@@ -20,6 +20,12 @@
             (TabsSettingsTableViewController*)tabsSettingsTableViewController
              didUpdateAutoOpenTabGroups:(BOOL)autoOpenTabGroups;
 
+// Tells the model to handle logic when the switch toggle for start surface
+// settings changed.
+- (void)tabsSettingsTableViewController:
+            (TabsSettingsTableViewController*)tabsSettingsTableViewController
+                  didUpdateStartSurface:(BOOL)startSurface;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_TABS_SETTINGS_TABLE_VIEW_CONTROLLER_DELEGATE_H_

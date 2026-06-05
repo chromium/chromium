@@ -32,6 +32,8 @@
   PrefChangeRegistrar _prefChangeRegistrar;
   // Pref tracking if automatically open tab groups from other devices.
   PrefBackedBoolean* _automaticallyOpenTabGroupsEnabled;
+  // Pref tracking if start surface on launch is enabled.
+  PrefBackedBoolean* _startSurfaceEnabled;
   // The consumer that will be notified when the data change.
   __weak id<TabsSettingsConsumer> _consumer;
 }
@@ -63,6 +65,14 @@
     [_automaticallyOpenTabGroupsEnabled setObserver:self];
     BOOL openTabGroups = _automaticallyOpenTabGroupsEnabled.value;
     [_consumer setAutomaticallyOpenTabGroupsEnabled:openTabGroups];
+
+    // Observe changes to the start surface preference.
+    _startSurfaceEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_prefs
+                   prefName:prefs::kStartSurfaceEnabled];
+    [_startSurfaceEnabled setObserver:self];
+    BOOL startSurface = _startSurfaceEnabled.value;
+    [_consumer setStartSurfaceEnabled:startSurface];
   }
   return self;
 }
@@ -72,6 +82,10 @@
   [_automaticallyOpenTabGroupsEnabled stop];
   _automaticallyOpenTabGroupsEnabled.observer = nil;
   _automaticallyOpenTabGroupsEnabled = nil;
+
+  [_startSurfaceEnabled stop];
+  _startSurfaceEnabled.observer = nil;
+  _startSurfaceEnabled = nil;
 
   // Remove pref changes registrations.
   _prefChangeRegistrar.RemoveAll();
@@ -89,6 +103,8 @@
 - (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
   if (observableBoolean == _automaticallyOpenTabGroupsEnabled) {
     [_consumer setAutomaticallyOpenTabGroupsEnabled:observableBoolean.value];
+  } else if (observableBoolean == _startSurfaceEnabled) {
+    [_consumer setStartSurfaceEnabled:observableBoolean.value];
   }
 }
 
@@ -114,6 +130,12 @@
             (TabsSettingsTableViewController*)tabsSettingsTableViewController
              didUpdateAutoOpenTabGroups:(BOOL)autoOpenTabGroups {
   _automaticallyOpenTabGroupsEnabled.value = autoOpenTabGroups;
+}
+
+- (void)tabsSettingsTableViewController:
+            (TabsSettingsTableViewController*)tabsSettingsTableViewController
+                  didUpdateStartSurface:(BOOL)startSurface {
+  _startSurfaceEnabled.value = startSurface;
 }
 
 @end

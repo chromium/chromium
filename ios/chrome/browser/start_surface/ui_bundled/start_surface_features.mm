@@ -29,3 +29,5 @@ base::TimeDelta GetReturnToTabGroupInGridDuration() {
       kShowTabGroupInGridOnStart, kShowTabGroupInGridInactiveDurationInSeconds,
       kDefaultShowTabGroupInGridInactiveDuration.InSecondsF()));
 }
+
+BASE_FEATURE(kStartSurfaceUserSetting, base::FEATURE_DISABLED_BY_DEFAULT);

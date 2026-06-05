@@ -7805,6 +7805,7 @@ from previous Chrome versions.
       label="AutofillEnableAiBasedAmountExtraction:enabled"/>
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
   <int value="-2119493239" label="enable-app-info-dialog-mac"/>
+  <int value="-2119003106" label="start-surface-user-setting:enabled"/>
   <int value="-2118893353" label="WebRtcRemoteEventLog:enabled"/>
   <int value="-2118731119"
       label="AutofillEnableMerchantOptOutClientSideUrlFiltering:disabled"/>
@@ -13517,6 +13518,7 @@ from previous Chrome versions.
   <int value="-275914198" label="ResetSuggestionsScroll:disabled"/>
   <int value="-275870837"
       label="OmniboxUIExperimentHideSuggestionUrlPath:enabled"/>
+  <int value="-275711152" label="start-surface-user-setting:disabled"/>
   <int value="-275638251" label="CCTAuthTabEnableHttpsRedirects:enabled"/>
   <int value="-275619817"
       label="disable-proximity-auth-bluetooth-low-energy-discovery"/>

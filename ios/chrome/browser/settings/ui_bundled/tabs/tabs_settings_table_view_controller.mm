@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -26,6 +27,7 @@ namespace {
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierInactiveTabs = kSectionIdentifierEnumZero,
+  SectionIdentifierStartSurface,
   SectionIdentifierTabGroups,
 };
 
@@ -33,6 +35,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeInactiveTabs = kItemTypeEnumZero,
   ItemTypeAutomaticallyOpenTabGroups,
+  ItemTypeStartSurface,
 };
 
 }  // namespace
@@ -42,10 +45,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* _inactiveTabsDetailItem;
   // Switch item for automatically open tab groups from other devices.
   TableViewSwitchItem* _automaticallyOpenTabGroupsItem;
+  // Switch item for start surface setting.
+  TableViewSwitchItem* _startSurfaceItem;
   // Current inactive tab days threshold.
   int _inactiveDaysThreshold;
   // Whether current automatically open tab groups enabled.
   BOOL _automaticallyOpenTabGroupsEnabled;
+  // Whether start surface on launch is enabled.
+  BOOL _startSurfaceEnabled;
 }
 
 - (instancetype)init {
@@ -84,6 +91,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self moveInactiveTabsItem]
       toSectionWithIdentifier:SectionIdentifierInactiveTabs];
   [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
+
+  if (base::FeatureList::IsEnabled(kStartSurfaceUserSetting)) {
+    [model addSectionWithIdentifier:SectionIdentifierStartSurface];
+    [model addItem:[self startSurfaceItem]
+        toSectionWithIdentifier:SectionIdentifierStartSurface];
+  }
 
   [model addSectionWithIdentifier:SectionIdentifierTabGroups];
   [model addItem:[self automaticallyOpenTabGroupsItem]
@@ -130,6 +143,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self reconfigureCellsForItems:@[ _automaticallyOpenTabGroupsItem ]];
 }
 
+- (void)setStartSurfaceEnabled:(BOOL)enabled {
+  _startSurfaceEnabled = enabled;
+  // Do not update UI when model is not loaded.
+  if (!_startSurfaceItem) {
+    return;
+  }
+  if (_startSurfaceItem.on == enabled) {
+    return;
+  }
+  _startSurfaceItem.on = enabled;
+  [self reconfigureCellsForItems:@[ _startSurfaceItem ]];
+}
+
 #pragma mark - Model Items
 
 // Returns a newly created TableViewDetailIconItem for the inactive tabs
@@ -163,11 +189,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _automaticallyOpenTabGroupsItem;
 }
 
+// Returns a newly created TableViewSwitchItem for the start surface settings
+// menu.
+- (TableViewSwitchItem*)startSurfaceItem {
+  _startSurfaceItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeStartSurface];
+  _startSurfaceItem.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_START_SURFACE_TITLE);
+  _startSurfaceItem.on = _startSurfaceEnabled;
+  _startSurfaceItem.accessibilityIdentifier = kSettingsStartSurfaceCellId;
+  _startSurfaceItem.target = self;
+  _startSurfaceItem.selector = @selector(startSurfaceSwitchToggled:);
+  return _startSurfaceItem;
+}
+
 #pragma mark - Switch Action
 
 - (void)openTabGroupsSwitchToggled:(UISwitch*)sender {
   [self.delegate tabsSettingsTableViewController:self
                       didUpdateAutoOpenTabGroups:sender.isOn];
+}
+
+- (void)startSurfaceSwitchToggled:(UISwitch*)sender {
+  [self.delegate tabsSettingsTableViewController:self
+                           didUpdateStartSurface:sender.isOn];
 }
 
 #pragma mark - Private
@@ -182,6 +227,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
           tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
       break;
     case ItemTypeAutomaticallyOpenTabGroups:
+      break;
+    case ItemTypeStartSurface:
       break;
   }
 }

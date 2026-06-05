@@ -196,17 +196,27 @@ bool IsEmptyNTP(const web::WebState* web_state) {
     return;
   }
 
+  if (base::FeatureList::IsEnabled(kStartSurfaceUserSetting)) {
+    BOOL isStartSurfaceEnabled =
+        profile->GetPrefs()->GetBoolean(prefs::kStartSurfaceEnabled);
+    base::UmaHistogramBoolean("IOS.StartSurface.EnabledByUserSetting",
+                              isStartSurfaceEnabled);
+    if (!isStartSurfaceEnabled) {
+      return;
+    }
+  }
+
   base::RecordAction(base::UserMetricsAction("IOS.StartSurface.Show"));
   StartSurfaceRecentTabBrowserAgent::FromBrowser(browser)->SaveMostRecentTab();
   WebStateList* webStateList = browser->GetWebStateList();
 
-    // Iterate through the WebStateList and activate the existing NTP tab for
-    // the Start surface (if any).
-    for (int i = webStateList->count() - 1; i >= 0; --i) {
-      if ([self activateUngroupedNTPForWebStateList:webStateList atIndex:i]) {
-        return;
-      }
+  // Iterate through the WebStateList and activate the existing NTP tab for
+  // the Start surface (if any).
+  for (int i = webStateList->count() - 1; i >= 0; --i) {
+    if ([self activateUngroupedNTPForWebStateList:webStateList atIndex:i]) {
+      return;
     }
+  }
 
   // Create a new NTP since there is no existing one.
   TabInsertionBrowserAgent* insertion_agent =

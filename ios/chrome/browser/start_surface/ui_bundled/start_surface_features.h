@@ -26,4 +26,7 @@ bool IsShowTabGroupInGridOnStartEnabled();
 // Returns the inactive duration to show the tab group in grid view.
 base::TimeDelta GetReturnToTabGroupInGridDuration();
 
+// The feature to gate the Start Surface user setting toggle.
+BASE_DECLARE_FEATURE(kStartSurfaceUserSetting);
+
 #endif  // IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_FEATURES_H_

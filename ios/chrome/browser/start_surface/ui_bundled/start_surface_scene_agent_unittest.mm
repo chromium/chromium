@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -48,7 +49,7 @@ using tab_groups::TabGroupId;
 namespace {
 
 const char kURL[] = "https://chromium.org/";
-const char kOneHourTreshold[] = "3600";
+const char kOneHourThreshold[] = "3600";
 
 }  // namespace
 
@@ -459,11 +460,11 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
 TEST_F(StartSurfaceSceneAgentTest, ShowTabGroupInGridOnStart) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Within the interval.
@@ -495,11 +496,11 @@ TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartInIncognitoMode) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Within the interval
@@ -538,11 +539,11 @@ TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartIfOpenedTooEarly) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Not in interval.
@@ -574,11 +575,11 @@ TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartIfOpenedTooLate) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Not in interval.
@@ -613,11 +614,11 @@ TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartIfNotInAGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Within the interval but no group.
@@ -649,11 +650,11 @@ TEST_F(StartSurfaceSceneAgentTest,
        DoNotShowTabGroupInGridOnStartBeforeForegroundActivation) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Within the interval.
@@ -680,16 +681,16 @@ TEST_F(StartSurfaceSceneAgentTest,
   [dispatcher_ stopDispatchingToTarget:application_handler_];
 }
 
-// Tests that a NTP is created when Chrome is foregrounded after being +4 hours
-// in background.
-TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
+// Tests that a NTP is created when Chrome is foregrounded after being in
+// background past the threshold.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterThreshold) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   base::Time time_last_background = base::Time::Now() - base::Hours(5);
@@ -713,15 +714,15 @@ TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
 }
 
 // Tests that a NTP is created outside the active group when Chrome is
-// foregrounded after being +4 hours in background.
-TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
+// foregrounded after being in background past the threshold.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterThresholdOutsideActiveGroup) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   base::Time time_last_background = base::Time::Now() - base::Hours(5);
@@ -746,15 +747,156 @@ TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
   [dispatcher_ stopDispatchingToTarget:application_handler_];
 }
 
+// Tests that a NTP is NOT created when Chrome is foregrounded after being in
+// background past the threshold if the Start Surface setting is disabled.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterThresholdSettingOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold},
+       {kStartSurfaceUserSetting, {}}},
+      /*disabled_features=*/{});
+
+  profile_->GetPrefs()->SetBoolean(prefs::kStartSurfaceEnabled, false);
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(SceneCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  // Count should remain 1 (no NTP created).
+  ASSERT_EQ(1, web_state_list->count());
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP IS created when Chrome is foregrounded after being in
+// background past the threshold if the Start Surface setting is explicitly
+// enabled.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterThresholdSettingOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold},
+       {kStartSurfaceUserSetting, {}}},
+      /*disabled_features=*/{});
+
+  profile_->GetPrefs()->SetBoolean(prefs::kStartSurfaceEnabled, true);
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(SceneCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  // Count should become 2 (NTP created).
+  ASSERT_EQ(2, web_state_list->count());
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP is NOT created when Chrome is foregrounded within the
+// threshold, even if the Start Surface setting is enabled.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPWithinThresholdSettingOn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold},
+       {kStartSurfaceUserSetting, {}}},
+      /*disabled_features=*/{});
+
+  profile_->GetPrefs()->SetBoolean(prefs::kStartSurfaceEnabled, true);
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(SceneCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  // Count should remain 1 (no NTP created).
+  ASSERT_EQ(1, web_state_list->count());
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP is NOT created when Chrome is foregrounded within the
+// threshold when the Start Surface setting is disabled.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPWithinThresholdSettingOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold},
+       {kStartSurfaceUserSetting, {}}},
+      /*disabled_features=*/{});
+
+  profile_->GetPrefs()->SetBoolean(prefs::kStartSurfaceEnabled, false);
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(SceneCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  // Count should remain 1 (no NTP created).
+  ASSERT_EQ(1, web_state_list->count());
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
 // Tests that the app does not crash when the webStateList is empty.
 TEST_F(StartSurfaceSceneAgentTest, AppDoesNotCrashWhenWebStateListEmpty) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Setting the ShowTabGroupInGridInactiveDuration to 1 hour.
-  base::FieldTrialParams show_tab_grid_treshold = {
-      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  base::FieldTrialParams show_tab_grid_threshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourThreshold}};
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      {{kShowTabGroupInGridOnStart, show_tab_grid_threshold}},
       /*disabled_features=*/{});
 
   // Within the interval.
