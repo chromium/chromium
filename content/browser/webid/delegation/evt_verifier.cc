@@ -172,7 +172,7 @@ base::expected<void, Result> VerifyKB(const sdjwt::Jwt& kb_jwt,
 
 EvtVerifier::Result EvtVerifier::Verify(const std::string& token,
                                         const url::Origin& issuer,
-                                        base::DictValue issuer_pub_keys,
+                                        const base::DictValue& issuer_pub_keys,
                                         const url::Origin& audience,
                                         const std::string& email,
                                         const std::string& nonce,

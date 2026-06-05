@@ -569,7 +569,7 @@ void EmailVerificationRequest::OnTokenAndKeysFetchComplete(
   std::string result = sd_jwt_kb.Serialize();
 
   EvtVerifier::Result verification_result =
-      EvtVerifier::Verify(result, issuer, std::move(jwks->data).value(),
+      EvtVerifier::Verify(result, issuer, jwks->data.value(),
                           render_frame_host_->GetLastCommittedOrigin(), email,
                           nonce, *holder_pub_key);
 

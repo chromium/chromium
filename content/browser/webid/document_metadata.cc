@@ -21,7 +21,7 @@ constexpr char kClientIdProperty[] = "clientId";
 constexpr char kNonceProperty[] = "nonce";
 constexpr char kFieldsProperty[] = "fields";
 
-const schema_org::mojom::EntityPtr GetEntityProperty(
+schema_org::mojom::EntityPtr GetEntityProperty(
     const schema_org::mojom::Entity& entity,
     const std::string& name) {
   for (const auto& property : entity.properties) {

@@ -472,8 +472,6 @@ std::optional<JSONString> Payload::ToJson() const {
   }
 
   if (cnf) {
-    base::DictValue jwk;
-
     base::DictValue cnf_dict;
     cnf_dict.Set("jwk", cnf->jwk.ToDict());
     payload_dict.Set("cnf", std::move(cnf_dict));

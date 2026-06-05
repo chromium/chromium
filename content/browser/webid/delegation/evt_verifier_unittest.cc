@@ -112,7 +112,7 @@ TEST_F(EvtVerifierTest, SuccessfulVerification) {
 
   // 7. Verify
   EvtVerifier::Result result = EvtVerifier::Verify(
-      full_token, url::Origin::Create(GURL(kIssuerUrl)), std::move(jwks),
+      full_token, url::Origin::Create(GURL(kIssuerUrl)), jwks,
       url::Origin::Create(GURL(kRpOrigin)), kEmail, kNonce, browser_jwk);
 
   EXPECT_EQ(result, EvtVerifier::Result::kVerified);
@@ -211,7 +211,7 @@ TEST_F(EvtVerifierTest, CaseInsensitiveEmailMatch) {
   // 7. Verify
   EvtVerifier::Result result =
       EvtVerifier::Verify(full_token, url::Origin::Create(GURL(kIssuerUrl)),
-                          std::move(jwks), url::Origin::Create(GURL(kRpOrigin)),
+                          jwks, url::Origin::Create(GURL(kRpOrigin)),
                           kEmailMixedCase, kNonce, browser_jwk);
 
   EXPECT_EQ(result, EvtVerifier::Result::kVerified);
@@ -296,9 +296,9 @@ TEST_F(EvtVerifierTest, ExpiredEvtRejected) {
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
   EvtVerifier::Result result = EvtVerifier::Verify(
-      full_token, url::Origin::Create(GURL("https://issuer.example.com")),
-      std::move(jwks), url::Origin::Create(GURL("https://rp.example.com")),
-      "test@example.com", "test_nonce", browser_jwk);
+      full_token, url::Origin::Create(GURL("https://issuer.example.com")), jwks,
+      url::Origin::Create(GURL("https://rp.example.com")), "test@example.com",
+      "test_nonce", browser_jwk);
 
   EXPECT_NE(result, EvtVerifier::Result::kVerified);
 }
@@ -382,9 +382,9 @@ TEST_F(EvtVerifierTest, ExpiredKbRejected) {
   std::string full_token = evt_string + kb_jwt.Serialize().value();
 
   EvtVerifier::Result result = EvtVerifier::Verify(
-      full_token, url::Origin::Create(GURL("https://issuer.example.com")),
-      std::move(jwks), url::Origin::Create(GURL("https://rp.example.com")),
-      "test@example.com", "test_nonce", browser_jwk);
+      full_token, url::Origin::Create(GURL("https://issuer.example.com")), jwks,
+      url::Origin::Create(GURL("https://rp.example.com")), "test@example.com",
+      "test_nonce", browser_jwk);
 
   EXPECT_NE(result, EvtVerifier::Result::kVerified);
 }
@@ -469,7 +469,7 @@ TEST_F(EvtVerifierTest, MismatchedIssuerRejected) {
 
   EvtVerifier::Result result = EvtVerifier::Verify(
       full_token, url::Origin::Create(GURL("https://mismatched.example.com")),
-      std::move(jwks), url::Origin::Create(GURL("https://rp.example.com")),
+      jwks, url::Origin::Create(GURL("https://rp.example.com")),
       "test@example.com", "test_nonce", browser_jwk);
 
   EXPECT_NE(result, EvtVerifier::Result::kVerified);
@@ -586,7 +586,7 @@ TEST_F(EvtVerifierTest, VerificationFallbackWhenKidMissing) {
 
   // 7. Verify
   EvtVerifier::Result result = EvtVerifier::Verify(
-      full_token, url::Origin::Create(GURL(kIssuerUrl)), std::move(jwks),
+      full_token, url::Origin::Create(GURL(kIssuerUrl)), jwks,
       url::Origin::Create(GURL(kRpOrigin)), kEmail, kNonce, browser_jwk);
 
   EXPECT_EQ(result, EvtVerifier::Result::kVerified);
@@ -703,7 +703,7 @@ TEST_F(EvtVerifierTest, VerificationFallbackWhenKidEmpty) {
 
   // 7. Verify
   EvtVerifier::Result result = EvtVerifier::Verify(
-      full_token, url::Origin::Create(GURL(kIssuerUrl)), std::move(jwks),
+      full_token, url::Origin::Create(GURL(kIssuerUrl)), jwks,
       url::Origin::Create(GURL(kRpOrigin)), kEmail, kNonce, browser_jwk);
 
   EXPECT_EQ(result, EvtVerifier::Result::kVerified);

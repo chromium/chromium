@@ -61,7 +61,7 @@ class CONTENT_EXPORT EvtVerifier {
 
   static Result Verify(const std::string& token,
                        const url::Origin& issuer,
-                       base::DictValue issuer_pub_keys,
+                       const base::DictValue& issuer_pub_keys,
                        const url::Origin& audience,
                        const std::string& email,
                        const std::string& nonce,
