@@ -19027,18 +19027,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TRANSLATE_TOAST_UNDO_BUTTON" desc="Button on a toast notification that allows users to undo the translation.">
         Undo
       </message>
-      <message name="IDS_MULTISTEP_FILTER_SUGGESTION_TITLE" desc="Title to show on the toast for Multistep Filter suggestions." translateable="false">
-        Apply <ph name="FILTER_COUNT">$1</ph> filters from <ph name="TIME_PERIOD">$2</ph> ago? <ph name="DETAILS">$3</ph>
-      </message>
-      <message name="IDS_MULTISTEP_FILTER_SUGGESTION_APPLY_BUTTON" desc="Text for the apply button on the Multistep Filter suggestion toast." translateable="false">
-        Apply
-      </message>
-      <message name="IDS_MULTISTEP_FILTER_SUGGESTION_RECENT_TITLE" desc="Title to show on the toast for Multistep Filter suggestions recent toast." translateable="false">
-        Recall <ph name="FILTER_COUNT">$1</ph> filters from <ph name="SOURCE_DOMAIN">$2</ph>? <ph name="DETAILS">$3</ph>
-      </message>
-      <message name="IDS_MULTISTEP_FILTER_SUGGESTION_RECENT_APPLY_BUTTON" desc="Text for the apply button on the Multistep Filter suggestion recent toast." translateable="false">
-        Apply
-      </message>
       <message name="IDS_MULTISTEP_FILTER_CUE_ACTION_TEXT" desc="Text for the action button on the contextual cue for multistep filters." translateable="false">
         Continue
       </message>

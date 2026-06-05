@@ -6,22 +6,17 @@
 #define CHROME_BROWSER_MULTISTEP_FILTER_UI_FILTER_UI_CONTROLLER_H_
 
 #include <optional>
-#include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/menus/simple_menu_model.h"
 
 class GURL;
-struct ToastParams;
 
 namespace tabs {
 class TabInterface;
@@ -53,24 +48,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
  public:
   DECLARE_USER_DATA(FilterUiController);
 
-  // Information needed to show a suggestion toast.
-  struct SuggestionUiData {
-    SuggestionUiData(ToastId toast_id,
-                     std::vector<std::u16string> replacement_params);
-    SuggestionUiData(const SuggestionUiData&);
-    SuggestionUiData& operator=(const SuggestionUiData&);
-    ~SuggestionUiData();
-
-    friend bool operator==(const SuggestionUiData&,
-                           const SuggestionUiData&) = default;
-
-    // The ID of the toast to show.
-    ToastId toast_id;
-
-    // The string parameters to replace in the toast body text.
-    std::vector<std::u16string> replacement_params;
-  };
-
   static FilterUiController* From(tabs::TabInterface* tab);
 
   explicit FilterUiController(tabs::TabInterface& tab);
@@ -96,22 +73,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
   // Handles the action invocation from the location bar or bubble.
   virtual void OnActionInvoked();
 
-  // Returns the UI data for the given `suggestion` and `time`.
-  SuggestionUiData GetSuggestionUiData(const UrlFilterSuggestion& suggestion,
-                                       base::Time now) const;
-
  protected:
-  // TODO(crbug.com/514312241): Remove this when toast code is cleaned
-  // up. Shows the UI for the given suggestion.
-  virtual bool ShowSuggestionUi(ToastParams params);
-
   // Navigates the current tab to the given URL. Virtual for testing.
   virtual void NavigateTo(const GURL& url);
-
-  // Returns the callback to be executed when the suggestion UI is dismissed.
-  base::OnceClosure GetOnDismissedCallback(std::string dismissal_domain,
-                                           int64_t navigation_id,
-                                           std::string triggering_domain);
 
  private:
   friend class FilterUiControllerTestApi;
@@ -121,11 +85,6 @@ class FilterUiController : public tabs::ContentsObservingTabFeature,
 
   // Opens the settings page.
   void OpenSettings();
-
-  // Invoked when a filter suggestion is dismissed by the user.
-  void OnSuggestionDismissed(std::string dismissal_domain,
-                             int64_t navigation_id,
-                             std::string triggering_domain);
 
   // Shows the cue for the given suggestion.
   void ShowCue(const UrlFilterSuggestion& suggestion);

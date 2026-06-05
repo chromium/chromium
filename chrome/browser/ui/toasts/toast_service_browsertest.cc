@@ -29,7 +29,9 @@ using ToastIdEnumSet =
 // specification.
 constexpr auto kDeprecatedToastIds =
     std::to_array<std::underlying_type_t<ToastId>>(
-        {/*kLensOverlay=*/4, /*kAddedToComparisonTable=*/6});
+        {/*kLensOverlay=*/4, /*kAddedToComparisonTable=*/6,
+         /*kMultistepFilterSuggestion=*/31,
+         /*kMultistepFilterSuggestionRecent=*/32});
 
 ToastIdEnumSet GetActiveToastIds() {
   auto result = ToastIdEnumSet::All();

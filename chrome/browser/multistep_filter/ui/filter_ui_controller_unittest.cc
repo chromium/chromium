@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/multistep_filter/content/filter_initiated_navigation_marker.h"
@@ -53,11 +51,8 @@ class MockFilterUiController : public FilterUiController {
       : FilterUiController(tab) {}
   ~MockFilterUiController() override = default;
 
-  MOCK_METHOD(bool, ShowSuggestionUi, (ToastParams params), (override));
   MOCK_METHOD(void, NavigateTo, (const GURL& url), (override));
   MOCK_METHOD(void, ClearSuggestion, (), (override));
-
-  using FilterUiController::GetOnDismissedCallback;
 };
 
 class TestFilterUiController : public FilterUiController {
@@ -69,7 +64,6 @@ class TestFilterUiController : public FilterUiController {
   // Expose protected methods for testing
   using FilterUiController::NavigateTo;
   using FilterUiController::OnSuggestionGenerated;
-  using FilterUiController::ShowSuggestionUi;
 };
 
 class MockMultistepFilterService : public MultistepFilterService {
@@ -342,30 +336,6 @@ TEST_F(FilterUiControllerTest, ClearSuggestionHidesPageAction) {
   controller_->FilterUiController::ClearSuggestion();
 }
 
-TEST_F(FilterUiControllerTest, DismissalDoesNotClearNewSuggestion) {
-  GURL url_a("https://a.com");
-  UrlFilterSuggestion suggestion_a =
-      CreateDummySuggestion(url_a, DefaultAttributes());
-  GURL url_b("https://b.com");
-  UrlFilterSuggestion suggestion_b =
-      CreateDummySuggestion(url_b, DefaultAttributes());
-
-  // 1. Suggestion A is generated.
-  controller_->OnSuggestionGenerated(suggestion_a);
-  base::OnceClosure callback_a = controller_->GetOnDismissedCallback(
-      GetEtldPlusOne(url_a), kTestNavigationId, GetEtldPlusOne(url_a));
-
-  // 2. Suggestion B is generated (preempts A).
-  controller_->OnSuggestionGenerated(suggestion_b);
-
-  // 3. Dismissal callback for A runs.
-  std::move(callback_a).Run();
-
-  // 4. Verify suggestion B is NOT cleared.
-  EXPECT_CALL(*controller_, NavigateTo(url_b));
-  controller_->ApplySuggestion();
-}
-
 // === Group 4: Apply Suggestion & Navigation ===
 
 TEST_F(FilterUiControllerTest, ApplySuggestion) {
@@ -452,72 +422,6 @@ TEST_F(FilterUiControllerTest, ExecuteCommandWithNullWebContents) {
 
   // Should not crash when attempting to open settings.
   controller_->ExecuteCommand(internal::kSettingsCommand, 0);
-}
-
-// === Group 6: UI Data (GetSuggestionUiData) ===
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-TEST_F(FilterUiControllerTest, GetSuggestionUiData_Recent) {
-  base::Time now = base::Time::Now();
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.extraction_timestamp = now - base::Hours(2);
-  suggestion.source_domain = u"example.com";
-
-  FilterUiController::SuggestionUiData data =
-      controller_->GetSuggestionUiData(suggestion, now);
-
-  EXPECT_EQ(data.toast_id, ToastId::kMultistepFilterSuggestionRecent);
-  ASSERT_EQ(data.replacement_params.size(), 3u);
-  EXPECT_EQ(data.replacement_params[0], u"2");
-  EXPECT_EQ(data.replacement_params[1], u"example.com");
-  EXPECT_EQ(data.replacement_params[2], u"red, large");
-}
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-TEST_F(FilterUiControllerTest, GetSuggestionUiData_Days) {
-  base::Time now = base::Time::Now();
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-  suggestion.extraction_timestamp = now - base::Days(5);
-
-  FilterUiController::SuggestionUiData data =
-      controller_->GetSuggestionUiData(suggestion, now);
-
-  EXPECT_EQ(data.toast_id, ToastId::kMultistepFilterSuggestion);
-  ASSERT_EQ(data.replacement_params.size(), 3u);
-  EXPECT_EQ(data.replacement_params[0], u"2");
-  EXPECT_EQ(data.replacement_params[1],
-            l10n_util::GetPluralStringFUTF16(IDS_TIME_DAYS, 5));
-  EXPECT_EQ(data.replacement_params[2], u"red, large");
-}
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-TEST_F(FilterUiControllerTest, GetSuggestionUiData_Months) {
-  base::Time now = base::Time::Now();
-  UrlFilterSuggestion suggestion =
-      CreateDummySuggestion(GURL("https://example.com"), DefaultAttributes());
-
-  // 44 days should round down to 1 month.
-  suggestion.extraction_timestamp = now - base::Days(44);
-  FilterUiController::SuggestionUiData data_44 =
-      controller_->GetSuggestionUiData(suggestion, now);
-  EXPECT_EQ(data_44.replacement_params[1],
-            l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 1));
-
-  // 45 days should round up to 2 months.
-  suggestion.extraction_timestamp = now - base::Days(45);
-  FilterUiController::SuggestionUiData data_45 =
-      controller_->GetSuggestionUiData(suggestion, now);
-  EXPECT_EQ(data_45.replacement_params[1],
-            l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 2));
-
-  // 75 days should round up to 3 months.
-  suggestion.extraction_timestamp = now - base::Days(75);
-  FilterUiController::SuggestionUiData data_75 =
-      controller_->GetSuggestionUiData(suggestion, now);
-  EXPECT_EQ(data_75.replacement_params[1],
-            l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, 3));
 }
 
 // === Group 7: Action Invocation (OnActionInvoked) ===

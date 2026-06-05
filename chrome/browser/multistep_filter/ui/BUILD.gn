@@ -27,8 +27,6 @@ source_set("ui") {
       "//chrome/browser/favicon",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/page_action",
-      "//chrome/browser/ui/toasts",
-      "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/common",
       "//components/favicon/core",
       "//components/multistep_filter/content",

@@ -51,8 +51,8 @@ enum class ToastId {
   kAutofillAiSaveToWalletErrorMessage = 28,
   kRecordReplay = 29,
   kAutoSignIn = 30,
-  kMultistepFilterSuggestion = 31,
-  kMultistepFilterSuggestionRecent = 32,
+  kMultistepFilterSuggestion = 31,        // Deprecated: Feature removed.
+  kMultistepFilterSuggestionRecent = 32,  // Deprecated: Feature removed.
   kSkillSavedWithoutInvokeButton = 33,
   kSendTabToSelfTabOpened = 34,
   kSendTabToSelfTabsOpenedInBackground = 35,

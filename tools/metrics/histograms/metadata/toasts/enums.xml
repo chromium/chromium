@@ -89,8 +89,8 @@ chromium-metrics-reviews@google.com.
              failed)"/>
   <int value="29" label="Showed Record / Replay progress"/>
   <int value="30" label="Auto Sign-in Toast"/>
-  <int value="31" label="Filter Suggestion"/>
-  <int value="32" label="Filter Suggestion Recent"/>
+  <int value="31" label="(Deprecated) Filter Suggestion"/>
+  <int value="32" label="(Deprecated) Filter Suggestion Recent"/>
   <int value="33" label="Saved Skill without Invoke Button"/>
   <int value="34" label="Send Tab To Self tab opened immediately"/>
   <int value="35" label="Send Tab To Self tabs opened in background"/>

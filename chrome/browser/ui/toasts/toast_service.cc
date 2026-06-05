@@ -14,7 +14,6 @@
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
-#include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service_factory.h"
@@ -43,7 +42,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
-#include "components/multistep_filter/core/features.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -477,63 +475,6 @@ void ToastService::RegisterToasts(
                           ChromeTranslateClient::FromWebContents(web_contents);
                       if (chrome_translate_client) {
                         chrome_translate_client->UndoTranslate();
-                      }
-                    },
-                    base::Unretained(browser_window_interface)))
-            .AddCloseButton()
-            .Build());
-  }
-
-  if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
-    toast_registry_->RegisterToast(
-        ToastId::kMultistepFilterSuggestion,
-        ToastSpecification::Builder(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            vector_icons::kPlayCircleSparkIcon,
-#else
-            features::IsRoundedIconsEnabled()
-                ? vector_icons::kPlayArrowIcon
-                : vector_icons::kPlayArrowChromeRefreshOldIcon,
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            IDS_MULTISTEP_FILTER_SUGGESTION_TITLE)
-            .AddActionButton(
-                IDS_MULTISTEP_FILTER_SUGGESTION_APPLY_BUTTON,
-                base::BindRepeating(
-                    [](BrowserWindowInterface* window) {
-                      if (tabs::TabInterface* tab =
-                              window->GetActiveTabInterface()) {
-                        if (multistep_filter::FilterUiController* controller =
-                                multistep_filter::FilterUiController::From(
-                                    tab)) {
-                          controller->ApplySuggestion();
-                        }
-                      }
-                    },
-                    base::Unretained(browser_window_interface)))
-            .AddCloseButton()
-            .Build());
-    toast_registry_->RegisterToast(
-        ToastId::kMultistepFilterSuggestionRecent,
-        ToastSpecification::Builder(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            vector_icons::kPlayCircleSparkIcon,
-#else
-            features::IsRoundedIconsEnabled()
-                ? vector_icons::kPlayArrowIcon
-                : vector_icons::kPlayArrowChromeRefreshOldIcon,
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-            IDS_MULTISTEP_FILTER_SUGGESTION_RECENT_TITLE)
-            .AddActionButton(
-                IDS_MULTISTEP_FILTER_SUGGESTION_RECENT_APPLY_BUTTON,
-                base::BindRepeating(
-                    [](BrowserWindowInterface* window) {
-                      if (tabs::TabInterface* tab =
-                              window->GetActiveTabInterface()) {
-                        if (multistep_filter::FilterUiController* controller =
-                                multistep_filter::FilterUiController::From(
-                                    tab)) {
-                          controller->ApplySuggestion();
-                        }
                       }
                     },
                     base::Unretained(browser_window_interface)))

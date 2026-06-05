@@ -4,16 +4,12 @@
 
 #include "chrome/browser/multistep_filter/ui/filter_ui_controller.h"
 
-#include <cmath>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_log_router_factory.h"
 #include "chrome/browser/multistep_filter/core/multistep_filter_service_factory.h"
@@ -22,8 +18,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/favicon_service.h"
@@ -78,20 +72,6 @@ void LogUiDismissed(MultistepFilterLogRouter* const log_router,
 }  // namespace
 
 DEFINE_USER_DATA(FilterUiController);
-
-FilterUiController::SuggestionUiData::SuggestionUiData(
-    ToastId toast_id,
-    std::vector<std::u16string> replacement_params)
-    : toast_id(toast_id), replacement_params(std::move(replacement_params)) {}
-
-FilterUiController::SuggestionUiData::SuggestionUiData(
-    const SuggestionUiData&) = default;
-
-FilterUiController::SuggestionUiData&
-FilterUiController::SuggestionUiData::operator=(const SuggestionUiData&) =
-    default;
-
-FilterUiController::SuggestionUiData::~SuggestionUiData() = default;
 
 // static
 FilterUiController* FilterUiController::From(tabs::TabInterface* tab) {
@@ -177,8 +157,6 @@ void FilterUiController::OnSuggestionGenerated(
 
   // Clear any existing suggestion state before showing the new one.
   ClearSuggestion();
-
-  // TODO(crbug.com/514312241): Clean up toast code once cue is ready.
   ShowCue(*suggestion);
   service_->DeleteAnnotationsForTask(suggestion->task_type,
                                      suggestion->triggering_navigation_id,
@@ -240,87 +218,6 @@ void FilterUiController::NavigateTo(const GURL& url) {
       params, base::BindOnce([](content::NavigationHandle& handle) {
         FilterInitiatedNavigationMarker::CreateForNavigationHandle(handle);
       }));
-}
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-FilterUiController::SuggestionUiData FilterUiController::GetSuggestionUiData(
-    const UrlFilterSuggestion& suggestion,
-    base::Time now) const {
-  int num_filters = suggestion.attribute_ui_labels.size();
-  base::TimeDelta suggestion_age = now - suggestion.extraction_timestamp;
-  if (suggestion_age.is_negative()) {
-    suggestion_age = base::TimeDelta();
-  }
-
-  std::vector<std::u16string> attribute_strings;
-  std::ranges::transform(suggestion.attribute_ui_labels,
-                         std::back_inserter(attribute_strings),
-                         [](const FilterAttributeUiLabel& label) {
-                           return label.attribute_value;
-                         });
-  std::u16string filter_names = base::JoinString(attribute_strings, u", ");
-
-  // Show the user the ETLD+1 of the domain where the suggestion was generated
-  // from if the suggestion is less than a day old.
-  if (suggestion_age < base::Days(1)) {
-    return {/*toast_id=*/ToastId::kMultistepFilterSuggestionRecent,
-            /*replacement_params=*/{base::NumberToString16(num_filters),
-                                    suggestion.source_domain, filter_names}};
-  }
-
-  std::u16string age_description;
-  if (suggestion_age < base::Days(30)) {
-    age_description = l10n_util::GetPluralStringFUTF16(IDS_TIME_DAYS,
-                                                       suggestion_age.InDays());
-  } else {
-    int num_months =
-        static_cast<int>(std::round(suggestion_age / base::Days(30)));
-    age_description =
-        l10n_util::GetPluralStringFUTF16(IDS_TIME_MONTHS, num_months);
-  }
-
-  return {/*toast_id=*/ToastId::kMultistepFilterSuggestion,
-          /*replacement_params=*/{base::NumberToString16(num_filters),
-                                  age_description, filter_names}};
-}
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-bool FilterUiController::ShowSuggestionUi(ToastParams params) {
-  BrowserWindowInterface* browser_window_interface =
-      tab().GetBrowserWindowInterface();
-  if (!browser_window_interface) {
-    return false;
-  }
-
-  ToastController* toast_controller =
-      browser_window_interface->GetFeatures().toast_controller();
-  if (!toast_controller) {
-    return false;
-  }
-
-  return toast_controller->MaybeShowToast(std::move(params));
-}
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-base::OnceClosure FilterUiController::GetOnDismissedCallback(
-    std::string dismissal_domain,
-    int64_t navigation_id,
-    std::string triggering_domain) {
-  return base::BindOnce(&FilterUiController::OnSuggestionDismissed,
-                        dismissal_weak_factory_.GetWeakPtr(),
-                        std::move(dismissal_domain), navigation_id,
-                        std::move(triggering_domain));
-}
-
-// TODO(crbug.com/514312241): Clean up toast code once cue is ready.
-void FilterUiController::OnSuggestionDismissed(std::string dismissal_domain,
-                                               int64_t navigation_id,
-                                               std::string triggering_domain) {
-  LogUiDismissed(log_router_, navigation_id, triggering_domain,
-                 dismissal_domain);
-  // This invalidates the weak pointers, including the one that triggered this
-  // callback, making it a OnceClosure effectively.
-  ClearSuggestion();
 }
 
 void FilterUiController::ShowCue(const UrlFilterSuggestion& suggestion) {
