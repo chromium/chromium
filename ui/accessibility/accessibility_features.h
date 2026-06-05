@@ -114,16 +114,9 @@ AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExposeSummaryAsHeading);
 AX_BASE_EXPORT bool IsAccessibilityExposeSummaryAsHeadingEnabled();
 
-// Use language detection to determine the language
-// of text content in page and exposed to the browser process AXTree.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityLanguageDetection);
-AX_BASE_EXPORT bool IsAccessibilityLanguageDetectionEnabled();
-
 // Extension manifest v3 migration for network speech synthesis.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis);
 AX_BASE_EXPORT bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled();
-
-
 
 // Expose document markers on inline text boxes in addition to
 // static nodes. (Note: This will make it possible for AXPosition in the browser

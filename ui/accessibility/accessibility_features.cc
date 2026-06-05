@@ -129,14 +129,6 @@ bool IsImageDescriptionsAlternateRoutingEnabled() {
       ::features::kImageDescriptionsAlternateRouting);
 }
 
-BASE_FEATURE(kEnableAccessibilityLanguageDetection,
-             "AccessibilityLanguageDetection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAccessibilityLanguageDetectionEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kEnableAccessibilityLanguageDetection);
-}
-
 BASE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis,
              base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled() {

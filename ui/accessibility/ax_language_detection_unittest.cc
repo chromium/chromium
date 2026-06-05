@@ -176,19 +176,6 @@ TEST_F(AXLanguageDetectionTestFixture, DynamicContentFeatureFlag) {
   EXPECT_TRUE(IsDynamicLanguageDetectionEnabled());
 }
 
-TEST_F(AXLanguageDetectionTestFixture, FeatureFlag) {
-  // TODO(crbug.com/41417304): Remove this test once this feature is stable
-  EXPECT_FALSE(IsStaticLanguageDetectionEnabled());
-  EXPECT_FALSE(IsDynamicLanguageDetectionEnabled());
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kEnableAccessibilityLanguageDetection}, {});
-
-  EXPECT_TRUE(IsStaticLanguageDetectionEnabled());
-  EXPECT_TRUE(IsDynamicLanguageDetectionEnabled());
-}
-
 TEST(AXLanguageDetectionTest, LangAttrInheritanceFeatureFlagOff) {
   // Test lang attribute inheritance when feature flag is off.
   //
@@ -890,33 +877,6 @@ TEST_F(AXLanguageDetectionTestFixture, ObserverRegistrationObeysFlag) {
 
   // Try registration again, this should construct and register observer as flag
   // is now enabled.
-  tree.language_detection_manager->RegisterLanguageDetectionObserver();
-
-  // Check our observer was constructed.
-  ASSERT_NE(getObserver(tree), nullptr);
-
-  // Check our observer was registered in our tree.
-  ASSERT_TRUE(tree.HasObserver(getObserver(tree)));
-}
-
-// Test RegisterLanguageDetectionObserver correctly respects the feature flag.
-TEST_F(AXLanguageDetectionTestFixture, ObserverRegistrationObeysFeatureFlag) {
-  // Construct empty tree and check initialisation.
-  AXTree tree;
-  ASSERT_NE(tree.language_detection_manager, nullptr);
-  ASSERT_EQ(getObserver(tree), nullptr);
-
-  // Try registration without enabling Dynamic feature flag, should be a no-op.
-  tree.language_detection_manager->RegisterLanguageDetectionObserver();
-
-  ASSERT_EQ(getObserver(tree), nullptr);
-
-  // Enable general feature flag which gates both Static and Dynamic features.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kEnableAccessibilityLanguageDetection}, {});
-
-  // Try registration again, this should now construct and register an observer.
   tree.language_detection_manager->RegisterLanguageDetectionObserver();
 
   // Check our observer was constructed.

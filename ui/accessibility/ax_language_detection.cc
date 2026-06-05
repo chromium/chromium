@@ -231,22 +231,16 @@ AXLanguageDetectionManager::GetShortTextLanguageIdentifier() {
 }
 
 bool AXLanguageDetectionManager::IsStaticLanguageDetectionEnabled() {
-  // Static language detection can be enabled by either:
-  //  1) The general language detection feature flag which gates both static and
-  //     dynamic language detection (feature flag for experiment), or
-  //  2) The Static specific flag (user controlled switch).
-  return features::IsAccessibilityLanguageDetectionEnabled() ||
-         ::switches::IsExperimentalAccessibilityLanguageDetectionEnabled();
+  // Static language detection can be enabled by the Static specific flag (user
+  // controlled switch).
+  return ::switches::IsExperimentalAccessibilityLanguageDetectionEnabled();
 }
 
 bool AXLanguageDetectionManager::IsDynamicLanguageDetectionEnabled() {
-  // Dynamic language detection can be enabled by either:
-  //  1) The general language detection feature flag which gates both static and
-  //     dynamic language detection (feature flag for experiment), or
-  //  2) The Dynamic specific flag (user controlled switch).
-  return features::IsAccessibilityLanguageDetectionEnabled() ||
-         ::switches::
-             IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
+  // Dynamic language detection can be enabled by the Dynamic specific flag
+  // (user controlled switch).
+  return ::switches::
+      IsExperimentalAccessibilityLanguageDetectionDynamicEnabled();
 }
 
 void AXLanguageDetectionManager::RegisterLanguageDetectionObserver() {
