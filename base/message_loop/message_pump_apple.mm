@@ -320,6 +320,33 @@ MessagePumpCFRunLoopBase::MessagePumpCFRunLoopBase(int initial_mode_mask) {
 // same number of run loops must be running when this object is destroyed.
 MessagePumpCFRunLoopBase::~MessagePumpCFRunLoopBase() {
   SetModeMask(0);
+
+  // Explicitly invalidate the observers, timers, and sources to prevent them
+  // from firing again. On iOS, the MessagePump may be destroyed while the run
+  // loop is active on the stack (e.g. during applicationWillTerminate:).
+  // Invalidation guarantees that these handles are not called during any
+  // trailing spins of the run loop after the MessagePump is destroyed.
+  if (pre_wait_observer_) {
+    CFRunLoopObserverInvalidate(pre_wait_observer_.get());
+  }
+  if (after_wait_observer_) {
+    CFRunLoopObserverInvalidate(after_wait_observer_.get());
+  }
+  if (pre_source_observer_) {
+    CFRunLoopObserverInvalidate(pre_source_observer_.get());
+  }
+  if (enter_exit_observer_) {
+    CFRunLoopObserverInvalidate(enter_exit_observer_.get());
+  }
+  if (delayed_work_timer_) {
+    CFRunLoopTimerInvalidate(delayed_work_timer_.get());
+  }
+  if (work_source_) {
+    CFRunLoopSourceInvalidate(work_source_.get());
+  }
+  if (nesting_deferred_work_source_) {
+    CFRunLoopSourceInvalidate(nesting_deferred_work_source_.get());
+  }
 }
 
 // static
