@@ -8207,6 +8207,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.WelcomeBack.ActiveDaysInPast28Days" units="days"
+    expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the number of active session days in the past 28 days for users
+    evaluated by the Welcome Back screen under the UseActiveDays arm. Recorded
+    when the feature engagement tracker is successfully initialized.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WelcomeBack.DaysSinceActive" units="days"
     expires_after="2027-04-01">
   <owner>cheickcisse@google.com</owner>

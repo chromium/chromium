@@ -33,9 +33,16 @@ BASE_DECLARE_FEATURE(kWelcomeBack);
 // kWelcomeBack is enabled.
 extern const char kWelcomeBackParam[];
 
+// Name of the param that indicates whether to use ChromeActiveDays for
+// inactivity tracking.
+extern const char kWelcomeBackUseActiveDaysParam[];
+
 // Whether `kWelcomeBack` is enabled. This experiment is disabled
 // when `kBestFeaturesScreenInFirstRun` is enabled.
 bool IsWelcomeBackEnabled();
+
+// Returns whether the Welcome Back screen should use ChromeActiveDays tracking.
+bool ShouldWelcomeBackUseActiveDays();
 
 // Erases an item from `kWelcomeBackEligibleItems`.
 void MarkWelcomeBackFeatureUsed(BestFeaturesItemType item_type);
