@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -24,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -161,6 +163,8 @@ public class PdfPageUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testReload_RecreatesFragment() throws Exception {
         String encodedUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
         PdfPage pdfPage =

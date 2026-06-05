@@ -59,6 +59,7 @@ import org.chromium.url.Origin;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+@Config(sdk = 35)
 public class PdfCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

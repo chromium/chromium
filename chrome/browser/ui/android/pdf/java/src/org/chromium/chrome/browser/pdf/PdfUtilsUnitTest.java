@@ -13,6 +13,8 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
 
 import org.junit.After;
@@ -24,9 +26,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -276,5 +284,126 @@ public class PdfUtilsUnitTest {
     public void testGetEncodedContentUri_Https() {
         String encodedUrl = PdfUtils.getEncodedContentUri(PDF_LINK, mContext);
         Assert.assertTrue("The encoded url should not exist", TextUtils.isEmpty(encodedUrl));
+    }
+
+    @Implements(SdkExtensions.class)
+    public static class ShadowSdkExtensions {
+        private static int sExtensionVersion;
+
+        @Implementation
+        protected static int getExtensionVersion(int extension) {
+            return sExtensionVersion;
+        }
+
+        public static void setExtensionVersion(int version) {
+            sExtensionVersion = version;
+        }
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testIsInlinePdfV2Enabled_FeatureDisabled() {
+        Assert.assertFalse(PdfUtils.isInlinePdfV2Enabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testIsInlinePdfV2Enabled_LowSdk() {
+        Assert.assertFalse(PdfUtils.isInlinePdfV2Enabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(
+            sdk = Build.VERSION_CODES.S,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testIsInlinePdfV2Enabled_SdkS_LowExtension() {
+        ShadowSdkExtensions.setExtensionVersion(12);
+        Assert.assertFalse(PdfUtils.isInlinePdfV2Enabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(
+            sdk = Build.VERSION_CODES.S,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testIsInlinePdfV2Enabled_SdkS_HighExtension() {
+        ShadowSdkExtensions.setExtensionVersion(13);
+        Assert.assertTrue(PdfUtils.isInlinePdfV2Enabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(
+            sdk = Build.VERSION_CODES.TIRAMISU,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testIsInlinePdfV2Enabled_SdkT_LowExtension() {
+        ShadowSdkExtensions.setExtensionVersion(12);
+        Assert.assertFalse(PdfUtils.isInlinePdfV2Enabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(
+            sdk = Build.VERSION_CODES.TIRAMISU,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testIsInlinePdfV2Enabled_SdkT_HighExtension() {
+        ShadowSdkExtensions.setExtensionVersion(13);
+        Assert.assertTrue(PdfUtils.isInlinePdfV2Enabled());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R)
+    public void testShouldOpenPdfInline_LowSdk() {
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
+        Assert.assertFalse(PdfUtils.shouldOpenPdfInline(false));
+    }
+
+    @Test
+    @Config(
+            sdk = Build.VERSION_CODES.S,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testShouldOpenPdfInline_SdkS_LowExtension() {
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
+        ShadowSdkExtensions.setExtensionVersion(12);
+        Assert.assertFalse(PdfUtils.shouldOpenPdfInline(false));
+    }
+
+    @Test
+    @Config(
+            sdk = Build.VERSION_CODES.S,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testShouldOpenPdfInline_SdkS_HighExtension() {
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
+        ShadowSdkExtensions.setExtensionVersion(13);
+        Assert.assertTrue(PdfUtils.shouldOpenPdfInline(false));
+    }
+
+    @Test
+    @Config(
+            sdk = Build.VERSION_CODES.TIRAMISU,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testShouldOpenPdfInline_SdkT_LowExtension() {
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
+        ShadowSdkExtensions.setExtensionVersion(12);
+        Assert.assertFalse(PdfUtils.shouldOpenPdfInline(false));
+    }
+
+    @Test
+    @Config(
+            sdk = Build.VERSION_CODES.TIRAMISU,
+            shadows = {PdfUtilsUnitTest.ShadowSdkExtensions.class})
+    public void testShouldOpenPdfInline_SdkT_HighExtension() {
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
+        ShadowSdkExtensions.setExtensionVersion(13);
+        Assert.assertTrue(PdfUtils.shouldOpenPdfInline(false));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testShouldOpenPdfInline_SdkV() {
+        PdfUtils.setShouldOpenPdfInlineForTesting(false);
+        Assert.assertTrue(PdfUtils.shouldOpenPdfInline(false));
     }
 }

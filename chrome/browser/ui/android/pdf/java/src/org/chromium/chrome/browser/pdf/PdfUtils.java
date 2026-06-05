@@ -139,20 +139,18 @@ public class PdfUtils {
     @CalledByNative
     public static boolean shouldOpenPdfInline(boolean isIncognito) {
         if (sShouldOpenPdfInlineForTesting) return true;
+        if (isIncognito) {
+            return false;
+        }
+        return isPlatformSupported();
+    }
+
+    private static boolean isPlatformSupported() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            if (isIncognito) {
-                return false;
-            }
             return true;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 13) {
-            if (isIncognito) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 13;
     }
 
     /**
@@ -376,8 +374,10 @@ public class PdfUtils {
      * @return {@code true} if the inline PDF V2 feature is enabled, {@code false} otherwise.
      */
     public static boolean isInlinePdfV2Enabled() {
-        // TODO(crbug.com/484388543): Add a check for minimum SDK version.
-        return ChromeFeatureList.sInlinePdfV2.isEnabled();
+        if (!ChromeFeatureList.sInlinePdfV2.isEnabled()) {
+            return false;
+        }
+        return isPlatformSupported();
     }
 
     /** Returns {@code true} if {@link PdfViewFragment} is reused on activity restart. */
