@@ -664,6 +664,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                        BubbleHiddenOnTabSwitchesAfterSelection) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kHasSelection);
 
   RunTestSequence(
       Do([this]() { chrome::AddTabAt(browser(), GetEmptyDocURL(), -1, true); }),
@@ -675,11 +677,22 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                               OverlayBaseController::kOverlayId),
       WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
                         "el => el.screenshot_ !== null"),
+      // `WaitForHide(kLensPreselectionBubbleElementId)` will satisfy as soon as
+      // the mouse click is registered. Makes sure the browser receives the
+      // selected region before switching tabs. Otherwise the test is flaky on
+      // slow bots such as MSAN / ASAN.
+      PollState(kHasSelection,
+                [this]() {
+                  return SelectionOverlayController::FromTabWebContents(
+                             browser()->tab_strip_model()->GetWebContentsAt(0))
+                             ->GetSelectedRegionCount() == 1;
+                }),
       MoveMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(50, 50)),
       DragMouseTo(OverlayBaseController::kOverlayId,
                   GetPointWithOffset(150, 150)),
       WaitForHide(kLensPreselectionBubbleElementId),
+      WaitForState(kHasSelection, true),
       Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
       Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
       EnsureNotPresent(kLensPreselectionBubbleElementId));
