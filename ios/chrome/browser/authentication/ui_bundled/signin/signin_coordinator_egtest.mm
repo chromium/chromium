@@ -930,6 +930,12 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   // Tap the snackbar to make it disappear.
   [[EarlGrey selectElementWithMatcher:snackbarMatcher]
       performAction:grey_tap()];
+
+  // Wait for History Sync screen to be visible.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
+
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
       performAction:grey_tap()];
