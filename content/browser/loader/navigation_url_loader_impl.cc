@@ -2140,11 +2140,6 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
               perfetto::Flow::FromPointer(this));
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TRACE_EVENT_BEGIN("navigation", "Navigation timeToResponseStarted",
-                    perfetto::Track::FromPointer(this),
-                    request_info_->common_params->navigation_start,
-                    "FrameTreeNode id", frame_tree_node_id_);
-
   mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
       accept_ch_frame_observer;
   // Use |kNavigationNetworkResponse| thread runner. Messages received related
@@ -2431,11 +2426,7 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
     bool is_download,
     network::mojom::URLResponseHeadPtr response_head) {
   TRACE_EVENT("navigation", "NavigationURLLoaderImpl::NotifyResponseStarted",
-              perfetto::Flow::FromPointer(this));
-  // End "Navigation timeToResponseStarted" trace event.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this),
-                  "&NavigationURLLoaderImpl", static_cast<void*>(this),
-                  "success", true);
+              perfetto::TerminatingFlow::FromPointer(this));
 
   NavigationURLLoaderDelegate::EarlyHints early_hints;
   if (early_hints_manager_) {
@@ -2478,10 +2469,8 @@ void NavigationURLLoaderImpl::NotifyRequestRedirected(
 
 void NavigationURLLoaderImpl::NotifyRequestFailed(
     const network::URLLoaderCompletionStatus& status) {
-  // End "Navigation timeToResponseStarted" trace event.
-  TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this),
-                  "&NavigationURLLoaderImpl", static_cast<void*>(this),
-                  "success", false);
+  TRACE_EVENT("navigation", "NavigationURLLoaderImpl::NotifyRequestFailed",
+              perfetto::TerminatingFlow::FromPointer(this));
   delegate_->OnRequestFailed(status);
 }
 
