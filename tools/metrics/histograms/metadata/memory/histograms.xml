@@ -2721,7 +2721,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.PartitionAlloc.CorePoolSizeReduced" enum="Boolean"
-    expires_after="2026-07-07">
+    expires_after="2026-08-31">
   <owner>nuskos@chromium.org</owner>
   <owner>chrome-cpp-runtime-safety@google.com</owner>
   <summary>
