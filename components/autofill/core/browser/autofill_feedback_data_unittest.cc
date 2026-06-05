@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -26,16 +27,16 @@ using test::CreateTestFormField;
 
 constexpr char kExpectedFeedbackDataJSON[] = R"({
    "formStructures": [ {
-      "formSignature": "4232380759432074174",
-      "hostFrame": "00000000000181CD000000000000A8CA",
+      "formSignature": "15183533776559422799",
+      "hostFrame": "AAAAAAAAAAAAAAABBBBBBBBBBBBBBBBC",
       "idAttribute": "",
-      "mainFrameUrl": "https://myform_root.com",
+      "mainFrameUrl": "https://example.test",
       "nameAttribute": "",
       "rendererId": "11",
-      "sourceUrl": "https://myform.com",
+      "sourceUrl": "https://example.com",
       "fields": [ {
          "autocompleteAttribute": "cc-given-name",
-         "fieldSignature": "3879476562",
+         "fieldSignature": "1969735877",
          "fieldTypes": [ "NAME_FIRST" ],
          "heuristicType": "CREDIT_CARD_NAME_FIRST",
          "hostFormSignature": "0",
@@ -44,19 +45,19 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
          "isEmpty": true,
          "isFocusable": true,
          "isVisible": true,
-         "labelAttribute": "First Name on Card",
+         "labelAttribute": "Credit card first name",
          "parseableNameAttribute": "",
          "placeholderAttribute": "",
          "rank": "0",
          "rankInHostForm": "0",
          "rankInHostFormSignatureGroup": "0",
          "rankInSignatureGroup": "0",
-         "section": "firstnameoncard_0_11",
+         "section": "cc_name_first_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
       }, {
          "autocompleteAttribute": "cc-family-name",
-         "fieldSignature": "3213606822",
+         "fieldSignature": "3826793033",
          "fieldTypes": [ "NAME_LAST" ],
          "heuristicType": "CREDIT_CARD_NAME_LAST",
          "hostFormSignature": "0",
@@ -65,14 +66,14 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
          "isEmpty": true,
          "isFocusable": true,
          "isVisible": true,
-         "labelAttribute": "Last Name on Card",
+         "labelAttribute": "Credit card last name",
          "parseableNameAttribute": "",
          "placeholderAttribute": "",
          "rank": "1",
          "rankInHostForm": "1",
          "rankInHostFormSignatureGroup": "0",
          "rankInSignatureGroup": "0",
-         "section": "firstnameoncard_0_11",
+         "section": "cc_name_first_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
       }, {
@@ -86,14 +87,14 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
          "isEmpty": true,
          "isFocusable": true,
          "isVisible": true,
-         "labelAttribute": "Email",
+         "labelAttribute": "E-mail address",
          "parseableNameAttribute": "",
          "placeholderAttribute": "",
          "rank": "2",
          "rankInHostForm": "2",
          "rankInHostFormSignatureGroup": "0",
          "rankInSignatureGroup": "0",
-         "section": "firstnameoncard_0_11",
+         "section": "cc_name_first_0_11",
          "serverType": "NO_SERVER_DATA",
          "serverTypeIsOverride": false
       } ]
@@ -101,25 +102,16 @@ constexpr char kExpectedFeedbackDataJSON[] = R"({
 })";
 
 FormData CreateFeedbackTestFormData() {
-  FormData form;
-  form.set_host_frame(test::MakeLocalFrameToken(test::RandomizeFrame(false)));
-  form.set_renderer_id(test::MakeFormRendererId());
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_main_frame_origin(
-      url::Origin::Create(GURL("https://myform_root.com/form.html")));
-  form.set_fields(
-      {CreateTestFormField("First Name on Card", "firstnameoncard", "",
-                           FormControlType::kInputText, "cc-given-name"),
-       CreateTestFormField("Last Name on Card", "lastnameoncard", "",
-                           FormControlType::kInputText, "cc-family-name"),
-       CreateTestFormField("Email", "email", "",
-                           FormControlType::kInputEmail)});
-  for (FormFieldData& field : test_api(form).fields()) {
-    field.set_host_frame(form.host_frame());
-  }
-  return form;
+  return test::GetFormData({
+      .fields = {{.role = FieldType::CREDIT_CARD_NAME_FIRST,
+                  .autocomplete_attribute = "cc-given-name",
+                  .form_control_type = FormControlType::kInputText},
+                 {.role = FieldType::CREDIT_CARD_NAME_LAST,
+                  .autocomplete_attribute = "cc-family-name",
+                  .form_control_type = FormControlType::kInputText},
+                 {.role = FieldType::EMAIL_ADDRESS,
+                  .form_control_type = FormControlType::kInputEmail}},
+  });
 }
 
 class AutofillFeedbackDataUnitTest

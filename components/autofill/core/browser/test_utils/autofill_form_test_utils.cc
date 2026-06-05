@@ -22,22 +22,11 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::Message;
 
-constexpr std::string_view kDefaultTestOrigin = "https://example.test/";
-
 }  // namespace
 
-Message DescribeFormData(const FormData& form_data) {
-  Message result;
-  result << "Form contains " << form_data.fields().size() << " fields:\n";
-  for (const FormFieldData& field : form_data.fields()) {
-    result << "type=" << FormControlTypeToString(field.form_control_type())
-           << ", name=" << field.name() << ", label=" << field.label() << "\n";
-  }
-  return result;
-}
+namespace internal {
 
-// Returns the form field relevant to the `role`.
-FormFieldData CreateFieldByRole(FieldType role) {
+FormFieldData CreateFieldByRole::operator()(FieldType role) const {
   DCHECK(role != FieldType::MAX_VALID_FIELD_TYPE)
       << "MAX_VALID_FIELD_TYPE is not a valid field type.";
   FormFieldData field;
@@ -524,109 +513,16 @@ FormFieldData CreateFieldByRole(FieldType role) {
   return field;
 }
 
-FormFieldData GetFormFieldData(const FieldDescription& fd) {
-  FormFieldData ff = CreateFieldByRole(fd.role);
-  ff.set_form_control_type(fd.form_control_type);
-  if (ff.form_control_type() == FormControlType::kSelectOne &&
-      !fd.select_options.empty()) {
-    ff.set_options(fd.select_options);
-  }
-  if (!fd.datalist_options.empty()) {
-    ff.set_datalist_options(fd.datalist_options);
-  }
-  ff.set_renderer_id(fd.renderer_id.value_or(MakeFieldRendererId()));
-  ff.set_host_form_id(MakeFormRendererId());
-  ff.set_is_focusable(fd.is_focusable);
-  ff.set_is_visible(fd.is_visible);
-  if (!fd.autocomplete_attribute.empty()) {
-    ff.set_autocomplete_attribute(fd.autocomplete_attribute);
-    ff.set_parsed_autocomplete(
-        ParseAutocompleteAttribute(fd.autocomplete_attribute));
-  }
-  if (fd.host_frame) {
-    ff.set_host_frame(*fd.host_frame);
-  }
-  if (fd.host_form_signature) {
-    ff.set_host_form_signature(*fd.host_form_signature);
-  }
-  if (fd.label) {
-    ff.set_label(*fd.label);
-  }
-  if (fd.name) {
-    ff.set_name(*fd.name);
-  }
-  if (fd.name_attribute) {
-    ff.set_name_attribute(*fd.name_attribute);
-  }
-  if (fd.id_attribute) {
-    ff.set_id_attribute(*fd.id_attribute);
-  }
-  if (fd.nonce) {
-    ff.set_nonce(*fd.nonce);
-  }
-  if (fd.value) {
-    ff.set_value(*fd.value);
-  }
-  if (fd.placeholder) {
-    ff.set_placeholder(*fd.placeholder);
-  }
-  if (fd.aria_label) {
-    ff.set_aria_label(*fd.aria_label);
-  }
-  if (fd.aria_description) {
-    ff.set_aria_description(*fd.aria_description);
-  }
-  if (fd.max_length) {
-    ff.set_max_length(*fd.max_length);
-  } else if (ff.IsSelectElement()) {
-    ff.set_max_length(0);
-  }
-  if (fd.origin) {
-    ff.set_origin(*fd.origin);
-  }
-  ff.set_is_autofilled_according_to_renderer(
-      fd.is_autofilled_according_to_renderer.value_or(false));
-  ff.set_should_autocomplete(fd.should_autocomplete);
-  ff.set_properties_mask(fd.properties_mask);
-  if (ff.form_control_type() == FormControlType::kInputCheckbox ||
-      ff.form_control_type() == FormControlType::kInputRadio) {
-    ff.set_check_status(
-        fd.checked ? FormFieldData::CheckStatus::kChecked
-                   : FormFieldData::CheckStatus::kCheckableButUnchecked);
-  }
-  if (fd.form_control_ax_id) {
-    ff.set_form_control_ax_id(*fd.form_control_ax_id);
-  }
-  if (fd.label_source) {
-    ff.set_label_source(*fd.label_source);
-  }
-  CHECK(!fd.checked ||
-        ff.form_control_type() == FormControlType::kInputCheckbox ||
-        ff.form_control_type() == FormControlType::kInputRadio)
-      << "Only <input type=checkbox> and <input type=radio> are checkable";
-  return ff;
-}
+}  // namespace internal
 
-FormData GetFormData(const FormDescription& d) {
-  FormData f;
-  f.set_url(GURL(d.url));
-  f.set_action(GURL(d.action));
-  f.set_name(d.name);
-  f.set_host_frame(d.host_frame.value_or(MakeLocalFrameToken()));
-  f.set_renderer_id(d.renderer_id.value_or(MakeFormRendererId()));
-  if (d.main_frame_origin) {
-    f.set_main_frame_origin(*d.main_frame_origin);
-  } else {
-    f.set_main_frame_origin(url::Origin::Create(GURL(kDefaultTestOrigin)));
+Message DescribeFormData(const FormData& form_data) {
+  Message result;
+  result << "Form contains " << form_data.fields().size() << " fields:\n";
+  for (const FormFieldData& field : form_data.fields()) {
+    result << "type=" << FormControlTypeToString(field.form_control_type())
+           << ", name=" << field.name() << ", label=" << field.label() << "\n";
   }
-  f.set_fields(base::ToVector(d.fields, [&f](const FieldDescription& dd) {
-    FormFieldData ff = GetFormFieldData(dd);
-    ff.set_host_frame(dd.host_frame.value_or(f.host_frame()));
-    ff.set_origin(dd.origin.value_or(f.main_frame_origin()));
-    ff.set_host_form_id(f.renderer_id());
-    return ff;
-  }));
-  return f;
+  return result;
 }
 
 FormData GetFormData(const std::vector<FieldType>& field_types) {

@@ -136,6 +136,7 @@ static_library("test_support") {
     "autofill_test_utils.h",
     "form_data_test_api.h",
     "test_matchers.h",
+    "test_utils/autofill_form_test_utils.h",
   ]
   deps = [
     "//base",

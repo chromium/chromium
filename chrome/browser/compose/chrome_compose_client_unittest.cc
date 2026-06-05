@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -2279,26 +2280,17 @@ class ComposePopupAutofillDriverTest : public ChromeComposeClientTest {
     config.selection_nudge_length = 5;
   }
 
-  // Creates a mock form  with |num_fields|.
+  // Creates a mock form  with `num_fields`.
   autofill::FormData CreateTestFormData(int num_fields = 1) {
-    autofill::FormData form;
-    form.set_url(web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
-    std::vector<autofill::FormFieldData> fields;
-    for (int i = 0; i < num_fields; ++i) {
-      fields.push_back(autofill::test::CreateTestFormField(
-          "label", "name", "value", autofill::FormControlType::kTextArea));
-    }
-    form.set_fields(fields);
-
-    for (int i = 0; i < num_fields; ++i) {
-      autofill::FormFieldData& field = test_api(form).field(i);
-
-      field.set_origin(
-          web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
-      field.set_host_frame(form.host_frame());
-    }
-
-    return form;
+    return autofill::test::GetFormData({
+        .fields = std::vector<autofill::test::FieldDescription>(
+            num_fields,
+            {.form_control_type = autofill::FormControlType::kTextArea}),
+        .url =
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL().spec(),
+        .main_frame_origin =
+            web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
+    });
   }
 
   autofill::ContentAutofillDriver* CreateAutofillDriver(

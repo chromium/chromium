@@ -14,63 +14,22 @@
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/test_utils/autofill_form_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::test {
 
 namespace internal {
 
-// Expected FormFieldData and type predictions are constructed based on these
-// descriptions.
-template <typename = void>
-struct FieldDescription {
-  FieldType role = FieldType::EMPTY_TYPE;
-  // If the server type is not set explicitly, it is assumed to be given by the
-  // role.
-  std::optional<FieldType> server_type;
-  // If the heuristic type is not set explicitly, it is assumed to be given by
-  // the role.
-  std::optional<FieldType> heuristic_type;
-  std::optional<LocalFrameToken> host_frame;
-  std::optional<FormSignature> host_form_signature;
-  std::optional<FieldRendererId> renderer_id;
-  bool is_focusable = true;
-  bool is_visible = true;
-  std::optional<std::u16string> label;
-  std::optional<std::u16string> name;
-  std::optional<std::u16string> name_attribute;
-  std::optional<std::u16string> id_attribute;
-  std::optional<std::u16string> nonce;
-  std::optional<std::u16string> value;
-  std::optional<std::u16string> placeholder;
-  std::optional<std::u16string> aria_label;
-  std::optional<std::u16string> aria_description;
-  std::optional<uint64_t> max_length;
-  const std::string autocomplete_attribute;
-  std::optional<AutocompleteParsingResult> parsed_autocomplete;
-  const FormControlType form_control_type = FormControlType::kInputText;
-  bool should_autocomplete = true;
-  std::optional<bool> is_autofilled_according_to_renderer;
-  std::optional<url::Origin> origin;
-  std::vector<SelectOption> select_options;
-  std::vector<SelectOption> datalist_options;
-  FieldPropertiesMask properties_mask = 0;
-  bool checked = false;
-  std::optional<int32_t> form_control_ax_id;
-  std::optional<FormFieldData::LabelSource> label_source;
-};
+struct CreateFieldByRole {
+  // Allows injection of `FieldType` into struct `FieldDescription` defined in
+  // common/ layer for the definition of a role of a field.
+  using FieldType = FieldType;
 
-// Attributes provided to the test form.
-template <typename = void>
-struct FormDescription {
-  const std::string description_for_logging;
-  std::vector<FieldDescription<>> fields;
-  std::optional<LocalFrameToken> host_frame;
-  std::optional<FormRendererId> renderer_id;
-  const std::u16string name = u"TestForm";
-  const std::string url = "https://example.com/form.html";
-  const std::string action = "https://example.com/submit.html";
-  std::optional<url::Origin> main_frame_origin;
+  static constexpr FieldType RoleDefaultValue = EMPTY_TYPE;
+
+  // Returns the form field initialized according to the `role`.
+  FormFieldData operator()(FieldType role) const;
 };
 
 // Flags determining whether the corresponding check should be run on the test
@@ -109,28 +68,41 @@ struct ExpectedFieldTypeValues {
 // Describes a test case for the parser.
 template <typename = void>
 struct FormStructureTestCase {
-  FormDescription<> form_attributes;
+  FormDescription<FieldDescription<CreateFieldByRole>> form_attributes;
   TestFormFlags<> form_flags;
   ExpectedFieldTypeValues<> expected_field_types;
 };
 
 }  // namespace internal
 
-using FieldDescription = internal::FieldDescription<>;
-using FormDescription = internal::FormDescription<>;
+// Replaces `CommonFieldDescription`. It provides the additional ability to
+// initialize a `FormFieldData` using `role`.
+using FieldDescription =
+    internal::FieldDescription<internal::CreateFieldByRole>;
+// Replaces `CommonFormDescription`. It uses `FieldDescription` instead of
+// `CommonFieldDescription` for its `fields`.
+using FormDescription = internal::FormDescription<FieldDescription>;
+
 using FormStructureTestCase = internal::FormStructureTestCase<>;
 
-// Describes the |form_data|. Use this in SCOPED_TRACE if other logging
+// Describes the `form_data`. Use this in `SCOPED_TRACE` if other logging
 // messages might refer to the form.
 testing::Message DescribeFormData(const FormData& form_data);
 
-// Creates a FormFieldData to be fed to the parser.
-FormFieldData GetFormFieldData(const FieldDescription& fd);
+// Overloads for templated function above to serve as deduction guides. This is
+// used to overrule the default template arguments of `GetFormFieldData<>` and
+// `GetFormData<>`. If this header is included, any implicit creation of the
+// `description` (e.g. using designed initializers), will use the
+// `FieldDescription` defined in this header file instead of
+// `CommonFieldDescription` (same for `GetFormData`).
+inline FormFieldData GetFormFieldData(const FieldDescription& description) {
+  return GetFormFieldData<FieldDescription>(description);
+}
+inline FormData GetFormData(const FormDescription& description) {
+  return GetFormData<FormDescription>(description);
+}
 
-// Creates a FormData to be fed to the parser.
-FormData GetFormData(const FormDescription& test_form_attributes);
-
-// Creates a FormData with `field_types`.
+// Creates a `FormData` with `field_types`.
 FormData GetFormData(const std::vector<FieldType>& field_types);
 
 // Extracts the heuristic types from the form description. If the heuristic type
@@ -140,7 +112,7 @@ std::vector<FieldType> GetHeuristicTypes(
     const FormDescription& form_description);
 
 // Extracts the server types from the form description. If the server type
-// is not explicitly set for field it is extracted from the fiel's role.
+// is not explicitly set for field it is extracted from the field's role.
 std::vector<FieldType> GetServerTypes(const FormDescription& form_description);
 
 class FormStructureTest : public testing::Test {

@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -32,15 +33,12 @@ namespace autofill::test {
 namespace {
 
 FormData ConstructFormWithNameRenderIdAndProtocol(bool is_https) {
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_renderer_id(MakeFormRendererId());
   std::string_view protocol = is_https ? "https://" : "http://";
-  form.set_url(GURL(base::StrCat({protocol, "myform.com/form.html"})));
-  form.set_action(GURL(base::StrCat({protocol, "myform.com/submit.html"})));
-  form.set_main_frame_origin(url::Origin::Create(
-      GURL(base::StrCat({protocol, "myform_root.com/form.html"}))));
-  return form;
+  return GetFormData(
+      {.url = base::StrCat({protocol, "myform.com/form.html"}),
+       .action = base::StrCat({protocol, "myform.com/submit.html"}),
+       .main_frame_origin = url::Origin::Create(
+           GURL(base::StrCat({protocol, "myform_root.com/form.html"})))});
 }
 
 }  // namespace
@@ -168,18 +166,13 @@ FormFieldData CreateTestFormField(std::u16string_view label,
                                   std::u16string_view name,
                                   std::u16string_view value,
                                   FormControlType type) {
-  FormFieldData field;
-  field.set_host_frame(MakeLocalFrameToken());
-  field.set_renderer_id(MakeFieldRendererId());
-  field.set_label(std::u16string(label));
-  field.set_name(std::u16string(name));
-  field.set_value(std::u16string(value));
-  field.set_form_control_type(type);
-  field.set_is_focusable(true);
-  if (field.IsSelectElement()) {
-    field.set_max_length(0);
-  }
-  return field;
+  return GetFormFieldData({
+      .host_frame = MakeLocalFrameToken(),
+      .label = std::u16string(label),
+      .name = std::u16string(name),
+      .value = std::u16string(value),
+      .form_control_type = type,
+  });
 }
 
 FormFieldData CreateTestFormField(std::string_view label,
