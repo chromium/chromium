@@ -189,13 +189,22 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
 
   static constexpr char kConsumerId[] = "NGShapeCache";
   static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits{
+      // Bounded entries of short strings; footprint under 10MB.
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      // Clearing maps requires traversing hash map structures.
       base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      // Results can be shaped again if cleared.
       base::MemoryConsumerTraits::InformationRetention::kLossless,
+      // Synchronously clears maps.
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      // Fixed entry limit that is independent to memory pressure.
       base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+      // Shaping short text runs is fast.
       base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
-      base::MemoryConsumerTraits::ReleaseGCReferences::kYes};
+      // Drops pointers allocated on the Oilpan heap.
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
+      // Performs a one-shot eviction of the whole cache when under pressure.
+      base::MemoryConsumerTraits::IsStateful::kNo};
 
   template <typename StringMap, typename ShapeResultFunc>
   const ShapeResult* GetOrCreateImpl(StringMap& map,
