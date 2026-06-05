@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/trees/property_tree.h"
@@ -74,6 +75,10 @@ class CC_EXPORT ScrollStateData {
   // placed in the current_native_scrolling_element_.
   uint32_t main_thread_hit_tested_reasons =
       MainThreadScrollingReason::kNotScrollingOnMain;
+
+  // Performance Scroll Timing API: hardware timestamp of the originating
+  // input event. Null when not set by the caller.
+  base::TimeTicks event_timestamp;
 
  private:
   // The id of the last native element to respond to a scroll, or 0 if none

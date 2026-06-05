@@ -173,6 +173,11 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
     scroll_status.raster_inducing =
         GetScrollTree().CanRealizeScrollsOnPendingTree(
             *CurrentlyScrollingNode());
+    // Performance Scroll Timing API: re-latch starts a new record.
+    if (compositor_delegate_->GetSettings().enable_scroll_performance_timing) {
+      scroll_timing_controller_.DidScrollBegin(
+          type, scroll_state->data()->event_timestamp);
+    }
     return scroll_status;
   }
 
@@ -297,6 +302,12 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
       scroll_tree.CanRealizeScrollsOnPendingTree(*scrolling_node);
 
   DidLatchToScroller(*scroll_state, type);
+
+  // Performance Scroll Timing API: start record once latched on the compositor.
+  if (compositor_delegate_->GetSettings().enable_scroll_performance_timing) {
+    scroll_timing_controller_.DidScrollBegin(
+        type, scroll_state->data()->event_timestamp);
+  }
 
   // If the viewport is scrolling and it cannot consume any delta hints, the
   // scroll event will need to get bubbled if the viewport is for a guest or
@@ -638,6 +649,11 @@ InputHandlerScrollEndResult InputHandler::ScrollEnd(
     }
     snap_animation_data_map_.erase(scroll_node->element_id);
   } else if (latched_node) {
+    // Performance Scroll Timing API: finalize record at GestureScrollEnd time.
+    if (compositor_delegate_->GetSettings().enable_scroll_performance_timing) {
+      scroll_timing_controller_.DidScrollEnd(latched_scroll_type_.value());
+    }
+
     scrollbar_controller_->ResetState();
 
     // Note that if we deferred the scroll end then we should not snap. We will
@@ -1379,6 +1395,10 @@ void InputHandler::ProcessCommitDeltas(
     last_latched_scroller_ = ElementId();
     last_latched_scroll_source_type_ = ScrollSourceType::kNone;
   }
+
+  // Performance Scroll Timing API: hand completed records to the main thread.
+  commit_data->scroll_timing_infos =
+      scroll_timing_controller_.TakeCompletedScrollTimingInfos();
 }
 
 void InputHandler::TickAnimations(base::TimeTicks monotonic_time) {
@@ -2275,6 +2295,12 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
     if (scroll_node.scrolls_outer_viewport)
       scroll_state.ConsumeDelta(applied_delta.x(), applied_delta.y());
     return;
+  }
+
+  // Performance Scroll Timing API: capture the latched scroller on the first
+  // effective update of the gesture.
+  if (compositor_delegate_->GetSettings().enable_scroll_performance_timing) {
+    scroll_timing_controller_.DidScrollUpdate(scroll_node.element_id);
   }
 
   if (!GetViewport().ShouldScroll(scroll_node)) {

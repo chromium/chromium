@@ -13,6 +13,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/input/scroll_snap_data.h"
+#include "cc/input/scroll_timing_info.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_delegate.h"
@@ -136,6 +137,11 @@ struct CC_EXPORT CompositorCommitData {
   base::flat_set<ElementId> advanced_image_animation_clients;
   scoped_refptr<const AnimatedImageFrameIndexMap>
       animated_image_frame_index_map;
+
+  // Per-scroll timing data finalized on the compositor thread and ready to be
+  // converted into PerformanceScrollTiming entries on the main thread. Only
+  // populated when the ScrollPerformanceTiming runtime feature is enabled.
+  std::vector<ScrollTimingInfo> scroll_timing_infos;
 };
 
 }  // namespace cc

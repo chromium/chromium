@@ -71,6 +71,7 @@ cc::ScrollStateData CreateScrollStateDataForGesture(
       scroll_state_data.delta_x_hint = -event.data.scroll_begin.delta_x_hint;
       scroll_state_data.delta_y_hint = -event.data.scroll_begin.delta_y_hint;
       scroll_state_data.is_beginning = true;
+      scroll_state_data.event_timestamp = event.TimeStamp();
       // On Mac, a GestureScrollBegin in the inertial phase indicates a fling
       // start.
       scroll_state_data.is_in_inertial_phase =

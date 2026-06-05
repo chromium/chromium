@@ -554,6 +554,9 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_unbounded_element =
       RuntimeEnabledFeatures::UnboundedElementEnabled();
 
+  settings.enable_scroll_performance_timing =
+      RuntimeEnabledFeatures::ScrollPerformanceTimingEnabled();
+
   settings.disable_frame_rate_limit =
       cmd.HasSwitch(::switches::kDisableFrameRateLimit);
 

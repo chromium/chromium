@@ -20,6 +20,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/input/scroll_state.h"
+#include "cc/input/scroll_timing_controller.h"
 #include "cc/input/scrollbar.h"
 #include "cc/input/touch_action.h"
 #include "cc/metrics/events_metrics_manager.h"
@@ -923,6 +924,12 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   base::flat_set<ElementId> pending_scrollend_containers_;
 
   base::TimeTicks last_scroll_begin_time_;
+
+  // Performance Scroll Timing API: owns all compositor-thread scroll
+  // timing state. `InputHandler` forwards lifecycle notifications and
+  // drains completed records on commit, but otherwise has no knowledge of
+  // the API's internals.
+  ScrollTimingController scroll_timing_controller_;
 
   // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
   ScrollSourceType last_latched_scroll_source_type_ = ScrollSourceType::kNone;

@@ -36,6 +36,7 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scroll_elasticity_helper.h"
+#include "cc/input/scroll_timing_info.h"
 #include "cc/input/scroll_utils.h"
 #include "cc/input/scrollbar_controller.h"
 #include "cc/layers/append_quads_context.h"
@@ -605,6 +606,76 @@ TEST_P(LayerTreeHostImplTest, ScrollUpdateAndEndNoOpWithoutBegin) {
 
     GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
   }
+}
+
+namespace {
+
+// Builds a touchscreen ScrollBegin ScrollState with the hardware event
+// timestamp set, the way the InputHandlerProxy populates it from the
+// originating WebGestureEvent.
+std::unique_ptr<ScrollState> BeginStateWithTimestamp(
+    base::TimeTicks event_timestamp) {
+  ScrollStateData data;
+  data.is_beginning = true;
+  data.delta_y_hint = 10;
+  data.is_direct_manipulation = true;
+  data.event_timestamp = event_timestamp;
+  return std::make_unique<ScrollState>(data);
+}
+
+}  // namespace
+
+// Performance Scroll Timing API: with the LayerTreeSettings flag enabled,
+// a touchscreen gesture that latches a scroller emits a ScrollTimingInfo
+// whose start_time reflects the hardware event timestamp.
+TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
+       ScrollPerformanceTimingEmitsRecordWithHardwareTimestampWhenEnabled) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = true;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+
+  const base::TimeTicks event_timestamp =
+      base::TimeTicks::Now() - base::Milliseconds(5);
+
+  GetInputHandler().ScrollBegin(BeginStateWithTimestamp(event_timestamp).get(),
+                                ui::ScrollInputType::kTouchscreen);
+  GetInputHandler().ScrollUpdate(UpdateState(
+      gfx::Point(), gfx::Vector2d(0, 10), ui::ScrollInputType::kTouchscreen));
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+
+  std::unique_ptr<CompositorCommitData> commit_data =
+      host_impl_->ProcessCompositorDeltas(
+          /* main_thread_mutator_host */ nullptr);
+  ASSERT_EQ(1u, commit_data->scroll_timing_infos.size());
+  const ScrollTimingInfo& info = commit_data->scroll_timing_infos.front();
+  EXPECT_EQ(event_timestamp, info.start_time);
+  ASSERT_TRUE(info.input_type.has_value());
+  EXPECT_EQ(ui::ScrollInputType::kTouchscreen, *info.input_type);
+  EXPECT_TRUE(info.element_id);
+}
+
+// Performance Scroll Timing API: with the LayerTreeSettings flag disabled,
+// the same gesture produces no ScrollTimingInfo. Guards against the cc
+// wiring firing when the runtime feature is off.
+TEST_F(CommitToActiveTreeLayerTreeHostImplTest,
+       ScrollPerformanceTimingNoRecordWhenDisabled) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.enable_scroll_performance_timing = false;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  SetupViewportLayersOuterScrolls(gfx::Size(100, 100), gfx::Size(1000, 1000));
+
+  GetInputHandler().ScrollBegin(
+      BeginStateWithTimestamp(base::TimeTicks::Now()).get(),
+      ui::ScrollInputType::kTouchscreen);
+  GetInputHandler().ScrollUpdate(UpdateState(
+      gfx::Point(), gfx::Vector2d(0, 10), ui::ScrollInputType::kTouchscreen));
+  GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
+
+  std::unique_ptr<CompositorCommitData> commit_data =
+      host_impl_->ProcessCompositorDeltas(
+          /* main_thread_mutator_host */ nullptr);
+  EXPECT_TRUE(commit_data->scroll_timing_infos.empty());
 }
 
 // Test that specifying a scroller to ScrollBegin (i.e. avoid hit testing)
