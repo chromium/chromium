@@ -7,8 +7,8 @@ import("fidl_library.gni")
 
 # Defines a configuration value file for a Fuchsia component.
 #
-# A config value file is produced from a component manifest that contains a schema
-# and a JSON5 file with concrete configuration values.
+# A config value file is produced from a component manifest that contains a
+# schema and a JSON5 file with concrete configuration values.
 #
 # For example, if a component manifest defines the `enable_foo` flag:
 #
@@ -106,11 +106,13 @@ template("fuchsia_structured_config_values") {
     _value_file = invoker.values_source
   }
 
-  # make sure invoker.cm_label is in the same module, i.e. starts with ":". get_target_outputs depends on this condition
+  # make sure invoker.cm_label is in the same module, i.e. starts with ":".
+  # get_target_outputs depends on this condition
   segments = string_split(invoker.cm_label, ":")
   assert(segments[0] == "", "cm_label cannot be in a different module")
 
-  # now we can call get_target_outputs without creating unactionable error messages
+  # now we can call get_target_outputs without creating unactionable error
+  # messages
   component_outputs = get_target_outputs(invoker.cm_label)
   compiled_manifest = component_outputs[0]
 
@@ -134,7 +136,8 @@ template("fuchsia_structured_config_values") {
 
 # Defines a C++ configuration client library for a Fuchsia ELF component.
 #
-# A config client library is produced from a component manifest that contains a schema.
+# A config client library is produced from a component manifest that contains a
+# schema.
 #
 # For example, if a component manifest defines the `enable_foo` flag:
 #
@@ -214,8 +217,8 @@ template("fuchsia_structured_config_cpp_elf_lib") {
     cpp_namespace = invoker.cpp_namespace
   }
 
-  # The library name is a string that is also used internally by configc when generating
-  # FIDL and C++ source files. It is not visible to the end user.
+  # The library name is a string that is also used internally by configc when
+  # generating FIDL and C++ source files. It is not visible to the end user.
   if (defined(invoker.fidl_library_name)) {
     fidl_library_name = invoker.fidl_library_name
   } else {

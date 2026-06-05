@@ -370,8 +370,8 @@ template("fidl_cpp_library") {
 
 # Define a Fuchsia FIDL library target.
 #
-# ${namespace}.${library_name} must match the the library name specified in the FIDL
-# files.
+# ${namespace}.${library_name} must match the the library name specified in the
+# FIDL files.
 #
 # Parameters
 #

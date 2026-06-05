@@ -117,19 +117,24 @@ template("fuchsia_component_manifest") {
 # Defines a Fuchsia component.
 # See: https://fuchsia.dev/fuchsia-src/glossary#component
 #
-# A component is defined by a component manifest.
-# A component is a unit of executable software on Fuchsia. When the componet is executed, there are usually many files
-# needed at runtime, such as the executable itself, shared libraries, and possibly other data resources. These files are
-# specified by using the GN concept of "data_deps".
+# A component is defined by a component manifest. A component is a unit of
+# executable software on Fuchsia. When the componet is executed, there are
+# usually many files needed at runtime, such as the executable itself, shared
+# libraries, and possibly other data resources. These files are specified by
+# using the GN concept of "data_deps".
 #
-# Components are distributed using a fuchsia package which can contain multiple components. The component manifest and
-# the runtime dependencies of the component are packaged using the fuchsia_package rule.
+# Components are distributed using a fuchsia package which can contain multiple
+# components. The component manifest and the runtime dependencies of the
+# component are packaged using the fuchsia_package rule.
 #
-# By default, the runtime depenencies of the component are included in the package using relative paths calcualted from
-# the "closest" root of: $root_gen_dir, $root_dir, $out_dir. If a specific path is desired in the package, the "resources" parameter can
-# be used to explicitly specify the path of a specific file.
+# By default, the runtime depenencies of the component are included in the
+# package using relative paths calcualted from the "closest" root of:
+# $root_gen_dir, $root_dir, $out_dir. If a specific path is desired in the
+# package, the "resources" parameter can be used to explicitly specify the path
+# of a specific file.
 #
-# A component is launched by a URL which identifies the package and the component manifest.
+# A component is launched by a URL which identifies the package and the
+# component manifest.
 # See: https://fuchsia.dev/fuchsia-src/glossary#component_url
 #
 # Example
@@ -287,8 +292,9 @@ template("fuchsia_component") {
     }
     deps += [ cm_label ]
 
-    # Create the component metadata entries. These capture the manifest information and
-    # the resources parameter contents.  The metadata is intended for the fuchsia_package rule.
+    # Create the component metadata entries. These capture the manifest
+    # information and the resources parameter contents. The metadata is intended
+    # for the fuchsia_package rule.
     component_contents = [
       {
         type = "manifest"

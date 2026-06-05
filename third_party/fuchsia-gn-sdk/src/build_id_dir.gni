@@ -9,10 +9,10 @@ assert(is_fuchsia)
 # ".build_id" convention used by the symbolizer and GNU GDB.
 #
 # The .build-id dir will be constructed from ids.txt files which are passed
-# through deps specifying 'ids_txt_paths' metadata values. If an unstripped binary
-# is found, it is added to the archive. If the matching file is not found in any
-# of the build-id directories, the directory of ids.txt is checked for
-# an unstripped file matching the filename.
+# through deps specifying 'ids_txt_paths' metadata values. If an unstripped
+# binary is found, it is added to the archive. If the matching file is not found
+# in any of the build-id directories, the directory of ids.txt is checked for an
+# unstripped file matching the filename.
 #
 # If the .build-id dir already exists, it will be deleted prior to re-creation
 # such that stale binaries are removed.
