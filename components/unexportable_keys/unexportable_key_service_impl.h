@@ -28,7 +28,12 @@
 
 namespace unexportable_keys {
 
+template <typename KeyIdType>
 class MaybePendingUnexportableKeyId;
+using MaybePendingUnexportableSigningKeyId =
+    MaybePendingUnexportableKeyId<UnexportableSigningKeyId>;
+using MaybePendingUnexportableAttestationKeyId =
+    MaybePendingUnexportableKeyId<UnexportableAttestationKeyId>;
 
 class UnexportableKeyTaskManager;
 
@@ -123,21 +128,25 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
     using is_transparent = void;
   };
 
+  template <typename MaybePendingKeyIdType>
   using WrappedKeyAndTagMap = absl::flat_hash_map<WrappedKeyAndTag,
-                                                  MaybePendingUnexportableKeyId,
+                                                  MaybePendingKeyIdType,
                                                   WrappedKeyAndTagViewHash,
                                                   std::ranges::equal_to>;
-  using KeyIdMap =
-      absl::flat_hash_map<UnexportableKeyId,
+
+  using WrappedSigningKeyAndTagMap =
+      WrappedKeyAndTagMap<MaybePendingUnexportableSigningKeyId>;
+  using WrappedAttestationKeyAndTagMap =
+      WrappedKeyAndTagMap<MaybePendingUnexportableAttestationKeyId>;
+  using SigningKeyIdMap =
+      absl::flat_hash_map<UnexportableSigningKeyId,
                           scoped_refptr<RefCountedUnexportableSigningKey>>;
+  using AttestationKeyIdMap =
+      absl::flat_hash_map<UnexportableAttestationKeyId,
+                          scoped_refptr<RefCountedUnexportableAttestationKey>>;
   using AllKeysForGarbageCollectionMap =
       absl::flat_hash_map<UnexportableKeyId,
                           scoped_refptr<RefCountedUnexportableKey>>;
-
-  // Convenience method to create a `WrappedKeyAndTag` from a
-  // `RefCountedUnexportableKey`.
-  static WrappedKeyAndTag GetWrappedKeyAndTag(
-      const RefCountedUnexportableKey& key);
 
   // Convenience method to create a `WrappedKeyAndTag` from a
   // `WrappedKeyAndTagView`.
@@ -205,11 +214,19 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
 
   // Helps mapping multiple `FromWrappedSigningKeySlowlyAsync()` requests with
   // the same (wrapped key, tag) pair into the same key ID.
-  WrappedKeyAndTagMap key_id_by_wrapped_key_and_tag_;
+  WrappedSigningKeyAndTagMap signing_key_id_by_wrapped_key_and_tag_;
+
+  // Helps mapping multiple `FromWrappedAttestationKeySlowlyAsync()` requests
+  // with the same (wrapped key, tag) pair into the same key ID.
+  WrappedAttestationKeyAndTagMap attestation_key_id_by_wrapped_key_and_tag_;
 
   // Stores unexportable signing keys that were created during the current
   // session.
-  KeyIdMap key_by_key_id_;
+  SigningKeyIdMap signing_key_by_key_id_;
+
+  // Stores unexportable attestation keys that were created during the current
+  // session.
+  AttestationKeyIdMap attestation_key_by_key_id_;
 
   // Stores all unexportable keys for garbage collection purposes. This map is
   // disjoint from `key_by_key_id_` and will be overwritten on each call to
