@@ -414,7 +414,8 @@ HEADLESS_MODE_PROTOCOL_TEST(WindowSizeSwitchLargerThanScreen,
 HEADLESS_MODE_PROTOCOL_TEST(WindowScreenAvail, "shared/window-screen-avail.js")
 
 // TODO(crbug.com/424797525): Fails Mac 13.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/520311348): Fails win-asan.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_StartFullscreenSwitch DISABLED_StartFullscreenSwitch
 #else
 #define MAYBE_StartFullscreenSwitch StartFullscreenSwitch
