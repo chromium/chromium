@@ -164,7 +164,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   bool network_initialized_ = false;
   bool refresh_tokens_loaded_ = false;
   bool enable_account_removal_for_test_ = false;
-  std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
+  // Used when switches::kFetchAccountInfoOnRestart is disabled.
+  std::unique_ptr<signin::PersistentRepeatingTimer> persistent_repeating_timer_;
+  // Used when switches::kFetchAccountInfoOnRestart is enabled.
+  std::unique_ptr<base::RepeatingTimer> repeating_timer_;
 
   // Holds references to account info fetchers keyed by account_id.
   std::unordered_map<CoreAccountId, std::unique_ptr<AccountInfoFetcher>>

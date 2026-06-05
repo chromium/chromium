@@ -484,6 +484,8 @@ BASE_FEATURE(kEnforceMustSkipAppleAgeRangeInChromeCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kFetchAccountInfoOnRestart, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kFirstRunDesktopRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFirstRunDesktopChoiceScreenRefresh,

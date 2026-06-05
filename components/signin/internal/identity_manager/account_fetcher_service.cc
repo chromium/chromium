@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,6 +29,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/signin_client.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "net/http/http_status_code.h"
@@ -84,13 +86,6 @@ void AccountFetcherService::Initialize(
   DCHECK(!account_fetcher_factory_);
   DCHECK(account_fetcher_factory);
   account_fetcher_factory_ = std::move(account_fetcher_factory);
-
-  repeating_timer_ = std::make_unique<signin::PersistentRepeatingTimer>(
-      signin_client_->GetPrefs(), AccountFetcherService::kLastUpdatePref,
-      kRefreshFromTokenServiceDelay,
-      base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
-                          base::Unretained(this),
-                          /*only_fetch_if_invalid=*/false));
 
   // Tokens may have already been loaded and we will not receive a
   // notification-on-registration for |token_service_->AddObserver(this)| few
@@ -158,11 +153,39 @@ void AccountFetcherService::MaybeEnableNetworkFetches() {
   if (!network_initialized_ || !refresh_tokens_loaded_) {
     return;
   }
+
   if (!network_fetches_enabled_) {
     network_fetches_enabled_ = true;
-    repeating_timer_->Start();
+    CHECK(!repeating_timer_);
+    CHECK(!persistent_repeating_timer_);
+    if (base::FeatureList::IsEnabled(switches::kFetchAccountInfoOnRestart)) {
+      // Schedule a fetch kRefreshFromTokenServiceDelay from now.
+      repeating_timer_ = std::make_unique<base::RepeatingTimer>();
+      repeating_timer_->Start(
+          FROM_HERE, kRefreshFromTokenServiceDelay,
+          base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
+                              base::Unretained(this),
+                              /*only_fetch_if_invalid=*/false));
+    } else {
+      // Schedule a fetch kRefreshFromTokenServiceDelay from the last fetch
+      // time.
+      persistent_repeating_timer_ =
+          std::make_unique<signin::PersistentRepeatingTimer>(
+              signin_client_->GetPrefs(),
+              AccountFetcherService::kLastUpdatePref,
+              kRefreshFromTokenServiceDelay,
+              base::BindRepeating(&AccountFetcherService::RefreshAllAccountInfo,
+                                  base::Unretained(this),
+                                  /*only_fetch_if_invalid=*/false));
+      persistent_repeating_timer_->Start();
+    }
   }
-  RefreshAllAccountInfo(/*only_fetch_if_invalid=*/true);
+
+  // If kFetchAccountInfoOnRestart is enabled, fetch account info
+  // unconditionally. Otherwise, only fetch if the account info is invalid.
+  bool only_fetch_if_invalid =
+      !base::FeatureList::IsEnabled(switches::kFetchAccountInfoOnRestart);
+  RefreshAllAccountInfo(only_fetch_if_invalid);
 }
 
 // Starts fetching user information. This is called periodically to refresh.

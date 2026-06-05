@@ -393,6 +393,10 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnforceMustSkipAppleAgeRangeInChromeCapability);
 #endif
 
+// Feature flag to fetch AccountInfo (UserInfo & Capabilities) on restart.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kFetchAccountInfoOnRestart);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This feature controls running visually refreshed first run and profile
 // creation flows for users outside of the search engine choice regions. To

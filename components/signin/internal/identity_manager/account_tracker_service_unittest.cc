@@ -1295,6 +1295,36 @@ TEST_F(AccountTrackerServiceTest, TimerRefresh) {
   EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
 }
 
+TEST_F(AccountTrackerServiceTest, FetchAccountInfoOnRestart) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kFetchAccountInfoOnRestart);
+
+  // Setup tracker with a valid, persisted account whose UserInfo and
+  // Capabilities are known.
+  ResetAccountTracker();
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
+
+  // Rewind time by 12 hours (not enough to trigger the legacy 24h timer).
+  base::Time fake_update = base::Time::Now() - base::Hours(12);
+  signin_client()->GetPrefs()->SetTime(AccountFetcherService::kLastUpdatePref,
+                                       fake_update);
+
+  // Reinstantiate ATS with network disabled.
+  ResetAccountTrackerNetworkDisabled();
+  EXPECT_TRUE(account_fetcher()->IsAllUserInfoFetched());
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  // Enable network fetches (simulating startup completion).
+  account_fetcher()->EnableNetworkFetchesForTest();
+
+  // BOTH UserInfo and Capabilities MUST be fetching due to the restart feature
+  // flag.
+  EXPECT_FALSE(account_fetcher()->IsAllUserInfoFetched());
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+}
+
 TEST_F(AccountTrackerServiceTest, LoadFromPrefs_RemovesAccountsWithoutGaiaId) {
   base::test::ScopedFeatureList scoped_feature_list(
       switches::kGaiaAccountIdEnforcement);
