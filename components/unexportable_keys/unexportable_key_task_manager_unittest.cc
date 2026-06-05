@@ -38,6 +38,7 @@ using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Invoke;
 using ::testing::NotNull;
+using ::testing::Ref;
 using ::testing::Return;
 using ::testing::Values;
 
@@ -57,6 +58,11 @@ constexpr std::string_view kSignTaskType = "Sign";
 constexpr std::string_view kDeleteKeysTaskType = "DeleteKeys";
 constexpr std::string_view kGetAllKeysTaskType = "GetAllKeys";
 constexpr std::string_view kDeleteAllKeysTaskType = "DeleteAllKeys";
+constexpr std::string_view kGenerateAttestationKeyTaskType =
+    "GenerateAttestationKey";
+constexpr std::string_view kFromWrappedAttestationKeyTaskType =
+    "FromWrappedAttestationKey";
+constexpr std::string_view kCertifyTaskType = "Certify";
 
 scoped_refptr<RefCountedUnexportableSigningKey> MakeRefCountedKey(
     base::span<const uint8_t> wrapped_key) {
@@ -862,6 +868,123 @@ TEST_P(UnexportableKeyTaskManagerTest,
                          ServiceError::kOperationNotSupported);
   EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
                   kTaskRetriesFailureHistogramNameFormat, kGetAllKeysTaskType)),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_P(UnexportableKeyTaskManagerTest, GenerateAttestationKeyAsync) {
+  crypto::ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+  scoped_provider.AddNextGeneratedAttestationKey(
+      std::make_unique<crypto::MockUnexportableAttestationKey>());
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
+      future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+
+  task_manager().GenerateAttestationKeySlowlyAsync(
+      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  RunBackgroundTasks();
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(future.Get(), ValueIs(NotNull()));
+  VerifyResultHistograms(histogram_tester, kGenerateAttestationKeyTaskType,
+                         kNoServiceErrorForMetrics);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  absl::StrFormat(kTaskRetriesSuccessHistogramNameFormat,
+                                  kGenerateAttestationKeyTaskType)),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_P(UnexportableKeyTaskManagerTest, FromWrappedAttestationKeyAsync) {
+  crypto::ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+  scoped_provider.AddNextGeneratedAttestationKey(
+      std::make_unique<crypto::MockUnexportableAttestationKey>());
+
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
+      generate_key_future;
+  auto supported_algorithm = {crypto::SignatureVerifier::ECDSA_SHA256};
+  task_manager().GenerateAttestationKeySlowlyAsync(
+      GetParam().origin, crypto::UnexportableKeyProvider::Config(),
+      supported_algorithm, BackgroundTaskPriority::kBestEffort,
+      generate_key_future.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_OK_AND_ASSIGN(scoped_refptr<RefCountedUnexportableAttestationKey> key,
+                       generate_key_future.Get());
+  std::vector<uint8_t> wrapped_key = key->key().GetWrappedKey();
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<
+      ServiceErrorOr<scoped_refptr<RefCountedUnexportableAttestationKey>>>
+      unwrap_key_future;
+
+  scoped_provider.AddNextGeneratedAttestationKey(
+      std::make_unique<crypto::MockUnexportableAttestationKey>());
+
+  task_manager().FromWrappedAttestationKeySlowlyAsync(
+      GetParam().origin, crypto::UnexportableKeyProvider::Config(), wrapped_key,
+      BackgroundTaskPriority::kBestEffort, unwrap_key_future.GetCallback());
+  EXPECT_FALSE(unwrap_key_future.IsReady());
+  RunBackgroundTasks();
+
+  EXPECT_TRUE(unwrap_key_future.IsReady());
+  ASSERT_OK_AND_ASSIGN(auto unwrapped_key, unwrap_key_future.Get());
+  EXPECT_NE(unwrapped_key, nullptr);
+  VerifyResultHistograms(histogram_tester, kFromWrappedAttestationKeyTaskType,
+                         kNoServiceErrorForMetrics);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  absl::StrFormat(kTaskRetriesSuccessHistogramNameFormat,
+                                  kFromWrappedAttestationKeyTaskType)),
+              ElementsAre(base::Bucket(0, 1)));
+}
+
+TEST_P(UnexportableKeyTaskManagerTest, CertifyAsync) {
+  auto mock_signing_key =
+      std::make_unique<crypto::MockUnexportableSigningKey>();
+  auto signing_key = base::MakeRefCounted<RefCountedUnexportableSigningKey>(
+      std::move(mock_signing_key), UnexportableSigningKeyId());
+
+  auto mock_attestation_key =
+      std::make_unique<crypto::MockUnexportableAttestationKey>();
+  std::vector<uint8_t> challenge = {1, 2, 3, 4};
+  crypto::AttestationStatement expected_statement{
+      .format = crypto::AttestationStatement::kTpm,
+      .statement = {5, 6, 7},
+      .signature = {8, 9, 0}};
+
+  EXPECT_CALL(*mock_attestation_key, CertifySlowly(Ref(signing_key->key()),
+                                                   ElementsAreArray(challenge)))
+      .WillOnce(Return(expected_statement));
+
+  auto attestation_key =
+      base::MakeRefCounted<RefCountedUnexportableAttestationKey>(
+          std::move(mock_attestation_key), UnexportableAttestationKeyId());
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<ServiceErrorOr<crypto::AttestationStatement>>
+      certify_future;
+  task_manager().CertifySlowlyAsync(
+      GetParam().origin, attestation_key, signing_key, challenge,
+      BackgroundTaskPriority::kBestEffort, certify_future.GetCallback());
+  EXPECT_FALSE(certify_future.IsReady());
+  RunBackgroundTasks();
+
+  EXPECT_TRUE(certify_future.IsReady());
+  ASSERT_OK_AND_ASSIGN(const auto statement, certify_future.Get());
+  EXPECT_EQ(statement.format, expected_statement.format);
+  EXPECT_EQ(statement.statement, expected_statement.statement);
+  EXPECT_EQ(statement.signature, expected_statement.signature);
+
+  VerifyResultHistograms(histogram_tester, kCertifyTaskType,
+                         kNoServiceErrorForMetrics);
+  EXPECT_THAT(histogram_tester.GetAllSamples(absl::StrFormat(
+                  kTaskRetriesSuccessHistogramNameFormat, kCertifyTaskType)),
               ElementsAre(base::Bucket(0, 1)));
 }
 

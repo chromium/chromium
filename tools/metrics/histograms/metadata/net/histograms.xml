@@ -254,12 +254,17 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(UnexportableKeysBackgroundTaskType) -->
 
 <variants name="UnexportableKeysBackgroundTaskType">
+  <variant name=".Certify" summary="key certification operations"/>
   <variant name=".DeleteAllKeys"
       summary="operations to delete all signing keys"/>
   <variant name=".DeleteKeys"
       summary="operations to delete a collection of signing keys"/>
+  <variant name=".FromWrappedAttestationKey"
+      summary="operations to create an attestation key from a wrapped key"/>
   <variant name=".FromWrappedKey"
       summary="operations to create a signing key from a wrapped key"/>
+  <variant name=".GenerateAttestationKey"
+      summary="operations to generate a new attestation key"/>
   <variant name=".GenerateKey"
       summary="operations to generate a new signing key"/>
   <variant name=".GetAllKeys"
