@@ -392,11 +392,16 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 }
 
 - (void)openNewTab {
-  [self openToolsMenu];
-  id<GREYMatcher> newTabButtonMatcher =
-      grey_accessibilityID(kToolsMenuNewTabId);
-  [[EarlGrey selectElementWithMatcher:newTabButtonMatcher]
-      performAction:grey_tap()];
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::NewTabButton()]
+        performAction:grey_tap()];
+  } else {
+    [self openToolsMenu];
+    id<GREYMatcher> newTabButtonMatcher =
+        grey_accessibilityID(kToolsMenuNewTabId);
+    [[EarlGrey selectElementWithMatcher:newTabButtonMatcher]
+        performAction:grey_tap()];
+  }
   [self waitForAppToIdle];
 }
 
