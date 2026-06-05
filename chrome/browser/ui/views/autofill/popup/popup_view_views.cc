@@ -940,7 +940,7 @@ void PopupViewViews::SetSelectedCell(
       // Since cell selection is based on virtual focus and not real focus,
       // we need to manually unfocus the settings link when updating virtual
       // focus.
-      if (!TrackAndRun(this,
+      if (!TrackAndRun(footnote,
                        [footnote]() { footnote->UnfocusSettingsLink(); })) {
         return;
       }
