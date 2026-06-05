@@ -128,6 +128,10 @@ DownloadPathReservationTrackerTest::CreateDownloadItem(int32_t id) {
   EXPECT_CALL(*item, IsTransient()).WillRepeatedly(Return(false));
   EXPECT_CALL(*item, GetForcedFilePath())
       .WillRepeatedly(ReturnRefOfCopy(base::FilePath()));
+  EXPECT_CALL(*item, GetLastReason())
+      .WillRepeatedly(Return(DOWNLOAD_INTERRUPT_REASON_NONE));
+  EXPECT_CALL(*item, GetTargetDisposition())
+      .WillRepeatedly(Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
 
   static constexpr base::Time::Exploded kReferenceTime = {.year = 2019,
                                                           .month = 1,
@@ -753,5 +757,62 @@ TEST_F(DownloadPathReservationTrackerTest, SymlinkTraversingPath) {
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }
 #endif
+
+TEST_F(DownloadPathReservationTrackerTest,
+       ConfirmedPathOutsideDownloadsResumption) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+  EXPECT_CALL(*item, GetTargetDisposition())
+      .WillRepeatedly(Return(DownloadItem::TARGET_DISPOSITION_PROMPT));
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+
+  base::FilePath target_path =
+      external_dir.GetPath().Append(FILE_PATH_LITERAL("payload.txt"));
+  ASSERT_FALSE(IsPathInUse(target_path));
+
+  base::FilePath reserved_path;
+  PathValidationResult result = PathValidationResult::SUCCESS;
+  DownloadPathReservationTracker::FilenameConflictAction conflict_action =
+      DownloadPathReservationTracker::OVERWRITE;
+  bool create_directory = false;
+  CallGetReservedPath(item.get(), target_path, create_directory,
+                      conflict_action, &reserved_path, &result);
+  EXPECT_EQ(PathValidationResult::SUCCESS, result);
+  EXPECT_EQ(target_path, reserved_path);
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+}
+
+TEST_F(DownloadPathReservationTrackerTest,
+       ResumedPathOutsideDownloadsAfterRestart) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+  // Simulate a restart where TargetDisposition defaults to OVERWRITE,
+  // but the download is recognized as resumed due to a non-zero interrupt
+  // reason.
+  EXPECT_CALL(*item, GetTargetDisposition())
+      .WillRepeatedly(Return(DownloadItem::TARGET_DISPOSITION_OVERWRITE));
+  EXPECT_CALL(*item, GetLastReason())
+      .WillRepeatedly(Return(download::DOWNLOAD_INTERRUPT_REASON_CRASH));
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+
+  base::FilePath target_path =
+      external_dir.GetPath().Append(FILE_PATH_LITERAL("payload.txt"));
+  ASSERT_FALSE(IsPathInUse(target_path));
+
+  base::FilePath reserved_path;
+  PathValidationResult result = PathValidationResult::SUCCESS;
+  DownloadPathReservationTracker::FilenameConflictAction conflict_action =
+      DownloadPathReservationTracker::OVERWRITE;
+  bool create_directory = false;
+  CallGetReservedPath(item.get(), target_path, create_directory,
+                      conflict_action, &reserved_path, &result);
+  EXPECT_EQ(PathValidationResult::SUCCESS, result);
+  EXPECT_EQ(target_path, reserved_path);
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+}
 
 }  // namespace download
