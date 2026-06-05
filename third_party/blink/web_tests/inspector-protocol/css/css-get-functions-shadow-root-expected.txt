@@ -1,0 +1,17 @@
+Verify that functions are reported properly from a shadow root.
+Computed style:
+--color-1: red
+--color-2: green
+--color-3: purple
+--color-4: orange
+--color-5: white
+Functions for #test:
+@function --defined-in-host() {result: --used-indirectly-in-host();} /* from document */
+@function --used-in-both() {result: orange;} /* from shadow */
+@function --used-in-both() {result: red;} /* from document */
+@function --used-in-host() {result: --used-indirectly();} /* from document */
+@function --used-in-shadow() {result: --used-indirectly();} /* from shadow */
+@function --used-indirectly-in-host() {result: white;} /* from document */
+@function --used-indirectly() {result: green;} /* from document */
+@function --used-indirectly() {result: purple;} /* from shadow */
+

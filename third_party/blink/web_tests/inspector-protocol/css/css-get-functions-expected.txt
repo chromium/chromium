@@ -394,4 +394,159 @@ function rule: {
     ]
     styleSheetId : <string 0>
 }
+Functions for #test4
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 18
+                            endLine : 26
+                            startColumn : 6
+                            startLine : 26
+                        }
+                        text : result: red;
+                        value : red
+                    }
+                    [1] : {
+                        name : result
+                        value : red
+                    }
+                ]
+                cssText : result: red;
+                range : {
+                    endColumn : 18
+                    endLine : 26
+                    startColumn : 6
+                    startLine : 26
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string 0>
+            }
+        }
+    ]
+    name : {
+        range : {
+            endColumn : 29
+            endLine : 25
+            startColumn : 14
+            startLine : 25
+        }
+        text : --after-color
+    }
+    origin : regular
+    originTreeScopeNodeId : <number 2>
+    parameters : [
+    ]
+    styleSheetId : <string 0>
+}
+Functions for #test5
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 20
+                            endLine : 36
+                            startColumn : 6
+                            startLine : 36
+                        }
+                        text : result: black;
+                        value : black
+                    }
+                    [1] : {
+                        name : result
+                        value : black
+                    }
+                ]
+                cssText : result: black;
+                range : {
+                    endColumn : 20
+                    endLine : 36
+                    startColumn : 6
+                    startLine : 36
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string 0>
+            }
+        }
+    ]
+    name : {
+        range : {
+            endColumn : 19
+            endLine : 35
+            startColumn : 14
+            startLine : 35
+        }
+        text : --g
+    }
+    origin : regular
+    originTreeScopeNodeId : <number 2>
+    parameters : [
+    ]
+    styleSheetId : <string 0>
+}
+function rule: {
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 21
+                            endLine : 33
+                            startColumn : 6
+                            startLine : 33
+                        }
+                        text : result: yellow;
+                        value : yellow
+                    }
+                    [1] : {
+                        name : result
+                        value : yellow
+                    }
+                ]
+                cssText : result: yellow;
+                range : {
+                    endColumn : 21
+                    endLine : 33
+                    startColumn : 6
+                    startLine : 33
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string 0>
+            }
+        }
+    ]
+    name : {
+        range : {
+            endColumn : 33
+            endLine : 32
+            startColumn : 14
+            startLine : 32
+        }
+        text : --highlight-color
+    }
+    origin : regular
+    originTreeScopeNodeId : <number 2>
+    parameters : [
+    ]
+    styleSheetId : <string 0>
+}
 

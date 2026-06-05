@@ -1687,13 +1687,38 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
         function_hash_map;
     CollectReferencedFunctionRules(function_to_css_rule_map,
                                    *resolver.MatchedRules(), function_hash_map);
+
+    // Pseudos
+    for (InspectorCSSMatchedRules* match : resolver.PseudoElementRules()) {
+      if (match->matched_rules) {
+        CollectReferencedFunctionRules(
+            function_to_css_rule_map, *match->matched_rules, function_hash_map);
+      }
+    }
+    // Inherited
+    for (InspectorCSSMatchedRules* match : resolver.ParentRules()) {
+      if (match->matched_rules) {
+        CollectReferencedFunctionRules(
+            function_to_css_rule_map, *match->matched_rules, function_hash_map);
+      }
+    }
+    for (InspectorCSSMatchedPseudoElements* match :
+         resolver.ParentPseudoElementRules()) {
+      for (InspectorCSSMatchedRules* pseudo_match :
+           match->pseudo_element_rules) {
+        if (pseudo_match->matched_rules) {
+          CollectReferencedFunctionRules(function_to_css_rule_map,
+                                         *pseudo_match->matched_rules,
+                                         function_hash_map);
+        }
+      }
+    }
+
     if (!function_hash_map.empty()) {
       *css_function_rules =
           std::make_unique<protocol::Array<protocol::CSS::CSSFunctionRule>>();
       for (const auto& [scoped_name, rule] : function_hash_map) {
-        (*css_function_rules)
-            ->emplace_back(
-                BuildObjectForFunctionRule(rule, scoped_name->GetTreeScope()));
+        (*css_function_rules)->emplace_back(BuildObjectForFunctionRule(rule));
       }
     }
   }
@@ -4103,8 +4128,7 @@ InspectorCSSAgent::BuildArrayForFunctionNodeChildren(CSSRuleList* rule_list) {
 }
 
 std::unique_ptr<protocol::CSS::CSSFunctionRule>
-InspectorCSSAgent::BuildObjectForFunctionRule(CSSFunctionRule* function_rule,
-                                              const TreeScope* tree_scope) {
+InspectorCSSAgent::BuildObjectForFunctionRule(CSSFunctionRule* function_rule) {
   InspectorStyleSheet* inspector_style_sheet =
       BindStyleSheet(function_rule->parentStyleSheet());
   std::unique_ptr<protocol::CSS::Value> name =
@@ -4136,6 +4160,19 @@ InspectorCSSAgent::BuildObjectForFunctionRule(CSSFunctionRule* function_rule,
   if (inspector_style_sheet->CanBindOrigin() &&
       !inspector_style_sheet->Id().empty()) {
     result->setStyleSheetId(inspector_style_sheet->Id());
+  }
+  const TreeScope* tree_scope = nullptr;
+  CSSStyleSheet* style_sheet = function_rule->parentStyleSheet();
+  while (style_sheet && style_sheet->parentStyleSheet()) {
+    style_sheet = style_sheet->parentStyleSheet();
+  }
+  if (style_sheet) {
+    if (Node* owner_node = style_sheet->ownerNode()) {
+      tree_scope = &owner_node->GetTreeScope();
+    } else if (Document* constructor_document =
+                   style_sheet->ConstructorDocument()) {
+      tree_scope = constructor_document;
+    }
   }
   if (tree_scope) {
     result->setOriginTreeScopeNodeId(tree_scope->RootNode().GetDomNodeId());
