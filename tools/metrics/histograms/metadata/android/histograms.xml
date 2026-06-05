@@ -155,6 +155,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".DesktopSiteWindowSetting"/>
   <variant name=".DownloadIncognitoWarning"/>
   <variant name=".DownloadProgress"/>
+  <variant name=".ExtensionDevTools"/>
   <variant name=".ExtensionsRequestAccess"/>
   <variant name=".ExternalNavigation"/>
   <variant name=".FramebustBlocked"/>
