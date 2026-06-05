@@ -13,4 +13,14 @@ Chromium uses traditional git, but our workflow has certain constraints:
   * **Rebase:** To rebase onto the latest code, you should pull on the main
     branch, then rebase onto it, then once those are finished you **MUST** run
     `gclient sync`.
-  *  **Formatting:** **ALWAYS** run `git cl format` before committing.
+  * **Formatting:** **ALWAYS** run `git cl format` before committing.
+
+### Commit messages
+  * Use active voice and avoid passive voice.
+  * Use present tense or imperative mood. (e.g., "Change foo" instead of
+    "Changed foo")
+  * No need to start the CL description with "This CL". (e.g., "Change foo"
+    instead of "This CL changes foo")
+  * Always refer to functions as FunctionName() or function_name(), with
+    parentheses, to avoid possible confusion with ClassName.
+  * Wrap the commit message at 72 characters when possible.
