@@ -102,6 +102,10 @@ export class PressHandler {
 
   private contextMenuState_: ContextMenuState|null = null;
 
+  // Do we expect the pointer to be captured between pointerDown and pointerUp?
+  // Mostly true, but false for screen reader synthetic mouse clicks.
+  private expectPointerCapture_: boolean = true;
+
   constructor(
       onLongPress: (source: MenuSourceType) => void,
       onShortPress: (e: MouseEvent) => void,
@@ -182,6 +186,10 @@ export class PressHandler {
     const target = e.currentTarget as HTMLElement;
     target.setPointerCapture(e.pointerId);
 
+    // With some screen readers, mouse clicks coming from the keyboard aren't
+    // able to hold pointer capture as the pointer isn't involved.
+    this.expectPointerCapture_ = target.hasPointerCapture(e.pointerId);
+
     if (e.button === BUTTON_RIGHT) {
       // The TypeScript code should only handle long press for the
       // left-click/middle-click.
@@ -216,7 +224,7 @@ export class PressHandler {
     const target = e.currentTarget as HTMLElement;
     // Ignore pointers that are not captured, indicating that there was no
     // corresponding pointer down event over this button.
-    if (!target.hasPointerCapture(e.pointerId)) {
+    if (this.expectPointerCapture_ && !target.hasPointerCapture(e.pointerId)) {
       return;
     }
 
