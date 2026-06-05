@@ -350,6 +350,7 @@ class WebUIToolbarWebView
   void OnTouchUiChanged();
   void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void PostPushNavigationState();
+  void MaybeInitializePageDependentControls();
   void PushNavigationState();
   toolbar_ui_api::mojom::BackForwardControlStatePtr GetBackForwardState() const;
 
@@ -448,7 +449,10 @@ class WebUIToolbarWebView
   // Extra space to put before the back button, which is the first button.
   int back_button_leading_margin_ = 0;
 
-  // True if the WebContents was pre-warmed and injected.
+  // Tracks if synchronous sub-controls have been initialized once.
+  bool sub_controls_initialized_ = false;
+
+  // True if the WebContents was pre-loaded.
   bool is_preloaded_ = false;
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;

@@ -113,6 +113,19 @@ int NextButtonWidth(int button_size,
   return button_size + button_spacing;
 }
 
+WebUIToolbarUI* GetWebUIToolbarUIFromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    return nullptr;
+  }
+  auto* controller = web_ui->GetController();
+  return controller ? controller->GetAs<WebUIToolbarUI>() : nullptr;
+}
+
 }  // namespace
 
 class WebUIToolbarInternalWebView : public views::WebView {
@@ -265,7 +278,8 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     // install the observer, so we have to manually init the `WebUIToolbarUI`.
     if (!pre_created_contents->IsLoading() &&
         pre_created_contents->GetController().GetLastCommittedEntry()) {
-      if (auto* ui = GetWebUIToolbarUI()) {
+      if (auto* ui =
+              GetWebUIToolbarUIFromWebContents(pre_created_contents.get())) {
         ui->Init(this);
       }
     }
@@ -299,60 +313,58 @@ WebUIToolbarWebView::~WebUIToolbarWebView() = default;
 void WebUIToolbarWebView::AddedToWidget() {
   CHECK(web_view_);
 
-  if (initialization_state_ == InitializationState::kInitialized) {
-    // Skips everything if already fully initialized.
-    return;
-  }
-
-  // If initialization has already started or completed, do not run it again.
-  if (initialization_state_ != InitializationState::kUninitialized) {
-    // For preloaded views, initialization_state_ is kPending. Apply deadline
-    // here which is after LoadURL has finished in InitialWebUIManager.
-    ApplyInitialSurfaceSyncDeadline();
-    return;
-  }
-
-  SetInitializationState(InitializationState::kPending);
-
-  if (!is_preloaded_) {
+  if (initialization_state_ == InitializationState::kUninitialized) {
+    // If the WebUI is in uninitialized state, it must be from the non-preloaded
+    // path, we move to the pending state and then load the initial URL.
+    CHECK(!is_preloaded_);
+    SetInitializationState(InitializationState::kPending);
     web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
-    // Apply deadline immediately after LoadInitialURL call for non-preloaded
-    // views.
+    ApplyInitialSurfaceSyncDeadline();
+  } else if (is_preloaded_ &&
+             initialization_state_ == InitializationState::kPending) {
+    // For preloaded path, apply sync deadline when added to the widget.
     ApplyInitialSurfaceSyncDeadline();
   }
 
-  // Initialize the split tabs control early to determine its initial visibility
-  // state (based on prefs/tab state) before the first layout. This prevents
-  // layout shifts that would occur if we waited for OnPageInitialized.
-  // This is safe because the split tabs control's Init() doesn't need to push
-  // state to the WebUI.
-  if (features::IsWebUISplitTabsButtonEnabled()) {
-    split_tabs_control_.Init();
-  }
+  // Initialize sub-controls exactly once when the view is first added to a
+  // widget. Note that this may or may not be called after `OnPageInitialized()`
+  // so we can't just rely on the initialization_state_ to decide if we want to
+  // initialize these controls.
+  if (!sub_controls_initialized_) {
+    sub_controls_initialized_ = true;
 
-  if (features::IsWebUIHomeButtonEnabled()) {
-    home_control_.Init();
-  }
+    // Initialize the split tabs control early to determine its initial
+    // visibility state (based on prefs/tab state) before the first layout. This
+    // prevents layout shifts that would occur if we waited for
+    // OnPageInitialized. This is safe because the split tabs control's Init()
+    // doesn't need to push state to the WebUI.
+    if (features::IsWebUISplitTabsButtonEnabled()) {
+      split_tabs_control_.Init();
+    }
+    if (features::IsWebUIHomeButtonEnabled()) {
+      home_control_.Init();
+    }
+    if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+      pinned_toolbar_actions_.Init();
+    }
+    if (features::IsWebUIExtensionsContainerEnabled()) {
+      extensions_container_ = std::make_unique<WebUIToolbarExtensionsContainer>(
+          *browser_, GetWidget(), web_contents()->GetWeakPtr());
+      // Register `extensions_container_` as the `ExtensionsContainer` for
+      // `browser_`.
+      scoped_extensions_container_user_data_ =
+          std::make_unique<ui::ScopedUnownedUserData<ExtensionsContainer>>(
+              browser_->GetUnownedUserDataHost(), *extensions_container_);
+      active_tab_subscription_ = browser_->RegisterActiveTabDidChange(
+          base::BindRepeating(&WebUIToolbarWebView::OnActiveTabChanged,
+                              base::Unretained(this)));
+    }
 
-  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
-    pinned_toolbar_actions_.Init();
+    // Safe-initialize page-dependent controls if the WebUI finished loading
+    // early when the widget was still null during `OnPageInitialized()` due to
+    // preloading.
+    MaybeInitializePageDependentControls();
   }
-
-  if (features::IsWebUIExtensionsContainerEnabled()) {
-    extensions_container_ = std::make_unique<WebUIToolbarExtensionsContainer>(
-        *browser_, GetWidget(), web_contents()->GetWeakPtr());
-    // Register `extensions_container_` as the `ExtensionsContainer` for
-    // `browser_`.
-    scoped_extensions_container_user_data_ =
-        std::make_unique<ui::ScopedUnownedUserData<ExtensionsContainer>>(
-            browser_->GetUnownedUserDataHost(), *extensions_container_);
-    active_tab_subscription_ =
-        browser_->RegisterActiveTabDidChange(base::BindRepeating(
-            &WebUIToolbarWebView::OnActiveTabChanged, base::Unretained(this)));
-  }
-
-  // Do NOT call GetWebUIToolbarUI() here as it may be null.
-  // The reload_control_ will be initialized once the WebUI is ready.
 }
 
 void WebUIToolbarWebView::OnThemeChanged() {
@@ -497,9 +509,11 @@ void WebUIToolbarWebView::ShowContentSettingsBubble(
   }
 }
 
-void WebUIToolbarWebView::OnPageInitialized() {
-  SetInitializationState(InitializationState::kInitialized);
-
+void WebUIToolbarWebView::MaybeInitializePageDependentControls() {
+  if (!GetWidget() ||
+      initialization_state_ != InitializationState::kInitialized) {
+    return;
+  }
   if (features::IsWebUIReloadButtonEnabled() &&
       !reload_control_.is_initialized()) {
     reload_control_.Init();
@@ -508,8 +522,15 @@ void WebUIToolbarWebView::OnPageInitialized() {
       !avatar_control_.is_initialized()) {
     avatar_control_.Initialize();
   }
+}
 
-  InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
+void WebUIToolbarWebView::OnPageInitialized() {
+  SetInitializationState(InitializationState::kInitialized);
+  MaybeInitializePageDependentControls();
+
+  if (auto* manager = InitialWebUIManager::From(browser_)) {
+    manager->OnWebUIToolbarLoaded();
+  }
 }
 
 void WebUIToolbarWebView::InvokePinnedToolbarAction(
@@ -887,12 +908,7 @@ views::WebView* WebUIToolbarWebView::GetWebViewForTesting() {
 }
 
 WebUIToolbarUI* WebUIToolbarWebView::GetWebUIToolbarUI() {
-  content::WebUI* web_ui = web_view_->web_contents()->GetWebUI();
-  if (!web_ui) {
-    return nullptr;
-  }
-  auto* controller = web_ui->GetController();
-  return controller ? controller->GetAs<WebUIToolbarUI>() : nullptr;
+  return GetWebUIToolbarUIFromWebContents(web_view_->web_contents());
 }
 
 void WebUIToolbarWebView::PermitLaunchUrl() {

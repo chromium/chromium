@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -113,17 +114,12 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 
   if (browser) {
-    // This use of unretained is safe because the
-    // TrackedElementHandlerDocumentSingleton only stores the callback for at
-    // most the lifetime of the WebContents, which is always shorter than the
-    // Browser.
+    auto context = BrowserElements::From(browser)->GetContext();
     ui::TrackedElementHandlerDocumentSingleton::Register(
         this, GetKnownElementIdentifiers(),
-        base::BindRepeating(
-            [](BrowserWindowInterface* browser) {
-              return BrowserElements::From(browser)->GetContext();
-            },
-            base::Unretained(browser)));
+        context ? base::BindRepeating([](ui::ElementContext c) { return c; },
+                                      context)
+                : base::RepeatingCallback<ui::ElementContext()>());
   }
 }
 
