@@ -738,6 +738,9 @@
     'cast_channel': {
       'filepath':  'components/cast_channel/'
     },
+    'cast_receiver_streaming': {
+      'filepath': 'components/cast_receiver/.*/streaming_',
+    },
     'cast_streaming': {
       'filepath': 'media/cast/' \
                   '|chrome/browser/media/cast_mirroring' \
@@ -2836,6 +2839,7 @@
                          'ryanchung+watch@chromium.org'],
     'cast_channel': ['mfoltz+watch-media@chromium.org',
                      'ryanchung+watch@chromium.org'],
+    'cast_receiver_streaming': ['inca-eng+reviews@google.com'],
     'cast_streaming': ['jasonroberts+watch@google.com',
                        'jophba+watch@chromium.org',
                        'mfoltz+watch-media@chromium.org'],
