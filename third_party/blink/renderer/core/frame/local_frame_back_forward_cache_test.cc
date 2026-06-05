@@ -9,7 +9,11 @@
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
+#include "third_party/blink/renderer/bindings/core/v8/window_proxy.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -127,6 +131,37 @@ TEST_F(LocalFrameBackForwardCacheTest, PauseMicrotaskExecution) {
   event_loop->PerformMicrotaskCheckpoint();
 
   EXPECT_EQ(microtask_execution_count, 1);
+}
+
+TEST_F(LocalFrameBackForwardCacheTest, EvictionHookOnDisposedContext) {
+  frame_test_helpers::TestWebFrameClient web_frame_client;
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize(&web_frame_client);
+  web_view_helper.Resize(gfx::Size(640, 480));
+
+  LocalFrame* frame = web_view_helper.GetWebView()->MainFrameImpl()->GetFrame();
+
+  auto* script_state = ToScriptStateForMainWorld(frame);
+  ASSERT_TRUE(script_state);
+  ASSERT_TRUE(script_state->ContextIsValid());
+
+  // Initialize the main world's JS context and create a JavaScript wrapper
+  // for the Document to populate its inline storage.
+  {
+    ScriptState::Scope scope(script_state);
+    v8::Local<v8::Value> document_wrapper =
+        ToV8Traits<Document>::ToV8(script_state, frame->GetDocument());
+    ASSERT_FALSE(document_wrapper.IsEmpty());
+  }
+
+  // Dispose the context, simulating context disposal on navigation.
+  frame->WindowProxy(DOMWrapperWorld::MainWorld(script_state->GetIsolate()))
+      ->ClearForNavigation();
+
+  // Hook BFCache eviction, which calls SetAbortScriptExecution. We verify that
+  // this does not force-initialize the context (which would crash due to the
+  // stale Document wrapper in inline storage).
+  frame->HookBackForwardCacheEviction();
 }
 
 }  // namespace blink

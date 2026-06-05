@@ -161,6 +161,9 @@ void LocalWindowProxy::Trace(Visitor* visitor) const {
 
 void LocalWindowProxy::DisposeContext(Lifecycle next_status,
                                       FrameReuseStatus frame_reuse_status) {
+  // Clear the deferred callback to prevent it from carrying over to a future
+  // context initialization.
+  abort_script_execution_callback_ = nullptr;
   DCHECK(next_status == Lifecycle::kV8MemoryIsForciblyPurged ||
          next_status == Lifecycle::kGlobalObjectIsDetached ||
          next_status == Lifecycle::kFrameIsDetached ||
@@ -242,6 +245,13 @@ void LocalWindowProxy::Initialize() {
 
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();
+
+  // If a script execution abort callback was deferred, register it now
+  // that the context is initialized.
+  if (abort_script_execution_callback_) {
+    context->SetAbortScriptExecution(abort_script_execution_callback_);
+  }
+
   if (global_proxy_.IsEmpty()) {
     global_proxy_.Reset(GetIsolate(), context->Global());
     CHECK(!global_proxy_.IsEmpty());
@@ -693,13 +703,15 @@ void LocalWindowProxy::UpdateSecurityOrigin(const SecurityOrigin* origin) {
 
 void LocalWindowProxy::SetAbortScriptExecution(
     v8::Context::AbortScriptExecutionCallback callback) {
-  InitializeIfNeeded();
-  // Aborting script execution may cause some undesired side effects, so
-  // leave some breadcrumbs in case things go wrong.
-  // See https://crbug.com/427166012 for additional context.
-  static auto* const abort_script_execution = AllocateCrashKeyString(
-      "abort_script_execution", base::debug::CrashKeySize::Size32);
-  SetCrashKeyString(abort_script_execution, callback ? "true" : "false");
+  abort_script_execution_callback_ = callback;
+
+  // If the context is not yet initialized, defer registering the callback on
+  // the context until Initialize() is called. Forcing initialization here is
+  // unnecessary and can cause crashes during navigation (e.g. due to stale
+  // wrappers in inline storage).
+  if (lifecycle_ != Lifecycle::kContextIsInitialized) {
+    return;
+  }
 
   script_state_->GetContext()->SetAbortScriptExecution(callback);
 }

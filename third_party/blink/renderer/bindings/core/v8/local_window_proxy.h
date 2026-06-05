@@ -111,6 +111,11 @@ class LocalWindowProxy final : public WindowProxy {
 
   Member<ScriptState> script_state_;
   bool context_was_created_from_snapshot_ = false;
+  // A callback registered by the embedder to abort script execution in the
+  // context. If the context is not yet initialized when registration is
+  // requested, registration is deferred until Initialize() is called.
+  v8::Context::AbortScriptExecutionCallback abort_script_execution_callback_ =
+      nullptr;
 };
 
 template <>
