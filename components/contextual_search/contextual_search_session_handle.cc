@@ -9,10 +9,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -493,6 +495,17 @@ ContextualSearchSessionHandle::GetSubmittedContextFileInfos() const {
   return TokensToFileInfos(GetController(), submitted_context_tokens_);
 }
 
+std::vector<std::string>
+ContextualSearchSessionHandle::GetSubmittedContextTabTitles() const {
+  std::vector<std::string> titles;
+  for (const auto& file_info : GetSubmittedContextFileInfos()) {
+    if (file_info.tab_title.has_value()) {
+      titles.push_back(file_info.tab_title.value());
+    }
+  }
+  return titles;
+}
+
 void ContextualSearchSessionHandle::ClearSubmittedContextTokens() {
   submitted_context_tokens_.clear();
 }
@@ -552,6 +565,11 @@ void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
                                            query_text_length, file_infos.size(),
                                            has_drive_context);
   }
+}
+
+void ContextualSearchSessionHandle::AddThreadTurn(
+    const contextual_tasks::ThreadTurn& turn) {
+  previous_turns_.push_back(turn);
 }
 
 }  // namespace contextual_search

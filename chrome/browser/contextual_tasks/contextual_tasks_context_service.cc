@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -1052,15 +1053,5 @@ ContextualTasksContextService::PendingRequest::~PendingRequest() = default;
 TabSelectionOptions::TabSelectionOptions() = default;
 TabSelectionOptions::~TabSelectionOptions() = default;
 TabSelectionOptions::TabSelectionOptions(const TabSelectionOptions&) = default;
-
-ThreadTurn::ThreadTurn() = default;
-ThreadTurn::~ThreadTurn() = default;
-ThreadTurn::ThreadTurn(const ThreadTurn&) = default;
-ThreadTurn& ThreadTurn::operator=(const ThreadTurn&) = default;
-
-ConversationThread::ConversationThread() = default;
-ConversationThread::~ConversationThread() = default;
-ConversationThread::ConversationThread(const ConversationThread&) = default;
-ConversationThread& ConversationThread::operator=(const ConversationThread&) = default;
 
 }  // namespace contextual_tasks

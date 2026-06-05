@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest, SubmitQuery) {
           lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
 
   handler_->SubmitQuery("test query", 0, false, false, false, false);
-  EXPECT_EQ(session_handle_->previous_query(), "test query");
+  EXPECT_EQ(session_handle_->previous_turns().back().query, "test query");
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,

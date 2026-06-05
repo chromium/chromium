@@ -494,8 +494,10 @@ omnibox::InputState ContextualSearchboxHandler::GetInputState() const {
 
 std::string ContextualSearchboxHandler::GetPreviousQuery() {
   auto* contextual_session_handle = GetContextualSessionHandle();
-  return contextual_session_handle ? contextual_session_handle->previous_query()
-                                   : std::string();
+  return contextual_session_handle &&
+                 !contextual_session_handle->previous_turns().empty()
+             ? contextual_session_handle->previous_turns().back().query
+             : std::string();
 }
 
 bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
@@ -1412,6 +1414,15 @@ void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
     }
   }
 
+  contextual_tasks::ConversationThread conversation_thread;
+  conversation_thread.query = query;
+  if (auto* contextual_session_handle = GetContextualSessionHandle()) {
+    conversation_thread.previous_turns =
+        contextual_session_handle->previous_turns();
+    conversation_thread.shared_tab_titles =
+        contextual_session_handle->GetSubmittedContextTabTitles();
+  }
+
   const bool is_eligible_for_promo =
       !IsSmartTabSharingActive() &&
       contextual_tasks::ContextualTasksContextService::
@@ -1427,8 +1438,8 @@ void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
     }
     tab_selection_options.min_model_score = static_cast<float>(
         contextual_tasks::GetSmartTabSharingPromoScoreThreshold());
-    contextual_tasks_context_service_->GetRelevantTabsForQuery(
-        tab_selection_options, query, explicit_urls,
+    contextual_tasks_context_service_->GetRelevantTabsForConversationThread(
+        tab_selection_options, conversation_thread, explicit_urls,
         base::BindOnce(
             &ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo,
             weak_ptr_factory_.GetWeakPtr()));
@@ -1442,8 +1453,9 @@ void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
       tab_selection_options.browser_window_interface =
           browser_window_interface->GetWeakPtr();
     }
-    contextual_tasks_context_service_->GetRelevantTabsForQuery(
-        tab_selection_options, query, explicit_urls, base::DoNothing());
+    contextual_tasks_context_service_->GetRelevantTabsForConversationThread(
+        tab_selection_options, conversation_thread, explicit_urls,
+        base::DoNothing());
   }
 }
 

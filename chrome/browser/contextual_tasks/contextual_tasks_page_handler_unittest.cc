@@ -39,6 +39,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/prefs/pref_service.h"
@@ -304,8 +305,9 @@ TEST_F(ContextualTasksPageHandlerTest, GetUrlForTask_InitialUrlExists) {
   page_handler_->GetUrlForTask(task_id,
                                base::BindLambdaForTesting([&](const GURL& url) {
                                  EXPECT_EQ(url, expected_url);
-                                 EXPECT_EQ(mock_session.previous_query(),
-                                           "test");
+                                 EXPECT_EQ(
+                                     mock_session.previous_turns().back().query,
+                                     "test");
                                  run_loop.Quit();
                                }));
   run_loop.Run();

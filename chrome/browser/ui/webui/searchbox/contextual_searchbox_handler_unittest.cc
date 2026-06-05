@@ -54,6 +54,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/contextual_tasks/public/query_contextualizer.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
@@ -204,9 +205,9 @@ class MockContextualTasksContextService
   explicit MockContextualTasksContextService(Profile* profile)
       : ContextualTasksContextService(profile) {}
   MOCK_METHOD(void,
-              GetRelevantTabsForQuery,
+              GetRelevantTabsForConversationThread,
               (const contextual_tasks::TabSelectionOptions&,
-               const std::string&,
+               const contextual_tasks::ConversationThread&,
                const std::vector<GURL>&,
                base::OnceCallback<
                    void(std::vector<base::WeakPtr<content::WebContents>>)>),
@@ -1231,10 +1232,11 @@ TEST_F(SmartTabSharingTest, SubmitQuery_SmartTabSharingOverrideDisabled) {
 
   ASSERT_TRUE(mock_service_);
 
-  EXPECT_CALL(*mock_service_, GetRelevantTabsForQuery(testing::_, testing::_,
-                                                      testing::_, testing::_))
+  EXPECT_CALL(*mock_service_,
+              GetRelevantTabsForConversationThread(testing::_, testing::_,
+                                                   testing::_, testing::_))
       .Times(1)
-      .WillOnce([](const auto& options, const auto& query,
+      .WillOnce([](const auto& options, const auto& conversation_thread,
                    const auto& explicit_urls, auto callback) {
         // The min model score should be set to the promo value.
         ASSERT_EQ(
@@ -1253,10 +1255,11 @@ TEST_F(SmartTabSharingTest,
 
   handler().set_smart_tab_sharing_active_override(true);
 
-  EXPECT_CALL(*mock_service_, GetRelevantTabsForQuery(testing::_, testing::_,
-                                                      testing::_, testing::_))
+  EXPECT_CALL(*mock_service_,
+              GetRelevantTabsForConversationThread(testing::_, testing::_,
+                                                   testing::_, testing::_))
       .Times(1)
-      .WillOnce([](const auto& options, const auto& query,
+      .WillOnce([](const auto& options, const auto& conversation_thread,
                    const auto& explicit_urls, auto callback) {
         ASSERT_FALSE(options.min_model_score.has_value());
         std::move(callback).Run({});
