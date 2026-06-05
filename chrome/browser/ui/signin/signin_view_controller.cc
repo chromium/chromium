@@ -599,39 +599,29 @@ void SigninViewController::ShowDiceSigninTab(
       *IdentityManagerFactory::GetForProfile(GetProfile()), access_point,
       signin_reason, email_hint, continue_url);
 
-  content::WebContents* active_contents = nullptr;
-  if (access_point == signin_metrics::AccessPoint::kStartPage) {
-    active_contents = tab_strip_model_->GetActiveWebContents();
-    content::OpenURLParams params(signin_url, content::Referrer(),
-                                  WindowOpenDisposition::CURRENT_TAB,
-                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
-    active_contents->OpenURL(params, /*navigation_handle_callback=*/{});
-  } else {
-    // Check if there is already a signin-tab open.
-    const int dice_tab_index =
-        FindDiceSigninTab(GetTabStripModel(), signin_url);
-    if (dice_tab_index != -1) {
-      if (access_point != signin_metrics::AccessPoint::kExtensions) {
-        // Extensions do not activate the tab to prevent misbehaving
-        // extensions to keep focusing the signin tab.
-        tab_strip_model_->ActivateTabAt(
-            dice_tab_index,
-            TabStripUserGestureDetails(
-                TabStripUserGestureDetails::GestureType::kOther));
+  // Check if there is already a signin-tab open.
+  const int dice_tab_index = FindDiceSigninTab(GetTabStripModel(), signin_url);
+  if (dice_tab_index != -1) {
+    if (access_point != signin_metrics::AccessPoint::kExtensions) {
+      // Extensions do not activate the tab to prevent misbehaving extensions
+      // from keeping the signin tab focused.
+      tab_strip_model_->ActivateTabAt(
+          dice_tab_index, TabStripUserGestureDetails(
+                              TabStripUserGestureDetails::GestureType::kOther));
 
-        // Update the access point of the signin tab, so that the next signin
-        // is recorded from the latest access point.
-        DiceTabHelper::FromWebContents(
-            tab_strip_model_->GetActiveTab()->GetContents())
-            ->SetAccessPoint(access_point);
-      }
-      // Do not create a new signin tab, because there is already one.
-      return;
+      // Update the access point of the signin tab, so that the next signin is
+      // recorded from the latest access point.
+      DiceTabHelper::FromWebContents(
+          tab_strip_model_->GetActiveTab()->GetContents())
+          ->SetAccessPoint(access_point);
     }
-
-    ShowTabOverwritingNTP(&browser_.get(), GetTabStripModel(), signin_url);
-    active_contents = tab_strip_model_->GetActiveWebContents();
+    // Do not create a new signin tab, because there is already one.
+    return;
   }
+
+  ShowTabOverwritingNTP(&browser_.get(), GetTabStripModel(), signin_url);
+  content::WebContents* active_contents =
+      tab_strip_model_->GetActiveWebContents();
 
   // Checks that we have right contents, in which the signin page is being
   // loaded. Note that we need to check the original URL, being mindful of
@@ -643,7 +633,7 @@ void SigninViewController::ShowDiceSigninTab(
   DiceTabHelper::CreateForWebContents(active_contents);
   DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
 
-  // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
+  // Use `redirect_url` and not `continue_url`, so that the `DiceTabHelper` can
   // redirect to chrome:// URLs such as the NTP.
   tab_helper->InitializeSigninFlow(
       signin_url, access_point, signin_reason, promo_action, redirect_url,
