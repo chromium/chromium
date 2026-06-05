@@ -2366,29 +2366,21 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     return true;
   };
 
-  // PlaceGaps simply places all gaps that fit within the current
-  // fragmentainer. The main idea is that we start from the first unprocessed
-  // gap, and place gaps until we find one that doesn't fit. If the last gap
+  // `PlaceMainGaps` simply builds and returns all main gaps that fit within
+  // the current fragmentainer. We start from the first unprocessed gap,
+  // and place gaps until we find one that doesn't fit. If the last gap
   // placed is split by the fragmentainer boundary or is the last content in
   // this fragmentainer, we suppress it and adjust the `intrinsic_block_size`
   // and item offsets by the delta of the gap that might have spilled over to
   // the next fragmentainer.
-  //
-  // TODO(samomekarajr): We currently suppress "free space" due to alignment as
-  // we would gaps. This is because the track sizing algorithm records free
-  // space as part of the gutters. This needs to be investigated further to
-  // determine what. the right behavior should be in these cases.
-  auto PlaceGaps = [&]() {
-    if (!full_gap_geometry || fragmentainer_space == kIndefiniteSize) {
-      return;
-    }
+  auto PlaceMainGaps = [&]() -> MainGaps {
+    MainGaps fragment_main_gaps;
 
     const MainGaps& main_gaps = full_gap_geometry->GetMainGaps();
     if (main_gaps.empty()) {
-      return;
+      return fragment_main_gaps;
     }
 
-    MainGaps fragment_main_gaps;
     LayoutUnit half_row_gap_size = full_gap_geometry->GetBlockGapSize() / 2;
 
     // Determines whether the last placed gap needs to be suppressed because it
@@ -2454,8 +2446,6 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     };
 
     wtf_size_t current_processed_gap_set_idx = kNotFound;
-    const wtf_size_t initial_unprocessed_row_gap_idx =
-        *first_unprocessed_row_gap_idx;
     for (wtf_size_t gap_index = *first_unprocessed_row_gap_idx;
          gap_index < main_gaps.size(); ++gap_index) {
       LayoutUnit row_gap_midpoint = main_gaps[gap_index].GetGapOffset() +
@@ -2492,6 +2482,18 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     if (!fragment_main_gaps.empty()) {
       MaybeSuppressLastGap(current_processed_gap_set_idx);
     }
+
+    return fragment_main_gaps;
+  };
+
+  auto PlaceGaps = [&]() {
+    if (!full_gap_geometry || fragmentainer_space == kIndefiniteSize) {
+      return;
+    }
+
+    const wtf_size_t initial_unprocessed_row_gap_idx =
+        *first_unprocessed_row_gap_idx;
+    MainGaps fragment_main_gaps = PlaceMainGaps();
 
     // Create gap geometry for this fragmentainer if we have gaps.
     if ((RuntimeEnabledFeatures::CSSGapDecorationEnabled() &&
