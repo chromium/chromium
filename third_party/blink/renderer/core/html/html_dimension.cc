@@ -158,13 +158,11 @@ static bool ParseDimensionValue(base::span<const CharacterType> characters,
     // yielding a regular length.) Gecko and Edge does not.
     current = SkipWhile<CharacterType, IsAsciiDigit>(characters, current);
   }
-  bool ok;
-  double value = CSSValueClampingUtils::ClampDouble(CharactersToDouble(
-      characters.subspan(number_start,
-                         static_cast<size_t>(current - number_start)),
-      &ok));
-  if (!ok)
+  std::optional<double> value = CharactersToDouble(
+      characters.subspan(number_start, current - number_start));
+  if (!value) {
     return false;
+  }
   HTMLDimension::HTMLDimensionType type = HTMLDimension::kAbsolute;
   if (current < characters.size()) {
     const auto c = characters[current];
@@ -179,7 +177,7 @@ static bool ParseDimensionValue(base::span<const CharacterType> characters,
       type = HTMLDimension::kRelative;
     }
   }
-  dimension = HTMLDimension(value, type);
+  dimension = HTMLDimension(CSSValueClampingUtils::ClampDouble(*value), type);
   return true;
 }
 

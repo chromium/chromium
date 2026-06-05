@@ -66,7 +66,7 @@ WTF_EXPORT std::optional<uint64_t> CharactersToUInt64(base::span<const LChar>,
 WTF_EXPORT std::optional<uint64_t> CharactersToUInt64(base::span<const UChar>,
                                                       NumberParsingOptions);
 
-// FIXME: Like the strict functions above, these give false for "ok" when there
+// FIXME: Like the strict functions above, these don't return a value when there
 // is trailing garbage.  Like the non-strict functions above, these return the
 // value when there is trailing garbage.  It would be better if these were more
 // consistent with the above functions instead.
@@ -88,8 +88,8 @@ WTF_EXPORT std::optional<uint64_t> CharactersToUInt64(base::span<const UChar>,
 //
 // A small absolute numbers which a double can't represent is accepted, and
 // 0 is returned
-WTF_EXPORT double CharactersToDouble(base::span<const LChar>, bool* ok);
-WTF_EXPORT double CharactersToDouble(base::span<const UChar>, bool* ok);
+WTF_EXPORT std::optional<double> CharactersToDouble(base::span<const LChar>);
+WTF_EXPORT std::optional<double> CharactersToDouble(base::span<const UChar>);
 
 // |parsed_length| will have the length of characters which was parsed as a
 // double number. It will be 0 if the input string isn't a number. It will be
@@ -117,8 +117,8 @@ WTF_EXPORT double CharactersToDouble(base::span<const UChar>,
 //
 // A small absolute numbers which a float can't represent is accepted, and
 // 0 is returned
-WTF_EXPORT float CharactersToFloat(base::span<const LChar>, bool* ok);
-WTF_EXPORT float CharactersToFloat(base::span<const UChar>, bool* ok);
+WTF_EXPORT std::optional<float> CharactersToFloat(base::span<const LChar>);
+WTF_EXPORT std::optional<float> CharactersToFloat(base::span<const UChar>);
 
 // |parsed_length| will have the length of characters which was parsed as a
 // flaot number. It will be 0 if the input string isn't a number. It will be

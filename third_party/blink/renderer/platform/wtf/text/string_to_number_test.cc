@@ -212,16 +212,13 @@ TEST(StringToNumberTest, NumberParsingState) {
 }
 
 void ParseDouble(const String& str, double expected_value) {
-  bool ok;
-  double value = CharactersToDouble(str.Span8(), &ok);
-  EXPECT_TRUE(ok) << "\"" << str << "\"";
-  EXPECT_EQ(expected_value, value);
+  EXPECT_EQ(expected_value, CharactersToDouble(str.Span8()))
+      << "\"" << str << "\"";
 }
 
 void FailToParseDouble(const String& str) {
-  bool ok;
-  CharactersToDouble(str.Span8(), &ok);
-  EXPECT_FALSE(ok) << "\"" << str << "\"";
+  EXPECT_FALSE(CharactersToDouble(str.Span8()).has_value())
+      << "\"" << str << "\"";
 }
 
 TEST(StringToNumberTest, CharactersToDouble) {
@@ -279,16 +276,13 @@ TEST(StringToNumberTest, CharactersToDoubleParsedLength) {
 }
 
 void ParseFloat(const String& str, float expected_value) {
-  bool ok;
-  float value = CharactersToFloat(str.Span8(), &ok);
-  EXPECT_TRUE(ok) << "\"" << str << "\"";
-  EXPECT_EQ(expected_value, value);
+  EXPECT_EQ(expected_value, CharactersToFloat(str.Span8()))
+      << "\"" << str << "\"";
 }
 
 void FailToParseFloat(const String& str) {
-  bool ok;
-  CharactersToFloat(str.Span8(), &ok);
-  EXPECT_FALSE(ok) << "\"" << str << "\"";
+  EXPECT_FALSE(CharactersToFloat(str.Span8()).has_value())
+      << "\"" << str << "\"";
 }
 
 TEST(StringToNumberTest, CharactersToFloat) {

@@ -490,20 +490,18 @@ Error BuildValue(Cursor* cursor,
       *result = std::make_unique<JSONBasicValue>(false);
       break;
     case kNumber: {
-      bool ok;
-      double value = CharactersToDouble(
-          data.subspan(token_start.pos,
-                       static_cast<size_t>(cursor->pos - token_start.pos)),
-          &ok);
-      if (!ok || std::isinf(value)) {
+      std::optional<double> value = CharactersToDouble(
+          data.subspan(token_start.pos, cursor->pos - token_start.pos));
+      if (!value || std::isinf(*value)) {
         *cursor = token_start;
         return Error::kSyntaxError;
       }
-      if (base::IsValueInRangeForNumericType<int>(value) &&
-          static_cast<int>(value) == value)
-        *result = std::make_unique<JSONBasicValue>(static_cast<int>(value));
-      else
-        *result = std::make_unique<JSONBasicValue>(value);
+      if (base::IsValueInRangeForNumericType<int>(*value) &&
+          static_cast<int>(*value) == *value) {
+        *result = std::make_unique<JSONBasicValue>(static_cast<int>(*value));
+      } else {
+        *result = std::make_unique<JSONBasicValue>(*value);
+      }
       break;
     }
     case kStringLiteral: {

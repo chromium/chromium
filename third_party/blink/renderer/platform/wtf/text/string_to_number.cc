@@ -227,10 +227,10 @@ std::optional<uint64_t> CharactersToUInt64(base::span<const UChar> data,
 
 enum TrailingJunkPolicy { kDisallowTrailingJunk, kAllowTrailingJunk };
 
-template <typename CharType, TrailingJunkPolicy policy>
-static inline double ToDoubleType(base::span<const CharType> data,
-                                  bool* ok,
-                                  size_t& parsed_length) {
+template <TrailingJunkPolicy policy, typename CharType>
+static inline std::optional<double> ToDoubleType(
+    base::span<const CharType> data,
+    size_t& parsed_length) {
   size_t length = data.size();
   size_t leading_spaces_length = 0;
   while (leading_spaces_length < length &&
@@ -241,63 +241,65 @@ static inline double ToDoubleType(base::span<const CharType> data,
   double number =
       ParseDouble(data.subspan(leading_spaces_length), parsed_length);
   if (!parsed_length) {
-    if (ok)
-      *ok = false;
-    return 0.0;
+    return std::nullopt;
   }
 
   parsed_length += leading_spaces_length;
-  if (ok)
-    *ok = policy == kAllowTrailingJunk || parsed_length == length;
+  if (policy != kAllowTrailingJunk && parsed_length != length) {
+    return std::nullopt;
+  }
   return number;
 }
 
-double CharactersToDouble(base::span<const LChar> data, bool* ok) {
+template <TrailingJunkPolicy policy, typename CharType>
+static inline std::optional<double> ToDoubleType(
+    base::span<const CharType> data) {
   size_t parsed_length;
-  return ToDoubleType<LChar, kDisallowTrailingJunk>(data, ok, parsed_length);
+  return ToDoubleType<policy>(data, parsed_length);
 }
 
-double CharactersToDouble(base::span<const UChar> data, bool* ok) {
-  size_t parsed_length;
-  return ToDoubleType<UChar, kDisallowTrailingJunk>(data, ok, parsed_length);
+std::optional<double> CharactersToDouble(base::span<const LChar> data) {
+  return ToDoubleType<kDisallowTrailingJunk>(data);
+}
+
+std::optional<double> CharactersToDouble(base::span<const UChar> data) {
+  return ToDoubleType<kDisallowTrailingJunk>(data);
 }
 
 double CharactersToDouble(base::span<const LChar> data, size_t& parsed_length) {
-  return ToDoubleType<LChar, kAllowTrailingJunk>(data, nullptr, parsed_length);
+  return ToDoubleType<kAllowTrailingJunk>(data, parsed_length).value_or(0);
 }
 
 double CharactersToDouble(base::span<const UChar> data, size_t& parsed_length) {
-  return ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length);
+  return ToDoubleType<kAllowTrailingJunk>(data, parsed_length).value_or(0);
 }
 
-float CharactersToFloat(base::span<const LChar> data, bool* ok) {
-  // FIXME: This will return ok even when the string fits into a double but
+std::optional<float> CharactersToFloat(base::span<const LChar> data) {
+  std::optional<double> value = ToDoubleType<kDisallowTrailingJunk>(data);
+  // FIXME: This will return a value even when the string fits into a double but
   // not a float.
-  size_t parsed_length;
-  return static_cast<float>(
-      ToDoubleType<LChar, kDisallowTrailingJunk>(data, ok, parsed_length));
+  return value ? std::make_optional(static_cast<float>(*value)) : std::nullopt;
 }
 
-float CharactersToFloat(base::span<const UChar> data, bool* ok) {
-  // FIXME: This will return ok even when the string fits into a double but
+std::optional<float> CharactersToFloat(base::span<const UChar> data) {
+  std::optional<double> value = ToDoubleType<kDisallowTrailingJunk>(data);
+  // FIXME: This will return a value even when the string fits into a double but
   // not a float.
-  size_t parsed_length;
-  return static_cast<float>(
-      ToDoubleType<UChar, kDisallowTrailingJunk>(data, ok, parsed_length));
+  return value ? std::make_optional(static_cast<float>(*value)) : std::nullopt;
 }
 
 float CharactersToFloat(base::span<const LChar> data, size_t& parsed_length) {
-  // FIXME: This will return ok even when the string fits into a double but
+  // FIXME: This will return a value even when the string fits into a double but
   // not a float.
   return static_cast<float>(
-      ToDoubleType<LChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
+      ToDoubleType<kAllowTrailingJunk>(data, parsed_length).value_or(0));
 }
 
 float CharactersToFloat(base::span<const UChar> data, size_t& parsed_length) {
-  // FIXME: This will return ok even when the string fits into a double but
+  // FIXME: This will return a value even when the string fits into a double but
   // not a float.
   return static_cast<float>(
-      ToDoubleType<UChar, kAllowTrailingJunk>(data, nullptr, parsed_length));
+      ToDoubleType<kAllowTrailingJunk>(data, parsed_length).value_or(0));
 }
 
 std::optional<int32_t> StringToInt(const StringView& input,
@@ -357,17 +359,13 @@ std::optional<uint32_t> StringToUintLoose(const StringView& input) {
 }
 
 std::optional<double> StringToDouble(const StringView& input) {
-  bool ok = false;
-  double value = input.Is8Bit() ? CharactersToDouble(input.Span8(), &ok)
-                                : CharactersToDouble(input.Span16(), &ok);
-  return ok ? std::optional<double>(value) : std::nullopt;
+  return input.Is8Bit() ? CharactersToDouble(input.Span8())
+                        : CharactersToDouble(input.Span16());
 }
 
 std::optional<float> StringToFloat(const StringView& input) {
-  bool ok = false;
-  float value = input.Is8Bit() ? CharactersToFloat(input.Span8(), &ok)
-                               : CharactersToFloat(input.Span16(), &ok);
-  return ok ? std::optional<float>(value) : std::nullopt;
+  return input.Is8Bit() ? CharactersToFloat(input.Span8())
+                        : CharactersToFloat(input.Span16());
 }
 
 }  // namespace blink

@@ -109,18 +109,16 @@ bool VTTScanner::ScanDouble(double& number) {
     return false;
   }
 
-  bool valid_number;
   number = Invoke(
-      [length_of_double, &valid_number](auto& buf) {
-        return CharactersToDouble(buf.first(length_of_double), &valid_number);
+      [length_of_double](auto& buf) {
+        return CharactersToDouble(buf.first(length_of_double))
+            .value_or(std::numeric_limits<double>::max());
       },
       start_state);
 
   if (number == std::numeric_limits<double>::infinity())
     return false;
 
-  if (!valid_number)
-    number = std::numeric_limits<double>::max();
   return true;
 }
 
