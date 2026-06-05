@@ -1959,6 +1959,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "contextual-tasks-cookie-prefetch",
+    "owners": ["nguyenbryan@chromium.org", "chrome-contextual-tasks-eng@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-suggestions-enabled",
     "owners": ["dianaou@google.com", "chrome-contextual-tasks-eng@google.com"],
     "expiry_milestone": 150

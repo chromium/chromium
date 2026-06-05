@@ -1875,9 +1875,10 @@ TEST_F(ContextualTasksUiServiceTest, EnsureCookiesSynced) {
 
 TEST_F(ContextualTasksUiServiceTest, PrefetchOnEligibilityChange) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasks,
-      {{"ContextualTasksEnableCookiePrefetch", "true"}});
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       contextual_tasks::kContextualTasksCookiePrefetch},
+      {});
 
   auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
@@ -1915,9 +1916,10 @@ TEST_F(ContextualTasksUiServiceTest, PrefetchOnEligibilityChange) {
 
 TEST_F(ContextualTasksUiServiceTest, PrefetchOnStartupIfAlreadyEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      contextual_tasks::kContextualTasks,
-      {{"ContextualTasksEnableCookiePrefetch", "true"}});
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       contextual_tasks::kContextualTasksCookiePrefetch},
+      {});
 
   auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
