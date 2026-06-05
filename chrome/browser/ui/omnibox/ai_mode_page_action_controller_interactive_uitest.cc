@@ -306,4 +306,15 @@ IN_PROC_BROWSER_TEST_F(
                   CheckChipVisible(/*visible=*/true));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    AiModePageActionControllerDynamicAiModeButtonInteractiveUiTest,
+    HidesOnUrlSuggestion) {
+  RunTestSequence(OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
+                  CheckChipVisible(true),
+                  // Type a URL.
+                  EnterText(kOmniboxElementId, u"https://google.com"),
+                  CheckChipVisible(false));
+}
+
 }  // namespace omnibox
+
