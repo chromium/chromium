@@ -199,6 +199,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h:AccountMoveDecision) -->
 
+<!-- LINT.IfChange(AccountPreviewDataFetchState) -->
+
+<enum name="AccountPreviewDataFetchState">
+  <int value="0" label="Requested"/>
+  <int value="1" label="EntityPreviewHasResult"/>
+  <int value="2" label="EntityPreviewEmptyResult"/>
+  <int value="3" label="StatisticsHasResult"/>
+  <int value="4" label="StatisticsEmptyResult"/>
+  <int value="5" label="CompletedWithResults"/>
+  <int value="6" label="CompletedWithoutResults"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/core/browser/account_preview_data_fetcher.h:AccountPreviewDataFetchState) -->
+
 <!-- LINT.IfChange(AccountProfileStartupState) -->
 
 <enum name="AccountProfileStartupState">

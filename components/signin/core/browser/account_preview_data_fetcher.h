@@ -35,6 +35,19 @@ class IdentityManager;
 // The fetching starts on construction.
 class AccountPreviewDataFetcher {
  public:
+  // LINT.IfChange(AccountPreviewDataFetchState)
+  enum class FetchState {
+    kRequested = 0,
+    kEntityPreviewHasResult = 1,
+    kEntityPreviewEmptyResult = 2,
+    kStatisticsHasResult = 3,
+    kStatisticsEmptyResult = 4,
+    kCompletedWithResults = 5,
+    kCompletedWithoutResults = 6,
+    kMaxValue = kCompletedWithoutResults,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:AccountPreviewDataFetchState)
+
   using FetchCompleteCallback =
       base::OnceCallback<void(const GaiaId&,
                               std::optional<AccountPreviewData>)>;
