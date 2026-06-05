@@ -308,7 +308,7 @@ def prepare_platform(platform, out_dir, project):
     arg_max = min(os.sysconf('SC_ARG_MAX') // 2, 1000000)
     subprocess.run(
         ['xargs', '-s',
-         str(arg_max), 'ninja', '-C',
+         str(arg_max), 'autoninja', '-C',
          str(out_dir_arg)],
         input='\n'.join(targets),
         text=True,
