@@ -42,17 +42,15 @@ namespace multistep_filter {
 
 namespace {
 
-// TODO(crbug.com/515670907): Remove 'const' from parameters passed by
-// value in .cc file as per code review feedback.
-void LogUiAccepted(MultistepFilterLogRouter* const log_router,
-                   const int64_t navigation_id,
-                   const std::string_view triggering_domain) {
+void LogUiAccepted(MultistepFilterLogRouter* log_router,
+                   int64_t navigation_id,
+                   std::string_view triggering_domain) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id, LogEventType::kUiAccepted,
                        triggering_domain)
       << LogDetail{"navigation_attempted", true};
 }
 
-void LogUiShown(MultistepFilterLogRouter* const log_router,
+void LogUiShown(MultistepFilterLogRouter* log_router,
                 const UrlFilterSuggestion& suggestion,
                 bool ui_shown) {
   MULTISTEP_FILTER_LOG(log_router, suggestion.triggering_navigation_id,
@@ -60,10 +58,10 @@ void LogUiShown(MultistepFilterLogRouter* const log_router,
       << LogDetail{"ui_shown", ui_shown};
 }
 
-void LogUiDismissed(MultistepFilterLogRouter* const log_router,
-                    const int64_t navigation_id,
-                    const std::string_view triggering_domain,
-                    const std::string_view suppressed_domain) {
+void LogUiDismissed(MultistepFilterLogRouter* log_router,
+                    int64_t navigation_id,
+                    std::string_view triggering_domain,
+                    std::string_view suppressed_domain) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id, LogEventType::kUiDismissed,
                        triggering_domain)
       << LogDetail{"suppressed_domain", std::string(suppressed_domain)};

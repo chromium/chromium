@@ -143,9 +143,9 @@ void LogServerRequestFailed(MultistepFilterLogRouter* log_router,
 
 void LogGetTaskExecutionStrategiesRequestSent(
     MultistepFilterLogRouter* log_router,
-    const int64_t navigation_id,
-    const std::string_view domain,
-    const std::string_view request_url,
+    int64_t navigation_id,
+    std::string_view domain,
+    std::string_view request_url,
     const GURL& url,
     base::span<const FilterAnnotation> filter_annotations) {
   std::vector<std::string> annotation_strings;
@@ -166,18 +166,18 @@ void LogGetTaskExecutionStrategiesRequestSent(
 }
 
 void LogGetSupportedTasksRequestSent(MultistepFilterLogRouter* log_router,
-                                     const int64_t navigation_id,
-                                     const std::string_view domain,
-                                     const std::string_view request_url) {
+                                     int64_t navigation_id,
+                                     std::string_view domain,
+                                     std::string_view request_url) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerRequestSent, domain)
       << LogDetail("request_url", std::string(request_url));
 }
 
 void LogExtractTaskAttributesRequestSent(MultistepFilterLogRouter* log_router,
-                                         const int64_t navigation_id,
-                                         const std::string_view domain,
-                                         const std::string_view request_url,
+                                         int64_t navigation_id,
+                                         std::string_view domain,
+                                         std::string_view request_url,
                                          const GURL& url) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerRequestSent, domain)
@@ -186,10 +186,10 @@ void LogExtractTaskAttributesRequestSent(MultistepFilterLogRouter* log_router,
 }
 
 void LogServerResponseReceived(MultistepFilterLogRouter* log_router,
-                               const int64_t navigation_id,
-                               const std::string_view domain,
-                               const int response_code,
-                               const bool is_success) {
+                               int64_t navigation_id,
+                               std::string_view domain,
+                               int response_code,
+                               bool is_success) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kServerResponseReceived, domain)
       << LogDetail("is_success", is_success)
@@ -198,10 +198,10 @@ void LogServerResponseReceived(MultistepFilterLogRouter* log_router,
 
 void LogResponseObjectsReceived(
     MultistepFilterLogRouter* log_router,
-    const int64_t navigation_id,
-    const std::string_view domain,
-    const int response_code,
-    const bool is_success,
+    int64_t navigation_id,
+    std::string_view domain,
+    int response_code,
+    bool is_success,
     const std::optional<std::vector<FilterSuggestionCandidate>>& result) {
   std::string candidates_str;
   if (result.has_value()) {
@@ -225,10 +225,10 @@ void LogResponseObjectsReceived(
 
 void LogResponseObjectsReceived(
     MultistepFilterLogRouter* log_router,
-    const int64_t navigation_id,
-    const std::string_view domain,
-    const int response_code,
-    const bool is_success,
+    int64_t navigation_id,
+    std::string_view domain,
+    int response_code,
+    bool is_success,
     const std::optional<std::vector<std::string>>& result) {
   std::string tasks_str;
   if (result.has_value()) {
@@ -245,10 +245,10 @@ void LogResponseObjectsReceived(
 }
 
 void LogResponseObjectsReceived(MultistepFilterLogRouter* log_router,
-                                const int64_t navigation_id,
-                                const std::string_view domain,
-                                const int response_code,
-                                const bool is_success,
+                                int64_t navigation_id,
+                                std::string_view domain,
+                                int response_code,
+                                bool is_success,
                                 const std::optional<FilterAnnotation>& result) {
   std::string annotation_str = result.has_value() ? result->ToString() : "";
 
