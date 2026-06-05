@@ -1123,6 +1123,8 @@ const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum) {
       return "swizzle_assignment";
     case wgpu::WGSLLanguageFeatureName::LinearIndexing:
       return "linear_indexing";
+    case wgpu::WGSLLanguageFeatureName::ImmediateAddressSpace:
+      return "immediate_address_space";
 
     // Non-standard.
     case wgpu::WGSLLanguageFeatureName::ChromiumTestingUnimplemented:

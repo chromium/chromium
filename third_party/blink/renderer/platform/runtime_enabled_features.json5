@@ -6729,9 +6729,7 @@
     },
     {
       name: "WebGPUImmediatesFeature",
-      status: "experimental",
-      public: true,
-      implied_by: ["WebGPUExperimentalFeatures"],
+      status: "stable",
     },
     {
       // Enables GPUBuffer::mapSync for WebGPU.
