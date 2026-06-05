@@ -935,7 +935,7 @@ std::string getNodeFromFunctionArrayParameter(
   const std::string& array_size_as_string =
       GetArraySize(array_type_loc, source_manager, ast_context);
   std::string span_type;
-  if (array_size_as_string.empty()) {
+  if (array_size_as_string.empty() || !GetProject()->SupportsStaticExtent()) {
     span_type = llvm::formatv("{0}<{1}> ",
                               GetProject()->GetSpanRelativePath(result), type)
                     .str();

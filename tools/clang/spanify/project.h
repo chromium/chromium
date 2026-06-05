@@ -37,5 +37,6 @@ class Project {
   virtual std::string_view GetAutoSpanificationHelperIncludePath() const = 0;
   virtual const std::vector<FuncMapping>& GetFuncMappingTable() const = 0;
   virtual bool IsExcludedFromProject(const clang::Decl& Node) const = 0;
+  virtual bool SupportsStaticExtent() const { return true; }
 };
 #endif  // TOOLS_CLANG_SPANIFY_PROJECT_H_

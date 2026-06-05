@@ -76,6 +76,7 @@ class SkiaProject : public Project {
             !file.contains("third_party/skia/")) ||
            file.contains("third_party/skia/third_party/");
   }
+  bool SupportsStaticExtent() const override { return false; }
 };
 
 #endif  // TOOLS_CLANG_SPANIFY_SKIA_PROJECT_H_
