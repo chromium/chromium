@@ -61,6 +61,17 @@ class MockTrackingUnexportableKeyProvider
     return key_provider_->FromWrappedSigningKeySlowly(wrapped_key);
   }
 
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    std::unique_ptr<UnexportableAttestationKey> key =
+        key_provider_->GenerateAttestationKeySlowly(acceptable_algorithms);
+    if (key) {
+      keys_.emplace(key->GetWrappedKey());
+    }
+    return key;
+  }
+
   StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
       override {
     return this;
@@ -132,11 +143,14 @@ TEST_F(UnexportableKeyMetricTest, GatherAllMetrics) {
                                     0);
   histogram_tester.ExpectTotalCount(
       "Crypto.TPMDuration.WrappedKeyCreationECDSA", 0);
+  histogram_tester.ExpectTotalCount("Crypto.TPMDuration.KeyCertificationECDSA",
+                                    0);
   histogram_tester.ExpectTotalCount("Crypto.TPMDuration.MessageSigningECDSA",
                                     0);
   histogram_tester.ExpectTotalCount("Crypto.TPMOperation.NewKeyCreation", 0);
   histogram_tester.ExpectTotalCount("Crypto.TPMOperation.WrappedKeyCreation",
                                     0);
+  histogram_tester.ExpectTotalCount("Crypto.TPMOperation.KeyCertification", 0);
   histogram_tester.ExpectTotalCount("Crypto.TPMOperation.MessageSigning", 0);
   histogram_tester.ExpectTotalCount("Crypto.TPMOperation.MessageVerify", 0);
 
@@ -148,6 +162,8 @@ TEST_F(UnexportableKeyMetricTest, GatherAllMetrics) {
                                     1);
   histogram_tester.ExpectTotalCount(
       "Crypto.TPMDuration.WrappedKeyCreationECDSA", 1);
+  histogram_tester.ExpectTotalCount("Crypto.TPMDuration.KeyCertificationECDSA",
+                                    1);
   histogram_tester.ExpectTotalCount("Crypto.TPMDuration.MessageSigningECDSA",
                                     1);
   EXPECT_THAT(
@@ -155,6 +171,9 @@ TEST_F(UnexportableKeyMetricTest, GatherAllMetrics) {
       BucketsAre(base::Bucket(true, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Crypto.TPMOperation.WrappedKeyCreationECDSA"),
+              BucketsAre(base::Bucket(true, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Crypto.TPMOperation.KeyCertificationECDSA"),
               BucketsAre(base::Bucket(true, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Crypto.TPMOperation.MessageSigningECDSA"),

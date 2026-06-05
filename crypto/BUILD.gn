@@ -255,6 +255,7 @@ test("crypto_unittests") {
     "sha2_unittest.cc",
     "sign_unittest.cc",
     "signature_verifier_unittest.cc",
+    "unexportable_key_metrics_unittest.cc",
     "unexportable_key_unittest.cc",
   ]
 
@@ -270,10 +271,6 @@ test("crypto_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_win || is_mac) {
-    sources += [ "unexportable_key_metrics_unittest.cc" ]
-  }
 
   if (is_apple) {
     if (!(is_ios && target_platform == "tvos")) {
