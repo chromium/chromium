@@ -91,6 +91,10 @@ class MEDIA_EXPORT AudioOutputStream {
     // unhandled kDeviceChange type error is likely to result in further errors;
     // so it's recommended that sources close their existing output stream and
     // request a new one when this error is sent.
+    //
+    // Note: Calls should not be made directly to `AudioOutputStream` from the
+    // `OnError` callback, as some implementations are holding locks. Calls
+    // should be posted instead.
     enum class ErrorType { kUnknown, kDeviceChange };
     virtual void OnError(ErrorType type) = 0;
   };
@@ -162,6 +166,10 @@ class MEDIA_EXPORT AudioInputStream {
     // destroyed yet. No direct action needed by the AudioInputStream, but it
     // is a good place to stop accumulating sound data since is is likely that
     // recording will not continue.
+    //
+    // Note: Calls should not be made directly to `AudioInputStream` from the
+    // `OnError` callback, as some implementations are holding locks. Calls
+    // should be posted instead.
     virtual void OnError() = 0;
 
    protected:
