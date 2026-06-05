@@ -1615,12 +1615,18 @@ class AutocompleteMediator
         AutocompleteMatch match = mAutocomplete != null ? mAutocomplete.classify(query) : null;
 
         GURL url;
-        if (match == null || match.isSearchSuggestion()) {
+        if (match == null
+                || match.isSearchSuggestion()
+                || ToolModeUtils.isAimRequest(mAutocompleteInput.getRequestType())) {
             url = TemplateUrlServiceFactory.getForProfile(profile).getUrlForVoiceSearchQuery(query);
         } else {
             url = match.getUrl();
         }
 
+        adjustGurlForRequestType(url, query, this::finishLoadUrlFromVoice);
+    }
+
+    private void finishLoadUrlFromVoice(GURL url) {
         mDelegate.loadUrl(
                 new OmniboxLoadUrlParams.Builder(url.getSpec(), PageTransition.TYPED)
                         .setOpenInNewTab(false)

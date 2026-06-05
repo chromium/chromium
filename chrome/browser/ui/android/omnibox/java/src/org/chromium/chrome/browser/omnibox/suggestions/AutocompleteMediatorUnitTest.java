@@ -1806,6 +1806,18 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void loadUrlFromVoice_conventionalRequest_loadsUrl() {
+        mMediator.beginInput(createSession(AutocompleteRequestType.SEARCH));
+        doReturn(JUnitTestGURLs.BLUE_1).when(mTemplateUrlService).getUrlForVoiceSearchQuery(any());
+
+        mMediator.loadUrlFromVoice("sample voice query");
+
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(JUnitTestGURLs.BLUE_1.getSpec(), mOmniboxLoadUrlParamsCaptor.getValue().url);
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":disable_zero_suggest/true")
     public void

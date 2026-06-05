@@ -27,7 +27,6 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.TextSelection;
-import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -226,8 +225,7 @@ public class VoiceRecognitionHandler {
                         ? sessionState.getAutocompleteInput().getRequestType()
                         : AutocompleteRequestType.SEARCH;
 
-        if (ToolModeUtils.isAimRequest(requestType)
-                || topResult.getConfidence() < VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD) {
+        if (topResult.getConfidence() < VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD) {
             beginInputWithVerbatimText(topResultQuery, requestType);
             return;
         }
