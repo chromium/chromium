@@ -14,8 +14,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
-#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -23,17 +21,30 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_urls.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/web_applications/preinstalled_app_install_features.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
+using extensions::mojom::ManifestLocation;
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 // Returns true if the app was a pre-installed app in Chrome 22
 bool IsOldPreinstalledApp(const std::string& extension_id) {
   return extension_id == extension_misc::kGmailAppId ||
          extension_id == extension_misc::kYoutubeAppId;
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 bool IsLocaleSupported() {
   // Don't bother installing pre-installed apps in locales where it is known
@@ -144,6 +155,8 @@ Provider::Provider(Profile* profile,
                                        creation_flags),
       profile_(profile) {
   DCHECK(profile);
+  // See SetPrefs() below.
+  CHECK_EQ(download_location, ManifestLocation::kInternal);
   set_auto_acknowledge(true);
 
   InitProfileState();
@@ -164,6 +177,20 @@ void Provider::VisitRegisteredExtension() {
 void Provider::SetPrefs(base::DictValue prefs) {
   DCHECK(preinstalled_apps_enabled_);
 
+  // TODO(crbug.com/517655721): Use this mechanism on Win/Mac/Linux as well.
+#if BUILDFLAG(IS_ANDROID)
+  // Load a hard-coded list of external extensions. These are not component
+  // extensions; they are installed from the webstore and don't get access to
+  // component only APIs. Must be used with ManifestLocation::kInternal to allow
+  // CWS to download certain extensions.
+  if (perform_new_installation_) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    AddExtension(extension_misc::kDocsOfflineExtensionId, prefs);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // First, check if this is for a migration from around 2013. Likely not.
   if (is_migration_) {
     DCHECK(!perform_new_installation_);
@@ -222,8 +249,15 @@ void Provider::SetPrefs(base::DictValue prefs) {
       prefs.Remove(key);
     }
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   ExternalProviderImpl::SetPrefs(std::move(prefs));
+}
+
+void Provider::AddExtension(const std::string& extension_id,
+                            base::DictValue& prefs) {
+  prefs.SetByDottedPath(extension_id + ".external_update_url",
+                        extension_urls::GetWebstoreUpdateUrl().spec());
 }
 
 }  // namespace preinstalled_apps

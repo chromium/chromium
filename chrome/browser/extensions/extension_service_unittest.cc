@@ -5000,7 +5000,7 @@ TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
   EXPECT_TRUE(prefs()->GetDisableReasons(good_crx).empty());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_CHROMEOS)
 // This tests if pre-installed apps are installed correctly.
 TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
   InitializeEmptyExtensionService();
@@ -5018,14 +5018,13 @@ TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
         "    \"is_bookmark_app\": false"
         "  }"
         "}";
-    preinstalled_apps::Provider* provider = new preinstalled_apps::Provider(
+    auto provider = std::make_unique<preinstalled_apps::Provider>(
         profile(), external_provider_manager(),
         new ExternalTestingLoader(json_data, data_dir()),
-        ManifestLocation::kInternal, ManifestLocation::kInvalidLocation,
+        ManifestLocation::kInternal, ManifestLocation::kInternal,
         Extension::FROM_WEBSTORE | Extension::WAS_INSTALLED_BY_DEFAULT);
 
-    external_provider_manager()->AddProviderForTesting(
-        base::WrapUnique(provider));
+    external_provider_manager()->AddProviderForTesting(std::move(provider));
   }
 
   ASSERT_EQ(0u, registry()->enabled_extensions().size());
@@ -5038,7 +5037,7 @@ TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {
   EXPECT_TRUE(extension->from_webstore());
   EXPECT_TRUE(extension->was_installed_by_default());
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests disabling extensions
 TEST_F(ExtensionServiceTest, DisableExtension) {

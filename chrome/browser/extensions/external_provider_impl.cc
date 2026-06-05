@@ -59,7 +59,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
 
@@ -80,6 +79,7 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #else
+#include "chrome/browser/extensions/preinstalled_apps.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #endif
 
@@ -878,9 +878,13 @@ void ExternalProviderImpl::CreateExternalProviders(
 #endif
   }
 
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
-  // The pre-installed apps are installed as INTERNAL but use the external
-  // extension installer codeflow.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The pre-installed apps and extensions are installed as
+  // `ManifestLocation::kInternal` but use the external extension installer
+  // codeflow. `download_location` must be `ManifestLocation::kInternal` so the
+  // Chrome Web Store requests will include `installedby=internal` and allow
+  // certain extension downloads (e.g. Docs Offline). Unused on Chrome OS, which
+  // has its own mechanism for preinstalls.
   provider_list->push_back(std::make_unique<preinstalled_apps::Provider>(
       profile, service,
       base::MakeRefCounted<ExternalPrefLoader>(

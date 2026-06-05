@@ -14,8 +14,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 using preinstalled_apps::Provider;
@@ -44,7 +47,8 @@ class PreinstalledAppsTest : public testing::Test {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Chrome OS has different way of installing pre-installed apps.
-// Android does not currently support installing apps via Chrome.
+// Android does not support Chrome Apps, but uses preinstalled_apps::Provider
+// to install internal extensions.
 TEST_F(PreinstalledAppsTest, Install) {
   TestingProfile profile;
   scoped_refptr<ExternalLoader> loader =

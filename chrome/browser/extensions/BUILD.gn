@@ -705,7 +705,11 @@ source_set("extensions") {
   }
 
   if (!is_chromeos) {
-    sources += [ "chrome_kiosk_delegate_non_chromeos.cc" ]
+    sources += [
+      "chrome_kiosk_delegate_non_chromeos.cc",
+      "preinstalled_apps.cc",
+      "preinstalled_apps.h",
+    ]
     if (!is_android) {
       deps += [ "//chrome/browser/download/bubble" ]
     }
@@ -1227,8 +1231,6 @@ source_set("extensions") {
         "api/enterprise_reporting_private/chrome_desktop_report_request_helper.cc",
         "api/enterprise_reporting_private/chrome_desktop_report_request_helper.h",
         "api/image_writer_private/operation_nonchromeos.cc",
-        "preinstalled_apps.cc",
-        "preinstalled_apps.h",
       ]
       deps += [
         "//components/enterprise/common/proto:connectors_proto",
@@ -1914,6 +1916,7 @@ source_set("unit_tests") {
     "permissions/scripting_permissions_modifier_unittest.cc",
     "permissions_based_management_policy_provider_unittest.cc",
     "policy_handlers_unittest.cc",
+    "preinstalled_apps_unittest.cc",
     "profile_util_unittest.cc",
     "shared_module_service_unittest.cc",
     "standard_management_policy_provider_unittest.cc",
@@ -2051,7 +2054,6 @@ source_set("unit_tests") {
       "manifest_v2_experiment_manager_unittest.cc",
       "menu_manager_unittest.cc",
       "mv2_deprecation_impact_checker_unittest.cc",
-      "preinstalled_apps_unittest.cc",
       "safe_browsing_verdict_handler_unittest.cc",
       "update_install_gate_unittest.cc",
       "warning_badge_service_unittest.cc",
