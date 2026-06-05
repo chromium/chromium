@@ -29,7 +29,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the bottom bar */
 @NullMarked
-public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destroyable {
+public class BottomBarMediator
+        implements ThemeColorProvider.TintObserver, BottomBarButtonManager.Listener, Destroyable {
     /** Delegate for compositor-level visibility changes. */
     public interface VisibilityDelegate {
         /**
@@ -124,7 +125,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
 
         // Safe to set the listener after all observers are initialized to trigger the immediate
         // callback with the correct state.
-        mButtonManager.setListener(this::onButtonChanged);
+        mButtonManager.setListener(this);
     }
 
     private void onTabChanged(@Nullable Tab tab) {
@@ -231,7 +232,13 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         mButtonManager.setButtonVisibility(actionId, visible);
     }
 
-    private void onButtonChanged(boolean visibilityChanged) {
+    @Override
+    public void onButtonVisibilityChanged(int actionId, boolean visible) {
+        // TODO(517591009): Add IPH dialog when GLIC button becomes visible.
+    }
+
+    @Override
+    public void onBottomBarStateChanged(boolean visibilityChanged) {
         mVisibilityDelegate.onModelTokenChange();
         if (visibilityChanged) {
             updateNewTabButtonBackground();

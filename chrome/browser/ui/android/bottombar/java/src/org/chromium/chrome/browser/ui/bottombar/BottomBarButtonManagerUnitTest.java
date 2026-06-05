@@ -98,7 +98,8 @@ public class BottomBarButtonManagerUnitTest {
         PropertyModel actionModel = new PropertyModel();
         mSupplierHome.set(actionModel);
 
-        verify(mListener).onButtonChanged(/* visibilityChanged= */ true);
+        verify(mListener).onButtonVisibilityChanged(HOME, true);
+        verify(mListener).onBottomBarStateChanged(/* visibilityChanged= */ true);
         assertTrue(
                 "Home button should be visible",
                 mBottomBarModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
@@ -179,10 +180,12 @@ public class BottomBarButtonManagerUnitTest {
 
         // Verify property change triggers listener before destroy.
         mSupplierHome.set(model1);
-        verify(mListener, times(1)).onButtonChanged(/* visibilityChanged= */ true);
+        verify(mListener, times(1)).onButtonVisibilityChanged(HOME, true);
+        verify(mListener, times(1)).onBottomBarStateChanged(/* visibilityChanged= */ true);
 
+        clearInvocations(mListener);
         model1.set(BottomBarProperties.IS_VISIBLE, true);
-        verify(mListener, times(1)).onButtonChanged(/* visibilityChanged= */ false);
+        verify(mListener, times(1)).onBottomBarStateChanged(/* visibilityChanged= */ false);
 
         mManager.destroy();
 
@@ -207,19 +210,23 @@ public class BottomBarButtonManagerUnitTest {
     }
 
     @Test
-    public void testOnModelChanged_WhenVisibilityDoesNotChange_ListenerNotifiedWithFalse() {
+    public void testOnModelChanged_WhenVisibilityDoesNotChange_ListenerNotifiedWithStateChanged() {
         mManager = initManager(HOME, HOME);
         clearInvocations(mListener);
 
         // Set initial model (null -> non-null). Visibility changes to true.
         PropertyModel model1 = new PropertyModel(BottomBarProperties.ALL_KEYS);
         mSupplierHome.set(model1);
-        verify(mListener).onButtonChanged(/* visibilityChanged= */ true);
+        verify(mListener).onButtonVisibilityChanged(HOME, true);
+        verify(mListener).onBottomBarStateChanged(/* visibilityChanged= */ true);
 
-        // Set a different model (non-null -> non-null). Button remains visible.
+        clearInvocations(mListener);
+
+        // Set a different model (non-null -> non-null). Button remains visible. Only properties
+        // change.
         PropertyModel model2 = new PropertyModel(BottomBarProperties.ALL_KEYS);
         mSupplierHome.set(model2);
-        verify(mListener).onButtonChanged(/* visibilityChanged= */ false);
+        verify(mListener).onBottomBarStateChanged(/* visibilityChanged= */ false);
 
         // Reset history to verify exactly zero new calls happen.
         clearInvocations(mListener);

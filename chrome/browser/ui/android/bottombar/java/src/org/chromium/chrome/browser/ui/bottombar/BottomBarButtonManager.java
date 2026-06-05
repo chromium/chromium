@@ -14,6 +14,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -41,19 +42,25 @@ public class BottomBarButtonManager implements Destroyable {
 
     /** Listener for button property changes. */
     public interface Listener {
-        // TODO(crbug.com/508296670): Make this more generic if there are other things we need to
-        // listen to.
         /**
-         * Called when any button's visibility or property changes.
-         *
-         * @param visibilityChanged True if the effective visibility of any button changed.
+         * Called when a specific button's visibility changes. Used for button-specific logic (e.g.,
+         * Feature Engagement/IPH tracking).
          */
-        void onButtonChanged(boolean visibilityChanged);
+        void onButtonVisibilityChanged(@ActionId int actionId, boolean visible);
+
+        /**
+         * Called once when the overall bottom bar state changes (recomputation complete or a
+         * property updated).
+         *
+         * <p>TODO(crbug.com/508296670): Make this more generic if there are other things we need to
+         * listen to.
+         */
+        void onBottomBarStateChanged(boolean visibilityChanged);
     }
 
     /** Configuration for an action button. */
     public static class ActionConfig {
-        public final int actionId;
+        public final @ActionId int actionId;
         public final BottomBarButtonContainer container;
         public final PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey>
                 binder;
@@ -68,7 +75,7 @@ public class BottomBarButtonManager implements Destroyable {
          * @param visibilityPropertyKey The property key for visibility in the bottom bar model.
          */
         public ActionConfig(
-                int actionId,
+                @ActionId int actionId,
                 BottomBarButtonContainer container,
                 PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> binder,
                 PropertyModel.WritableBooleanPropertyKey visibilityPropertyKey) {
@@ -121,12 +128,12 @@ public class BottomBarButtonManager implements Destroyable {
     }
 
     private final PropertyObservable.PropertyObserver<PropertyKey> mModelObserver =
-            (source, propertyKey) -> notifyButtonChanged(/* visibilityChanged= */ false);
+            this::onModelPropertyChanged;
     private final SparseArray<ButtonBinding> mButtons = new SparseArray<>();
     private final PropertyModel mBottomBarModel;
 
-    private boolean mHasCenteredButton;
     private @Nullable Listener mListener;
+    private boolean mHasCenteredButton;
 
     /**
      * Constructs a BottomBarButtonManager.
@@ -176,7 +183,14 @@ public class BottomBarButtonManager implements Destroyable {
     public void setListener(Listener listener) {
         assert mListener == null : "Listener should only be set once";
         mListener = listener;
-        notifyButtonChanged(/* visibilityChanged= */ true);
+        for (int i = 0; i < mButtons.size(); i++) {
+            @ActionId int actionId = mButtons.keyAt(i);
+            ButtonBinding state = mButtons.valueAt(i);
+            if (state.mCachedVisibility) {
+                listener.onButtonVisibilityChanged(actionId, true);
+            }
+        }
+        listener.onBottomBarStateChanged(/* visibilityChanged= */ true);
     }
 
     /**
@@ -185,7 +199,7 @@ public class BottomBarButtonManager implements Destroyable {
      * @param actionId The ID of the action.
      * @param visible True to request visibility, false to hide.
      */
-    public void setButtonVisibility(int actionId, boolean visible) {
+    public void setButtonVisibility(@ActionId int actionId, boolean visible) {
         ButtonBinding state = mButtons.get(actionId);
         assert state != null : "Action not registered: " + actionId;
 
@@ -213,7 +227,7 @@ public class BottomBarButtonManager implements Destroyable {
      * @param visibilityPropertyKey The property key for visibility in the bottom bar model.
      */
     private void registerAction(
-            int actionId,
+            @ActionId int actionId,
             NullableObservableSupplier<PropertyModel> supplier,
             BottomBarButtonContainer container,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, View, PropertyKey> binder,
@@ -242,33 +256,39 @@ public class BottomBarButtonManager implements Destroyable {
      * equal number of visible buttons on left and right).
      */
     private void recomputeState() {
-        int balance = 0;
-        boolean anyChanged = false;
+        // We run in two separate passes so that all internal manager state (like centering)
+        // is fully calculated and consistent before we dispatch events to the listener.
 
+        // Update model properties and calculate centering.
+        int balance = 0;
         for (int i = 0; i < mButtons.size(); i++) {
             ButtonBinding state = mButtons.valueAt(i);
             boolean visible = isVisible(state);
-
-            if (state.mCachedVisibility != visible) {
-                anyChanged = true;
-                state.mCachedVisibility = visible;
-            }
-
             mBottomBarModel.set(state.mVisibilityPropertyKey, visible);
-
             if (visible) {
                 balance += state.mPosition;
             }
         }
-
         mHasCenteredButton = balance == ButtonPosition.CENTER;
 
-        notifyButtonChanged(anyChanged);
-    }
+        // Update cached visibility and dispatch button-specific events.
+        boolean anyVisibilityChanged = false;
+        for (int i = 0; i < mButtons.size(); i++) {
+            @ActionId int actionId = mButtons.keyAt(i);
+            ButtonBinding state = mButtons.valueAt(i);
+            boolean visible = isVisible(state);
+            if (state.mCachedVisibility != visible) {
+                state.mCachedVisibility = visible;
+                anyVisibilityChanged = true;
+                if (mListener != null) {
+                    mListener.onButtonVisibilityChanged(actionId, visible);
+                }
+            }
+        }
 
-    private void notifyButtonChanged(boolean visibilityChanged) {
+        // Notify mediator to handle layout/compositor invalidation.
         if (mListener != null) {
-            mListener.onButtonChanged(visibilityChanged);
+            mListener.onBottomBarStateChanged(anyVisibilityChanged);
         }
     }
 
@@ -276,7 +296,7 @@ public class BottomBarButtonManager implements Destroyable {
         return state.mModel != null && state.mRequestedVisibility;
     }
 
-    private void onModelChanged(int actionId, @Nullable PropertyModel model) {
+    private void onModelChanged(@ActionId int actionId, @Nullable PropertyModel model) {
         ButtonBinding state = mButtons.get(actionId);
         assert state != null : "State not found for action: " + actionId;
 
@@ -301,6 +321,13 @@ public class BottomBarButtonManager implements Destroyable {
         if (state.mModel != null) {
             state.mModel.removeObserver(mModelObserver);
             state.mModel = null;
+        }
+    }
+
+    private void onModelPropertyChanged(
+            PropertyObservable<PropertyKey> source, PropertyKey propertyKey) {
+        if (mListener != null) {
+            mListener.onBottomBarStateChanged(/* visibilityChanged= */ false);
         }
     }
 

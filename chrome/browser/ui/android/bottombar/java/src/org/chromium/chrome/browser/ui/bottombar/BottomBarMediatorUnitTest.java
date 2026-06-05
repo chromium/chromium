@@ -400,11 +400,11 @@ public class BottomBarMediatorUnitTest {
 
         when(mButtonManager.hasCenteredButton()).thenReturn(true);
 
-        listener.onButtonChanged(true);
+        listener.onBottomBarStateChanged(/* visibilityChanged= */ true);
         assertTrue(mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
 
         when(mButtonManager.hasCenteredButton()).thenReturn(false);
-        listener.onButtonChanged(true);
+        listener.onBottomBarStateChanged(/* visibilityChanged= */ true);
         assertFalse(mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
     }
 
