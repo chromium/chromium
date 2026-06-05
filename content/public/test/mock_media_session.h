@@ -41,6 +41,10 @@ class MockMediaSession : public MediaSession {
               GetMediaSessionMetadata,
               (),
               (override));
+  MOCK_METHOD(std::vector<media_session::mojom::MediaSessionAction>,
+              GetMediaSessionActionsSync,
+              (),
+              (const, override));
   MOCK_METHOD(void, Suspend, (SuspendType suspend_type), (override));
   MOCK_METHOD(void, Resume, (SuspendType suspend_type), (override));
   MOCK_METHOD(void, StartDucking, (), (override));

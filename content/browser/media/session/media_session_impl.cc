@@ -829,6 +829,12 @@ MediaSessionImpl::GetMediaSessionMetadata() {
   return metadata_;
 }
 
+std::vector<media_session::mojom::MediaSessionAction>
+MediaSessionImpl::GetMediaSessionActionsSync() const {
+  return std::vector<media_session::mojom::MediaSessionAction>(actions_.begin(),
+                                                               actions_.end());
+}
+
 void MediaSessionImpl::StartDucking() {
   should_unduck_on_focus_gained_ = false;
   if (is_ducking_)
@@ -973,6 +979,7 @@ void MediaSessionImpl::OnSuspendInternal(SuspendType suspend_type,
       it.first.observer->OnSuspend(it.first.player_id, triggered_by_user);
   }
   RebuildAndNotifyMediaSessionInfoChanged();
+  RebuildAndNotifyActionsChanged();
 }
 
 void MediaSessionImpl::OnResumeInternal(SuspendType suspend_type) {
@@ -985,6 +992,7 @@ void MediaSessionImpl::OnResumeInternal(SuspendType suspend_type) {
     it.first.observer->OnResume(it.first.player_id, triggered_by_user);
 
   RebuildAndNotifyMediaSessionInfoChanged();
+  RebuildAndNotifyActionsChanged();
 }
 
 MediaSessionImpl::MediaSessionImpl(WebContents* web_contents)

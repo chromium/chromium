@@ -90,6 +90,11 @@ class MediaSession : public media_session::mojom::MediaSession {
   // Returns the current media session metadata for a one-off request.
   virtual const media_session::MediaMetadata& GetMediaSessionMetadata() = 0;
 
+  // Returns the current media session actions synchronously for a one-off
+  // request.
+  virtual std::vector<media_session::mojom::MediaSessionAction>
+  GetMediaSessionActionsSync() const = 0;
+
   // Report to all players that information related to automatic picture in
   // picture has changed.
   virtual void ReportAutoPictureInPictureInfoChanged() = 0;

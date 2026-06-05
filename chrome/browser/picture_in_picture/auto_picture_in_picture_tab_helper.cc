@@ -904,7 +904,16 @@ AutoPictureInPictureTabHelper::GetAutoPipReason() const {
   }
 
   if (MeetsVideoPlaybackConditions()) {
-    return media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+    content::MediaSession* media_session =
+        content::MediaSession::GetIfExists(web_contents());
+    if (media_session) {
+      auto actions = media_session->GetMediaSessionActionsSync();
+      if (std::ranges::find(actions,
+                            media_session::mojom::MediaSessionAction::
+                                kEnterAutoPictureInPicture) != actions.end()) {
+        return media::PictureInPictureEventsInfo::AutoPipReason::kMediaPlayback;
+      }
+    }
   }
 
   return media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;

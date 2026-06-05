@@ -227,6 +227,11 @@ class MediaSessionImpl : public MediaSession,
   CONTENT_EXPORT const media_session::MediaMetadata& GetMediaSessionMetadata()
       override;
 
+  // Returns the current media session actions synchronously for a one-off
+  // request.
+  std::vector<media_session::mojom::MediaSessionAction>
+  GetMediaSessionActionsSync() const override;
+
   // Suspend the media session.
   // |type| represents the origin of the request.
   CONTENT_EXPORT void Suspend(MediaSession::SuspendType suspend_type) override;
