@@ -10,7 +10,6 @@ include_rules = [
   "+components/version_info",
   "+content/public/browser",
   "+content/public/test",
-  "+services/data_decoder/public/cpp",
   "+net",
   "+mojo/public/cpp/bindings",
 ]

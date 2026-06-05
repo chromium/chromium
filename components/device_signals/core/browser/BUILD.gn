@@ -82,7 +82,6 @@ static_library("browser") {
       "crowdstrike_client.cc",
       "desktop/desktop_os_signals_collector.cc",
     ]
-    deps += [ "//services/data_decoder/public/cpp" ]
   }
 
   if (is_win) {
@@ -177,10 +176,7 @@ source_set("unit_tests") {
       "crowdstrike_client_unittest.cc",
       "desktop/desktop_os_signals_collector_unittest.cc",
     ]
-    deps += [
-      "//components/device_signals/core/common:test_support",
-      "//services/data_decoder/public/cpp:test_support",
-    ]
+    deps += [ "//components/device_signals/core/common:test_support" ]
   }
 
   if (is_win) {

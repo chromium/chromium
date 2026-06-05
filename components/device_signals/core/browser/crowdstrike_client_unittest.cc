@@ -20,7 +20,6 @@
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/scoped_platform_wrapper.h"
 #include "components/device_signals/core/common/signals_features.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -203,7 +202,6 @@ class CrowdStrikeClientTest : public testing::Test {
   testing::NiceMock<ScopedPlatformWrapper> scoped_platform_wrapper_;
   base::ScopedTempDir scoped_temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::HistogramTester histogram_tester_;
 
 #if BUILDFLAG(IS_WIN)
