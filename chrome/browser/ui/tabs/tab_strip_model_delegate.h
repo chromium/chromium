@@ -151,7 +151,7 @@ class TabStripModelDelegate {
   virtual void GroupAdded(const tab_groups::TabGroupId& group) = 0;
 
   // Notifies the delegate that a group is about to be closed, and allows it
-  // to perform any preparation neccessary.
+  // to perform any preparation necessary.
   virtual void WillCloseGroup(const tab_groups::TabGroupId& group) = 0;
 
   // Called before a full split view (both tabs) is closed.
