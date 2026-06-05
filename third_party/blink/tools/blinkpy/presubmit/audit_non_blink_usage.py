@@ -123,6 +123,7 @@ _CONFIG = [
             'base::MatchPattern',
             'base::MaxThreadType',
             'base::MemoryConsumer',
+            'base::MemoryConsumerTraits',
             'base::MemoryPressureListener',
             'base::MemoryPressureListenerTag',
             'base::MessagePump',

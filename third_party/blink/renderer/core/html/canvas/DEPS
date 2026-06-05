@@ -3,6 +3,7 @@ include_rules = [
 "+base/memory_coordinator/memory_consumer.h",
 "+base/memory_coordinator/memory_coordinator_features.h",
 "+base/memory_coordinator/test_memory_consumer_registry.h",
+"+base/memory_coordinator/traits.h",
 "+base/memory_coordinator/utils.h",
 "+cc/layers/texture_layer.h",
 "+cc/layers/texture_layer_client.h",

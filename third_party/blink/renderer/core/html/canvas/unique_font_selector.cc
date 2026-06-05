@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -14,14 +15,31 @@
 
 namespace blink {
 
+namespace {
+
+constexpr base::MemoryConsumerTraits kUniqueFontSelectorTraits{
+    // Bounded by CanvasFontCache::MaxFonts(), keeping footprint under 10MB.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+    // Iterates hash map and list to erase keys.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Evicted elements can be reconstructed.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Synchronous capacity trimming.
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    // Re-instantiating a Font from a description needs minimal CPU overhead.
+    base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
+    // Holds references managed by Blink Oilpan GC.
+    base::MemoryConsumerTraits::ReleaseGCReferences::kYes};
+
+}  // namespace
+
 UniqueFontSelector::UniqueFontSelector(FontSelector* base_selector)
     : base_selector_(base_selector),
       current_max_fonts_(CanvasFontCache::MaxFonts()) {
   if (base_selector_) {
     memory_consumer_registration_.emplace(
-        "UniqueFontSelector",
-        std::nullopt,  // TODO(crbug.com/489671163): Add traits.
-        this, MemoryConsumerRegistration::CheckUnregister::kDisabled,
+        "UniqueFontSelector", kUniqueFontSelectorTraits, this,
+        MemoryConsumerRegistration::CheckUnregister::kDisabled,
         MemoryConsumerRegistration::CheckRegistryExists::kDisabled);
   }
 }
