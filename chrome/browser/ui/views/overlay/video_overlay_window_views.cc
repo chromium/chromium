@@ -60,6 +60,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/system_theme.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -2076,6 +2078,24 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
 
   // Otherwise, just use default gesture event handling.
   views::Widget::OnGestureEvent(event);
+}
+
+// Video Picture-in-Picture windows only support dark mode, and child views
+// like the Live Caption dialog must follow this as well. Under High Contrast
+// mode, the system theme might override colors to light or high contrast colors
+// which makes the PiP window and the dialog illegible. We override this method
+// to bypass High Contrast mode, forcing the widget and its children to resolve
+// colors using the default dark theme.
+ui::ColorProviderKey VideoOverlayWindowViews::GetColorProviderKey() const {
+  auto key = views::Widget::GetColorProviderKey();
+  if (key.contrast_mode != ui::ColorProviderKey::ContrastMode::kHigh) {
+    return key;
+  }
+
+  key.contrast_mode = ui::ColorProviderKey::ContrastMode::kNormal;
+  key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
+  key.system_theme = ui::SystemTheme::kDefault;
+  return key;
 }
 
 gfx::Rect VideoOverlayWindowViews::GetBackToTabControlsBounds() {

@@ -47,6 +47,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
@@ -54,6 +55,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/controls/button/label_button.h"
@@ -1836,4 +1838,15 @@ TEST_F(VideoOverlayWindowWithMuteControlTest, ToggleMuteButton_HitTest) {
   EXPECT_FALSE(mute_button_bounds.IsEmpty());
   EXPECT_TRUE(overlay_window().ControlsHitTestContainsPoint(
       mute_button_bounds.CenterPoint()));
+}
+
+TEST_F(VideoOverlayWindowViewsTest, GetColorProviderKeyBypassesHighContrast) {
+  ui::MockOsSettingsProvider mock_provider;
+  mock_provider.SetPreferredContrast(ui::NativeTheme::PreferredContrast::kMore);
+
+  // The widget's key should have contrast_mode == kNormal.
+  ui::ColorProviderKey key = overlay_window().GetColorProviderKey();
+  EXPECT_EQ(ui::ColorProviderKey::ContrastMode::kNormal, key.contrast_mode);
+  EXPECT_EQ(ui::ColorProviderKey::ColorMode::kDark, key.color_mode);
+  EXPECT_EQ(ui::SystemTheme::kDefault, key.system_theme);
 }

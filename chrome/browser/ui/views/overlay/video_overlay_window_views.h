@@ -126,6 +126,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void OnKeyEvent(ui::KeyEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  ui::ColorProviderKey GetColorProviderKey() const override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
