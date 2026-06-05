@@ -94,7 +94,6 @@ found in the LICENSE file.
     <dimen name="location_bar_status_extra_padding">4dp</dimen>
     <dimen name="location_bar_url_action_offset">8dp</dimen>
     <dimen name="location_bar_url_action_offset_ntp">4dp</dimen>
-    <dimen name="location_bar_status_view_left_space_width_bigger">12dp</dimen>
     <dimen name="tablet_toolbar_start_padding">4dp</dimen>
     <dimen name="incognito_indicator_lateral_margin">8dp</dimen>
     <dimen name="incognito_indicator_lateral_start_padding">8dp</dimen>
@@ -115,7 +114,6 @@ found in the LICENSE file.
     <dimen name="omnibox_suggestion_list_divider_line_padding">12dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_top">0dp</dimen>
     <dimen name="omnibox_suggestion_list_padding_bottom">8dp</dimen>
-    <dimen name="omnibox_suggestion_list_active_top_small_margin">8dp</dimen>
     <dimen name="omnibox_suggestion_list_toolbar_overlap">0dp</dimen>
     <dimen name="omnibox_suggestion_list_elevation">6dp</dimen>
     <dimen name="omnibox_suggestion_list_animation_added_vertical_offset">

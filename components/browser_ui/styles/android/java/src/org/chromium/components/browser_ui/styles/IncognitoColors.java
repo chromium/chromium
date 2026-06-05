@@ -11,7 +11,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * Provides helper methods for fetching colors and text styles with a boolean param that will load
@@ -97,12 +96,6 @@ public class IncognitoColors {
         return isIncognito
                 ? context.getColor(R.color.baseline_neutral_90)
                 : SemanticColorUtils.getColorOnSurface(context);
-    }
-
-    /** Returns colorOnSurface but with the alpha channel set to 16%. */
-    public static @ColorInt int getColorOnSurfaceWithAlpha16(Context context, boolean isIncognito) {
-        @ColorInt int colorOnSurface = getColorOnSurface(context, isIncognito);
-        return ColorUtils.setAlphaComponentWithFloat(colorOnSurface, /* alpha= */ 0.16f);
     }
 
     /** {@see SemanticColorUtils#getDividerLineBgColor} */

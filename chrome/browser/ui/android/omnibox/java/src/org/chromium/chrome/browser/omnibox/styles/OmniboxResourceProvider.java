@@ -538,26 +538,11 @@ public class OmniboxResourceProvider {
                 .getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding);
     }
 
-    /** Get the top margin for first suggestion in the omnibox with "active color" enabled. */
-    public static @Px int getActiveOmniboxTopSmallMargin(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.omnibox_suggestion_list_active_top_small_margin);
-    }
-
     /** Gets the start padding for a header suggestion. */
     public static @Px int getHeaderStartPadding(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
-    }
-
-    /**
-     * Returns the size of the spacer on the left side of the status view when the omnibox is
-     * focused.
-     */
-    public static @Px int getFocusedStatusViewLeftSpacing(Context context) {
-        return context.getResources()
-                .getDimensionPixelSize(R.dimen.location_bar_status_view_left_space_width_bigger);
     }
 
     /**
@@ -726,22 +711,6 @@ public class OmniboxResourceProvider {
         return IncognitoColors.getDefaultIconColor(context, isIncognito);
     }
 
-    /** Resolves the icon tint to be used for all the ai mode icons. This is a vivid color. */
-    public static @ColorInt int getAiModeHintIconTintColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getDefaultIconColorSecondary(context, isIncognito);
-    }
-
-    /** Resolves the icon tint to be used for all the ai mode icons. */
-    public static @ColorInt int getAiModeHintBorderColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getColorOnSurfaceWithAlpha16(context, isIncognito);
-    }
-
     /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
     public static ColorStateList getPrimaryIconTintList(
             Context context, @BrandedColorScheme int brandedColorScheme) {
@@ -786,13 +755,6 @@ public class OmniboxResourceProvider {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
         return IncognitoColors.getTextMediumThickPrimary(isIncognito);
-    }
-
-    /** Resolves the text appearance for the hint chip, somewhat faded out. */
-    public static @StyleRes int getAiModeHintTextRes(@BrandedColorScheme int brandedColorScheme) {
-        boolean isIncognito =
-                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextMediumThickSecondary(isIncognito);
     }
 
     /** Resolves the text appearance for menu items in the popup. */
