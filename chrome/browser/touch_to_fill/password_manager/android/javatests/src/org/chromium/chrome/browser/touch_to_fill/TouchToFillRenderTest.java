@@ -58,6 +58,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -172,6 +173,17 @@ public class TouchToFillRenderTest {
     @After
     public void tearDown() {
         setRtlForTesting(false);
+        // Hide the bottom sheet before tearing down the activity. Otherwise pending
+        // main-thread runnables posted by ViewRootImpl (e.g. fit-system-windows) keep
+        // strong references to the bottom sheet's view hierarchy and the destroyed
+        // ChromeTabbedActivity, causing LeakCanary failures in @AfterClass.
+        if (mModel != null && mBottomSheetController != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, false));
+            BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
+        }
+        mTouchToFillView = null;
+        mModel = null;
+        mBottomSheetController = null;
         try {
             ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
         } catch (Exception e) {
