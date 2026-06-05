@@ -405,7 +405,6 @@ public class StatusBarColorControllerTest {
     @LargeTest
     @Feature({"StatusBar"})
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485874")
     public void testStatusBarColorForTabStripRedesignFolioTablet() {
         final ChromeActivity activity = mActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
