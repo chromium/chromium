@@ -49,11 +49,35 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableSigningKey
   const UnexportableSigningKeyId& id() const override;
 
  private:
-  friend class base::RefCountedThreadSafe<RefCountedUnexportableSigningKey>;
   ~RefCountedUnexportableSigningKey() override;
 
   const std::unique_ptr<crypto::UnexportableSigningKey> key_;
   const UnexportableSigningKeyId id_;
+};
+
+// RefCounted wrapper around `crypto::UnexportableAttestationKey`.
+//
+// Also contains a unique id token that identifies a class instance. This id can
+// be used for a faster key comparison (as opposed to comparing public key
+// infos). It doesn't guarantee that two objects with different ids have
+// different underlying keys.
+class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) RefCountedUnexportableAttestationKey
+    : public RefCountedUnexportableKey {
+ public:
+  // `key` must be non-null.
+  explicit RefCountedUnexportableAttestationKey(
+      std::unique_ptr<crypto::UnexportableAttestationKey> key,
+      UnexportableAttestationKeyId key_id);
+
+  // Use covariance to return more specific types for `key` and `id`.
+  crypto::UnexportableAttestationKey& key() const override;
+  const UnexportableAttestationKeyId& id() const override;
+
+ private:
+  ~RefCountedUnexportableAttestationKey() override;
+
+  const std::unique_ptr<crypto::UnexportableAttestationKey> key_;
+  const UnexportableAttestationKeyId id_;
 };
 
 }  // namespace unexportable_keys
