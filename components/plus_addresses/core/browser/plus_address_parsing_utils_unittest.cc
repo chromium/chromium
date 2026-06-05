@@ -13,7 +13,6 @@
 #include "components/plus_addresses/core/browser/plus_address_test_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,10 +22,9 @@ using ::testing::ElementsAre;
 using ::testing::Optional;
 
 // PlusAddressParsing tests validate the ParsePlusAddressFrom* methods
-// Returns empty when the DataDecoder fails to parse the JSON.
+// Returns empty when the JSON fails to parse.
 TEST(PlusAddressParsing, NotValidJson) {
-  EXPECT_EQ(ParsePlusProfileFromV1Create(base::unexpected("error!")),
-            std::nullopt);
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::nullopt), std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
@@ -37,9 +35,10 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   const std::string kPlusAddress = "fubar@plus.com";
 
   // Test when the plusMode should set is_confirmed to true.
-  std::optional<base::Value> valid_mode = base::JSONReader::Read(
-      base::ReplaceStringPlaceholders(
-          R"(
+  std::optional<PlusProfile> valid_result =
+      ParsePlusProfileFromV1Create(base::JSONReader::Read(
+          base::ReplaceStringPlaceholders(
+              R"(
     {
       "plusProfile":  {
         "unwanted": 123,
@@ -53,15 +52,9 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       "unwanted": "abc"
     }
     )",
-          {kProfileId, kFacet.canonical_spec(), kPlusAddress},
-          /*offsets=*/nullptr),
-      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-
-  ASSERT_TRUE(valid_mode.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(valid_mode.value());
-
-  std::optional<PlusProfile> valid_result =
-      ParsePlusProfileFromV1Create(std::move(value));
+              {kProfileId, kFacet.canonical_spec(), kPlusAddress},
+              /*offsets=*/nullptr),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_TRUE(valid_result.has_value());
   EXPECT_EQ(valid_result->profile_id, kProfileId);
   EXPECT_EQ(valid_result->facet, kFacet);
@@ -69,9 +62,10 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
   EXPECT_EQ(valid_result->is_confirmed, true);
 
   // Test when the plusMode should set is_confirmed to false.
-  std::optional<base::Value> invalid_mode = base::JSONReader::Read(
-      base::ReplaceStringPlaceholders(
-          R"(
+  std::optional<PlusProfile> invalid_result =
+      ParsePlusProfileFromV1Create(base::JSONReader::Read(
+          base::ReplaceStringPlaceholders(
+              R"(
     {
       "plusProfile":  {
         "unwanted": 123,
@@ -85,15 +79,9 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       "unwanted": "abc"
     }
     )",
-          {kProfileId, kFacet.canonical_spec(), kPlusAddress},
-          /*offsets=*/nullptr),
-      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(invalid_mode.has_value());
-  data_decoder::DataDecoder::ValueOrError decoded =
-      std::move(invalid_mode.value());
-
-  std::optional<PlusProfile> invalid_result =
-      ParsePlusProfileFromV1Create(std::move(decoded));
+              {kProfileId, kFacet.canonical_spec(), kPlusAddress},
+              /*offsets=*/nullptr),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_TRUE(invalid_result.has_value());
   EXPECT_EQ(invalid_result->profile_id, kProfileId);
   EXPECT_EQ(invalid_result->facet, kFacet);
@@ -103,8 +91,8 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
 
 // Validate that there is a plusAddress field in the plusEmail object.
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusAddress) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
     {
       "plusProfile":  {
         "plusEmail" : {
@@ -113,16 +101,14 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusAddress) {
       }
     }
     )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 // Validate that there is a plusMode field in the plusEmail object.
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusMode) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
     {
       "plusProfile":  {
         "plusEmail" : {
@@ -131,65 +117,55 @@ TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusMode) {
       }
     }
     )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 // Validate that there is a plusEmail object.
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutEmailObject) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
     {
       "plusProfile":  {
         "address": "foobar"
       }
     }
     )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsForEmptyDict) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
     {
       "plusProfile": {}
     }
     )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsWithoutPlusProfileKey) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
       {
         "plusAddress": "wouldnt this be nice?"
       }
     )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
       {
         "plusProfile": "not a dict"
       }
     )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 // Tests that parsing the create response returns the first existing profile if
@@ -206,9 +182,10 @@ TEST(PlusAddressParsing, FromV1Create_ParseExistingPlusProfiles) {
   const std::string kPlusAddress1 = "fubar@plus.com";
   const std::string kPlusAddress2 = "fubar2@plus.com";
 
-  std::optional<base::Value> json = base::JSONReader::Read(
-      base::ReplaceStringPlaceholders(
-          R"(
+  std::optional<PlusProfile> profile =
+      ParsePlusProfileFromV1Create(base::JSONReader::Read(
+          base::ReplaceStringPlaceholders(
+              R"(
     {
       "existingPlusProfiles": [
         {
@@ -229,14 +206,10 @@ TEST(PlusAddressParsing, FromV1Create_ParseExistingPlusProfiles) {
         }
       ]
     })",
-          {kProfileId1, kFacet.canonical_spec(), kPlusAddress1, kProfileId2,
-           kFacet.canonical_spec(), kPlusAddress2},
-          /*offsets=*/nullptr),
-      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  std::optional<PlusProfile> profile =
-      ParsePlusProfileFromV1Create(std::move(value));
+              {kProfileId1, kFacet.canonical_spec(), kPlusAddress1, kProfileId2,
+               kFacet.canonical_spec(), kPlusAddress2},
+              /*offsets=*/nullptr),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_EQ(profile,
             PlusProfile(kProfileId1, kFacet, PlusAddress(kPlusAddress1),
                         /*is_confirmed=*/true));
@@ -248,20 +221,19 @@ TEST(PlusAddressParsing, FromV1Create_ParseEmptyExistingPlusProfiles) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressParseExistingProfilesFromCreateResponse};
 
-  std::optional<base::Value> json = base::JSONReader::Read(
-      R"(
+  EXPECT_EQ(ParsePlusProfileFromV1Create(base::JSONReader::Read(
+                R"(
     {
       "existingPlusProfiles": []
     })",
-      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json.has_value());
-  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
-  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS)),
+            std::nullopt);
 }
 
 TEST(PlusAddressParsing, ParsePreallocatedPlusAddresses) {
-  std::optional<base::Value> json =
-      base::JSONReader::Read(R"(
+  std::optional<std::vector<PreallocatedPlusAddress>> addresses =
+      ParsePreallocatedPlusAddresses(base::JSONReader::Read(
+          R"(
   {
     "emailAddresses": [
       {
@@ -275,11 +247,7 @@ TEST(PlusAddressParsing, ParsePreallocatedPlusAddresses) {
     ]
   }
   )",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  ASSERT_TRUE(json);
-
-  std::optional<std::vector<PreallocatedPlusAddress>> addresses =
-      ParsePreallocatedPlusAddresses(std::move(*json));
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_THAT(
       addresses,
       Optional(ElementsAre(
@@ -290,9 +258,7 @@ TEST(PlusAddressParsing, ParsePreallocatedPlusAddresses) {
 }
 
 TEST(PlusAddressParsing, ParsePreallocatedPlusAddressesWithInvalidJSON) {
-  EXPECT_EQ(
-      ParsePreallocatedPlusAddresses(base::unexpected("An error occurred")),
-      std::nullopt);
+  EXPECT_EQ(ParsePreallocatedPlusAddresses(std::nullopt), std::nullopt);
 }
 
 // Tests that `ParsePreallocatedPlusAddresses` ignores malformed entries.

@@ -10,7 +10,6 @@
 
 #include "base/values.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace plus_addresses {
 
@@ -28,9 +27,9 @@ namespace plus_addresses {
 //         }
 //       }
 //   }
-//  This method returns nullopt otherwise or if `response` is an error.
+//  This method returns nullopt otherwise or if `response` is `std::nullopt`.
 std::optional<PlusProfile> ParsePlusProfileFromV1Create(
-    data_decoder::DataDecoder::ValueOrError response);
+    std::optional<base::Value> response);
 
 // Attempts to parse `response` into a vector of `PreallocatedPlusAddress`.
 // The following schema is expected:
@@ -43,8 +42,7 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Create(
 // }
 //
 std::optional<std::vector<PreallocatedPlusAddress>>
-ParsePreallocatedPlusAddresses(
-    data_decoder::DataDecoder::ValueOrError response);
+ParsePreallocatedPlusAddresses(std::optional<base::Value> response);
 
 }  // namespace plus_addresses
 

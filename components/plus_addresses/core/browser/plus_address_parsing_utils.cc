@@ -16,7 +16,6 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/core/browser/plus_address_types.h"
 #include "components/plus_addresses/core/common/features.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace plus_addresses {
 
@@ -122,7 +121,7 @@ std::optional<PreallocatedPlusAddress> ParsePreallocatedPlusAddress(
 }  // namespace
 
 std::optional<PlusProfile> ParsePlusProfileFromV1Create(
-    data_decoder::DataDecoder::ValueOrError response) {
+    std::optional<base::Value> response) {
   if (!response.has_value() || !response->is_dict()) {
     return std::nullopt;
   }
@@ -163,8 +162,7 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Create(
 }
 
 std::optional<std::vector<PreallocatedPlusAddress>>
-ParsePreallocatedPlusAddresses(
-    data_decoder::DataDecoder::ValueOrError response) {
+ParsePreallocatedPlusAddresses(std::optional<base::Value> response) {
   static constexpr std::string_view kAddressesKey = "emailAddresses";
   if (!response.has_value() || !response->is_dict()) {
     return std::nullopt;

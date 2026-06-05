@@ -14,6 +14,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -32,7 +33,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -408,21 +408,15 @@ void PlusAddressHttpClientImpl::OnReserveOrConfirmPlusAddressComplete(
   }
 
   // Parse the response & return it via callback.
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response,
-      base::BindOnce(&ParsePlusProfileFromV1Create)
-          .Then(base::BindOnce(
-              [](PlusAddressRequestCallback callback,
-                 std::optional<PlusProfile> result) {
-                if (!result.has_value()) {
-                  std::move(callback).Run(
-                      base::unexpected(PlusAddressRequestError(
-                          PlusAddressRequestErrorType::kParsingError)));
-                  return;
-                }
-                std::move(callback).Run(result.value());
-              },
-              std::move(on_completed))));
+  std::optional<PlusProfile> profile = ParsePlusProfileFromV1Create(
+      base::JSONReader::Read(*response, base::JSON_PARSE_RFC));
+  if (!profile.has_value()) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kParsingError)));
+    return;
+  }
+  std::move(on_completed).Run(std::move(*profile));
 }
 
 void PlusAddressHttpClientImpl::OnPreallocationComplete(
@@ -437,21 +431,16 @@ void PlusAddressHttpClientImpl::OnPreallocationComplete(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *response,
-      base::BindOnce(&ParsePreallocatedPlusAddresses)
-          .Then(base::BindOnce(
-              [](PreallocatePlusAddressesCallback callback,
-                 std::optional<std::vector<PreallocatedPlusAddress>> result) {
-                if (!result) {
-                  std::move(callback).Run(
-                      base::unexpected(PlusAddressRequestError(
-                          PlusAddressRequestErrorType::kParsingError)));
-                  return;
-                }
-                std::move(callback).Run(*std::move(result));
-              },
-              std::move(on_completed))));
+  std::optional<std::vector<PreallocatedPlusAddress>> preallocated =
+      ParsePreallocatedPlusAddresses(
+          base::JSONReader::Read(*response, base::JSON_PARSE_RFC));
+  if (!preallocated) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError(
+            PlusAddressRequestErrorType::kParsingError)));
+    return;
+  }
+  std::move(on_completed).Run(std::move(*preallocated));
 }
 
 void PlusAddressHttpClientImpl::GetAuthToken(TokenReadyCallback callback) {

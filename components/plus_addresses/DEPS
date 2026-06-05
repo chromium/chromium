@@ -17,7 +17,6 @@ include_rules = [
   "+net/http",
   "+net/test/embedded_test_server/http_request.h",
   "+net/test/embedded_test_server/http_response.h",
-  "+services/data_decoder",
   "+services/network/public",
   "+services/network/test",
   "+third_party/re2",

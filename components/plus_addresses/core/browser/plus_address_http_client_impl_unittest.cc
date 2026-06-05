@@ -30,7 +30,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -124,7 +123,6 @@ class PlusAddressHttpClientRequests : public ::testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  data_decoder::test::InProcessDataDecoder decoder_;
 
   // The last network request made.
   network::ResourceRequest last_request_;
