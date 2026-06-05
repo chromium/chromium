@@ -303,7 +303,6 @@ def CheckUnexpectedPreprocessorDefines(input_api, output_api):
         'ADDRESS_SANITIZER',
         'MEMORY_SANITIZER',
         'THREAD_SANITIZER',
-        'WIN32',
         '_CPPUNWIND',
         '_MSC_VER',
         '_WIN32',
