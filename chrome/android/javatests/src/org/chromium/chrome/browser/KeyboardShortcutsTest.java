@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -23,6 +24,8 @@ import static org.mockito.Mockito.when;
 import android.os.SystemClock;
 import android.util.Pair;
 import android.view.KeyEvent;
+import android.view.KeyboardShortcutGroup;
+import android.view.KeyboardShortcutInfo;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -44,6 +47,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -97,6 +101,7 @@ public class KeyboardShortcutsTest {
     @Mock private Profile mProfile;
 
     @Mock private HomepageManager mHomepageManager;
+    @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
     @Before
     public void setUp() {
@@ -108,6 +113,8 @@ public class KeyboardShortcutsTest {
         PinnedTabClosureManagerFactory.setInstanceForTesting(mPinnedTabCloseManager);
 
         HomepageManager.setInstanceForTesting(mHomepageManager);
+        FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
     }
 
     @Test
@@ -615,6 +622,74 @@ public class KeyboardShortcutsTest {
 
         // Ensure we trigger the help action
         verify(mMenuOrKeyboardActionController).onMenuOrKeyboardAction(eq(R.id.help_id), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testFeedbackShortcut_Allowed() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
+        assertTrue(
+                keyDown(
+                        KeyEvent.KEYCODE_I,
+                        KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON,
+                        /* isCurrentTabVisible= */ true));
+        verify(mMenuOrKeyboardActionController, times(1))
+                .onMenuOrKeyboardAction(eq(R.id.feedback_form), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    public void testFeedbackShortcut_Disallowed() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(false);
+        assertTrue(
+                keyDown(
+                        KeyEvent.KEYCODE_I,
+                        KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON,
+                        /* isCurrentTabVisible= */ true));
+        verify(mMenuOrKeyboardActionController, never())
+                .onMenuOrKeyboardAction(eq(R.id.feedback_form), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testFeedbackShortcutInGroup_Allowed() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(true);
+        List<KeyboardShortcutGroup> groups =
+                KeyboardShortcuts.createShortcutGroup(ApplicationProvider.getApplicationContext());
+        boolean found = false;
+        for (KeyboardShortcutGroup group : groups) {
+            for (KeyboardShortcutInfo item : group.getItems()) {
+                if (item.getLabel()
+                        .equals(
+                                ApplicationProvider.getApplicationContext()
+                                        .getString(R.string.keyboard_shortcut_send_feedback))) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        assertTrue("Feedback shortcut should be in the group when allowed", found);
+    }
+
+    @Test
+    @SmallTest
+    public void testFeedbackShortcutInGroup_Disallowed() {
+        when(mFeedbackPolicyManager.isUserFeedbackAllowed()).thenReturn(false);
+        List<KeyboardShortcutGroup> groups =
+                KeyboardShortcuts.createShortcutGroup(ApplicationProvider.getApplicationContext());
+        boolean found = false;
+        for (KeyboardShortcutGroup group : groups) {
+            for (KeyboardShortcutInfo item : group.getItems()) {
+                if (item.getLabel()
+                        .equals(
+                                ApplicationProvider.getApplicationContext()
+                                        .getString(R.string.keyboard_shortcut_send_feedback))) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        assertFalse("Feedback shortcut should NOT be in the group when disallowed", found);
     }
 
     private void testOpenBookmarks(

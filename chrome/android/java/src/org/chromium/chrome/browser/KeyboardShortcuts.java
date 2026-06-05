@@ -26,6 +26,7 @@ import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.feedback.FeedbackPolicyManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -591,9 +592,7 @@ public class KeyboardShortcuts {
                 });
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.FEEDBACK_FORM,
-                new KeyCombo(KeyEvent.KEYCODE_I, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON),
-                R.string.keyboard_shortcut_send_feedback,
-                R.string.keyboard_shortcut_chrome_feature_group_header);
+                new KeyCombo(KeyEvent.KEYCODE_I, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.SHOW_DOWNLOADS,
                 new KeyCombo(KeyEvent.KEYCODE_J, KeyEvent.META_CTRL_ON),
@@ -949,6 +948,15 @@ public class KeyboardShortcuts {
                     KeyEvent.KEYCODE_B,
                     (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
         }
+        if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+            addShortcut(
+                    context,
+                    shortcutGroupsById,
+                    R.string.keyboard_shortcut_chrome_feature_group_header,
+                    R.string.keyboard_shortcut_send_feedback,
+                    KeyEvent.KEYCODE_I,
+                    KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON);
+        }
         if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND)) {
             addShortcut(
                     context,
@@ -1111,7 +1119,10 @@ public class KeyboardShortcuts {
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.show_menu, false);
                 return true;
             case KeyboardShortcutsSemanticMeaning.FEEDBACK_FORM:
-                menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.feedback_form, false);
+                if (FeedbackPolicyManager.getInstance().isUserFeedbackAllowed()) {
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.feedback_form, false);
+                }
                 return true;
             case KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR:
                 return menuOrKeyboardActionController.onMenuOrKeyboardAction(
