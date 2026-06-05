@@ -526,6 +526,10 @@ Called by update_bad_message_reasons.py.-->
   <int value="353"
       label="BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_BLOCKED_BY_PERMISSIONS_POLICY"/>
   <int value="354" label="RFH_DID_COMMIT_NAVIGATION_WHILE_BFCACHED"/>
+  <int value="355"
+      label="BIBI_BIND_WEBNN_CONTEXT_PROVIDER_BLOCKED_BY_PERMISSIONS_POLICY"/>
+  <int value="356"
+      label="BIBI_BIND_WEBNN_WEIGHTS_FILE_CREATOR_BLOCKED_BY_PERMISSIONS_POLICY"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

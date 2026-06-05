@@ -41,9 +41,6 @@ crbug.com/396104415 [ Linux ] virtual/gpu-rasterization/images/yuv-decode-eligib
 
 # Gardener 2025-04-28.
 crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?cpu [ Crash ]
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?cpu [ Crash ]
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?cpu [ Crash ]
-crbug.com/414243950 [ Linux ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?cpu [ Crash ]
 
 # Gardener 2026-04-17
 crbug.com/503765990 [ Linux ] external/wpt/css/filter-effects/crashtests/fecomponenttransfer-tablevalues-crash.html [ Crash ]

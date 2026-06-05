@@ -6799,6 +6799,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="144" label="LocalNetwork"/>
   <int value="145" label="LoopbackNetwork"/>
   <int value="146" label="Tools"/>
+  <int value="147" label="WebNN"/>
 </enum>
 
 <!-- LINT.IfChange(FedCmAccountChooserResult) -->

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[FAIL] document.permissionsPolicy.features should advertise webnn.
+  Cannot read properties of undefined (reading 'features')
+Harness: the test ran to completion.

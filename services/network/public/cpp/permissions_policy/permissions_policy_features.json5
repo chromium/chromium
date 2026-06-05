@@ -639,6 +639,11 @@
       feature_default: "EnableForSelf",
     },
     {
+      name: "WebNN",
+      permissions_policy_name: "webnn",
+      depends_on: ["MachineLearningNeuralNetwork"],
+    },
+    {
       name: "WebPrinting",
       permissions_policy_name: "web-printing",
       depends_on: ["WebPrinting"],

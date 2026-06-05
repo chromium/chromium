@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/webnn/public/cpp/in_process_context_provider.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
@@ -75,6 +76,15 @@ ScriptPromise<MLContext> ML::createContext(ScriptState* script_state,
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid script state");
+    return EmptyPromise();
+  }
+
+  // Check if it is allowed by Permissions Policy to call WebNN API.
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::blink::PermissionsPolicyFeature::kWebNN,
+          ReportOptions::kReportOnFailure)) {
+    exception_state.ThrowSecurityError(
+        "Access to the WebNN API is blocked by Permissions Policy.");
     return EmptyPromise();
   }
 

@@ -358,6 +358,10 @@ enum PermissionsPolicyFeature {
   // the built-in agent and other origins.
   kTools = 146,
 
+  // Controls access to the Web Neural Network (WebNN) API.
+  // See https://www.w3.org/TR/webnn/#permissions-policy-integration
+  kWebNN = 147,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Run tools/metrics/histograms/update_permissions_policy_enum.py to update

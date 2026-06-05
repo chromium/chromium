@@ -8787,11 +8787,6 @@ crbug.com/412321937 [ Mac ] media/controls/closed-captions-switch-track.html [ C
 
 # Gardener 2025-04-23
 crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu [ Failure Pass ]
-crbug.com/412431600 [ Win10.20h2 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.sharedworker.html?cpu [ Failure Pass ]
-
-# Gardener 2025-05-16
-crbug.com/418169805 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.serviceworker.html?cpu [ Failure Pass ]
-crbug.com/418173365 [ Win ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Failure Pass ]
 
 # Gardener 2025-05-14
 crbug.com/417479566 [ Mac ] external/wpt/css/css-transitions/transitioncancel-003.html [ Failure Pass ]
@@ -8829,9 +8824,6 @@ crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-se
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash.sub.html [ Pass ]
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-blocked-report-contains-hash.html [ Pass ]
 crbug.com/392657736 virtual/script-src-hashes-v1-enabled/external/wpt/content-security-policy/unsafe-eval/tentative/eval-allowed-by-hash-long-script.sub.html [ Pass ]
-
-# Gardener 2025-06-16
-crbug.com/420596996 [ Win ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/parallel-dispatch.https.any.serviceworker.html?gpu [ Failure Pass ]
 
 # Gardener 2025-06-19
 crbug.com/426081198 [ Mac ] external/wpt/html/document-isolation-policy/service-worker-coep-credentialless-proxy.https.tentative.window.html [ Pass Timeout ]
@@ -8923,14 +8915,8 @@ crbug.com/443533494 [ Linux ] http/tests/worklet/paint-worklet-csp-eval.html [ F
 # Gardener 2025-09-17
 crbug.com/444447168 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Crash Failure Pass ]
 crbug.com/444445518 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?gpu [ Crash Failure Pass ]
-crbug.com/444450168 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?gpu [ Crash Failure Pass ]
-crbug.com/444433224 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?gpu [ Crash Failure Pass ]
-crbug.com/444405358 [ Win11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?gpu [ Crash Failure Pass ]
 crbug.com/444447168 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Crash Failure Pass ]
 crbug.com/444445518 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.html?gpu [ Crash Failure Pass ]
-crbug.com/444450168 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.serviceworker.html?gpu [ Crash Failure Pass ]
-crbug.com/444433224 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.sharedworker.html?gpu [ Crash Failure Pass ]
-crbug.com/444405358 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/qdq_subgraph.https.any.worker.html?gpu [ Crash Failure Pass ]
 
 crbug.com/444150315 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
 

@@ -304,6 +304,15 @@ void BindTextDetection(
 void BindWebNNContextProviderForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
+  if (!host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kWebNN)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_WEBNN_CONTEXT_PROVIDER_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
   auto* process_host = static_cast<RenderProcessHostImpl*>(host->GetProcess());
   const bool is_incognito = host->GetBrowserContext()->IsOffTheRecord();
 #if BUILDFLAG(IS_MAC)
@@ -318,9 +327,34 @@ void BindWebNNContextProviderForRenderFrame(
 }
 
 template <typename WorkerHost>
+bool IsWebNNPermissionsPolicyBlocked(WorkerHost* host) {
+  if constexpr (std::is_same_v<WorkerHost, DedicatedWorkerHost>) {
+    auto* ancestor_render_frame_host =
+        RenderFrameHostImpl::FromID(host->GetAncestorRenderFrameHostId());
+    return !ancestor_render_frame_host ||
+           !ancestor_render_frame_host->IsFeatureEnabled(
+               network::mojom::PermissionsPolicyFeature::kWebNN);
+  } else {
+    // Shared workers and service workers don't have a single parent document
+    // to inherit permissions policy from. Disable WebNN until the
+    // permissions policy specification defines behavior for these contexts.
+    // See https://github.com/w3c/webappsec-permissions-policy/issues/207.
+    return true;
+  }
+}
+
+template <typename WorkerHost>
 void BindWebNNContextProviderForWorker(
     WorkerHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNContextProvider> receiver) {
+  if (IsWebNNPermissionsPolicyBlocked(host)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcessHost(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_WEBNN_CONTEXT_PROVIDER_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
   auto* process_host =
       static_cast<RenderProcessHostImpl*>(host->GetProcessHost());
   const bool is_incognito = process_host->GetBrowserContext()->IsOffTheRecord();
@@ -338,6 +372,15 @@ void BindWebNNContextProviderForWorker(
 void BindWebNNWeightsFileCreatorForRenderFrame(
     RenderFrameHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNWeightsFileCreator> receiver) {
+  if (!host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kWebNN)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_WEBNN_WEIGHTS_FILE_CREATOR_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
   const bool is_incognito = host->GetBrowserContext()->IsOffTheRecord();
   webnn::WeightsFileCreatorImpl::Create(std::move(receiver), is_incognito);
 }
@@ -346,6 +389,14 @@ template <typename WorkerHost>
 void BindWebNNWeightsFileCreatorForWorker(
     WorkerHost* host,
     mojo::PendingReceiver<webnn::mojom::WebNNWeightsFileCreator> receiver) {
+  if (IsWebNNPermissionsPolicyBlocked(host)) {
+    bad_message::ReceivedBadMessage(
+        host->GetProcessHost(),
+        bad_message::BadMessageReason::
+            BIBI_BIND_WEBNN_WEIGHTS_FILE_CREATOR_BLOCKED_BY_PERMISSIONS_POLICY);
+    return;
+  }
+
   const bool is_incognito =
       host->GetProcessHost()->GetBrowserContext()->IsOffTheRecord();
   webnn::WeightsFileCreatorImpl::Create(std::move(receiver), is_incognito);

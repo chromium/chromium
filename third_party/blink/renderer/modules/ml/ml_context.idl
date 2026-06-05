@@ -284,7 +284,7 @@ typedef record<USVString, MLTensor> MLNamedTensors;
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
   SecureContext,
-  Exposed=(Window, Worker)
+  Exposed=(Window, DedicatedWorker)
 ] interface MLContext {
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
