@@ -34,11 +34,13 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"
@@ -51,6 +53,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1996,6 +1999,155 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
   }
 
   RunTestSequence(std::move(sequence));
+}
+
+// CUJ covered by this test:
+// 1) Opens Contextual Tasks in a tab.
+// 2) Call window.open from the Contextual Tasks <webview>.
+// 3) In the opened window, call window.opener.postMessage.
+// 4) Verify the postMessage is received in the <webview>.
+IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTestParameterized,
+                       PopupPostMessageToOpenerRoutedToWebview) {
+  const GURL kActiveTabUrl =
+      https_server_.GetURL("myaccount.google.com", "/title1.html");
+  const GURL clicked_url =
+      https_server_.GetURL("myaccount.google.com", "/title1.html#citation");
+  const GURL kInterceptionUrl =
+      https_server_.GetURL(kMockAimPageHost, "/search?udm=50");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOpenedPopup);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab2);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId2);
+
+  // Step 1: Open Contextual Tasks in a Tab
+  auto sequence =
+      Steps(InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+            OpenContextualTasksInCurrentTab(kInterceptionUrl),
+            InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0));
+
+  sequence = Steps(
+      std::move(sequence),
+      // 1. Inject listener in the <webview> to collect
+      // received messages.
+      WithElement(kInnerWebContentsId,
+                  base::BindOnce([](ui::TrackedElement* el) {
+                    std::string setup_listener = R"(
+            window.receivedMessages = [];
+            window.messagePromiseResolver = null;
+            window.addEventListener('message', (event) => {
+              window.receivedMessages.push(event.data);
+              if (window.messagePromiseResolver &&
+                  event.data === 'hello_from_opened_page') {
+                window.messagePromiseResolver(true);
+              }
+            });
+          )";
+                    auto* wc = AsInstrumentedWebContents(el)->web_contents();
+                    EXPECT_TRUE(content::ExecJs(wc, setup_listener));
+                  })),
+
+      // 2. Within the guest view, call window.open with popup=yes
+      WithElement(kInnerWebContentsId,
+                  base::BindOnce(
+                      [](GURL url, ui::TrackedElement* el) {
+                        auto* wc =
+                            AsInstrumentedWebContents(el)->web_contents();
+                        std::string open_script = content::JsReplace(
+                            R"(
+                (() => {
+                  window.open($1, '_blank', 'popup=yes,width=400,height=400');
+                })();
+              )",
+                            url.spec());
+                        EXPECT_TRUE(content::ExecJs(wc, open_script));
+                      },
+                      clicked_url)),
+
+      // 3. Verify the URL opens in a new window (popup) and instrument it!
+      // We use AnyBrowser() to catch it if it opens in a new window.
+      InstrumentNextTab(kOpenedPopup, AnyBrowser()),
+
+      // 4. Wait for the opened popup to finish loading
+      WaitForWebContentsNavigation(kOpenedPopup, clicked_url),
+
+      // Check that the popup window is focused when it is opened.
+      CheckElement(
+          kOpenedPopup, base::BindOnce([](ui::TrackedElement* el) {
+            auto* wc = AsInstrumentedWebContents(el)->web_contents();
+            tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(wc);
+            Browser* popup_browser =
+                tab->GetBrowserWindowInterface()->GetBrowserForMigrationOnly();
+            EXPECT_TRUE(popup_browser);
+            EXPECT_TRUE(ui_test_utils::IsBrowserActive(popup_browser));
+            return true;
+          })),
+
+      // 5. Verify window.opener is non-null and call postMessage from the
+      // opened popup
+      WithElement(kOpenedPopup, base::BindOnce([](ui::TrackedElement* el) {
+                    auto* wc = AsInstrumentedWebContents(el)->web_contents();
+                    std::string post_message_script = R"(
+            (async () => {
+              if (!window.opener) {
+                return "no opener";
+              }
+              try {
+                window.opener.postMessage("hello_from_opened_page", "*");
+                return "ok";
+              } catch (e) {
+                return "error: " + e.message;
+              }
+            })();
+          )";
+                    EXPECT_EQ("ok", content::EvalJs(wc, post_message_script));
+                  })));
+
+  const std::string check_message_script = R"(
+          new Promise((resolve) => {
+            if (window.receivedMessages &&
+                window.receivedMessages.includes("hello_from_opened_page")) {
+              resolve(true);
+            } else {
+              window.messagePromiseResolver = resolve;
+            }
+          });
+        )";
+
+  // If AimTriggeredThreadLinks is enabled, the window.open call opens in a new
+  // tab, so the original contextual tasks tab still exists.
+  if (GetParam()) {
+    sequence = Steps(
+        std::move(sequence), WaitForShow(kInnerWebContentsId),
+        WithElement(kInnerWebContentsId,
+                    base::BindOnce(
+                        [](std::string script, ui::TrackedElement* el) {
+                          auto* wc =
+                              AsInstrumentedWebContents(el)->web_contents();
+                          EXPECT_EQ(true, content::EvalJs(wc, script));
+                        },
+                        check_message_script)));
+  } else {
+    // If AimTriggeredThreadLinks is disabled, the window.open call moves
+    // Contextual Tasks into the side panel. Therefore, instrument the side
+    // panel <webview> and ensure the postMessage was received.
+    sequence = Steps(
+        std::move(sequence),
+        WaitForShow(kContextualTasksSidePanelWebViewElementId),
+        InstrumentNonTabWebView(kPrimaryTab2,
+                                kContextualTasksSidePanelWebViewElementId),
+        InstrumentInnerWebContents(kInnerWebContentsId2, kPrimaryTab2, 0),
+        WaitForShow(kInnerWebContentsId2),
+        WithElement(kInnerWebContentsId2,
+                    base::BindOnce(
+                        [](std::string script, ui::TrackedElement* el) {
+                          auto* wc =
+                              AsInstrumentedWebContents(el)->web_contents();
+                          EXPECT_EQ(true, content::EvalJs(wc, script));
+                        },
+                        check_message_script)));
+  }
+
+  RunTestSequence(InAnyContext(std::move(sequence)));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

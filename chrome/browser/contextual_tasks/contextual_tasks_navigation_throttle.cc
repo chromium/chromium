@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/origin.h"
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
@@ -124,7 +125,8 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
                   web_contents->GetResponsibleWebContents() ||
               navigation_handle()->IsGuestViewMainFrame(),
           /*from_can_create_window=*/false, is_same_site_or_from_ui,
-          is_mobile_ua, initiator_origin, initiator_frame_token)) {
+          is_mobile_ua, initiator_origin, initiator_frame_token,
+          blink::mojom::WindowFeatures())) {
     return CANCEL;
   }
   return PROCEED;

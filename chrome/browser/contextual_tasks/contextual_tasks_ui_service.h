@@ -26,6 +26,7 @@
 #include "content/public/browser/frame_tree_node_id.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -171,7 +172,8 @@ class ContextualTasksUiService : public KeyedService {
       bool is_mobile_ua,
       const std::optional<url::Origin>& initiator_origin,
       const std::optional<content::GlobalRenderFrameHostToken>&
-          initiator_frame_token);
+          initiator_frame_token,
+      const blink::mojom::WindowFeatures& window_features);
 
   // Returns the contextual_task UI for a task.
   virtual GURL GetContextualTaskUrlForTask(const base::Uuid& task_id);
@@ -403,7 +405,8 @@ class ContextualTasksUiService : public KeyedService {
       bool is_mobile_ua,
       const std::optional<url::Origin>& initiator_origin,
       const std::optional<content::GlobalRenderFrameHostToken>&
-          initiator_frame_token);
+          initiator_frame_token,
+      const blink::mojom::WindowFeatures& window_features);
 
   // Used primarily for debugging - loads a URL in the specified WebContents.
   virtual void LoadUrlInWebContents(
@@ -489,7 +492,8 @@ class ContextualTasksUiService : public KeyedService {
           session_handle);
 
   // Navigates to a share URL.
-  virtual void OpenUrl(const content::OpenURLParams& url_params);
+  virtual void OpenUrl(const content::OpenURLParams& url_params,
+                       const blink::mojom::WindowFeatures& window_features);
 
   // Sets the initial thread URL for a given task and runs any pending
   // callbacks.

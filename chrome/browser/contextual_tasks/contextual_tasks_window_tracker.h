@@ -15,6 +15,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -81,6 +82,12 @@ class ContextualTasksWindowTracker {
 
   void SetWindowId(ContextualWindowId window_id) { window_id_ = window_id; }
   void SetOpenURLParams(const content::OpenURLParams& params);
+  void SetWindowFeatures(const blink::mojom::WindowFeatures& features) {
+    window_features_ = features;
+  }
+  const blink::mojom::WindowFeatures& window_features() const {
+    return window_features_;
+  }
   void SetMessageProxyWebContents(
       std::unique_ptr<content::WebContents> contents);
 
@@ -104,6 +111,8 @@ class ContextualTasksWindowTracker {
   base::WeakPtr<content::WebContents> webui_contents_;
   // The params stored from CanCreateWindow call.
   std::unique_ptr<content::OpenURLParams> open_url_params_;
+  // The window features stored from CanCreateWindow call.
+  blink::mojom::WindowFeatures window_features_;
   // The dummy WebContents used as opener for message routing. For more
   // context in how WebContents routing works, see http://shortn/_eyIJvb0jIx.
   std::unique_ptr<content::WebContents> message_proxy_web_contents_;

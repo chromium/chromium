@@ -54,6 +54,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -191,7 +192,8 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               (override));
   MOCK_METHOD(void,
               OpenUrl,
-              (const content::OpenURLParams& url_params),
+              (const content::OpenURLParams& url_params,
+               const blink::mojom::WindowFeatures& window_features),
               (override));
 
   using ContextualTasksUiService::HandleNavigationImpl;
@@ -205,11 +207,12 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
       bool is_mobile_ua,
       const std::optional<url::Origin>& initiator_origin,
       const std::optional<content::GlobalRenderFrameHostToken>&
-          initiator_frame_token) override {
+          initiator_frame_token,
+      const blink::mojom::WindowFeatures& window_features) override {
     return ContextualTasksUiService::HandleNavigationImpl(
         std::move(url_params), source_contents, tab, is_from_embedded_page,
         from_can_create_window, is_same_site_or_from_ui, is_mobile_ua,
-        initiator_origin, initiator_frame_token);
+        initiator_origin, initiator_frame_token, window_features);
   }
 };
 
@@ -433,7 +436,8 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/true,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -484,7 +488,8 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_ChecksCobrowse) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -508,7 +513,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/false, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/false, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -533,7 +539,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -553,7 +560,8 @@ TEST_F(ContextualTasksUiServiceTest,
       /*is_from_embedded_page=*/false,
       /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true,
-      /*is_mobile_ua=*/true, std::nullopt, std::nullopt));
+      /*is_mobile_ua=*/true, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 }
 
 TEST_F(ContextualTasksUiServiceTest,
@@ -577,7 +585,8 @@ TEST_F(ContextualTasksUiServiceTest,
       /*is_from_embedded_page=*/false,
       /*from_can_create_window=*/false,
       /*is_same_site_or_from_ui=*/true,
-      /*is_mobile_ua=*/true, std::nullopt, std::nullopt));
+      /*is_mobile_ua=*/true, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -595,7 +604,8 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_DebugParam) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -617,7 +627,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -646,7 +657,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(virtual_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -663,7 +675,8 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_NcbParam) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -691,7 +704,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(virtual_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -723,7 +737,8 @@ TEST_F(ContextualTasksUiServiceTest, LinkFromWebUiIntercepted) {
   EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -745,7 +760,8 @@ TEST_F(ContextualTasksUiServiceTest, BrowserUiNavigationFromWebUiIgnored) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -767,7 +783,8 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), true), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -800,7 +817,8 @@ TEST_F(ContextualTasksUiServiceTest,
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/true,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -864,7 +882,8 @@ TEST_F(ContextualTasksUiServiceTest,
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/true,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -912,7 +931,8 @@ TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kTestUrl), false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -936,7 +956,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_NotEligible) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -961,7 +982,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromTab) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -979,7 +1001,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_FromOmnibox) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -997,7 +1020,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageIntercepted_AlreadyViewingUiInTab) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1015,7 +1039,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(GURL(kAiPageUrl), false), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1043,7 +1068,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_AccountMismatch) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1070,7 +1096,8 @@ TEST_F(ContextualTasksUiServiceTest, AiPageNotIntercepted_BrowserSignedOut) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(ai_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1105,7 +1132,7 @@ TEST_F(ContextualTasksUiServiceTest, SearchResultsNavigation_ViewedInTab) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1137,7 +1164,7 @@ TEST_F(ContextualTasksUiServiceTest,
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1170,7 +1197,7 @@ TEST_F(ContextualTasksUiServiceTest, AllowedHostNavigation_ViewedInTab) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1205,7 +1232,8 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ToNewTab_Allowed) {
       std::move(params), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/true,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1241,7 +1269,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInTab) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1271,7 +1299,8 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
 
   EXPECT_CALL(
       *service_for_nav_,
-      OpenUrl(testing::Field(&content::OpenURLParams::url, navigated_url)))
+      OpenUrl(testing::Field(&content::OpenURLParams::url, navigated_url),
+              testing::_))
       .Times(1);
   EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
       .Times(0);
@@ -1279,7 +1308,7 @@ TEST_F(ContextualTasksUiServiceTest, Navigation_ViewedInSidePanel) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1311,7 +1340,7 @@ TEST_F(ContextualTasksUiServiceTest,
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1345,7 +1374,7 @@ TEST_F(ContextualTasksUiServiceTest,
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1544,7 +1573,8 @@ TEST_F(ContextualTasksUiServiceTest, SrpHomepage_Intercepted) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1566,7 +1596,8 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InTab_NotIntercepted) {
       CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1593,7 +1624,8 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepage_InSidePanel_Intercepted) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1621,7 +1653,8 @@ TEST_F(ContextualTasksUiServiceTest, SrpShoppingMode_InSidePanel_Intercepted) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1642,7 +1675,8 @@ TEST_F(ContextualTasksUiServiceTest, AimHomepageThinking_InTab_NotIntercepted) {
       CreateOpenUrlParams(nav_url, false), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1670,7 +1704,8 @@ TEST_F(ContextualTasksUiServiceTest,
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1694,7 +1729,7 @@ TEST_F(ContextualTasksUiServiceTest, LensQuery_Intercepted) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), nullptr,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1779,14 +1814,16 @@ TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
   base::RunLoop run_loop;
   EXPECT_CALL(*service_for_nav_,
               OpenUrl(testing::Field(
-                  &content::OpenURLParams::url,
-                  GURL("https://google.com/"
-                       "search?q=https%3A%2F%2Fshare.google%2Faimode"))))
+                          &content::OpenURLParams::url,
+                          GURL("https://google.com/"
+                               "search?q=https%3A%2F%2Fshare.google%2Faimode")),
+                      testing::_))
       .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1869,7 +1906,7 @@ TEST_F(ContextualTasksUiServiceTest, SignOutNavigation_OpenedInTab) {
       CreateOpenUrlParams(navigated_url, true), web_contents.get(), &tab,
       /*is_from_embedded_page=*/true,
       /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true, false,
-      std::nullopt, std::nullopt));
+      std::nullopt, std::nullopt, blink::mojom::WindowFeatures()));
   run_loop.Run();
 }
 
@@ -1935,7 +1972,8 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   EXPECT_TRUE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(display_url, false), web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -1971,7 +2009,8 @@ TEST_F(ContextualTasksUiServiceTest,
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   run_loop.Run();
 }
@@ -2000,7 +2039,8 @@ TEST_F(ContextualTasksUiServiceTest,
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 }
 
 // Do not enter cobrowse if it's back navigation, even if originally from link
@@ -2024,7 +2064,8 @@ TEST_F(ContextualTasksUiServiceTest,
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -2098,7 +2139,8 @@ TEST_F(ContextualTasksUiServiceTest,
       tab->GetContents(), tab,
       /*is_from_embedded_page=*/false,
       /*from_can_create_window=*/false,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -2271,7 +2313,8 @@ TEST_F(ContextualTasksUiServiceTest, RegisterWindow_UpdatesTracker) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -2304,7 +2347,8 @@ TEST_F(ContextualTasksUiServiceTest, CloseTrackedWindow_ClosesTab) {
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
       CreateOpenUrlParams(navigated_url, true), web_contents.get(),
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
-      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt));
+      /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
