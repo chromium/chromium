@@ -6,6 +6,7 @@
 #define MEDIA_MIDI_TASK_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -29,6 +30,7 @@ class MIDI_EXPORT TaskService final {
   using InstanceId = int64_t;
 
   static constexpr RunnerId kDefaultRunnerId = 0;
+  static constexpr InstanceId kInvalidInstanceId = -1;
 
   TaskService();
 
@@ -41,11 +43,11 @@ class MIDI_EXPORT TaskService final {
   // PostDelayedBoundTask() with the InstanceId. Once UnbindInstance() is
   // called, tasks posted via these methods with unbind InstanceId won't be
   // invoked any more.
-  // Returns true if call is bound or unbound correctly. Otherwise returns
-  // false, that happens when the BindInstance() is called twice without
-  // unbinding the previous instance, or the UnbindInstance() is called without
-  // any successful BindInstance() call.
-  [[nodiscard]] bool BindInstance();
+  // BindInstance() returns the bound InstanceId, or nullopt if
+  // it fails (e.g., if another instance is already bound).
+  // UnbindInstance() returns true if unbound correctly, or false if there
+  // was no active binding.
+  [[nodiscard]] std::optional<InstanceId> BindInstance();
   [[nodiscard]] bool UnbindInstance();
 
   // Checks if the current thread belongs to the specified runner.
@@ -61,7 +63,20 @@ class MIDI_EXPORT TaskService final {
   // |runner_id| should be |kDefaultRunnerId| or a positive number. If
   // |kDefaultRunnerId| is specified, the task runs on the thread on which
   // BindInstance() was called.
-  void PostBoundTask(RunnerId runner, base::OnceClosure task);
+  //
+  // The overloads taking |instance_id| will only run the task if the instance
+  // is still bound (i.e., UnbindInstance() has not been called for this
+  // instance) when the task is about to run.
+  // The overloads without |instance_id| will bind the task to the current
+  // bound instance at the time of posting.
+  void PostBoundTask(InstanceId instance_id,
+                     RunnerId runner_id,
+                     base::OnceClosure task);
+  void PostBoundTask(RunnerId runner_id, base::OnceClosure task);
+  void PostBoundDelayedTask(InstanceId instance_id,
+                            RunnerId runner_id,
+                            base::OnceClosure task,
+                            base::TimeDelta delay);
   void PostBoundDelayedTask(RunnerId runner_id,
                             base::OnceClosure task,
                             base::TimeDelta delay);
@@ -69,8 +84,6 @@ class MIDI_EXPORT TaskService final {
   void OverflowInstanceIdForTesting();
 
  private:
-  static constexpr TaskService::InstanceId kInvalidInstanceId = -1;
-
   // Returns a SingleThreadTaskRunner reference. Each TaskRunner will be
   // constructed on demand.
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(RunnerId runner_id);
