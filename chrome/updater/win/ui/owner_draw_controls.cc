@@ -118,8 +118,8 @@ HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
   // custom icon is rendered.
   HWND control_hwnd = ::CreateWindowExW(
       0, L"BUTTON", tool_tip_text_.c_str(),
-      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_OWNERDRAW, bounds.left,
-      bounds.top, Width(bounds), Height(bounds), parent,
+      WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, bounds.left, bounds.top,
+      Width(bounds), Height(bounds), parent,
       reinterpret_cast<HMENU>(static_cast<INT_PTR>(control_id)),
       CURRENT_MODULE(), nullptr);
   CHECK(control_hwnd && ::IsWindow(control_hwnd));
@@ -235,7 +235,7 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
                     is_mouse_hovering_ ? COLOR_HIGHLIGHTTEXT : COLOR_BTNTEXT));
 
   const UINT button_state = draw_item_struct->itemState;
-  if (!(button_state & ODS_FOCUS) || !(button_state & ODS_SELECTED)) {
+  if (!(button_state & ODS_FOCUS)) {
     return;
   }
 
@@ -1018,6 +1018,18 @@ LRESULT FlatButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
   return 0;
 }
 
+LRESULT FlatButton::OnThemeChanged(UINT, WPARAM, LPARAM) {
+  ::InvalidateRect(hwnd(), nullptr, FALSE);
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
+LRESULT FlatButton::OnSysColorChange(UINT, WPARAM, LPARAM) {
+  ::InvalidateRect(hwnd(), nullptr, FALSE);
+  SetMsgHandled(FALSE);
+  return 0;
+}
+
 LRESULT FlatButton::OnEraseBkgnd(UINT, WPARAM, LPARAM) {
   return 1;
 }
@@ -1058,10 +1070,16 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
   COLORREF border = CLR_INVALID;
 
   if (IsHighContrastOn()) {
-    bg = (is_pressed || is_default) ? ::GetSysColor(COLOR_HIGHLIGHT)
-                                    : ::GetSysColor(COLOR_BTNFACE);
-    text = (is_pressed || is_default) ? ::GetSysColor(COLOR_HIGHLIGHTTEXT)
-                                      : ::GetSysColor(COLOR_BTNTEXT);
+    const bool is_focused =
+        (::GetFocus() == hwnd()) ||
+        ((::SendMessageW(hwnd(), BM_GETSTATE, 0, 0) & BST_FOCUS) != 0);
+    const bool use_highlight = is_pressed || is_default || is_mouse_hovering_ ||
+                               is_focused || is_primary_;
+
+    bg = use_highlight ? ::GetSysColor(COLOR_HIGHLIGHT)
+                       : ::GetSysColor(COLOR_BTNFACE);
+    text = use_highlight ? ::GetSysColor(COLOR_HIGHLIGHTTEXT)
+                         : ::GetSysColor(COLOR_BTNTEXT);
     border = ::GetSysColor(COLOR_WINDOWFRAME);
   } else if (IsDarkModeOn()) {
     if (is_disabled) {
@@ -1102,30 +1120,99 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
   }
 
   const int dpi = ::GetDpiForWindow(hwnd());
-  const int radius_x = ::MulDiv(4, dpi, USER_DEFAULT_SCREEN_DPI);
-  const int radius_y = ::MulDiv(4, dpi, USER_DEFAULT_SCREEN_DPI);
 
-  base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(bg));
-  HGDIOBJ old_brush = ::SelectObject(dc, bg_brush.get());
+  // Render background and border at 4x scale for high-quality anti-aliasing.
+  constexpr int kScale = 4;
+  const RECT high_res_rect = {0, 0, Width(rect) * kScale,
+                              Height(rect) * kScale};
 
-  HGDIOBJ old_pen = nullptr;
-  base::win::ScopedGDIObject<HPEN> border_pen;
-  if (border != CLR_INVALID) {
-    const int thickness =
-        std::max(1, ::MulDiv(1, dpi, USER_DEFAULT_SCREEN_DPI));
-    border_pen.reset(::CreatePen(PS_SOLID, thickness, border));
-    old_pen = ::SelectObject(dc, border_pen.get());
+  HDC dc_hi_res = ::CreateCompatibleDC(dc);
+  base::win::ScopedGDIObject<HBITMAP> bmp_hi_res(::CreateCompatibleBitmap(
+      dc, Width(high_res_rect), Height(high_res_rect)));
+
+  if (dc_hi_res && bmp_hi_res.is_valid()) {
+    HGDIOBJ old_bmp_hi_res = ::SelectObject(dc_hi_res, bmp_hi_res.get());
+
+    // Copy parent background to high-res DC to blend corners beautifully.
+    ::StretchBlt(dc_hi_res, 0, 0, Width(high_res_rect), Height(high_res_rect),
+                 dc, 0, 0, Width(rect), Height(rect), SRCCOPY);
+
+    base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(bg));
+    HGDIOBJ old_brush = ::SelectObject(dc_hi_res, bg_brush.get());
+
+    HGDIOBJ old_pen = nullptr;
+    base::win::ScopedGDIObject<HPEN> border_pen;
+    if (border != CLR_INVALID) {
+      const int thickness =
+          std::max(1, ::MulDiv(1, dpi, USER_DEFAULT_SCREEN_DPI)) * kScale;
+      // Use PS_INSIDEFRAME so thick borders draw completely inside the rect
+      // and do not get clipped at the top/left bitmap boundaries.
+      border_pen.reset(::CreatePen(PS_INSIDEFRAME, thickness, border));
+      old_pen = ::SelectObject(dc_hi_res, border_pen.get());
+    } else {
+      old_pen = ::SelectObject(dc_hi_res, ::GetStockObject(NULL_PEN));
+    }
+
+    const int corner_size = Height(high_res_rect);
+    ::RoundRect(dc_hi_res, high_res_rect.left, high_res_rect.top,
+                high_res_rect.right, high_res_rect.bottom, corner_size,
+                corner_size);
+
+    ::SelectObject(dc_hi_res, old_brush);
+    if (old_pen) {
+      ::SelectObject(dc_hi_res, old_pen);
+    }
+
+    // Downscale back to 1x DC using HALFTONE for smooth anti-aliased edges.
+    ::SetStretchBltMode(dc, HALFTONE);
+    ::SetBrushOrgEx(dc, 0, 0, nullptr);
+    ::StretchBlt(dc, 0, 0, Width(rect), Height(rect), dc_hi_res, 0, 0,
+                 Width(high_res_rect), Height(high_res_rect), SRCCOPY);
+
+    ::SelectObject(dc_hi_res, old_bmp_hi_res);
+    ::DeleteDC(dc_hi_res);
   } else {
-    old_pen = ::SelectObject(dc, ::GetStockObject(NULL_PEN));
-  }
+    // Fallback: draw directly at 1x if high-res DC allocation failed.
+    if (dc_hi_res) {
+      ::DeleteDC(dc_hi_res);
+    }
+    base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(bg));
+    HGDIOBJ old_brush = ::SelectObject(dc, bg_brush.get());
 
-  ::RoundRect(dc, rect.left, rect.top, rect.right, rect.bottom, 2 * radius_x,
-              2 * radius_y);
+    HGDIOBJ old_pen = nullptr;
+    base::win::ScopedGDIObject<HPEN> border_pen;
+    if (border != CLR_INVALID) {
+      const int thickness =
+          std::max(1, ::MulDiv(1, dpi, USER_DEFAULT_SCREEN_DPI));
+      border_pen.reset(::CreatePen(PS_INSIDEFRAME, thickness, border));
+      old_pen = ::SelectObject(dc, border_pen.get());
+    } else {
+      old_pen = ::SelectObject(dc, ::GetStockObject(NULL_PEN));
+    }
+
+    const int corner_size = Height(rect);
+    ::RoundRect(dc, rect.left, rect.top, rect.right, rect.bottom, corner_size,
+                corner_size);
+
+    ::SelectObject(dc, old_brush);
+    if (old_pen) {
+      ::SelectObject(dc, old_pen);
+    }
+  }
 
   if (::GetFocus() == hwnd() && !is_disabled) {
     RECT focus_rect = rect;
     ::InflateRect(&focus_rect, -2, -2);
-    ::DrawFocusRect(dc, &focus_rect);
+    const int focus_corner_size = Height(focus_rect);
+    base::win::ScopedGDIObject<HPEN> focus_pen(::CreatePen(PS_DOT, 1, text));
+    HGDIOBJ old_focus_pen = ::SelectObject(dc, focus_pen.get());
+    HGDIOBJ old_focus_brush = ::SelectObject(dc, ::GetStockObject(NULL_BRUSH));
+    const int old_bk_mode = ::SetBkMode(dc, TRANSPARENT);
+    ::RoundRect(dc, focus_rect.left, focus_rect.top, focus_rect.right,
+                focus_rect.bottom, focus_corner_size, focus_corner_size);
+    ::SetBkMode(dc, old_bk_mode);
+    ::SelectObject(dc, old_focus_brush);
+    ::SelectObject(dc, old_focus_pen);
   }
 
   wchar_t button_text[256] = {};
@@ -1155,10 +1242,6 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
   ::BitBlt(dc_paint, rect.left, rect.top, Width(rect), Height(rect), dc, 0, 0,
            SRCCOPY);
 
-  ::SelectObject(dc, old_brush);
-  if (old_pen) {
-    ::SelectObject(dc, old_pen);
-  }
   ::SelectObject(dc, old_bmp);
   ::DeleteDC(dc);
 

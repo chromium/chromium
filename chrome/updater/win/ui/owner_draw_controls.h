@@ -288,6 +288,8 @@ class FlatButton : public SubclassedWindow {
     CR_MESSAGE_HANDLER_EX(WM_MOUSELEAVE, OnMouseLeave)
     CR_MESSAGE_HANDLER_EX(WM_PAINT, OnPaint)
     CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
+    CR_MESSAGE_HANDLER_EX(WM_THEMECHANGED, OnThemeChanged)
+    CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnSysColorChange)
   CR_END_MSG_MAP()
 
   void SetIsPrimary(bool is_primary);
@@ -299,6 +301,8 @@ class FlatButton : public SubclassedWindow {
   LRESULT OnMouseLeave(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnPaint(UINT msg, WPARAM wparam, LPARAM lparam);
   LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnThemeChanged(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSysColorChange(UINT msg, WPARAM wparam, LPARAM lparam);
 
   bool is_tracking_mouse_events_ = false;
   bool is_mouse_hovering_ = false;
