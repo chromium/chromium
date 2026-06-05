@@ -451,8 +451,9 @@ TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_Default) {
     prefetch_document_manager->ProcessCandidates(candidates);
 
     auto& prefetch = GetPrefetches().back();
-    prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-    prefetch_document_manager->OnPrefetchCompletedOrFailed(*prefetch);
+    MakeServableStreamingURLLoaderForTest(
+        prefetch.get(), SuccessfulPrefetchResponseHeadForTesting(),
+        "test body");
   }
 
   ASSERT_EQ(GetPrefetches().size(), 2u);
@@ -504,8 +505,9 @@ TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_EagerEviction) {
         PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
 
     auto& prefetch = GetPrefetches().back();
-    prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-    prefetch_document_manager->OnPrefetchCompletedOrFailed(*prefetch);
+    MakeServableStreamingURLLoaderForTest(
+        prefetch.get(), SuccessfulPrefetchResponseHeadForTesting(),
+        "test body");
   }
 
   ASSERT_EQ(GetPrefetches().size(), 4u);
@@ -571,8 +573,9 @@ TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_ModerateEviction) {
         PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
 
     auto& prefetch = GetPrefetches().back();
-    prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
-    prefetch_document_manager->OnPrefetchCompletedOrFailed(*prefetch);
+    MakeServableStreamingURLLoaderForTest(
+        prefetch.get(), SuccessfulPrefetchResponseHeadForTesting(),
+        "test body");
   }
 
   ASSERT_EQ(GetPrefetches().size(), 4u);
@@ -627,10 +630,9 @@ TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_ConservativeEviction) {
         PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
 
     my_prefetches.push_back(GetPrefetches().back());
-    my_prefetches.back()->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchSuccessful);
-    prefetch_document_manager->OnPrefetchCompletedOrFailed(
-        *my_prefetches.back());
+    MakeServableStreamingURLLoaderForTest(
+        my_prefetches.back().get(), SuccessfulPrefetchResponseHeadForTesting(),
+        "test body");
   }
 
   ASSERT_EQ(GetPrefetches().size(), 4u);
