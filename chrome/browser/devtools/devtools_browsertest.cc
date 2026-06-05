@@ -3383,6 +3383,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
   CloseDevToolsWindow();
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Tests that OpenInNewTab filters URLs.
 // TODO(crbug.com/40847130): Flaky on Windows and Linux.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
@@ -3420,20 +3422,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestOpenInNewTabFilter) {
       {"", "about:blank"},
   };
 
-  TabStripModel* tabs = browser()->tab_strip_model();
-  int i = 0;
   for (const auto& pair : tests) {
+    content::WebContentsAddedObserver observer;
     bindings_delegate_->OpenInNewTab(pair.first);
-    i++;
-
-    std::string opened_url = tabs->GetWebContentsAt(i)->GetVisibleURL().spec();
+    content::WebContents* new_wc = observer.GetWebContents();
+    std::string opened_url = new_wc->GetVisibleURL().spec();
     EXPECT_EQ(opened_url, pair.second) << " while testing URL: " << pair.first;
   }
 
   CloseDevToolsWindow();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilterHardening) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
 
@@ -3458,36 +3457,39 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenInNewTabFilterHardening) {
       {"file:///", "about:blank"},
   };
 
-  TabStripModel* tabs = browser()->tab_strip_model();
-  int i = 0;
   for (const auto& pair : tests) {
+    content::WebContentsAddedObserver observer;
     embedder_delegate->OpenInNewTab(pair.first);
-    i++;
-
-    std::string opened_url = tabs->GetWebContentsAt(i)->GetVisibleURL().spec();
+    content::WebContents* new_wc = observer.GetWebContents();
+    std::string opened_url = new_wc->GetVisibleURL().spec();
     EXPECT_EQ(opened_url, pair.second) << " while testing URL: " << pair.first;
   }
 
   CloseDevToolsWindow();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenSearchResultsInNewTab) {
   OpenDevToolsWindow(kDebuggerTestPage, false);
   DevToolsUIBindings::Delegate* bindings_delegate_ =
       static_cast<DevToolsUIBindings::Delegate*>(window_);
 
-  TabStripModel* tabs = browser()->tab_strip_model();
-
+  content::WebContentsAddedObserver observer;
   bindings_delegate_->OpenSearchResultsInNewTab("test query");
+  content::WebContents* new_wc = observer.GetWebContents();
 
-  std::string opened_url = tabs->GetWebContentsAt(1)->GetVisibleURL().spec();
-  EXPECT_EQ(
-      opened_url,
-      "https://www.google.com/search?q=test+query&sourceid=chrome&ie=UTF-8");
-
+  std::string opened_url = new_wc->GetVisibleURL().spec();
+  constexpr char kExpectedUrl[] =
+#if BUILDFLAG(IS_ANDROID)
+      "https://www.google.com/"
+      "search?q=test+query&sourceid=chrome-mobile&ie=UTF-8";
+#else
+      "https://www.google.com/search?q=test+query&sourceid=chrome&ie=UTF-8";
+#endif
+  EXPECT_EQ(opened_url, kExpectedUrl);
   CloseDevToolsWindow();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
   std::string file_url =
