@@ -92,12 +92,12 @@ export class Conversation implements ApiSessionDelegate {
       config: ConversationConfig, uiDelegate: UiDelegate,
       toolsRemote: AiOverlayToolsRemote, router: PageCallbackRouter,
       initialPageContext?: PageContext) {
-    log(FILE, `Conversation with ${config.persona.name}, config`, config);
+    const assistantName = config.persona.name;
+    log(FILE, `Conversation with ${assistantName}, config`, config);
     this.config = config;
     this.uiDelegate = uiDelegate;
     this.toolExecutor = new ToolExecutor(
-        toolsRemote, this.pageContextManager, this.journal,
-        config.persona.name);
+        toolsRemote, this.pageContextManager, this.journal, assistantName);
 
     this.pageContextManager.registerListener((event) => {
       this.onPageContextChange(event);
@@ -296,7 +296,8 @@ export class Conversation implements ApiSessionDelegate {
     const turns = this.journal.getTurnEntries();
     const pages = this.journal.getPageVisitEntries();
 
-    const transcript = formatTranscript(turns, this.config.persona.name);
+    const assistantName = this.config.persona.name;
+    const transcript = formatTranscript(turns, assistantName);
     const pageHistory = formatPageVisitHistory(pages);
 
     // Behavioral rules are sent in the system instruction (Static/Trusted).

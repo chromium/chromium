@@ -4,7 +4,8 @@
 
 import 'chrome-untrusted://ai-overlay-dialog/persona.js';
 
-import {processConditionals, processNumbering, processTemplate} from 'chrome-untrusted://ai-overlay-dialog/persona.js';
+import type {ConversationConfig} from 'chrome-untrusted://ai-overlay-dialog/conversation.js';
+import {buildSystemInstruction, processConditionals, processNumbering, processTemplate} from 'chrome-untrusted://ai-overlay-dialog/persona.js';
 import {assertEquals, assertThrows} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 suite('PersonaTest', () => {
@@ -116,5 +117,41 @@ suite('PersonaTest', () => {
         'Status: Discount Applied ' +
         'Final check: 2.';
     assertEquals(expectedBasic, processTemplate(template, data));
+  });
+
+  test('BuildSystemInstructionUsePersonaTrue', () => {
+    const config: ConversationConfig = {
+      system_instruction:
+          'Assistant persona details: ${persona}. Call us: ${nameList}.',
+      persona: {
+        id: '1',
+        name: 'Chef Billy',
+        nicknames: ['Billy', 'Bill'],
+        persona: 'You are Chef Billy, an elite French chef.',
+        voice: 'Aoede',
+      },
+      api_config: {endpointUrl: '', model: '', apiKey: ''},
+    };
+    const expected =
+        'Assistant persona details: You are Chef Billy, an elite French ' +
+        'chef.. Call us: Billy, Bill.';
+    assertEquals(expected, buildSystemInstruction(config));
+  });
+
+  test('BuildSystemInstructionUsePersonaFalse', () => {
+    const config: ConversationConfig = {
+      system_instruction:
+          'Assistant persona details: ${persona}. Call us: ${nameList}.',
+      persona: {
+        id: 'generic',
+        name: 'Chrome',
+        nicknames: [],
+        persona: '',
+        voice: 'Aoede',
+      },
+      api_config: {endpointUrl: '', model: '', apiKey: ''},
+    };
+    const expected = 'Assistant persona details: . Call us: Chrome.';
+    assertEquals(expected, buildSystemInstruction(config));
   });
 });

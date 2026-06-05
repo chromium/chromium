@@ -404,8 +404,15 @@ export class AppElement extends CrLitElement {
       // Locally specified key overrides the fetched one.
       const apiKey =
           loadTimeData.getString('apiKey') || bundle.apiConfig.apiKey;
+      const genericPersona: Persona = {
+        id: 'generic',
+        name: 'Chrome',
+        nicknames: [],
+        persona: '',
+        voice: bundle.persona.voice,
+      };
       const config: ConversationConfig = {
-        persona: bundle.persona,
+        persona: this.usePersona ? bundle.persona : genericPersona,
         system_instruction: bundle.instruction,
         api_config: {
           ...bundle.apiConfig,

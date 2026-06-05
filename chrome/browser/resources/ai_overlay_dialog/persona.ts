@@ -132,10 +132,13 @@ export function formatPageVisitHistory(pages: PersistedPageContext[]): string {
 
 export function buildSystemInstruction(config: ConversationConfig): string {
   const nicknames = config.persona.nicknames;
+  const usePersona = config.persona.id !== 'generic';
   const data: Record<string, unknown> = {
+    usePersona: usePersona,
     persona: config.persona.persona,
-    nameList: nicknames && nicknames.length > 0 ? nicknames.join(', ') :
-                                                  'Chrome',
+    nameList: (usePersona && nicknames && nicknames.length > 0) ?
+        nicknames.join(', ') :
+        'Chrome',
     title: '',
     url: '',
     pageHistory: '',
