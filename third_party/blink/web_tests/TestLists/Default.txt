@@ -355,6 +355,7 @@ external/wpt/workers/semantics/run-a-worker/001.html
 external/wpt/workers/semantics/xhr/002.html
 external/wpt/workers/Worker_dispatchEvent_ErrorEvent.htm
 external/wpt/workers/Worker-terminate-forever.html
+external/wpt/xhr/responsexml-invalid-type.html
 external/wpt/XMLHttpRequest/event-load.htm
 external/wpt/XMLHttpRequest/open-after-abort.htm
 fast/alignment/new-alignment-values.html
@@ -738,7 +739,6 @@ fast/workers/worker-sharedarraybuffer-transfer.html
 fast/writing-mode/english-lr-text.html
 fast/writing-mode/flipped-blocks-outline-crash.html
 fast/writing-mode/percentage-padding.html
-fast/xmlhttprequest/xmlhttprequest-responseXML-invalid-xml.html
 fast/xmlhttprequest/xmlhttprequest-responseXML-xml-text-responsetype.html
 fast/xpath/nodeset-duplicates.html
 fast/xpath/py-dom-xpath/predicates.html
