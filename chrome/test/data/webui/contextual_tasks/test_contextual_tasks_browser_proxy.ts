@@ -157,7 +157,6 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   removeInjectedInput(fileToken: UnguessableToken) {
     this.methodCalled('removeInjectedInput', fileToken);
   }
-
   onSidePanelPinStateChanged(isPinned: boolean) {
     this.methodCalled('onSidePanelPinStateChanged', isPinned);
   }

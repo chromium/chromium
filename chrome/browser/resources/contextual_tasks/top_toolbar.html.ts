@@ -27,14 +27,6 @@ export function getHtml(this: TopToolbarElement) {
     ${this.title}
   </div>
   <div class="top-toolbar-action-buttons">
-    <cr-icon-button id="pinButton"
-        @click="${this.onPinClick_}"
-        iron-icon="${this.isPinned ?
-            'contextual_tasks:keep' : 'contextual_tasks:keep_off'}"
-        title="${this.getPinButtonTooltip_()}"
-        aria-label="${this.getPinButtonTooltip_()}"
-        ?hidden="${!this.shouldShowPinButton_()}">
-    </cr-icon-button>
     <cr-icon-button id="newThreadButton"
         @click="${this.onNewThreadClick_}"
         iron-icon="contextual_tasks:edit_square"
@@ -66,14 +58,13 @@ export function getHtml(this: TopToolbarElement) {
         @click="${this.onOpenInNewTabClick_}"
         ?disabled="${!this.enableOpenInNewTabButton}">
       </cr-icon-button>
-    ` : html`
-      <cr-icon-button id="overflowMenuButton" iron-icon="cr:more-vert"
-        class="no-overlap" title="$i18n{moreOptionsTooltip}"
-        aria-label="$i18n{moreOptionsTooltip}"
-        @click="${this.onOverflowMenuButtonClick_}"
-        ?hidden="${this.hideOverflowMenuButton_}">
-      </cr-icon-button>
-    `}
+    ` : ''}
+    <cr-icon-button id="overflowMenuButton" iron-icon="cr:more-vert"
+      class="no-overlap" title="$i18n{moreOptionsTooltip}"
+      aria-label="$i18n{moreOptionsTooltip}"
+      @click="${this.onOverflowMenuButtonClick_}"
+      ?hidden="${this.hideOverflowMenuButton_}">
+    </cr-icon-button>
     <cr-icon-button id="closeButton"
         @click="${this.onCloseButtonClick_}"
         iron-icon="cr:close"
@@ -89,7 +80,11 @@ export function getHtml(this: TopToolbarElement) {
   </cr-lazy-render-lit>
   <cr-lazy-render-lit id="overflowMenu" .template="${() => html`
     <contextual-tasks-overflow-menu
-      .enableOpenInNewTabButton="${this.enableOpenInNewTabButton}">
+      .enableOpenInNewTabButton="${this.enableOpenInNewTabButton}"
+      .isPinned="${this.isPinned}"
+      .isPinButtonEnabled="${this.isPinButtonEnabled}"
+      .isAiPage="${this.isAiPage}"
+      @pin-click="${this.onPinClick_}">
     </contextual-tasks-overflow-menu>`}">
   </cr-lazy-render-lit>
   ${this.showReopenTabs_ ? html`

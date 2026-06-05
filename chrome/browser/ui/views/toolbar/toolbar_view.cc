@@ -445,20 +445,20 @@ void ToolbarView::Init() {
   }
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
-    if ((contextual_tasks::kShowEntryPoint.Get() ==
-         contextual_tasks::EntryPointOption::kToolbarPermanent) ||
-        (contextual_tasks::kShowEntryPoint.Get() ==
-         contextual_tasks::EntryPointOption::kToolbarRevisit)) {
-      AddChildView(std::make_unique<ContextualTasksButton>(browser_));
-    } else if (contextual_tasks::kShowEntryPoint.Get() ==
-               contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-      auto button = std::make_unique<ContextualTasksButton>(browser_);
+    auto button = std::make_unique<ContextualTasksButton>(browser_);
+    if (contextual_tasks::kShowEntryPoint.Get() ==
+        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
       auto* vts_controller =
           tabs::VerticalTabStripStateController::From(browser_);
       if (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) {
         button->SetProperty(views::kMarginsKey, gfx::Insets());
       }
       AddChildViewAt(std::move(button), 0);
+    } else if (contextual_tasks::kShowEntryPoint.Get() ==
+                   contextual_tasks::EntryPointOption::kToolbarPermanent ||
+               contextual_tasks::kShowEntryPoint.Get() ==
+                   contextual_tasks::EntryPointOption::kToolbarRevisit) {
+      AddChildView(std::move(button));
     }
   }
 
