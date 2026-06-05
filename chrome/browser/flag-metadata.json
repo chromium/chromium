@@ -9159,6 +9159,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "tips-self-service",
+    "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "tls-trust-anchor-ids",
     "owners": ["trusty-transport@chromium.org"],
     "expiry_milestone": 155

@@ -9948,6 +9948,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBookmarkPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBookmarkPaneAndroid)},
 
+    {"tips-self-service", flag_descriptions::kTipsSelfServiceName,
+     flag_descriptions::kTipsSelfServiceDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTipsSelfService)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,

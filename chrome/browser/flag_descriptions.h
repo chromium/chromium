@@ -6137,6 +6137,10 @@ inline constexpr char kThreeDotMenuBackButtonName[] =
 inline constexpr char kThreeDotMenuBackButtonDescription[] =
     "Enables the Three Dot Menu Back Button on Android.";
 
+inline constexpr char kTipsSelfServiceName[] = "Tips Self Service";
+inline constexpr char kTipsSelfServiceDescription[] =
+    "Enables the tips self service interface and workflow on Android.";
+
 inline constexpr char kToolbarSnapshotRefactorName[] =
     "Toolbar Snapshot Refactor";
 inline constexpr char kToolbarSnapshotRefactorDescription[] =
