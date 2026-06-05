@@ -88,7 +88,8 @@ enum class GlicPrivateApiStatusCodeHistogramValue {
   kLocalConversationNotFound = 13,
   kLocalNoBoundTabs = 14,
   kLocalTabNotInWindow = 15,
-  kMaxValue = kLocalTabNotInWindow,
+  kLocalGlicAccessFromPageDisabled = 16,
+  kMaxValue = kLocalGlicAccessFromPageDisabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrivateApiStatusCodeHistogramValue)
 
@@ -133,6 +134,10 @@ GlicPrivateApiStatusCodeHistogramValue ConvertStatusCodeToHistogramValue(
       return GlicPrivateApiStatusCodeHistogramValue::kLocalNoBoundTabs;
     case extensions::api::glic_private::ErrorCode::kLocalTabNotInWindow:
       return GlicPrivateApiStatusCodeHistogramValue::kLocalTabNotInWindow;
+    case extensions::api::glic_private::ErrorCode::
+        kLocalGlicAccessFromPageDisabled:
+      return GlicPrivateApiStatusCodeHistogramValue::
+          kLocalGlicAccessFromPageDisabled;
   }
 }
 
@@ -408,17 +413,25 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
       glic::mojom::InvocationSource::kUnsupported;
   glic::mojom::FeatureMode feature_mode =
       glic::mojom::FeatureMode::kUnspecified;
-  bool is_valid_source =
-      params->details.invocation_source ==
-          api::glic_private::InvocationSource::kUniversalCart ||
-      params->details.invocation_source ==
-          api::glic_private::InvocationSource::kPromotionPage;
+  bool is_universal_cart = params->details.invocation_source ==
+                           api::glic_private::InvocationSource::kUniversalCart;
+  bool is_promotion_page = params->details.invocation_source ==
+                           api::glic_private::InvocationSource::kPromotionPage;
 
-  if (is_valid_source &&
+  if (is_universal_cart &&
       !base::FeatureList::IsEnabled(
           extensions_features::kApiGlicAccessFromGoogleWebpage)) {
-    return RespondNow(GetPromptResponseValueAndLog(
-        extensions::api::glic_private::ErrorCode::kLocalGlicNotEnabled));
+    return RespondNow(
+        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
+                                         kLocalGlicAccessFromPageDisabled));
+  }
+
+  if (is_promotion_page &&
+      !base::FeatureList::IsEnabled(
+          extensions_features::kApiGlicAccessFromPromotionPage)) {
+    return RespondNow(
+        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
+                                         kLocalGlicAccessFromPageDisabled));
   }
 
   switch (params->details.invocation_source) {

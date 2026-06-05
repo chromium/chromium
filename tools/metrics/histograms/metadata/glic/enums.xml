@@ -653,6 +653,7 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="LocalConversationNotFound"/>
   <int value="14" label="LocalNoBoundTabs"/>
   <int value="15" label="LocalTabNotInWindow"/>
+  <int value="16" label="LocalGlicAccessFromPageDisabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/extensions/api/glic_private/glic_private_api.cc:GlicPrivateApiStatusCodeHistogramValue) -->
