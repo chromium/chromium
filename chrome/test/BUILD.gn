@@ -6361,7 +6361,10 @@ group("telemetry_perf_unittests_base") {
     "//third_party/logdog/logdog",
   ]
 
-  data_deps = [ "//testing:test_scripts_shared" ]
+  data_deps = [
+    "//testing:test_scripts_shared",
+    "//third_party/crashpad/crashpad/tools:crashpad_database_util($host_toolchain)",
+  ]
 }
 
 _telemetry_perf_args = [
