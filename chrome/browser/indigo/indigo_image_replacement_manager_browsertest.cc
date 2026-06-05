@@ -7,12 +7,14 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/indigo/fake_api.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
+#include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1177,6 +1179,81 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   // second regenerate request.
   EXPECT_TRUE(
       WaitUntilReplacementImageSrcMatches(subframe.get(), success_url3.spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ReplacePhotoTriggersRegenerate) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Register primary replacement.
+  MockImageReplacement mock_replacement(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  // First generate request arrives and succeeds.
+  fake_api_.WaitForGenerateRequest(0);
+  GURL success_url1(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url1, 0);
+
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 0));
+  ASSERT_TRUE(subframe.get());
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url1.spec()));
+
+  // Set up the onboarding dialog factory to intercept the onboarding dialog
+  // and capture the callback.
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents);
+  ASSERT_TRUE(tab);
+  auto* controller = IndigoPageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  base::OnceCallback<void(const OnboardingResult&)> onboarding_callback;
+  IndigoPageActionController::TestApi(controller)
+      .SetOnboardingDialogFactory(base::BindLambdaForTesting(
+          [&](tabs::TabInterface& tab, const GURL& url,
+              base::OnceCallback<void(const OnboardingResult&)> callback)
+              -> std::unique_ptr<IndigoOnboardingDialog> {
+            onboarding_callback = std::move(callback);
+            return nullptr;
+          }));
+
+  // Trigger "Replace original photo" which should show the onboarding
+  // dialog.
+  controller->OnReplaceOriginalPhoto(nullptr);
+  ASSERT_FALSE(onboarding_callback.is_null());
+
+  // Simulate successful completion of the onboarding dialog.
+  OnboardingResult result;
+  result.acknowledge_chrome_disclaimer = true;
+  std::move(onboarding_callback).Run(result);
+
+  // Second generate request (regeneration) should arrive.
+  fake_api_.WaitForGenerateRequest(1);
+  GURL success_url2(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk"
+      "YPjfDwAEhQGA6R1ykwAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url2, 1);
+
+  // Verify the frame correctly updates to show success_url2.
+  EXPECT_TRUE(
+      WaitUntilReplacementImageSrcMatches(subframe.get(), success_url2.spec()));
 }
 
 }  // namespace indigo
