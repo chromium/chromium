@@ -2810,7 +2810,7 @@ void ValidatePausedStateConsistency() {
       auto* local_frame = DynamicTo<LocalFrame>(frame);
       const LocalDOMWindow* window =
           local_frame ? local_frame->DomWindow() : nullptr;
-      if (!window) {
+      if (!window || window->is_in_back_forward_cache()) {
         continue;
       }
       const bool microtasks_are_paused =
