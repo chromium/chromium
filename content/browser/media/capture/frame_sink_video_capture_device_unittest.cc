@@ -630,5 +630,50 @@ TEST_F(FrameSinkVideoCaptureDeviceTest, ShutsDownOnFatalError) {
   }
 }
 
+// Tests that the video rotation is properly sent through metadata.
+TEST_F(FrameSinkVideoCaptureDeviceTest, SetsVideoRotation) {
+  auto receiver_ptr = std::make_unique<MockVideoFrameReceiver>();
+  auto* const receiver = receiver_ptr.get();
+  EXPECT_CALL(*receiver, OnStarted());
+  EXPECT_CALL(*receiver, OnError(_)).Times(0);
+
+  AllocateAndStartSynchronouslyWithExpectations(std::move(receiver_ptr));
+
+  // Set the rotation to 180 degrees.
+  POST_DEVICE_METHOD_CALL(SetVideoRotation, media::VIDEO_ROTATION_180);
+  WAIT_FOR_DEVICE_TASKS();
+
+  int buffer_id = -1;
+  MockFrameSinkVideoConsumerFrameCallbacks callbacks;
+
+  Expectation new_buffer_called =
+      EXPECT_CALL(*receiver, MockOnNewBuffer(Ge(0), NotNull()))
+          .WillOnce(SaveArg<0>(&buffer_id));
+  EXPECT_CALL(*receiver, MockOnFrameReadyInBuffer(Eq(ByRef(buffer_id)), Ge(0),
+                                                  NotNull(), NotNull()))
+      .After(new_buffer_called);
+
+  SimulateFrameCapture(0, &callbacks);
+  WAIT_FOR_DEVICE_TASKS();
+
+  // Confirm the VideoFrameReceiver was provided the correct metadata.
+  const auto info = receiver->TakeVideoFrameInfo(buffer_id);
+  ASSERT_TRUE(info);
+  EXPECT_TRUE(info->metadata.transformation.has_value());
+  EXPECT_EQ(media::VIDEO_ROTATION_180, info->metadata.transformation->rotation);
+
+  media::VideoCaptureFeedback fake_feedback = media::VideoCaptureFeedback(0.0);
+  fake_feedback.frame_id = receiver->TakeFeedbackId(buffer_id);
+  EXPECT_CALL(callbacks, ProvideFeedback(fake_feedback));
+  EXPECT_CALL(callbacks, Done());
+  EXPECT_CALL(*receiver, OnBufferRetired(buffer_id));
+  POST_DEVICE_METHOD_CALL(OnUtilizationReport, fake_feedback);
+  receiver->ReleaseAccessPermission(buffer_id);
+  auto buffer = receiver->TakeBufferHandle(buffer_id);
+  WAIT_FOR_DEVICE_TASKS();
+
+  StopAndDeAllocateSynchronouslyWithExpectations(true /* capturer will stop */);
+}
+
 }  // namespace
 }  // namespace content

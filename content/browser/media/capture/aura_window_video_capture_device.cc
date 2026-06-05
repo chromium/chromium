@@ -25,8 +25,28 @@
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 
 namespace content {
+
+namespace {
+media::VideoRotation GetVideoRotationForDisplay(
+    const display::Display& display) {
+  switch (display.panel_rotation()) {
+    case display::Display::ROTATE_0:
+      return media::VIDEO_ROTATION_0;
+    case display::Display::ROTATE_90:
+      return media::VIDEO_ROTATION_90;
+    case display::Display::ROTATE_180:
+      return media::VIDEO_ROTATION_180;
+    case display::Display::ROTATE_270:
+      return media::VIDEO_ROTATION_270;
+  }
+  return media::VIDEO_ROTATION_0;
+}
+
+}  // namespace
 
 // Threading note: This is constructed on the device thread, while the
 // destructor and the rest of the class will run exclusively on the UI thread.
@@ -77,10 +97,11 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     // |target_window_| to be null at this point.
     DCHECK(!target_window_);
 
-    target_window_ = DesktopMediaID::GetNativeWindowById(source_id);
+    aura::Window* const window = DesktopMediaID::GetNativeWindowById(source_id);
     aura::Window* const root_window =
-        target_window_ ? target_window_->GetRootWindow() : nullptr;
-    if (!target_window_ || !root_window->GetFrameSinkId().is_valid()) {
+        window ? window->GetRootWindow() : nullptr;
+    if (!window || !root_window || !root_window->GetFrameSinkId().is_valid() ||
+        !window->GetHost()) {
       device_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost,
@@ -88,6 +109,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
       return;
     }
 
+    target_window_ = window;
     target_ = viz::VideoCaptureTarget(root_window->GetFrameSinkId());
     if (!target_window_->IsRootWindow()) {
       capture_request_ = target_window_->MakeWindowCapturable();
@@ -99,10 +121,14 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     force_visible_.emplace(target_window_);
 #endif
     target_window_->AddObserver(this);
+    display::Screen* const screen = display::Screen::Get();
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&FrameSinkVideoCaptureDevice::OnTargetChanged, device_,
                        target_, /*sub_capture_target_version=*/0));
+    if (screen) {
+      SendVideoRotation(screen->GetDisplayNearestWindow(target_window_));
+    }
 
     // Note: The MouseCursorOverlayController runs on the UI thread. It's also
     // important that SetTargetView() be called in the current stack while
@@ -112,6 +138,17 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     // NOTE: for Aura capture, the cursor controller's view should always be
     // the root compositor frame sink.
     cursor_controller_->SetTargetView(root_window);
+  }
+
+  void SendVideoRotation(const display::Display& display) {
+    if (!target_window_->IsRootWindow()) {
+      return;
+    }
+
+    device_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&FrameSinkVideoCaptureDevice::SetVideoRotation, device_,
+                       GetVideoRotationForDisplay(display)));
   }
 
   // aura::WindowObserver override.
@@ -139,8 +176,12 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK_EQ(window, target_window_);
 
-    viz::FrameSinkId new_frame_sink_id =
-        target_window_->GetRootWindow()->GetFrameSinkId();
+    aura::Window* const root_window = target_window_->GetRootWindow();
+    if (!root_window) {
+      return;
+    }
+
+    viz::FrameSinkId new_frame_sink_id = root_window->GetFrameSinkId();
 
     // Since the window is not destroyed, only re-parented, we can keep the
     // same subtree ID and only update the FrameSinkId of the target.

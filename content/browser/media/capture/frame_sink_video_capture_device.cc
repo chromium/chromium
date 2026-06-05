@@ -498,6 +498,10 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   info->metadata.interactive_content = true;
 #endif
 
+  if (video_rotation_ != media::VIDEO_ROTATION_0) {
+    info->metadata.transformation = media::VideoTransformation(video_rotation_);
+  }
+
   if (!has_sent_on_started_to_client_) {
     has_sent_on_started_to_client_ = true;
     receiver_->OnStarted();
@@ -571,6 +575,12 @@ void FrameSinkVideoCaptureDevice::OnTargetPermanentlyLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnTargetChanged(std::nullopt, sub_capture_version_);
   OnFatalError("Capture target has been permanently lost.");
+}
+
+void FrameSinkVideoCaptureDevice::SetVideoRotation(
+    media::VideoRotation video_rotation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  video_rotation_ = video_rotation;
 }
 
 void FrameSinkVideoCaptureDevice::WillStart() {}
