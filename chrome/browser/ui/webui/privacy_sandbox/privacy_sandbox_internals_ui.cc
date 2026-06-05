@@ -52,13 +52,6 @@ PrivacySandboxInternalsUI::PrivacySandboxInternalsUI(content::WebUI* web_ui)
                          privacy_sandbox::kPrivacySandboxInternalsDevUI));
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(privacy_sandbox::kRelatedWebsiteSetsDevUI)) {
-    content::URLDataSource::Add(
-        Profile::FromWebUI(web_ui),
-        std::make_unique<SanitizedImageSource>(Profile::FromWebUI(web_ui)));
-    source->AddResourcePath("related-website-sets",
-                            IDR_RELATED_WEBSITE_SETS_RELATED_WEBSITE_SETS_HTML);
-  }
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivateStateTokensDevUI)) {
     source->AddResourcePath("private-state-tokens",
                             IDR_PRIVATE_STATE_TOKENS_PRIVATE_STATE_TOKENS_HTML);
