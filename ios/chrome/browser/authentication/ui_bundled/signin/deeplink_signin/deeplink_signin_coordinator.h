@@ -20,14 +20,10 @@
 //     email. This will start the add account flow if the account is not
 //     present in device. If there are multiple accounts on device the selected
 //     account will be shown as chosen in account picker flow.
-// `screenProvider` helps decide which screen to show.
 - (instancetype)
            initWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
                  selectedAccountEmail:(NSString*)selectedAccountEmail
-                       screenProvider:(ScreenProvider*)screenProvider
-                         contextStyle:(SigninContextStyle)contextStyle
-                          accessPoint:(signin_metrics::AccessPoint)accessPoint
     changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
                                           changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;

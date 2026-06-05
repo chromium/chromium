@@ -268,6 +268,7 @@ NSString* GetPromoLabelString(
       labelText = l10n_util::GetNSString(
           IDS_IOS_SIGNIN_GROUP_COLLABORATION_HALF_SHEET_SUBTITLE);
       break;
+    case SigninContextStyle::kDeeplinkSignin:
     case SigninContextStyle::kDefault:
       break;
   }

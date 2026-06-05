@@ -58,6 +58,8 @@
           IDS_IOS_HISTORY_SYNC_GROUP_COLLABORATION_SUBTITLE);
       break;
     }
+    case SigninContextStyle::kDeeplinkSignin:
+      NOTREACHED();
     case SigninContextStyle::kDefault: {
       self.titleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_TITLE);
       self.subtitleText = l10n_util::GetNSString(IDS_IOS_HISTORY_SYNC_SUBTITLE);

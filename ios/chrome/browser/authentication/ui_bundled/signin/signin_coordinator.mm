@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/consistency_promo_signin/coordinator/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
@@ -360,23 +362,14 @@ using signin_metrics::PromoAction;
                                             browser:(Browser*)browser
                                selectedAccountEmail:
                                    (NSString*)selectedAccountEmail
-                                     screenProvider:
-                                         (ScreenProvider*)screenProvider
-                                       contextStyle:
-                                           (SigninContextStyle)contextStyle
-                                        accessPoint:
-                                            (signin_metrics::AccessPoint)
-                                                accessPoint
                   changeProfileContinuationProvider:
                       (const ChangeProfileContinuationProvider&)
                           changeProfileContinuationProvider {
+  CHECK(base::FeatureList::IsEnabled(switches::kCrossDeviceSignin));
   return [[DeeplinkSigninCoordinator alloc]
              initWithBaseViewController:viewController
                                 browser:browser
                    selectedAccountEmail:selectedAccountEmail
-                         screenProvider:screenProvider
-                           contextStyle:contextStyle
-                            accessPoint:accessPoint
       changeProfileContinuationProvider:changeProfileContinuationProvider];
 }
 

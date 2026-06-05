@@ -246,13 +246,6 @@ class PrefRegistrySyncable;
                                             browser:(Browser*)browser
                                selectedAccountEmail:
                                    (NSString*)selectedAccountEmail
-                                     screenProvider:
-                                         (ScreenProvider*)screenProvider
-                                       contextStyle:
-                                           (SigninContextStyle)contextStyle
-                                        accessPoint:
-                                            (signin_metrics::AccessPoint)
-                                                accessPoint
                   changeProfileContinuationProvider:
                       (const ChangeProfileContinuationProvider&)
                           changeProfileContinuationProvider;
