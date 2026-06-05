@@ -358,12 +358,13 @@ public class FuseboxCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testDseChangedToNonGoogleDuringSession() {
         // Start with Google DSE.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
-        mCoordinator.beginInput(createSession());
         mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.beginInput(createSession());
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Verify session is active (beginInput was called on mediator).
