@@ -11,7 +11,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -41,8 +40,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     model_execution_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).GetHost()};
+    cert_config.dns_names = {switches::GetModelExecutionServiceURL().GetHost()};
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(
         base::BindRepeating(&ModelExecutionValidationBrowserTestBase::
@@ -56,9 +54,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceModelExecutionURL,
         model_execution_server_
-            ->GetURL(GURL(kOptimizationGuideServiceModelExecutionDefaultURL)
-                         .GetHost(),
-                     "/")
+            ->GetURL(switches::GetModelExecutionServiceURL().GetHost(), "/")
             .spec());
   }
 

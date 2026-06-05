@@ -27,7 +27,6 @@
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
 #include "components/optimization_guide/core/delivery/prediction_model_fetch_timer.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -86,7 +85,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig models_server_cert_config;
     models_server_cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceGetModelsDefaultURL).GetHost()};
+        features::GetOptimizationGuideServiceGetModelsURL().GetHost()};
     models_server_cert_config.ip_addresses = {net::IPAddress::IPv4Localhost()};
     models_server_->SetSSLConfig(models_server_cert_config);
     models_server_->ServeFilesFromSourceDirectory(
@@ -118,7 +117,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
         switches::kOptimizationGuideServiceGetModelsURL,
         models_server_
             ->GetURL(
-                GURL(kOptimizationGuideServiceGetModelsDefaultURL).GetHost(),
+                features::GetOptimizationGuideServiceGetModelsURL().GetHost(),
                 "/")
             .spec());
     cmd->AppendSwitchASCII("force-variation-ids", "4");

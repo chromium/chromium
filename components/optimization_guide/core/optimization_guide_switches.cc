@@ -49,6 +49,9 @@ const char kOptimizationGuideServiceGetModelsURL[] =
 const char kOptimizationGuideServiceModelExecutionURL[] =
     "optimization-guide-service-model-execution-url";
 
+const char kOptimizationGuideServiceModelExecutionDefaultURL[] =
+    "https://chromemodelexecution-pa.googleapis.com/v1:Execute";
+
 // Overrides the Optimization Guide Service API Key for remote requests to be
 // made.
 const char kOptimizationGuideServiceAPIKey[] =

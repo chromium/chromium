@@ -19,7 +19,6 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -182,7 +181,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   bool SimulateResponse(const std::string& content,
                         net::HttpStatusCode http_status) {
     return test_url_loader_factory_.SimulateResponseForPendingRequest(
-        kOptimizationGuideServiceModelQualtiyDefaultURL, content, http_status,
+        GetModelQualityLogsUploaderServiceURL().spec(), content, http_status,
         network::TestURLLoaderFactory::kUrlMatchPrefix);
   }
 

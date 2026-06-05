@@ -75,6 +75,8 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kHintsMaxConcurrentBatchUpdateFetches);
 // remove this.
 BASE_DECLARE_FEATURE_PARAM(size_t, kHintsMaxConcurrentNavigationFetches);
 
+extern const char kOptimizationGuideServiceGetHintsDefaultURL[];
+
 class HintsManager : public OptimizationHintsComponentObserver,
                      public PushNotificationManager::Delegate {
  public:

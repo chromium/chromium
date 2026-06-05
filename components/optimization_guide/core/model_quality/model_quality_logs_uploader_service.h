@@ -28,6 +28,9 @@ namespace optimization_guide {
 class MqlsFeatureMetadata;
 class ModelQualityLogEntry;
 
+// Returns the URL endpoint for the model quality service.
+GURL GetModelQualityLogsUploaderServiceURL();
+
 class ModelQualityLogsUploaderService {
  public:
   ModelQualityLogsUploaderService(

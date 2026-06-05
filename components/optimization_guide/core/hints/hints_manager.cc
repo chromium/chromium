@@ -62,6 +62,9 @@
 
 namespace optimization_guide {
 
+const char kOptimizationGuideServiceGetHintsDefaultURL[] =
+    "https://optimizationguide-pa.googleapis.com/v1:GetHints";
+
 BASE_FEATURE(kHintsBatchUpdateForActiveTabsAndTopHosts,
              "OptimizationGuideHintsBatchUpdateForActiveTabsAndTopHosts",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)

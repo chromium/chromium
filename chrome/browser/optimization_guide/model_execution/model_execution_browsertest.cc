@@ -42,7 +42,7 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -132,7 +132,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
     cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).GetHost(),
+        switches::GetModelExecutionServiceURL().GetHost(),
     };
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(base::BindRepeating(
@@ -144,7 +144,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     model_quality_logs_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).GetHost(),
+        GetModelQualityLogsUploaderServiceURL().GetHost(),
     };
     model_quality_logs_server_->SetSSLConfig(cert_config);
     model_quality_logs_server_->RegisterRequestHandler(base::BindRepeating(
@@ -161,16 +161,12 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceModelExecutionURL,
         model_execution_server_
-            ->GetURL(GURL(kOptimizationGuideServiceModelExecutionDefaultURL)
-                         .GetHost(),
-                     "/")
+            ->GetURL(switches::GetModelExecutionServiceURL().GetHost(), "/")
             .spec());
     cmd->AppendSwitchASCII(
         switches::kModelQualityServiceURL,
         model_quality_logs_server_
-            ->GetURL(
-                GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).GetHost(),
-                "/")
+            ->GetURL(GetModelQualityLogsUploaderServiceURL().GetHost(), "/")
             .spec());
   }
 

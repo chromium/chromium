@@ -17,7 +17,6 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
-#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
@@ -41,6 +40,9 @@ namespace optimization_guide {
 
 namespace {
 
+const char kOptimizationGuideServiceModelQualityDefaultURL[] =
+    "https://chromemodelquality-pa.googleapis.com/v1:LogAiData";
+
 void RecordUploadStatusHistogram(proto::LogAiDataRequest::FeatureCase feature,
                                  ModelQualityLogsUploadStatus status) {
   const MqlsFeatureMetadata* metadata =
@@ -51,17 +53,6 @@ void RecordUploadStatusHistogram(proto::LogAiDataRequest::FeatureCase feature,
           {"OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.",
            metadata->name()}),
       status);
-}
-
-// Returns the URL endpoint for the model quality service along with the needed
-// API key.
-GURL GetModelQualityLogsUploaderServiceURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kModelQualityServiceURL)) {
-    return GURL(
-        command_line->GetSwitchValueASCII(switches::kModelQualityServiceURL));
-  }
-  return GURL(kOptimizationGuideServiceModelQualtiyDefaultURL);
 }
 
 // Sets user feedback for the ModelExecutionFeature corresponding to the
@@ -115,6 +106,15 @@ void OnURLLoadComplete(
 }
 
 }  // namespace
+
+GURL GetModelQualityLogsUploaderServiceURL() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kModelQualityServiceURL)) {
+    return GURL(
+        command_line->GetSwitchValueASCII(switches::kModelQualityServiceURL));
+  }
+  return GURL(kOptimizationGuideServiceModelQualityDefaultURL);
+}
 
 ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
