@@ -583,6 +583,19 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_colorFromHex() {
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(COLOR_FROM_HEX);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.GREEN);
+
+        assertEquals(
+                Color.GREEN,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorSetWithImage() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.BLUE);

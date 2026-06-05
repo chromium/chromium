@@ -330,6 +330,8 @@ public class NtpCustomizationUtils {
                 colorId = ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForChromeColor(colorId);
             }
             return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
+        } else if (imageType == NtpBackgroundType.COLOR_FROM_HEX) {
+            color = getCustomizedPrimaryColorFromSharedPreference();
         } else if (imageType == NtpBackgroundType.THEME_COLLECTION) {
             if (checkDailyRefresh) {
                 ntpThemeDailyRefreshManager.maybeApplyDailyRefreshForThemeCollection();
@@ -794,6 +796,13 @@ public class NtpCustomizationUtils {
         prefsManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR, color);
     }
 
+    /** Gets the customized primary color from the SharedPreference. */
+    public static @ColorInt int getCustomizedPrimaryColorFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readInt(
+                NTP_CUSTOMIZATION_PRIMARY_COLOR, NtpThemeColorInfo.COLOR_NOT_SET);
+    }
+
     /**
      * Sets the customized primary color for daily refresh to SharedPreferences.
      *
@@ -803,13 +812,6 @@ public class NtpCustomizationUtils {
             @ColorInt int color) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH, color);
-    }
-
-    /** Gets the customized primary color from the SharedPreference. */
-    public static @ColorInt int getCustomizedPrimaryColorFromSharedPreference() {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        return prefsManager.readInt(
-                NTP_CUSTOMIZATION_PRIMARY_COLOR, NtpThemeColorInfo.COLOR_NOT_SET);
     }
 
     /** Gets the customized primary color for daily refresh from SharedPreferences. */
