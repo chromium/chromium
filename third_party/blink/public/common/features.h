@@ -68,11 +68,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowerHighResolutionTimerThreshold);
 
-// Allows running DevTools main thread debugger even when a renderer process
-// hosts multiple main frames.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
-
 // Enables rate obfuscation mitigation in compute pressure, to prevent
 // cross-channel attacks.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(

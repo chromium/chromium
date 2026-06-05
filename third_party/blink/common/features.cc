@@ -113,9 +113,6 @@ BASE_FEATURE(kLowerHighResolutionTimerThreshold,
 BASE_FEATURE(kAllowDatapipeDrainedAsBytesConsumerInBFCache,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAllowDevToolsMainThreadDebuggerForMultipleMainFrames,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables URN URLs like those produced by Protected Audience auctions to be
 // displayed by iframes (instead of requiring fenced frames).
 BASE_FEATURE(kAllowURNsInIframes, base::FEATURE_ENABLED_BY_DEFAULT);

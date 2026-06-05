@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -41,21 +39,8 @@ TEST_F(MainThreadDebuggerTest, HitBreakPointDuringLifecycle) {
   EXPECT_FALSE(document.Lifecycle().LifecyclePostponed());
 }
 
-class MainThreadDebuggerMultipleMainFramesTest
-    : public MainThreadDebuggerTest,
-      public testing::WithParamInterface<bool> {
+class MainThreadDebuggerMultipleMainFramesTest : public MainThreadDebuggerTest {
  public:
-  MainThreadDebuggerMultipleMainFramesTest() {
-    if (IsDebuggerAllowed()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kAllowDevToolsMainThreadDebuggerForMultipleMainFrames);
-    }
-  }
-  ~MainThreadDebuggerMultipleMainFramesTest() override = default;
-
   void SetUp() override {
     second_dummy_page_holder_ = std::make_unique<DummyPageHolder>();
     MainThreadDebuggerTest::SetUp();
@@ -63,18 +48,11 @@ class MainThreadDebuggerMultipleMainFramesTest
 
   Page& GetSecondPage() { return second_dummy_page_holder_->GetPage(); }
 
-  bool IsDebuggerAllowed() { return GetParam(); }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<DummyPageHolder> second_dummy_page_holder_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         MainThreadDebuggerMultipleMainFramesTest,
-                         testing::Bool());
-
-TEST_P(MainThreadDebuggerMultipleMainFramesTest, Allow) {
+TEST_F(MainThreadDebuggerMultipleMainFramesTest, Allow) {
   Page::InsertOrdinaryPageForTesting(&GetPage());
   Page::InsertOrdinaryPageForTesting(&GetSecondPage());
   GetFrame().GetSettings()->SetScriptEnabled(true);
@@ -82,11 +60,7 @@ TEST_P(MainThreadDebuggerMultipleMainFramesTest, Allow) {
       MainThreadDebugger::Instance(GetDocument().GetAgent().isolate());
   int context_group_id = debugger->ContextGroupId(&GetFrame());
 
-  if (IsDebuggerAllowed()) {
-    ASSERT_TRUE(debugger->canExecuteScripts(context_group_id));
-  } else {
-    ASSERT_FALSE(debugger->canExecuteScripts(context_group_id));
-  }
+  ASSERT_TRUE(debugger->canExecuteScripts(context_group_id));
 }
 
 }  // namespace blink
