@@ -120,8 +120,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   const char* GetClassName() const;
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
-  bool IsLeafConsideringChildren() const;
-  bool HasFocusableChild() const;
 
   std::u16string GetBrailleLabel() const;
   std::u16string GetBrailleRoleDescription() const;
@@ -340,6 +338,14 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
                                    const std::u16string& b);
   static size_t CommonEndLengths(const std::u16string& a,
                                  const std::u16string& b);
+
+  // Computes whether there is an Android-specific reason that the node is a
+  // leaf. The computed value is cached in GetLeafMap() and is used in the
+  // IsLeaf() computation.
+  bool ComputeIsLeaf() const;
+
+  bool IsLeafConsideringChildren() const;
+  bool HasFocusableChild() const;
 
   bool HasOnlyTextChildren() const;
   bool HasOnlyTextAndImageChildren() const;

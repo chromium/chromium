@@ -796,10 +796,25 @@ bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
 }
 
 bool BrowserAccessibilityAndroid::IsLeaf() const {
-  if (GetLeafMap().contains(this)) {
-    return GetLeafMap()[this];
+  const auto leaf_it = GetLeafMap().find(this);
+  if (leaf_it != GetLeafMap().end()) {
+    return leaf_it->second;
   }
 
+  if (BrowserAccessibility::IsLeaf()) {
+    // Don't cache result because GetLeafMap() is not cleared if a child
+    // crossing the tree boundary is added.
+    return true;
+  }
+
+  CHECK(node()->IsIgnored() ||
+        node()->GetUnignoredChildCountCrossingTreeBoundary() > 0);
+  bool is_leaf = ComputeIsLeaf();
+  GetLeafMap()[this] = is_leaf;
+  return is_leaf;
+}
+
+bool BrowserAccessibilityAndroid::ComputeIsLeaf() const {
   if (GetData().IsNonAtomicTextField()) {
     // Non-atomic text fields (e.g. contenteditable) should not be leaves when
     // this flag is enabled, allowing their internal structure to be exposed.
@@ -810,10 +825,6 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
       return false;
     }
     return !HasFocusableChild();
-  }
-
-  if (BrowserAccessibility::IsLeaf()) {
-    return true;
   }
 
   // Document roots (e.g. kRootWebArea and kPdfRoot), and iframes are always
@@ -869,33 +880,26 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
   // and allow the child nodes to be set as a leaf.
 
   if (GetRole() == ax::mojom::Role::kComboBoxSelect) {
-    GetLeafMap()[this] = true;
     return true;
   }
 
   // Headings with text can drop their children (with exceptions).
   std::u16string name = GetSubstringTextContentUTF16(1);
   if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
-    bool ret = IsLeafConsideringChildren();
-    GetLeafMap()[this] = ret;
-    return ret;
+    return IsLeafConsideringChildren();
   }
 
   // Focusable nodes with text can drop their children (with exceptions).
   if (HasState(ax::mojom::State::kFocusable) && !name.empty()) {
-    bool ret = IsLeafConsideringChildren();
-    GetLeafMap()[this] = ret;
-    return ret;
+    return IsLeafConsideringChildren();
   }
 
   // Nodes with only static text can drop their children, with the exception
   // that list markers have a different role and should not be dropped.
   if (HasOnlyTextChildren() && !HasListMarkerChild()) {
-    GetLeafMap()[this] = true;
     return true;
   }
 
-  GetLeafMap()[this] = false;
   return false;
 }
 
