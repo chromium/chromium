@@ -4,6 +4,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/android/webapps/twa_launch_navigation_handle_user_data.h"
 #include "chrome/browser/android/webapps/twa_launch_queue_tab_helper.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
@@ -29,7 +30,12 @@ static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
 
   auto* helper =
       TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
-  helper->EnsureLaunchQueue().Enqueue(launch_params);
+  if (start_new_navigation) {
+    helper->SetPendingLaunchParams(std::move(launch_params));
+  } else {
+    TwaLaunchNavigationHandleUserData::EnqueueNonNavigating(
+        web_contents, std::move(launch_params));
+  }
 }
 
 }  // namespace webapps
