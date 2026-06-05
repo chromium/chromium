@@ -7,7 +7,6 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.ntp.RecentTabsGroupView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/recent_tabs_group_view"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
@@ -49,6 +48,6 @@ found in the LICENSE file.
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/small_icon_background_selector"
-        tools:ignore="ContentDescription" />
+        android:importantForAccessibility="no" />
 
 </org.chromium.chrome.browser.ntp.RecentTabsGroupView>

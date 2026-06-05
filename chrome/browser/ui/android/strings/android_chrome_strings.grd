@@ -5321,12 +5321,6 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {Remove 1 selected item}
           other {Remove # selected items}}
       </message>
-      <message name="IDS_ACCESSIBILITY_EXPAND_SECTION_HEADER" desc="Content description for the suggested section header expand button.">
-        Tap to expand
-      </message>
-      <message name="IDS_ACCESSIBILITY_COLLAPSE_SECTION_HEADER" desc="Content description for the suggested section header collapse button.">
-        Tap to collapse
-      </message>
 
       <message name="IDS_ACCESSIBILITY_DEFAULT_APP_LABEL" desc="Accessibility label of the current window when app name is empty.">
         Application
