@@ -548,6 +548,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void performPreInflationStartup() {
+        // Initialize PopupCreator early so that it's available when WebContentsDelegateAndroid
+        // wants to create a new window.
+        PopupCreatorFactory.setInstance(new PopupCreatorImpl());
+
         mUmaActivityObserver =
                 new UmaActivityObserver(this, getLifecycleDispatcher(), getActivityType());
         setupUnownedUserDataSuppliers();
@@ -1087,16 +1091,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             @SupportedProfileType int supportedProfileType,
             @Nullable MultiInstanceManager multiInstanceManager) {
         try (TraceEvent e = TraceEvent.scoped("ChromeActivity.initializeChromeAndroidTask")) {
-            // 1. Initialize PopupCreator early so that ChromeAndroidTaskTracker can use it to
-            // create intents for popup windows. This overwrites the instance each time.
-            PopupCreatorFactory.setInstance(new PopupCreatorImpl());
-
             var chromeAndroidTaskTracker = ChromeAndroidTaskTrackerFactory.getInstance();
             if (chromeAndroidTaskTracker == null) {
                 return;
             }
 
-            // 2. Obtain ChromeAndroidTask dependencies.
+            // 1. Obtain ChromeAndroidTask dependencies.
             var activityWindowAndroid = getWindowAndroid();
             assert activityWindowAndroid != null
                     : "ChromeAndroidTask must be initialized after Java WindowAndroid is created.";
@@ -1112,7 +1112,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             /* defaultValue= */ -1);
             Integer pendingId = pendingIdExtraValue == -1 ? null : pendingIdExtraValue;
 
-            // 3. Obtain a ChromeAndroidTask that represents the Task (window) for this Activity.
+            // 2. Obtain a ChromeAndroidTask that represents the Task (window) for this Activity.
             var chromeAndroidTask =
                     chromeAndroidTaskTracker.obtainTask(
                             browserWindowType,
@@ -1124,7 +1124,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                     desktopWindowStateManager),
                             pendingId);
 
-            // 4. Add windowing features.
+            // 3. Add windowing features.
             // TODO(crbug.com/491791326): Handle multiple profiles for mobile.
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             assert profile != null;
@@ -1133,7 +1133,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                             ExtensionWindowControllerBridge.class, profile, activityWindowAndroid),
                     ExtensionWindowControllerBridgeFactory::create);
 
-            // 5. Make the ChromeAndroidTask available via OneshotSupplier.
+            // 4. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);
         }
     }
