@@ -20,6 +20,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
 
@@ -76,6 +77,10 @@ void PrintLayerHierarchyImp(const Layer* layer,
 
   if (!layer->visible())
     *out << " !visible";
+
+  if (layer->GetMasksToBounds()) {
+    *out << " masks-to-bounds";
+  }
 
   std::string property_indent_str(indent+3, ' ');
   *out << '\n' << property_indent_str;
