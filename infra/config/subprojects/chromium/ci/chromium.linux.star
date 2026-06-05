@@ -492,6 +492,9 @@ ci.thin_tester(
         per_test_modifications = {
             "browser_tests": targets.mixin(
                 swarming = targets.swarming(
+                    # TODO(crbug.com/493903786): Drop back down to 1h timeout
+                    # after resources are deployed.
+                    hard_timeout_sec = 7200,
                     shards = 40,
                 ),
             ),
@@ -516,6 +519,7 @@ ci.thin_tester(
         short_name = "dbg",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
+    execution_timeout = 6 * time.hour,
 )
 
 ci.builder(
