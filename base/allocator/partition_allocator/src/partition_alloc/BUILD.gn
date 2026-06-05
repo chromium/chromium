@@ -78,6 +78,8 @@ config("dependants_extra_warnings") {
       "-Winvalid-constexpr",
       "-Winvalid-offsetof",
       "-Wmissing-field-initializers",
+      "-Wnontrivial-memaccess",
+      "-Wnontrivial-memcall",
       "-Wnon-c-typedef-for-linkage",
       "-Wpessimizing-move",
       "-Wrange-loop-analysis",

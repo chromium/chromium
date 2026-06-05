@@ -16,6 +16,7 @@
 #include "partition_alloc/partition_alloc-inl.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/containers/span.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_base/time/time.h"
@@ -500,8 +501,21 @@ ThreadCache* ThreadCache::Create(PartitionRoot* root, size_t index) {
   if (!IsValidPtr(tcaches)) {
     constexpr size_t array_size =
         sizeof(ThreadCache) * internal::kMaxThreadCacheIndex;
-    tcaches = reinterpret_cast<ThreadCache*>(operator new(array_size));
-    PA_UNSAFE_TODO(memset(tcaches, 0, array_size));
+    // The memory is allocated from the internal allocator to avoid reentrancy
+    // issues.
+    //
+    // To avoid -Wnontrivial-memcall, the memory initialization must happen over
+    // a uint8_t[] instead of a ThreadCache[]. Indeed, ThreadCache has a
+    // non-trivial constructor. This is safe because we will use placement new
+    // to construct tcaches[index] right after. The other ThreadCaches in the
+    // array are not used until they are initialized, and they are just reserved
+    // as raw memory until then.
+    void* tcaches_memory = operator new(array_size);
+    // SAFETY: The span size matches the allocation.
+    auto storage_span = PA_UNSAFE_BUFFERS(
+        base::span<uint8_t>(static_cast<uint8_t*>(tcaches_memory), array_size));
+    std::ranges::fill(storage_span, 0);
+    tcaches = static_cast<ThreadCache*>(tcaches_memory);
     // This may allocate.
     internal::PartitionTlsSet(internal::g_thread_cache_key, tcaches);
   }
