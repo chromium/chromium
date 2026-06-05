@@ -786,6 +786,9 @@ LensQueryFlowRouter::CreateContextualInputData(
   // presence of a follow-up interaction request instead of this bit in the
   // context upload request.
   contextual_input_data->has_lens_usage_intent = false;
+  contextual_input_data->upload_type =
+      lens::LensOverlayContextualInputUploadType::
+          CONTEXTUAL_INPUT_UPLOAD_TYPE_CONTEXTUAL_SEARCHBOX_INITIAL_QUERY;
   return contextual_input_data;
 }
 
