@@ -159,6 +159,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIphController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.readaloud.ReadAloudIphController;
+import org.chromium.chrome.browser.readaloud.ReadAloudMetrics.ReasonForStoppingPlayback;
 import org.chromium.chrome.browser.safe_browsing.AdvancedProtectionCoordinator;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -1892,8 +1893,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mCallbackController.makeCancelable(
                             (ReadAloudController readAloudController) -> {
                                 if (mTabBottomSheetManager != null) {
-                                    mTabBottomSheetManager.setReadAloudActivePlaybackTabSupplier(
-                                            readAloudController.getActivePlaybackTabSupplier());
+                                    mTabBottomSheetManager.initReadAloudIntegration(
+                                            readAloudController.getActivePlaybackTabSupplier(),
+                                            () -> {
+                                                readAloudController.maybeStopPlayback(
+                                                        null,
+                                                        ReasonForStoppingPlayback.MANUAL_CLOSE);
+                                            });
                                 }
                                 assert mTabBottomSheetReadAloudControllerCallback != null;
                                 mReadAloudControllerSupplier.removeObserver(

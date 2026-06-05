@@ -108,6 +108,7 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     private boolean mIsSuppressedOnToolbarSwipe;
     private boolean mIsSuppressedByReadAloud;
     private boolean mIsSuppressedByIncognito;
+    private boolean mIsSuppressedByAutofill;
 
     private final TabModelSelectorObserver mTabModelSelectorObserver =
             new TabModelSelectorObserver() {
@@ -132,7 +133,6 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                     }
                 }
             };
-    private boolean mIsSuppressedByAutofill;
 
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
@@ -153,6 +153,7 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     private @Nullable ManualFillingComponent mCurrentManualFillingComponent;
 
     private @Nullable NullableObservableSupplier<Tab> mActivePlaybackTabSupplier;
+    private @Nullable Runnable mReadAloudStopPlaybackCallback;
     private final Callback<@Nullable Tab> mActivePlaybackTabObserver =
             this::onActivePlaybackTabChanged;
 
@@ -260,6 +261,9 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                 || mIsSuppressedByAutofill) {
             // We are currently suppressed, save this sheet to be shown when suppression ends.
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
+            if (mIsSuppressedByReadAloud && mReadAloudStopPlaybackCallback != null) {
+                mReadAloudStopPlaybackCallback.run();
+            }
             return true;
         }
         if (!mSuppressBottomSheetForTesting
@@ -345,11 +349,13 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     }
 
     @Override
-    public void setReadAloudActivePlaybackTabSupplier(
-            NullableObservableSupplier<Tab> activePlaybackTabSupplier) {
+    public void initReadAloudIntegration(
+            NullableObservableSupplier<Tab> activePlaybackTabSupplier,
+            Runnable stopPlaybackCallback) {
         assert mActivePlaybackTabSupplier == null;
         mActivePlaybackTabSupplier = activePlaybackTabSupplier;
         mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(mActivePlaybackTabObserver);
+        mReadAloudStopPlaybackCallback = stopPlaybackCallback;
     }
 
     @Override
@@ -358,6 +364,7 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
             mActivePlaybackTabSupplier.removeObserver(mActivePlaybackTabObserver);
             mActivePlaybackTabSupplier = null;
         }
+        mReadAloudStopPlaybackCallback = null;
         if (mCurrentManualFillingComponent != null) {
             mCurrentManualFillingComponent
                     .getIsAccessoryRequestedSupplier()
@@ -484,21 +491,25 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         mSuppressBottomSheetForTesting = suppress;
     }
 
-    public void setReadAloudActivePlaybackTabSupplierForTesting(
-            NullableObservableSupplier<Tab> activePlaybackTabSupplier) {
+    public void initReadAloudIntegrationForTesting(
+            NullableObservableSupplier<Tab> activePlaybackTabSupplier,
+            Runnable stopPlaybackCallback) {
         var oldSupplier = mActivePlaybackTabSupplier;
         if (oldSupplier != null) {
             oldSupplier.removeObserver(mActivePlaybackTabObserver);
         }
+        var oldCallback = mReadAloudStopPlaybackCallback;
 
         mActivePlaybackTabSupplier = activePlaybackTabSupplier;
         mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(mActivePlaybackTabObserver);
+        mReadAloudStopPlaybackCallback = stopPlaybackCallback;
         ResettersForTesting.register(
                 () -> {
                     if (mActivePlaybackTabSupplier != null) {
                         mActivePlaybackTabSupplier.removeObserver(mActivePlaybackTabObserver);
                     }
                     mActivePlaybackTabSupplier = oldSupplier;
+                    mReadAloudStopPlaybackCallback = oldCallback;
                     if (mActivePlaybackTabSupplier != null) {
                         mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(
                                 mActivePlaybackTabObserver);

@@ -373,13 +373,12 @@ public class TabBottomSheetManagerTest {
                         });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mManager.setReadAloudActivePlaybackTabSupplierForTesting(readAloudTabSupplier);
+                    mManager.initReadAloudIntegrationForTesting(readAloudTabSupplier, () -> {});
                 });
         showBottomSheetAndBlockUntilReady();
 
-        // Fake start read aloud
         ThreadUtils.runOnUiThreadBlocking(
-                () -> readAloudTabSupplier.set(mActivity.getActivityTab()));
+                () -> readAloudTabSupplier.set(mActivity.getTabModelSelector().getCurrentTab()));
 
         CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
 
@@ -387,6 +386,39 @@ public class TabBottomSheetManagerTest {
         ThreadUtils.runOnUiThreadBlocking(() -> readAloudTabSupplier.set(null));
 
         blockUntilSheetFullyRestored();
+    }
+
+    @Test
+    @SmallTest
+    public void testReadAloudClosedOnBottomSheetShown() {
+        SettableNullableObservableSupplier<Tab> readAloudTabSupplier =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            return ObservableSuppliers.createNullable();
+                        });
+        Runnable mockStopPlaybackCallback = mock(Runnable.class);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.initReadAloudIntegrationForTesting(
+                            readAloudTabSupplier, mockStopPlaybackCallback);
+                });
+
+        // Start read aloud
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> readAloudTabSupplier.set(mActivity.getTabModelSelector().getCurrentTab()));
+
+        // Call tabBottomSheet
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mManager.tryToShowBottomSheet(
+                            mDelegate,
+                            mCoBrowseViews,
+                            /* animate= */ false,
+                            /* startsExpanded= */ true);
+                });
+
+        // Verify that stop playback callback was called
+        verify(mockStopPlaybackCallback).run();
     }
 
     @Test
