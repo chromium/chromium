@@ -1205,17 +1205,17 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // another profile.
   base::Lock origins_isolation_opt_in_lock_;
   // The set of all origins that have ever requested opt-in isolation or
-  // requested to opt-out, organized by BrowserContext. This is tracked so we
-  // know which origins need to be tracked when using default isolation in any
-  // given BrowsingInstance. Origins requesting isolation opt-in or out, if
-  // successful, are marked as isolated or not via
+  // requested to opt-out, keyed by BrowserContext's UniqueId(). This is
+  // tracked so we know which origins need to be tracked when using default
+  // isolation in any given BrowsingInstance. Origins requesting isolation
+  // opt-in or out, if successful, are marked as isolated or not via
   // DetermineOriginAgentClusterIsolation's checking
   // |requested_isolation_state|. Each BrowserContext's state is tracked
   // separately so that timing attacks do not reveal whether an origin has been
   // visited in another (e.g., incognito) BrowserContext. In general, the state
   // of other BrowsingInstances is not observable outside such timing side
   // channels.
-  base::flat_map<BrowserContext*, base::flat_set<url::Origin>>
+  base::flat_map<base::UnguessableToken, base::flat_set<url::Origin>>
       origin_isolation_opt_ins_and_outs_
           GUARDED_BY(origins_isolation_opt_in_lock_);
 

@@ -3227,9 +3227,11 @@ bool ChildProcessSecurityPolicyImpl::
     HasOriginEverRequestedOriginAgentClusterValue(
         BrowserContext* browser_context,
         const url::Origin& origin) {
+  const auto& browser_context_id = browser_context->UniqueToken();
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
-  return origin_isolation_opt_ins_and_outs_.contains(browser_context) &&
-         origin_isolation_opt_ins_and_outs_[browser_context].contains(origin);
+  auto it = origin_isolation_opt_ins_and_outs_.find(browser_context_id);
+  return it != origin_isolation_opt_ins_and_outs_.end() &&
+         it->second.contains(origin);
 }
 
 OriginAgentClusterIsolationState*
@@ -3285,10 +3287,13 @@ void ChildProcessSecurityPolicyImpl::AddDefaultIsolatedOriginIfNeeded(
   // avoid unnecessary work, since this is called on every commit. Skip this
   // during global walks and frame removals, since we do want to track the
   // origin's non-isolated status in those cases.
-  if (!is_global_walk_or_frame_removal &&
-      !(origin_isolation_opt_ins_and_outs_.contains(browser_context) &&
-        origin_isolation_opt_ins_and_outs_[browser_context].contains(origin))) {
-    return;
+  if (!is_global_walk_or_frame_removal) {
+    const auto& browser_context_id = browser_context->UniqueToken();
+    auto it = origin_isolation_opt_ins_and_outs_.find(browser_context_id);
+    if (it == origin_isolation_opt_ins_and_outs_.end() ||
+        !it->second.contains(origin)) {
+      return;
+    }
   }
 
   // If |origin| is already in the opt-in-out list, then we don't want to add it
@@ -3496,12 +3501,14 @@ bool ChildProcessSecurityPolicyImpl::UpdateOriginIsolationOptInListIfNecessary(
 
   base::AutoLock origins_isolation_opt_in_lock(origins_isolation_opt_in_lock_);
 
-  if (origin_isolation_opt_ins_and_outs_.contains(browser_context) &&
-      origin_isolation_opt_ins_and_outs_[browser_context].contains(origin)) {
+  const auto& browser_context_id = browser_context->UniqueToken();
+  auto it = origin_isolation_opt_ins_and_outs_.find(browser_context_id);
+  if (it != origin_isolation_opt_ins_and_outs_.end() &&
+      it->second.contains(origin)) {
     return false;
   }
 
-  origin_isolation_opt_ins_and_outs_[browser_context].insert(origin);
+  origin_isolation_opt_ins_and_outs_[browser_context_id].insert(origin);
   return true;
 }
 
