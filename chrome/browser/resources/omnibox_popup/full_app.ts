@@ -7,10 +7,8 @@ import '/strings.m.js';
 
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './full_app.css.js';
 import {getHtml} from './full_app.html.js';
 
 export class OmniboxFullAppElement extends CrLitElement {
@@ -18,32 +16,9 @@ export class OmniboxFullAppElement extends CrLitElement {
     return 'omnibox-full-app';
   }
 
-  static override get styles() {
-    return getCss();
-  }
-
   override render() {
     return getHtml.bind(this)();
   }
-
-  static override get properties() {
-    return {
-      omniboxPopupDebugEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
-      // TODO(b/517218130): Ensure Omnibox is laid out correctly when
-      //   `isTouchUi_` is true.
-      isTouchUi_: {
-        type: Boolean,
-        reflect: true,
-      },
-    };
-  }
-
-  protected accessor omniboxPopupDebugEnabled_ =
-      loadTimeData.getBoolean('omniboxPopupDebugEnabled');
-  protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
 
   private isDebug_: boolean =
       new URLSearchParams(window.location.search).has('debug');

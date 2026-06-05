@@ -11,6 +11,9 @@
 
 :host {
   /* Embedders should define --cr-searchbox-min-width. */
+  --cr-searchbox-icon-left-position: 5px;
+  --cr-searchbox-icon-top-position: 0;
+  --cr-searchbox-min-width: 100%;
   --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
   --cr-searchbox-icon-spacing: 11px;
   --cr-searchbox-icon-width: 26px;
@@ -21,10 +24,27 @@
   --cr-searchbox-voice-search-button-width: 0px;
   --cr-searchbox-width: var(--cr-searchbox-min-width);
   border-radius: var(--cr-searchbox-border-radius);
+  display: block;
   font-size: var(--cr-searchbox-font-size, 16px);
   height: var(--cr-searchbox-height);
   width: var(--cr-searchbox-width);
   z-index: 99;
+}
+
+/* TODO(b/519185419): Get layout constants and font sizes from a C++ layout
+ *    helper instead of manually defining them here. */
+:host([is-touch-ui_]) {
+  --cr-searchbox-font-size: 15px;
+  --location-bar-height: 36px;
+  --location-bar-page-info-icon-vertical-padding: 3px;
+}
+
+/* TODO(b/519185419): Get layout constants and font sizes from a C++ layout
+ *    helper instead of manually defining them here. */
+:host(:not([is-touch-ui_])) {
+  --cr-searchbox-font-size: 14px;
+  --location-bar-height: 34px;
+  --location-bar-page-info-icon-vertical-padding: 5px;
 }
 
 :host([searchbox-chrome-refresh-theming][dropdown-is-visible]) {
@@ -33,6 +53,19 @@
 
 :host([searchbox-chrome-refresh-theming]:not([searchbox-steady-state-shadow]):not([dropdown-is-visible])) {
   --cr-searchbox-shadow: none;
+}
+
+/* TODO(b/511199705): Ensure input has correct size when results visible. */
+:host(:not([dropdown-is-visible])) {
+  --cr-searchbox-height: var(--location-bar-height);
+  --cr-searchbox-input-height: calc(
+      var(--location-bar-height) -
+      2 * var(--location-bar-page-info-icon-vertical-padding));
+  --cr-searchbox-shadow: none;
+}
+
+:host([omnibox-popup-debug-enabled_]) cr-searchbox-input::part(searchbox-input) {
+  background-color: lightgreen;
 }
 
 :host([searchbox-voice-search-enabled_]) {
@@ -63,6 +96,7 @@
 
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
+  height: var(--cr-searchbox-input-height);
   padding-top: 2px;
 }
 
@@ -101,10 +135,10 @@ cr-searchbox-input::part(icon) {
   border-radius: 50%;
   display: flex;
   flex-shrink: 0;
-  height: 36px;
+  height: var(--cr-searchbox-height);
   justify-content: center;
   position: relative;
-  width: 36px;
+  width: var(--cr-searchbox-height);
   z-index: 100;
 }
 
@@ -148,7 +182,7 @@ cr-searchbox-input::part(icon) {
 
 cr-searchbox-dropdown::part(dropdown-content) {
   background-color: unset;
-  border-radius: unset;
+  border-radius: 0;
   box-shadow: unset;
   gap: unset;
   margin-bottom: unset;
