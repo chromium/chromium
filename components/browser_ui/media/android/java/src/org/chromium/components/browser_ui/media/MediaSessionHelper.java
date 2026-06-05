@@ -38,6 +38,7 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.media_session.mojom.MediaSession.SuspendType;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaImage;
 import org.chromium.services.media_session.MediaMetadata;
@@ -146,7 +147,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                             && mMediaSessionObserver != null
                             && mMediaSessionObserver.getMediaSession() != null) {
                         MediaSessionUma.recordPause(MediaSessionActionSource.SYSTEM_SLEEP);
-                        mMediaSessionObserver.getMediaSession().suspend();
+                        mMediaSessionObserver.getMediaSession().suspend(SuspendType.SYSTEM);
                     }
                 }
             };
@@ -174,7 +175,7 @@ public class MediaSessionHelper implements MediaImageCallback {
 
                     if (mMediaSessionObserver.getMediaSession() == null) return;
 
-                    mMediaSessionObserver.getMediaSession().suspend();
+                    mMediaSessionObserver.getMediaSession().suspend(SuspendType.UI);
                 }
 
                 @Override

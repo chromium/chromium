@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.media_session.mojom.MediaSession.SuspendType;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -306,7 +307,7 @@ public class FullscreenVideoPictureInPictureController {
         // `stashed`.  Also note that `mIsSuspendedForStash` can be reset elsewhere, to help to
         // account for missed events from Android.
         if (mIsPlaying && stashed && !mIsSuspendedForStash) {
-            mediaSession.suspend();
+            mediaSession.suspend(SuspendType.UI);
             mIsSuspendedForStash = true;
         } else if (!mIsPlaying && !stashed && mIsSuspendedForStash) {
             // Don't resume if we didn't pause it on the transition into stash.  For example, don't
@@ -635,7 +636,7 @@ public class FullscreenVideoPictureInPictureController {
             final MediaSession mediaSession = getMediaSession();
 
             if (mediaSession != null && mIsPlaying) {
-                mediaSession.suspend();
+                mediaSession.suspend(SuspendType.UI);
             }
         }
     }

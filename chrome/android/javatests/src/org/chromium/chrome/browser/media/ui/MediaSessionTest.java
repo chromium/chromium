@@ -41,6 +41,7 @@ import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.media.MediaSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -194,6 +195,12 @@ public class MediaSessionTest {
         mFakeTimeTestRule.deepSleepMillis(1500);
         simulateScreenOn();
         DOMUtils.waitForMediaPauseBeforeEnd(tab.getWebContents(), VIDEO_ID);
+
+        // Verify that the system sleep pause did not grant user activation.
+        String result =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(), "navigator.userActivation.isActive");
+        Assert.assertEquals("false", result);
     }
 
     @Test

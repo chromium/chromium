@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.media_session.mojom.MediaSession.SuspendType;
 
 import java.util.concurrent.TimeUnit;
 
@@ -181,7 +182,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         // Stash while media is playing.
         mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
-        verify(mMediaSession, times(1)).suspend();
+        verify(mMediaSession, times(1)).suspend(SuspendType.UI);
         mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Un-stash while media is still paused.
@@ -206,7 +207,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         // Stashing paused video should do nothing.
         mController.onStashReported(true);
-        verify(mMediaSession, times(0)).suspend();
+        verify(mMediaSession, times(0)).suspend(SuspendType.UI);
 
         // Un-stash should also do nothing.
         mController.onStashReported(false);
@@ -225,7 +226,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         // Stash normally.
         mWebContentsObserverCaptor.getValue().mediaStartedPlaying(0, true, true);
         mController.onStashReported(true);
-        verify(mMediaSession, times(1)).suspend();
+        verify(mMediaSession, times(1)).suspend(SuspendType.UI);
         mWebContentsObserverCaptor.getValue().mediaStoppedPlaying(0);
 
         // Restart playback while still stashed.
@@ -253,7 +254,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
         mController.onResume();
         verify(mActivity, times(0)).moveTaskToBack(true);
         // The media should be paused, though, just as if pip had closed.
-        verify(mMediaSession, times(1)).suspend();
+        verify(mMediaSession, times(1)).suspend(SuspendType.UI);
 
         // When the device is unlocked, we will get `onStart`.  This should cause pip to close
         // because it's still deferred from the `onResume` call, above.
