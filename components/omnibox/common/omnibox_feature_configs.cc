@@ -4,9 +4,12 @@
 
 #include "omnibox_feature_configs.h"
 
+#include <vector>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -796,5 +799,48 @@ ComposeboxSuggestionLimit&
 ComposeboxSuggestionLimit::ComposeboxSuggestionLimit::operator=(
     ComposeboxSuggestionLimit&&) = default;
 ComposeboxSuggestionLimit::~ComposeboxSuggestionLimit() = default;
+
+// Feature to enable the short suggest path.
+BASE_FEATURE(SuggestPathClientConfig::kUseShortSuggestPathV1,
+             "OmniboxUseShortSuggestPathV1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(std::string,
+                   kSuggestPathClient,
+                   &SuggestPathClientConfig::kUseShortSuggestPathV1,
+                   "OmniboxSuggestPathClient",
+                   "");
+
+SuggestPathClientConfig::SuggestPathClientConfig() {
+  enabled = base::FeatureList::IsEnabled(kUseShortSuggestPathV1);
+  const std::string param_value = kSuggestPathClient.Get();
+
+  if (param_value.empty()) {
+    enable_for_all = true;
+  } else {
+    enable_for_all = false;
+    std::vector<std::string> client_list = base::SplitString(
+        param_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    allowed_clients.insert(client_list.begin(), client_list.end());
+  }
+}
+
+bool SuggestPathClientConfig::ShouldUseShortPath(
+    const std::string& client_name) const {
+  if (!enabled) {
+    return false;
+  }
+
+  return enable_for_all || allowed_clients.contains(client_name);
+}
+
+SuggestPathClientConfig::SuggestPathClientConfig(
+    const SuggestPathClientConfig&) = default;
+SuggestPathClientConfig::SuggestPathClientConfig(SuggestPathClientConfig&&) =
+    default;
+SuggestPathClientConfig& SuggestPathClientConfig::operator=(
+    const SuggestPathClientConfig&) = default;
+SuggestPathClientConfig& SuggestPathClientConfig::operator=(
+    SuggestPathClientConfig&&) = default;
+SuggestPathClientConfig::~SuggestPathClientConfig() = default;
 
 }  // namespace omnibox_feature_configs

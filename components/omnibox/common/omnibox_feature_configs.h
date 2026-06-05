@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURE_CONFIGS_H_
 
+#include <string>
+#include <unordered_set>
+
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
@@ -632,6 +635,27 @@ struct ComposeboxSuggestionLimit : Config<ComposeboxSuggestionLimit> {
   size_t max_aim_suggestions;
   // Max number of contextual zps suggestions to show.
   size_t max_contextual_suggestions;
+};
+
+// Enables the short suggest path for the specified clients.
+struct SuggestPathClientConfig : Config<SuggestPathClientConfig> {
+  DECLARE_FEATURE(kUseShortSuggestPathV1);
+
+  SuggestPathClientConfig();
+  SuggestPathClientConfig(const SuggestPathClientConfig&);
+  SuggestPathClientConfig(SuggestPathClientConfig&&);
+  SuggestPathClientConfig& operator=(const SuggestPathClientConfig&);
+  SuggestPathClientConfig& operator=(SuggestPathClientConfig&&);
+  ~SuggestPathClientConfig();
+
+  bool enabled;
+  // Whether the short path is enabled for all clients.
+  bool enable_for_all = false;
+  // Set of client names allowed to use the short path.
+  std::unordered_set<std::string> allowed_clients;
+
+  // Returns whether the short path should be used for the given client.
+  bool ShouldUseShortPath(const std::string& client_name) const;
 };
 
 // Do not add new configs here at the bottom by default. They should be ordered

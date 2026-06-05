@@ -327,11 +327,6 @@ BASE_FEATURE(kOmniboxItemDecoration, DISABLED);
 // When the first suggestion is a url, the favicon is shown in the status view.
 BASE_FEATURE(kExactMatchFavicons, DISABLED);
 
-// If enabled, the omnibox will use the short suggest path.
-BASE_FEATURE(kUseShortSuggestPathV1,
-             "OmniboxUseShortSuggestPathV1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The features below allow tuning number of suggestions offered to users in
 // specific contexts. These features are default enabled and are used to control
 // related fieldtrial parameters.
