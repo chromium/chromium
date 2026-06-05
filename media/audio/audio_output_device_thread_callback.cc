@@ -93,7 +93,9 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   // that we have some data, we'll get another one after the device is awake and
   // ingesting data, which is what we want to track with this trace.
   if (callback_num_ == 2) {
-    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("audio",
+                    perfetto::NamedTrack::FromPointer(
+                        "media::AudioOutputDeviceThreadCallback", this));
     if (first_play_start_time_) {
       UmaHistogramTimes("Media.Audio.Render.OutputDeviceStartTime2",
                         base::TimeTicks::Now() - *first_play_start_time_);
@@ -130,7 +132,8 @@ void AudioOutputDeviceThreadCallback::InitializePlayStartTime() {
 
   DCHECK(!callback_num_);
   TRACE_EVENT_BEGIN("audio", "StartingPlayback",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "media::AudioOutputDeviceThreadCallback", this));
   first_play_start_time_ = base::TimeTicks::Now();
 }
 
