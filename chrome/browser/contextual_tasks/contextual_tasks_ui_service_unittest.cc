@@ -819,6 +819,11 @@ TEST_F(ContextualTasksUiServiceTest,
       /*from_can_create_window=*/true,
       /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksWindowTracking)) {
+    EXPECT_TRUE(service_for_nav_->window_trackers_for_testing().empty());
+    return;
+  }
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -884,6 +889,11 @@ TEST_F(ContextualTasksUiServiceTest,
       /*from_can_create_window=*/true,
       /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksWindowTracking)) {
+    EXPECT_TRUE(service_for_nav_->window_trackers_for_testing().empty());
+    return;
+  }
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -2317,6 +2327,11 @@ TEST_F(ContextualTasksUiServiceTest, RegisterWindow_UpdatesTracker) {
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
       /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksWindowTracking)) {
+    EXPECT_TRUE(service_for_nav_->window_trackers_for_testing().empty());
+    return;
+  }
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());
@@ -2351,6 +2366,11 @@ TEST_F(ContextualTasksUiServiceTest, CloseTrackedWindow_ClosesTab) {
       /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
       /*is_same_site_or_from_ui=*/true, false, std::nullopt, std::nullopt,
       blink::mojom::WindowFeatures()));
+  if (!base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksWindowTracking)) {
+    EXPECT_TRUE(service_for_nav_->window_trackers_for_testing().empty());
+    return;
+  }
 
   const auto& trackers = service_for_nav_->window_trackers_for_testing();
   ASSERT_EQ(1U, trackers.size());

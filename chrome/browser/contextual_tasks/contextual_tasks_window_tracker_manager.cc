@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/common/logger.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +20,9 @@ namespace contextual_tasks {
 ContextualTasksWindowTrackerManager::ContextualTasksWindowTrackerManager(
     Profile* profile)
     : profile_(profile) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   auto* collection = GlobalBrowserCollection::GetInstance();
   if (collection) {
     browser_collection_observation_.Observe(collection);
@@ -44,11 +48,17 @@ ContextualTasksWindowTrackerManager::~ContextualTasksWindowTrackerManager() {
 
 void ContextualTasksWindowTrackerManager::AddTracker(
     std::unique_ptr<ContextualTasksWindowTracker> tracker) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   window_trackers_.push_back(std::move(tracker));
 }
 
 void ContextualTasksWindowTrackerManager::RemoveTracker(
     ContextualTasksWindowTracker* tracker) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   OMNIBOX_LOG("window_tracker") << "RemoveTracker called";
   std::erase_if(window_trackers_,
                 [tracker](const auto& ptr) { return ptr.get() == tracker; });
@@ -58,6 +68,9 @@ void ContextualTasksWindowTrackerManager::RegisterWindow(
     ContextualTaskId task_id,
     const GURL& url,
     ContextualWindowId window_id) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   OMNIBOX_LOG("window_tracker")
       << "RegisterWindow called for task: "
       << task_id.value().AsLowercaseString() << ", URL: " << url.spec()
@@ -79,6 +92,9 @@ void ContextualTasksWindowTrackerManager::RegisterWindow(
 
 void ContextualTasksWindowTrackerManager::CloseTrackedWindow(
     ContextualWindowId window_id) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   OMNIBOX_LOG("window_tracker") << "CloseTrackedWindow called for window_id: "
                                 << window_id.value().ToString();
   for (const auto& tracker : window_trackers_) {
@@ -94,6 +110,9 @@ void ContextualTasksWindowTrackerManager::CloseTrackedWindow(
 
 bool ContextualTasksWindowTrackerManager::IsTrackedWindow(
     content::WebContents* web_contents) const {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return false;
+  }
   OMNIBOX_LOG("window_tracker") << "IsTrackedWindow, searching "
                                 << window_trackers_.size() << " trackers";
   for (const auto& tracker : window_trackers_) {
@@ -110,6 +129,9 @@ bool ContextualTasksWindowTrackerManager::IsTrackedWindow(
 bool ContextualTasksWindowTrackerManager::IsPendingWindow(
     const GURL& url,
     content::WebContents* source_contents) const {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return false;
+  }
   return GetPendingTracker(url, source_contents) != nullptr;
 }
 
@@ -117,6 +139,9 @@ ContextualTasksWindowTracker*
 ContextualTasksWindowTrackerManager::GetPendingTracker(
     const GURL& url,
     content::WebContents* source_contents) const {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return nullptr;
+  }
   OMNIBOX_LOG("window_tracker") << "GetPendingTracker, searching "
                                 << window_trackers_.size() << " trackers";
   for (const auto& tracker : window_trackers_) {
@@ -154,6 +179,9 @@ ContextualTasksWindowTrackerManager::MatchAndAssociatePendingTracker(
     const GURL& url,
     content::WebContents* source_contents,
     std::unique_ptr<content::WebContents> message_proxy_web_contents) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return nullptr;
+  }
   for (const auto& tracker : window_trackers_) {
     if (tracker->GetTabWebContents() == source_contents) {
       if (message_proxy_web_contents) {
@@ -178,6 +206,9 @@ ContextualTasksWindowTrackerManager::MatchAndAssociatePendingTracker(
 ContextualTasksWindowTracker*
 ContextualTasksWindowTrackerManager::FindTrackerByMessageProxy(
     content::WebContents* proxy_contents) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return nullptr;
+  }
   for (const auto& tracker : window_trackers_) {
     if (tracker->message_proxy_web_contents() == proxy_contents) {
       return tracker.get();
@@ -188,6 +219,9 @@ ContextualTasksWindowTrackerManager::FindTrackerByMessageProxy(
 
 void ContextualTasksWindowTrackerManager::OnBrowserCreated(
     BrowserWindowInterface* browser) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   if (browser->GetProfile()->GetOriginalProfile() ==
       profile_->GetOriginalProfile()) {
     TabListInterface* tab_list = TabListInterface::From(browser);
@@ -205,6 +239,9 @@ void ContextualTasksWindowTrackerManager::OnBrowserClosed(
 
 void ContextualTasksWindowTrackerManager::ObserveTabList(
     TabListInterface* tab_list) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   if (observed_tab_lists_.insert(tab_list).second) {
     tab_list->AddTabListInterfaceObserver(this);
   }
@@ -213,6 +250,9 @@ void ContextualTasksWindowTrackerManager::ObserveTabList(
 void ContextualTasksWindowTrackerManager::OnTabAdded(TabListInterface& tab_list,
                                                      tabs::TabInterface* tab,
                                                      int index) {
+  if (!GetIsContextualTasksWindowTrackingEnabled()) {
+    return;
+  }
   content::WebContents* inserted_contents = tab->GetContents();
   if (!inserted_contents) {
     return;

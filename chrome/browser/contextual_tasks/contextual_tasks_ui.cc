@@ -576,6 +576,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       "enableLockAndUnlockInputCapability",
       contextual_tasks::ShouldEnableLockAndUnlockInputCapability());
   source->AddBoolean("enableFileHint", contextual_tasks::GetEnableFileHint());
+  source->AddBoolean(
+      "windowTrackingEnabled",
+      contextual_tasks::GetIsContextualTasksWindowTrackingEnabled());
   source->AddBoolean("supportsLensButtonInComposebox", !BUILDFLAG(IS_ANDROID));
   source->AddBoolean("isSystemVoiceSearchEnabled", BUILDFLAG(IS_ANDROID));
   source->AddBoolean("enableComposeboxJumpFix",

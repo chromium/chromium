@@ -110,9 +110,15 @@ BASE_DECLARE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen);
 // When enabled, AIM must send the browser a message to initiate the cobrowse
 // experience for link clicks.
 BASE_DECLARE_FEATURE(kAimTriggeredThreadLinks);
+
+// Enables window tracking for Contextual Tasks.
+BASE_DECLARE_FEATURE(kContextualTasksWindowTracking);
+
 bool GetIsContextualTasksPdfCitationsEnabled();
 
 bool GetIsContextualTasksLazyFetchClusterInfoEnabled();
+
+bool GetIsContextualTasksWindowTrackingEnabled();
 
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {

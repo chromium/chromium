@@ -623,7 +623,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     // <if expr="not is_android">
     // Handle newwindow events with mock webviews.
-    new WindowManager(this.$.threadFrame);
+    if (loadTimeData.getBoolean('windowTrackingEnabled')) {
+      new WindowManager(this.$.threadFrame);
+    }
     // </if>
 
     // Check if the URL that loaded this page has a task attached to it. If it
