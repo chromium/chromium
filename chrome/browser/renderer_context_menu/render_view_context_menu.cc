@@ -4852,6 +4852,10 @@ void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
 
 void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
   // Append an item for opening Glic
+  if (!IsNormalBrowser()) {
+    return;
+  }
+
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
     std::string arm = features::kGlicContextMenuArm.Get();
     bool show_summarize_page = (arm == "arm2");
@@ -5039,6 +5043,11 @@ Browser* RenderViewContextMenu::GetBrowser() const {
   auto* browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
       embedder_web_contents_);
   return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
+}
+
+bool RenderViewContextMenu::IsNormalBrowser() const {
+  const BrowserWindowInterface* browser = GetBrowser();
+  return browser && browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 ToastController* RenderViewContextMenu::GetToastController() const {
