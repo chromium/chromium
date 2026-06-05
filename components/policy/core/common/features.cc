@@ -72,6 +72,12 @@ BASE_FEATURE(kUseManagementServiceForSensitivePolicies,
 BASE_FEATURE(kBypassURLBlocklistWildcardForInternalChromeUrls,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Modifies behavior of policies utilizing URLBlocklistManager.
+// When enabled, downgrades the match level to neutral if the URL is allowed by
+// the wildcard '*' in the allowlist.
+BASE_FEATURE(kDowngradeURLAllowlistWildcardToNeutral,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPolicyPageMojoMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeviceSignalsBackfillDisclaimer,

@@ -764,6 +764,68 @@ TEST_F(URLBlocklistManagerTest, UseBlocklistState) {
                                           "https://*", "http://example.com"));
 }
 
+TEST_F(URLBlocklistManagerTest, DowngradeURLAllowlistWildcardToNeutralEnabled) {
+  using State = URLBlocklist::URLBlocklistState;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDowngradeURLAllowlistWildcardToNeutral);
+
+  // Wildcard allowlist alone returns neutral.
+  EXPECT_EQ(State::URL_NEUTRAL_STATE,
+            GetUrlBlocklistStateAfterAllowing("*", "http://example.com"));
+
+  // When both "*" and "example.com" are in the allowlist.
+  URLBlocklist blocklist;
+  base::ListValue allowed;
+  allowed.Append("*");
+  allowed.Append("example.com");
+  blocklist.Allow(allowed);
+
+  // "google.com" only matches "*" and is downgraded to neutral.
+  EXPECT_EQ(State::URL_NEUTRAL_STATE,
+            blocklist.GetURLBlocklistState(GURL("http://google.com")));
+
+  // "example.com" matches the more specific filter and returns allowed.
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://example.com")));
+
+  // Explicitly disable downgrading.
+  blocklist.SetDowngradeAllowlistWildcardToNeutral(false);
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://google.com")));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://example.com")));
+}
+
+TEST_F(URLBlocklistManagerTest,
+       DowngradeURLAllowlistWildcardToNeutralDisabled) {
+  using State = URLBlocklist::URLBlocklistState;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDowngradeURLAllowlistWildcardToNeutral);
+
+  // When both "*" and "example.com" are in the allowlist.
+  URLBlocklist blocklist;
+
+  base::ListValue allowed;
+  allowed.Append("*");
+  allowed.Append("example.com");
+  blocklist.Allow(allowed);
+
+  // When disabled, both match and return allowed.
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://google.com")));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://example.com")));
+
+  // Explicitly disable downgrading.
+  blocklist.SetDowngradeAllowlistWildcardToNeutral(false);
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://google.com")));
+  EXPECT_EQ(State::URL_IN_ALLOWLIST,
+            blocklist.GetURLBlocklistState(GURL("http://example.com")));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Custom BlocklistSource implementation.
 // Custom BlocklistSource implementation.
@@ -782,6 +844,10 @@ class CustomBlocklistSource : public BlocklistSource {
     return &allowlist_;
   }
 
+  bool DowngradeAllowlistWildcardToNeutral() const override {
+    return downgrade_allowlist_wildcard_to_neutral_;
+  }
+
   void SetBlocklistObserver(base::RepeatingClosure observer) override {
     blocklist_observer_ = std::move(observer);
   }
@@ -796,6 +862,11 @@ class CustomBlocklistSource : public BlocklistSource {
     TriggerObserver();
   }
 
+  void SetDowngradeAllowlistWildcardToNeutral(bool downgrade) {
+    downgrade_allowlist_wildcard_to_neutral_ = downgrade;
+    TriggerObserver();
+  }
+
  private:
   void TriggerObserver() {
     if (!blocklist_observer_) {
@@ -807,6 +878,7 @@ class CustomBlocklistSource : public BlocklistSource {
   base::ListValue blocklist_;
   base::ListValue allowlist_;
   base::RepeatingClosure blocklist_observer_;
+  bool downgrade_allowlist_wildcard_to_neutral_ = true;
 };
 
 TEST_F(URLBlocklistManagerTest, SetAndUnsetOverrideBlockListSource) {
@@ -879,6 +951,25 @@ TEST_F(URLBlocklistManagerTest, BlockListSourceUpdates) {
   EXPECT_EQ(
       URLBlocklist::URL_NEUTRAL_STATE,
       blocklist_manager()->GetURLBlocklistState(GURL("http://preconnect.com")));
+}
+
+TEST_F(URLBlocklistManagerTest, SetDowngradeAllowlistWildcardToNeutral) {
+  using State = URLBlocklist::URLBlocklistState;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDowngradeURLAllowlistWildcardToNeutral);
+
+  std::unique_ptr<CustomBlocklistSource> custom_blocklist =
+      std::make_unique<CustomBlocklistSource>();
+  custom_blocklist->SetAllowlistSpec(base::ListValue().Append("*"));
+  custom_blocklist->SetDowngradeAllowlistWildcardToNeutral(false);
+
+  blocklist_manager()->SetOverrideBlockListSource(std::move(custom_blocklist));
+  task_environment()->RunUntilIdle();
+
+  // Wildcard is not downgraded because BlocklistSource configured it to false.
+  EXPECT_EQ(State::URL_IN_ALLOWLIST, blocklist_manager()->GetURLBlocklistState(
+                                         GURL("http://example.com")));
 }
 #endif
 }  // namespace policy

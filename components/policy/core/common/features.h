@@ -69,6 +69,11 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kUseManagementServiceForSensitivePolicies);
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kBypassURLBlocklistWildcardForInternalChromeUrls);
 
+// Modifies behavior of policies utilizing URLBlocklistManager.
+// When enabled, downgrades the match level to neutral if the URL is allowed by
+// the wildcard '*' in the allowlist.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kDowngradeURLAllowlistWildcardToNeutral);
+
 // Enables the mojo version of the page handler for chrome://policy.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyPageMojoMigration);
 

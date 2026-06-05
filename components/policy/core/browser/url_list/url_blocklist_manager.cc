@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -79,8 +80,10 @@ constexpr char kIosNtpHost[] = "newtab";
 
 // Returns a blocklist based on the given |block| and |allow| pattern lists.
 std::unique_ptr<URLBlocklist> BuildBlocklist(const base::ListValue* block,
-                                             const base::ListValue* allow) {
+                                             const base::ListValue* allow,
+                                             bool downgrade = true) {
   auto blocklist = std::make_unique<URLBlocklist>();
+  blocklist->SetDowngradeAllowlistWildcardToNeutral(downgrade);
   if (block) {
     blocklist->Block(*block);
   }
@@ -138,6 +141,10 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
 
 bool IsWildcardBlocklist(const FilterComponents& filter) {
   return !filter.allow && filter.IsWildcard();
+}
+
+bool IsWildcardAllowlist(const FilterComponents& filter) {
+  return filter.allow && filter.IsWildcard();
 }
 
 // Determines if the left-hand side `lhs` filter takes precedence over the
@@ -227,11 +234,17 @@ class DefaultBlocklistSource : public BlocklistSource {
     }
   }
 
+  bool DowngradeAllowlistWildcardToNeutral() const override { return true; }
+
  private:
   std::optional<std::string> blocklist_pref_path_;
   std::optional<std::string> allowlist_pref_path_;
   PrefChangeRegistrar pref_change_registrar_;
 };
+
+bool BlocklistSource::DowngradeAllowlistWildcardToNeutral() const {
+  return true;
+}
 
 URLBlocklist::URLBlocklist() : url_matcher_(new URLMatcher) {}
 
@@ -263,6 +276,13 @@ URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
     return URLBlocklist::URLBlocklistState::URL_NEUTRAL_STATE;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kDowngradeURLAllowlistWildcardToNeutral) &&
+      downgrade_allowlist_wildcard_to_neutral_ &&
+      IsWildcardAllowlist(*highest_priority_filter)) {
+    return URLBlocklist::URLBlocklistState::URL_NEUTRAL_STATE;
+  }
+
   // Some of the internal Chrome URLs are not affected by the "*" in the
   // blocklist. Note that the "*" is the lowest priority filter possible, so
   // any higher priority filter will be applied first.
@@ -274,6 +294,10 @@ URLBlocklist::URLBlocklistState URLBlocklist::GetURLBlocklistState(
   return highest_priority_filter->allow
              ? URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
              : URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+}
+
+void URLBlocklist::SetDowngradeAllowlistWildcardToNeutral(bool downgrade) {
+  downgrade_allowlist_wildcard_to_neutral_ = downgrade;
 }
 
 const FilterComponents* URLBlocklist::GetHighestPriorityFilterFor(
@@ -343,6 +367,8 @@ void URLBlocklistManager::Update() {
                                               ? override_blocklist_source_.get()
                                               : default_blocklist_source_.get();
 
+  bool downgrade = current_source->DowngradeAllowlistWildcardToNeutral();
+
   const base::ListValue* block = current_source->GetBlocklistSpec();
   const base::ListValue* allow = current_source->GetAllowlistSpec();
 
@@ -353,7 +379,8 @@ void URLBlocklistManager::Update() {
           base::Owned(block ? std::make_unique<base::ListValue>(block->Clone())
                             : nullptr),
           base::Owned(allow ? std::make_unique<base::ListValue>(allow->Clone())
-                            : nullptr)),
+                            : nullptr),
+          downgrade),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }

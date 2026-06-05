@@ -353,3 +353,8 @@ const base::ListValue*
 OnTaskBlocklist::OnTaskBlocklistSource::GetAllowlistSpec() const {
   return &allowlist_;
 }
+
+bool OnTaskBlocklist::OnTaskBlocklistSource::
+    DowngradeAllowlistWildcardToNeutral() const {
+  return false;
+}

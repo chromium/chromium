@@ -56,6 +56,8 @@ class AlwaysOnVpnPreConnectBlocklistSource : public policy::BlocklistSource {
         policy::policy_prefs::kAlwaysOnVpnPreConnectUrlAllowlist, observer);
   }
 
+  bool DowngradeAllowlistWildcardToNeutral() const override { return true; }
+
  private:
   const base::ListValue blocklist_;
   PrefChangeRegistrar pref_change_registrar_;

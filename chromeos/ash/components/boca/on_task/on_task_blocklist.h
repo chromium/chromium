@@ -36,6 +36,7 @@ class OnTaskBlocklist {
 
     const base::ListValue* GetBlocklistSpec() const override;
     const base::ListValue* GetAllowlistSpec() const override;
+    bool DowngradeAllowlistWildcardToNeutral() const override;
     void SetBlocklistObserver(base::RepeatingClosure observer) override {}
 
    private:
