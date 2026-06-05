@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/script/module_script.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -14,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
@@ -74,13 +72,6 @@ class ModuleScriptTestModulator final : public DummyModulator {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
     DummyModulator::Trace(visitor);
-  }
-
-  // The kDefault V8 cache options behavior provided by DummyModulator varies
-  // depending on the build configuration or platform. Force using kCode to
-  // ensure we are testing the desired behavior.
-  mojom::blink::V8CacheOptions GetV8CacheOptions() const override {
-    return mojom::blink::V8CacheOptions::kCode;
   }
 
  private:
@@ -190,8 +181,6 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
   using Checkpoint = testing::StrictMock<testing::MockFunction<void(int)>>;
 
   V8TestingScope scope;
-  scope.GetWindow().GetFrame()->GetSettings()->SetV8CacheOptions(
-      mojom::blink::V8CacheOptions::kCode);
   Modulator* modulator =
       MakeGarbageCollected<ModuleScriptTestModulator>(scope.GetScriptState());
   Modulator::SetModulator(scope.GetScriptState(), modulator);
@@ -306,7 +295,7 @@ TEST_F(ModuleScriptTest, V8CodeCache) {
 TEST_F(ModuleScriptTest, ValueWrapperSyntheticModuleScript) {
   V8TestingScope scope;
   v8::Local<v8::Value> local_value(v8::Number::New(scope.GetIsolate(), 1234));
-  auto* modulator =
+  Modulator* modulator =
       MakeGarbageCollected<ModuleScriptTestModulator>(scope.GetScriptState());
   ValueWrapperSyntheticModuleScript* module_script =
       CreateValueWrapperSyntheticModuleScript(modulator, local_value);
@@ -506,17 +495,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithHashChecking) {
   }
 }
 
-#if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
-// WebUI bundled cache is not used on Fuchsia, and since we disable caching
-// by default on Fuchsia size-optimized builds (overriding kDefault to kNone),
-// this test (which uses kDefault) will fail due to early return.
-#define MAYBE_LoadingSupportsWebUIBundledCodeCaching \
-  DISABLED_LoadingSupportsWebUIBundledCodeCaching
-#else
-#define MAYBE_LoadingSupportsWebUIBundledCodeCaching \
-  LoadingSupportsWebUIBundledCodeCaching
-#endif
-TEST_F(ModuleScriptTest, MAYBE_LoadingSupportsWebUIBundledCodeCaching) {
+TEST_F(ModuleScriptTest, LoadingSupportsWebUIBundledCodeCaching) {
   // Initialize the modulator.
   V8TestingScope scope;
   Modulator* modulator =

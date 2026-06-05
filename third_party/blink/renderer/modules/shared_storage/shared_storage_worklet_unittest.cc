@@ -21,7 +21,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "gin/array_buffer.h"
 #include "gin/dictionary.h"
@@ -725,15 +724,6 @@ class SharedStorageWorkletCodeCacheTest : public SharedStorageWorkletTest {
     }
     SharedStorageWorkletTest::SetUp();
   }
-
-  // On Fuchsia size-optimized builds, the default V8 cache option is
-  // overridden to kNone, disabling code caching by default.
-  static constexpr size_t kExpectedCacheableMetadataCount =
-#if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
-      0;
-#else
-      1;
-#endif
 };
 
 TEST_F(SharedStorageWorkletCodeCacheTest,
@@ -814,8 +804,7 @@ TEST_F(SharedStorageWorkletCodeCacheTest, DidGenerateData) {
   EXPECT_EQ(mock_code_cache_host_->clear_code_cache_entry_count(), 0u);
 
   // Code cache was generated.
-  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(),
-            1 * kExpectedCacheableMetadataCount);
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 1u);
 }
 
 TEST_F(SharedStorageWorkletCodeCacheTest, AddModuleTwice) {
@@ -839,8 +828,7 @@ TEST_F(SharedStorageWorkletCodeCacheTest, AddModuleTwice) {
   // The second script loading also triggered the code cache generation. This
   // implies that the code cache was still not used. This is expected, as we
   // won't store the cached code entirely for first seen URLs.
-  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(),
-            2 * kExpectedCacheableMetadataCount);
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 2u);
 }
 
 TEST_F(SharedStorageWorkletCodeCacheTest, AddModuleThreeTimes) {
@@ -864,8 +852,7 @@ TEST_F(SharedStorageWorkletCodeCacheTest, AddModuleThreeTimes) {
 
   // The third script loading did not trigger the code cache generation. This
   // implies that the cached code was used for the third script loading.
-  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(),
-            2 * kExpectedCacheableMetadataCount);
+  EXPECT_EQ(mock_code_cache_host_->did_generate_cacheable_metadata_count(), 2u);
 }
 
 TEST_F(SharedStorageWorkletTest, WorkletTerminationDueToDisconnect) {

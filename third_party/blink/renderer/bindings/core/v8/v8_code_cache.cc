@@ -412,15 +412,6 @@ V8CodeCache::GetCompileOptionsInternal(
                            no_cache_reason);
   }
 
-#if BUILDFLAG(IS_FUCHSIA) && defined(__OPTIMIZE_SIZE__)
-  // On Fuchsia size-optimized builds, default is to not cache.
-  // Note that Fuchsia doesn't use kWebUIBundledCache, so we don't need to
-  // worry about bypassing it here when overriding to kNone.
-  if (cache_options == mojom::blink::V8CacheOptions::kDefault) {
-    cache_options = mojom::blink::V8CacheOptions::kNone;
-  }
-#endif
-
   if (cache_options == mojom::blink::V8CacheOptions::kNone) {
     no_cache_reason = v8::ScriptCompiler::kNoCacheBecauseCachingDisabled;
     return std::make_tuple(no_code_cache_compile_options,
