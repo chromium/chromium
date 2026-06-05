@@ -1528,7 +1528,8 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletGet) {
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, WorkletKeys) {
+// TODO(crbug.com/483748082): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, DISABLED_WorkletKeys) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -3989,7 +3990,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DocumentTiming) {
   histogram_tester_.ExpectTotalCount(kTimingDocumentClearHistogram, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, WorkletTiming) {
+// TODO(crbug.com/483748082): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DISABLED_WorkletTiming) {
   base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
 
   // The test assumes pages get deleted after navigation. To ensure this,
