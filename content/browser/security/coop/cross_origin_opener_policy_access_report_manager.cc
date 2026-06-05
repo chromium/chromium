@@ -41,7 +41,7 @@ std::optional<blink::FrameToken> GetFrameToken(
 // `frame`, but are in a different virtual browsing context group.
 std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
     FrameTreeNode* frame) {
-  DCHECK(frame->IsMainFrame());
+  CHECK(frame->IsMainFrame(), base::NotFatalUntil::M152);
   int virtual_browsing_context_group =
       frame->current_frame_host()->virtual_browsing_context_group();
 
@@ -83,7 +83,8 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
 
   // Fenced frame roots are in their own BrowsingInstance and shouldn't be
   // joined with any other main frames.
-  DCHECK(!frame->IsInFencedFrameTree() || other_main_frames.empty());
+  CHECK(!frame->IsInFencedFrameTree() || other_main_frames.empty(),
+        base::NotFatalUntil::M152);
 
   CrossOriginOpenerPolicyAccessReportManager* access_manager_frame =
       frame->current_frame_host()->coop_access_report_manager();
@@ -107,11 +108,12 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
 void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
     FrameTreeNode* accessing_node,
     FrameTreeNode* accessed_node) {
-  DCHECK_NE(accessing_node, accessed_node);
-  DCHECK(accessing_node->current_frame_host()->coop_access_report_manager() ==
-             this ||
-         accessed_node->current_frame_host()->coop_access_report_manager() ==
-             this);
+  CHECK_NE(accessing_node, accessed_node, base::NotFatalUntil::M152);
+  CHECK(accessing_node->current_frame_host()->coop_access_report_manager() ==
+                this ||
+            accessed_node->current_frame_host()->coop_access_report_manager() ==
+                this,
+        base::NotFatalUntil::M152);
   if (!coop_reporter_.get())
     return;
 

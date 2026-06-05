@@ -118,7 +118,7 @@ CrossOriginOpenerPolicyReporter::CrossOriginOpenerPolicyReporter(
       context_referrer_url_(SanitizedURL(context_referrer_url)),
       coop_(coop),
       network_anonymization_key_(network_anonymization_key) {
-  DCHECK(!reporting_source_.is_empty());
+  CHECK(!reporting_source_.is_empty(), base::NotFatalUntil::M152);
 }
 
 CrossOriginOpenerPolicyReporter::~CrossOriginOpenerPolicyReporter() = default;
@@ -240,8 +240,9 @@ void CrossOriginOpenerPolicyReporter::QueueAccessReport(
 
   const std::string& endpoint = coop_.report_only_reporting_endpoint.value();
 
-  DCHECK(base::FeatureList::IsEnabled(
-      network::features::kCrossOriginOpenerPolicy));
+  CHECK(
+      base::FeatureList::IsEnabled(network::features::kCrossOriginOpenerPolicy),
+      base::NotFatalUntil::M152);
 
   base::DictValue body;
   body.Set(kType, network::CoopAccessReportTypeToString(report_type));

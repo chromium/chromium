@@ -160,9 +160,9 @@ CrossOriginOpenerPolicyStatus::SanitizeResponse(
     // defaulted to the default unsafe-none.
     // Data documents can only be loaded on main documents through browser
     // initiated navigations. These never inherit sandbox flags.
-    DCHECK(!response_url.SchemeIsBlob());
-    DCHECK(!response_url.SchemeIsFileSystem());
-    DCHECK(!response_url.SchemeIs(url::kDataScheme));
+    CHECK(!response_url.SchemeIsBlob(), base::NotFatalUntil::M152);
+    CHECK(!response_url.SchemeIsFileSystem(), base::NotFatalUntil::M152);
+    CHECK(!response_url.SchemeIs(url::kDataScheme), base::NotFatalUntil::M152);
 
     // We should force a COOP browsing instance swap to avoid certain
     // opener+error pages exploits, see https://crbug.com/1256823 and
@@ -207,12 +207,12 @@ void CrossOriginOpenerPolicyStatus::EnforceCOOP(
           ->ComputeIsolationInfoForSubresourcesForPendingCommit(
               response_origin, navigation_request_->is_credentialless(),
               navigation_request_->ComputeFencedFrameNonce());
-  DCHECK(!isolation_info_for_subresources.IsEmpty());
+  CHECK(!isolation_info_for_subresources.IsEmpty(), base::NotFatalUntil::M152);
 
-    // Set up endpoint if response contains Reporting-Endpoints header.
-    SetReportingEndpoints(response_origin, storage_partition,
-                          navigation_request_reporting_source,
-                          isolation_info_for_subresources);
+  // Set up endpoint if response contains Reporting-Endpoints header.
+  SetReportingEndpoints(response_origin, storage_partition,
+                        navigation_request_reporting_source,
+                        isolation_info_for_subresources);
 
   auto response_reporter = std::make_unique<CrossOriginOpenerPolicyReporter>(
       storage_partition, response_url, response_referrer_url, response_coop,

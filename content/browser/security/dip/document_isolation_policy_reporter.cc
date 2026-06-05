@@ -33,8 +33,8 @@ DocumentIsolationPolicyReporter::DocumentIsolationPolicyReporter(
       report_only_endpoint_(report_only_endpoint),
       reporting_source_(reporting_source),
       network_anonymization_key_(network_anonymization_key) {
-  DCHECK(storage_partition_);
-  DCHECK(!reporting_source_.is_empty());
+  CHECK(storage_partition_, base::NotFatalUntil::M152);
+  CHECK(!reporting_source_.is_empty(), base::NotFatalUntil::M152);
 }
 
 DocumentIsolationPolicyReporter::~DocumentIsolationPolicyReporter() = default;
