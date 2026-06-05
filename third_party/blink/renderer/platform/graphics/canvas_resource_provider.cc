@@ -243,7 +243,25 @@ bool Canvas2DResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
                                                  size_t row_bytes,
                                                  int x,
                                                  int y) {
-  return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::WritePixels");
+  DCHECK(IsValid());
+  DCHECK(!Recorder().HasRecordedDrawOps());
+
+  if (!skia_canvas_) {
+    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+  }
+
+  bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
+      orig_info, pixels, row_bytes, x, y);
+
+  if (wrote_pixels) {
+    // WritePixels content is not saved in recording. Calling WritePixels
+    // therefore invalidates `last_recording_` because it's now
+    // missing that information.
+    last_recording_ = std::nullopt;
+  }
+  return wrote_pixels;
 }
 
 BASE_FEATURE(kAppendCpuUsages, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -590,12 +608,28 @@ bool Canvas2DResourceProviderSharedImage::WritePixels(
     size_t row_bytes,
     int x,
     int y) {
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::WritePixels");
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
-  }
+    DCHECK(IsValid());
+    DCHECK(!Recorder().HasRecordedDrawOps());
 
-  TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::WritePixels");
+    if (!skia_canvas_) {
+      skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
+          GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+    }
+
+    bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
+        orig_info, pixels, row_bytes, x, y);
+
+    if (wrote_pixels) {
+      // WritePixels content is not saved in recording. Calling WritePixels
+      // therefore invalidates `last_recording_` because it's now
+      // missing that information.
+      last_recording_ = std::nullopt;
+    }
+    return wrote_pixels;
+  }
   if (IsGpuContextLost()) {
     return false;
   }
@@ -2556,34 +2590,7 @@ sk_sp<SkSurface> CanvasNon2DResourceProviderSharedImage::CreateSkSurface()
   return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
 }
 
-bool CanvasResourceProvider::UnacceleratedWritePixels(
-    const SkImageInfo& orig_info,
-    const void* pixels,
-    size_t row_bytes,
-    int x,
-    int y) {
-  TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
-  CHECK(!IsAccelerated());
 
-  DCHECK(IsValid());
-  DCHECK(!Recorder().HasRecordedDrawOps());
-
-  if (!skia_canvas_) {
-    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
-  }
-
-  bool wrote_pixels = GetSkSurface()->getCanvas()->writePixels(
-      orig_info, pixels, row_bytes, x, y);
-
-  if (wrote_pixels) {
-    // WritePixels content is not saved in recording. Calling WritePixels
-    // therefore invalidates `last_recording_` because it's now
-    // missing that information.
-    last_recording_ = std::nullopt;
-  }
-  return wrote_pixels;
-}
 
 void CanvasResourceProvider::ClearAtCreation() {
   // Clear the background transparent or opaque, as required. This should only
