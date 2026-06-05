@@ -499,7 +499,10 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     }
 
     if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
-        sandbox_type == Sandbox::kIconReader) {
+        sandbox_type == Sandbox::kIconReader ||
+        (sandbox_type == Sandbox::kSpeechRecognition &&
+         base::FeatureList::IsEnabled(
+             features::kSpeechRecognitionSandboxHardening))) {
       mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
     }
 

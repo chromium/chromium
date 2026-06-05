@@ -115,6 +115,10 @@ void SodaClientImpl::Reset(const SerializedSodaConfig config,
   }
 
   soda_async_handle_ = create_soda_func_(config);
+  if (!soda_async_handle_) {
+    is_initialized_ = false;
+    return;
+  }
   sample_rate_ = sample_rate;
   channel_count_ = channel_count;
   is_initialized_ = true;

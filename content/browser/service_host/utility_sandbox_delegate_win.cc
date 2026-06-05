@@ -404,7 +404,10 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
   }
 
   if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit) {
+      sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit ||
+      (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition &&
+       base::FeatureList::IsEnabled(
+           sandbox::policy::features::kSpeechRecognitionSandboxHardening))) {
     auto result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
     if (result != sandbox::SBOX_ALL_OK) {
       return false;

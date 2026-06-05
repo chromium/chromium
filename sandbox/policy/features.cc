@@ -36,6 +36,11 @@ BASE_FEATURE(kNetworkServiceFileAllowlist, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
+// Enables the Windows speech recognition sandbox hardening.
+BASE_FEATURE(kSpeechRecognitionSandboxHardening,
+             "SpeechRecognitionSandboxHardening",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Experiment for Windows sandbox security mitigation,
 // sandbox::MITIGATION_EXTENSION_POINT_DISABLE.
 BASE_FEATURE(kWinSboxDisableExtensionPoints,
