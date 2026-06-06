@@ -1720,6 +1720,17 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
   entry->SetIsOverridingUserAgent(override_user_agent);
   controller_.SetPendingEntry(std::move(entry));
 
+  // If the embedder's OverrideNavigationParams flipped this entry's
+  // is_renderer_initiated bit to false (e.g., for an NTP navigation that
+  // gets overridden to look browser-initiated), the INVALIDATE_TYPE_URL
+  // notification in SetPendingEntry was skipped because it is gated on
+  // is_renderer_initiated(). Fire it here so the omnibox can reflect the
+  // destination URL during the pending navigation, rather than displaying
+  // stale text until commit.
+  if (!controller_.GetPendingEntry()->is_renderer_initiated()) {
+    delegate_->NotifyChangedNavigationState(INVALIDATE_TYPE_URL);
+  }
+
   return controller_.GetPendingEntry();
 }
 

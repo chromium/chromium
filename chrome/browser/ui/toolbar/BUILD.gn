@@ -372,6 +372,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common",
       "//chrome/test:test_support",
