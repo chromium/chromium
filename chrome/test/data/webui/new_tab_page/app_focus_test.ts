@@ -4,13 +4,13 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ComposeboxProxyImpl, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import type {AppElement, NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, CustomizeButtonsProxy, NewTabPageProxy, SearchboxBrowserProxy, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';

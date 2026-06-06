@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {File} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
-import {RecommendationType} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
 import {FileSuggestionElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {File} from 'chrome://new-tab-page/new_tab_page.js';
+import {RecommendationType} from 'chrome://new-tab-page/new_tab_page.js';
 import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';

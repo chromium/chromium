@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import type {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.js';
+import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';

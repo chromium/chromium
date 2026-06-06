@@ -6,8 +6,8 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import {NtpPromoProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import type {NtpPromoProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {NtpPromoClientCallbackRouter} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
-import type {NtpPromoClientRemote, NtpPromoHandlerInterface} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
+import {NtpPromoClientCallbackRouter} from 'chrome://new-tab-page/new_tab_page.js';
+import type {NtpPromoClientRemote, NtpPromoHandlerInterface} from 'chrome://new-tab-page/new_tab_page.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestNtpPromoHandler extends TestBrowserProxy implements

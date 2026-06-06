@@ -4,9 +4,8 @@
 
 import type {IconContainerElement, TabGroupsModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, colorIdToString, NTPPluralStringProxyImpl, tabGroupsDescriptor, TabGroupsProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
-import {Color} from 'chrome://new-tab-page/tab_group_types.mojom-webui.js';
-import {PageHandlerRemote} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
-import type {TabGroup} from 'chrome://new-tab-page/tab_groups.mojom-webui.js';
+import {Color, TabGroupsPageHandlerRemote as PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import type {TabGroup} from 'chrome://new-tab-page/new_tab_page.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

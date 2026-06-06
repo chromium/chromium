@@ -7,7 +7,7 @@ import './ntp_promo_test_common.js';
 
 import type {IndividualPromosElement} from 'chrome://new-tab-page/lazy_load.js';
 import {getTrustedHTML} from 'chrome://new-tab-page/new_tab_page.js';
-import type {Promo} from 'chrome://new-tab-page/ntp_promo.mojom-webui.js';
+import type {NtpPromo as Promo} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';

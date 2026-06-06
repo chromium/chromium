@@ -54,31 +54,3 @@ all_css_files =
       "ntp_searchbox.css",
       "voice_search_overlay.css",
     ] + modules_css_files + ntp_promo_css_files + action_chips_css_files
-
-if (optimize_webui) {
-  # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
-  mojo_js_files = [
-    "action_chips.mojom-webui.js",
-    "calendar_data.mojom-webui.js",
-    "ntp_promo.mojom-webui.js",
-    "customize_chrome.mojom-webui.js",
-    "customize_buttons.mojom-webui.js",
-    "drive_suggestion.mojom-webui.js",
-    "file_suggestion.mojom-webui.js",
-    "google_calendar.mojom-webui.js",
-    "microsoft_auth.mojom-webui.js",
-    "microsoft_files.mojom-webui.js",
-    "most_relevant_tab_resumption.mojom-webui.js",
-    "new_tab_page.mojom-webui.js",
-    "ntp_microsoft_auth_shared_ui.mojom-webui.js",
-    "outlook_calendar.mojom-webui.js",
-    "tab_groups.mojom-webui.js",
-    "tab_group_types.mojom-webui.js",
-    "tile_type.mojom-webui.js",
-    "url_visit_types.mojom-webui.js",
-  ]
-
-  if (!is_official_build) {
-    mojo_js_files += [ "foo.mojom-webui.js" ]
-  }
-}

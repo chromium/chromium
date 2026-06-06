@@ -43,9 +43,12 @@ build_webui_tests("build") {
   ts_tsconfig_base = "tsconfig_base.json"
 
   ts_path_mappings = [
-    "chrome://new-tab-page/*|" +
-        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
-                    target_gen_dir),
+    "chrome://new-tab-page/new_tab_page.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/new_tab_page.d.ts",
+            target_gen_dir),
+    "chrome://new-tab-page/lazy_load.js|" + rebase_path(
+            "$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/lazy_load.d.ts",
+            target_gen_dir),
     "chrome://webui-test/cr_components/searchbox/*|" + rebase_path(
             "$root_gen_dir/chrome/test/data/webui/cr_components/searchbox/tsc/*",
             target_gen_dir),

@@ -37,11 +37,6 @@ build_webui("build") {
     "modules/tab_groups/icons:build_grdp",
   ]
 
-  if (optimize_webui) {
-    extra_grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
-    extra_grdp_deps += [ ":build_mojo_grdp" ]
-  }
-
   web_component_files = all_web_component_files
   ts_files = all_ts_files
   css_files = all_css_files
@@ -131,37 +126,25 @@ build_webui("build") {
       "lazy_load.js",
     ]
     optimize_webui_excludes = [
-                                "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-                                "chrome://resources/cr_components/composebox/composebox.mojom-webui.js",
-                                "chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js",
-                                "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
-                                "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
-                                "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
-                                "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
-                                "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
-                                "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
-                                "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
-                                "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-                                "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
-                                "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-                                "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
-                              ] + mojo_js_files
+      "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
+      "chrome://resources/cr_components/composebox/composebox.mojom-webui.js",
+      "chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js",
+      "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
+      "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
+      "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
+      "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
+      "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+      "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
+      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+    ]
     optimize_webui_external_paths =
         [ "chrome://new-tab-page/shared|" +
           rebase_path(
               "$root_gen_dir/chrome/browser/resources/new_tab_shared/tsc",
               root_build_dir) ]
-  }
-}
-
-if (optimize_webui) {
-  # Register all mojo files to their own grdp, since they are excluded from the
-  # bundle on optimized builds and need to be registered separately.
-  generate_grd("build_mojo_grdp") {
-    grd_prefix = grd_prefix
-    out_grd = "$target_gen_dir/mojo_resources.grdp"
-    input_files = mojo_js_files
-    input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
-    deps = [ ":build_ts" ]
   }
 }

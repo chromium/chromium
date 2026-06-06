@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {File} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
-import {RecommendationType} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
 import type {DisableModuleEvent, DismissModuleInstanceEvent, MicrosoftFilesModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {microsoftFilesModuleDescriptor, MicrosoftFilesProxyImpl, ParentTrustedDocumentProxy} from 'chrome://new-tab-page/lazy_load.js';
-import {MicrosoftFilesPageHandlerRemote} from 'chrome://new-tab-page/microsoft_files.mojom-webui.js';
-import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {MicrosoftAuthUntrustedDocumentRemote} from 'chrome://new-tab-page/ntp_microsoft_auth_shared_ui.mojom-webui.js';
+import type {File} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, MicrosoftAuthUntrustedDocumentRemote, MicrosoftFilesPageHandlerRemote, RecommendationType} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';

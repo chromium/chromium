@@ -6,10 +6,8 @@ import 'chrome://new-tab-page/lazy_load.js';
 
 import type {MiddleSlotPromoElement} from 'chrome://new-tab-page/lazy_load.js';
 import {PromoDismissAction} from 'chrome://new-tab-page/lazy_load.js';
-import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BrowserCommandProxy, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import type {CrAutoImgElement, PageRemote, Promo} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BrowserCommandProxy, NewTabPageProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';

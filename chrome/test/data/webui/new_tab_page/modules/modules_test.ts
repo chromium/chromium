@@ -4,9 +4,8 @@
 
 import type {Module, ModuleWrapperElement, NamedWidth} from 'chrome://new-tab-page/lazy_load.js';
 import {ModuleDescriptor, ModuleRegistry, ModulesElement, SUPPORTED_MODULE_WIDTHS} from 'chrome://new-tab-page/lazy_load.js';
-import {NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import {NewTabPageProxy, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

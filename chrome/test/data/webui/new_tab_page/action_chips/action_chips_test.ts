@@ -4,10 +4,10 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {ActionChipsHandlerRemote, IconType, PageCallbackRouter, ToolMode} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
-import type {ActionChip, PageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackRouter, IconType, ToolMode} from 'chrome://new-tab-page/new_tab_page.js';
+import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
