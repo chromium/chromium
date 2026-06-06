@@ -159,13 +159,13 @@ public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
         return NtpCustomizationUtils.getSheetHalfHeightAccessibilityStringId(
-                assumeNonNull(mCurrentBottomSheetTypeSupplier.get()));
+                mCurrentBottomSheetTypeSupplier.get());
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
         return NtpCustomizationUtils.getSheetFullHeightAccessibilityStringId(
-                assumeNonNull(mCurrentBottomSheetTypeSupplier.get()));
+                mCurrentBottomSheetTypeSupplier.get());
     }
 
     @Override
