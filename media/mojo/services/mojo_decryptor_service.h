@@ -79,9 +79,11 @@ class MEDIA_MOJO_EXPORT MojoDecryptorService final : public mojom::Decryptor {
   void OnVideoDecoderInitialized(InitializeVideoDecoderCallback callback,
                                  bool success);
 
-  void OnAudioRead(DecryptAndDecodeAudioCallback callback,
+  void OnAudioRead(mojo::ReportBadMessageCallback bad_message_callback,
+                   DecryptAndDecodeAudioCallback callback,
                    scoped_refptr<DecoderBuffer> buffer);
-  void OnVideoRead(DecryptAndDecodeVideoCallback callback,
+  void OnVideoRead(mojo::ReportBadMessageCallback bad_message_callback,
+                   DecryptAndDecodeVideoCallback callback,
                    scoped_refptr<DecoderBuffer> buffer);
   void OnReaderFlushDone(StreamType stream_type);
 
