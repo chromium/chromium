@@ -374,7 +374,8 @@ cr-icon-button {
   box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
 }
 
-:host(:not([glif-animation-state='ineligible'])) #entrypoint {
+:host([glif-animation-state='started']) #entrypoint,
+:host([glif-animation-state='spinner-only']) #entrypoint {
   --cr-hover-background-color: transparent;
   animation: hover-background-delay 0ms 1850ms linear forwards;
   --icon-block-padding-small: 8px;
