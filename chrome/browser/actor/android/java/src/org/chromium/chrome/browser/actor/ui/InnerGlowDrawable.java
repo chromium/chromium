@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -22,8 +21,47 @@ import org.chromium.build.annotations.Nullable;
 /** A custom drawable that draws an inner glow effect using two layers of inner shadows. */
 @NullMarked
 public class InnerGlowDrawable extends Drawable {
+    private final InnerGlowConstantState mState;
     private final Paint mSoftGlowPaint;
     private final Paint mStrongOutlinePaint;
+    private boolean mMutated;
+
+    private static class InnerGlowConstantState extends ConstantState {
+        public final int color;
+        public final float softBlur;
+        public final float softSpread;
+        public final float softOpacity;
+        public final float strongBlur;
+        public final float strongSpread;
+        public final float strongOpacity;
+
+        InnerGlowConstantState(
+                int color,
+                float softBlur,
+                float softSpread,
+                float softOpacity,
+                float strongBlur,
+                float strongSpread,
+                float strongOpacity) {
+            this.color = color;
+            this.softBlur = softBlur;
+            this.softSpread = softSpread;
+            this.softOpacity = softOpacity;
+            this.strongBlur = strongBlur;
+            this.strongSpread = strongSpread;
+            this.strongOpacity = strongOpacity;
+        }
+
+        @Override
+        public Drawable newDrawable() {
+            return new InnerGlowDrawable(this);
+        }
+
+        @Override
+        public int getChangingConfigurations() {
+            return 0;
+        }
+    }
 
     /**
      * Creates an InnerGlowDrawable with the specified parameters.
@@ -46,28 +84,37 @@ public class InnerGlowDrawable extends Drawable {
             int strongBlurRes,
             int strongSpreadRes,
             float strongOpacity) {
-        Resources res = context.getResources();
-        float softBlur = res.getDimension(softBlurRes);
-        float softSpread = res.getDimension(softSpreadRes);
-        float strongBlur = res.getDimension(strongBlurRes);
-        float strongSpread = res.getDimension(strongSpreadRes);
+        this(
+                new InnerGlowConstantState(
+                        color,
+                        context.getResources().getDimension(softBlurRes),
+                        context.getResources().getDimension(softSpreadRes),
+                        softOpacity,
+                        context.getResources().getDimension(strongBlurRes),
+                        context.getResources().getDimension(strongSpreadRes),
+                        strongOpacity));
+    }
+
+    private InnerGlowDrawable(InnerGlowConstantState state) {
+        mState = state;
 
         mSoftGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mSoftGlowPaint.setStyle(Paint.Style.STROKE);
-        mSoftGlowPaint.setColor(color);
-        mSoftGlowPaint.setAlpha((int) (255 * softOpacity));
+        mSoftGlowPaint.setColor(state.color);
+        mSoftGlowPaint.setAlpha((int) (255 * state.softOpacity));
         // Spread in spec means the stroke must be 2x wide because the stroke is drawn centered on
         // the line.
-        mSoftGlowPaint.setStrokeWidth(softSpread * 2);
-        mSoftGlowPaint.setMaskFilter(new BlurMaskFilter(softBlur, BlurMaskFilter.Blur.NORMAL));
+        mSoftGlowPaint.setStrokeWidth(state.softSpread * 2);
+        mSoftGlowPaint.setMaskFilter(
+                new BlurMaskFilter(state.softBlur, BlurMaskFilter.Blur.NORMAL));
 
         mStrongOutlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mStrongOutlinePaint.setStyle(Paint.Style.STROKE);
-        mStrongOutlinePaint.setColor(color);
-        mStrongOutlinePaint.setAlpha((int) (255 * strongOpacity));
-        mStrongOutlinePaint.setStrokeWidth(strongSpread * 2);
+        mStrongOutlinePaint.setColor(state.color);
+        mStrongOutlinePaint.setAlpha((int) (255 * state.strongOpacity));
+        mStrongOutlinePaint.setStrokeWidth(state.strongSpread * 2);
         mStrongOutlinePaint.setMaskFilter(
-                new BlurMaskFilter(strongBlur, BlurMaskFilter.Blur.NORMAL));
+                new BlurMaskFilter(state.strongBlur, BlurMaskFilter.Blur.NORMAL));
     }
 
     /**
@@ -129,5 +176,18 @@ public class InnerGlowDrawable extends Drawable {
     @Override
     public int getOpacity() {
         return PixelFormat.TRANSLUCENT;
+    }
+
+    @Override
+    public @Nullable ConstantState getConstantState() {
+        return mState;
+    }
+
+    @Override
+    public Drawable mutate() {
+        if (!mMutated && super.mutate() == this) {
+            mMutated = true;
+        }
+        return this;
     }
 }
