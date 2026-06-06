@@ -433,7 +433,18 @@ bool MaybeAddCertWithConstraints(
 constexpr std::string_view kDiskCacheExperimentNameSeparator = " ";
 constexpr std::string_view kDiskCacheExperimentNameNone = "None";
 
-bool GetHttpCacheBackendResetParam(Profile* profile) {
+bool GetHttpCacheBackendResetParam(
+    Profile* profile,
+    const base::FilePath& relative_partition_path) {
+  // Only reset the HTTP cache for the default partition, as resetting
+  // non-default partitions is not critical for experiment performance metrics.
+  // Non-default partitions share profile preferences. If a non-default
+  // partition initialized first and updated the shared pref, the default
+  // partition would skip its reset. We also avoid tracking per-partition
+  // state to prevent pref leaks for deleted partitions.
+  if (!relative_partition_path.empty()) {
+    return false;
+  }
   PrefService* profile_prefs = profile->GetPrefs();
   // Get the field trial groups.  If the server cannot be reached, then
   // this corresponds to "None" for each experiment.
@@ -1541,7 +1552,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   network_context_params->reset_http_cache_backend =
-      GetHttpCacheBackendResetParam(profile_);
+      GetHttpCacheBackendResetParam(profile_, relative_partition_path);
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   // Enable encrypted HTTP cache if the enterprise policy is set.
