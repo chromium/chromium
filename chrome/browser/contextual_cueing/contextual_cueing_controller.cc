@@ -924,6 +924,8 @@ void ContextualCueingController::OnCueInteraction(
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
                                     shown_duration);
 
+  HideCue();
+
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueDismissed:
       contextual_cueing_service_->OnCueDismissed(cue_type);
@@ -944,8 +946,6 @@ void ContextualCueingController::OnCueInteraction(
       contextual_cueing_service_->OnCueClicked(cue_type);
       break;
   }
-
-  HideCue();
 }
 
 base::TimeDelta ContextualCueingController::ExtractCueShownDuration() {
