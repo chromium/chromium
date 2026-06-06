@@ -444,6 +444,10 @@
   display: none !important;
 }
 
+#composeboxHeaderWrapper[hidden] {
+  display: none !important;
+}
+
 #threadFrame {
   border: none;
   grid-column: 1;
