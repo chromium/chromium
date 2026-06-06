@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/lens/lens_overlay_request_id_generator.h"
@@ -182,9 +183,9 @@ class ComposeboxQueryController
     ~UploadRequest();
 
     // The time the request was sent.
-    base::Time start_time;
+    base::TimeTicks start_time;
     // The time the response was received.
-    base::Time response_time;
+    base::TimeTicks response_time;
     // The response code of the request. 0 if the response has not been
     // received.
     int response_code = 0;

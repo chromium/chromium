@@ -91,6 +91,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Composebox.ContextUpload.FailureResponseTime" units="ms"
+    expires_after="2026-12-03">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a context upload request fails. Measures the time elapsed
+    between the time the request was initiated and the time the failure response
+    was received.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Composebox.ContextUpload.SuccessResponseTime" units="ms"
+    expires_after="2026-12-03">
+  <owner>hujasonx@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when a context upload request succeeds. Measures the time elapsed
+    between the time the request was initiated and the time the successful
+    response was received.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Composebox.HandshakeCompletedInSession" enum="Boolean"
     expires_after="2026-10-25">
   <owner>mercerd@google.com</owner>
