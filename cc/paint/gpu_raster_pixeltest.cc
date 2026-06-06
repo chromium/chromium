@@ -1068,21 +1068,19 @@ TEST_F(GpuRasterPixelTest, DrawHdrImageWithMetadata) {
           std::optional<float> peak_luminance = std::nullopt,
           std::optional<float> white_luminance = std::nullopt,
           PaintFlags* paint_flags = nullptr) {
-        auto image_generator =
-            sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
-        {
-          ImageHeaderMetadata image_metadata;
-          if (peak_luminance.has_value()) {
-            image_metadata.hdr_metadata.SetCLLI(
-                skhdr::ContentLightLevelInformation{peak_luminance.value(),
-                                                    kContentAvgNits});
-          }
-          if (white_luminance.has_value()) {
-            image_metadata.hdr_metadata.SetNDWL(white_luminance.value());
-          }
-          image_generator->SetImageHeaderMetadata(image_metadata);
-          EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
+        gfx::HDRMetadata hdr_metadata;
+        if (peak_luminance.has_value()) {
+          hdr_metadata.SetCLLI(skhdr::ContentLightLevelInformation{
+              peak_luminance.value(), kContentAvgNits});
         }
+        if (white_luminance.has_value()) {
+          hdr_metadata.SetNDWL(white_luminance.value());
+        }
+
+        auto image_generator = sk_make_sp<FakePaintImageGenerator>(
+            image->imageInfo(), std::vector<FrameMetadata>{FrameMetadata()},
+            true, std::vector<SkISize>{}, hdr_metadata);
+        EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
 
         static int id_counter = 0;
         const PaintImage::Id kSomeId = 32 + id_counter++;

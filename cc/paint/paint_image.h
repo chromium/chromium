@@ -106,9 +106,6 @@ struct CC_PAINT_EXPORT ImageHeaderMetadata {
   // The subsampling format used for the chroma planes, e.g., YUV 4:2:0.
   YUVSubsampling yuv_subsampling = YUVSubsampling::kUnknown;
 
-  // Any HDR metadata included with the image.
-  gfx::HDRMetadata hdr_metadata;
-
   // The visible size of the image (i.e., the area that contains meaningful
   // pixels).
   gfx::Size image_size;

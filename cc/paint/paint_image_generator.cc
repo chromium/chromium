@@ -14,8 +14,10 @@
 namespace cc {
 
 PaintImageGenerator::PaintImageGenerator(const SkImageInfo& info,
+                                         const gfx::HDRMetadata& hdr_metadata,
                                          std::vector<FrameMetadata> frames)
     : info_(info),
+      hdr_metadata_(hdr_metadata),
       generator_content_id_(PaintImage::GetNextContentId()),
       frames_(std::move(frames)) {}
 

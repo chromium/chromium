@@ -20,14 +20,16 @@ class FakePaintImageGenerator : public PaintImageGenerator {
       const SkImageInfo& info,
       std::vector<FrameMetadata> frames = {FrameMetadata()},
       bool allocate_discardable_memory = true,
-      std::vector<SkISize> supported_sizes = {});
+      std::vector<SkISize> supported_sizes = {},
+      const gfx::HDRMetadata& hdr_metadata = {});
   // YUV decoding mode constructor.
   explicit FakePaintImageGenerator(
       const SkImageInfo& info,
       const SkYUVAPixmapInfo& yuva_pixmap_info,
       std::vector<FrameMetadata> frames = {FrameMetadata()},
       bool allocate_discardable_memory = true,
-      std::vector<SkISize> supported_sizes = {});
+      std::vector<SkISize> supported_sizes = {},
+      const gfx::HDRMetadata& hdr_metadata = {});
   FakePaintImageGenerator(const FakePaintImageGenerator&) = delete;
   ~FakePaintImageGenerator() override;
 
@@ -71,11 +73,6 @@ class FakePaintImageGenerator : public PaintImageGenerator {
 
     expect_fallback_to_rgb_ = true;
   }
-  void SetImageHeaderMetadata(const ImageHeaderMetadata& image_metadata) {
-    base::AutoLock lock(lock_);
-
-    image_metadata_ = image_metadata;
-  }
   SkPixmap& GetPixmap() {
     // TODO(crbug.com/340576175): This should be made thread-safe.
     return image_pixmap_;
@@ -96,7 +93,6 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   // fallback.
   bool expect_fallback_to_rgb_ = false;
   bool force_fail_decode_ = false;
-  ImageHeaderMetadata image_metadata_;
 };
 
 }  // namespace cc

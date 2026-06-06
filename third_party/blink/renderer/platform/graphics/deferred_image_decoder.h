@@ -133,6 +133,7 @@ class PLATFORM_EXPORT DeferredImageDecoder final {
   bool image_is_high_bit_depth_;
   bool has_c2pa_manifest_;
   sk_sp<SkColorSpace> color_space_for_sk_images_;
+  gfx::HDRMetadata hdr_metadata_;
   gfx::Point hot_spot_;
   const PaintImage::ContentId complete_frame_content_id_;
   std::optional<bool> incremental_decode_needed_;

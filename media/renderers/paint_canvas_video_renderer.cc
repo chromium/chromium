@@ -604,7 +604,8 @@ class VideoImageGenerator : public cc::PaintImageGenerator {
   VideoImageGenerator() = delete;
 
   explicit VideoImageGenerator(scoped_refptr<VideoFrame> frame)
-      : cc::PaintImageGenerator(GetVideoImageGeneratorSkImageInfo(frame)),
+      : cc::PaintImageGenerator(GetVideoImageGeneratorSkImageInfo(frame),
+                                frame->hdr_metadata()),
         frame_(std::move(frame)) {
     DCHECK(!frame_->HasSharedImage());
   }
@@ -1597,7 +1598,8 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       cc::PaintImageBuilder::WithDefault()
           .set_id(renderer_stable_id_)
           .set_animation_type(cc::PaintImage::AnimationType::kVideo)
-          .set_completion_state(cc::PaintImage::CompletionState::kDone);
+          .set_completion_state(cc::PaintImage::CompletionState::kDone)
+          .set_hdr_metadata(video_frame->hdr_metadata());
 
   // Generate a new image.
   // Note: Skia will hold onto |video_frame| via |video_generator| only when

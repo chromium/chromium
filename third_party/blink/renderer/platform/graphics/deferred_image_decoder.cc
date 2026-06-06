@@ -164,9 +164,9 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
       !incremental_decode_needed_.value();
 
   auto generator = DecodingImageGenerator::Create(
-      frame_generator_, info, std::move(segment_reader), std::move(frames),
-      complete_frame_content_id_, all_data_received_, can_yuv_decode_,
-      *image_metadata_);
+      frame_generator_, info, hdr_metadata_, std::move(segment_reader),
+      std::move(frames), complete_frame_content_id_, all_data_received_,
+      can_yuv_decode_, *image_metadata_);
   first_decoding_generator_created_ = true;
 
   return generator;
@@ -184,9 +184,9 @@ bool DeferredImageDecoder::CreateGainmapGenerator(
       SkImageInfo::Make(gainmap_->frame_generator->GetFullSize(),
                         kN32_SkColorType, kOpaque_SkAlphaType);
   gainmap_generator = DecodingImageGenerator::Create(
-      gainmap_->frame_generator, gainmap_image_info, gainmap_->data, frames,
-      complete_frame_content_id_, all_data_received_, gainmap_->can_decode_yuv,
-      gainmap_->image_metadata);
+      gainmap_->frame_generator, gainmap_image_info, gfx::HDRMetadata(),
+      gainmap_->data, frames, complete_frame_content_id_, all_data_received_,
+      gainmap_->can_decode_yuv, gainmap_->image_metadata);
   gainmap_info = gainmap_->info;
   return true;
 }
@@ -343,6 +343,7 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
   mime_type_ = metadata_decoder_->MimeType();
   has_embedded_color_profile_ = metadata_decoder_->HasEmbeddedColorProfile();
   color_space_for_sk_images_ = metadata_decoder_->ColorSpaceForSkImages();
+  hdr_metadata_ = metadata_decoder_->GetHDRMetadata();
 
   const bool is_single_frame =
       metadata_decoder_->RepetitionCount() == kAnimationNone ||

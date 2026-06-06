@@ -93,7 +93,8 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<const SkData> data) {
       decoder->MakeMetadataForDecodeAcceleration();
   image_metadata.all_data_received_prior_to_decode = true;
   sk_sp<DecodingImageGenerator> generator = DecodingImageGenerator::Create(
-      std::move(frame), info, std::move(segment_reader), std::move(frames),
+      std::move(frame), info, decoder->GetHDRMetadata(),
+      std::move(segment_reader), std::move(frames),
       PaintImage::GetNextContentId(), true /* all_data_received */,
       false /* can_yuv_decode */, image_metadata);
   return std::make_unique<SkiaPaintImageGenerator>(
@@ -105,6 +106,7 @@ DecodingImageGenerator::CreateAsSkImageGenerator(sk_sp<const SkData> data) {
 sk_sp<DecodingImageGenerator> DecodingImageGenerator::Create(
     scoped_refptr<ImageFrameGenerator> frame_generator,
     const SkImageInfo& info,
+    const gfx::HDRMetadata& hdr_metadata,
     scoped_refptr<SegmentReader> data,
     std::vector<FrameMetadata> frames,
     PaintImage::ContentId content_id,
@@ -112,20 +114,22 @@ sk_sp<DecodingImageGenerator> DecodingImageGenerator::Create(
     bool can_yuv_decode,
     const cc::ImageHeaderMetadata& image_metadata) {
   return sk_sp<DecodingImageGenerator>(new DecodingImageGenerator(
-      std::move(frame_generator), info, std::move(data), std::move(frames),
-      content_id, all_data_received, can_yuv_decode, image_metadata));
+      std::move(frame_generator), info, hdr_metadata, std::move(data),
+      std::move(frames), content_id, all_data_received, can_yuv_decode,
+      image_metadata));
 }
 
 DecodingImageGenerator::DecodingImageGenerator(
     scoped_refptr<ImageFrameGenerator> frame_generator,
     const SkImageInfo& info,
+    const gfx::HDRMetadata& hdr_metadata,
     scoped_refptr<SegmentReader> data,
     std::vector<FrameMetadata> frames,
     PaintImage::ContentId complete_frame_content_id,
     bool all_data_received,
     bool can_yuv_decode,
     const cc::ImageHeaderMetadata& image_metadata)
-    : PaintImageGenerator(info, std::move(frames)),
+    : PaintImageGenerator(info, hdr_metadata, std::move(frames)),
       frame_generator_(std::move(frame_generator)),
       data_(std::move(data)),
       all_data_received_(all_data_received),

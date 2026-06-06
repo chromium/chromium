@@ -59,6 +59,7 @@ class PLATFORM_EXPORT DecodingImageGenerator final
   static sk_sp<DecodingImageGenerator> Create(
       scoped_refptr<ImageFrameGenerator>,
       const SkImageInfo&,
+      const gfx::HDRMetadata&,
       scoped_refptr<SegmentReader>,
       std::vector<FrameMetadata>,
       PaintImage::ContentId,
@@ -94,6 +95,7 @@ class PLATFORM_EXPORT DecodingImageGenerator final
  private:
   DecodingImageGenerator(scoped_refptr<ImageFrameGenerator>,
                          const SkImageInfo&,
+                         const gfx::HDRMetadata&,
                          scoped_refptr<SegmentReader>,
                          std::vector<FrameMetadata>,
                          PaintImage::ContentId,

@@ -567,7 +567,6 @@ cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
   cc::ImageHeaderMetadata image_metadata{};
   image_metadata.image_type = FileExtensionToImageType(FilenameExtension());
   image_metadata.yuv_subsampling = GetYUVSubsampling();
-  image_metadata.hdr_metadata = hdr_metadata_;
   image_metadata.image_size = size_;
   image_metadata.has_embedded_color_profile = HasEmbeddedColorProfile();
   return image_metadata;

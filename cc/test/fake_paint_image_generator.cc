@@ -16,8 +16,9 @@ FakePaintImageGenerator::FakePaintImageGenerator(
     const SkImageInfo& info,
     std::vector<FrameMetadata> frames,
     bool allocate_discardable_memory,
-    std::vector<SkISize> supported_sizes)
-    : PaintImageGenerator(info, std::move(frames)),
+    std::vector<SkISize> supported_sizes,
+    const gfx::HDRMetadata& hdr_metadata)
+    : PaintImageGenerator(info, hdr_metadata, std::move(frames)),
       image_backing_memory_(
           allocate_discardable_memory ? info.computeMinByteSize() : 0,
           0),
@@ -29,8 +30,9 @@ FakePaintImageGenerator::FakePaintImageGenerator(
     const SkYUVAPixmapInfo& yuva_pixmap_info,
     std::vector<FrameMetadata> frames,
     bool allocate_discardable_memory,
-    std::vector<SkISize> supported_sizes)
-    : PaintImageGenerator(info, std::move(frames)),
+    std::vector<SkISize> supported_sizes,
+    const gfx::HDRMetadata& hdr_metadata)
+    : PaintImageGenerator(info, hdr_metadata, std::move(frames)),
       image_backing_memory_(allocate_discardable_memory
                                 ? yuva_pixmap_info.computeTotalBytes()
                                 : 0,
@@ -140,7 +142,7 @@ SkISize FakePaintImageGenerator::GetSupportedDecodeSize(
 
 const ImageHeaderMetadata*
 FakePaintImageGenerator::GetMetadataForDecodeAcceleration() const {
-  return &image_metadata_;
+  return nullptr;
 }
 
 }  // namespace cc
