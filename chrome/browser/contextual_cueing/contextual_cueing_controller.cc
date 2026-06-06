@@ -896,7 +896,7 @@ void ContextualCueingController::OnCueClicked(
         page_action_controller->ShowAnchoredMessage(
             kActionAnchoredContextualCue,
             {.priority =
-                 page_actions::PageActionPriorityCategory::kContextualCue});
+                 page_actions::PageActionPriorityCategory::kUserInteraction});
         if (!cue_hidden_time_.is_null()) {
           base::TimeDelta collapsed_duration =
               base::TimeTicks::Now() - cue_hidden_time_;
