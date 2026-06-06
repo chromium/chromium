@@ -59,6 +59,11 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
         searchboxIcon: {
           type: String,
         },
+
+        showThumbnail: {
+          type: Boolean,
+          reflect: true,
+        },
       };
     }
     composeboxSource: string = loadTimeData.valueExists('composeboxSource') ?
@@ -72,6 +77,7 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
     accessor selectedMatchIndex: number = -1;
     accessor inputAriaLive: string = '';
     accessor searchboxIcon: string = '';
+    accessor showThumbnail: boolean = false;
 
     initialInputScrollHeight: number = 0;
 
@@ -89,6 +95,19 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       if (changedPrivateProperties.has('result') ||
           changedPrivateProperties.has('selectedMatchIndex')) {
         this.selectedMatch = this.computeSelectedMatch_();
+      }
+    }
+
+    override updated(changedProperties: PropertyValues<this>) {
+      super.updated(changedProperties);
+
+      const changedPrivateProperties =
+          changedProperties as Map<PropertyKey, unknown>;
+      if (changedPrivateProperties.has('showThumbnail')) {
+        const dropdown = this.getDropdownElement();
+        if (dropdown) {
+          dropdown.showThumbnail = this.showThumbnail;
+        }
       }
     }
 
@@ -493,6 +512,7 @@ export interface SearchboxMixinInterface {
   searchboxAriaDescription: string;
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;
+  showThumbnail: boolean;
 
   clearAutocompleteMatches(): void;
   getDropdownElement(): SearchboxDropdownElement;
