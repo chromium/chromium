@@ -110,7 +110,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="322254490661677575">Gib deine Passphrase ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="3303503998967553377">Chrome Aktionen unter iOS verwenden</translation>
 <translation id="3348862487678490430">Leselisteneintrag zu Chrome hinzufügen</translation>
-<translation id="3357827134511189025">Verwende „Autofill“ in Chrome, um dich in deinen Apps mit deinen gespeicherten Passwörtern und Passkeys anzumelden</translation>
+<translation id="3357827134511189025">Per „Autofill“ in Chrome kannst du dich in deinen Apps mit deinen gespeicherten Passwörtern und Passkeys anmelden</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Das passiert, wenn Chrome {THRESHOLD} Minute lang nicht verwendet wird}other{Das passiert, wenn Chrome {THRESHOLD} Minuten lang nicht verwendet wird}}</translation>
 <translation id="3367797402528056312">Chrome fertig einrichten</translation>
 <translation id="3371064404604898522">Google Chrome als Standardbrowser festlegen</translation>
@@ -297,7 +297,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7617512710641355143">Chrome wird verwaltet</translation>
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7634397654061173327">Wenn du in Chrome Funktionen zum Schutz von Kindern nutzen möchtest, kannst du entweder ein Google-Konto verwenden, das für ein Kind eingerichtet ist, oder Chrome ohne Konto nutzen.</translation>
-<translation id="7641448682796883218">Chrome-Tipp: erweitertes Safe Browsing</translation>
+<translation id="7641448682796883218">Chrome-Tipp: Erweitertes Safe Browsing</translation>
 <translation id="7642373780953416937">Du erhältst Benachrichtigungen bei Problemen mit dem Datenschutz oder der Sicherheit, die Chrome automatisch für dich erkennt.</translation>
 <translation id="7660356333829433649">Schaue später noch einmal hier vorbei, um weitere nützliche Tipps zu erhalten, wie du Chrome optimal nutzen kannst.</translation>
 <translation id="7662994914830945754">Melde dich an und aktiviere die Synchronisierung, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>

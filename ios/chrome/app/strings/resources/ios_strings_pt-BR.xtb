@@ -1083,7 +1083,7 @@
 <translation id="4860114370595561279">As informações salvas são armazenadas no seu dispositivo</translation>
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4861953997778766866">Todos os participantes podem fazer mudanças em grupos de guias compartilhados</translation>
-<translation id="4865063548323785458">Salve e preencha automaticamente suas senhas para fazer login em sites e apps com facilidade</translation>
+<translation id="4865063548323785458">Salve e preencha automaticamente suas senhas para fazer login em sites e apps rapidamente.</translation>
 <translation id="4867608294647017606">Remover imagem da pesquisa</translation>
 <translation id="4869146460927742717">Posição da barra de endereço</translation>
 <translation id="4870911314065352661">Fechar todas as guias?</translation>
@@ -1796,14 +1796,14 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7281202269687163394">Sua privacidade e o Gemini.</translation>
 <translation id="7282197670900591579">Tema limão</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
-<translation id="7300448350764260141">Adicione mais uma camada de proteção contra ameaças on-line.</translation>
+<translation id="7300448350764260141">Mais proteção contra ameaças on-line.</translation>
 <translation id="7311244614769792472">Nenhum resultado encontrado</translation>
 <translation id="7313347584264171202">Você verá suas guias anônimas aqui</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opção de preenchimento automático disponível acima do teclado.}one{{count} opção de preenchimento automático disponível acima do teclado.}other{{count} opções de preenchimento automático disponíveis acima do teclado.}}</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento baixados</translation>
 <translation id="7345061034321640811">Importação não permitida</translation>
-<translation id="7347998088283246662">Importe senhas, histórico, favoritos e muito mais</translation>
+<translation id="7347998088283246662">Importe senhas, histórico, favoritos e muito mais.</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="7364796246159120393">Escolher arquivo</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para personalizar sua experiência.</translation>
@@ -2252,7 +2252,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="881559332211266856">Atualizar número de reparação</translation>
 <translation id="8817524703470045896">Monitore os preços e receba alertas quando houver redução em algum site</translation>
-<translation id="8819155700324279105">Adicione mais uma camada de proteção contra ameaças on-line</translation>
+<translation id="8819155700324279105">Mais proteção contra ameaças on-line.</translation>
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8822421075653507124">Para garantir que o dispositivo seja usado com segurança, talvez sua organização precise verificar informações sobre sistema operacional, navegador e configurações, além de qual software está instalado no dispositivo.</translation>
 <translation id="882557203579758546">Localizar na página…</translation>
