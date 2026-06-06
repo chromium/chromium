@@ -66,7 +66,11 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "GuidedLearning",
             .json = R"({"guidedLearning": {"title": "Test Guided Learning"}})",
             .expected_title = "Test Guided Learning",
-            .expected_type = Material::Type::kGuidedLearning}),
+            .expected_type = Material::Type::kGuidedLearning},
+        MaterialTestCase{.test_name = "Notebook",
+                         .json = R"({"notebook": {"title": "Test Notebook"}})",
+                         .expected_title = "Test Notebook",
+                         .expected_type = Material::Type::kNotebook}),
     [](const testing::TestParamInfo<
         ClassroomApiMaterialResponseTypesTest::ParamType>& info) {
       return info.param.test_name;

@@ -122,7 +122,7 @@ TEST_F(ClassroomApiListCourseWorkRequestTest, ListCourseWorkRequest) {
                    "%2CcreationTime%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
                    "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos)%2CworkType"
                    "%2Cmaterials(youtubeVideo(title)%2Clink(title)"
-                   "%2Cform(title)%2CguidedLearning(title)"
+                   "%2Cform(title)%2CguidedLearning(title)%2Cnotebook(title)"
                    "%2CdriveFile(driveFile(title))))%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
 
@@ -152,7 +152,7 @@ TEST_F(ClassroomApiListCourseWorkRequestTest,
                    "%2CcreationTime%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
                    "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos)%2CworkType"
                    "%2Cmaterials(youtubeVideo(title)%2Clink(title)"
-                   "%2Cform(title)%2CguidedLearning(title)"
+                   "%2Cform(title)%2CguidedLearning(title)%2Cnotebook(title)"
                    "%2CdriveFile(driveFile(title))))%2CnextPageToken"
                    "&pageToken=qwerty")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse())));
@@ -183,7 +183,7 @@ TEST_F(ClassroomApiListCourseWorkRequestTest,
                    "%2CcreationTime%2CupdateTime%2CdueDate(year%2Cmonth%2Cday)"
                    "%2CdueTime(hours%2Cminutes%2Cseconds%2Cnanos)%2CworkType"
                    "%2Cmaterials(youtubeVideo(title)%2Clink(title)"
-                   "%2Cform(title)%2CguidedLearning(title)"
+                   "%2Cform(title)%2CguidedLearning(title)%2Cnotebook(title)"
                    "%2CdriveFile(driveFile(title))))%2CnextPageToken")))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
