@@ -139,6 +139,9 @@ class ContextualSearchContextController {
     // The callback to run when the interaction response is received.
     base::OnceCallback<void(lens::LensOverlayInteractionResponse)>
         interaction_response_callback;
+
+    // Whether the query originated from voice search.
+    bool is_voice_search = false;
   };
 
   // Struct containing information needed to create a ClientToAimMessage.

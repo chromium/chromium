@@ -143,7 +143,8 @@ class ContextualSearchboxHandler
                    bool alt_key,
                    bool ctrl_key,
                    bool meta_key,
-                   bool shift_key) override;
+                   bool shift_key,
+                   bool is_voice_search) override;
   void GetRecentTabs(GetRecentTabsCallback callback) override;
   void GetTabPreview(int32_t tab_id, GetTabPreviewCallback callback) override;
   void GetInputState(GetInputStateCallback callback) override;
@@ -263,13 +264,15 @@ class ContextualSearchboxHandler
       const std::string& query_text,
       WindowOpenDisposition disposition,
       omnibox::ChromeAimEntryPoint aim_entry_point,
-      std::map<std::string, std::string> additional_params);
+      std::map<std::string, std::string> additional_params,
+      bool is_voice_search);
 
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
       WindowOpenDisposition disposition,
       omnibox::ChromeAimEntryPoint aim_entry_point,
-      std::map<std::string, std::string> additional_params);
+      std::map<std::string, std::string> additional_params,
+      bool is_voice_search);
 
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerBrowserTest,
                            CreateTabPreviewEncodingOptions_NotScaled);

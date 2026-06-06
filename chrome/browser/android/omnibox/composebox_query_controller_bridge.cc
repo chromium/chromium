@@ -759,7 +759,7 @@ void ComposeboxQueryControllerBridge::SubmitQueryToAimPage(
             query_text, self->session_handle_.get(),
             self->contextual_tasks_web_ui_interface_, active_tool, active_model,
             /*active_tab_context_id=*/std::nullopt,
-            /*overlay_token=*/std::nullopt);
+            /*overlay_token=*/std::nullopt, /*is_voice_search=*/false);
 
         contextual_tasks::FinalizeAndSendAimQuery(
             std::move(request_info), self->session_handle_.get(),

@@ -2529,6 +2529,51 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrlWithInvocationSource) {
   EXPECT_EQ(source_param, "chrome.crn.menu");
 }
 
+TEST_F(ComposeboxQueryControllerTest, CreateSearchUrlWithVoiceSearch) {
+  CreateController(/*send_lns_surface=*/false);
+  controller().InitializeIfNeeded();
+
+  std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info =
+      std::make_unique<CreateSearchUrlRequestInfo>();
+  search_url_request_info->query_text = "test voice query";
+  search_url_request_info->query_start_time = kTestQueryStartTime;
+  search_url_request_info->is_voice_search = true;
+
+  base::test::TestFuture<GURL> url_future;
+  controller().CreateSearchUrl(std::move(search_url_request_info),
+                               url_future.GetCallback());
+  GURL aim_url = url_future.Take();
+
+  std::string gs_ivs_param;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, "gs_ivs", &gs_ivs_param));
+  EXPECT_EQ(gs_ivs_param, "1");
+}
+
+TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithVoiceSearch) {
+  controller().InitializeIfNeeded();
+
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->query_text = "voice query";
+  client_to_aim_request_info->query_text_source =
+      lens::QueryPayload::QUERY_TEXT_SOURCE_VOICE_INPUT;
+  client_to_aim_request_info->query_start_time = kTestQueryStartTime;
+
+  std::optional<lens::ClientToAimMessage> client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  ASSERT_TRUE(client_to_aim_request.has_value());
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text(),
+            "voice query");
+  EXPECT_EQ(client_to_aim_request->submit_query().payload().query_text_source(),
+            lens::QueryPayload::QUERY_TEXT_SOURCE_VOICE_INPUT);
+  auto cgi_params =
+      client_to_aim_request->submit_query().payload().cgi_params();
+  ASSERT_TRUE(cgi_params.contains("gs_ivs"));
+  EXPECT_EQ(cgi_params.at("gs_ivs"), "1");
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        UploadPageContextPdfFileWithViewportRequestSuccess) {
   // Act: Start the session.

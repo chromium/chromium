@@ -71,7 +71,8 @@ class ContextualTasksComposeboxHandler
                    bool alt_key,
                    bool ctrl_key,
                    bool meta_key,
-                   bool shift_key) override;
+                   bool shift_key,
+                   bool is_voice_search) override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
   void HandleFileUpload(bool is_image) override;
@@ -103,7 +104,8 @@ class ContextualTasksComposeboxHandler
       const std::optional<contextual_search::ContextUploadErrorType>&
           error_type) override;
 
-  void CreateAndSendQueryMessage(const std::string& query);
+  void CreateAndSendQueryMessage(const std::string& query,
+                                 bool is_voice_search);
 
   void ResetInputStateModel() override;
   void UpdateStateFromUrl(const GURL& url) override;
@@ -175,7 +177,8 @@ class ContextualTasksComposeboxHandler
   void ContinueCreateAndSendQueryMessage(
       std::string query,
       std::optional<base::Uuid> original_task_id,
-      std::optional<base::UnguessableToken> overlay_token);
+      std::optional<base::UnguessableToken> overlay_token,
+      bool is_voice_search);
 
 #if !BUILDFLAG(IS_ANDROID)
   void OnVisualSelectionAdded(

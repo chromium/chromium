@@ -110,7 +110,7 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
       query_text, disposition,
       PageClassificationToAimEntryPoint(
           GetPageClassification(/*is_prefetch=*/false)),
-      additional_params);
+      additional_params, /*is_voice_search=*/false);
 }
 
 }  // namespace
@@ -292,7 +292,8 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
                                     bool alt_key,
                                     bool ctrl_key,
                                     bool meta_key,
-                                    bool shift_key) {
+                                    bool shift_key,
+                                    bool is_voice_search) {
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
@@ -311,14 +312,15 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
   }
 
   SubmitQuery(query_text, disposition, aim_entry_point,
-              /*additional_params=*/{});
+              /*additional_params=*/{}, is_voice_search);
 }
 
 void ComposeboxHandler::SubmitQuery(
     const std::string& query_text,
     WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entrypoint,
-    std::map<std::string, std::string> additional_params) {
+    std::map<std::string, std::string> additional_params,
+    bool is_voice_search) {
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Record AIM tool and model mode on query submission.
     const auto& input_state = GetInputState();
@@ -330,7 +332,7 @@ void ComposeboxHandler::SubmitQuery(
   }
 
   ContextualizeQueryAndOpenUrl(query_text, disposition, aim_entrypoint,
-                               std::move(additional_params));
+                               std::move(additional_params), is_voice_search);
 }
 
 void ComposeboxHandler::OpenUrl(GURL url,

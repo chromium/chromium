@@ -78,6 +78,7 @@ constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kAimMultiContextQueryParameter[] = "amc";
 constexpr char kLnsModeQueryParameterKey[] = "lns_mode";
 constexpr char kLnsModeQueryParameterValue[] = "cvst";
+constexpr char kVoiceSearchQueryParameterKey[] = "gs_ivs";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -611,6 +612,11 @@ void ComposeboxQueryController::CreateSearchUrl(
   }
 
   // If we are here, it is not multimodal URL, and all context is uploaded.
+  if (search_url_request_info->is_voice_search) {
+    search_url_request_info->additional_params.insert(
+        {kVoiceSearchQueryParameterKey, "1"});
+  }
+
   bool is_aim_search =
       search_url_request_info->search_url_type == SearchUrlType::kAim;
   bool send_upload_type =
@@ -861,6 +867,12 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
        create_client_to_aim_request_info->additional_cgi_params) {
     (*submit_query->mutable_payload()->mutable_cgi_params())[param.first] =
         param.second;
+  }
+
+  if (create_client_to_aim_request_info->query_text_source ==
+      lens::QueryPayload::QUERY_TEXT_SOURCE_VOICE_INPUT) {
+    (*submit_query->mutable_payload()
+          ->mutable_cgi_params())[kVoiceSearchQueryParameterKey] = "1";
   }
 
   // Add context turn metadata.
