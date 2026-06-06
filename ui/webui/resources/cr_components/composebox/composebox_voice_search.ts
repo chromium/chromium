@@ -177,6 +177,7 @@ export class ComposeboxVoiceSearchElement extends
       detailsUrl_: {type: String},
       detailedError_: {type: Number},
       hasErrorTimer: {type: Boolean},
+      isPermissionPromptOpen_: {type: Boolean, reflect: true},
       submitButtonIconType: {type: String},
       /**
        * Determines whether to automatically submit the query upon receiving a
@@ -224,8 +225,11 @@ export class ComposeboxVoiceSearchElement extends
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
+  protected accessor isPermissionPromptOpen_: boolean = false;
+
   private accessor state_: State = State.UNINITIALIZED;
   private metricSource_: string = '';
+  private blurTimeoutId_: number|null = null;
 
   private pageHandler_: PageHandlerRemote =
       ComposeboxProxyImpl.getInstance().handler;
@@ -313,10 +317,33 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   private onOutsideInteraction_ = (e: Event) => {
-    if (e.type === 'pointerdown' && e.composedPath().includes(this)) {
+    if (e.type === 'pointerdown') {
+      if (e.composedPath().includes(this)) {
+        return;
+      }
+      this.onStopClick_();
       return;
     }
-    this.onStopClick_();
+
+    if (e.type === 'blur') {
+      // If permission prompt is open currently, ignore the blur event,
+      // as the blur is from the permission prompt, and need voice search
+      // to stay open during prompt.
+      if (this.isPermissionPromptOpen_) {
+        return;
+      }
+
+      // Add a timeout before calling `stop()`. This gives a small delay for
+      // `onEmbeddedVoicePermissionPromptChanged` to run after any setup lag
+      // (~15ms). This way, it is certain that this blur event is not due to
+      // a permission prompt popping up.
+      this.blurTimeoutId_ = WindowProxy.getInstance().setTimeout(() => {
+        if (!this.isPermissionPromptOpen_) {
+          this.onStopClick_();
+        }
+        this.blurTimeoutId_ = null;
+      }, 100);
+    }
   };
 
   /**
@@ -353,6 +380,21 @@ export class ComposeboxVoiceSearchElement extends
 
   private onEmbeddedVoicePermissionPromptChanged(
       isOpened: boolean, promptSize: Size) {
+    // Track the state for the blur event handler to ignore if
+    // permission prompt open.
+    this.isPermissionPromptOpen_ = isOpened;
+
+    // If the prompt just opened, cancel any pending closure triggered by a
+    // premature blur event.
+    if (isOpened && this.blurTimeoutId_) {
+      WindowProxy.getInstance().clearTimeout(this.blurTimeoutId_);
+      this.blurTimeoutId_ = null;
+    }
+    // Fire event so `composebox_mixin.ts` knows to hide voice animation when
+    // `isOpened`=`true`. `composebox_mixin.ts` will fire another event if
+    // conditions are met so `aim_app.ts` (omnibox popup) can resize to be at
+    // least as big as the permission prompt if needed. This voice component
+    // does not control any resizing or hiding:
     this.fire('voice-permission-changed', {
       'isOpened': isOpened,
       'height': promptSize.height,
