@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 CANVAS_DIMENSIONS, 24,
+FLIPS_IN_RTL,
 FILL_RULE_NONZERO,
 MOVE_TO, 8.4f, 16.95f,
 R_V_LINE_TO, -9.89f,

@@ -63,12 +63,12 @@ class SeeAllButton : public views::LabelButton {
     SetCallback(std::move(on_see_all_pressed));
     SetID(std::to_underlying(GlanceablesViewId::kListFooterSeeAllButton));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kOpenInNewIcon
-                                           : vector_icons::kLaunchOldIcon,
-                                       cros_tokens::kCrosSysOnSurface));
+    SetImageModel(views::Button::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      ::features::IsRoundedIconsEnabled()
+                          ? vector_icons::kOpenInNewFlippableIcon
+                          : vector_icons::kLaunchOldIcon,
+                      cros_tokens::kCrosSysOnSurface));
     SetImageLabelSpacing(kSeeAllIconLabelSpacing);
     SetTextColor(views::Button::STATE_NORMAL, cros_tokens::kCrosSysOnSurface);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,

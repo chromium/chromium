@@ -79,7 +79,7 @@ ui::ImageModel GetSiteSettingsIcon() {
 ui::ImageModel GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kOpenInNewIcon
+          ? vector_icons::kOpenInNewFlippableIcon
           : vector_icons::kLaunchChromeRefreshOldIcon,
       ui::kColorIcon, GetLayoutConstant(LayoutConstant::kPageInfoIconSize));
 }

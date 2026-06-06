@@ -177,9 +177,10 @@ std::unique_ptr<views::View> CreateManagePasswordsView(
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
       ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
-          : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
-                                              : vector_icons::kLaunchOldIcon,
+          features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+          : features::IsRoundedIconsEnabled()
+              ? vector_icons::kOpenInNewFlippableIcon
+              : vector_icons::kLaunchOldIcon,
           ui::kColorIconSecondary,
           GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_passwords_button->SetID(

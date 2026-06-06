@@ -72,7 +72,7 @@ TEST(PopupCellUtilsTest,
   EXPECT_EQ(GetExpandableMenuIconNameFromSuggestionType(
                 SuggestionType::kAddressEntry),
             ::features::IsRoundedIconsEnabled()
-                ? vector_icons::kKeyboardArrowRightIcon.name
+                ? vector_icons::kKeyboardArrowRightFlippableIcon.name
                 : vector_icons::kSubmenuArrowChromeRefreshOldIcon.name);
 }
 

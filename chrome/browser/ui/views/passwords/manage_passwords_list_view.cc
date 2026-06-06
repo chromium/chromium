@@ -68,7 +68,7 @@ ManagePasswordsListView::ManagePasswordsListView(
             /*action_image_icon=*/
             ui::ImageModel::FromVectorIcon(
                 features::IsRoundedIconsEnabled()
-                    ? vector_icons::kArrowRightIcon
+                    ? vector_icons::kArrowRightFlippableIcon
                     : vector_icons::kSubmenuArrowOldIcon,
                 ui::kColorIcon),
             /*state_icon=*/store_icon);
@@ -103,8 +103,9 @@ ManagePasswordsListView::ManagePasswordsListView(
           /*subtitle_text=*/std::u16string(),
           /*action_image_icon=*/
           ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
-                                                : vector_icons::kLaunchOldIcon,
+              features::IsRoundedIconsEnabled()
+                  ? vector_icons::kOpenInNewFlippableIcon
+                  : vector_icons::kLaunchOldIcon,
               ui::kColorIconSecondary,
               GetLayoutConstant(LayoutConstant::kPageInfoIconSize))));
   manage_passwords_button->SetID(static_cast<int>(

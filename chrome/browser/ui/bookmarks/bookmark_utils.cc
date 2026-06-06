@@ -334,11 +334,11 @@ ui::ImageModel GetBookmarkFolderIcon(BookmarkFolderIconType icon_type,
   const gfx::VectorIcon* icon_id;
   if (icon_type == BookmarkFolderIconType::kNormal) {
     icon_id = &(features::IsRoundedIconsEnabled()
-                    ? vector_icons::kFolderIcon
+                    ? vector_icons::kFolderFlippableIcon
                     : vector_icons::kFolderChromeRefreshOldIcon);
   } else {
     icon_id = &(features::IsRoundedIconsEnabled()
-                    ? vector_icons::kFolderManagedIcon
+                    ? vector_icons::kFolderManagedFlippableIcon
                     : vector_icons::kFolderManagedRefreshOldIcon);
   }
   return ui::ImageModel::FromVectorIcon(*icon_id, color);

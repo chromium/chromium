@@ -352,7 +352,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                          ? vector_icons::kOpenInNewOffIcon
                          : vector_icons::kLaunchOffChromeRefreshOldIcon)
                  : &(features::IsRoundedIconsEnabled()
-                         ? vector_icons::kOpenInNewIcon
+                         ? vector_icons::kOpenInNewFlippableIcon
                          : vector_icons::kLaunchChromeRefreshOldIcon);
       break;
     case ContentSettingsType::GEOLOCATION:
@@ -659,8 +659,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                               : vector_icons::kDatabaseOldIcon);
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
-      icon = &(features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
-               : features::IsRoundedIconsEnabled()
+      icon = &(features::IsRoundedIconsEnabled()
                    ? vector_icons::kAccountCircleIcon
                    : vector_icons::kAccountCircleOldIcon);
       break;
@@ -674,10 +673,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                                  : vector_icons::kCodeOldIcon);
       break;
     case ContentSettingsType::POPUPS:
-      icon =
-          &(features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
-            : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
-                                                : vector_icons::kLaunchOldIcon);
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? vector_icons::kOpenInNewFlippableIcon
+                   : vector_icons::kLaunchOldIcon);
       break;
     case ContentSettingsType::GEOLOCATION:
       icon = &(features::IsRoundedIconsEnabled()
@@ -892,7 +890,7 @@ const ui::ImageModel PageInfoViewFactory::GetSiteSettingsIcon() {
 const ui::ImageModel PageInfoViewFactory::GetLaunchIcon() {
   return ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kOpenInNewIcon
+          ? vector_icons::kOpenInNewFlippableIcon
           : vector_icons::kLaunchChromeRefreshOldIcon,
       ui::kColorIcon, GetIconSize());
 }
@@ -907,12 +905,12 @@ const ui::ImageModel PageInfoViewFactory::GetConnectionSecureIcon() {
 // static
 const ui::ImageModel PageInfoViewFactory::GetOpenSubpageIcon() {
   // GetIconSize() does not work for subpage icons because the default size of
-  // features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightIcon :
-  // kSubmenuArrowOldIcon is 8 rather than 16.
+  // features::IsRoundedIconsEnabled() ? vector_icons::kArrowRightFlippableIcon
+  // : kSubmenuArrowOldIcon is 8 rather than 16.
   constexpr int kIconSize = 20;
   return ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kKeyboardArrowRightIcon
+          ? vector_icons::kKeyboardArrowRightFlippableIcon
           : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
       ui::kColorIcon, kIconSize);
 }

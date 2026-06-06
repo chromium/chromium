@@ -123,7 +123,6 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
                                                  : views::kNewTabOldIcon;
       // The LAUNCH_NEW command is for an ARC app.
       return features::IsRoundedIconsEnabled()   ? views::kOpenInNewIcon
-             : features::IsRoundedIconsEnabled() ? vector_icons::kOpenInNewIcon
                                                  : views::kLaunchOldIcon;
     case ash::TOGGLE_PIN:
       return string_id == IDS_APP_LIST_CONTEXT_MENU_PIN

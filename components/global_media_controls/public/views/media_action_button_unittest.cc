@@ -65,7 +65,7 @@ TEST_F(MediaActionButtonTest, UpdateButton) {
 
   button->Update(static_cast<int>(MediaSessionAction::kPlay),
                  features::IsRoundedIconsEnabled()
-                     ? vector_icons::kPlayArrowFilledIcon
+                     ? vector_icons::kPlayArrowFilledFlippableIcon
                      : vector_icons::kPlayArrowOldIcon,
                  kUpdatedTooltipTextId, kIconColorId);
   EXPECT_EQ(button->GetID(), static_cast<int>(MediaSessionAction::kPlay));

@@ -665,7 +665,7 @@ void MediaDialogView::InitializeCaptionSettingsSection() {
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_CAPTION_SETTINGS),
       std::u16string(),
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? vector_icons::kOpenInNewIcon
+                                         ? vector_icons::kOpenInNewFlippableIcon
                                          : vector_icons::kLaunchOldIcon,
                                      ui::kColorIcon, kImageWidthDip));
   caption_settings_button_ = caption_settings_container->AddChildView(

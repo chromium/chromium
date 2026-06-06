@@ -36,8 +36,9 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
 
   play_image_ = ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
-                                        : vector_icons::kPlayArrowOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kPlayArrowFilledFlippableIcon
+          : vector_icons::kPlayArrowOldIcon,
       ui::kColorSysOnSecondaryContainer, kPlaybackButtonIconSize);
   pause_image_ = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? vector_icons::kPauseFilledIcon

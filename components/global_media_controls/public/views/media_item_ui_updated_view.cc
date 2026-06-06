@@ -216,8 +216,9 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       metadata_row->AddChildView(std::make_unique<views::BoxLayoutView>());
   play_pause_button_ = CreateMediaActionButton(
       play_pause_button_container, static_cast<int>(MediaSessionAction::kPlay),
-      features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
-                                        : vector_icons::kPlayArrowOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? vector_icons::kPlayArrowFilledFlippableIcon
+          : vector_icons::kPlayArrowOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.play_button_container_color_id,
@@ -415,8 +416,9 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
   } else {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPlay),
-        features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
-                                          : vector_icons::kPlayArrowOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? vector_icons::kPlayArrowFilledFlippableIcon
+            : vector_icons::kPlayArrowOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         media_color_theme_.play_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(

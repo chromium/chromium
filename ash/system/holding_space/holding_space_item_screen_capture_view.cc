@@ -47,7 +47,7 @@ std::optional<const gfx::VectorIcon*> GetOverlayIcon(
   switch (item->type()) {
     case HoldingSpaceItem::Type::kScreenRecording:
       return &(::features::IsRoundedIconsEnabled()
-                   ? vector_icons::kPlayArrowFilledIcon
+                   ? vector_icons::kPlayArrowFilledFlippableIcon
                    : vector_icons::kPlayArrowOldIcon);
     case HoldingSpaceItem::Type::kScreenRecordingGif:
       return &kGifIcon;

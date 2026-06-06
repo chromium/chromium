@@ -271,8 +271,9 @@ void HandoffButtonController::UpdateState(HandoffButtonState state,
       a11y_text =
           l10n_util::GetStringUTF16(IDS_HANDOFF_GIVE_TASK_BACK_A11Y_LABEL);
       icon = ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? vector_icons::kPlayArrowFilledIcon
-                                            : vector_icons::kPlayArrowOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? vector_icons::kPlayArrowFilledFlippableIcon
+              : vector_icons::kPlayArrowOldIcon,
           ::ui::kColorLabelForeground, kHandoffButtonIconSize);
       break;
   }

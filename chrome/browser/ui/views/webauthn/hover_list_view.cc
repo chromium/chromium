@@ -39,7 +39,7 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
   auto secondary_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled()
-              ? vector_icons::kKeyboardArrowRightIcon
+              ? vector_icons::kKeyboardArrowRightFlippableIcon
               : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
           enabled ? ui::kColorIcon : ui::kColorIconDisabled, kChevronSize));
 

@@ -244,7 +244,7 @@ void PermissionToggleRowView::InitForUserSource(
             },
             base::Unretained(this)),
         features::IsRoundedIconsEnabled()
-            ? vector_icons::kKeyboardArrowRightIcon
+            ? vector_icons::kKeyboardArrowRightFlippableIcon
             : vector_icons::kSubmenuArrowChromeRefreshOldIcon,
         icon_size);
     subpage_button->SetProperty(views::kElementIdentifierKey,

@@ -221,16 +221,18 @@ ui::ImageModel SplitTabMenuModel::GetIconForCommandId(int command_id) const {
   if (id == CommandId::kReversePosition) {
     icon = &GetReversePositionIcon(active_split_tab_location);
   } else if (id == CommandId::kCloseStartTab) {
-    icon = GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
-               ? &(features::IsRoundedIconsEnabled() ? kLeftPanelCloseIcon
-                                                     : kLeftPanelCloseOldIcon)
-               : &(features::IsRoundedIconsEnabled() ? kTopPanelCloseIcon
-                                                     : kTopPanelCloseOldIcon);
+    icon =
+        GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
+            ? &(features::IsRoundedIconsEnabled() ? kLeftPanelCloseFlippableIcon
+                                                  : kLeftPanelCloseOldIcon)
+            : &(features::IsRoundedIconsEnabled() ? kTopPanelCloseIcon
+                                                  : kTopPanelCloseOldIcon);
   } else if (id == CommandId::kCloseEndTab) {
     icon =
         GetSplitLayout() == split_tabs::SplitTabLayout::kSideBySide
-            ? &(features::IsRoundedIconsEnabled() ? kRightPanelCloseIcon
-                                                  : kRightPanelCloseOldIcon)
+            ? &(features::IsRoundedIconsEnabled()
+                    ? kRightPanelCloseFlippableIcon
+                    : kRightPanelCloseOldIcon)
             : &(features::IsRoundedIconsEnabled() ? kBottomPanelCloseIcon
                                                   : kBottomPanelCloseOldIcon);
   } else if (id == CommandId::kToggleOrientation) {
