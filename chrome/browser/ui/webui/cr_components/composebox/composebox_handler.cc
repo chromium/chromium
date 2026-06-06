@@ -190,6 +190,10 @@ void ComposeboxHandler::HandleFileUpload(bool is_image) {
   // Ignore, intentionally unimplemented for NTP.
 }
 
+void ComposeboxHandler::StartPlatformVoiceRecognition() {
+  // Ignore, intentionally unimplemented for NTP.
+}
+
 void ComposeboxHandler::OnContextMenuOpened() {
   if (contextual_tasks::GetIsContextualTasksLazyFetchClusterInfoEnabled()) {
     auto* session_handle = GetContextualSessionHandle();

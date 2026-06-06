@@ -27185,6 +27185,7 @@ others/histograms.xml -->
   <int value="2" label="Search widget"/>
   <int value="3" label="Tasks surface"/>
   <int value="4" label="Toolbar button"/>
+  <int value="5" label="Composebox"/>
 </enum>
 
 <enum name="WebApkDistributor">

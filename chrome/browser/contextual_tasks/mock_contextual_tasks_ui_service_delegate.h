@@ -43,6 +43,10 @@ class MockContextualTasksUiServiceDelegate
                const std::optional<base::Uuid>& old_task_id,
                const std::optional<base::Uuid>& new_task_id),
               (override));
+  MOCK_METHOD(void,
+              StartPlatformVoiceRecognition,
+              (BrowserWindowInterface * browser),
+              (override));
 };
 
 }  // namespace contextual_tasks

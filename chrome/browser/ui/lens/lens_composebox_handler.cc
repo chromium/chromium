@@ -164,6 +164,10 @@ void LensComposeboxHandler::HandleFileUpload(bool is_image) {
   mojo::ReportBadMessage("File upload is not implemented in Lens");
 }
 
+void LensComposeboxHandler::StartPlatformVoiceRecognition() {
+  mojo::ReportBadMessage("Voice recognition is not implemented in Lens");
+}
+
 void LensComposeboxHandler::OnContextMenuOpened() {
   // Ignore, intentionally unimplemented for Lens.
 }

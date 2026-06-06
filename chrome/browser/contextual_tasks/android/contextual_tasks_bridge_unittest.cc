@@ -8,11 +8,14 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/test/bind.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -62,6 +65,25 @@ class ContextualTasksBridgeTest : public testing::Test {
         ContextualTasksServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockContextualTasksService));
     profile_ = profile_builder.Build();
+
+    auto* contextual_tasks_service =
+        ContextualTasksServiceFactory::GetForProfile(profile_.get());
+
+    auto mock_ui_service = std::make_unique<
+        testing::NiceMock<contextual_tasks::MockContextualTasksUiService>>(
+        profile_.get(), contextual_tasks_service,
+        /*identity_manager=*/nullptr,
+        /*aim_eligibility_service=*/nullptr,
+        /*eligibility_manager=*/nullptr,
+        /*cookie_synchronizer=*/nullptr);
+
+    ContextualTasksUiServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(),
+        base::BindLambdaForTesting([service = std::move(mock_ui_service)](
+                                       content::BrowserContext* context) mutable
+                                       -> std::unique_ptr<KeyedService> {
+          return std::move(service);
+        }));
   }
 
  protected:

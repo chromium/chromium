@@ -326,6 +326,10 @@ void ContextualTasksComposeboxHandler::OnContextUploadStatusChanged(
   }
 }
 
+void ContextualTasksComposeboxHandler::StartPlatformVoiceRecognition() {
+  web_ui_interface_->StartPlatformVoiceRecognition();
+}
+
 void ContextualTasksComposeboxHandler::SubmitQuery(
     const std::string& query_text,
     uint8_t mouse_button,

@@ -48,6 +48,7 @@ class LensComposeboxHandler : public composebox::mojom::PageHandler,
   void FocusChanged(bool focused) override;
   void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
+  void StartPlatformVoiceRecognition() override;
   void OnContextMenuOpened() override;
   void NavigateUrl(const GURL& url) override;
   void CloseLensOverlayFromWebUI(
