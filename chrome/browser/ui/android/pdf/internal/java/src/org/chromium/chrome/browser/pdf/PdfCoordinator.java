@@ -653,6 +653,11 @@ public class PdfCoordinator
             return null;
         }
 
+        if (!PdfUtils.isUriSafeForSharing(mUri, mActivity)) {
+            Log.e(TAG, "Blocked getFileUri for unsafe URI: " + mUri);
+            return null;
+        }
+
         if (targetPackage == null) {
             targetPackage = PackageUtils.getDefaultAssistantPackageName(mActivity);
             PdfUtils.recordGetAssistantPackageResult(targetPackage != null);
@@ -671,6 +676,12 @@ public class PdfCoordinator
         if (mUri == null) {
             return null;
         }
+
+        if (!PdfUtils.isUriSafeForSharing(mUri, mActivity)) {
+            Log.e(TAG, "Blocked requestAssistContent for unsafe URI: " + mUri);
+            return null;
+        }
+
         String structuredData;
         try {
             structuredData =

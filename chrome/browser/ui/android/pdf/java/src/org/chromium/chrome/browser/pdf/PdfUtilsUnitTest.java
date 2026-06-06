@@ -12,6 +12,8 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.ext.SdkExtensions;
@@ -47,6 +49,7 @@ public class PdfUtilsUnitTest {
     @Mock private NativePage mNativePage;
     @Mock private Context mContext;
     @Mock private ContentResolver mContentResolver;
+    @Mock private PackageManager mPackageManager;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
 
@@ -284,6 +287,179 @@ public class PdfUtilsUnitTest {
     public void testGetEncodedContentUri_Https() {
         String encodedUrl = PdfUtils.getEncodedContentUri(PDF_LINK, mContext);
         Assert.assertTrue("The encoded url should not exist", TextUtils.isEmpty(encodedUrl));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_NullUri() {
+        Assert.assertFalse(PdfUtils.isUriSafeForSharing(null, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_NonContentScheme() {
+        Uri fileUri = Uri.parse("file:///sdcard/Downloads/sample.pdf");
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(fileUri, mContext));
+
+        Uri httpsUri = Uri.parse("https://example.com/sample.pdf");
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(httpsUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_UnresolvedProvider() {
+        Uri contentUri = Uri.parse("content://unknown.provider/sample.pdf");
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mPackageManager.resolveContentProvider("unknown.provider", 0)).thenReturn(null);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_ExternalProvider() {
+        Uri contentUri = Uri.parse("content://com.external.provider/sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "com.external.app";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("com.external.provider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_InternalFileProvider_PdfsAllowed() {
+        Uri contentUri = Uri.parse("content://org.chromium.chrome.FileProvider/pdfs/sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.FileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_InternalFileProvider_DownloadsAllowed() {
+        Uri contentUri =
+                Uri.parse("content://org.chromium.chrome.FileProvider/downloads/sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.FileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_InternalFileProvider_PasswordsBlocked() {
+        Uri contentUri =
+                Uri.parse("content://org.chromium.chrome.FileProvider/passwords/ChromePass.csv");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.FileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertFalse(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_InternalPdfContentProvider_Allowed() {
+        Uri contentUri = Uri.parse("content://org.chromium.chrome.PdfContentProvider/12345678");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.PdfContentProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_OtherInternalProvider_Blocked() {
+        Uri contentUri = Uri.parse("content://org.chromium.chrome.ChromeBrowserProvider/bookmarks");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.ChromeBrowserProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertFalse(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_DownloadFileProvider_DownloadAllowed() {
+        Uri contentUri =
+                Uri.parse(
+                        "content://org.chromium.chrome.DownloadFileProvider/download?file=sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_DownloadFileProvider_DownloadExternalAllowed() {
+        Uri contentUri =
+                Uri.parse(
+                        "content://org.chromium.chrome.DownloadFileProvider/download_external?file=sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_DownloadFileProvider_ExternalVolumeAllowed() {
+        Uri contentUri =
+                Uri.parse(
+                        "content://org.chromium.chrome.DownloadFileProvider/external_volume?file=sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertTrue(PdfUtils.isUriSafeForSharing(contentUri, mContext));
+    }
+
+    @Test
+    public void testIsUriSafeForSharing_DownloadFileProvider_InvalidPathBlocked() {
+        Uri contentUri =
+                Uri.parse(
+                        "content://org.chromium.chrome.DownloadFileProvider/invalid_path?file=sample.pdf");
+        ProviderInfo providerInfo = new ProviderInfo();
+        providerInfo.packageName = "org.chromium.chrome";
+
+        when(mContext.getPackageManager()).thenReturn(mPackageManager);
+        when(mContext.getPackageName()).thenReturn("org.chromium.chrome");
+        when(mPackageManager.resolveContentProvider("org.chromium.chrome.DownloadFileProvider", 0))
+                .thenReturn(providerInfo);
+
+        Assert.assertFalse(PdfUtils.isUriSafeForSharing(contentUri, mContext));
     }
 
     @Implements(SdkExtensions.class)
