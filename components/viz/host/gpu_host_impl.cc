@@ -114,6 +114,21 @@ std::string GraphiteDawnCacheVersion() {
 }
 #endif
 
+bool CanUseShaderCache(const gpu::GpuDiskCacheHandle& handle,
+                       const std::optional<bool>& gpu_uses_graphite) {
+  if (handle == gpu::GpuDiskCacheHandle(gpu::kGraphiteDawnGpuDiskCacheHandle) &&
+      !gpu_uses_graphite.value()) {
+    // GraphiteDawn cache is not used when Skia Graphite is disabled.
+    return false;
+  }
+  if (handle == gpu::GpuDiskCacheHandle(gpu::kGrShaderGpuDiskCacheHandle) &&
+      gpu_uses_graphite.value()) {
+    // GrShader cache is not used when Skia Graphite is enabled.
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 GpuHostImpl::InitParams::InitParams() = default;
@@ -344,6 +359,10 @@ void GpuHostImpl::SetChannelDiskCacheHandle(
     return;
   }
 
+  if (!CanUseShaderCache(handle, gpu_uses_graphite_)) {
+    return;
+  }
+
   scoped_refptr<gpu::GpuDiskCache> cache =
       delegate_->GetGpuDiskCacheFactory()->Get(handle);
   if (!cache) {
@@ -515,6 +534,12 @@ void GpuHostImpl::SetChannelPersistentCachePendingBackend(
     persistent_cache::PendingBackend pending_backend) {
   TRACE_EVENT2("gpu", "GpuHostImpl::SetChannelPersistentCachePendingBackend",
                "client_id", client_id, "handle_type", GetHandleType(handle));
+  if (!CanUseShaderCache(handle, gpu_uses_graphite_)) {
+    if (auto* factory = PersistentCacheSandboxedFileFactory::GetInstance()) {
+      factory->DeletePendingBackendAsync(std::move(pending_backend));
+    }
+    return;
+  }
   gpu_service()->SetChannelPersistentCachePendingBackend(
       client_id, handle, std::move(pending_backend));
 }
@@ -621,6 +646,10 @@ void GpuHostImpl::DidInitialize(
   delegate_->DidInitialize(gpu_info, gpu_feature_info,
                            gpu_info_for_hardware_gpu,
                            gpu_feature_info_for_hardware_gpu, gpu_extra_info);
+
+  gpu_uses_graphite_ =
+      gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+      gpu::kGpuFeatureStatusEnabled;
 
   if (!params_.disable_gpu_shader_disk_cache) {
     // Signal that any delayed loads of the persistent cache files should be

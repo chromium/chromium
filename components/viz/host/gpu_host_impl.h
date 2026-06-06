@@ -387,6 +387,9 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   // should be forwarded as soon as they are loaded.
   bool send_persistent_cache_files_to_service_ = false;
 
+  // This is only set in GpuHostImpl::DidInitialize().
+  std::optional<bool> gpu_uses_graphite_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<GpuHostImpl> weak_ptr_factory_{this};
