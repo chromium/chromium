@@ -7,15 +7,17 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,7 +46,6 @@ class SearchFileScannerTest : public testing::Test {
   void WriteFile(const std::string& filename) {
     ASSERT_TRUE(base::WriteFile(Path(filename), "abcd"));
     ASSERT_TRUE(base::PathExists(Path(filename)));
-    Wait();
   }
 
   Profile* profile() { return profile_.get(); }
@@ -55,7 +56,14 @@ class SearchFileScannerTest : public testing::Test {
 
   std::vector<base::FilePath> excluded_paths() { return excluded_paths_; }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
+  void WaitForScanComplete() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !profile()
+                  ->GetPrefs()
+                  ->GetTime(ash::prefs::kLauncherSearchLastFileScanLogTime)
+                  .is_null();
+    }));
+  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -79,7 +87,7 @@ TEST_F(SearchFileScannerTest, FileScanTriggerLogging) {
       std::make_unique<app_list::SearchFileScanner>(
           profile(), root_path(), excluded_paths(),
           /*start_delay_override=*/base::TimeDelta::Min());
-  Wait();
+  WaitForScanComplete();
 
   // Logs the total file number.
   EXPECT_THAT(histogram_tester()->GetAllSamples(
@@ -98,7 +106,6 @@ TEST_F(SearchFileScannerTest, FileScanTriggerLogging) {
   file_scanner = std::make_unique<app_list::SearchFileScanner>(
       profile(), root_path(), excluded_paths(),
       /*start_delay_override=*/base::TimeDelta::Min());
-  Wait();
 
   // No new log should appear as there is a scan limit, and the second scan has
   // early returned.
