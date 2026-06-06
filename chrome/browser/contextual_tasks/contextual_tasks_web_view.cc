@@ -77,7 +77,7 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  BrowserWindowInterface* browser = GetBrowser();
+  BrowserWindowInterface* browser = webui::GetBrowserWindowInterface(source);
   if (browser) {
     return browser->OpenURL(params, std::move(navigation_handle_callback));
   } else {
@@ -89,10 +89,12 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
 web_modal::WebContentsModalDialogHost*
 ContextualTasksWebView::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
-  if (!GetBrowser()) {
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_contents);
+  if (!browser) {
     return nullptr;
   }
-  return GetBrowser()->GetWebContentsModalDialogHostForWindow();
+  return browser->GetWebContentsModalDialogHostForWindow();
 }
 
 void ContextualTasksWebView::AttachWebContentsModalDialogManager(
@@ -115,13 +117,6 @@ void ContextualTasksWebView::DetachWebContentsModalDialogManager(
   if (dialog_manager) {
     dialog_manager->SetDelegate(nullptr);
   }
-}
-
-BrowserWindowInterface* ContextualTasksWebView::GetBrowser() {
-  if (!web_contents()) {
-    return nullptr;
-  }
-  return webui::GetBrowserWindowInterface(web_contents());
 }
 
 }  // namespace contextual_tasks

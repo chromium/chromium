@@ -23,6 +23,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -31,6 +32,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/views/widget/widget_deletion_observer.h"
 
 using testing::AtLeast;
 using testing::Field;
@@ -969,6 +972,62 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
   coordinator->Close();
   EXPECT_EQ(content::Visibility::HIDDEN, web_contents1->GetVisibility());
   EXPECT_EQ(content::Visibility::HIDDEN, web_contents2->GetVisibility());
+}
+
+// Regression test for crbug.com/517906613: On a buggy build, trying to show the
+// pending dialog during SetWebContents when the view's web_contents() is stale
+// would result in a null host crash in the dialog manager.
+IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+                       ModalDialogSwitchTabsDoesNotCrash) {
+  SetUpTasks();
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+
+  views::Widget* dialog_widget = nullptr;
+  std::unique_ptr<views::WidgetDeletionObserver> deletion_observer;
+
+  RunTestSequence(
+      Do([&]() {
+        // Open the side panel for the active tab (Tab 0).
+        coordinator->Show(
+            false, omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Show a modal dialog on the active side panel's WebContents.
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+
+        auto dialog_model = ui::DialogModel::Builder()
+                                .SetTitle(u"Test Modal Dialog")
+                                .AddOkButton(base::DoNothing())
+                                .Build();
+        dialog_widget = constrained_window::ShowWebModal(
+            std::move(dialog_model), side_panel_contents);
+        ASSERT_NE(dialog_widget, nullptr);
+        deletion_observer =
+            std::make_unique<views::WidgetDeletionObserver>(dialog_widget);
+
+        // Switch to a tab with no associated task to close the side panel.
+        // This destroys the side panel view, leaving the WebContents with the
+        // pending dialog cached in the coordinator.
+        TabListInterface* tab_list = TabListInterface::From(browser());
+        tab_list->ActivateTab(tab_list->GetTab(3)->GetHandle());
+      }),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Switch back to Tab 0. This recreates the side panel view and triggers
+        // SetWebContents with the cached WebContents.
+        TabListInterface* tab_list = TabListInterface::From(browser());
+        tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
+      }),
+      Do([&]() {
+        // If we didn't crash, verify the side panel is open again.
+        EXPECT_TRUE(coordinator->IsPanelOpenForContextualTask());
+
+        // Cleanup the dialog widget if it's still alive.
+        if (deletion_observer && deletion_observer->IsWidgetAlive()) {
+          dialog_widget->CloseNow();
+        }
+      }));
 }
 
 }  // namespace contextual_tasks
