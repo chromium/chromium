@@ -440,10 +440,10 @@ void ExtensionMessagePort::DispatchOnConnect(
     const std::set<base::UnguessableToken>& open_channel_tracking_ids) {
   mojom::TabConnectionInfoPtr source = mojom::TabConnectionInfo::New();
 
-  // Source document ID should exist if and only if there is a source tab.
-  DCHECK_EQ(!!source_tab, !!source_frame.document_id);
   if (source_tab) {
     source->tab = source_tab->Clone();
+  }
+  if (!source_frame.document_id.is_empty()) {
     source->document_id = source_frame.document_id.ToString();
     source->document_lifecycle = ToString(source_frame.document_lifecycle);
   }

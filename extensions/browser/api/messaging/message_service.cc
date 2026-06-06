@@ -621,6 +621,9 @@ void MessageService::OpenChannelToExtension(
     if (is_web_view &&
         Manifest::IsComponentLocation(target_extension->location())) {
       include_guest_process_info = true;
+      // Temporarily allow to populate source_frame for webview.
+      source_frame = ExtensionApiFrameIdMap::Get()->GetFrameData(
+          source_render_frame_host->GetGlobalId());
     }
 #endif
   }

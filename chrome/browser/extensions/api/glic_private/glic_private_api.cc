@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
 
@@ -522,8 +524,15 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
     return;
   }
 
-  tab_interface = tabs::TabInterface::MaybeGetFromContents(
-      content::WebContents::FromRenderFrameHost(rfh));
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+  WebViewGuest* guest_view = WebViewGuest::FromRenderFrameHost(rfh);
+  // Support invocations from a webview if it's inside ContextualTasks WebUI.
+  if (guest_view && contextual_tasks::GetWebUiInterface(
+                        guest_view->embedder_web_contents())) {
+    web_contents = guest_view->embedder_web_contents();
+  }
+  tab_interface = tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab_interface) {
     Respond(GetPromptResponseValueAndLog(
         extensions::api::glic_private::ErrorCode::kLocalNoActiveTab));
