@@ -974,6 +974,22 @@ TEST_F(
             {"vsrid", "vsrid"},
             {"gsessionid", "gsessionid"},
             {"azm", "7"}});
+
+  search_terms_args.input_state.image_gen_upload_active = false;
+  search_terms_args.input_state.active_tool =
+      omnibox::ToolMode::TOOL_MODE_CANVAS;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+
+  // When active_tool is TOOL_MODE_CANVAS, client=chrome-contextual is omitted,
+  // but vsrid, gsessionid, vit, gs_ps, and azm=2 (CANVAS) are sent.
+  CheckUrl(endpoint_url, "https://www.google.com/suggest",
+           {{"q", "query"},
+            {"gs_ps", "1"},
+            {"vit", "vit"},
+            {"vsrid", "vsrid"},
+            {"gsessionid", "gsessionid"},
+            {"azm", "2"}});
 }
 
 TEST_F(

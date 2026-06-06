@@ -2017,7 +2017,7 @@ TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest,
-       QueryAutocomplete_SkipsLensInputs_InToolModes) {
+       QueryAutocomplete_SetsLensInputs_InToolModes) {
   lens::proto::LensOverlaySuggestInputs suggest_inputs;
   suggest_inputs.set_encoded_image_signals("xyz");
   EXPECT_CALL(*static_cast<TestOmniboxClient*>(
@@ -2066,7 +2066,9 @@ TEST_F(ContextualSearchboxHandlerTest,
         std::move(autocomplete_controller));
 
     handler().QueryAutocomplete(u"test", false, 0);
-    EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
+    EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
+              "xyz");
   }
 }
 

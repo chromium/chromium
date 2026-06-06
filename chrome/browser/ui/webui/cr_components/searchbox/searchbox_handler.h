@@ -189,7 +189,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
                            QueryAutocomplete_SetsLensInputs);
   FRIEND_TEST_ALL_PREFIXES(ContextualSearchboxHandlerTest,
-                           QueryAutocomplete_SkipsLensInputs_InToolModes);
+                           QueryAutocomplete_SetsLensInputs_InToolModes);
   SearchboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       mojo::PendingRemote<searchbox::mojom::Page> pending_page,
