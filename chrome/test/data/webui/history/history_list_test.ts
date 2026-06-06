@@ -750,6 +750,11 @@ suite('HistoryListTest', function() {
     for (let i = 0; i < itemsNeeded; i++) {
       results.push(createHistoryEntry('2016-03-15', 'https://www.google.com'));
     }
+    // TODO(crbug.com/509908129): Use static CSS file to remove side effect.
+    // Because finishSetup is being called a second time, the history-app is
+    // going to get reconnected. First, clear out the document body to mitigate
+    // side effects, such as addition of the color theme CSS file.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     await finishSetup(results, /*finished=*/ false);
     testProxy.handler.reset();
     // Make scroll debounce shorter to shorten some wait times below.

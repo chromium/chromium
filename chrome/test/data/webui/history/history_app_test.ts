@@ -327,6 +327,7 @@ suite('HistoryAppTest', function() {
 
     // Recreate the app with the promo enabled.
     loadTimeData.overrideValues({maybeShowEmbeddingsIph: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = document.createElement('history-app');
     document.body.appendChild(element);
     await microtasksFinished();
