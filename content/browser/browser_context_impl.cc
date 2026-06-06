@@ -127,8 +127,6 @@ BrowserContextImpl::~BrowserContextImpl() {
   // this context. Trigger a crash report if there are still references so
   // we can detect/diagnose potential UAFs.
   std::string rph_crash_key_value;
-  ChildProcessSecurityPolicyImpl* policy =
-      ChildProcessSecurityPolicyImpl::GetInstance();
   for (RenderProcessHost::iterator host_iterator =
            RenderProcessHost::AllHostsIterator();
        !host_iterator.IsAtEnd(); host_iterator.Advance()) {
@@ -145,10 +143,6 @@ BrowserContextImpl::~BrowserContextImpl() {
     DUMP_WILL_BE_NOTREACHED()
         << "rph_with_bc_reference : " << rph_crash_key_value;
   }
-
-  // Clean up any isolated origins and other security state associated with this
-  // BrowserContext.
-  policy->RemoveStateForBrowserContext(*self_);
 
   if (download_manager_) {
     download_manager_->Shutdown();
@@ -200,6 +194,11 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
       host->DisableRefCounts();
     }
   }
+
+  // Clean up any isolated origins and other security state associated with this
+  // BrowserContext.
+  ChildProcessSecurityPolicyImpl::GetInstance()->RemoveStateForBrowserContext(
+      *self_);
 }
 
 StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {

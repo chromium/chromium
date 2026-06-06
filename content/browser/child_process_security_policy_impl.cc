@@ -2968,6 +2968,12 @@ void ChildProcessSecurityPolicyImpl::RemoveStateForBrowserContext(
   }
 
   {
+    base::AutoLock origins_isolation_opt_in_lock(
+        origins_isolation_opt_in_lock_);
+    origin_isolation_opt_ins_and_outs_.erase(browser_context.UniqueToken());
+  }
+
+  {
     base::AutoLock lock(lock_);
     security_states_.ClearBrowserContextIfMatches(browser_context);
   }
