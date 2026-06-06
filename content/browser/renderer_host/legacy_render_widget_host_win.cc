@@ -76,8 +76,15 @@ LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(
 }
 
 void LegacyRenderWidgetHostHWND::Destroy() {
-  // Delete DirectManipulationHelper before the window is destroyed.
+  // Delete DirectManipulationHelper before the window is destroyed. The
+  // helper's destructor makes COM calls that can spin a nested message loop
+  // that could destroy the window through another path before returning.
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   direct_manipulation_helper_.reset();
+  if (!ref) {
+    return;
+  }
   window_tree_host_prop_.reset();
   host_ = nullptr;
   if (::IsWindow(hwnd())) {
