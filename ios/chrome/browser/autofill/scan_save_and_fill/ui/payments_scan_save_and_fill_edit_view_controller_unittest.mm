@@ -271,13 +271,14 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestPlaceholders) {
   // Card Number.
   TableViewTextEditItem* numberItem =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[0]);
-  EXPECT_NSEQ(l10n_util::GetNSString(
-                  IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER),
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER),
               numberItem.textFieldPlaceholder);
 
   // Expiration Date.
   TableViewTextEditItem* expItem =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[1]);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_AUTOFILL_SCAN_CARD_EXP_DATE),
+              expItem.fieldNameLabelText);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE),
               expItem.textFieldPlaceholder);
@@ -285,20 +286,22 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestPlaceholders) {
   // Cardholder Name.
   TableViewTextEditItem* nameItem =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[2]);
-  EXPECT_NSEQ(nil, nameItem.textFieldPlaceholder);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME),
+              nameItem.textFieldPlaceholder);
 
   // CVC.
   TableViewTextEditItem* cvcItem =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[3]);
   EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL),
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL),
       cvcItem.textFieldPlaceholder);
 
   // Nickname.
   TableViewTextEditItem* nicknameItem =
       base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[4]);
   EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME),
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL),
       nicknameItem.textFieldPlaceholder);
 }
 

@@ -228,21 +228,20 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
                                           IDS_IOS_AUTOFILL_CARD_NUMBER)
                        textFieldValue:_cardNumber
                          keyboardType:UIKeyboardTypeNumberPad
-                 textFieldPlaceholder:
-                     l10n_util::GetNSString(
-                         IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER)];
+                 textFieldPlaceholder:l10n_util::GetNSString(
+                                          IDS_IOS_AUTOFILL_CARD_NUMBER)];
 }
 
 // Creates the expiration date input item.
 - (TableViewTextEditItem*)expirationDateItem {
-  return [self
-      createEditItemWithType:ItemTypeCardExpireDate
-          fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_DATE)
-              textFieldValue:_expirationDate
-                keyboardType:UIKeyboardTypeNumberPad
-        textFieldPlaceholder:
-            l10n_util::GetNSString(
-                IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE)];
+  return [self createEditItemWithType:ItemTypeCardExpireDate
+                   fieldNameLabelText:l10n_util::GetNSString(
+                                          IDS_IOS_AUTOFILL_SCAN_CARD_EXP_DATE)
+                       textFieldValue:_expirationDate
+                         keyboardType:UIKeyboardTypeNumberPad
+                 textFieldPlaceholder:
+                     l10n_util::GetNSString(
+                         IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE)];
 }
 
 // Creates the cardholder name input item.
@@ -252,19 +251,21 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
           fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARDHOLDER)
               textFieldValue:_cardholderName
                 keyboardType:UIKeyboardTypeDefault
-        textFieldPlaceholder:nil];
+        textFieldPlaceholder:
+            l10n_util::GetNSString(
+                IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CARD_HOLDER_NAME)];
 }
 
 // Creates the CVC input item.
 - (TableViewTextEditItem*)cardCVCItem {
-  return [self createEditItemWithType:ItemTypeCardCVC
-                   fieldNameLabelText:l10n_util::GetNSString(
-                                          IDS_IOS_AUTOFILL_SCAN_CARD_CVC)
-                       textFieldValue:_cardCVC
-                         keyboardType:UIKeyboardTypeNumberPad
-                 textFieldPlaceholder:
-                     l10n_util::GetNSString(
-                         IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL)];
+  return [self
+      createEditItemWithType:ItemTypeCardCVC
+          fieldNameLabelText:l10n_util::GetNSString(
+                                 IDS_IOS_AUTOFILL_SECURITY_CODE)
+              textFieldValue:_cardCVC
+                keyboardType:UIKeyboardTypeNumberPad
+        textFieldPlaceholder:l10n_util::GetNSString(
+                                 IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL)];
 }
 
 // Creates the nickname input item.
@@ -275,7 +276,7 @@ void StyleButtonForConfirmation(UIButtonConfiguration* config) {
               textFieldValue:_nickname
                 keyboardType:UIKeyboardTypeDefault
         textFieldPlaceholder:l10n_util::GetNSString(
-                                 IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME)];
+                                 IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL)];
 }
 
 #pragma mark - UI Setup

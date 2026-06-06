@@ -27,8 +27,8 @@
   // gone) and manually appends the placeholder back to the accessibility label
   // if it matches one of the essential types.
   if (item.textFieldValue.length > 0) {
-    NSString* optionalPlaceholder = l10n_util::GetNSString(
-        IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL);
+    NSString* optionalPlaceholder =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL);
     NSString* monthPlaceholder = l10n_util::GetNSString(
         IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH);
     NSString* yearPlaceholder = l10n_util::GetNSString(

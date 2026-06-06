@@ -492,7 +492,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    textFieldValue:_cardCvc
              textFieldPlaceholder:
                  l10n_util::GetNSString(
-                     IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL)
+                     IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_OPTIONAL)
                      keyboardType:UIKeyboardTypeNumberPad
          autofillCreditCardUIType:AutofillCreditCardUIType::kSecurityCode];
   return cardCvcItem;
