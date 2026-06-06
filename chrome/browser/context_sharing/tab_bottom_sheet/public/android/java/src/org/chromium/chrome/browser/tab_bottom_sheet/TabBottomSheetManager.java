@@ -54,10 +54,12 @@ public interface TabBottomSheetManager extends Destroyable {
     boolean isInPeekMode();
 
     /**
-     * Sets the supplier for the active playback tab from ReadAloud.
+     * Initializes the ReadAloud integration.
      *
-     * @param activePlaybackTabSupplier The supplier.
+     * @param activePlaybackTabSupplier The active playback tab supplier.
+     * @param stopPlaybackCallback Callback to stop ReadAloud playback.
      */
-    void setReadAloudActivePlaybackTabSupplier(
-            NullableObservableSupplier<Tab> activePlaybackTabSupplier);
+    void initReadAloudIntegration(
+            NullableObservableSupplier<Tab> activePlaybackTabSupplier,
+            Runnable stopPlaybackCallback);
 }
