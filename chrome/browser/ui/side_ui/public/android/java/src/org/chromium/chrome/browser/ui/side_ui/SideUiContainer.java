@@ -59,10 +59,6 @@ public interface SideUiContainer {
     int determineContainerWidth(
             @Px int requestedWidth, @Px int availableWidth, @Px int windowWidth);
 
-    /** Returns the container's current width. */
-    @Px
-    int getCurrentWidth();
-
     /** Returns the container's current anchor side. */
     @AnchorSide
     int getAnchorSide();

@@ -78,11 +78,6 @@ public final class TestSideUiContainer implements SideUiContainer {
     }
 
     @Override
-    public int getCurrentWidth() {
-        return mSideUiContainerView.getWidth();
-    }
-
-    @Override
     @AnchorSide
     public int getAnchorSide() {
         return mAnchorSide;
