@@ -1705,7 +1705,7 @@
   {
     "name": "chromebox-usb-passthrough-restrictions",
     "owners": [ "drmasquatch@google.com", "clumptini@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "clank-default-browser-promo-role-manager",
