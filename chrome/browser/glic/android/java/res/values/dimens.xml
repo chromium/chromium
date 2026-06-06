@@ -36,4 +36,5 @@ found in the LICENSE file.
     <dimen name="glic_menu_end_icon_width">40dp</dimen>
     <dimen name="glic_menu_end_icon_width_desktop">32dp</dimen>
     <!-- LINT.ThenChange(//chrome/browser/glic/android/java/res/drawable/glic_menu_dot.xml) -->
+    <dimen name="glic_dirty_dot_size">6dp</dimen>
 </resources>

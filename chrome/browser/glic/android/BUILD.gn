@@ -20,8 +20,6 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/glic_dirty_dot_filled_spark_24dp.xml",
-    "java/res/drawable/glic_dirty_dot_spark.xml",
     "java/res/drawable/glic_menu_dot.xml",
     "java/res/drawable/glic_menu_end_icon_needs_review.xml",
     "java/res/drawable/glic_menu_end_icon_standard.xml",
