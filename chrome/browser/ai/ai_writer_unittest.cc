@@ -179,7 +179,8 @@ class AIWriterTest : public AITestUtils::AITestBase {
       blink::mojom::AIWriterCreateOptionsPtr options = GetDefaultOptions()) {
     TestCreateWriterClient create_writer_client;
     GetAIManagerRemote()->CreateWriter(
-        create_writer_client.BindNewPipeAndPassRemote(), std::move(options));
+        create_writer_client.BindNewPipeAndPassRemote(), std::move(options),
+        /*monitor=*/mojo::NullRemote());
 
     CreateWriterResult result = create_writer_client.result().Take();
     EXPECT_OK(result);
@@ -217,7 +218,8 @@ class AIWriterTest : public AITestUtils::AITestBase {
   void EnsureModelIsReady() {
     TestCreateWriterClient writer_client;
     GetAIManagerRemote()->CreateWriter(writer_client.BindNewPipeAndPassRemote(),
-                                       GetDefaultOptions());
+                                       GetDefaultOptions(),
+                                       /*monitor=*/mojo::NullRemote());
 
     auto result = writer_client.result().Take();
     EXPECT_OK(result);
@@ -295,7 +297,8 @@ TEST_F(AIWriterTest, CreateWriterNoService) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateWriterResult result = create_writer_client.result().Take();
   EXPECT_FALSE(result.has_value());
@@ -332,7 +335,8 @@ TEST_F(AIWriterTest, CreateWriterModelNotEligible) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateWriterResult result = create_writer_client.result().Take();
   EXPECT_EQ(result.error().error,
@@ -344,7 +348,8 @@ TEST_F(AIWriterTest, CreateWriterWaitsForBaseModel) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   TestFuture<CreateWriterResult>& future = create_writer_client.result();
   task_environment()->FastForwardBy(base::Hours(1));
@@ -363,7 +368,8 @@ TEST_F(AIWriterTest, CreateWriterWaitsForModelAdaptation) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   TestFuture<CreateWriterResult>& future = create_writer_client.result();
   task_environment()->FastForwardBy(base::Hours(1));
@@ -383,7 +389,8 @@ TEST_F(AIWriterTest, CreateWriterWaitsForTextSafetyModel) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   TestFuture<CreateWriterResult>& future = create_writer_client.result();
   task_environment()->FastForwardBy(base::Hours(1));
@@ -410,7 +417,8 @@ TEST_F(AIWriterTest, CreateWriterSafetyConfigNotAvailable) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateWriterResult result = create_writer_client.result().Take();
   EXPECT_EQ(result.error().error,
@@ -429,7 +437,8 @@ TEST_F(AIWriterTest, CreateWriterUnableToCalculateTokenSize) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateWriterResult result = create_writer_client.result().Take();
   EXPECT_EQ(
@@ -443,7 +452,8 @@ TEST_F(AIWriterTest, CreateWriterContextLimitExceededError) {
 
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   CreateWriterResult result = create_writer_client.result().Take();
   EXPECT_EQ(result.error().error,
@@ -710,7 +720,8 @@ TEST_F(AIWriterTest, CreatePermissionsPolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
 }
 
@@ -725,7 +736,8 @@ TEST_F(AIWriterTest, CreateBuiltInAIAPIsEnterprisePolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetBuiltInAIAPIsEnterprisePolicy(true);
 }
@@ -741,7 +753,8 @@ TEST_F(AIWriterTest, CreateGenAILocalEnterprisePolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetGenAILocalEnterprisePolicy(true);
 }
@@ -757,7 +770,8 @@ TEST_F(AIWriterTest, CreateOnDeviceAiUserSettingDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetOnDeviceAiUserSetting(true);
 }
@@ -851,7 +865,8 @@ TEST_F(AIWriterManifestTest, CanCreateAndCreateWithManifestGemma4) {
   // Verify CreateWriter can retrieve the model successfully.
   TestCreateWriterClient create_writer_client;
   GetAIManagerRemote()->CreateWriter(
-      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_writer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      /*monitor=*/mojo::NullRemote());
 
   auto result = create_writer_client.result().Take();
   EXPECT_TRUE(result.has_value());

@@ -127,8 +127,8 @@ class AIClassifierTest : public AITestUtils::AITestBase {
           GetDefaultOptions()) {
     TestCreateClassifierClient create_classifier_client;
     GetAIManagerRemote()->CreateClassifier(
-        create_classifier_client.BindNewPipeAndPassRemote(),
-        std::move(options));
+        create_classifier_client.BindNewPipeAndPassRemote(), std::move(options),
+        /*monitor=*/mojo::NullRemote());
 
     CreateClassifierResult result = create_classifier_client.result().Take();
     EXPECT_OK(result);
@@ -147,7 +147,8 @@ class AIClassifierTest : public AITestUtils::AITestBase {
   void EnsureModelIsReady() {
     TestCreateClassifierClient classifier_client;
     GetAIManagerRemote()->CreateClassifier(
-        classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+        classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+        mojo::NullRemote());
     auto result = classifier_client.result().Take();
     EXPECT_TRUE(result.has_value());
   }
@@ -221,7 +222,8 @@ TEST_F(AIClassifierTest, CreateBuiltInAIAPIsEnterprisePolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateClassifierClient create_classifier_client;
   GetAIManagerRemote()->CreateClassifier(
-      create_classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetBuiltInAIAPIsEnterprisePolicy(true);
 }
@@ -237,7 +239,8 @@ TEST_F(AIClassifierTest, CreateGenAILocalEnterprisePolicyDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateClassifierClient create_classifier_client;
   GetAIManagerRemote()->CreateClassifier(
-      create_classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetGenAILocalEnterprisePolicy(true);
 }
@@ -253,7 +256,8 @@ TEST_F(AIClassifierTest, CreateOnDeviceAiUserSettingDisabled) {
   mojo::test::BadMessageObserver observer;
   TestCreateClassifierClient create_classifier_client;
   GetAIManagerRemote()->CreateClassifier(
-      create_classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+      create_classifier_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
+      mojo::NullRemote());
   EXPECT_EQ(observer.WaitForBadMessage(), "Policy or user setting disabled");
   SetOnDeviceAiUserSetting(true);
 }

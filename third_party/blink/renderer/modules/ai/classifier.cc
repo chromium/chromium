@@ -30,7 +30,8 @@ void AIWritingAssistanceCreateClient<
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
   ai_manager_remote->CreateClassifier(
-      std::move(client_remote), mojom::blink::AIClassifierCreateOptions::New());
+      std::move(client_remote), mojom::blink::AIClassifierCreateOptions::New(),
+      monitor_ ? monitor_->BindRemote() : mojo::NullRemote());
 }
 
 template <>
