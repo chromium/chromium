@@ -794,15 +794,6 @@ BASE_FEATURE(kSkipRendererCancellationThrottle,
 BASE_FEATURE(kStrictHighRankProcessLRU, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kTextInputClient, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kTextInputClientIPCTimeout,
-                   &kTextInputClient,
-                   "ipc_timeout",
-                   base::Milliseconds(1500));
-#endif
-
 // Allows swipe left/right from touchpad change browser navigation.
 // On platforms that don't have this enabled by default, the overscroll gesture
 // is handled at a different level and not through the interpretation of scroll

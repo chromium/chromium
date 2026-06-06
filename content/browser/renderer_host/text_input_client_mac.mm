@@ -24,7 +24,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/mojom/attributed_string.mojom.h"
@@ -223,9 +222,6 @@ TextInputClientMac::ResultValue TextInputClientMac::SyncRequest(
   CHECK(!in_sync_request_);
   base::AutoReset in_sync_request(&in_sync_request_, true);
 
-  const base::TimeDelta wait_timeout =
-      features::kTextInputClientIPCTimeout.Get();
-
   ResultValue result;
   const base::LiveTicks start = base::LiveTicks::Now();
   {
@@ -239,12 +235,12 @@ TextInputClientMac::ResultValue TextInputClientMac::SyncRequest(
     async_request_delegate_->SendRequest(rfhi.get(),
                                          current_sync_request_.value(), params);
 
-    base::TimeDelta remaining_timeout = wait_timeout;
+    base::TimeDelta remaining_timeout = wait_timeout_;
     while (std::holds_alternative<NoResultYetTag>(current_sync_result_) &&
            remaining_timeout.is_positive()) {
       base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
       condition_.TimedWait(remaining_timeout);
-      remaining_timeout = start + wait_timeout - base::LiveTicks::Now();
+      remaining_timeout = start + wait_timeout_ - base::LiveTicks::Now();
     }
 
     // Take the result before releasing the lock.
@@ -267,9 +263,6 @@ void TextInputClientMac::AsyncRequest(
 
   CHECK(!in_sync_request_);
 
-  const base::TimeDelta wait_timeout =
-      features::kTextInputClientIPCTimeout.Get();
-
   const base::LiveTicks start = base::LiveTicks::Now();
   base::AutoLock lock(lock_);
   RecordLockWaitTime(start);
@@ -287,7 +280,7 @@ void TextInputClientMac::AsyncRequest(
   async_request_delegate_->SendRequest(rfhi.get(), request_token, params);
 
   it->second.timer->Start(
-      FROM_HERE, wait_timeout,
+      FROM_HERE, wait_timeout_,
       base::BindOnce(&TextInputClientMac::OnAsyncRequestTimedOut,
                      weak_factory_.GetWeakPtr(), request_token,
                      std::move(timeout_callback)));
@@ -351,6 +344,16 @@ void TextInputClientMac::SetAsyncRequestDelegateForTesting(
   async_request_delegate_ =
       delegate ? std::move(delegate)
                : std::make_unique<DefaultAsyncRequestDelegate>();
+}
+
+void TextInputClientMac::SetTimeoutForTesting(base::TimeDelta timeout) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  wait_timeout_ = timeout;
+}
+
+base::TimeDelta TextInputClientMac::GetTimeoutForTesting() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return wait_timeout_;
 }
 
 void TextInputClientMac::SetCharacterIndexWhileLockedForTesting(

@@ -29,7 +29,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/text_input_host_impl.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -51,7 +50,7 @@ using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Values;
 
-// Value for kTextInputClientIPCTimeout. These aren't specified directly in
+// Value for TextInputClientMac timeout. These aren't specified directly in
 // INSTANTIATE_TEST_SUITE_P because TestTimeouts isn't initialized before the
 // test suit constructor.
 enum class TimeoutParam {
@@ -248,10 +247,7 @@ class TextInputClientMacTest
         ipc_timeout = TestTimeouts::tiny_timeout() * 1.5;
         break;
     }
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kTextInputClient,
-        {{"ipc_timeout",
-          absl::StrFormat("%dms", ipc_timeout.InMilliseconds())}});
+    TextInputClientMac::GetInstance()->SetTimeoutForTesting(ipc_timeout);
   }
 
  protected:
@@ -272,6 +268,8 @@ class TextInputClientMacTest
     delegate_ = nullptr;
     TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
         nullptr);
+    TextInputClientMac::GetInstance()->SetTimeoutForTesting(
+        base::Milliseconds(1500));
 
     RenderViewHostTestHarness::TearDown();
   }
@@ -362,7 +360,6 @@ class TextInputClientMacTest
  private:
   FunctionToTest function_to_test_;
   bool is_sync_;
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<FakeAsyncRequestDelegate> delegate_ = nullptr;
 };
 
@@ -559,7 +556,8 @@ TEST_P(TextInputClientMacTimeoutTest, SyncOrAsyncGetter_StaleResult) {
   // T=500ms: Second reply arrives, 200ms after the request.
   // T=600ms: Second request times out. (Shouldn't reach here, but see below...)
   const base::TimeDelta delay = TestTimeouts::tiny_timeout();
-  ASSERT_EQ(features::kTextInputClientIPCTimeout.Get(), delay * 1.5);
+  ASSERT_EQ(TextInputClientMac::GetInstance()->GetTimeoutForTesting(),
+            delay * 1.5);
 
   FocusWebContentsOnMainFrame();
 

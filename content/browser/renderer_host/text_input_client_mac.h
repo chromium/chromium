@@ -186,6 +186,9 @@ class CONTENT_EXPORT TextInputClientMac {
   void SetAsyncRequestDelegateForTesting(
       std::unique_ptr<AsyncRequestDelegate> delegate);
 
+  void SetTimeoutForTesting(base::TimeDelta timeout);
+  base::TimeDelta GetTimeoutForTesting() const;
+
   // Allows tests to call setters while already holding the lock, to prevent
   // deadlocks when calling them from the main test thread.
   void SetCharacterIndexWhileLockedForTesting(const RequestToken& request_token,
@@ -259,6 +262,9 @@ class CONTENT_EXPORT TextInputClientMac {
   // that's accessed only on the main thread so that it can be tested without
   // taking the lock, which would deadlock if the main thread already holds it.
   bool in_sync_request_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+
+  base::TimeDelta wait_timeout_ GUARDED_BY_CONTEXT(thread_checker_) =
+      base::Milliseconds(1500);
 
   base::WeakPtrFactory<TextInputClientMac> weak_factory_{this};
 };
