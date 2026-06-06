@@ -292,6 +292,10 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetWebActuationEnabled) {
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, SetWebActuationEnabled) {
   glic_handler()->AllowJavascriptForTesting();
 
+  glic::GlicKeyedService::Get(browser()->profile())
+      ->enabling()
+      .SetExperimentalTriggeringEnabled(true);
+
   base::ListValue args;
   args.Append(true);
   glic_handler()->HandleSetWebActuationEnabled(args);
@@ -299,6 +303,9 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, SetWebActuationEnabled) {
   EXPECT_TRUE(glic::GlicKeyedService::Get(browser()->profile())
                   ->enabling()
                   .GetUserEnabledActuationOnWeb());
+  EXPECT_TRUE(glic::GlicKeyedService::Get(browser()->profile())
+                  ->enabling()
+                  .GetExperimentalTriggeringEnabled());
 
   base::ListValue args2;
   args2.Append(false);
@@ -307,6 +314,9 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, SetWebActuationEnabled) {
   EXPECT_FALSE(glic::GlicKeyedService::Get(browser()->profile())
                    ->enabling()
                    .GetUserEnabledActuationOnWeb());
+  EXPECT_FALSE(glic::GlicKeyedService::Get(browser()->profile())
+                   ->enabling()
+                   .GetExperimentalTriggeringEnabled());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,

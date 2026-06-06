@@ -525,6 +525,9 @@
         <settings-toggle-button
             id="glicExperimentalTriggeringToggle"
             class="hr"
+            disabled="[[isExperimentalTriggeringDisabled_(
+                webActuationEnabledPref_.value,
+                isWebActuationDisabledForEnterprise_)]]"
             pref="{{experimentalTriggeringEnabledPref_}}"
             no-set-pref
             label="$i18n{glicExperimentalTriggering}"

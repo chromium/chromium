@@ -868,6 +868,27 @@ suite('GlicSubpage', function() {
       const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
       assertFalse(isVisible(toggle));
     });
+
+    test('ToggleDisabledWhenWebActuationDisabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        showGlicExperimentalTriggering: true,
+      });
+      await createGlicPage('⌃A', true);
+      const toggle =
+          $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
+      assertTrue(!!toggle);
+
+      assertTrue(toggle.disabled);
+
+      page.set('webActuationEnabledPref_.value', true);
+      await flushTasks();
+      assertFalse(toggle.disabled);
+
+      page.set('webActuationEnabledPref_.value', false);
+      await flushTasks();
+      assertTrue(toggle.disabled);
+    });
   });
 
   suite('MicrophoneToggleVisible', () => {
