@@ -21,6 +21,7 @@
 #include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -387,4 +388,97 @@ TEST_F(MojoDecryptorTest, DestroyService) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(MojoDecryptorTest, Deinitialize_DuringDecryptAndDecode) {
+  decryptor_ = std::make_unique<StrictMock<MockDecryptor>>();
+  mojo_decryptor_service_ =
+      std::make_unique<MojoDecryptorService>(decryptor_.get(), nullptr);
+
+  mojo::Remote<mojom::Decryptor> remote_decryptor;
+  receiver_ = std::make_unique<mojo::Receiver<mojom::Decryptor>>(
+      mojo_decryptor_service_.get(),
+      remote_decryptor.BindNewPipeAndPassReceiver());
+
+  // Create the four DataPipes.
+  mojo::ScopedDataPipeConsumerHandle audio_consumer;
+  mojo::ScopedDataPipeProducerHandle audio_producer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, audio_producer, audio_consumer));
+
+  mojo::ScopedDataPipeConsumerHandle video_consumer;
+  mojo::ScopedDataPipeProducerHandle video_producer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, video_producer, video_consumer));
+
+  mojo::ScopedDataPipeConsumerHandle decrypt_consumer;
+  mojo::ScopedDataPipeProducerHandle decrypt_producer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, decrypt_producer, decrypt_consumer));
+
+  mojo::ScopedDataPipeProducerHandle decrypted_producer;
+  mojo::ScopedDataPipeConsumerHandle decrypted_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, decrypted_producer,
+                                                 decrypted_consumer));
+
+  remote_decryptor->Initialize(
+      std::move(audio_consumer), std::move(video_consumer),
+      std::move(decrypt_consumer), std::move(decrypted_producer));
+
+  bool deinitialized = false;
+
+  EXPECT_CALL(*decryptor_, InitializeAudioDecoder(_, _))
+      .Times(testing::AtMost(1))
+      .WillOnce([](const AudioDecoderConfig& config,
+                   Decryptor::DecoderInitCB cb) { std::move(cb).Run(true); });
+
+  EXPECT_CALL(*decryptor_, DeinitializeDecoder(Decryptor::kAudio))
+      .Times(testing::AtMost(1))
+      .WillOnce(testing::Assign(&deinitialized, true));
+
+  EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(_, _))
+      .WillRepeatedly([&deinitialized](scoped_refptr<DecoderBuffer> buffer,
+                                       Decryptor::AudioDecodeCB cb) {
+        ASSERT_FALSE(deinitialized) << "DecryptAndDecodeAudio called after "
+                                       "DeinitializeDecoder!";
+        std::move(cb).Run(Decryptor::kSuccess, Decryptor::AudioFrames());
+      });
+
+  auto data_buffer = mojom::DataDecoderBuffer::New();
+  data_buffer->timestamp = base::TimeDelta();
+  data_buffer->duration = base::Seconds(1);
+  data_buffer->is_key_frame = false;
+  data_buffer->data_size = 256;
+
+  auto mojo_buffer = mojom::DecoderBuffer::NewData(std::move(data_buffer));
+
+  bool decode_called = false;
+  remote_decryptor->DecryptAndDecodeAudio(
+      std::move(mojo_buffer),
+      base::BindOnce(
+          [](bool* called, Decryptor::Status status,
+             std::vector<mojom::AudioBufferPtr> buffers) { *called = true; },
+          &decode_called));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  remote_decryptor->DeinitializeDecoder(Decryptor::kAudio);
+
+  remote_decryptor->InitializeAudioDecoder(
+      AudioDecoderConfig(AudioCodec::kAAC, SampleFormat::kSampleFormatS16,
+                         ChannelLayoutConfig::Stereo(), 44100,
+                         std::vector<uint8_t>(),
+                         EncryptionScheme::kUnencrypted),
+      base::BindOnce(
+          [](mojo::ScopedDataPipeProducerHandle producer, bool success) {
+            LOG(INFO) << "InitializeAudioDecoder callback called. Success="
+                      << success;
+            std::vector<uint8_t> data(256, 0);
+            size_t bytes_written = 0;
+            std::ignore = producer->WriteData(data, MOJO_WRITE_DATA_FLAG_NONE,
+                                              bytes_written);
+          },
+          std::move(audio_producer)));
+
+  std::string bad_message = bad_message_observer.WaitForBadMessage();
+  EXPECT_EQ(bad_message,
+            "DeinitializeDecoder with pending DecryptAndDecode reads");
+}
 }  // namespace media
