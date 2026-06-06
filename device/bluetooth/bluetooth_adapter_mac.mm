@@ -23,6 +23,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -54,39 +55,113 @@ extern "C" {
 void IOBluetoothPreferenceSetControllerPowerState(int state);
 }
 
-// A simple helper class that forwards any Bluetooth device connect notification
-// to its wrapped |_adapter|.
-@interface BluetoothDevicesConnectListener : NSObject {
- @private
-  // The BluetoothAdapterMac that owns |self|.
-  base::WeakPtr<device::BluetoothAdapterMac> _adapter;
-
-  // The OS mechanism used to subscribe to and unsubscribe from any Bluetooth
-  // device connect notification.
-  IOBluetoothUserNotification* __weak _connectNotification;
-
-  // This UI thread task runner should be used to invoke any functions on the
-  // adapter object because the connect notification might be delivered on a
-  // worker thread.
-  scoped_refptr<base::SingleThreadTaskRunner> _ui_task_runner;
+namespace device {
+class BluetoothDevicesConnectListenerBridge;
 }
 
-- (instancetype)initWithAdapter:
-    (base::WeakPtr<device::BluetoothAdapterMac>)adapter;
+@interface BluetoothDevicesConnectListener : NSObject {
+ @private
+  // Weak reference back to the C++ Bridge. This raw_ptr is safe to access
+  // concurrently from the background thread because:
+  // 1. It is only written to once during initialization on the UI thread and
+  //    remains read-only afterwards.
+  // 2. The Bridge strongly owns this Listener and employs a 2-second delayed
+  //    release during Shutdown() to ensure all in-flight background dispatches
+  //    have drained before the Bridge (and this Listener) are deallocated.
+  raw_ptr<device::BluetoothDevicesConnectListenerBridge> _bridge;
+  IOBluetoothUserNotification* __weak _connectNotification;
+}
+
+- (instancetype)initWithBridge:
+    (device::BluetoothDevicesConnectListenerBridge*)bridge;
 - (void)deviceConnected:(IOBluetoothUserNotification*)notification
                  device:(IOBluetoothDevice*)device;
 - (void)stopListening;
 
 @end
 
+namespace device {
+// A C++ bridge that manages the lifetime of BluetoothDevicesConnectListener
+// and safely bounces notifications to the UI thread.
+class BluetoothDevicesConnectListenerBridge
+    : public base::RefCountedDeleteOnSequence<
+          BluetoothDevicesConnectListenerBridge> {
+ public:
+  explicit BluetoothDevicesConnectListenerBridge(
+      base::WeakPtr<device::BluetoothAdapterMac> adapter)
+      : base::RefCountedDeleteOnSequence<BluetoothDevicesConnectListenerBridge>(
+            base::SingleThreadTaskRunner::GetCurrentDefault()),
+        adapter_(adapter) {}
+
+  BluetoothDevicesConnectListenerBridge(
+      const BluetoothDevicesConnectListenerBridge&) = delete;
+  BluetoothDevicesConnectListenerBridge& operator=(
+      const BluetoothDevicesConnectListenerBridge&) = delete;
+
+  void Initialize() {
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    listener_ = [[BluetoothDevicesConnectListener alloc] initWithBridge:this];
+  }
+
+  void Shutdown() {
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    adapter_ = nullptr;
+    if (listener_) {
+      [listener_ stopListening];
+      // Keep this Bridge (and thus the ObjC listener) alive for 2 seconds by
+      // passing a scoped_refptr (WrapRefCounted) to the delayed task. This
+      // allows any in-flight background dispatches to drain safely.
+      // TODO(crbug.com/519625606): Refactor this to use a singleton listener
+      // to avoid the brittle 2-second timeout.
+      owning_task_runner()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              &BluetoothDevicesConnectListenerBridge::ReleaseListener,
+              base::WrapRefCounted(this)),
+          base::Seconds(2));
+    }
+  }
+
+  void OnConnection(const std::string& device_address) {
+    owning_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&BluetoothDevicesConnectListenerBridge::OnConnectionOnUI,
+                       base::WrapRefCounted(this), device_address));
+  }
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<
+      BluetoothDevicesConnectListenerBridge>;
+  friend class base::DeleteHelper<BluetoothDevicesConnectListenerBridge>;
+
+  ~BluetoothDevicesConnectListenerBridge() {
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  }
+
+  void OnConnectionOnUI(const std::string& device_address) {
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    if (adapter_) {
+      adapter_->OnConnectNotification(device_address);
+    }
+  }
+
+  void ReleaseListener() {
+    DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+    listener_ = nil;
+  }
+
+  base::WeakPtr<device::BluetoothAdapterMac> adapter_;
+  BluetoothDevicesConnectListener* listener_;
+};
+}  // namespace device
+
 @implementation BluetoothDevicesConnectListener
 
-- (instancetype)initWithAdapter:
-    (base::WeakPtr<device::BluetoothAdapterMac>)adapter {
-  CHECK(adapter);
+- (instancetype)initWithBridge:
+    (device::BluetoothDevicesConnectListenerBridge*)bridge {
+  CHECK(bridge);
   if ((self = [super init])) {
-    _adapter = adapter;
-    _ui_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
+    _bridge = bridge;
 
     _connectNotification = [IOBluetoothDevice
         registerForConnectNotifications:self
@@ -100,28 +175,14 @@ void IOBluetoothPreferenceSetControllerPowerState(int state);
 
 - (void)deviceConnected:(IOBluetoothUserNotification*)notification
                  device:(IOBluetoothDevice*)device {
-  if (!_ui_task_runner) {
-    return;
+  if (_bridge) {
+    std::string address = base::SysNSStringToUTF8([device addressString]);
+    _bridge->OnConnection(address);
   }
-  _ui_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&device::BluetoothAdapterMac::OnConnectNotification,
-                     _adapter, device));
 }
 
 - (void)stopListening {
   [_connectNotification unregister];
-  _ui_task_runner = nullptr;
-  _adapter = nullptr;
-
-  // Keep self alive for a brief period to allow any already-enqueued
-  // notifications on the main run loop to fire safely (and become no-ops
-  // since _ui_task_runner is now null) rather than hitting a deallocated
-  // object. See FB13705522.
-  __strong auto strongSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    (void)strongSelf;
-  });
 }
 
 @end
@@ -183,8 +244,10 @@ BluetoothAdapterMac::BluetoothAdapterMac()
 }
 
 BluetoothAdapterMac::~BluetoothAdapterMac() {
-  [connect_listener_ stopListening];
-  connect_listener_ = nil;
+  if (connect_listener_bridge_) {
+    connect_listener_bridge_->Shutdown();
+    connect_listener_bridge_ = nullptr;
+  }
 }
 
 std::string BluetoothAdapterMac::GetAddress() const {
@@ -302,7 +365,15 @@ void BluetoothAdapterMac::ClassicDiscoveryStopped(bool unexpected) {
     observer.AdapterDiscoveringChanged(this, false);
 }
 
-void BluetoothAdapterMac::OnConnectNotification(IOBluetoothDevice* device) {
+void BluetoothAdapterMac::OnConnectNotification(
+    const std::string& device_address) {
+  IOBluetoothDevice* device = [IOBluetoothDevice
+      deviceWithAddressString:base::SysUTF8ToNSString(device_address)];
+  if (!device) {
+    BLUETOOTH_LOG(ERROR) << "Failed to find device for address: "
+                         << device_address;
+    return;
+  }
   DeviceConnected(
       std::make_unique<device::BluetoothClassicDeviceMac>(this, device));
 }
@@ -358,8 +429,10 @@ void BluetoothAdapterMac::LazyInitialize() {
   classic_discovery_manager_.reset(
       BluetoothDiscoveryManagerMac::CreateClassic(this));
   BluetoothLowEnergyAdapterApple::LazyInitialize();
-  connect_listener_ = [[BluetoothDevicesConnectListener alloc]
-      initWithAdapter:weak_ptr_factory_.GetWeakPtr()];
+  connect_listener_bridge_ =
+      base::MakeRefCounted<BluetoothDevicesConnectListenerBridge>(
+          weak_ptr_factory_.GetWeakPtr());
+  connect_listener_bridge_->Initialize();
   PollAdapter();
 }
 

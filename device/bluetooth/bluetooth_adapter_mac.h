@@ -23,6 +23,8 @@
 
 namespace device {
 
+class BluetoothDevicesConnectListenerBridge;
+
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
     : public BluetoothLowEnergyAdapterApple,
       public BluetoothDiscoveryManagerMac::Observer {
@@ -64,7 +66,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
 
   // Used for delivering device connect notification from MacOS IOBluetooth
   // framework to this adapter object.
-  void OnConnectNotification(IOBluetoothDevice* device);
+  void OnConnectNotification(const std::string& device_address);
 
   // Registers that a new |device| has connected to the local host.
   void DeviceConnected(std::unique_ptr<BluetoothDevice> device);
@@ -184,7 +186,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
   // the adapter has not been polled.
   std::optional<uint32_t> paired_count_;
 
-  BluetoothDevicesConnectListener* __strong connect_listener_;
+  scoped_refptr<BluetoothDevicesConnectListenerBridge> connect_listener_bridge_;
 
   base::WeakPtrFactory<BluetoothAdapterMac> weak_ptr_factory_{this};
 };
