@@ -39,8 +39,11 @@ class FakeDataWriter final
     : public RuntimeClass<RuntimeClassFlags<Microsoft::WRL::WinRtClassicComMix>,
                           IDataWriter> {
  public:
-  explicit FakeDataWriter(IOutputStream* output_stream)
-      : output_stream_(output_stream) {}
+  explicit FakeDataWriter(bool check_for_unflushed_writer_destroyed,
+                          IOutputStream* output_stream)
+      : check_for_unflushed_writer_destroyed_(
+            check_for_unflushed_writer_destroyed),
+        output_stream_(output_stream) {}
   FakeDataWriter(const FakeDataWriter&) = delete;
   FakeDataWriter& operator=(const FakeDataWriter&) = delete;
   ~FakeDataWriter() final {
@@ -48,8 +51,10 @@ class FakeDataWriter final
         << "FakeDataWriter destroyed with data pending storage.";
     EXPECT_FALSE(store_async_in_progress_)
         << "FakeDataWriter destroyed while store operation is in progress.";
-    EXPECT_TRUE(flush_called_)
-        << "FakeDataWriter destroyed without calling FlushAsync.";
+    if (check_for_unflushed_writer_destroyed_) {
+      EXPECT_TRUE(flush_called_)
+          << "FakeDataWriter destroyed without calling FlushAsync.";
+    }
   }
 
   // IDataWriter
@@ -232,6 +237,7 @@ class FakeDataWriter final
   }
 
  private:
+  bool check_for_unflushed_writer_destroyed_;
   ComPtr<IBuffer> buffer_;
   bool flush_called_ = false;
   ComPtr<IOutputStream> output_stream_;
@@ -251,13 +257,18 @@ IFACEMETHODIMP FakeDataWriterFactory::CreateDataWriter(
     ADD_FAILURE() << "CreateDataWriter called with null output_stream.";
     return E_INVALIDARG;
   }
-  auto fake_data_writer = Make<FakeDataWriter>(output_stream);
+  auto fake_data_writer = Make<FakeDataWriter>(
+      check_for_unflushed_writer_destroyed_, output_stream);
   HRESULT hr = fake_data_writer->QueryInterface(IID_PPV_ARGS(data_writer));
   if (FAILED(hr)) {
     EXPECT_HRESULT_SUCCEEDED(hr);
     return hr;
   }
   return S_OK;
+}
+
+void FakeDataWriterFactory::SetCheckForUnflushedWriterDestroyed(bool check) {
+  check_for_unflushed_writer_destroyed_ = check;
 }
 
 }  // namespace webshare

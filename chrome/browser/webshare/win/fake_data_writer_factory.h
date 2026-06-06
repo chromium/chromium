@@ -26,6 +26,16 @@ class __declspec(uuid("4A0022E7-D891-4B52-8736-77497F9FFE14"))
   IFACEMETHODIMP CreateDataWriter(
       ABI::Windows::Storage::Streams::IOutputStream* outputStream,
       ABI::Windows::Storage::Streams::IDataWriter** data_writer) final;
+
+  // By default any IDataWriters created by this factory will check if they are
+  // destroyed without having FlushAsync called on them, as this should not
+  // happen for normal operations. If a test needs to allow for this (for
+  // example, to test an error case where the operation is abandoned) it should
+  // call this to disable/re-enable that check.
+  void SetCheckForUnflushedWriterDestroyed(bool check);
+
+ private:
+  bool check_for_unflushed_writer_destroyed_ = true;
 };
 
 }  // namespace webshare

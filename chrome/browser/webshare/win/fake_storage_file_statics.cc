@@ -212,8 +212,19 @@ class FakeStorageFile final
           fake_iasync_operation->CompleteWithResults(random_access_stream);
         }));
 
+    // The IStreamedFileDataRequestedHandler should not be invoked multiple
+    // times, so we clear it here after invocation, mimicking Windows behavior.
+    //
+    // Technically opening the same IStorageFile multiple times is allowed by
+    // Windows (it caches the results of the first call to the
+    // IStreamedFileDataRequestedHandler), but we shouldn't have a practical
+    // reason to ever do so. If the need arises this test mock can be updated to
+    // support that behavior, but more likely the calling code should be
+    // adjusted to only try to open the file once.
+    ASSERT_TRUE(streamed_file_data_requested_handler_);
     ASSERT_HRESULT_SUCCEEDED(
         streamed_file_data_requested_handler_->Invoke(output_stream.Get()));
+    streamed_file_data_requested_handler_ = nullptr;
   }
 
   std::string display_name_with_extension_;

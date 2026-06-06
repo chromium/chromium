@@ -91,4 +91,9 @@ ScopedShareOperationFakeComponents::fake_data_transfer_manager_interop() {
   return scoped_fake_data_transfer_manager_interop_.instance();
 }
 
+FakeDataWriterFactory&
+ScopedShareOperationFakeComponents::fake_data_writer_factory() {
+  return *fake_data_writer_factory_.Get();
+}
+
 }  // namespace webshare

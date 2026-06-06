@@ -283,7 +283,13 @@ class FakeDataRequest final
 
     // IDataRequestDeferral
     IFACEMETHODIMP Complete() final {
+      if (!data_request_) {
+        ADD_FAILURE()
+            << "Complete called on IDataRequestDeferral more than once";
+        return E_FAIL;
+      }
       data_request_->RunPostDataRequestedCallbackImpl();
+      data_request_ = nullptr;
       return S_OK;
     }
 

@@ -34,6 +34,7 @@ class ScopedShareOperationFakeComponents final {
   void SetUp();
 
   FakeDataTransferManagerInterop& fake_data_transfer_manager_interop();
+  FakeDataWriterFactory& fake_data_writer_factory();
 
  private:
   Microsoft::WRL::ComPtr<FakeDataWriterFactory> fake_data_writer_factory_;
