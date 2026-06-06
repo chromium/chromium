@@ -7,12 +7,16 @@
 #include <algorithm>
 #include <numeric>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <variant>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/page_content_annotations/content/embeddings_candidate_generator.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
@@ -39,17 +43,49 @@ passage_embeddings::PassagePriority ConvertToPassagePriority(
       return passage_embeddings::kLatent;
   }
 }
+
+// LINT.IfChange(PageEmbeddingsPriority)
+std::string_view PageEmbeddingsPriorityToString(
+    PageEmbeddingsService::Priority priority) {
+  switch (priority) {
+    case PageEmbeddingsService::kUserBlocking:
+      return "UserBlocking";
+    case PageEmbeddingsService::kUrgent:
+      return "Urgent";
+    case PageEmbeddingsService::kDefault:
+      return "Default";
+    case PageEmbeddingsService::kBackground:
+      return "Background";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:PageEmbeddingsPriority)
+
+// LINT.IfChange(PageEmbeddingsUsageMode)
+std::string_view PageEmbeddingsUsageModeToString(
+    PageEmbeddingsService::UsageMode usage_mode) {
+  switch (usage_mode) {
+    case PageEmbeddingsService::kOnDemand:
+      return "OnDemand";
+    case PageEmbeddingsService::kContinuous:
+      return "Continuous";
+  }
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/histograms.xml:PageEmbeddingsUsageMode)
+
 }  // namespace
 
 // Passages have been produced for the page, but embedding computation has not
 // yet started.
 struct PageEmbeddingsService::Pending {
   std::vector<std::pair<std::string, EmbeddingPassageType>> passages;
+  base::TimeTicks queue_time = base::TimeTicks::Now();
 };
 
 // Embedding computation is currently in progress for the page.
 struct PageEmbeddingsService::Computing {
   passage_embeddings::Embedder::Job job;
+  base::TimeTicks queue_time;
+  Priority priority;
 };
 
 // Embeddings have been successfully computed for the page and are available.
@@ -339,6 +375,7 @@ void PageEmbeddingsService::ComputeEmbeddings(content::Page& page) {
 
   std::vector<std::pair<std::string, EmbeddingPassageType>> passages =
       std::move(pending->passages);
+  base::TimeTicks queue_time = pending->queue_time;
 
   std::vector<EmbeddingPassageType> passage_types;
   passage_types.reserve(passages.size());
@@ -356,7 +393,9 @@ void PageEmbeddingsService::ComputeEmbeddings(content::Page& page) {
                     base::BindOnce(&PageEmbeddingsService::OnEmbeddingsComputed,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(passage_types),
-                                   web_contents->GetWeakPtr(), state.page))};
+                                   web_contents->GetWeakPtr(), state.page)),
+                .queue_time = queue_time,
+                .priority = current_priority_};
 }
 
 void PageEmbeddingsService::ComputeEmbeddingsOnHide(content::Page& page) {
@@ -412,6 +451,12 @@ void PageEmbeddingsService::OnEmbeddingsComputed(
     loc->second.embeddings_state = Unavailable{};
     return;
   }
+
+  base::UmaHistogramLongTimes(
+      base::StrCat({"OptimizationGuide.PageEmbeddings.Job.TotalDuration.",
+                    PageEmbeddingsUsageModeToString(current_usage_mode_), ".",
+                    PageEmbeddingsPriorityToString(computing->priority)}),
+      base::TimeTicks::Now() - computing->queue_time);
 
   CHECK_EQ(passage_types.size(), embeddings.size());
   CHECK_EQ(passage_strings.size(), embeddings.size());

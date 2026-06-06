@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -1272,6 +1273,41 @@ TEST_F(PageEmbeddingsServiceTest, BFCacheRaceReproduction) {
            passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
 
   page_embeddings_service().RemoveObserver(&observer);
+}
+
+TEST_F(PageEmbeddingsServiceTest, RecordsHistograms) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::WebContents> web_contents =
+      CreateTestWebContentsWithVisibility(content::Visibility::HIDDEN);
+  scoped_refptr<RefCountedAnnotatedPageContent> page_content =
+      base::MakeRefCounted<RefCountedAnnotatedPageContent>();
+  page_content->data.mutable_main_frame_data()->set_title("passage text");
+
+  passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+      compute_passages_embeddings_callback;
+
+  EXPECT_CALL(embedder_mock(), ComputePassagesEmbeddings)
+      .WillOnce(
+          [&](passage_embeddings::PassagePriority priority,
+              std::vector<std::string> passages,
+              passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback
+                  callback) {
+            compute_passages_embeddings_callback = std::move(callback);
+            return passage_embeddings::Embedder::Job(
+                embedder_mock_.GetWeakPtr(), 1);
+          });
+
+  page_embeddings_service().OnPageContentExtracted(
+      web_contents->GetPrimaryPage(), page_content);
+
+  ASSERT_FALSE(compute_passages_embeddings_callback.is_null());
+
+  std::move(compute_passages_embeddings_callback)
+      .Run({"passage"}, {passage_embeddings::Embedding({1.0f})}, 1,
+           passage_embeddings::ComputeEmbeddingsStatus::kSuccess);
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PageEmbeddings.Job.TotalDuration.OnDemand.Default", 1);
 }
 
 }  // namespace page_content_annotations

@@ -627,6 +627,26 @@ chromium-metrics-reviews@google.com.
   <variant name="Unknown" summary="Unknown"/>
 </variants>
 
+<!-- LINT.IfChange(PageEmbeddingsPriority) -->
+
+<variants name="PageEmbeddingsPriority">
+  <variant name="Background" summary="Background priority"/>
+  <variant name="Default" summary="Default priority"/>
+  <variant name="Urgent" summary="Urgent priority"/>
+  <variant name="UserBlocking" summary="User Blocking priority"/>
+</variants>
+
+<!-- LINT.ThenChange(//depot/chromium/components/page_content_annotations/content/page_embeddings_service.cc:PageEmbeddingsPriority) -->
+
+<!-- LINT.IfChange(PageEmbeddingsUsageMode) -->
+
+<variants name="PageEmbeddingsUsageMode">
+  <variant name="Continuous" summary="Continuous usage mode"/>
+  <variant name="OnDemand" summary="On-demand usage mode"/>
+</variants>
+
+<!-- LINT.ThenChange(//depot/chromium/components/page_content_annotations/content/page_embeddings_service.cc:PageEmbeddingsUsageMode) -->
+
 <variants name="PageTextDumpEvent">
   <variant name="FinishedLoad" summary="finished load"/>
   <variant name="FirstLayout" summary="first layout"/>
@@ -2532,6 +2552,20 @@ chromium-metrics-reviews@google.com.
     Records whether Chrome was handling input, at the time when we requested a
     screenshot.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageEmbeddings.Job.TotalDuration.{PageEmbeddingsUsageMode}.{PageEmbeddingsPriority}"
+    units="ms" expires_after="2027-06-01">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the total time from when page content is extracted (the job is
+    queued up) until the page embeddings computation is completed. Recorded once
+    for every successfully completed page embeddings computation job.
+  </summary>
+  <token key="PageEmbeddingsPriority" variants="PageEmbeddingsPriority"/>
+  <token key="PageEmbeddingsUsageMode" variants="PageEmbeddingsUsageMode"/>
 </histogram>
 
 <histogram
