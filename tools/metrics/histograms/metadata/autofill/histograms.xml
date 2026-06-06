@@ -4407,7 +4407,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.FormEvents.CreditCard.SaveAndFill"
     enum="SaveAndFillFormEvent" expires_after="M155">
-  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Deprecated. Replaced by Autofill.SaveAndFill.SuggestionEvent in May 2026.
@@ -7225,7 +7225,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.SaveAndFill.CreateCard.Latency{RequestResult}"
     units="ms" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>
-  <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the latency of the CreateCard request of the Save-and-Fill flow when
@@ -7236,7 +7235,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.DialogResult2"
     enum="SaveAndFillDialogResult" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7252,7 +7250,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.DialogShown2"
     enum="SaveAndFillDialogShown" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7266,7 +7263,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.Funnel.Canceled"
     enum="SaveAndFillFunnelCanceledStage" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7278,7 +7274,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.Funnel.Canceled.{FlowScenario}"
     enum="SaveAndFillFunnelCanceledStage" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7298,7 +7293,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.Funnel.Succeeded"
     enum="SaveAndFillFunnelSucceededStage" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7310,7 +7304,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.Funnel.Succeeded.{FlowScenario}"
     enum="SaveAndFillFunnelSucceededStage" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7337,7 +7330,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.SaveAndFill.Funnel.{SaveType}.{Result}"
     enum="SaveAndFillFormEvent" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>
-  <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Deprecated. Replaced by Autofill.SaveAndFill.Funnel.Succeeded and
@@ -7360,7 +7352,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.SaveAndFill.GetDetailsForCreateCard.Latency{RequestResult}"
     units="ms" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>
-  <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the latency of the GetDetailsForCreateCard request of the
@@ -7372,7 +7363,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.SuggestionEvent"
     enum="SaveAndFillSuggestionEvent" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7385,7 +7375,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.SuggestionNotShownReason"
     enum="SaveAndFillSuggestionNotShownReason" expires_after="M155">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -7398,7 +7387,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SaveAndFill.{RequestType}.Result"
     enum="SaveAndFillPaymentsRequestResult" expires_after="2027-04-30">
-  <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -8064,7 +8052,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.SettingsPage.LocalIbanActions"
     enum="AutofillPaymentMethodsActionEnum" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>
-  <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records user interactions with local IBANs on the Chrome payment methods
@@ -8357,7 +8344,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.StrikeDatabase.NumOfStrikesPresentWhenSaveAndFillAccepted"
     units="strikes" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>
-  <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of &quot;strikes&quot; when a user accepted the Save and
@@ -8368,7 +8354,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.StrikeDatabase.SaveAndFillStrikeDatabaseBlockReason"
     enum="AutofillStrikeDatabaseBlockReason" expires_after="2027-04-30">
   <owner>siyua@chromium.org</owner>
-  <owner>averina@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason why Save and Fill offer is blocked by the strike
