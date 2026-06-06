@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/types_util.h"
@@ -145,7 +146,11 @@ class SearchControllerTest : public testing::Test {
                 UnorderedElementsAreArray(expected_ids_to_burn_in_iteration));
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
+  void WaitForZeroStateCompletion() {
+    base::test::TestFuture<void> future;
+    search_controller_->WaitForZeroStateCompletionForTest(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+  }
 
   // Add a wait period in milliseconds to allow results collected from search
   // providers. The default period is 1000 milliseconds (i.e., 1 second).
@@ -708,7 +713,7 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
 
   search_controller_->StartZeroState(base::DoNothing(), base::Seconds(1));
 
-  Wait();
+  WaitForZeroStateCompletion();
 
   ExpectIdOrder({"drive_a", "drive_b", "local_a", "local_b"});
 }
@@ -745,7 +750,7 @@ TEST_F(SearchControllerTest, ContinueRanksAdminTemplateAboveHelpAppAndDrive) {
 
   search_controller_->StartZeroState(base::DoNothing(), base::Seconds(1));
 
-  Wait();
+  WaitForZeroStateCompletion();
   ExpectIdOrder({"template_a", "template_b", "explore_a", "explore_b",
                  "drive_a", "drive_b"});
 }
