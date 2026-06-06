@@ -131,7 +131,8 @@ class CONTENT_EXPORT EmailVerificationRequest {
       std::optional<std::string> response,
       blink::mojom::EmailVerificationRequestResult status);
 
-  void AddDevToolsIssue(blink::mojom::EmailVerificationRequestResult status);
+  void MaybeAddDevToolsIssue(
+      blink::mojom::EmailVerificationRequestResult status);
 
   std::unique_ptr<DnsRequest> dns_request_;
   std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;
