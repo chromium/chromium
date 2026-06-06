@@ -504,7 +504,10 @@ bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
   if (smart_tab_sharing_active_for_thread_.has_value()) {
     return *smart_tab_sharing_active_for_thread_;
   }
-  if (profile_) {
+  if (profile_ &&
+      base::FeatureList::IsEnabled(
+          contextual_tasks::
+              kContextualTasksContextSmartTabSharingDefaultOnAvailability)) {
     return profile_->GetPrefs()->GetBoolean(
         contextual_tasks::kContextualTasksShareOpenTabsEveryThread);
   }
