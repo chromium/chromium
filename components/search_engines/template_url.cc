@@ -43,6 +43,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -58,6 +59,7 @@
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "base/logging.h"
 
 #if BUILDFLAG(ENABLE_BUILTIN_SEARCH_PROVIDER_ASSETS) && !BUILDFLAG(IS_ANDROID)
 #include "third_party/search_engines_data/search_engine_descriptions_strings_map.h"
@@ -1032,15 +1034,19 @@ void TemplateURLRef::ParseHostAndSearchTermKey(
   base::ReplaceSubstringsAfterOffset(
       &url_string, 0, "{google:baseSuggestURL}",
       search_terms_data.GoogleBaseSuggestURLValue());
+  std::string suggest_path = TemplateURLService::kSuggestPath;
+  if (base::FeatureList::GetInstance()) {
+    const auto& config =
+        omnibox_feature_configs::SuggestPathClientConfig::Get();
+    if (config.enabled && config.enable_for_all) {
+      suggest_path = TemplateURLService::kShortSuggestPath;
+    }
+  }
   // TODO(crbug.com/509448052): ParseHostAndSearchTermKey manually replaces a
   // subset of structural placeholders. This logic should ideally be unified
   // with HandleReplacements to avoid duplication.
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, "{google:suggestPath}",
-      (base::FeatureList::GetInstance() &&
-        omnibox_feature_configs::SuggestPathClientConfig::Get().enabled)
-          ? "s"
-          : "search");
+  base::ReplaceSubstringsAfterOffset(&url_string, 0, "{google:suggestPath}",
+                                     suggest_path);
   base::ReplaceSubstringsAfterOffset(&url_string, 0, "{yandex:searchPath}",
                                      YandexSearchPathFromDeviceFormFactor());
 
@@ -1475,17 +1481,27 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       case GOOGLE_SUGGEST_PATH: {
-        bool use_short_path = false;
-        if (base::FeatureList::GetInstance()) {
-          const auto& config =
-              omnibox_feature_configs::SuggestPathClientConfig::Get();
-          use_short_path = config.ShouldUseShortPath(
-              TemplateURL::GetSuggestionClient(search_terms_args));
+        if (search_terms_args.request_source ==
+            SearchTermsData::RequestSource::LENS_OVERLAY) {
+          // For LENS_OVERLAY requests, we don't have access to the client name
+          // here so the final URL construction, including
+          // the appropriate client and path, is handled entirely within the
+          // RemoteSuggestionsService. We insert a placeholder here, which the
+          // RemoteSuggestionsService is responsible for replacing with the
+          // correct path.
+          HandleReplacement(
+              std::string(),
+              TemplateURLService::kLensOverlaySuggestPathPlaceholder,
+              replacement, &url);
+          break;
         }
-        const std::string path = use_short_path ? "s" : "search";
+
+        const std::string path = TemplateURL::GetSuggestionPath(
+            TemplateURL::GetSuggestionClient(search_terms_args));
         HandleReplacement(std::string(), path, replacement, &url);
         base::UmaHistogramBoolean(
-            "Omnibox.SuggestionShown.SuggestionResultType", use_short_path);
+            "Omnibox.SuggestionShown.SuggestionResultType",
+            path == TemplateURLService::kShortSuggestPath);
         break;
       }
 
@@ -1873,6 +1889,19 @@ std::string TemplateURL::GetSuggestionClient(
   }
 
   return "";
+}
+
+// static
+std::string TemplateURL::GetSuggestionPath(const std::string& client_name) {
+  if (base::FeatureList::GetInstance()) {
+    const auto& config =
+        omnibox_feature_configs::SuggestPathClientConfig::Get();
+    if (config.ShouldUseShortPath(client_name)) {
+      return TemplateURLService::kShortSuggestPath;
+    }
+  }
+
+  return TemplateURLService::kSuggestPath;
 }
 
 // static

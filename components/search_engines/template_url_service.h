@@ -118,6 +118,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   static constexpr char kSearchPolicyHasConflictWithNonFeaturedHistogramName[] =
       "Search.SearchPolicyConflict.HasConflictWith.WithNonFeatured";
   static constexpr char kKeywordCountHistogramName[] = "Omnibox.KeywordCount";
+  static constexpr char kLensOverlaySuggestPathPlaceholder[] =
+      "lensoverlayplaceholder";
+  static constexpr char kSuggestPath[] = "search";
+  static constexpr char kShortSuggestPath[] = "s";
 
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
