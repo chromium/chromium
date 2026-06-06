@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 
 namespace chrome_pdf {
@@ -20,26 +22,31 @@ namespace {
 // TODO(crbug.com/510015130): check `is_horizontal`: if false the rectangle
 // would need to be split on the y-axis instead of the x-axis.
 InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
+                               float y_offset,
                                size_t start,
                                size_t end) {
   CHECK_LT(start, input.glyphs.size());
   CHECK_LE(end, input.glyphs.size());
+  CHECK_LT(start, end);
   CHECK_EQ(input.glyphs.size(), input.glyph_positions.size());
 
-  InkTextInfo split(input.font_id, {}, {}, input.location, input.is_horizontal);
-
+  const size_t count = end - start;
   const float left = input.glyph_positions[start];
   const float right = end < input.glyph_positions.size()
                           ? input.glyph_positions[end]
                           : input.location.width();
 
-  for (size_t i = start; i < end; ++i) {
-    split.glyphs.push_back(input.glyphs[i]);
-    split.glyph_positions.push_back(input.glyph_positions[i] - left);
-  }
-  split.location.set_x(left + split.location.x());
-  split.location.set_width(right - left);
-  return split;
+  std::vector<uint32_t> glyphs =
+      base::ToVector(base::span(input.glyphs).subspan(start, count));
+  std::vector<float> glyph_positions =
+      base::ToVector(base::span(input.glyph_positions).subspan(start, count),
+                     [&left](float pos) { return pos - left; });
+  gfx::RectF location(/*x=*/input.location.x() + left,
+                      /*y=*/input.location.y() + y_offset,
+                      /*width=*/right - left,
+                      /*height=*/input.location.height());
+  return InkTextInfo(input.font_id, std::move(glyphs),
+                     std::move(glyph_positions), location, input.is_horizontal);
 }
 
 // Because PDF text objects only support 1D glyph positioning, it is necessary
@@ -71,9 +78,7 @@ std::vector<InkTextInfo> Split2DOffsets(const InkTextInfo& input,
     if (!is_boundary) {
       continue;
     }
-    InkTextInfo split = MakeSubstrTextInfo(input, run_start, i);
-    split.location.set_y(offsets[i - 1] + split.location.y());
-    results.push_back(std::move(split));
+    results.push_back(MakeSubstrTextInfo(input, offsets[i - 1], run_start, i));
     run_start = i;
   }
   return results;
