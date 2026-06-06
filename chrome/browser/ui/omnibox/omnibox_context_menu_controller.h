@@ -125,7 +125,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   static OmniboxController* GetOmniboxController(
       content::WebContents* web_contents);
   static OmniboxPopupUI* GetOmniboxPopupUI(content::WebContents* web_contents);
-  int GetMaxTabSuggestions() const;
+  std::optional<size_t> GetMaxTabSuggestions() const;
+  bool IsTabCommandId(int command_id) const;
 
  private:
   friend class TabSimpleMenuModel;
@@ -151,6 +152,8 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
                            GetIconForInputType_Drive);
   FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
                            ExecuteCommand_DriveInputType);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxContextMenuControllerTest,
+                           IsTabCommandId_HandlesInfinity);
 
   // Keeps track of various bits of info that are necessary to dynamically
   // render the contents of the context menu, based on the InputState received

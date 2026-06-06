@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -160,20 +161,20 @@ TEST_F(OmniboxContextMenuControllerTest, GetMaxTabSuggestions_UsesServerLimit) {
       omnibox::internal::kWebUIOmniboxAimPopup, params);
 
   // Initially should use feature param limit.
-  EXPECT_EQ(controller()->GetMaxTabSuggestions(), 2);
+  EXPECT_EQ(controller()->GetMaxTabSuggestions(), std::optional<size_t>(2u));
 
   // Set server-provided limit.
   omnibox::InputState state;
   state.max_inputs_by_type[omnibox::InputType::INPUT_TYPE_BROWSER_TAB] = 1;
   controller()->OnGetInputState(state);
 
-  EXPECT_EQ(controller()->GetMaxTabSuggestions(), 1);
+  EXPECT_EQ(controller()->GetMaxTabSuggestions(), std::optional<size_t>(1u));
 
   // Fallback to feature param limit if not in map.
   state.max_inputs_by_type.erase(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
   controller()->OnGetInputState(state);
 
-  EXPECT_EQ(controller()->GetMaxTabSuggestions(), 2);
+  EXPECT_EQ(controller()->GetMaxTabSuggestions(), std::optional<size_t>(2u));
 }
 
 TEST_F(OmniboxContextMenuControllerTest, GetIconForInputType_Drive) {
@@ -219,4 +220,54 @@ TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_DriveInputType) {
 
   // Verify that OpenFileUploadDialog was NOT called.
   EXPECT_EQ(test_selector->open_file_upload_dialog_calls(), initial_calls);
+}
+
+TEST_F(OmniboxContextMenuControllerTest, IsTabCommandId_HandlesInfinity) {
+  // Test 1: Feature param limit = 2
+  {
+    base::test::ScopedFeatureList feature_list;
+    base::FieldTrialParams params;
+    params[omnibox::kContextMenuMaxTabSuggestions.name] = "2";
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::internal::kWebUIOmniboxAimPopup, params);
+
+    EXPECT_EQ(controller()->GetMaxTabSuggestions(), std::optional<size_t>(2u));
+    EXPECT_TRUE(controller()->IsTabCommandId(33000));
+    EXPECT_TRUE(controller()->IsTabCommandId(33001));
+    EXPECT_FALSE(controller()->IsTabCommandId(33002));
+    EXPECT_FALSE(controller()->IsTabCommandId(32999));
+    EXPECT_FALSE(controller()->IsTabCommandId(54010));
+  }
+
+  // Test 2: ContextManagementInComposebox and ContextManagementInOmnibox
+  // features enabled -> returns std::nullopt
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({omnibox::kContextManagementInComposebox,
+                                   omnibox::kContextManagementInOmnibox},
+                                  {});
+
+    EXPECT_EQ(controller()->GetMaxTabSuggestions(), std::nullopt);
+    EXPECT_TRUE(controller()->IsTabCommandId(33000));
+    EXPECT_TRUE(controller()->IsTabCommandId(33001));
+    EXPECT_TRUE(controller()->IsTabCommandId(33002));
+    EXPECT_TRUE(controller()->IsTabCommandId(33005));
+    EXPECT_FALSE(controller()->IsTabCommandId(32999));
+    EXPECT_FALSE(controller()->IsTabCommandId(54010));
+  }
+
+  // Test 3: InputState limit = -1 -> returns std::nullopt
+  {
+    omnibox::InputState state;
+    state.max_inputs_by_type[omnibox::InputType::INPUT_TYPE_BROWSER_TAB] = -1;
+    controller()->OnGetInputState(state);
+
+    EXPECT_EQ(controller()->GetMaxTabSuggestions(), std::nullopt);
+    EXPECT_TRUE(controller()->IsTabCommandId(33000));
+    EXPECT_TRUE(controller()->IsTabCommandId(33001));
+    EXPECT_TRUE(controller()->IsTabCommandId(33002));
+    EXPECT_TRUE(controller()->IsTabCommandId(33005));
+    EXPECT_FALSE(controller()->IsTabCommandId(32999));
+    EXPECT_FALSE(controller()->IsTabCommandId(54010));
+  }
 }

@@ -96,11 +96,9 @@ const gfx::FontList* TabSimpleMenuModel::GetLabelFontListAt(
         ui::ResourceBundle::SmallFont);
   }
   int command_id = GetCommandIdAt(index);
-  // Check if the command ID belongs to the recent tabs section. Tabs have
+  // Check if the command ID belongs to the tabs section/submenu. Tabs have
   // commands starting at `kMinOmniboxContextMenuRecentTabsCommandId`.
-  if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-      command_id < kMinOmniboxContextMenuRecentTabsCommandId +
-                       controller_->GetMaxTabSuggestions()) {
+  if (controller_->IsTabCommandId(command_id)) {
     // Make the font smaller for "current tab" and 'tab name' minor text.
     return &ui::ResourceBundle::GetSharedInstance().GetFontList(
         ui::ResourceBundle::SmallFont);
@@ -109,6 +107,24 @@ const gfx::FontList* TabSimpleMenuModel::GetLabelFontListAt(
 }
 
 namespace {
+
+bool IsStaticOmniboxCommandId(int command_id) {
+  switch (command_id) {
+    case IDC_OMNIBOX_CONTEXT_ADD_IMAGE:
+    case IDC_OMNIBOX_CONTEXT_ADD_FILE:
+    case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
+    case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
+    case IDC_OMNIBOX_CONTEXT_CANVAS:
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_AUTO:
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_THINKING:
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
+    case IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI:
+    case IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU:
+      return true;
+    default:
+      return false;
+  }
+}
 
 bool IsValidTab(GURL url) {
   // Skip tabs that are still loading, and skip webui.
@@ -229,8 +245,13 @@ OmniboxContextMenuController::OmniboxContextMenuController(
                        weak_ptr_factory_.GetWeakPtr()));
     InitializeMenuItemInfo();
   }
+  // Set remaining command ID start point. If max tabs
+  // is known, reserve command ID's now. Otherwise, tab
+  // command ID's will be dynamically added later for tabs.
+  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
   min_tools_and_models_command_id_ =
-      kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions();
+      kMinOmniboxContextMenuRecentTabsCommandId +
+      static_cast<int>(max_suggestions.value_or(0));
   BuildMenu();
 }
 
@@ -388,10 +409,10 @@ void OmniboxContextMenuController::AddRecentTabItems() {
         shared_tabs_menu_model_.get(),
         ui::ImageModel::FromVectorIcon(kTabOldIcon, ui::kColorMenuIcon,
                                        ui::SimpleMenuModel::kDefaultIconSize));
-    // Update next id for menu items.
-    min_tools_and_models_command_id_ =
-        std::max(min_tools_and_models_command_id_, next_command_id_);
   }
+
+  min_tools_and_models_command_id_ =
+      std::max(min_tools_and_models_command_id_, next_command_id_);
 
   // ID for testing tab section.
   target_menu_model->SetElementIdentifierAt(first_tab_index,
@@ -602,9 +623,15 @@ OmniboxContextMenuController::GetRecentTabs() {
     tabs.push_back(tab_data);
   }
 
-  // Sort tabs with checked first, followed by most recently active.
-  int max_tab_suggestions =
-      std::min(static_cast<int>(tabs.size()), GetMaxTabSuggestions());
+  // Sort tabs by most recently active, up to `max_suggestions`
+  // number of tabs. Checked (selected) tabs are first; ties broken by most
+  // recent.
+  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
+  // Max tab suggestions allowed is infinite if nullopt is returned,
+  // so use current number of tabs; otherwise, limit sorted tabs to
+  // the number of max tabs.
+  size_t max_tab_suggestions = max_suggestions.value_or(tabs.size());
+  max_tab_suggestions = std::min(tabs.size(), max_tab_suggestions);
   std::partial_sort(tabs.begin(), tabs.begin() + max_tab_suggestions,
                     tabs.end(),
                     [](const OmniboxContextMenuController::TabInfo& a,
@@ -756,13 +783,50 @@ bool OmniboxContextMenuController::IsContentSharingEnabled() const {
   return omnibox::IsContentSharingEnabled(profile, session_handle);
 }
 
-int OmniboxContextMenuController::GetMaxTabSuggestions() const {
+std::optional<size_t> OmniboxContextMenuController::GetMaxTabSuggestions()
+    const {
   if (auto it = input_state_.max_inputs_by_type.find(
           omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       it != input_state_.max_inputs_by_type.end()) {
-    return it->second;
+    if (it->second < 0) {
+      return std::nullopt;
+    }
+    return static_cast<size_t>(it->second);
   }
-  return omnibox::kContextMenuMaxTabSuggestions.Get();
+  // If `kContextManagementInComposebox` and `kContextManagementInOmnibox`
+  // are enabled, there is no maximum tab limit.
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
+      base::FeatureList::IsEnabled(omnibox::kContextManagementInOmnibox)) {
+    return std::nullopt;
+  }
+  int limit = omnibox::kContextMenuMaxTabSuggestions.Get();
+  if (limit < 0) {
+    return std::nullopt;
+  }
+  return static_cast<size_t>(limit);
+}
+
+bool OmniboxContextMenuController::IsTabCommandId(int command_id) const {
+  if (command_id < kMinOmniboxContextMenuRecentTabsCommandId) {
+    return false;
+  }
+  if (IsStaticOmniboxCommandId(command_id)) {
+    return false;
+  }
+  if (tool_for_command_id_.find(command_id) != tool_for_command_id_.end() ||
+      model_for_command_id_.find(command_id) != model_for_command_id_.end()) {
+    return false;
+  }
+  if (auto it = input_type_for_command_id_.find(command_id);
+      it != input_type_for_command_id_.end()) {
+    return it->second == omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+  }
+  std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
+  if (max_suggestions.has_value()) {
+    return command_id < kMinOmniboxContextMenuRecentTabsCommandId +
+                            static_cast<int>(max_suggestions.value());
+  }
+  return true;
 }
 
 omnibox::ContextType OmniboxContextMenuController::CommandIdToEnum(
@@ -830,9 +894,7 @@ omnibox::ContextType OmniboxContextMenuController::CommandIdToEnum(
     default:
       // There is no command id for tabs due to there being multiple
       // tabs that would have the same command id.
-      CHECK_GE(command_id, kMinOmniboxContextMenuRecentTabsCommandId);
-      CHECK_LT(command_id, kMinOmniboxContextMenuRecentTabsCommandId +
-                               GetMaxTabSuggestions());
+      CHECK(IsTabCommandId(command_id));
       return omnibox::ContextType::kTab;
   }
 }
@@ -1099,8 +1161,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                                  ? kAimContextTypeHistogramPrefix
                                  : kClassicContextTypeHistogramPrefix;
   const std::string sliced_prefix = base::StrCat({prefix, ".Clicked"});
-  if (id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-      id < kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions()) {
+  // Add tab context if tab is selected.
+  if (IsTabCommandId(id)) {
     std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
     int tab_index_in_menu = id - kMinOmniboxContextMenuRecentTabsCommandId;
     if (static_cast<size_t>(tab_index_in_menu) < tabs.size()) {
@@ -1298,10 +1360,8 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
                                    : kAimContextTypeHistogramPrefix;
     const std::string sliced_prefix = base::StrCat({prefix, ".Shown"});
 
-    // Command ID corresponds to "Most recent tabs" menu item.
-    if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-        command_id < kMinOmniboxContextMenuRecentTabsCommandId +
-                         GetMaxTabSuggestions()) {
+    // Command ID corresponds to tabs section/submenu item.
+    if (IsTabCommandId(command_id)) {
       auto it =
           input_type_info_.find(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
       bool tab_context_enabled =
@@ -1445,10 +1505,8 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
     return true;
   }
 
-  // Command ID corresponds to "Most recent tabs" menu item.
-  if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-      command_id <
-          kMinOmniboxContextMenuRecentTabsCommandId + GetMaxTabSuggestions()) {
+  // Command ID corresponds to tab section/submenu item.
+  if (IsTabCommandId(command_id)) {
     return true;
   }
 
