@@ -1515,7 +1515,23 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       return false;
     }
 
-    if (base::FeatureList::IsEnabled(kAimTriggeredThreadLinks)) {
+    std::vector<content::WebContents*> inner_contents =
+        source_contents->GetInnerWebContents();
+    bool is_nav_from_embedded_non_ai_page = false;
+    // For this feature there should only ever be a single inner WebContents if
+    // one exists at all.
+    if (inner_contents.size() > 0) {
+      is_nav_from_embedded_non_ai_page =
+          is_from_embedded_page &&
+          !IsAiUrl(inner_contents[0]->GetLastCommittedURL());
+    }
+
+    // A message about how to treat links is only received from aim pages. In
+    // lens flows, link behavior is still treated as best-guess since the SRP
+    // doesn't message the browser when a link is clicked - search results
+    // links still need to be opened as a thread link.
+    if (base::FeatureList::IsEnabled(kAimTriggeredThreadLinks) &&
+        !is_nav_from_embedded_non_ai_page) {
       if (is_forward_link_navigation) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,

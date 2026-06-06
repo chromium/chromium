@@ -2413,4 +2413,56 @@ TEST_F(ContextualTasksUiServiceTest, IsValidUrlForSuggestedTab) {
                                          site_exclusion_detail));
 }
 
+TEST_F(ContextualTasksUiServiceTest, SearchResultsLink_HandledAsThreadLink) {
+  content::WebContents* outer_contents = web_contents();
+  content::WebContentsTester::For(outer_contents)
+      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+  content::RenderFrameHost* main_frame = outer_contents->GetPrimaryMainFrame();
+  ASSERT_NE(main_frame, nullptr);
+
+  // Initialize the main frame tester.
+  content::RenderFrameHostTester::For(main_frame)
+      ->InitializeRenderFrameIfNeeded();
+
+  // 1. Create a child frame (subframe) in the outer WebContents.
+  // Inner WebContents cannot be attached directly to the main frame.
+  content::RenderFrameHost* child_frame =
+      content::RenderFrameHostTester::For(main_frame)->AppendChild("subframe");
+  ASSERT_NE(child_frame, nullptr);
+  content::RenderFrameHostTester::For(child_frame)
+      ->InitializeRenderFrameIfNeeded();
+
+  // Create the inner WebContents.
+  std::unique_ptr<content::WebContents> inner_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          outer_contents->GetBrowserContext(), nullptr);
+  content::WebContentsTester::For(inner_contents.get())
+      ->SetLastCommittedURL(GURL(kSrpUrl));
+
+  // Attach the inner WebContents to the child frame.
+  outer_contents->AttachInnerWebContents(std::move(inner_contents), child_frame,
+                                         /*is_full_page=*/false);
+
+  // Verify that it was successfully attached.
+  EXPECT_EQ(outer_contents->GetInnerWebContents().size(), 1u);
+
+  // Test that a navigation from an embedded page that is the SRP is still
+  // treated as a thread link.
+  GURL navigated_url("http://example.com");
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(navigated_url, _, _, _, _))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  EXPECT_CALL(*service_for_nav_, OnSearchResultsNavigationInSidePanel(_, _))
+      .Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+  EXPECT_TRUE(service_for_nav_->HandleNavigationImpl(
+      CreateOpenUrlParams(navigated_url, true), outer_contents, nullptr,
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+  run_loop.Run();
+}
+
 }  // namespace contextual_tasks
