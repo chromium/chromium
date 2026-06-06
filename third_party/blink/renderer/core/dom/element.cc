@@ -285,6 +285,7 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
@@ -7370,7 +7371,8 @@ CustomElementDefinition* Element::GetCustomElementDefinition() const {
   return nullptr;
 }
 
-CustomElementRegistry* Element::customElementRegistry() const {
+CustomElementRegistry* Element::customElementRegistry(
+    ScriptState* script_state) const {
   // If scoped registry is not exercised at all in the document,
   // we can avoid the rare data lookup and just return the tree scope's
   // registry.
@@ -7378,11 +7380,18 @@ CustomElementRegistry* Element::customElementRegistry() const {
       GetDocument().ScopedCustomElementRegistryUsed()) {
     if (const ElementRareDataVector* data = RareData()) {
       if (data->HasCustomElementRegistrySet()) {
-        return data->GetCustomElementRegistry();
+        CustomElementRegistry* registry = data->GetCustomElementRegistry();
+        // A null script_state indicates an internal call that bypasses the
+        // world check.
+        if (script_state && registry &&
+            script_state->World().GetWorldId() != registry->GetWorldId()) {
+          return nullptr;
+        }
+        return registry;
       }
     }
   }
-  return GetTreeScope().customElementRegistry();
+  return GetTreeScope().customElementRegistry(script_state);
 }
 
 void Element::SetCustomElementRegistry(CustomElementRegistry* registry,

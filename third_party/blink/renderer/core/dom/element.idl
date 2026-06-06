@@ -196,7 +196,7 @@ dictionary ParseHTMLUnsafeOptions {
     [CEReactions, RuntimeEnabled=HeadingOffset] attribute boolean headingReset;
 
     // Scoped Custom Element Registries
-    [RuntimeEnabled=ScopedCustomElementRegistry] readonly attribute CustomElementRegistry? customElementRegistry;
+    [CallWith=ScriptState, RuntimeEnabled=ScopedCustomElementRegistry] readonly attribute CustomElementRegistry? customElementRegistry;
 };
 
 Element includes ParentNode;

@@ -64,7 +64,9 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
 #include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -299,15 +301,28 @@ Element* TreeScope::ElementForHitTest(Node* node, HitTestPointType type) const {
   return element;
 }
 
-CustomElementRegistry* TreeScope::customElementRegistry() const {
+CustomElementRegistry* TreeScope::customElementRegistry(
+    ScriptState* script_state) const {
   if (custom_element_registry_) {
     CHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
     DCHECK(!waiting_for_registry_);
+    // A null script_state indicates an internal call that bypasses the check.
+    if (script_state &&
+        script_state->World().GetWorldId() !=
+            custom_element_registry_->GetWorldId()) {
+      return nullptr;
+    }
     return custom_element_registry_;
   }
 
   if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
       waiting_for_registry_) {
+    return nullptr;
+  }
+
+  // The global registry must only be accessible from the main world.
+  // A null script_state indicates an internal call that bypasses the check.
+  if (script_state && !script_state->World().IsMainWorld()) {
     return nullptr;
   }
 

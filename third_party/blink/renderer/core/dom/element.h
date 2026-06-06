@@ -1648,7 +1648,13 @@ class CORE_EXPORT Element : public ContainerNode {
   CustomElementDefinition* GetCustomElementDefinition() const;
 
   // Scoped Custom Elements
-  CustomElementRegistry* customElementRegistry() const;
+  //
+  // Returns the custom element registry associated with this element.
+  // See TreeScope::customElementRegistry() for the rule about when to
+  // pass `script_state` (in short: any caller that will hand the registry
+  // to script must pass it).
+  CustomElementRegistry* customElementRegistry(
+      ScriptState* script_state = nullptr) const;
   // When it comes to storing an element's custom element registry, we have an
   // optimization where if the registry to be set is the same as element's tree
   // scope's registry, we don't store it in the element itself and rely on tree

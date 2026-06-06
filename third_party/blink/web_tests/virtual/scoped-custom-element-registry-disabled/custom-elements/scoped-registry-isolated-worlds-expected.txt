@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] No document.customElementRegistry in isolated worlds
+  assert_equals: document.customElementRegistry should be null in isolated worlds expected "document.customElementRegistry=null" but got "document.customElementRegistry=undefined"
+[FAIL] No element.customElementRegistry in isolated worlds
+  assert_equals: element.customElementRegistry should be null in isolated worlds expected "element.customElementRegistry=null" but got "element.customElementRegistry=undefined"
+[FAIL] document.customElementRegistry accessible in main world
+  assert_equals: document.customElementRegistry should equal window.customElements in main world expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] No scoped customElementRegistry in isolated worlds
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CustomElementRegistry': Illegal constructor"
+Harness: the test ran to completion.
+
