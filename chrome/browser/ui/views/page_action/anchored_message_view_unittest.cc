@@ -103,8 +103,7 @@ TEST_F(AnchoredMessageBubbleViewTest, VisibilityReflectsModelOnCreation) {
       .WillByDefault(Return(AnchoredMessageActionIconType::kClose));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
   widget->Show();
 
   RunTestSequence(
@@ -134,8 +133,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
       .WillByDefault(Return(AnchoredMessageActionIconType::kClose));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
   widget->Show();
 
   RunTestSequence(
@@ -168,8 +166,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
       .WillByDefault(Return(&menu_model));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
   widget->Show();
 
   RunTestSequence(
@@ -193,8 +190,7 @@ TEST_F(AnchoredMessageBubbleViewTest,
       .WillByDefault(Return(AnchoredMessageActionIconType::kMenu));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
   widget->Show();
 
   RunTestSequence(
@@ -217,8 +213,7 @@ TEST_F(AnchoredMessageBubbleViewTest, UpdateContentChangesVisibility_ChipOnly) {
   ON_CALL(model_, GetImage()).WillByDefault(ReturnRef(test_image_));
 
   auto view = CreateView();
-  auto* widget = views::BubbleDialogDelegate::CreateBubbleDeprecated(
-      std::move(view), views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
   widget->Show();
 
   RunTestSequence(
@@ -232,6 +227,45 @@ TEST_F(AnchoredMessageBubbleViewTest, UpdateContentChangesVisibility_ChipOnly) {
                 }),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
       EnsureNotPresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId));
+
+  widget->CloseNow();
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, CloseButtonIsFocusable) {
+  ON_CALL(model_, GetAnchoredMessageText())
+      .WillByDefault(ReturnRef(test_text_));
+  ON_CALL(model_, GetAnchoredMessageActionIconType())
+      .WillByDefault(Return(AnchoredMessageActionIconType::kClose));
+
+  auto view = CreateView();
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
+  widget->Show();
+
+  RunTestSequence(
+      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId,
+                [](views::View* button) { return button->IsFocusable(); }));
+
+  widget->CloseNow();
+}
+
+TEST_F(AnchoredMessageBubbleViewTest, MenuButtonIsFocusable) {
+  ui::SimpleMenuModel menu_model(nullptr);
+  ON_CALL(model_, GetAnchoredMessageText())
+      .WillByDefault(ReturnRef(test_text_));
+  ON_CALL(model_, GetAnchoredMessageActionIconType())
+      .WillByDefault(Return(AnchoredMessageActionIconType::kMenu));
+  ON_CALL(model_, GetAnchoredMessageMenuModel())
+      .WillByDefault(Return(&menu_model));
+
+  auto view = CreateView();
+  auto widget = views::BubbleDialogDelegate::CreateBubble(view.release());
+  widget->Show();
+
+  RunTestSequence(
+      EnsurePresent(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId),
+      CheckView(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId,
+                [](views::View* button) { return button->IsFocusable(); }));
 
   widget->CloseNow();
 }
