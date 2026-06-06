@@ -1478,7 +1478,7 @@ void MaybeRegisterChromeFeaturePromos(
           .SetPromoSubtype(
               FeaturePromoSpecification::PromoSubtype::kActionableAlert)
           .SetBubbleIcon(&(features::IsRoundedIconsEnabled()
-                               ? vector_icons::kFamilyLinkFilledIcon
+                               ? vector_icons::kFamilyLinkIcon
                                : vector_icons::kFamilyLinkOldIcon))
           .SetBubbleTitleText(IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)

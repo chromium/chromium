@@ -58,7 +58,7 @@ void ShowExtensionInstallBlockedByParentDialog(
           .SetTitle(GetTitle(action, extension_type))
           .SetIcon(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
-                  ? vector_icons::kFamilyLinkFilledIcon
+                  ? vector_icons::kFamilyLinkIcon
                   : vector_icons::kFamilyLinkOldIcon,
               ui::kColorIcon))
           .AddParagraph(

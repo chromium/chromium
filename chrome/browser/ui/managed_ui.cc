@@ -146,7 +146,7 @@ const gfx::VectorIcon& GetManagedUiIcon(Profile* profile) {
   }
 
   CHECK(ShouldDisplayManagedByParentUi(profile));
-  return features::IsRoundedIconsEnabled() ? vector_icons::kFamilyLinkFilledIcon
+  return features::IsRoundedIconsEnabled() ? vector_icons::kFamilyLinkIcon
                                            : vector_icons::kFamilyLinkOldIcon;
 }
 
