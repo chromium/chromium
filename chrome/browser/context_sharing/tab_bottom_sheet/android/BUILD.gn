@@ -97,6 +97,7 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:context_menu_java",
+    "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/omnibox/browser:browser_java",
     "//components/security_state/core:security_state_enums_java",

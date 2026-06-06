@@ -22,12 +22,17 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupp
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -129,6 +134,19 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
             };
     private boolean mIsSuppressedByAutofill;
 
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onDidStartNavigationInPrimaryMainFrame(
+                        Tab tab, NavigationHandle navigationHandle) {
+                    if (UrlConstants.DISTILLER_SCHEME.equals(
+                            navigationHandle.getUrl().getScheme())) {
+                        tryToCloseBottomSheet(/* animate= */ false);
+                    }
+                }
+            };
+    private @Nullable CurrentTabObserver mCurrentTabObserver;
+
     private @Nullable View mPeekView;
     private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
             mManualFillingComponentSupplier;
@@ -189,6 +207,9 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                             (TabModelSelector selector) -> {
                                 if (selector != null) {
                                     selector.addObserver(mTabModelSelectorObserver);
+                                    mCurrentTabObserver =
+                                            new CurrentTabObserver(
+                                                    selector.getCurrentTabSupplier(), mTabObserver);
                                 }
                             }));
         }
@@ -357,6 +378,11 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         if (mTabBottomSheetCoordinator != null) {
             mTabBottomSheetCoordinator.destroy();
             mTabBottomSheetCoordinator = null;
+        }
+
+        if (mCurrentTabObserver != null) {
+            mCurrentTabObserver.destroy();
+            mCurrentTabObserver = null;
         }
 
         TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);

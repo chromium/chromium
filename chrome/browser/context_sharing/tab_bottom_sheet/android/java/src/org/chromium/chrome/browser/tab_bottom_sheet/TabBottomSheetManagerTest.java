@@ -677,6 +677,24 @@ public class TabBottomSheetManagerTest {
         blockUntilSheetFullyRestored();
     }
 
+    @Test
+    @SmallTest
+    public void testBottomSheetClosedOnReaderModeNavigation() {
+        showBottomSheetAndBlockUntilReady();
+
+        // Navigate to a reader mode URL
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity
+                            .getTabModelSelector()
+                            .getCurrentTab()
+                            .loadUrl(new LoadUrlParams("chrome-distiller://some_distilled_page"));
+                });
+
+        // Verify the sheet is closed
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+    }
+
     private static class TestManualFillingComponent extends EmptyManualFillingComponent {
         private final NonNullObservableSupplier<Boolean> mAccessoryRequestedSupplier;
 
