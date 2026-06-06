@@ -649,6 +649,23 @@ ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
     return ContextualCueingDecision::kSidePanelShowing;
   }
 
+#if !BUILDFLAG(IS_ANDROID)
+  if (tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab()) {
+    if (page_actions::PageActionController* page_action_controller =
+            active_tab->GetTabFeatures()->page_action_controller()) {
+      if (page_action_controller->GetActiveAnchoredMessage().has_value()) {
+        CUEING_LOG(
+            "Not attempting to show/generate cue because another anchored "
+            "message is currently showing.");
+        RecordContextualCueingDecision(
+            source_id,
+            ContextualCueingDecision::kAnchoredMessageAlreadyShowing);
+        return ContextualCueingDecision::kAnchoredMessageAlreadyShowing;
+      }
+    }
+  }
+#endif
+
   return ContextualCueingDecision::kUnspecified;
 }
 
@@ -1006,6 +1023,7 @@ void ContextualCueingController::HideCue() {
   if (!page_action_controller) {
     return;
   }
+  page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
   page_action_controller->Hide(kActionAnchoredContextualCue);
 #endif
 }
