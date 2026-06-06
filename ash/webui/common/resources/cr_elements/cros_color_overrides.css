@@ -193,7 +193,7 @@
   --cr-input-border: none;
   --cr-input-border-bottom: none;
   --cr-input-border-radius: 8px;
-  --cr-input-label-color: var(--cros-sys-on-surface);
+  --cr-input-label-color: var(--cros-sys-on_surface);
   --cr-input-padding-start: 16px;
   --cr-input-padding-end: 16px;
   --cr-input-placeholder-color: var(--cros-sys-secondary);
