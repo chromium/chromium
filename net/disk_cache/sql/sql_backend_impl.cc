@@ -13,12 +13,14 @@
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
@@ -50,8 +52,11 @@ size_t GetShardCount() {
 // Checks the fake index file, creating it if it doesn't exist. Returns an
 // error code if the file is corrupted or cannot be created.
 FakeIndexFileError CheckFakeIndexFileInternal(const base::FilePath& path) {
+  base::FieldTrial* backend_field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kDiskCacheBackendExperiment);
   const std::string expected_contents = base::StrCat(
-      {kSqlBackendFakeIndexPrefix, base::NumberToString(GetShardCount())});
+      {kSqlBackendFakeIndexPrefix, base::NumberToString(GetShardCount()),
+       backend_field_trial ? backend_field_trial->group_name() : ""});
   const base::FilePath file_path = path.Append(kSqlBackendFakeIndexFileName);
   const std::optional<int64_t> file_size = base::GetFileSize(file_path);
   if (file_size.has_value()) {
