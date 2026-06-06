@@ -6,20 +6,25 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/version_info/channel.h"
+#include "components/metrics/profile_metrics_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/core/browser/account_metrics_id_allocator.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_data_test_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/data_type.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -34,13 +39,14 @@ class AccountPreviewDataServiceTest : public testing::Test {
 
   void SetUp() override {
     AccountPreviewDataService::RegisterProfilePrefs(prefs_.registry());
+    SigninPrefs::RegisterProfilePrefs(prefs_.registry());
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
     network_delay_helper_ = helper.get();
     service_ = std::make_unique<AccountPreviewDataServiceImpl>(
         identity_test_env_.identity_manager(), &prefs_,
         test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-        version_info::Channel::UNKNOWN);
+        version_info::Channel::UNKNOWN, &profile_metrics_service_);
   }
 
   void TearDown() override {
@@ -56,6 +62,7 @@ class AccountPreviewDataServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple prefs_;
   IdentityTestEnvironment identity_test_env_;
+  metrics::ProfileMetricsService profile_metrics_service_;
   raw_ptr<TestWaitForNetworkCallbackHelper> network_delay_helper_ = nullptr;
   std::unique_ptr<AccountPreviewDataServiceImpl> service_;
 };
@@ -134,7 +141,7 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
       identity_test_env_.identity_manager(), &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-      version_info::Channel::UNKNOWN);
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   // Verify that it did NOT fetch yet.
   EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
@@ -172,7 +179,7 @@ TEST_F(AccountPreviewDataServiceTest, NoFetchOnStartupIfTimerNotExpired) {
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
       identity_test_env_.identity_manager(), &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
-      version_info::Channel::UNKNOWN);
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
 
   // Verify that it did NOT fetch yet.
   EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());

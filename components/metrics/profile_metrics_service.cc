@@ -42,7 +42,7 @@ ProfileMetricsService::ProfileMetricsService(ProfileMetricsContext context)
       histogram_suffix_(GetHistogramSuffix(profile_metrics_context_)) {}
 
 void ProfileMetricsService::UmaHistogramBoolean(std::string_view name,
-                                                bool sample) {
+                                                bool sample) const {
   base::UmaHistogramBoolean(name, sample);
   if (!histogram_suffix_.empty()) {
     base::UmaHistogramBoolean(base::StrCat({name, histogram_suffix_}), sample);
@@ -59,7 +59,7 @@ void ProfileMetricsService::UmaHistogramCounts100(std::string_view name,
 }
 
 void ProfileMetricsService::UmaHistogramCounts1000(std::string_view name,
-                                                   int sample) {
+                                                   int sample) const {
   base::UmaHistogramCounts1000(name, sample);
   if (!histogram_suffix_.empty()) {
     base::UmaHistogramCounts1000(base::StrCat({name, histogram_suffix_}),
@@ -67,8 +67,26 @@ void ProfileMetricsService::UmaHistogramCounts1000(std::string_view name,
   }
 }
 
+void ProfileMetricsService::UmaHistogramCounts10000(std::string_view name,
+                                                    int sample) const {
+  base::UmaHistogramCounts10000(name, sample);
+  if (!histogram_suffix_.empty()) {
+    base::UmaHistogramCounts10000(base::StrCat({name, histogram_suffix_}),
+                                  sample);
+  }
+}
+
+void ProfileMetricsService::UmaHistogramCounts100000(std::string_view name,
+                                                     int sample) const {
+  base::UmaHistogramCounts100000(name, sample);
+  if (!histogram_suffix_.empty()) {
+    base::UmaHistogramCounts100000(base::StrCat({name, histogram_suffix_}),
+                                   sample);
+  }
+}
+
 void ProfileMetricsService::UmaHistogramSparse(std::string_view name,
-                                               int sample) {
+                                               int sample) const {
   base::UmaHistogramSparse(name, sample);
   if (!histogram_suffix_.empty()) {
     base::UmaHistogramSparse(base::StrCat({name, histogram_suffix_}), sample);
@@ -79,7 +97,7 @@ void ProfileMetricsService::UmaHistogramCustomTimes(std::string_view name,
                                                     base::TimeDelta sample,
                                                     base::TimeDelta min,
                                                     base::TimeDelta max,
-                                                    size_t buckets) {
+                                                    size_t buckets) const {
   base::UmaHistogramCustomTimes(name, sample, min, max, buckets);
   if (!histogram_suffix_.empty()) {
     base::UmaHistogramCustomTimes(base::StrCat({name, histogram_suffix_}),

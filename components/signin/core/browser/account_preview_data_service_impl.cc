@@ -11,6 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
+#include "components/signin/core/browser/account_preview_metrics_recorder.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -24,11 +25,15 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     PrefService* pref_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
-    version_info::Channel channel)
+    version_info::Channel channel,
+    const metrics::ProfileMetricsService* profile_metrics_service)
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       network_delay_helper_(std::move(network_delay_helper)),
-      channel_(channel) {
+      channel_(channel),
+      metrics_recorder_(*pref_service,
+                        *identity_manager,
+                        *profile_metrics_service) {
   CHECK(network_delay_helper_);
   identity_manager_observation_.Observe(identity_manager_);
 
@@ -86,15 +91,14 @@ void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(
 void AccountPreviewDataServiceImpl::OnFetchCompleted(
     const GaiaId& gaia_id,
     std::optional<AccountPreviewData> data) {
-  if (data.has_value()) {
-    // TODO(crbug.com/510760810): Metrics logging can happen here for data type
-    // counts of interest.
-
-    cached_data_[gaia_id] = std::move(data).value();
+  bool loaded = data.has_value();
+  if (loaded) {
+    auto [it, inserted] =
+        cached_data_.insert_or_assign(gaia_id, std::move(*data));
+    metrics_recorder_.RecordMetrics(gaia_id, it->second);
   }
-
-  // `gaia_id` is owned by the fetcher and should not be used beyond this point.
   active_fetchers_.erase(gaia_id);
+  // `gaia_id` is owned by the fetcher and should not be used beyond this point.
 
   if (fetch_complete_callback_for_testing_) {
     std::move(fetch_complete_callback_for_testing_).Run();
