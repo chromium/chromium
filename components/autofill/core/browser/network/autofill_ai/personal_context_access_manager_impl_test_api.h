@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -24,7 +25,12 @@ class PersonalContextAccessManagerImplTestApi {
   }
 
   void CachePrefetchedEntities(std::vector<EntityInstance> entities) {
-    manager_->CachePrefetchedEntities(std::move(entities));
+    absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>>
+        grouped_entities;
+    for (EntityInstance& entity : entities) {
+      grouped_entities[entity.type().name()].push_back(std::move(entity));
+    }
+    manager_->CachePrefetchedEntities(std::move(grouped_entities));
   }
 
   void CacheUnmaskedSpiiEntity(EntityInstance entity) {

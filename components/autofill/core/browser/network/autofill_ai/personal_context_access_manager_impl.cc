@@ -18,7 +18,6 @@
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -63,9 +62,19 @@ PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
 
 void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
     base::span<const EntityType> requested_types) {
-  personal_context::proto::ContextMemoryAmbientAutofillRequest request;
+  std::vector<EntityType> non_cached_requested_types;
   for (const EntityType& type : requested_types) {
-    // TODO(crbug.com/516721244): Only request types with !IsTypeCached.
+    if (!IsTypeCached(type.name())) {
+      non_cached_requested_types.push_back(type);
+    }
+  }
+
+  if (non_cached_requested_types.empty()) {
+    return;
+  }
+
+  personal_context::proto::ContextMemoryAmbientAutofillRequest request;
+  for (const EntityType& type : non_cached_requested_types) {
     request.add_requested_types(
         AutofillEntityTypeToPersonalContextEntityType(type));
   }
@@ -75,10 +84,12 @@ void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
       /*options=*/{},
       base::BindOnce(&PersonalContextAccessManagerImpl::
                          OnPrefetchAmbientAutofillContextComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     std::move(non_cached_requested_types)));
 }
 
 void PersonalContextAccessManagerImpl::OnPrefetchAmbientAutofillContextComplete(
+    std::vector<EntityType> requested_types,
     personal_context::FetchContextResult result) {
   if (!result.response.has_value()) {
     return;
@@ -88,7 +99,23 @@ void PersonalContextAccessManagerImpl::OnPrefetchAmbientAutofillContextComplete(
                  personal_context::ContextMemoryError>
       entities = ExtractEntitiesFromResponse(result.response.value().value());
 
-  // TODO(crbug.com/516721244): Cache the prefetched entities.
+  if (!entities.has_value()) {
+    return;
+  }
+
+  absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>>
+      grouped_entities;
+  // Initialize requested types results, including entries for empty responses
+  // so that EntityTypes without responses are not fetched over and over again.
+  for (EntityType type : requested_types) {
+    grouped_entities[type.name()] = std::vector<EntityInstance>();
+  }
+  // Group entities by type.
+  for (EntityInstance& entity : *entities) {
+    grouped_entities[entity.type().name()].push_back(std::move(entity));
+  }
+
+  CachePrefetchedEntities(std::move(grouped_entities));
 }
 
 std::optional<EntityInstance> PersonalContextAccessManagerImpl::GetCachedEntity(
@@ -121,7 +148,7 @@ PersonalContextAccessManagerImpl::GetCachedEntities() const {
 
 bool PersonalContextAccessManagerImpl::IsTypeCached(
     EntityTypeName type_name) const {
-  return prefetched_type_expiry_.contains(type_name);
+  return cached_types_.contains(type_name);
 }
 
 void PersonalContextAccessManagerImpl::ResetCacheForType(
@@ -135,26 +162,17 @@ void PersonalContextAccessManagerImpl::ResetCacheForType(
   // Clear unmasked SPII of this type.
   base::EraseIf(unmasked_spii_cache_, is_entity_type_name);
 
-  prefetched_type_expiry_.erase(type_name);
+  cached_types_.erase(type_name);
 }
 
 void PersonalContextAccessManagerImpl::CachePrefetchedEntities(
-    std::vector<EntityInstance> entities) {
-  // Group entities by type.
-  absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>>
-      grouped_entities;
-  for (EntityInstance& entity : entities) {
-    grouped_entities[entity.type().name()].push_back(std::move(entity));
-  }
-
-  // For each type present, reset cache (which clears old), insert new data and
-  // schedule wipeout.
-  for (auto& [type_name, type_entities] : grouped_entities) {
-    ResetCacheForType(type_name);
+    absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>> entities) {
+  // For each type present, insert new data and schedule wipeout.
+  for (auto& [type_name, type_entities] : entities) {
     prefetched_entity_cache_.insert(
         std::make_move_iterator(type_entities.begin()),
         std::make_move_iterator(type_entities.end()));
-    prefetched_type_expiry_.insert(type_name);
+    cached_types_.insert(type_name);
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

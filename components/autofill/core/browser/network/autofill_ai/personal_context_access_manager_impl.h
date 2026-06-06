@@ -13,8 +13,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace personal_context {
 class PersonalContextEnablementService;
@@ -64,12 +66,14 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
 
   // Handles the asynchronous result of the ambient autofill context fetch.
   void OnPrefetchAmbientAutofillContextComplete(
+      std::vector<EntityType> requested_types,
       personal_context::FetchContextResult result);
 
-  // Caches a batch of prefetched `entities`.
-  // Groups them by type, clears old entities of those types, and schedules
-  // their invalidation after kPrefetchedEntitiesCacheTTL".
-  void CachePrefetchedEntities(std::vector<EntityInstance> entities);
+  // Caches a batch of prefetched `entities` and schedules new invalidations
+  // after `kPrefetchedEntitiesCacheTTL`.
+  void CachePrefetchedEntities(
+      absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>>
+          entities);
 
   // Caches an unmasked SPII `entity`, so it can be refilled without an
   // additional network round trip for `kUnmaskedSpiiCacheTTL`.
@@ -84,7 +88,7 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
   //
   // **Eviction Mechanism**: Managed **per entity type** (not per individual
   // entity). When a type is prefetched, its lifetime is tracked in
-  // `prefetched_type_expiry_`. After `kPrefetchedEntitiesCacheTTL` the entire
+  // `cached_types_`. After `kPrefetchedEntitiesCacheTTL` the entire
   // type expires, and all entities belonging to this type are evicted together
   // from this cache.
   //
@@ -115,7 +119,7 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
 
   // Entity types for which their corresponding prefetched entities are within
   // their TTL.
-  base::flat_set<EntityTypeName> prefetched_type_expiry_;
+  base::flat_set<EntityTypeName> cached_types_;
 
   base::WeakPtrFactory<PersonalContextAccessManagerImpl> weak_factory_{this};
 };
