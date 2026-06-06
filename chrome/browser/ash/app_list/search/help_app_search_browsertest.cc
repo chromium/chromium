@@ -11,6 +11,7 @@
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
+#include "ash/webui/help_app_ui/url_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -364,10 +365,19 @@ IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, Launch) {
 
   auto* result = FindResult(ash::kHelpAppId);
   ASSERT_TRUE(result);
-  result->Open(ui::EF_NONE);
 
-  // TODO(crbug.com/41435725): Remove or document why this is needed.
-  base::RunLoop().RunUntilIdle();
+  const GURL expected_url(ash::kChromeUIHelpAppURL);
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+  result->Open(ui::EF_NONE);
+  navigation_observer.Wait();
+
+  Browser* help_app_browser =
+      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::HELP);
+  ASSERT_TRUE(help_app_browser);
+  EXPECT_EQ(expected_url, help_app_browser->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetVisibleURL());
 }
 
 }  // namespace app_list::test
