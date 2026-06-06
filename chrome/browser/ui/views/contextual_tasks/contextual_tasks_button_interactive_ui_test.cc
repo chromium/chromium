@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -671,3 +672,32 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksEphemeralButtonInteractiveTest,
                          testing::Values("toolbar-revisit",
                                          "toolbar-ephemeral-branded"));
+
+class ContextualTasksEphemeralBrandedButtonInteractiveTest
+    : public ContextualTasksEphemeralButtonInteractiveTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{contextual_tasks::kContextualTasks,
+          {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+        {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralBrandedButtonInteractiveTest,
+                       ButtonHidesOnContextualTasksPage) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
+      NavigateWebContents(kFirstTab, GURL(chrome::kChromeUIContextualTasksURL)),
+      WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton));
+}
