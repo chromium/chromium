@@ -430,13 +430,13 @@ public class LocationBarMediatorTest {
     @Test
     public void testDestroyEndsInput() {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
+
         mMediator.beginInput(input);
         assertTrue(mSessionState.isSessionActive());
         assertTrue(input.getRequestTypeSupplier().hasObservers());
 
         mMediator.destroy();
         assertFalse(mSessionState.isSessionActive());
-        mSessionState.destroy();
         assertFalse(input.getRequestTypeSupplier().hasObservers());
     }
 
