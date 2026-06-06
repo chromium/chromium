@@ -20,7 +20,6 @@
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list::test {
@@ -111,10 +110,9 @@ class HelpAppProviderTest : public AppListTestBase {
     AppListTestBase::TearDown();
   }
 
-  // Starts a search and waits for the query to be sent.
+  // Starts a search against the synchronous mock search handler.
   void StartSearch(const std::u16string& query) {
     search_controller_->StartSearch(query);
-    task_environment()->RunUntilIdle();
   }
 
   const app_list::Results& GetLatestResults() {
