@@ -267,7 +267,7 @@ GURL GetConferenceDataUri(const base::DictValue& dict) {
     return GURL();
   }
   const GURL entry_point_url = GURL(*entry_point_uri);
-  if (entry_point_url.is_valid()) {
+  if (entry_point_url.is_valid() && entry_point_url.SchemeIsHTTPOrHTTPS()) {
     return entry_point_url;
   }
 

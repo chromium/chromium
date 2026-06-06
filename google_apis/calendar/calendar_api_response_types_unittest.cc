@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/json/json_reader.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "google_apis/common/test_util.h"
@@ -300,6 +301,36 @@ TEST(CalendarAPIResponseTypesTest, ParseInvalidAttachments) {
             "17tkfUouD4CjwnW7cFWww4lk5__7parQy_eJBAwPIC-Q/edit#slide=id.p");
   EXPECT_TRUE(attachments[1].icon_link().is_empty());
   EXPECT_EQ(attachments[1].title(), "Google Slides Attachment");
+}
+
+TEST(CalendarAPIResponseTypesTest, ParsePrivilegedSchemeConferenceDataUri) {
+  std::optional<base::Value> events =
+      base::JSONReader::Read(R"(
+    {
+      "kind": "calendar#events",
+      "items": [
+        {
+          "kind": "calendar#event",
+          "id": "event_id",
+          "status": "confirmed",
+          "conferenceData": {
+            "entryPoints": [
+              {
+                "entryPointType": "video",
+                "uri": "chrome://settings"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  )",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(events.has_value());
+  std::unique_ptr<EventList> event_list = EventList::CreateFrom(*events);
+  ASSERT_TRUE(event_list);
+  ASSERT_EQ(1U, event_list->items().size());
+  EXPECT_TRUE(event_list->items()[0]->conference_data_uri().is_empty());
 }
 }  // namespace calendar
 }  // namespace google_apis

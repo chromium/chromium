@@ -801,6 +801,9 @@ void SystemTrayClientImpl::ShowCalendarEvent(
 // one for each call to `LaunchAppWithUrl`.
 void SystemTrayClientImpl::ShowVideoConference(
     const GURL& video_conference_url) {
+  if (!video_conference_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
   if (auto* profile = ProfileManager::GetActiveUserProfile()) {
     apps::MaybeLaunchPreferredAppForUrl(
         profile, video_conference_url,

@@ -624,6 +624,19 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowVideoConferenceTest,
       browser_->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
+IN_PROC_BROWSER_TEST_F(SystemTrayClientShowVideoConferenceTest,
+                       DoNotLaunchPrivilegedVideoConferenceUrl) {
+  const auto kPrivilegedUrl = GURL("chrome://settings");
+
+  ash::Shell::Get()->system_tray_model()->client()->ShowVideoConference(
+      kPrivilegedUrl);
+
+  // The active tab should NOT be the privileged URL.
+  EXPECT_NE(
+      kPrivilegedUrl,
+      browser_->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+}
+
 class SystemTrayClientShowChannelInfoGiveFeedbackTest
     : public ash::LoginManagerTest {
  public:
