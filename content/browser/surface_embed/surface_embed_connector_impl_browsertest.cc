@@ -177,6 +177,10 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
   bool HasKeepSurfaceAlive(SurfaceEmbedConnectorImpl* connector) const {
     return !!connector->keep_surface_alive_;
   }
+
+  bool HasParentWCObserver(SurfaceEmbedConnectorImpl* connector) const {
+    return !!connector->parent_wc_observer_;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, BasicConnection) {
@@ -210,6 +214,7 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
       static_cast<WebContentsImpl*>(context.parent_web_contents.get());
 
   EXPECT_EQ(connector->GetParentWebContentsView(), parent_impl->GetView());
+  EXPECT_TRUE(HasParentWCObserver(connector));
 
   context.parent_web_contents = nullptr;
   Shell* shell = context.parent_shell;
@@ -219,10 +224,8 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   // Verify connector handles missing parent gracefully where checks exist.
   EXPECT_EQ(connector->GetParentWebContentsView(), nullptr);
   EXPECT_EQ(connector->GetParentRenderViewHostDelegateView(), nullptr);
-
-  // Note: GetInputEventRouter() and GetTextInputManager() in
-  // SurfaceEmbedConnectorImpl currently do not check for null parent, so we
-  // don't test them here to avoid crash.
+  EXPECT_EQ(connector->GetInputEventRouter(), nullptr);
+  EXPECT_EQ(connector->GetTextInputManager(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, ConstGetters) {

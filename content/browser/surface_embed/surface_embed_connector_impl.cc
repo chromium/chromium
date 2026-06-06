@@ -58,6 +58,38 @@ class SurfaceEmbedConnectorImpl::WCObserver : public WebContentsObserver {
   raw_ptr<SurfaceEmbedConnectorImpl> surface_embed_connector_;
 };
 
+// Observes the parent WebContents to propagate visibility changes.
+//
+// LIFECYCLE NOTE: Unlike older implementation patterns that explicitly reset
+// and deleted this observer object immediately during `WebContentsDestroyed`,
+// this object is now left alive as a dormant `unique_ptr` for the remaining
+// lifetime of the `SurfaceEmbedConnectorImpl`. We rely on the base
+// `WebContentsObserver` to safely detach from the parent `WebContents` when it
+// is destroyed, preventing further callbacks.
+class SurfaceEmbedConnectorImpl::ParentWCObserver : public WebContentsObserver {
+ public:
+  ParentWCObserver(SurfaceEmbedConnectorImpl* surface_embed_connector,
+                   WebContents* parent_web_contents)
+      : WebContentsObserver(parent_web_contents),
+        surface_embed_connector_(surface_embed_connector) {}
+
+  ~ParentWCObserver() override = default;
+
+  // WebContentsObserver:
+  void OnVisibilityChanged(Visibility visibility) override {
+    surface_embed_connector_->ParentVisibilityChanged(visibility);
+  }
+
+  // NOTE: We deliberately do NOT implement WebContentsDestroyed() here because
+  // it is called in the middle of WebContentsImpl destructor, making it unsafe
+  // for outliving objects to rely on. Instead, cleanup happens automatically
+  // via ResetWebContents() in the base WebContentsObserver and the invalidation
+  // of the WeakPtr parent_web_contents_.
+
+ private:
+  raw_ptr<SurfaceEmbedConnectorImpl> surface_embed_connector_;
+};
+
 // static
 void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
                                    RenderFrameHost* outer_document_rfh,
@@ -108,8 +140,17 @@ SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     SurfaceEmbedConnector::Delegate* delegate)
     : delegate_(delegate),
       child_web_contents_(static_cast<WebContentsImpl*>(child_web_contents)),
-      parent_web_contents_(parent_web_contents->GetWeakPtr()) {
+      // Rely on Chromium's WeakPtrFactory to automatically invalidate this
+      // pointer safely at the start of parent_web_contents's destructor.
+      parent_web_contents_(
+          parent_web_contents ? parent_web_contents->GetWeakPtr() : nullptr) {
   wc_observer_ = std::make_unique<WCObserver>(this, child_web_contents);
+  // The parent WebContents could be null if the child is being moved from one
+  // parent to another.
+  // TODO(crbug.com/496266440): Repoint this observer to the new parent
+  // WebContents when the move occurs.
+  parent_wc_observer_ =
+      std::make_unique<ParentWCObserver>(this, parent_web_contents);
   CHECK(current_child_frame_host());
 
   // Current_child_frame_host must be the primary main frame of the child
@@ -337,13 +378,15 @@ SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
   if (!parent_web_contents_) {
     return nullptr;
   }
-  auto* root_web_contents = parent_web_contents();
-  auto* root_connector = static_cast<SurfaceEmbedConnectorImpl*>(
-      parent_web_contents()->GetSurfaceEmbedConnector());
-  while (root_connector && root_connector->parent_web_contents()) {
-    root_web_contents = root_connector->parent_web_contents();
-    root_connector = static_cast<SurfaceEmbedConnectorImpl*>(
-        root_connector->parent_web_contents()->GetSurfaceEmbedConnector());
+  WebContentsImpl* root_web_contents = parent_web_contents();
+  while (SurfaceEmbedConnectorImpl* root_connector =
+             static_cast<SurfaceEmbedConnectorImpl*>(
+                 root_web_contents->GetSurfaceEmbedConnector())) {
+    WebContentsImpl* parent = root_connector->parent_web_contents();
+    if (!parent) {
+      break;
+    }
+    root_web_contents = parent;
   }
   CHECK(root_web_contents);
   return static_cast<RenderWidgetHostViewBase*>(
@@ -501,6 +544,10 @@ bool SurfaceEmbedConnectorImpl::IsHidden() {
   // rendering us, since WebContents may want to render us for features like
   // capture; any CSS that's hiding us should make us not show up incorrectly
   // in the parent renderer regardless.
+  //
+  // NOTE: This relies on parent_web_contents_ (a WeakPtr) which automatically
+  // clears to null when the parent is destroyed, ensuring IsHidden() becomes
+  // true immediately.
   return !parent_web_contents_;
 }
 
@@ -607,17 +654,7 @@ void SurfaceEmbedConnectorImpl::OnVisibilityChanged(
     current_child_frame_host()->VisibilityChanged(visibility_);
   }
 
-  switch (visibility) {
-    case blink::mojom::FrameVisibility::kRenderedInViewport:
-      child_web_contents_->WasShown();
-      break;
-    case blink::mojom::FrameVisibility::kNotRendered:
-      child_web_contents_->WasHidden();
-      break;
-    case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
-      child_web_contents_->WasOccluded();
-      break;
-  }
+  UpdateChildVisibility();
 }
 
 bool SurfaceEmbedConnectorImpl::IsVisible() {
@@ -692,6 +729,35 @@ RenderFrameHostImpl* SurfaceEmbedConnectorImpl::current_child_frame_host()
   }
   return static_cast<RenderFrameHostImpl*>(
       child_web_contents()->GetPrimaryMainFrame());
+}
+
+void SurfaceEmbedConnectorImpl::ParentVisibilityChanged(Visibility visibility) {
+  UpdateChildVisibility();
+}
+
+void SurfaceEmbedConnectorImpl::UpdateChildVisibility() {
+  if (!view_) {
+    return;
+  }
+
+  bool parent_is_visible = (EmbedderVisibility() == Visibility::VISIBLE);
+
+  if (!parent_is_visible) {
+    child_web_contents_->WasHidden();
+    return;
+  }
+
+  switch (visibility_) {
+    case blink::mojom::FrameVisibility::kRenderedInViewport:
+      child_web_contents_->WasShown();
+      break;
+    case blink::mojom::FrameVisibility::kNotRendered:
+      child_web_contents_->WasHidden();
+      break;
+    case blink::mojom::FrameVisibility::kRenderedOutOfViewport:
+      child_web_contents_->WasOccluded();
+      break;
+  }
 }
 
 }  // namespace content

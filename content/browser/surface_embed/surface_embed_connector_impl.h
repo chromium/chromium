@@ -140,6 +140,7 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
 
  private:
   class WCObserver;
+  class ParentWCObserver;
 
   friend class SurfaceEmbedConnector;
   friend class SurfaceEmbedConnectorImplBrowserTest;
@@ -166,12 +167,19 @@ class CONTENT_EXPORT SurfaceEmbedConnectorImpl
 
   RenderFrameHostImpl* current_child_frame_host() const;
 
-  // Observes the child web contents to send notifications to the connector.
+  void ParentVisibilityChanged(Visibility visibility);
+  void UpdateChildVisibility();
+
+  // Observes the child WebContents to send notifications to the connector.
   std::unique_ptr<WCObserver> wc_observer_;
+  // Observes the parent WebContents to propagate visibility changes.
+  std::unique_ptr<ParentWCObserver> parent_wc_observer_;
 
   raw_ptr<SurfaceEmbedConnector::Delegate> delegate_ = nullptr;
 
   raw_ptr<WebContentsImpl> child_web_contents_;  // Owns this object.
+  // WeakPtr to the parent WebContents. Automatically clears to nullptr when the
+  // observed parent is destroyed, safely notifying all consumers.
   base::WeakPtr<WebContents> parent_web_contents_;
   raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
