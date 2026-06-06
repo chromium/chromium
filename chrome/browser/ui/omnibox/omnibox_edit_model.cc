@@ -3506,7 +3506,7 @@ void OmniboxEditModel::
       view_->RevertAll();
     }
   } else {
-    chrome_omnibox_client->OpenUrl(url);
+    chrome_omnibox_client->OpenUrl(url, disposition);
   }
 #endif
 }

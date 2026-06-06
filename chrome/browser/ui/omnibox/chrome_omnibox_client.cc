@@ -934,10 +934,11 @@ void ChromeOmniboxClient::OnPopupVisibilityChanged(bool popup_is_open) {
   }
 }
 
-void ChromeOmniboxClient::OpenUrl(GURL gurl) {
+void ChromeOmniboxClient::OpenUrl(GURL gurl,
+                                  WindowOpenDisposition disposition) {
   CHECK(browser_);
   NavigateParams params(browser_, gurl, ui::PAGE_TRANSITION_GENERATED);
-  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.disposition = disposition;
   Navigate(&params);
 }
 

@@ -348,9 +348,11 @@ class OmniboxClient {
   // Called when the thumbnail image has been removed.
   virtual void OnThumbnailRemoved() {}
 
-  // Navigates to `gurl` in the current tab. Used for handling activations of
-  // the AI Mode page action icon.
-  virtual void OpenUrl(GURL gurl) {}
+  // Navigates to `gurl` with the specified `disposition`. Used for handling
+  // activations of the AI Mode page action icon.
+  virtual void OpenUrl(
+      GURL gurl,
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB) {}
 
   // Even though IPH suggestions aren't selectable like normal matches, they can
   // have a 'learn more' or next-steps link. `OpenIphLink()` allows opening

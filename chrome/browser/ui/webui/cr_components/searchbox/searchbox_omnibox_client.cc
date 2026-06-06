@@ -167,6 +167,14 @@ void SearchboxOmniboxClient::OnAutocompleteAccept(
       /*navigation_handle_callback=*/{});
 }
 
+void SearchboxOmniboxClient::OpenUrl(GURL gurl,
+                                     WindowOpenDisposition disposition) {
+  web_contents_->OpenURL(
+      content::OpenURLParams(gurl, content::Referrer(), disposition,
+                             ui::PAGE_TRANSITION_GENERATED, false),
+      /*navigation_handle_callback=*/{});
+}
+
 base::WeakPtr<OmniboxClient> SearchboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
