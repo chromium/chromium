@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/feedback/feedback_data.h"
@@ -472,7 +474,8 @@ void FeedbackService::EncryptVariations(
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&FeedbackService::OnVariationsFetchHpkeURL, this,
-                     std::move(loader), feedback_data, barrier_closure),
+                     std::move(loader), feedback_data,
+                     std::move(barrier_closure)),
       kVariationsMaxDownloadBytes);
 }
 
@@ -483,7 +486,7 @@ void FeedbackService::OnVariationsFetchHpkeURL(
     std::optional<std::string> hpke_public_key) {
   if (!loader) {
     LOG(ERROR) << "invalid loader";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
   auto net_error = loader->NetError();
@@ -494,14 +497,8 @@ void FeedbackService::OnVariationsFetchHpkeURL(
   if (!hpke_public_key || http_error != net::HTTP_OK) {
     LOG(ERROR) << "Unable to fetch hpke_public_key. http code: " << http_error
                << ", net error: " << net_error;
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
-  // Send the JSON string to a dedicated service for safe parsing.
-  data_decoder_.ParseJson(
-      *hpke_public_key,
-      base::BindOnce(&FeedbackService::VariationsExtractHpkePublicKey, this,
-                     feedback_data, barrier_closure));
-}
 
 // Sample JSON string:
 // {
@@ -519,37 +516,32 @@ void FeedbackService::OnVariationsFetchHpkeURL(
 //     }
 //   ]
 // }
-void FeedbackService::VariationsExtractHpkePublicKey(
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    base::RepeatingClosure barrier_closure,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
+  std::optional<base::DictValue> json_dict =
+      base::JSONReader::ReadDict(*hpke_public_key, base::JSON_PARSE_RFC);
+  if (!json_dict) {
     LOG(ERROR) << "Failed to parse JSON or it's not a dictionary.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
-  const base::DictValue& json_dict = result->GetDict();
-  const base::ListValue* key_list = json_dict.FindList("key");
-
+  const base::ListValue* key_list = json_dict->FindList("key");
   if (!key_list || key_list->empty()) {
     LOG(ERROR) << "Key list not found or empty.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
   // Get the first item in the "key" list
   const base::Value& key_item = (*key_list)[0];
   const base::DictValue* key_dict = key_item.GetIfDict();
-
   if (!key_dict) {
     LOG(ERROR) << "Unexpected format in 'key' item.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
   // Extract "keyData" dictionary
   const base::DictValue* key_data_dict = key_dict->FindDict("keyData");
   if (!key_data_dict) {
     LOG(ERROR) << "Failed to find 'keyData' dictionary.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
   // Extract "value" from "keyData"
@@ -557,45 +549,38 @@ void FeedbackService::VariationsExtractHpkePublicKey(
       key_data_dict->FindString("value");
   if (!base64_serialized_proto_hpke) {
     LOG(ERROR) << "Failed to extract 'value' from 'keyData'.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
-  // std::string base64_proto_key = *base64_proto_keyp;
   std::string serialized_proto_hpke;
-
   if (!base::Base64Decode(*base64_serialized_proto_hpke,
                           &serialized_proto_hpke)) {
     LOG(ERROR) << "base64 decode of hpke proto failed";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
   userfeedback::HpkePublicKey key_proto;
   if (!key_proto.ParseFromString(serialized_proto_hpke)) {
     LOG(ERROR) << "Failed to parse HpkePublicKey.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
 
-  std::string hpke_public_key_string = key_proto.public_key();
-  std::vector<uint8_t> hpke_public_key;
-  hpke_public_key.assign(hpke_public_key_string.begin(),
-                         hpke_public_key_string.end());
-  VLOG(1) << "HPKE public KEY:" << base::HexEncode(hpke_public_key);
-  return VariationsEncryptWithHpkeKey(hpke_public_key, feedback_data,
-                                      barrier_closure);
-  ;
+  VLOG(1) << "HPKE public KEY:"
+          << base::HexEncode(base::as_byte_span(key_proto.public_key()));
+  VariationsEncryptWithHpkeKey(base::as_byte_span(key_proto.public_key()),
+                               feedback_data, std::move(barrier_closure));
 }
 
 void FeedbackService::VariationsEncryptWithHpkeKey(
-    const std::vector<uint8_t>& hpke_public_key,
+    base::span<const uint8_t> hpke_public_key,
     scoped_refptr<feedback::FeedbackData> feedback_data,
     base::RepeatingClosure barrier_closure) {
   std::string variations_string =
       variations::VariationsCommandLine::GetForCurrentProcess().ToString();
   if (variations_string.empty()) {
     LOG(ERROR) << "Unable to get valid variations.";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
-  std::vector<uint8_t> variations(variations_string.begin(),
-                                  variations_string.end());
+  auto variations_span = base::as_byte_span(variations_string);
   bssl::ScopedEVP_HPKE_CTX sender_context;
 
   // This vector will hold the encapsulated shared secret "enc" followed by the
@@ -617,10 +602,10 @@ void FeedbackService::VariationsEncryptWithHpkeKey(
           /*info=*/nullptr,
           /*info_len=*/0)) {
     LOG(ERROR) << "hpke setup failed";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
   encrypted_variations.resize(encapsulated_shared_secret_len +
-                              variations.size() +
+                              variations_span.size() +
                               EVP_HPKE_CTX_max_overhead(sender_context.get()));
   base::span<uint8_t> ciphertext =
       base::span(encrypted_variations).subspan(encapsulated_shared_secret_len);
@@ -631,18 +616,17 @@ void FeedbackService::VariationsEncryptWithHpkeKey(
           /*out=*/ciphertext.data(),
           /*out_len=*/&ciphertext_len,
           /*max_out_len=*/ciphertext.size(),
-          /*in=*/variations.data(),
-          /*in_len*/ variations.size(),
+          /*in=*/variations_span.data(),
+          /*in_len*/ variations_span.size(),
           /*ad=*/nullptr,
           /*ad_len=*/0)) {
     LOG(ERROR) << "hpke seal failed";
-    return VariationsFinished(false, barrier_closure);
+    return VariationsFinished(false, std::move(barrier_closure));
   }
   encrypted_variations.resize(encapsulated_shared_secret_len + ciphertext_len);
-  feedback_data->AddFile(
-      kVariationsAttachmentName,
-      std::string(encrypted_variations.begin(), encrypted_variations.end()));
-  return VariationsFinished(true, barrier_closure);
+  feedback_data->AddFile(kVariationsAttachmentName,
+                         std::move(encrypted_variations));
+  return VariationsFinished(true, std::move(barrier_closure));
 }
 
 void FeedbackService::VariationsFinished(

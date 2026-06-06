@@ -22,8 +22,8 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/span.h"
 #include "chromeos/ash/components/dbus/debug_daemon/binary_log_files_reader.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace feedback {
@@ -131,13 +131,10 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
                          base::RepeatingClosure barrier_closure);
   std::string VariationsFetchHpkeKey();
   void VariationsEncryptWithHpkeKey(
-      const std::vector<uint8_t>& hpke_public_key,
+      base::span<const uint8_t> hpke_public_key,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       base::RepeatingClosure barrier_closure);
-  void VariationsExtractHpkePublicKey(
-      scoped_refptr<feedback::FeedbackData> feedback_data,
-      base::RepeatingClosure barrier_closure,
-      data_decoder::DataDecoder::ValueOrError result);
+
   void VariationsFinished(bool file_added,
                           base::RepeatingClosure barrier_clsoure);
   void OnVariationsFetchHpkeURL(
@@ -155,8 +152,6 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   // Root file path for log files. It can be overwritten for testing purpose.
   base::FilePath log_file_root_{FILE_PATH_LITERAL("/var/log/")};
   feedback::BinaryLogFilesReader binary_log_files_reader_;
-  // Decoder for data decoding service.
-  data_decoder::DataDecoder data_decoder_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };

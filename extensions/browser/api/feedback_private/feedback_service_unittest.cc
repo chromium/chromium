@@ -32,7 +32,6 @@
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -335,7 +334,6 @@ class FeedbackServiceTest : public ApiUnitTest {
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::ScopedTempDir scoped_temp_dir_;
