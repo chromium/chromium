@@ -12,8 +12,6 @@ build_webui("build") {
   grd_prefix = "cr_components_searchbox"
   ts_files = [
     "placeholder_text_cycler.ts",
-    "searchbox.html.ts",
-    "searchbox.ts",
     "searchbox_action.html.ts",
     "searchbox_action.ts",
     "searchbox_browser_proxy.ts",
@@ -33,7 +31,6 @@ build_webui("build") {
     "utils.ts",
   ]
   css_files = [
-    "searchbox.css",
     "searchbox_action.css",
     "searchbox_compose_button.css",
     "searchbox_dropdown.css",
