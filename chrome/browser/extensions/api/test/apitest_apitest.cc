@@ -7,7 +7,9 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -836,5 +838,125 @@ IN_PROC_BROWSER_TEST_P(TestStandardizedAPITest, assertEq) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, TestStandardizedAPITest, testing::Bool());
+
+class TestHarnessEventsBrowserTest : public TestAPITest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TestAPITest::SetUpCommandLine(command_line);
+    // Enabled the `chrome.test` API on web pages.
+    command_line->AppendSwitch(switches::kExtensionTestApiOnWebPages);
+  }
+
+  // This script registers listeners for `onTestStarted` and `onTestFinished`
+  // and asserts that they fire in the correct order and with the expected
+  // arguments. It runs a single test named `test_name` that succeeds.
+  std::string GetTestScript(const std::string& test_name) {
+    return base::StringPrintf(
+        R"(
+           // Setup the listeners before running the test.
+           let onTestStartedFired = false;
+           chrome.test.onTestStarted.addListener((info) => {
+               chrome.test.assertEq('%s', info.testName);
+               onTestStartedFired = true;
+           });
+
+           const finishedListener = (info) => {
+             if (info.result === false) {
+               // The test already failed, don't call chrome.test.fail() again
+               // to avoid infinite recursion.
+               return;
+             }
+             if (onTestStartedFired &&
+                 info.remainingTests === 0 &&
+                 info.assertionDescription === 'Test succeeded') {
+               // Send message indicating we successfully received the finished
+               // event for this test.
+               chrome.test.sendMessage('finished:' + info.testName);
+             } else {
+               chrome.test.fail('Unexpected info: ' + JSON.stringify(info));
+             }
+           };
+           chrome.test.onTestFinished.addListener(finishedListener);
+
+           // Run the test. The test passing means that the `onTestStarted`
+           // event fired. `onTestFinished` is confirmed when it runs and sends
+           // a message back to the test C++.
+           chrome.test.runTests([
+             function %s() {
+               chrome.test.assertTrue(onTestStartedFired);
+               chrome.test.succeed();
+             }
+           ]);)",
+        test_name.c_str(), test_name.c_str());
+  }
+};
+
+// Tests that `chrome.test.onTestStarted` and `chrome.test.onTestFinished` fired
+// when `chrome.test.runTests` is called in various contexts (background
+// scripts, extension pages, content scripts, and web pages).
+IN_PROC_BROWSER_TEST_F(TestHarnessEventsBrowserTest, AllContexts) {
+  ResultCatcher result_catcher;
+
+  // We will use ExtensionTestMessageListener to verify `onTestFinished` fires.
+  // `onTestStarted` is confirmed to have run when the test case succeeds.
+  // The JS will send "finished:<testName>".
+  ExtensionTestMessageListener bg_listener("finished:backgroundTest");
+  ExtensionTestMessageListener cs_listener("finished:contentScriptTest");
+  ExtensionTestMessageListener page_listener("finished:pageTest");
+  ExtensionTestMessageListener web_listener("finished:webPageTest");
+
+  // Define the extension and web page tests.
+  constexpr char kTestManifest[] =
+      R"({
+           "name": "test extension",
+           "version": "1.0",
+           "manifest_version": 3,
+           "background": { "service_worker": "background.js" },
+           "content_scripts": [{
+             "matches": ["http://*/*"],
+             "js": ["content_script.js"]
+           }]
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kTestManifest);
+  std::string background_js = GetTestScript("backgroundTest");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
+  std::string content_script_js = GetTestScript("contentScriptTest");
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), content_script_js);
+  constexpr char kPageHtml[] = R"(<script src="page.js"></script>)";
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  std::string page_js = GetTestScript("pageTest");
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), page_js);
+
+  // Start embedded test server for the web page test.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load the extension which runs the background script test.
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  EXPECT_TRUE(bg_listener.WaitUntilSatisfied());
+
+  // Navigate to a web page. This will trigger the content script test.
+  GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  EXPECT_TRUE(cs_listener.WaitUntilSatisfied());
+
+  // Navigate to an extension page to run the test.
+  GURL ext_url = extension->GetResourceURL("page.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), ext_url));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  EXPECT_TRUE(page_listener.WaitUntilSatisfied());
+
+  // Navigate to a non-extension web page to run the web page context test.
+  GURL web_url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), web_url));
+  std::string web_page_js = GetTestScript("webPageTest");
+  ASSERT_TRUE(content::ExecJs(GetActiveWebContents(), web_page_js));
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  EXPECT_TRUE(web_listener.WaitUntilSatisfied());
+}
 
 }  // namespace extensions

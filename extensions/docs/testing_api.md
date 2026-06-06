@@ -8,6 +8,16 @@ an extension API.  It is primarily used in order to provide testing
 functionality used in writing extension API tests by exercising an API directly
 in JS.  See also [writing extension tests].
 
+### Accessibility
+
+#### `browser.test` Alias
+In extension contexts `chrome` is aliased to `browser` for cross-browser
+compatibility. Therefore `chrome.test` is accessible from `browser.test`.
+
+#### Web Page Access to `chrome.test`
+In web pages, `chrome.test` is only accessible if the browser has been passed
+the `--extension-test-api-on-web-pages` flag.
+
 ### Basic JS-Based Tests
 All tests must have some limited C++ portion (in order to kick off and drive
 the test).  In the most basic form, this C++ test only needs to load the
@@ -117,6 +127,39 @@ chrome.test.runTests([
   },
 ]);
 ```
+
+### Events
+
+The testing framework also provides events that are fired during the execution
+of tests in `runTests()`:
+
+#### onTestStarted
+
+```js
+chrome.test.onTestStarted.addListener(function(info: {testName: string}) {...});
+```
+
+Fired when an individual test begins running. Emitted before any test logic has
+run. Provides `{testName: string}`.
+
+#### onTestFinished
+
+```js
+chrome.test.onTestFinished.addListener(
+    function(info: {
+      testName: string,
+      result: boolean,
+      remainingTests: number,
+      assertionDescription: string,
+      message?: string}) {
+  ...
+});
+```
+
+Fired when an individual test finishes execution. Provides `{testName: string,
+result: boolean, remainingTests: number, assertionDescription: string, message?:
+string}` (where message is only set if the test failed). `remainingTests` counts
+the tests remaining in the queue after the current test finishes.
 
 ### Checks
 

@@ -497,6 +497,38 @@
             }
           }
         ]
+      },
+      {
+        "name": "onTestStarted",
+        "type": "function",
+        "description": "Fired when a test is started, before any test logic has run.",
+        "parameters": [
+          {
+            "type": "object",
+            "name": "info",
+            "properties": {
+              "testName": { "type": "string" }
+            }
+          }
+        ]
+      },
+      {
+        "name": "onTestFinished",
+        "type": "function",
+        "description": "Fired when a test evaluates to success or failure.",
+        "parameters": [
+          {
+            "type": "object",
+            "name": "info",
+            "properties": {
+              "testName": { "type": "string" },
+              "result": { "type": "boolean" },
+              "remainingTests": { "type": "integer" },
+              "assertionDescription": { "type": "string" },
+              "message": { "type": "string", "optional": true }
+            }
+          }
+        ]
       }
     ]
   }

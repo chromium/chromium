@@ -327,6 +327,9 @@ apiBridge.registerCustomHook(function(api) {
 
     try {
       chromeTest.log(`( RUN      ) ${testName(currentTest)}`);
+      if (chromeTest.onTestStarted) {
+        chromeTest.onTestStarted.dispatch({testName: testName(currentTest)});
+      }
       bindingUtil.setExceptionHandler(function(message, e) {
         if (e !== kFailureException) {
           chromeTest.fail(`uncaught exception: ${message}`);
@@ -431,12 +434,19 @@ apiBridge.registerCustomHook(function(api) {
     // really fancy, there may be more sophisticated ways of doing this.
     Error.captureStackTrace(stack, failHandler);
 
-    if (!message) {
-      message = 'FAIL (no message)';
-    }
+    const assertionDescription = message || 'FAIL (no message)';
+    const fullMessage = `${assertionDescription} \n ${stack.stack}`;
 
-    message += '\n' + stack.stack;
-    console.log(`[FAIL] ${testName(currentTest)}: ${message}`);
+    console.log(`[FAIL] ${testName(currentTest)}: ${fullMessage}`);
+    if (chromeTest.onTestFinished) {
+      chromeTest.onTestFinished.dispatch({
+        testName: testName(currentTest),
+        result: false,
+        remainingTests: chromeTest.tests.length,
+        assertionDescription: assertionDescription,
+        message: fullMessage
+      });
+    }
     testsFailed++;
     testDone();
 
@@ -453,6 +463,14 @@ apiBridge.registerCustomHook(function(api) {
         '`assertPromiseRejects(...).then(...).`.');
     console.log(`[SUCCESS] ${testName(currentTest)}`);
     chromeTest.log('(  SUCCESS )');
+    if (chromeTest.onTestFinished) {
+      chromeTest.onTestFinished.dispatch({
+        testName: testName(currentTest),
+        result: true,
+        remainingTests: chromeTest.tests.length,
+        assertionDescription: 'Test succeeded'
+      });
+    }
     testDone();
   });
 

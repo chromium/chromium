@@ -303,3 +303,17 @@ chrome.test.setExceptionHandler = function(handler) {};
  * @see https://developer.chrome.com/extensions/test#event-onMessage
  */
 chrome.test.onMessage;
+
+/**
+ * Fired when a test is started, before any test logic has run.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/test#event-onTestStarted
+ */
+chrome.test.onTestStarted;
+
+/**
+ * Fired when a test evaluates to success or failure.
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/test#event-onTestFinished
+ */
+chrome.test.onTestFinished;
