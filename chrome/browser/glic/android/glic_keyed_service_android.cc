@@ -154,6 +154,25 @@ void GlicKeyedServiceAndroid::OnAllowedStateChanged() {
   Java_GlicKeyedServiceImpl_onAllowedStateChanged(env, java_obj_);
 }
 
+bool GlicKeyedService::IsGlicShortcutActive() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_service = GetJavaObject(this);
+  if (!java_service) {
+    return false;
+  }
+  return Java_GlicKeyedServiceImpl_isGlicShortcutActive(
+      env, java_service, profile_->GetJavaObject());
+}
+
+bool GlicKeyedService::IsBottomBarEnabled() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> java_service = GetJavaObject(this);
+  if (!java_service) {
+    return false;
+  }
+  return Java_GlicKeyedServiceImpl_isBottomBarEnabled(env, java_service);
+}
+
 }  // namespace glic
 
 DEFINE_JNI(GlicKeyedServiceImpl)
