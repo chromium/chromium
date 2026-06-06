@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_SWAP_CHAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_SWAP_CHAIN_H_
 
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_swap_chain.h"
@@ -50,6 +51,7 @@ class XRWebGLSwapChain : public XRSwapChain<WebGLUnownedTexture> {
     return nullptr;
   }
   virtual bool IsCube() const { return false; }
+  virtual gpu::SyncToken GetSyncToken() const { return gpu::SyncToken(); }
 
  protected:
   void OnTextureQueried() override;
@@ -96,10 +98,13 @@ class XRWebGLSharedImageSwapChain final : public XRWebGLSwapChain {
 
   void OnFrameEnd() override;
 
+  gpu::SyncToken GetSyncToken() const override { return sync_token_; }
+
  private:
   std::unique_ptr<gpu::SharedImageTexture> shared_image_texture_;
   std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
       shared_image_scoped_access_;
+  gpu::SyncToken sync_token_;
 };
 
 }  // namespace blink

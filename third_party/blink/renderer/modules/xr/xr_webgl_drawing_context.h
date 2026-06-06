@@ -24,6 +24,7 @@ class XRWebGLDrawingContext final : public XRLayerDrawingContext {
 
   XRSession* session() const override;
   std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
+  std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() override;
   XRFrameTransportDelegate* GetTransportDelegate() override;
 
   uint16_t TextureWidth() const override;

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 
+#include "base/functional/callback_helpers.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_frame_transport_context_impl.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
@@ -69,6 +71,26 @@ XRSession* XRWebGLDrawingContext::session() const {
 std::unique_ptr<SharedImageHolder>
 XRWebGLDrawingContext::TransferToSharedImageHolder() {
   return color_swap_chain_->TransferToSharedImageHolder();
+}
+
+std::unique_ptr<SharedImageHolder>
+XRWebGLDrawingContext::DoneWithSharedBuffer() {
+  // Get the shared image from the color swap chain.
+  if (!color_swap_chain_ || !color_swap_chain_->layer()) {
+    return nullptr;
+  }
+
+  const XRSharedImageData& shared_image_data =
+      color_swap_chain_->layer()->SharedImage();
+
+  if (!shared_image_data.shared_image) {
+    return nullptr;
+  }
+
+  gpu::SyncToken sync_token = color_swap_chain_->GetSyncToken();
+
+  return std::make_unique<SharedImageHolder>(shared_image_data.shared_image,
+                                             sync_token, base::DoNothing());
 }
 
 XRFrameTransportDelegate* XRWebGLDrawingContext::GetTransportDelegate() {
