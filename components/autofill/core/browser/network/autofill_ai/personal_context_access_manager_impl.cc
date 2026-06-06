@@ -51,15 +51,10 @@ ExtractEntitiesFromResponse(const std::string& serialized_response) {
   return entities;
 }
 
-bool IsPrefetchAmbientAutofillContextEnabled(
-    personal_context::PersonalContextEnablementService& enablement_service) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
-    return false;
-  }
-
+bool IsPersonalContextEnabled(
+    personal_context::PersonalContextEnablementState state) {
   using personal_context::PersonalContextEnablementState;
-
-  switch (enablement_service.GetEnablementState()) {
+  switch (state) {
     case PersonalContextEnablementState::kDisabledNotEligible:
     case PersonalContextEnablementState::kDisabledNeedsOptIn:
     case PersonalContextEnablementState::
@@ -71,6 +66,15 @@ bool IsPrefetchAmbientAutofillContextEnabled(
   }
 }
 
+bool IsPrefetchAmbientAutofillContextEnabled(
+    personal_context::PersonalContextEnablementService& enablement_service) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
+    return false;
+  }
+
+  return IsPersonalContextEnabled(enablement_service.GetEnablementState());
+}
+
 }  // namespace
 
 PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
@@ -79,7 +83,9 @@ PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
         personal_context_enablement_service)
     : personal_context_service_(CHECK_DEREF(personal_context_service)),
       personal_context_enablement_service_(
-          CHECK_DEREF(personal_context_enablement_service)) {}
+          CHECK_DEREF(personal_context_enablement_service)) {
+  enablement_service_observation_.Observe(personal_context_enablement_service);
+}
 
 PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
 
@@ -231,6 +237,20 @@ void PersonalContextAccessManagerImpl::CacheUnmaskedSpiiEntity(
           },
           weak_factory_.GetWeakPtr(), id),
       kUnmaskedSpiiCacheTTL);
+}
+
+void PersonalContextAccessManagerImpl::OnEnablementStateChanged(
+    personal_context::PersonalContextEnablementState new_state) {
+  if (!IsPersonalContextEnabled(new_state)) {
+    WipeCaches();
+  }
+}
+
+void PersonalContextAccessManagerImpl::WipeCaches() {
+  prefetched_entity_cache_.clear();
+  unmasked_spii_cache_.clear();
+  cached_types_.clear();
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 }  // namespace autofill

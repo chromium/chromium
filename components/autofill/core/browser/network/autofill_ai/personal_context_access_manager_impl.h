@@ -11,21 +11,24 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager.h"
+#include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace personal_context {
-class PersonalContextEnablementService;
 class PersonalContextService;
 }  // namespace personal_context
 
 namespace autofill {
 
-class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
+class PersonalContextAccessManagerImpl
+    : public PersonalContextAccessManager,
+      public personal_context::PersonalContextEnablementService::Observer {
  public:
   // The TTL for prefetched (masked/non-SPII) entities.
   static constexpr base::TimeDelta kPrefetchedEntitiesCacheTTL =
@@ -55,8 +58,15 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
   std::vector<EntityInstance> GetCachedEntities() const override;
   bool IsTypeCached(EntityTypeName type_name) const override;
 
+  // personal_context::PersonalContextEnablementService::Observer:
+  void OnEnablementStateChanged(
+      personal_context::PersonalContextEnablementState new_state) override;
+
  private:
   friend class PersonalContextAccessManagerImplTestApi;
+
+  // Clears all caches and invalidates weak pointers.
+  void WipeCaches();
 
   // Resets the cache state for `type_name` by clearing both the prefetched
   // (masked) entities and the unmasked SPII entities of this type. This ensures
@@ -120,6 +130,11 @@ class PersonalContextAccessManagerImpl : public PersonalContextAccessManager {
   // Entity types for which their corresponding prefetched entities are within
   // their TTL.
   base::flat_set<EntityTypeName> cached_types_;
+
+  base::ScopedObservation<
+      personal_context::PersonalContextEnablementService,
+      personal_context::PersonalContextEnablementService::Observer>
+      enablement_service_observation_{this};
 
   base::WeakPtrFactory<PersonalContextAccessManagerImpl> weak_factory_{this};
 };

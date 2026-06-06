@@ -513,5 +513,34 @@ TEST_F(PersonalContextAccessManagerImplTest,
   EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kOrder));
 }
 
+// Tests that when OnEnablementStateChanged is called with a disabled state, all
+// caches are wiped.
+TEST_F(PersonalContextAccessManagerImplTest, WipeCachesOnDisablement) {
+  EntityInstance passport =
+      test::MaskEntityInstance(test::GetPassportEntityInstance(
+          {.record_type = EntityInstance::RecordType::kPersonalContext}));
+
+  // 1. Cache prefetched (masked) passport.
+  test_api(access_manager()).CachePrefetchedEntities({passport});
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), passport);
+
+  // 2. Call OnEnablementStateChanged with an ENABLED state. Caches should not
+  // be wiped.
+  access_manager().OnEnablementStateChanged(
+      personal_context::PersonalContextEnablementState::
+          kEnabledShouldShowNotice);
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), passport);
+
+  // 3. Call OnEnablementStateChanged with a DISABLED state. Caches should be
+  // wiped.
+  access_manager().OnEnablementStateChanged(
+      personal_context::PersonalContextEnablementState::
+          kDisabledViaPersonalIntelligenceInAutofillToggle);
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kPassport));
+  EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), std::nullopt);
+}
+
 }  // namespace
 }  // namespace autofill
