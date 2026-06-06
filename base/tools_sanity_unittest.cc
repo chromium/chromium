@@ -18,6 +18,7 @@
 #include <atomic>
 
 #include "base/cfi_buildflags.h"
+#include "base/compiler_specific.h"
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
@@ -67,7 +68,7 @@ void DoReadUninitializedValue(volatile char* ptr) {
   }
 }
 
-void ReadUninitializedValue(volatile char* ptr) {
+NOOPT void ReadUninitializedValue(volatile char* ptr) {
 #if defined(MEMORY_SANITIZER)
   EXPECT_DEATH(DoReadUninitializedValue(ptr), "use-of-uninitialized-value");
 #else
@@ -95,7 +96,7 @@ void WriteValueOutOfArrayBoundsRight(char* ptr, size_t size) {
 }
 #endif  // HARMFUL_ACCESS_IS_NOOP
 
-void MakeSomeErrors(char* ptr, size_t size) {
+NOOPT void MakeSomeErrors(char* ptr, size_t size) {
   ReadUninitializedValue(ptr);
 
   HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(ptr), "2 bytes before");
