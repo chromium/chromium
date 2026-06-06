@@ -1212,6 +1212,8 @@ void GlicEnabling::OnPrimaryAccountChanged(
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     SetCompletedFre(prefs::FreStatus::kNotStarted);
+    profile_->GetPrefs()->ClearPref(prefs::kGlicActuationOnWeb);
+    profile_->GetPrefs()->ClearPref(prefs::kGlicGeolocationEnabled);
   }
 #endif
   UpdateEnabledStatus();
