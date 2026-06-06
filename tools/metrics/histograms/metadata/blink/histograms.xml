@@ -1492,6 +1492,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Evp.Timing.IsVerifiable" units="ms"
+    expires_after="2026-11-01">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time taken from the start of checking if an email is verifiable
+    until the pre-prompt background verification check completes. Recorded once
+    per pre-prompt check.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Evp.Timing.Verify" units="ms" expires_after="2026-11-01">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the time taken from the start of the token verification call until
+    the post-prompt token verification and fetch completes. Recorded once per
+    verification request execution.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Experimental.Cookies.CacheLookupResult2"
     enum="CookieCacheLookupResult" expires_after="2025-12-28">
   <owner>olivierli@chromium.org</owner>

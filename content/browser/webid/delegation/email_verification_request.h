@@ -10,6 +10,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/types/expected.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
@@ -58,6 +60,20 @@ using JwksResultOrError = base::RefCountedData<
 // to outlive it.
 class CONTENT_EXPORT EmailVerificationRequest {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+    virtual void OnIsVerifiableStart(EmailVerificationRequest* request) {}
+    virtual void OnIsVerifiableComplete(
+        EmailVerificationRequest* request,
+        blink::mojom::EmailVerificationRequestResult status) = 0;
+    virtual void OnVerifyStart(EmailVerificationRequest* request) {}
+    virtual void OnVerifyComplete(
+        EmailVerificationRequest* request,
+        blink::mojom::EmailVerificationRequestResult status) = 0;
+    virtual void OnRequestDestroyed(EmailVerificationRequest* request) {}
+  };
+
   explicit EmailVerificationRequest(RenderFrameHostImpl& render_frame_host);
   EmailVerificationRequest(
       std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager,
@@ -68,6 +84,9 @@ class CONTENT_EXPORT EmailVerificationRequest {
 
   EmailVerificationRequest(const EmailVerificationRequest&) = delete;
   EmailVerificationRequest& operator=(const EmailVerificationRequest&) = delete;
+
+  virtual void AddObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   // Checks if the given `email` is verifiable. This also checks if the user is
   // logged in to the issuer.
@@ -138,6 +157,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
   std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;
   std::unique_ptr<IdpNetworkRequestManager> idp_network_manager_;
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<EmailVerificationRequest> weak_ptr_factory_{this};
 };

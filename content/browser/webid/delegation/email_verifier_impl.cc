@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/email_verification_request.h"
 #include "content/public/browser/render_frame_host.h"
@@ -34,9 +35,10 @@ void EmailVerifierImpl::Verify(
     const EmailVerifier::Result& result,
     const std::string& nonce,
     EmailVerifier::OnEmailVerifiedCallback callback) {
-  auto request = request_builder_.Run();
-  auto* request_ptr = request.get();
+  std::unique_ptr<EmailVerificationRequest> request = request_builder_.Run();
+  request->AddObserver(&performance_metrics_observer_);
 
+  EmailVerificationRequest* request_ptr = request.get();
   request_ptr->Verify(result, nonce,
                       base::BindOnce(&EmailVerifierImpl::OnRequestComplete,
                                      weak_ptr_factory_.GetWeakPtr(),
@@ -46,9 +48,10 @@ void EmailVerifierImpl::Verify(
 void EmailVerifierImpl::CheckIfVerifiable(
     const std::string& email,
     EmailVerifier::IsVerifiableCallback callback) {
-  auto request = request_builder_.Run();
-  auto* request_ptr = request.get();
+  std::unique_ptr<EmailVerificationRequest> request = request_builder_.Run();
+  request->AddObserver(&performance_metrics_observer_);
 
+  EmailVerificationRequest* request_ptr = request.get();
   request_ptr->CheckIfVerifiable(
       email, base::BindOnce(
                  [](EmailVerifier::IsVerifiableCallback cb,
@@ -64,6 +67,51 @@ void EmailVerifierImpl::OnRequestComplete(
     EmailVerifier::OnEmailVerifiedCallback callback,
     std::optional<std::string> result) {
   std::move(callback).Run(std::move(result));
+}
+
+EmailVerifierImpl::PerformanceMetricsObserver::PerformanceMetricsObserver() =
+    default;
+EmailVerifierImpl::PerformanceMetricsObserver::~PerformanceMetricsObserver() =
+    default;
+
+void EmailVerifierImpl::PerformanceMetricsObserver::OnIsVerifiableStart(
+    EmailVerificationRequest* request) {
+  is_verifiable_start_times_[request] = base::TimeTicks::Now();
+}
+
+void EmailVerifierImpl::PerformanceMetricsObserver::OnIsVerifiableComplete(
+    EmailVerificationRequest* request,
+    blink::mojom::EmailVerificationRequestResult status) {
+  base::flat_map<EmailVerificationRequest*, base::TimeTicks>::iterator it =
+      is_verifiable_start_times_.find(request);
+  if (it != is_verifiable_start_times_.end()) {
+    base::UmaHistogramMediumTimes("Blink.Evp.Timing.IsVerifiable",
+                                  base::TimeTicks::Now() - it->second);
+    is_verifiable_start_times_.erase(it);
+  }
+}
+
+void EmailVerifierImpl::PerformanceMetricsObserver::OnVerifyStart(
+    EmailVerificationRequest* request) {
+  verify_start_times_[request] = base::TimeTicks::Now();
+}
+
+void EmailVerifierImpl::PerformanceMetricsObserver::OnVerifyComplete(
+    EmailVerificationRequest* request,
+    blink::mojom::EmailVerificationRequestResult status) {
+  base::flat_map<EmailVerificationRequest*, base::TimeTicks>::iterator it =
+      verify_start_times_.find(request);
+  if (it != verify_start_times_.end()) {
+    base::UmaHistogramMediumTimes("Blink.Evp.Timing.Verify",
+                                  base::TimeTicks::Now() - it->second);
+    verify_start_times_.erase(it);
+  }
+}
+
+void EmailVerifierImpl::PerformanceMetricsObserver::OnRequestDestroyed(
+    EmailVerificationRequest* request) {
+  is_verifiable_start_times_.erase(request);
+  verify_start_times_.erase(request);
 }
 
 // static
