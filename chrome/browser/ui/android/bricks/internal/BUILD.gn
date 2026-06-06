@@ -10,6 +10,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/ui/android/bricks:java",
+    "//components/browser_ui/styles/android:java",
     "//third_party/androidx:androidx_activity_activity_compose_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_compose_foundation_foundation_java",
