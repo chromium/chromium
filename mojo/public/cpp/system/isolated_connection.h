@@ -7,6 +7,7 @@
 
 #include "base/process/process.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -55,6 +56,15 @@ class MOJO_CPP_SYSTEM_EXPORT IsolatedConnection {
   // `process` identifies the remote process.
   ScopedMessagePipeHandle Connect(PlatformChannelEndpoint endpoint,
                                   base::Process process);
+
+  // Connects to a process at the other end of the channel. Returns a primordial
+  // message pipe that can be used for Mojo IPC. The connection
+  // will be connected to a corresponding peer pipe in the remote process.
+  // `process` identifies the remote process. Invitation flag sets additional
+  // invitation flags.
+  ScopedMessagePipeHandle Connect(PlatformChannelEndpoint endpoint,
+                                  base::Process process,
+                                  MojoSendInvitationFlags invitation_flags);
 
   // Same as above but works with a server endpoint. The corresponding client
   // could use the above signature with NamedPlatformChannel::ConnectToServer.
