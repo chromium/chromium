@@ -34,6 +34,10 @@ const MENU_WIDTH_PX = 190;
 const SHARE_TABS_MENU_WIDTH_PX = 240;
 const SHARE_TABS_FLYOUT_CLOSE_DELAY_MS = 300;
 
+const ALIGNMENT_THRESHOLD_PX = 160;
+const VIEWPORT_BUFFER_PX = 16;
+const MIN_MENU_HEIGHT_PX = 100;
+
 export interface ContextualActionMenuElement {
   $: {
     menu: CrActionMenuElement,
@@ -212,12 +216,47 @@ export class ContextualActionMenuElement extends
   private onWindowBlur_ = this.close.bind(this);
 
   showAt(anchor: HTMLElement) {
+    // Show the menu initially to render it and measure its natural height.
     this.$.menu.showAt(anchor, {
       width: this.contextManagementInComposeboxEnabled_ ?
           SHARE_TABS_MENU_WIDTH_PX :
           MENU_WIDTH_PX,
       anchorAlignmentX: AnchorAlignment.AFTER_START,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
+      noOffset: true,
+    });
+
+    const rect = anchor.getBoundingClientRect();
+    const menuHeight = this.$.menu.getDialog().offsetHeight;
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    // Decide alignment strictly based on the threshold.
+    const anchorAlignmentY = spaceBelow >= ALIGNMENT_THRESHOLD_PX ?
+        AnchorAlignment.AFTER_END :
+        AnchorAlignment.BEFORE_START;
+
+    // Calculate max height based on the chosen alignment.
+    const availableSpace = anchorAlignmentY === AnchorAlignment.AFTER_END ?
+        spaceBelow :
+        spaceAbove;
+    const maxHeight = availableSpace - VIEWPORT_BUFFER_PX;
+
+    // Constrain height if the menu is taller than available space.
+    if (menuHeight > maxHeight) {
+      const constrainedHeight = Math.max(MIN_MENU_HEIGHT_PX, maxHeight);
+      this.$.menu.style.setProperty('--contextual-menu-max-height', `${constrainedHeight}px`);
+    } else {
+      this.$.menu.style.removeProperty('--contextual-menu-max-height');
+    }
+
+    // Position the menu using the finalized alignment.
+    this.$.menu.showAt(anchor, {
+      width: this.contextManagementInComposeboxEnabled_ ?
+          SHARE_TABS_MENU_WIDTH_PX :
+          MENU_WIDTH_PX,
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: anchorAlignmentY,
       noOffset: true,
     });
     window.addEventListener('blur', this.onWindowBlur_);
@@ -708,6 +747,7 @@ export class ContextualActionMenuElement extends
   protected onMenuClose_() {
     window.removeEventListener('blur', this.onWindowBlur_);
     this.resetShareTabsFlyout_();
+    this.$.menu.style.removeProperty('--contextual-menu-max-height');
     this.fire('close');
   }
 

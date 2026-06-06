@@ -8,6 +8,7 @@ import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js'
 
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -1776,6 +1777,87 @@ suite('ContextualActionMenu', () => {
       // Tab 5 is filtered out because it is not found in tabSuggestions.
       assertEquals(1, selectedTabs.length);
       assertEquals(tab1, selectedTabs[0]);
+    });
+  });
+
+  suite('Positioning', () => {
+    let anchor: HTMLButtonElement;
+    let showAtCalls: any[] = [];
+    let originalShowAt: any;
+
+    setup(() => {
+      anchor = document.createElement('button');
+      document.body.appendChild(anchor);
+
+      showAtCalls = [];
+      originalShowAt = actionMenu.$.menu.showAt.bind(actionMenu.$.menu);
+      actionMenu.$.menu.showAt = (_anchor: HTMLElement, options?: any) => {
+        showAtCalls.push(options);
+        originalShowAt(_anchor, options);
+      };
+    });
+
+    teardown(() => {
+      anchor.remove();
+      actionMenu.$.menu.showAt = originalShowAt;
+    });
+
+    test('Anchors below the button if space below >= 160px', async () => {
+      // Mock window innerHeight
+      Object.defineProperty(window, 'innerHeight', {
+        value: 800,
+        configurable: true,
+      });
+
+      // Mock anchor position (rect.bottom = 500px, spaceBelow = 800 - 500 = 300px >= 160px)
+      anchor.getBoundingClientRect = () => {
+        return {
+          bottom: 500,
+          top: 450,
+          left: 100,
+          right: 200,
+          width: 100,
+          height: 50,
+          x: 100,
+          y: 450,
+        } as DOMRect;
+      };
+
+      actionMenu.showAt(anchor);
+      await microtasksFinished();
+
+      // showAt is called twice: once for natural measurement, once for finalized positioning.
+      assertEquals(2, showAtCalls.length);
+      // The second call is the final positioning alignment.
+      assertEquals(AnchorAlignment.AFTER_END, showAtCalls[1].anchorAlignmentY);
+    });
+
+    test('Anchors above the button if space below < 160px', async () => {
+      // Mock window innerHeight
+      Object.defineProperty(window, 'innerHeight', {
+        value: 600,
+        configurable: true,
+      });
+
+      // Mock anchor position (rect.bottom = 500px, spaceBelow = 600 - 500 = 100px < 160px)
+      anchor.getBoundingClientRect = () => {
+        return {
+          bottom: 500,
+          top: 450,
+          left: 100,
+          right: 200,
+          width: 100,
+          height: 50,
+          x: 100,
+          y: 450,
+        } as DOMRect;
+      };
+
+      actionMenu.showAt(anchor);
+      await microtasksFinished();
+
+      assertEquals(2, showAtCalls.length);
+      assertEquals(AnchorAlignment.BEFORE_START, showAtCalls[1].anchorAlignmentY);
     });
   });
 });
