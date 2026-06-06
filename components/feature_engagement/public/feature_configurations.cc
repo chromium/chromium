@@ -3229,6 +3229,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.event_configs.insert(
         EventConfig("gemini_external_app_store_event_trigger",
                     Comparator(EQUAL, 0), 3, 365));
+    config.event_configs.insert(
+        EventConfig("new_ia_promo_trigger", Comparator(EQUAL, 0), 3, 365));
     return config;
   }
 

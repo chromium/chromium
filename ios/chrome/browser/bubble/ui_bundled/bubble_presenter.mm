@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -103,6 +104,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
   LayoutGuideCenter* _layoutGuideCenter;
   raw_ptr<WebStateList> _webStateList;
   raw_ptr<feature_engagement::Tracker> _engagementTracker;
+  LayoutState* _layoutState;
 
   // Overlay observing.
   raw_ptr<OverlayPresenter> _webContentOverlayPresenter;
@@ -155,6 +157,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
                      webStateList:(raw_ptr<WebStateList>)webStateList
              fullscreenController:
                  (raw_ptr<FullscreenController>)fullscreenController
+                      layoutState:(LayoutState*)layoutState
     overlayPresenterForWebContent:
         (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
                     infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter
@@ -167,6 +170,7 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     _engagementTracker = engagementTracker;
     _webStateList = webStateList;
     _fullscreenController = fullscreenController;
+    _layoutState = layoutState;
 
     _overlayPresenterObserver =
         std::make_unique<OverlayPresenterObserverBridge>(self);
@@ -797,6 +801,10 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
 }
 
 - (void)presentPageActionMenuBubbleForFeature:(const base::Feature&)feature {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+
   if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
     return;
   }
@@ -885,16 +893,30 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
     return;
   }
 
-  BubbleArrowDirection arrowDirection =
-      [self isGuideAtBottom:kPageActionMenuEntrypointGuide]
-          ? BubbleArrowDirectionDown
-          : BubbleArrowDirectionUp;
+  BOOL nextIAEnabled = IsChromeNextIaEnabled();
+  BubbleArrowDirection arrowDirection;
+  if (nextIAEnabled) {
+    AppBarPosition position = _layoutState.appBarPosition;
+    if (position == AppBarPosition::kLeft) {
+      arrowDirection = BubbleArrowDirectionLeading;
+    } else if (position == AppBarPosition::kRight) {
+      arrowDirection = BubbleArrowDirectionTrailing;
+    } else {
+      arrowDirection = BubbleArrowDirectionDown;
+    }
+  } else {
+    arrowDirection = [self isGuideAtBottom:kPageActionMenuEntrypointGuide]
+                         ? BubbleArrowDirectionDown
+                         : BubbleArrowDirectionUp;
+  }
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_GEMINI_IMAGE_REMIX_ENTRY_POINT_IPH);
 
+  GuideName* anchorGuide = nextIAEnabled ? kAppBarAssistantButtonGuide
+                                         : kPageActionMenuEntrypointGuide;
+
   CGPoint pageActionMenuEntrypointAnchor =
-      [self anchorPointToGuide:kPageActionMenuEntrypointGuide
-                     direction:arrowDirection];
+      [self anchorPointToGuide:anchorGuide direction:arrowDirection];
 
   BubbleViewControllerPresenter* presenter = [self
       presentBubbleForFeature:feature_engagement::kIPHiOSGeminiImageRemixFeature
@@ -904,13 +926,16 @@ constexpr CGFloat kAdditionalBorderMargin = 4;
       voiceOverAnnouncement:text
       anchorPoint:CGPoint(pageActionMenuEntrypointAnchor.x,
                           pageActionMenuEntrypointAnchor.y)
-      anchorViewFrame:
-          [self anchorViewFrameForGuide:kPageActionMenuEntrypointGuide]
+      anchorViewFrame:[self anchorViewFrameForGuide:anchorGuide]
       presentAction:^{
-        [pageActionMenuEntryPointHandler toggleEntryPointHighlight:YES];
+        if (!nextIAEnabled) {
+          [pageActionMenuEntryPointHandler toggleEntryPointHighlight:YES];
+        }
       }
       dismissAction:^(IPHDismissalReasonType reason) {
-        [pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
+        if (!nextIAEnabled) {
+          [pageActionMenuEntryPointHandler toggleEntryPointHighlight:NO];
+        }
         base::UmaHistogramEnumeration(
             "IOS.Gemini.ImageRemix.IPH.DismissalReason", reason);
 

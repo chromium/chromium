@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -322,6 +323,10 @@
 // Attempts to present the entry point IPH if the user hasn't used the AI Hub
 // entry point yet.
 - (void)presentPageActionMenuIPH {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+
   if (_entryPoint == gemini::EntryPoint::ExternalAppStoreEvent) {
     [_helpCommandsHandler presentInProductHelpWithType:
                               InProductHelpType::kGeminiExternalAppStoreEvent];
@@ -333,6 +338,10 @@
 
 // Prepares UI for AI Hub In-Product Help (IPH) bubble.
 - (void)prepareAIHubIPH {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+
   if (_mediator.shouldShowAIHubIPH) {
     // Ensures toolbar is expanded. If the toolbar is not fully expanded, the AI
     // Hub In-Product Help (IPH) bubble will be misaligned from using anchor

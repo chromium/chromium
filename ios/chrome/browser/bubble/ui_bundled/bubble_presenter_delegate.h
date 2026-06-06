@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_PRESENTER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_BUBBLE_UI_BUNDLED_BUBBLE_PRESENTER_DELEGATE_H_
 
+#import <Foundation/Foundation.h>
+
 @class BubblePresenter;
 
 // Delegate for the BubblePresenter.

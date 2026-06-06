@@ -16,6 +16,7 @@
 class FullscreenController;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
+@class LayoutState;
 class OverlayPresenter;
 @protocol BWGCommands;
 @protocol FullscreenCommands;
@@ -46,6 +47,7 @@ class DeviceSwitcherResultDispatcher;
                      webStateList:(raw_ptr<WebStateList>)webStateList
              fullscreenController:
                  (raw_ptr<FullscreenController>)fullscreenController
+                      layoutState:(LayoutState*)layoutState
     overlayPresenterForWebContent:
         (raw_ptr<OverlayPresenter>)webContentOverlayPresenter
                     infobarBanner:(raw_ptr<OverlayPresenter>)bannerPresenter
