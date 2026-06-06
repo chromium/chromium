@@ -4,6 +4,7 @@
 
 import '//resources/cr_components/composebox/composebox_dropdown.js';
 import '//resources/cr_components/composebox/composebox_file_inputs.js';
+import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 import '//resources/cr_components/composebox/error_scrim.js';

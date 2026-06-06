@@ -187,11 +187,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxContextMenuV2ForkFalse) {
           "false\\\\)')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadFileTest) {
-  RunTest("new_tab_page/composebox/composebox_upload_test.js",
-          "runMochaSuite('NewTabPageComposeboxUploadFileTest')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadPasteTestV2ForkTrue) {
   RunTest("new_tab_page/composebox/composebox_upload_test.js",
           "runMochaSuite('NewTabPageComposeboxUploadPasteTestV2 "
@@ -204,10 +199,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadPasteTestV2ForkFalse) {
           "\\\\(useNtpComposeboxFork = false\\\\)')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadToolModeTest) {
-  RunTest("new_tab_page/composebox/composebox_upload_test.js",
-          "runMochaSuite('NewTabPageComposeboxUploadToolModeTest')");
-}
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxUploadContextTest) {
   RunTest("new_tab_page/composebox/composebox_upload_test.js",

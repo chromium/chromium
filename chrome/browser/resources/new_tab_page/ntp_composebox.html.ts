@@ -71,6 +71,16 @@ export function getHtml(this: NtpComposeboxElement) {
                   </div>
                   ` : ''}
               </div>
+              ${this.shouldShowSubmitButton() ? html`
+              <cr-composebox-submit
+                exportparts="action-icon, submit, submit-icon, submit-overlay"
+                ?disabled="${!this.canSubmitFilesAndInput}"
+                .iconType="${this.submitButtonIconType}"
+                .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
+                @submit-click="${this.onSubmitClick}"
+                @submit-focusin="${this.onSubmitFocusin}">
+              </cr-composebox-submit>
+              ` : ''}
             </div>
             ${this.shouldShowDivider() ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
