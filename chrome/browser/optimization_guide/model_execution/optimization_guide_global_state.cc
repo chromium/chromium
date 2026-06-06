@@ -163,7 +163,7 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState(
   if (base::FeatureList::IsEnabled(kOptimizationGuideManifestBroker)) {
     auto manifest_broker_state = std::make_unique<ManifestBrokerState>(
         *g_browser_process->local_state(), CreateManifestDelegate(),
-        launch_service_callback);
+        launch_service_callback, g_browser_process->component_updater());
 
     manifest_broker_state->performance_classifier()
         .ListenForPerformanceClassAvailable(

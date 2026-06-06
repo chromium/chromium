@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
@@ -29,9 +30,11 @@ namespace optimization_guide {
 class ManifestBrokerState final : public OnDeviceCapability,
                                   mojom::ModelBrokerDebug {
  public:
-  ManifestBrokerState(PrefService& local_state,
-                      std::unique_ptr<ManifestAssetManager::Delegate> delegate,
-                      on_device_model::ServiceClient::LaunchFn launch_fn);
+  ManifestBrokerState(
+      PrefService& local_state,
+      std::unique_ptr<ManifestAssetManager::Delegate> delegate,
+      on_device_model::ServiceClient::LaunchFn launch_fn,
+      component_updater::ComponentUpdateService* component_update_service);
   ~ManifestBrokerState() override;
 
   // OnDeviceCapability
@@ -91,9 +94,15 @@ class ManifestBrokerState final : public OnDeviceCapability,
   // Handle unexpected service disconnects.
   void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
 
+  void AddDownloadProgressObserver(
+      const std::string& use_case,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
+
   raw_ref<PrefService> local_state_;
   std::unique_ptr<ManifestAssetManager::Delegate> delegate_;
   on_device_model::ServiceClient service_client_;
+  const raw_ptr<component_updater::ComponentUpdateService>
+      component_update_service_;
   UsageTracker usage_tracker_;
   OnDeviceModelAccessController access_controller_{*local_state_};
   ModelBrokerImpl model_broker_impl_;

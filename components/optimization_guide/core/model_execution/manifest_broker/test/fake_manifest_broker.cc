@@ -17,7 +17,7 @@ void FakeManifestBroker::Startup() {
   if (!manifest_broker_state_) {
     manifest_broker_state_ = std::make_unique<ManifestBrokerState>(
         local_state_.local_state(), component_state_.CreateDelegate(),
-        launcher_.LaunchFn());
+        launcher_.LaunchFn(), &component_update_service_);
   }
   if (!model_broker_client_) {
     model_broker_client_ = std::make_unique<ModelBrokerClient>(

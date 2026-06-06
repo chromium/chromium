@@ -22,9 +22,12 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_solution_factory.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_download_progress_manager.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
@@ -68,11 +71,17 @@ class ManifestAssetManager : public UsageTracker::Observer {
       PrefService& local_state,
       UsageTracker& usage_tracker,
       Delegate& delegate,
+      component_updater::ComponentUpdateService* component_update_service,
       std::unique_ptr<ManifestSolutionFactory> factory);
   ~ManifestAssetManager() override;
 
   ManifestAssetManager(const ManifestAssetManager&) = delete;
   ManifestAssetManager& operator=(const ManifestAssetManager&) = delete;
+
+  // Add download progress observer for the given use case.
+  void AddDownloadProgressObserver(
+      const std::string& use_case,
+      mojo::PendingRemote<on_device_model::mojom::DownloadObserver> observer);
 
   // Tells the manager to begin providing assets to a new solution factory.
   // The `solution_factory` must not be null.
@@ -244,11 +253,16 @@ class ManifestAssetManager : public UsageTracker::Observer {
 
   const raw_ref<UsageTracker> usage_tracker_;
   const raw_ref<Delegate> delegate_;
+  raw_ptr<component_updater::ComponentUpdateService> component_update_service_;
 
   // Tracks the state of all components known to the manager. Keyed by the
   // component public key hex and computed for the union of components in the
   // manifest and persisted contexts.
   AssetLedger ledger_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unordered_map<std::string,
+                     std::unique_ptr<OnDeviceModelDownloadProgressManager>>
+      progress_managers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Tracks the free disk space and the last time it was evaluated.
   struct DiskSpaceStatus {
