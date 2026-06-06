@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/functional/callback_forward.h"
@@ -22,11 +23,13 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/view_shadow.h"
 
 namespace {
 // New main menu width.
@@ -35,6 +38,8 @@ constexpr int kMainMenuWidthWithSubmenuEnabled = 240;
 constexpr int kDefaultMenuWidth = 320;
 // Maximum height of tab sub menu before scroll is activated.
 constexpr int kMaxTabSubMenuHeight = 344;
+// The shadow variation to use for `ViewShadow`
+constexpr int kShadowOption = 3;
 }  // namespace
 
 OmniboxContextMenu::OmniboxContextMenu(views::Widget* parent_widget,
@@ -109,14 +114,30 @@ int OmniboxContextMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
   return width;
 }
 void OmniboxContextMenu::WillShowMenu(views::MenuItemView* menu) {
-  if (menu->GetCommand() == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
-    // Set up scroll capabilities for tabs submenu right before it is rendered.
-    // Scroll is set up to start when max height is exceeded.
+  // For both tabs and regular context menu:
+  if (menu == menu_ ||
+      menu->GetCommand() == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
     auto* scroll_container = menu->GetSubmenu()->GetScrollViewContainer();
     if (scroll_container) {
-      gfx::Size pref_size = scroll_container->GetPreferredSize({});
-      pref_size.set_height(std::min(pref_size.height(), kMaxTabSubMenuHeight));
-      scroll_container->SetPreferredSize(pref_size);
+      if (menu->GetCommand() == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
+        // Set up scroll capabilities for tabs submenu right before it is
+        // rendered. Scroll is set up to start when max height is exceeded.
+        gfx::Size pref_size = scroll_container->GetPreferredSize({});
+        pref_size.set_height(
+            std::min(pref_size.height(), kMaxTabSubMenuHeight));
+        scroll_container->SetPreferredSize(pref_size);
+      }
+
+      // Add elevation shadow based on variation option `kShadowOption`
+      // for both tabs submenu and context menu.
+      if (!view_shadows_.contains(scroll_container)) {
+        auto shadow = std::make_unique<views::ViewShadow>(scroll_container,
+                                                          kShadowOption);
+        int corner_radius = views::MenuConfig::instance().CornerRadiusForMenu(
+            menu->GetMenuController());
+        shadow->SetRoundedCornerRadius(corner_radius);
+        view_shadows_[scroll_container] = std::move(shadow);
+      }
     }
   }
 }
@@ -215,6 +236,7 @@ bool OmniboxContextMenu::IsCommandVisible(int command_id) const {
 }
 
 void OmniboxContextMenu::OnMenuClosed(views::MenuItemView* menu) {
+  view_shadows_.clear();
   if (on_menu_closed_) {
     on_menu_closed_.Run();
   }
