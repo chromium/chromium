@@ -239,9 +239,7 @@ GeminiPageContext* GeminiTabHelper::GetPartialPageContext() {
 
   if (!CanExtractPageContextForGemini()) {
     gemini_page_context.geminiPageContextComputationState =
-        IsGeminiFloatyAllPagesEnabled()
-            ? ios::provider::GeminiPageContextComputationState::kBlocked
-            : ios::provider::GeminiPageContextComputationState::kError;
+        ios::provider::GeminiPageContextComputationState::kBlocked;
     // Attachment state will be explicitly determined by the browser agent
     // applying user prefs.
     return gemini_page_context;

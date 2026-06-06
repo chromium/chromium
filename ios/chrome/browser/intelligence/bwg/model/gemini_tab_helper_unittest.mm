@@ -26,6 +26,7 @@
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -46,6 +47,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -974,4 +976,26 @@ TEST_F(GeminiTabHelperTest, GetCurrentPageType_Other) {
   web_state_->SetContentsMimeType("application/octet-stream");
   EXPECT_EQ(tab_helper_->GetCurrentPageType(),
             IOSGeminiInvocationPageType::kOtherNonExtractable);
+}
+
+// Tests that `GetPartialPageContext` returns a blocked state on the NTP.
+TEST_F(GeminiTabHelperTest, GetPartialPageContext_Ntp) {
+  web_state_->SetBrowserState(profile_.get());
+  web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
+  GeminiTabHelper::CreateForWebState(web_state_.get());
+  tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
+
+  struct TestResult {
+    GeminiPageContext* context = nil;
+  };
+  TestResult result;
+  tab_helper_->GeneratePageContext(base::BindRepeating(
+      [](TestResult* tr, GeminiPageContext* response) {
+        tr->context = response;
+      },
+      &result));
+
+  ASSERT_NE(result.context, nil);
+  EXPECT_EQ(result.context.geminiPageContextComputationState,
+            ios::provider::GeminiPageContextComputationState::kBlocked);
 }
