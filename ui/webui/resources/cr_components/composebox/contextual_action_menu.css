@@ -17,7 +17,7 @@
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
   --cr-hover-background-color:
       var(--color-composebox-context-entrypoint-hover-background);
-  --cr-action-menu-overflow: auto;
+  --cr-action-menu-overflow: visible;
 }
 
 #menu::part(dialog) {

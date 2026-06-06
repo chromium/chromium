@@ -726,7 +726,7 @@ suite('ContextualActionMenu', () => {
   });
 
   test(
-      'Introduce scroll bar if space below plus menu button is < menu height',
+      'Constrain height if space below plus menu button is < menu height',
       async () => {
     // Arrange: Provide 20 tab suggestions to ensure height exceeds 540px.
     actionMenu.tabSuggestions = Array(20).fill({
@@ -756,7 +756,7 @@ suite('ContextualActionMenu', () => {
     assertEquals(expectedMaxHeight, dialog.offsetHeight);
 
     const style = window.getComputedStyle(dialog);
-    assertEquals('auto', style.overflowY);
+    assertEquals('visible', style.overflowY);
     assertTrue(dialog.scrollHeight > dialog.offsetHeight);
   });
 
