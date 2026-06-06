@@ -67,3 +67,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, DoodleShareDialogFocus) {
 IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, AppFocus) {
   RunTest("new_tab_page/app_focus_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, SearchboxFocus) {
+  RunTest("new_tab_page/searchbox_focus_test.js", "mocha.run()");
+}

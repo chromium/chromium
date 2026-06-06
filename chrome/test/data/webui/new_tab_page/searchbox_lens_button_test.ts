@@ -10,10 +10,9 @@ import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrom
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 // This is the realbox's lens button tests, not the lens searchbox's tests.
 suite('Lens search in ntp realbox', () => {

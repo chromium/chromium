@@ -20,10 +20,6 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, CrShortcutInput) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, Searchbox) {
-  set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/searchbox/searchbox_focus_test.js", "mocha.run()");
-}
 
 class CrComponentsHistoryClustersFocusTest : public WebUIMochaFocusTest {
  protected:
