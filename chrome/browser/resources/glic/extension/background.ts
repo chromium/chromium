@@ -24,7 +24,8 @@ chrome.runtime.onMessageExternal.addListener(
       }
 
       if (message && message.type === 'glicPrivate.getState') {
-        const state = await chrome.glicPrivate.getState(sender.documentId);
+        const state =
+            await chrome.glicPrivate.getState(sender.documentId, message.args);
         return {state};
       }
 

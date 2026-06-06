@@ -163,7 +163,9 @@ api::glic_private::ProfileReadyState ConvertProfileReadyState(
   }
 }
 
-api::glic_private::ProfileState CreateProfileState(Profile* profile) {
+api::glic_private::ProfileState CreateProfileState(
+    Profile* profile,
+    api::glic_private::InvocationSource invocation_source) {
   api::glic_private::ProfileState state;
 
   glic::GlicEnabling::ProfileEnablement enablement =
@@ -185,6 +187,23 @@ api::glic_private::ProfileState CreateProfileState(Profile* profile) {
 
   state.user_enable_actuation_on_web =
       glic_service && glic_service->enabling().GetUserEnabledActuationOnWeb();
+
+  bool invocation_source_enabled = false;
+  switch (invocation_source) {
+    case api::glic_private::InvocationSource::kUniversalCart:
+      invocation_source_enabled = base::FeatureList::IsEnabled(
+          extensions_features::kApiGlicAccessFromGoogleWebpage);
+      break;
+    case api::glic_private::InvocationSource::kPromotionPage:
+      invocation_source_enabled = base::FeatureList::IsEnabled(
+          extensions_features::kApiGlicAccessFromPromotionPage);
+      break;
+    case api::glic_private::InvocationSource::kUnknown:
+    case api::glic_private::InvocationSource::kNone:
+      invocation_source_enabled = false;
+      break;
+  }
+  state.invocation_source_enabled = invocation_source_enabled;
 
   return state;
 }
@@ -340,8 +359,14 @@ ExtensionFunction::ResponseAction GlicPrivateGetStateFunction::Run() {
         api::glic_private::ErrorCode::kLocalAccountMismatch)));
   }
 
+  api::glic_private::InvocationSource invocation_source =
+      api::glic_private::InvocationSource::kNone;
+  if (params->params) {
+    invocation_source = params->params->invocation_source;
+  }
+
   return RespondNow(ArgumentList(api::glic_private::GetState::Results::Create(
-      CreateProfileState(profile))));
+      CreateProfileState(profile, invocation_source))));
 }
 
 GlicPrivateInvokeFunction::GlicPrivateInvokeFunction() = default;
@@ -377,10 +402,16 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
-  api::glic_private::ProfileState profile_state = CreateProfileState(profile);
+  api::glic_private::ProfileState profile_state =
+      CreateProfileState(profile, params->details.invocation_source);
   if (!profile_state.is_enabled) {
     return RespondNow(GetPromptResponseValueAndLog(
         extensions::api::glic_private::ErrorCode::kLocalGlicNotEnabled));
+  }
+  if (!profile_state.invocation_source_enabled) {
+    return RespondNow(
+        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
+                                         kLocalGlicAccessFromPageDisabled));
   }
   if (profile_state.ready_state !=
       api::glic_private::ProfileReadyState::kReady) {
@@ -415,27 +446,6 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
       glic::mojom::InvocationSource::kUnsupported;
   glic::mojom::FeatureMode feature_mode =
       glic::mojom::FeatureMode::kUnspecified;
-  bool is_universal_cart = params->details.invocation_source ==
-                           api::glic_private::InvocationSource::kUniversalCart;
-  bool is_promotion_page = params->details.invocation_source ==
-                           api::glic_private::InvocationSource::kPromotionPage;
-
-  if (is_universal_cart &&
-      !base::FeatureList::IsEnabled(
-          extensions_features::kApiGlicAccessFromGoogleWebpage)) {
-    return RespondNow(
-        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
-                                         kLocalGlicAccessFromPageDisabled));
-  }
-
-  if (is_promotion_page &&
-      !base::FeatureList::IsEnabled(
-          extensions_features::kApiGlicAccessFromPromotionPage)) {
-    return RespondNow(
-        GetPromptResponseValueAndLog(extensions::api::glic_private::ErrorCode::
-                                         kLocalGlicAccessFromPageDisabled));
-  }
-
   switch (params->details.invocation_source) {
     case api::glic_private::InvocationSource::kUniversalCart:
       source = glic::mojom::InvocationSource::kUniversalCart;
@@ -467,8 +477,8 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved, this,
-                         std::move(options), in_new_tab,
-                         params->details.document_id,
+                         std::move(options), params->details.invocation_source,
+                         in_new_tab, params->details.document_id,
                          extensions::api::glic_private::ErrorCode::kNone,
                          /*prompt=*/std::nullopt));
       return RespondLater();
@@ -478,17 +488,19 @@ ExtensionFunction::ResponseAction GlicPrivateInvokeFunction::Run() {
     }
   }
 
-  GetPromptFromId(*profile, *params->details.prompt_id,
-                  InvocationSourceToString(params->details.invocation_source),
-                  base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved,
-                                 this, std::move(options), in_new_tab,
-                                 params->details.document_id));
+  GetPromptFromId(
+      *profile, *params->details.prompt_id,
+      InvocationSourceToString(params->details.invocation_source),
+      base::BindOnce(&GlicPrivateInvokeFunction::OnPromptRetrieved, this,
+                     std::move(options), params->details.invocation_source,
+                     in_new_tab, params->details.document_id));
 
   return RespondLater();
 }
 
 void GlicPrivateInvokeFunction::OnPromptRetrieved(
     glic::GlicInvokeOptions options,
+    api::glic_private::InvocationSource invocation_source,
     bool in_new_tab,
     const std::string& document_id,
     extensions::api::glic_private::ErrorCode result,
@@ -549,7 +561,7 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
     } else if (disposition == extensions_features::GlicOpenNewTabDisposition::
                                   kForegroundIfNotConsented) {
       api::glic_private::ProfileState profile_state =
-          CreateProfileState(profile);
+          CreateProfileState(profile, invocation_source);
       open_in_foreground = !profile_state.is_enabled_and_consented ||
                            !profile_state.user_enable_actuation_on_web;
     }

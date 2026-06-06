@@ -102,6 +102,33 @@ function tests_runFullyEnabled(documentId) {
       chrome.test.assertTrue(
           state.userEnableActuationOnWeb,
           'userEnableActuationOnWeb should be true');
+      chrome.test.assertFalse(
+          state.invocationSourceEnabled,
+          'invocationSourceEnabled should be false when source is not provided');
+
+      const stateCart = await chrome.glicPrivate.getState(documentId, {
+        invocationSource: 'universal-cart',
+      });
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(
+          stateCart.invocationSourceEnabled,
+          'invocationSourceEnabled should be true for universal-cart');
+
+      const statePromo = await chrome.glicPrivate.getState(documentId, {
+        invocationSource: 'promotion-page',
+      });
+      chrome.test.assertNoLastError();
+      chrome.test.assertTrue(
+          statePromo.invocationSourceEnabled,
+          'invocationSourceEnabled should be true for promotion-page');
+
+      const stateUnknown = await chrome.glicPrivate.getState(documentId, {
+        invocationSource: 'unknown',
+      });
+      chrome.test.assertNoLastError();
+      chrome.test.assertFalse(
+          stateUnknown.invocationSourceEnabled,
+          'invocationSourceEnabled should be false for unknown source');
 
       chrome.test.succeed();
     },

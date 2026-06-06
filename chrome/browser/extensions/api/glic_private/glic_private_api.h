@@ -47,6 +47,7 @@ class GlicPrivateInvokeFunction : public ExtensionFunction {
       extensions::api::glic_private::ErrorCode result);
 
   void OnPromptRetrieved(glic::GlicInvokeOptions options,
+                         api::glic_private::InvocationSource invocation_source,
                          bool in_new_tab,
                          const std::string& document_id,
                          extensions::api::glic_private::ErrorCode result,
