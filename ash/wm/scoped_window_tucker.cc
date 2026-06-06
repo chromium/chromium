@@ -119,6 +119,9 @@ ScopedWindowTucker::ScopedWindowTucker(std::unique_ptr<Delegate> delegate,
 
 ScopedWindowTucker::~ScopedWindowTucker() {
   Shell::Get()->activation_client()->RemoveObserver(this);
+  if (window_->is_destroying()) {
+    return;
+  }
   if (!window_->IsVisible()) {
     window_->Show();
     return;

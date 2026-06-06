@@ -612,6 +612,10 @@ void FrameViewAsh::UpdateDefaultFrameColors() {
 }
 
 void FrameViewAsh::PaintAsActiveChanged() {
+  if (widget_->GetNativeWindow()->is_destroying()) {
+    return;
+  }
+
   header_view_->GetFrameHeader()->SetPaintAsActive(ShouldPaintAsActive());
   widget_->non_client_view()->DeprecatedLayoutImmediately();
 }

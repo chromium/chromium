@@ -1506,7 +1506,7 @@ void WindowState::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& new_bounds,
                                         ui::PropertyChangeReason reason) {
   CHECK_EQ(window_, window);
-  if (window_->GetTransparent() &&
+  if (!window->is_destroying() && window_->GetTransparent() &&
       ShouldSetExplicitOpaqueRegionsForOcclusion(this)) {
     window_->SetOpaqueRegionsForOcclusion({gfx::Rect(new_bounds.size())});
   }

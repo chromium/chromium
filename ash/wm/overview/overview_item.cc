@@ -383,7 +383,8 @@ OverviewItem* OverviewItem::GetLeafItemForWindow(aura::Window* window) {
 void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
                              OverviewAnimationType animation_type) {
   if (in_bounds_update_ || transform_window_.is_restoring() ||
-      !OverviewController::Get()->InOverviewSession()) {
+      !OverviewController::Get()->InOverviewSession() ||
+      GetWindow()->is_destroying()) {
     return;
   }
 
@@ -572,6 +573,9 @@ gfx::Transform OverviewItem::ComputeTargetTransform(
 
 void OverviewItem::RestoreWindow(bool reset_transform, bool animate) {
   TRACE_EVENT0("ui", "OverviewItem::RestoreWindow");
+  if (GetWindow()->is_destroying()) {
+    return;
+  }
 
   // TODO(oshima): SplitViewController has its own logic to adjust the
   // target state in `SplitViewController::OnOverviewModeEnding`.

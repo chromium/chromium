@@ -1013,16 +1013,22 @@ void WorkspaceWindowResizer::RevertDrag() {
     return;
   }
 
-  ResetFrameRestoreLookKey(window_state());
-  GetTarget()->SetBounds(details().initial_bounds_in_parent);
-  if (!details().restore_bounds_in_parent.IsEmpty()) {
-    window_state()->SetRestoreBoundsInParent(
-        details().restore_bounds_in_parent);
+  if (!GetTarget()->is_destroying()) {
+    ResetFrameRestoreLookKey(window_state());
+    GetTarget()->SetBounds(details().initial_bounds_in_parent);
+    if (!details().restore_bounds_in_parent.IsEmpty()) {
+      window_state()->SetRestoreBoundsInParent(
+          details().restore_bounds_in_parent);
+    }
   }
 
   if (details().window_component == HTRIGHT) {
     int last_x = details().initial_bounds_in_parent.right();
     for (size_t i = 0; i < attached_windows_.size(); ++i) {
+      if (attached_windows_[i]->is_destroying()) {
+        continue;
+      }
+
       gfx::Rect bounds(attached_windows_[i]->bounds());
       bounds.set_x(last_x);
       bounds.set_width(initial_size_[i]);
@@ -1032,6 +1038,9 @@ void WorkspaceWindowResizer::RevertDrag() {
   } else {
     int last_y = details().initial_bounds_in_parent.bottom();
     for (size_t i = 0; i < attached_windows_.size(); ++i) {
+      if (attached_windows_[i]->is_destroying()) {
+        continue;
+      }
       gfx::Rect bounds(attached_windows_[i]->bounds());
       bounds.set_y(last_y);
       bounds.set_height(initial_size_[i]);

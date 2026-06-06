@@ -94,8 +94,9 @@ void AccessibilityPanelLayoutManager::OnFullscreenStateChanged(
 }
 
 void AccessibilityPanelLayoutManager::UpdateWindowBounds() {
-  if (!panel_window_)
+  if (!panel_window_ || panel_window_->is_destroying()) {
     return;
+  }
 
   aura::Window* root_window = panel_window_->GetRootWindow();
   RootWindowController* root_controller =

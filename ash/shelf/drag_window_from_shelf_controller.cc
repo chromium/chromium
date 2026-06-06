@@ -411,7 +411,10 @@ void DragWindowFromShelfController::CancelDrag() {
   drag_started_ = false;
   presentation_time_recorder_.reset();
   // Reset the window's transform to identity transform.
-  window_->SetTransform(gfx::Transform());
+  if (!window_->is_destroying()) {
+    window_->SetTransform(gfx::Transform());
+  }
+  // We still need to notify observers even if the window is being destroyed.
   WindowBackdrop::Get(window_)->RestoreBackdrop();
 
   // End overview if it was opened during dragging.

@@ -330,7 +330,8 @@ void TabletModeWindowManager::OnOverviewModeEndingAnimationComplete(
       Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
           kActiveDesk);
   for (aura::Window* window : windows) {
-    if (split_view_controller->primary_window() != window &&
+    if (!window->is_destroying() &&
+        split_view_controller->primary_window() != window &&
         split_view_controller->secondary_window() != window) {
       MaximizeIfSnapped(window);
     }
@@ -383,8 +384,9 @@ void TabletModeWindowManager::OnSplitViewStateChanged(
     // `EndSplitView` which can trigger activating the overview focus widget,
     // but the pending activable window could be the window on the primary
     // display.
-    if (window->GetRootWindow() != primary_root)
+    if (window->GetRootWindow() != primary_root || window->is_destroying()) {
       continue;
+    }
     MaximizeIfSnapped(window);
   }
 }
@@ -774,6 +776,10 @@ void TabletModeWindowManager::ForgetWindow(aura::Window* window,
 
 bool TabletModeWindowManager::ShouldHandleWindow(aura::Window* window) {
   DCHECK(window);
+
+  if (window->is_destroying()) {
+    return false;
+  }
 
   // Windows that don't have normal z-ordering should be free-floating and thus
   // not managed by us.

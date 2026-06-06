@@ -526,7 +526,9 @@ void WorkspaceLayoutManager::AdjustAllWindowsBoundsForWorkAreaChange(
   // they occlude windows below them first.
   auto ordered_windows = window_util::SortWindowsBottomToTop(windows_);
   for (aura::Window* window : base::Reversed(ordered_windows)) {
-    WindowState::Get(window)->OnWMEvent(event);
+    if (!window->is_destroying()) {
+      WindowState::Get(window)->OnWMEvent(event);
+    }
   }
 }
 
