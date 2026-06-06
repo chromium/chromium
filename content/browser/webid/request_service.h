@@ -350,9 +350,9 @@ class CONTENT_EXPORT RequestService
       std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers);
 
   void MaybeShowAccountsDialog();
-  void OnShouldShowAccountsPassiveDialogResult(
+  void OnGetPassiveDialogVolume(
       const std::set<GURL>& unique_idps,
-      bool should_show);
+      IdentityRequestDialogController::PassiveDialogVolume dialog_volume);
   // To be called immediately after ShowAccountsDialog for correct devtools
   // integration and metrics reporting.
   // `did_succeed_for_at_least_one_idp` needs to be passed as a parameter
@@ -633,6 +633,8 @@ class CONTENT_EXPORT RequestService
   MediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
   RpMode rp_mode_{RpMode::kPassive};
+  IdentityRequestDialogController::PassiveDialogVolume passive_dialog_volume_ =
+      IdentityRequestDialogController::PassiveDialogVolume::kDefault;
 
   // Time when the accounts dialog is last shown for metrics purposes.
   std::optional<base::TimeTicks> accounts_dialog_shown_time_;

@@ -28,4 +28,10 @@ content::WebContents* FakeDelegate::GetWebContents() {
   return web_contents_;
 }
 
+content::IdentityRequestDialogController::PassiveDialogVolume
+FakeDelegate::GetPassiveDialogVolume() const {
+  return content::IdentityRequestDialogController::PassiveDialogVolume::
+      kDefault;
+}
+
 }  // namespace webid

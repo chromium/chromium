@@ -53,6 +53,10 @@ class MockDelegate : public AccountSelectionView::Delegate {
   MOCK_METHOD(void, OnAccountsDisplayed, (), (override));
   MOCK_METHOD(gfx::NativeView, GetNativeView, (), (override));
   MOCK_METHOD(content::WebContents*, GetWebContents, (), (override));
+  MOCK_METHOD(content::IdentityRequestDialogController::PassiveDialogVolume,
+              GetPassiveDialogVolume,
+              (),
+              (const, override));
 };
 
 class FedCmAmbientUiBrowserTest : public InProcessBrowserTest {
@@ -71,6 +75,10 @@ class FedCmAmbientUiBrowserTest : public InProcessBrowserTest {
         .WillByDefault(testing::Return(web_contents));
     ON_CALL(*delegate_, GetNativeView())
         .WillByDefault(testing::Return(gfx::NativeView()));
+    ON_CALL(*delegate_, GetPassiveDialogVolume())
+        .WillByDefault(
+            testing::Return(content::IdentityRequestDialogController::
+                                PassiveDialogVolume::kDefault));
 
     account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
         delegate_.get(), browser()->GetActiveTabInterface());

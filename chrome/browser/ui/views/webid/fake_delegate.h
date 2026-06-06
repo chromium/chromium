@@ -38,6 +38,8 @@ class FakeDelegate : public AccountSelectionView::Delegate {
   // AccountSelectionView::Delegate
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
+  content::IdentityRequestDialogController::PassiveDialogVolume
+  GetPassiveDialogVolume() const override;
 
  private:
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;

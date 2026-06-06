@@ -177,8 +177,16 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogLinkType
   enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
 
-  using ShouldShowAccountsPassiveDialogCallback =
-      base::OnceCallback<void(bool)>;
+  // The volume of the dialog to show when in passive mode.
+  enum class PassiveDialogVolume {
+    // The standard volume UI (e.g. widget on desktop, bottom sheet on Android).
+    kDefault,
+    // The quieter volume UI (e.g. omnibox chip).
+    kAmbient,
+  };
+
+  using GetPassiveDialogVolumeCallback =
+      base::OnceCallback<void(PassiveDialogVolume)>;
   using AccountSelectionCallback =
       base::OnceCallback<void(const GURL& idp_config_url,
                               const std::string& /*account_id*/,
@@ -215,11 +223,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // When this is true, the dialog should not be immediately auto-accepted.
   virtual void SetIsInterceptionEnabled(bool enabled);
 
-  // Computes whether to show the dialog. Will be called before
-  // ShowAccountsDialog, but only in passive mode. If false is passed to the
-  // callback, the request will be cancelled.
-  virtual void ShouldShowAccountsPassiveDialog(
-      ShouldShowAccountsPassiveDialogCallback cb);
+  // Computes the passive dialog volume to show. Will be called before
+  // ShowAccountsDialog, but only in passive mode.
+  virtual void GetPassiveDialogVolume(GetPassiveDialogVolumeCallback cb);
 
   // Shows and accounts selections for the given IDP. The `on_selected` callback
   // is called with the selected account id or empty string otherwise. Accounts

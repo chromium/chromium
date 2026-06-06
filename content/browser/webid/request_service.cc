@@ -586,8 +586,8 @@ void RequestService::RequestToken(
 
   CHECK(!unique_idps.empty());
   if (rp_mode_ == RpMode::kPassive && idp_order_.size() == 1u) {
-    request_dialog_controller_->ShouldShowAccountsPassiveDialog(
-        base::BindOnce(&RequestService::OnShouldShowAccountsPassiveDialogResult,
+    request_dialog_controller_->GetPassiveDialogVolume(
+        base::BindOnce(&RequestService::OnGetPassiveDialogVolume,
                        weak_ptr_factory_.GetWeakPtr(), std::move(unique_idps)));
     return;
   }
@@ -1306,16 +1306,10 @@ void RequestService::MaybeShowAccountsDialog() {
   AfterAccountsDialogShown(did_succeed_for_at_least_one_idp);
 }
 
-void RequestService::OnShouldShowAccountsPassiveDialogResult(
+void RequestService::OnGetPassiveDialogVolume(
     const std::set<GURL>& unique_idps,
-    bool should_show) {
-  if (!should_show) {
-    CompleteRequestWithError(
-        FederatedAuthRequestResult::kSuppressedBySegmentationPlatform,
-        TokenStatus::kSuppressedBySegmentationPlatform,
-        /*should_delay_callback=*/true);
-    return;
-  }
+    IdentityRequestDialogController::PassiveDialogVolume dialog_volume) {
+  passive_dialog_volume_ = dialog_volume;
   FetchEndpointsForIdps(std::move(unique_idps));
 }
 
@@ -3051,8 +3045,15 @@ bool RequestService::HandlePendingRequestAndCancelNewRequest(
 }
 
 bool RequestService::IsUsingAmbient() const {
-  if (!IsFedCmAmbientUIEnabled() || rp_mode_ != RpMode::kPassive ||
-      idp_order_.size() != 1u) {
+  if (rp_mode_ != RpMode::kPassive || idp_order_.size() != 1u) {
+    return false;
+  }
+
+  bool is_ambient_enabled =
+      IsFedCmAmbientUIEnabled() ||
+      passive_dialog_volume_ ==
+          IdentityRequestDialogController::PassiveDialogVolume::kAmbient;
+  if (!is_ambient_enabled) {
     return false;
   }
 
