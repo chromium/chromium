@@ -86,17 +86,17 @@ const DeepQuery kClassicMatchText = {"omnibox-popup-app",
                                      "cr-searchbox-dropdown",
                                      "cr-searchbox-match", "#suggestion"};
 
-const DeepQuery kAimInput = {"omnibox-aim-app", "cr-composebox",
+const DeepQuery kAimInput = {"omnibox-aim-app", "#composebox",
                              "cr-composebox-input", "#input"};
-const DeepQuery kVoiceSearch = {"omnibox-aim-app", "cr-composebox",
+const DeepQuery kVoiceSearch = {"omnibox-aim-app", "#composebox",
                                 "#voiceSearch"};
-const DeepQuery kCancelIcon = {"omnibox-aim-app", "cr-composebox",
+const DeepQuery kCancelIcon = {"omnibox-aim-app", "#composebox",
                                "cr-composebox-input", "#cancelIcon"};
-const DeepQuery kAimSubmit = {"omnibox-aim-app", "cr-composebox",
+const DeepQuery kAimSubmit = {"omnibox-aim-app", "#composebox",
                               "cr-composebox-submit", "#submitContainer"};
-const DeepQuery kComposeboxMatch1 = {"omnibox-aim-app", "cr-composebox",
+const DeepQuery kComposeboxMatch1 = {"omnibox-aim-app", "#composebox",
                                      "#matches", "#match1", "#textContainer"};
-const DeepQuery kComposeboxFileThumbnail = {"omnibox-aim-app", "cr-composebox",
+const DeepQuery kComposeboxFileThumbnail = {"omnibox-aim-app", "#composebox",
                                             "cr-composebox-file-carousel",
                                             "cr-composebox-file-thumbnail"};
 }  // namespace
@@ -373,7 +373,11 @@ class OmniboxAimWebUiInteractiveTestBase
         WaitForPageActionChipVisible(kActionAiMode),
         FocusElement(kOmniboxElementId),
         PressButton(kAiModePageActionIconElementId), WaitForAimPopupReady(),
-        InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)));
+        InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)),
+        InAnyContext(ExecuteJsAt(
+            kAimPopupWebView, {"omnibox-aim-app"},
+            "el => { el.setSearchboxLayoutModeForTesting('TallBottomContext'); "
+            "el.setHasAllowedInputsForTesting(true); }")));
   }
 
   // Opens the AIM popup in a new tab to ensure a clean state.
@@ -398,7 +402,7 @@ class OmniboxAimWebUiInteractiveTestBase
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitEnabled);
     StateChange submit_enabled;
     submit_enabled.event = kAimSubmitEnabled;
-    submit_enabled.where = DeepQuery{"omnibox-aim-app", "cr-composebox"};
+    submit_enabled.where = DeepQuery{"omnibox-aim-app", "#composebox"};
     submit_enabled.test_function = "(el) => el && el.canSubmitFilesAndInput";
     return Steps(WaitForElementToRender(contents_id, kAimSubmit),
                  WaitForStateChange(contents_id, submit_enabled));
@@ -517,7 +521,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
 #endif
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
                        MAYBE_ClassicContextMenuOpensDeepSearch) {
-  const DeepQuery kDeepSearchChip = {"omnibox-aim-app", "cr-composebox",
+  const DeepQuery kDeepSearchChip = {"omnibox-aim-app", "#composebox",
                                      "cr-composebox-tool-chip"};
   RunTestSequence(
       SetAimEligibleResponse(),
@@ -572,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimSubmitVisibleAndLayoutSettled);
   StateChange submit_visible_and_layout_settled;
   submit_visible_and_layout_settled.event = kAimSubmitVisibleAndLayoutSettled;
-  submit_visible_and_layout_settled.where = {"omnibox-aim-app", "cr-composebox",
+  submit_visible_and_layout_settled.where = {"omnibox-aim-app", "#composebox",
                                              "cr-composebox-submit",
                                              "#submitIcon"};
   submit_visible_and_layout_settled.test_function = R"(
