@@ -107,9 +107,10 @@ void MultiContentsViewDelegateImpl::HandleLinkDrop(
       tab_strip_model_->active_index() +
       (side == MultiContentsDropTargetView::DropSide::START ? 0 : 1);
 
-  // TODO(crbug.com/406792273): Support entrypoint for horizontal splits.
   const split_tabs::SplitTabVisualData split_data(
-      split_tabs::SplitTabLayout::kSideBySide);
+      side == MultiContentsDropTargetView::DropSide::BOTTOM
+          ? split_tabs::SplitTabLayout::kStacked
+          : split_tabs::SplitTabLayout::kSideBySide);
 
   // We currently only support creating a split with one link; i.e., the first
   // link in the provided list.
@@ -143,9 +144,10 @@ void MultiContentsViewDelegateImpl::HandleTabDrop(
     TabDragTarget::DragController& drag_controller) {
   CHECK(!tab_strip_model_->GetActiveTab()->IsSplit());
 
-  // TODO(crbug.com/406792273): Support entrypoint for horizontal splits.
   const split_tabs::SplitTabVisualData split_data(
-      split_tabs::SplitTabLayout::kSideBySide);
+      side == MultiContentsDropTargetView::DropSide::BOTTOM
+          ? split_tabs::SplitTabLayout::kStacked
+          : split_tabs::SplitTabLayout::kSideBySide);
 
   std::unique_ptr<tabs::TabModel> detached_tab =
       drag_controller.DetachTabAtForInsertion(

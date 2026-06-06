@@ -7,8 +7,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
+#include "chrome/browser/ui/views/frame/multi_contents_view_drop_target_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -55,16 +57,29 @@ class MultiContentsViewTabDragEntrypointsUiTest
   MultiContentsViewTabDragEntrypointsUiTest() = default;
   ~MultiContentsViewTabDragEntrypointsUiTest() override = default;
 
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return std::vector<base::test::FeatureRefAndParams>{
+        {tabs::kSplitViewHorizontal, {}}};
+  }
+
   gfx::Point GetPointForDropSide(MultiContentsDropTargetView::DropSide side) {
     const gfx::Rect bounds = GetBrowserView().GetBoundsInScreen();
     switch (side) {
       case MultiContentsDropTargetView::DropSide::START:
-        return gfx::Point(bounds.left_center().x() + 10,
-                          bounds.left_center().y());
+        return bounds.left_center() +
+               gfx::Vector2d(MultiContentsViewDropTargetController::
+                                 DropTargetConstants::GetHideWidth(),
+                             0);
       case MultiContentsDropTargetView::DropSide::END:
-        return gfx::Point(bounds.right_center().x() - 10,
-                          bounds.right_center().y());
+        return bounds.right_center() -
+               gfx::Vector2d(MultiContentsViewDropTargetController::
+                                 DropTargetConstants::GetHideWidth(),
+                             0);
       case MultiContentsDropTargetView::DropSide::BOTTOM:
+        return bounds.bottom_center() -
+               gfx::Vector2d(0, MultiContentsViewDropTargetController::
+                                    kReservedHeightForScrollingDown);
       default:
         NOTREACHED();
     }
@@ -294,7 +309,8 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     MultiContentsViewTabDragEntrypointsUiParamTest,
     ::testing::Values(MultiContentsDropTargetView::DropSide::START,
-                      MultiContentsDropTargetView::DropSide::END));
+                      MultiContentsDropTargetView::DropSide::END,
+                      MultiContentsDropTargetView::DropSide::BOTTOM));
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 }  // namespace
