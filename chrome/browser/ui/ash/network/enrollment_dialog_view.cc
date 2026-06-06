@@ -9,12 +9,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/client_cert_util.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
@@ -177,7 +177,7 @@ bool ShowEnrollmentDialog(const std::string& network_guid,
 bool EnrollmentDialogAllowed(Profile* profile) {
   // Enrollment dialog is currently not supported on the sign-in profile.
   // This also applies to lock screen,
-  if (ProfileHelper::IsSigninProfile(profile)) {
+  if (IsSigninBrowserContext(profile)) {
     return false;
   }
 
