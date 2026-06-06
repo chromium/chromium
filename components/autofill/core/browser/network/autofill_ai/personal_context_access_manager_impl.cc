@@ -10,11 +10,14 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
@@ -48,6 +51,26 @@ ExtractEntitiesFromResponse(const std::string& serialized_response) {
   return entities;
 }
 
+bool IsPrefetchAmbientAutofillContextEnabled(
+    personal_context::PersonalContextEnablementService& enablement_service) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAmbientAutofill)) {
+    return false;
+  }
+
+  using personal_context::PersonalContextEnablementState;
+
+  switch (enablement_service.GetEnablementState()) {
+    case PersonalContextEnablementState::kDisabledNotEligible:
+    case PersonalContextEnablementState::kDisabledNeedsOptIn:
+    case PersonalContextEnablementState::
+        kDisabledViaPersonalIntelligenceInAutofillToggle:
+      return false;
+    case PersonalContextEnablementState::kEnabled:
+    case PersonalContextEnablementState::kEnabledShouldShowNotice:
+      return true;
+  }
+}
+
 }  // namespace
 
 PersonalContextAccessManagerImpl::PersonalContextAccessManagerImpl(
@@ -62,6 +85,11 @@ PersonalContextAccessManagerImpl::~PersonalContextAccessManagerImpl() = default;
 
 void PersonalContextAccessManagerImpl::PrefetchAmbientAutofillContext(
     base::span<const EntityType> requested_types) {
+  if (!IsPrefetchAmbientAutofillContextEnabled(
+          *personal_context_enablement_service_)) {
+    return;
+  }
+
   std::vector<EntityType> non_cached_requested_types;
   for (const EntityType& type : requested_types) {
     if (!IsTypeCached(type.name())) {

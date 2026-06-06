@@ -9,12 +9,14 @@
 #include <vector>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_access_manager_impl_test_api.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -95,13 +97,21 @@ class MockPersonalContextEnablementService
 
 class PersonalContextAccessManagerImplTest : public testing::Test {
  public:
-  PersonalContextAccessManagerImplTest() = default;
+  PersonalContextAccessManagerImplTest() {
+    ON_CALL(mock_enablement_service_, GetEnablementState)
+        .WillByDefault(testing::Return(
+            personal_context::PersonalContextEnablementState::kEnabled));
+  }
   ~PersonalContextAccessManagerImplTest() override = default;
 
   PersonalContextAccessManagerImpl& access_manager() { return access_manager_; }
 
   MockPersonalContextService& mock_personal_context_service() {
     return mock_personal_context_service_;
+  }
+
+  MockPersonalContextEnablementService& mock_enablement_service() {
+    return mock_enablement_service_;
   }
 
   void FastForwardBy(base::TimeDelta delta) {
@@ -116,6 +126,8 @@ class PersonalContextAccessManagerImplTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAmbientAutofill};
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockPersonalContextService mock_personal_context_service_;
@@ -430,6 +442,75 @@ TEST_F(PersonalContextAccessManagerImplTest,
   EXPECT_EQ(access_manager().GetCachedEntity(passport_masked.guid()),
             std::nullopt);
   EXPECT_EQ(GetUnmaskedSpiiEntitySync(passport_unmasked.guid()), std::nullopt);
+}
+
+// Tests that PrefetchAmbientAutofillContext is not executed if the
+// kAutofillAmbientAutofill flag is disabled.
+TEST_F(PersonalContextAccessManagerImplTest,
+       PrefetchAmbientAutofillContext_FlagDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(features::kAutofillAmbientAutofill);
+
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder)};
+
+  EXPECT_CALL(mock_personal_context_service(), FetchContext).Times(0);
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+}
+
+// Tests that PrefetchAmbientAutofillContext is not executed if the
+// enablement state does not return an enabled state.
+TEST_F(PersonalContextAccessManagerImplTest,
+       PrefetchAmbientAutofillContext_EnablementDisabled) {
+  EXPECT_CALL(mock_enablement_service(), GetEnablementState)
+      .WillRepeatedly(
+          testing::Return(personal_context::PersonalContextEnablementState::
+                              kDisabledNotEligible));
+
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder)};
+
+  EXPECT_CALL(mock_personal_context_service(), FetchContext).Times(0);
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+}
+
+// Tests that PrefetchAmbientAutofillContext is executed if the
+// enablement state is kEnabledShouldShowNotice.
+TEST_F(PersonalContextAccessManagerImplTest,
+       PrefetchAmbientAutofillContext_EnabledShouldShowNotice) {
+  EXPECT_CALL(mock_enablement_service(), GetEnablementState)
+      .WillRepeatedly(
+          testing::Return(personal_context::PersonalContextEnablementState::
+                              kEnabledShouldShowNotice));
+
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder)};
+
+  auto create_expected_response = []() -> personal_context::proto::Any {
+    personal_context::proto::ContextMemoryAmbientAutofillResponse
+        expected_response;
+    personal_context::proto::Entity* entity = expected_response.add_entities();
+    entity->mutable_order()->set_order_id("12345");
+    entity->mutable_order()->set_merchant_name("Amazon");
+
+    personal_context::proto::Any any_response;
+    expected_response.SerializeToString(any_response.mutable_value());
+    return any_response;
+  };
+
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+          _, _))
+      .WillOnce(RunOnceCallback<3>(personal_context::FetchContextResult(
+          base::ok(create_expected_response()))));
+
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kOrder));
 }
 
 }  // namespace
