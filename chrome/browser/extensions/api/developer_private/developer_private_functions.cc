@@ -632,22 +632,35 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
   }
 
   if (update.file_access) {
-    util::SetAllowFileAccess(extension->id(), browser_context(),
+    // `util::SetAllowFileAccess()` can synchronously reload the extension,
+    // invalidating the `extension` pointer. We pass `update.extension_id`
+    // to ensure the ID reference stays alive, and re-fetch the pointer after.
+    util::SetAllowFileAccess(update.extension_id, browser_context(),
                              *update.file_access);
+    extension = GetExtensionById(update.extension_id);
+    if (!extension) {
+      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    }
   }
   if (update.incognito_access) {
-    util::SetIsIncognitoEnabled(extension->id(), browser_context(),
+    // `util::SetIsIncognitoEnabled()` can also synchronously reload the
+    // extension.
+    util::SetIsIncognitoEnabled(update.extension_id, browser_context(),
                                 *update.incognito_access);
+    extension = GetExtensionById(update.extension_id);
+    if (!extension) {
+      return RespondNow(LogNoSuchExtensionFoundAndReturn());
+    }
   }
   if (update.user_scripts_access) {
     ExtensionSystem::Get(browser_context())
         ->user_script_manager()
-        ->SetUserScriptPrefEnabled(extension->id(),
+        ->SetUserScriptPrefEnabled(update.extension_id,
                                    *update.user_scripts_access);
   }
   if (update.error_collection) {
     ErrorConsole::Get(browser_context())
-        ->SetReportingAllForExtension(extension->id(),
+        ->SetReportingAllForExtension(update.extension_id,
                                       *update.error_collection);
   }
   if (update.host_access != developer::HostAccess::kNone) {
@@ -679,31 +692,31 @@ DeveloperPrivateUpdateExtensionConfigurationFunction::Run() {
       developer_private::SafetyCheckWarningReason::kNone) {
     ExtensionPrefs::Get(browser_context())
         ->SetIntegerPref(
-            extension->id(), kPrefAcknowledgeSafetyCheckWarningReason,
+            update.extension_id, kPrefAcknowledgeSafetyCheckWarningReason,
             static_cast<int>(update.acknowledge_safety_check_warning_reason));
     DeveloperPrivateEventRouter* event_router =
         DeveloperPrivateAPI::Get(browser_context())
             ->developer_private_event_router();
     if (event_router) {
-      event_router->OnExtensionConfigurationChanged(extension->id());
+      event_router->OnExtensionConfigurationChanged(update.extension_id);
     }
   }
   if (update.show_access_requests_in_toolbar) {
     SitePermissionsHelper(Profile::FromBrowserContext(browser_context()))
         .SetShowAccessRequestsInToolbar(
-            extension->id(), *update.show_access_requests_in_toolbar);
+            update.extension_id, *update.show_access_requests_in_toolbar);
   }
   if (update.pinned_to_toolbar) {
     ToolbarActionsModel* toolbar_actions_model = ToolbarActionsModel::Get(
         Profile::FromBrowserContext(browser_context()));
-    if (!toolbar_actions_model->HasAction(extension->id())) {
+    if (!toolbar_actions_model->HasAction(update.extension_id)) {
       return RespondNow(Error(kCannotSetPinnedWithoutAction));
     }
 
     bool is_action_pinned =
-        toolbar_actions_model->IsActionPinned(extension->id());
+        toolbar_actions_model->IsActionPinned(update.extension_id);
     if (is_action_pinned != *update.pinned_to_toolbar) {
-      toolbar_actions_model->SetActionVisibility(extension->id(),
+      toolbar_actions_model->SetActionVisibility(update.extension_id,
                                                  !is_action_pinned);
     }
   }
