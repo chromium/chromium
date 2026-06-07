@@ -17,6 +17,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -35,6 +39,9 @@ import org.chromium.components.browser_ui.widget.containment.ContainmentItemCont
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link SiteSearchViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -211,5 +218,61 @@ public class SiteSearchViewBinderUnitTest {
         assertNotNull(style);
         assertTrue(style.getTopRadius() > 0f);
         assertTrue(style.getBottomRadius() > 0f);
+    }
+
+    @Test
+    public void testBindIsExpanded_True_Accessibility() {
+        View realView = new View(mContext);
+        realView.setTag(mViewHolder);
+
+        mModel.set(SiteSearchProperties.IS_EXPANDED, true);
+        SiteSearchViewBinder.bind(mModel, realView, SiteSearchProperties.IS_EXPANDED);
+
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(realView);
+        assertNotNull(delegate);
+
+        AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(realView, info);
+
+        assertEquals(AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL, info.getExpandedState());
+        List<AccessibilityActionCompat> actionList = info.getActionList();
+        assertTrue(actionList.contains(AccessibilityActionCompat.ACTION_COLLAPSE));
+
+        AtomicBoolean clicked = new AtomicBoolean(false);
+        realView.setOnClickListener(v -> clicked.set(true));
+
+        boolean handled =
+                delegate.performAccessibilityAction(
+                        realView, AccessibilityActionCompat.ACTION_COLLAPSE.getId(), null);
+        assertTrue(handled);
+        assertTrue(clicked.get());
+    }
+
+    @Test
+    public void testBindIsExpanded_False_Accessibility() {
+        View realView = new View(mContext);
+        realView.setTag(mViewHolder);
+
+        mModel.set(SiteSearchProperties.IS_EXPANDED, false);
+        SiteSearchViewBinder.bind(mModel, realView, SiteSearchProperties.IS_EXPANDED);
+
+        AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(realView);
+        assertNotNull(delegate);
+
+        AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain();
+        delegate.onInitializeAccessibilityNodeInfo(realView, info);
+
+        assertEquals(AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED, info.getExpandedState());
+        List<AccessibilityActionCompat> actionList = info.getActionList();
+        assertTrue(actionList.contains(AccessibilityActionCompat.ACTION_EXPAND));
+
+        AtomicBoolean clicked = new AtomicBoolean(false);
+        realView.setOnClickListener(v -> clicked.set(true));
+
+        boolean handled =
+                delegate.performAccessibilityAction(
+                        realView, AccessibilityActionCompat.ACTION_EXPAND.getId(), null);
+        assertTrue(handled);
+        assertTrue(clicked.get());
     }
 }

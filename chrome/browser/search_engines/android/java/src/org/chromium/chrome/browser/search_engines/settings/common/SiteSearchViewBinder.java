@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.search_engines.settings.common;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
@@ -57,6 +63,7 @@ public class SiteSearchViewBinder {
                             ? R.drawable.ic_expand_less_black_24dp
                             : R.drawable.ic_expand_more_black_24dp;
             holder.mActionIcon.setImageResource(iconRes);
+            ViewCompat.setAccessibilityDelegate(view, new MoreButtonAccessibilityDelegate(model));
         } else if (SiteSearchProperties.MENU_DELEGATE == propertyKey) {
             ListMenuButton button = view.findViewById(R.id.overflow_menu_button);
             ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
@@ -110,5 +117,38 @@ public class SiteSearchViewBinder {
         }
 
         return builder.build();
+    }
+
+    private static class MoreButtonAccessibilityDelegate extends AccessibilityDelegateCompat {
+        private final PropertyModel mModel;
+
+        MoreButtonAccessibilityDelegate(PropertyModel model) {
+            mModel = model;
+        }
+
+        @Override
+        public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            boolean expanded = mModel.get(SiteSearchProperties.IS_EXPANDED);
+            info.setExpandedState(
+                    expanded
+                            ? AccessibilityNodeInfoCompat.EXPANDED_STATE_FULL
+                            : AccessibilityNodeInfoCompat.EXPANDED_STATE_COLLAPSED);
+            info.addAction(
+                    expanded
+                            ? AccessibilityActionCompat.ACTION_COLLAPSE
+                            : AccessibilityActionCompat.ACTION_EXPAND);
+        }
+
+        @Override
+        public boolean performAccessibilityAction(
+                View host, int action, @Nullable Bundle arguments) {
+            if (action == AccessibilityActionCompat.ACTION_EXPAND.getId()
+                    || action == AccessibilityActionCompat.ACTION_COLLAPSE.getId()) {
+                host.performClick();
+                return true;
+            }
+            return super.performAccessibilityAction(host, action, arguments);
+        }
     }
 }
