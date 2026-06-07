@@ -22,6 +22,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Ezin izan da instalatu, Windows-en bertsio hau ez delako bateragarria.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
+<translation id="1186645291482254714">Jaso prezioen jarraipenari buruzko alertak telefonoan Chromium bidez</translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
 <translation id="1232234696885483911">Irudi-bilaketa irekitzen duzunean, orriaren izena, URLa eta edukia (PDFak barne) zerbitzariari bidaliko zaizkio automatikoki. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Saioa hasita daukazunean, Google-ko kontuko pasahitzak eta beste erabil ditzakezu Chromium-en. Hori aldatzeko, joan "Zure kontua Chromium-en" atalera.</translation>
@@ -69,6 +70,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1749104137266986751">HTTPS erabilgarri ez dagoenean, Chromium-ek konexio ez-seguru bat erabiliko du abisatu gabe</translation>
 <translation id="1774152462503052664">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="1779356040007214683">Chromium seguruagoa izan dadin, zuk jakin gabe gehitu izan dituzten eta <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dendan zerrendatu gabe dauden luzapen batzuk desgaitu ditugu.</translation>
+<translation id="1793486931176048546">Chromium zereginen barran ainguratzeko eta bizkor atzitzeko, sakatu <ph name="BEGIN_BOLD" />Bai<ph name="END_BOLD" /> Windows-en jakinarazpenean.</translation>
 <translation id="1808667845054772817">Instalatu berriro Chromium</translation>
 <translation id="1820835682567584003">Chromium-ek <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> gailuan Chromium irekitzen duzun hurrengo aldian, Google-ren Pasahitz-kudeatzailea erabiltzeko eskatuko zaizu.</translation>
@@ -382,8 +384,10 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="5294316920224716406">Ezkutuko moduan arakatzen duzunean, Chromium-ek abisatu egingo dizu webgune bat konexio ez-seguru batekin kargatu aurretik</translation>
 <translation id="5313228254328109263">Chromium eguneratzeko barneko zerbitzua</translation>
 <translation id="5346389065299425353">Sakondu bilaketan fitxa, fitxategi eta tresna bat baino gehiago gehituta</translation>
+<translation id="5348677704241861105">Lortu dokumentu honen laburpen bizkor bat eta egin galderak Chromium-eko Gemini-rekin</translation>
 <translation id="5352264705793813212">Chromium-ek segurtasun-gomendio batzuk aurkitu ditu berrikus ditzazun</translation>
 <translation id="5352361688875342522">Chromium-eko beste profilak</translation>
+<translation id="535243042947607642">Kontuan saioa hasteko xehetasunak zaharkituta daudela eta, Chromium OS-ek ezin izan ditu gorde Chromium-eko datuak zure Google-ko kontuan</translation>
 <translation id="5358375970380395591">Kontu kudeatu batekin hasten ari zara saioa eta kontuaren administratzaileari zure Chromium profila kontrolatzeko ahalmena ematera zoaz. Chromium aplikazioan dituzun datuak, esaterako, aplikazioak, laster-markak, historia, pasahitzak eta beste ezarpen batzuk betiko lotuko zaizkio <ph name="USER_NAME" /> erabiltzaileari. Google-ko kontuetako Panelaren bidez ezabatu ahalko dituzu datu horiek, baina ezingo dituzu beste kontu batekin lotu. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Kode gehigarria: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Pertsonalizazioa eskuratzeko, sartu Chromium sareko eta aplikazioetako jardueretan</translation>
@@ -489,6 +493,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="6390800440335263989">Jarraitzeko, hasi saioa Chromium-en <ph name="EMAIL" /> helbide elektronikoarekin. Horrek bermatuko du zure erakundearen gidalerroak jasotzen dituzula.</translation>
 <translation id="6400112897226594999">Chromium-en logotipoa ordenagailu baten pantailan.</translation>
 <translation id="6403826409255603130">Web-orriak eta aplikazioak tximista bezain azkar abiarazten dituen web-arakatzailea da Chromium. Bizkorra, egonkorra eta erabiltzeko erraza da. Chromium-ek malwarearen eta phishingaren aurka dituen babes inkorporatuei esker, seguruago ibiliko zara Interneten.</translation>
+<translation id="6414624068245092115">Chromium-eko datuak Google-ko kontuan beti gorde eta erabili ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="642132557830635295">Chromium-ek bizkorrago funtzionatzen du, eta JavaScript darabilten eginbideek behar bezala funtzionatu beharko lukete</translation>
 <translation id="6436260184216827876">Irudi-bilaketa ez dago erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="6442900851116057561">Berrabiarazi Chromium OS</translation>
@@ -717,6 +722,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8852026904190808918">Chromium-en menuak, ezarpenak, alertak eta bestelako testuak bistaratzeko erabiltzen da hizkuntza hau</translation>
 <translation id="8862326446509486874">Ez dituzu eskubide egokiak sistema mailako instalazio bat egiteko. Saiatu instalatzailea administratzaile gisa abiarazten.</translation>
 <translation id="8876044221123442390">Gehitu Chromium-eko profil bat</translation>
+<translation id="8890569919834781711">Saioa hastean gertatu den errore bat dela eta, Chromium OS-ek ezin izan ditu gorde Chromium-eko datuak zure Google-ko kontuan</translation>
 <translation id="8891709362986793894">Chromium-en saioa hasteko eskatzen dizu zure erakundeak</translation>
 <translation id="8907580949721785412">Chromium pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
 <translation id="8932992523185907506">Chromium jada ez da arakatzaile lehenetsia. Chromium arakatzaile lehenetsi gisa ezarri nahi duzu?</translation>

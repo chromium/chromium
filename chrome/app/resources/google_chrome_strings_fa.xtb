@@ -188,6 +188,7 @@
 <translation id="2945997411976714835">خطای نصب: فرایند نصب‌کننده شروع نشد.</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - ورود به سیستم شبکه - Chrome</translation>
 <translation id="2970681950995291301">‏برای برداشتن «حساب Google» خود از Chrome، در صفحه «تنظیمات» از سیستم Chrome خارج شوید</translation>
+<translation id="2976869732253036751">‏دریافت هشدارهای پیگیری قیمت با Chrome در تلفن همراه</translation>
 <translation id="2991167882679440829">‏گذرواژه‌ها و دیگر داده‌های Chrome که در «حساب Google» خود ذخیره کرده‌اید از این دستگاه برداشته خواهد شد. برای استفاده مجدد از آن‌ها در Chrome، دوباره به سیستم وارد شوید.</translation>
 <translation id="2994465299455873643">سرویس‌های رمزگذاری و روشی ایمن برای بازیابی کردن <ph name="BROWSER_NAME" /> درصورت قدیمی شدن آن ارائه می‌دهد. اگر این سرویس غیرفعال باشد، ممکن است <ph name="BROWSER_NAME" /> دسترسی به داده‌های رمزگذاری‌شده را ازدست بدهد و <ph name="BROWSER_NAME" /> نتواند خود را بازیابی کند.</translation>
 <translation id="3003694935412297923">همه تکلیف‌ها</translation>
@@ -240,7 +241,7 @@
 <translation id="345171907106878721">‏افرودن خودتان به Chrome</translation>
 <translation id="3453763134178591239">‏شرایط ChromeOS</translation>
 <translation id="3503306920980160878">‏Chrome برای هم‌رسانی مکانتان با این سایت باید به مکان شما دسترسی داشته باشد</translation>
-<translation id="3539955434060988644">‏باز کردن پیوند در پنجره حالت &amp;ناشناس Chrome</translation>
+<translation id="3539955434060988644">‏باز کردن پیوند در پنجره حالت «&amp;ناشناس» Chrome</translation>
 <translation id="3576528680708590453">‏سرپرست سیستم برای باز شدن مرورگری دیگر جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Google Chrome را پیکربندی کرده است.</translation>
 <translation id="3582972582564653026">‏Chrome را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
 <translation id="3583751698304738917">‏قبلاً با <ph name="USER_EMAIL_ADDRESS" /> در نمایه Chrome دیگری به سیستم وارد شده‌اید</translation>

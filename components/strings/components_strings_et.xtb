@@ -306,6 +306,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1458140305240870199">Aluspesu</translation>
 <translation id="1458770162980644530">Järelmaksu teenusetingimuste kuva. Klaviatuur on peidetud.</translation>
 <translation id="1459693405370120464">Ilm</translation>
+<translation id="1460317464907341501">Kas kinnitada see e-posti aadress automaatselt?</translation>
 <translation id="1461041542809785877">Toimivus</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Kasutada teie arvutis olevaid fonte, et saaksite luua kvaliteetset sisu</translation>
@@ -2004,6 +2005,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="412601465078863288">Üleslaadimine aegus</translation>
 <translation id="4127317221386336246">Aksessuaarid</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{veel 1}other{veel #}}</translation>
+<translation id="4129810348470013900">Midagi läks valesti. Kontrollige internetiühendust ja proovige uuesti.</translation>
 <translation id="4129992181550680635">Haridusressursid</translation>
 <translation id="4130226655945681476">Kontrollige võrgukaableid, modemit ja ruuterit</translation>
 <translation id="4132448310531350254">Failinimelaienduse „<ph name="FILE_EXTENSION" />“ töötlejaks on määratud mitu rakendust: „<ph name="POLICY_IDS_LIST" />“.</translation>

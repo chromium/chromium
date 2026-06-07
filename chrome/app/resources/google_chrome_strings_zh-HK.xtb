@@ -153,7 +153,7 @@
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
-<translation id="2608461706055011366">讓 Chrome 內建 Gemini 快速歸納這份文件的摘要，並回答你的問題</translation>
+<translation id="2608461706055011366">使用 Chrome 版 Gemini 撮要文件內容並提問</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="263447411082773721">讓密碼、書籤和記錄在所有裝置上完美同步。將預設瀏覽器更新為 Chrome，即可輕鬆存取你熟悉和喜愛的功能。Chrome 會固定在工作列，方便你快速取用。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -192,6 +192,7 @@
 <translation id="2945997411976714835">安裝錯誤：安裝程式程序無法開始。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網絡登入 - Chrome</translation>
 <translation id="2970681950995291301">如要從 Chrome 中移除 Google 帳戶，請前往「設定」頁面登出 Chrome</translation>
+<translation id="2976869732253036751">在手機上透過 Chrome 接收價格追蹤通知</translation>
 <translation id="2991167882679440829">你儲存在 Google 帳戶的密碼和其他 Chrome 資料，將會從這部裝置移除。如要再次在 Chrome 中使用這些資料，請重新登入。</translation>
 <translation id="2994465299455873643">提供加密服務，以及安全復原 <ph name="BROWSER_NAME" /> 的方式 (如果已過期)。如果停用此服務，<ph name="BROWSER_NAME" /> 可能會無法存取已加密的資料，而且 <ph name="BROWSER_NAME" /> 可能無法自行復原。</translation>
 <translation id="3003694935412297923">所有工作</translation>
@@ -756,7 +757,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8624541899164515475">設定，喺新分頁打開。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將於 1 分鐘後重新啟動}other{Chrome 將於 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
-<translation id="8642497536370021917">請驗證身分，確保你隨時可以將 Chrome 資料儲存到 Google 帳戶，或使用帳戶中的 Chrome 資料</translation>
+<translation id="8642497536370021917">為確保你可隨時在 Google 帳戶中使用和儲存 Chrome 資料，請驗證你的身分</translation>
 <translation id="8656634243791296665">開啟 Chrome 開發人員版 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>
 <translation id="8679801911857917785">這個擴充功能也會管制 Chrome 啟動時所顯示的網頁。</translation>

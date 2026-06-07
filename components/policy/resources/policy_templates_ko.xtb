@@ -10422,13 +10422,13 @@ URL 패턴은 <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_BLOCKED_FOR_URLS_P
 <translation id="7534199150025803530">이 정책은 Android Google Drive 앱에 아무런 영향도 미치지 않습니다. 모바일 연결을 통해 Google Drive를 사용하지 못하게 하려면 Android Google Drive 앱 설치를 허용하지 않아야 합니다.</translation>
 <translation id="7537404002861344834">Chrome의 Gemini 기능의 대답이 개선되도록 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
 
-이 정책을 설정하면 지정된 프로젝트 및 앱 ID에 연결된 관리 계정으로 로그인한 사용자에 대한 Chrome의 Gemini 대답을 개선하는 데 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />를 사용할 수 있습니다. 개인 계정으로 로그인된 프로필에서는 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 제공되지 않습니다.
+이 정책을 설정하면 지정된 프로젝트 및 앱 ID에 연결된 관리 계정으로 로그인한 사용자에게 제공되는 Chrome의 Gemini 대답을 개선하는 데 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(을)를 사용할 수 있습니다. 개인 계정으로 로그인된 프로필에서는 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(이)가 제공되지 않습니다.
 
-이 정책을 설정하지 않으면 Chrome의 Gemini 대답을 개선하는 데 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 사용되지 않습니다.
+이 정책을 설정하지 않으면 Chrome의 Gemini 대답을 개선하는 데 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(이)가 사용되지 않습니다.
 
 이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.
 
-이 정책의 모든 설정은 <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> 콘솔의 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 프로젝트 구성과 일치해야 합니다. 불일치가 있는 경우 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />를 사용할 때 예기치 않은 동작이 발생합니다.</translation>
+이 정책의 모든 설정은 <ph name="GOOGLE_CLOUD_PRODUCT_NAME" /> 콘솔의 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 프로젝트 구성과 일치해야 합니다. 불일치가 있는 경우 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />(을)를 사용할 때 예기치 않은 동작이 발생합니다.</translation>
 <translation id="7538583957913002726">이 정책은 기본적으로 사용으로 설정됩니다. 등록된 기기에서 CPU 모델 이름, 아키텍처, 최대 클럭 속도(M96 이상의 경우 CPU 사용률 및 온도 포함)를 보고하도록 제어합니다.
 
       정책을 사용 안함으로 설정하면 등록된 기기에서 CPU 정보를 보고하지 않습니다.

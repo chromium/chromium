@@ -22,6 +22,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalacija nije uspela jer vaša verzija Windows-a nije podržana.</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
+<translation id="1186645291482254714">Dobijajte obaveštenja o praćenju cena uz Chromium na telefonu</translation>
 <translation id="1203500561924088507">Hvala vam na instalaciji. Potrebno je da restartujete pregledač pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Kada otvorite pretragu slika, naslov, URL i sadržaj stranice, uključujući PDF-ove, automatski se šalju na server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Dok ste prijavljeni, možete da koristite lozinke i drugo sa Google naloga u Chromium-u. Da biste to promenili, idite na Nalog u Chromium-u.</translation>
@@ -384,6 +385,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="5294316920224716406">Kada pregledate u režimu bez arhiviranja, Chromium će vas upozoriti pre učitavanja sajta pomoću nebezbedne veze</translation>
 <translation id="5313228254328109263">Unutrašnja usluga ažuriranja Chromium-a</translation>
 <translation id="5346389065299425353">Produbite pretragu dodavanjem više kartica, fajlova i alatki</translation>
+<translation id="5348677704241861105">Pogledajte brz pregled ovog dokumenta i postavljajte pitanja pomoću Gemini-ja u Chromium-u</translation>
 <translation id="5352264705793813212">Chromium je pronašao bezbednosne preporuke koje možete da pregledate</translation>
 <translation id="5352361688875342522">Drugi Chromium profili</translation>
 <translation id="535243042947607642">Chromium OS nije uspeo da sačuva Chromium podatke na Google nalogu zato što su podaci za prijavljivanje na nalog zastareli</translation>
@@ -492,6 +494,7 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="6390800440335263989">Da biste nastavili, prijavite se u Chromium kao <ph name="EMAIL" />. Time se omogućava da se na nalog primenjuju smernice organizacije.</translation>
 <translation id="6400112897226594999">Chromium logotip na ekranu računara.</translation>
 <translation id="6403826409255603130">Chromium je veb pregledač koji pokreće veb-stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za korišćenje. Pregledajte Veb bezbednije sa zaštitom od malvera i „pecanja“ koja je ugrađena u Chromium.</translation>
+<translation id="6414624068245092115">Da biste bili sigurni da uvek možete da koristite i čuvate Chromium podatke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="642132557830635295">Chromium radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno</translation>
 <translation id="6436260184216827876">Pretraga slika nije dostupna. Probajte ponovo kasnije.</translation>
 <translation id="6442900851116057561">Restartujte Chromium OS</translation>

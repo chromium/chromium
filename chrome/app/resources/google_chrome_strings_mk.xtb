@@ -153,6 +153,7 @@
 <translation id="2580411288591421699">Не може да се инсталира истата верзија на Google Chrome што работи во моментов. Затворете го Google Chrome и обидете се повторно.</translation>
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Преземениот инсталатор не можеше да се кешира. Грешка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Добијте брз преглед на документов и поставувајте прашања со Gemini во Chrome</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="263447411082773721">Одржувајте ги лозинките, обележувачите и историјата совршено синхронизирани на уредите. Лесно пристапувајте до функциите што ги знаете и ги обожавате така што ќе го промените стандардниот прелистувач на Chrome. За брз пристап, Chrome ќе се закачи на лентата со задачи.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">Отвори го линкот во нова &amp;картичка на Chrome</translation>
 <translation id="2665296953892887393">Помогнете да го подобриме Google Chrome со испраќање извештаи за падови и <ph name="UMA_LINK" /> до Google</translation>
 <translation id="2668094785979141847">Кликнете за да излезете од Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex не можеше да ги зачува податоците од Chrome во вашата сметка на Google бидејќи деталите за најавување на сметката се застарени</translation>
 <translation id="2681444469812712297"><ph name="URL" /> ќе се отвори во нова картичка во Google Chrome.</translation>
 <translation id="2699790011615497488">Отворете го Gemini во Chrome Beta</translation>
 <translation id="2712141162840347885">Изберете што било за да пребарате со Google Lens или притиснете го копчето Escape за да излезете од Google Lens</translation>
@@ -190,6 +192,7 @@
 <translation id="2945997411976714835">Грешка при инсталирање: процесот на инсталаторот не можеше да започне.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Мрежно најавување - Chrome</translation>
 <translation id="2970681950995291301">Одјавете се од Chrome на страницата „Поставки“ за да се отстрани вашата сметка на Google од Chrome</translation>
+<translation id="2976869732253036751">Добивајте известувања за „Следење цена“ со Chrome на телефонот</translation>
 <translation id="2991167882679440829">Вашите лозинки и други податоци од Chrome што сте ги зачувале во вашата сметка на Google ќе се отстранат од уредов. За да ги користите повторно во Chrome, најавете се пак.</translation>
 <translation id="2994465299455873643">Обезбедува услуги за шифрирање и безбеден клуч за враќање на <ph name="BROWSER_NAME" /> ако застари. Ако е оневозможена услугава, <ph name="BROWSER_NAME" /> може да го изгуби пристапот до шифрираните податоци, поради што <ph name="BROWSER_NAME" /> може да не може да се врати.</translation>
 <translation id="3003694935412297923">Сите задачи</translation>
@@ -538,6 +541,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="6497147134301593682">Chrome се затвори автоматски</translation>
 <translation id="6506909944137591434">На Chrome му треба дозвола за камерата за да создаде 3D-карта на опкружувањето</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex не можеше да ги зачува податоците од Chrome во вашата сметка на Google поради грешка при најавувањето</translation>
 <translation id="6520670145826811516">За да ја користи локацијата, дајте му пристап на Chrome во <ph name="BEGIN_LINK" />системските поставки<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Историја на Chrome</translation>
 <translation id="6532945796722480006">Отворете го Gemini во Chrome Canary</translation>
@@ -585,6 +589,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7011190694940573312">Инсталацијата не успеа бидејќи оваа верзија на оперативниот систем не е поддржана.</translation>
 <translation id="7024536598735240744">Грешка при отпакување: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
+<translation id="7026856149118332950">Кликнете <ph name="BEGIN_BOLD" />Да<ph name="END_BOLD" /> во известувањето на Windows за да го закачите Chrome на лентата со задачи за брз пристап.</translation>
 <translation id="7047386856539490735">Дали се корисни резултативе?</translation>
 <translation id="7051685429025310665">Не сте дошле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Направете го Chrome свој</translation>
@@ -677,6 +682,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7890208801193284374">Доколку споделувате компјутер, пријателите и семејството може да прелистуваат одделно и да го поставуваат Chrome токму онака како што сакаат.</translation>
 <translation id="7896673875602241923">Некој претходно се најави на Chrome од овој компјутер како <ph name="ACCOUNT_EMAIL_LAST" />. Создајте нов корисник на Chrome за да ги чувате информациите одделно.</translation>
 <translation id="7904985524660297937">Испробајте го Gemini во Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS не можеше да ги зачува податоците од Chrome во вашата сметка на Google поради грешка при најавувањето</translation>
 <translation id="7917876797003313048">Може да управувате со најавените сметки на Google. Вашите сметки на Google се користат за прелистувачот Chrome, Play Store, Gmail и друго. Ако сакате да додадете сметка за некој друг, како член на семејството, додајте ново лице во вашиот уред <ph name="DEVICE_TYPE" /> наместо тоа. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome го блокираше преземањево затоа што датотеката е измамничка и може да изврши неочекувани промени на вашиот уред</translation>
 <translation id="7951272445806340501">ChromeOS Flex треба да се рестартира за да се примени ажурирањето.</translation>
@@ -751,6 +757,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8624541899164515475">Поставки, се отвора во нова картичка.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ќе се рестартира по 1 минута}one{Chrome ќе се рестартира по # минута}other{Chrome ќе се рестартира по # минути}}</translation>
 <translation id="8637932705841171563">За да го споделите прозорецот, дозволете снимање на екранот за Chrome во System Settings</translation>
+<translation id="8642497536370021917">За да се погрижите секогаш да може да ги користите и да ги зачувувате податоците од Chrome во вашата сметка на Google, потврдете дека сте вие</translation>
 <translation id="8656634243791296665">Отворете го Gemini во Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Контролира и која страница се прикажува кога ќе стартувате Chrome.</translation>
@@ -800,6 +807,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="93760716455950538">Рестартирајте ја ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome препорачува скенирање на датотекава бидејќи можеби е опасна.</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
+<translation id="973195869036269770">ChromeOS не можеше да ги зачува податоците од Chrome во вашата сметка на Google бидејќи деталите за најавување на сметката се застарени</translation>
 <translation id="983803489796659991">Инсталацијата не успеа бидејќи серверот за ажурирање нема хаш-податоци за апликацијата.</translation>
 <translation id="989369509083708165">Google Chrome е вашиот стандарден прелистувач</translation>
 <translation id="989816563149873169">Со <ph name="SHORTCUT" /> се менуваат профили на Chrome</translation>

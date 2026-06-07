@@ -155,6 +155,7 @@
 <translation id="2652691236519827073">在新的 Chrome 分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2668094785979141847">按一下即可退出 Google 智慧鏡頭</translation>
+<translation id="2674238339205910678">你的帳戶登入詳細資料未更新，因此 ChromeOS Flex 無法將 Chrome 資料儲存到 Google 帳戶</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新分頁中開啟 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">開啟 Chrome 內建 Gemini (Beta 版)</translation>
 <translation id="2712141162840347885">選取任何要使用 Google 智慧鏡頭搜尋的內容，按下 Esc 鍵即可退出 Google 智慧鏡頭</translation>
@@ -185,6 +186,7 @@
 <translation id="2945997411976714835">安裝錯誤：無法啟動安裝程式程序。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網路登入 - Chrome</translation>
 <translation id="2970681950995291301">如要從 Chrome 中移除 Google 帳戶，請前往「設定」頁面登出 Chrome</translation>
+<translation id="2976869732253036751">在手機上透過 Chrome 接收價格追蹤通知</translation>
 <translation id="2991167882679440829">Google 帳戶中儲存的密碼和其他 Chrome 資料將從這部裝置上移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
 <translation id="2994465299455873643">提供加密服務，以及安全復原 <ph name="BROWSER_NAME" /> 的方式 (如果已過期)。如果停用這項服務，<ph name="BROWSER_NAME" /> 可能會無法存取加密的資料，而且 <ph name="BROWSER_NAME" /> 可能無法自行復原。</translation>
 <translation id="3003694935412297923">所有工作</translation>
@@ -530,6 +532,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
+<translation id="6520608191273161151">登入時發生錯誤，因此 ChromeOS Flex 無法將 Chrome 資料儲存到你的 Google 帳戶</translation>
 <translation id="6520670145826811516">如要使用位置資訊，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中授予 Chrome 存取權</translation>
 <translation id="652948702951888897">Chrome 歷史記錄</translation>
 <translation id="6532945796722480006">開啟 Chrome 內建 Gemini (Canary 版)</translation>
@@ -577,6 +580,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7011190694940573312">安裝失敗，因為應用程式不支援這個版本的作業系統。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">你可以在這裡切換不同的 Chrome 設定檔</translation>
+<translation id="7026856149118332950">在 Windows 通知中點選「是<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />」，即可將 Chrom 釘選到工作列以便快速存取。</translation>
 <translation id="7047386856539490735">這些結果實用嗎？</translation>
 <translation id="7051685429025310665">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
@@ -669,6 +673,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7890208801193284374">如果你與親朋好友共用電腦，人人皆可享有獨立的瀏覽空間，依照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他使用者使用 <ph name="ACCOUNT_EMAIL_LAST" /> 在這部電腦上登入 Chrome。請建立新的 Chrome 使用者，以便另行保存你的資訊。</translation>
 <translation id="7904985524660297937">試試 Chrome 內建 Gemini</translation>
+<translation id="7905880575591690197">登入時發生錯誤，因此 ChromeOS 無法將 Chrome 資料儲存到你的 Google 帳戶</translation>
 <translation id="7917876797003313048">你可以管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要添加他人 (例如家庭成員) 的帳戶，請改為將使用者新增至你的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">這是詐騙檔案，可能會對裝置造成非預期的變更，因此 Chrome 已禁止下載</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
@@ -794,6 +799,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
 <translation id="943390475793766444">這個檔案可能有危險內容，因此 Chrome 建議掃描檔案。</translation>
 <translation id="945522503751344254">提供意見</translation>
+<translation id="973195869036269770">你的帳戶登入詳細資料尚未更新，因此 ChromeOS 無法將 Chrome 資料儲存到 Google 帳戶</translation>
 <translation id="983803489796659991">更新伺服器沒有應用程式的任何雜湊資料，因此安裝失敗。</translation>
 <translation id="989369509083708165">Google Chrome 是你的預設瀏覽器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可以切換不同的 Chrome 設定檔</translation>

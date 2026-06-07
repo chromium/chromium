@@ -645,6 +645,7 @@
 <translation id="3771290962915251154">已啟用家長監護功能，因此這項設定已停用</translation>
 <translation id="3771694256347217732">Google 服務條款</translation>
 <translation id="3777796259512476958">你會從大多數網站登出</translation>
+<translation id="3786379886124795923">你已掃描 QR code 登入 Chrome。請確認你要從這個設定檔取得密碼、書籤等資料。</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="3792938779249970121">選取帳戶</translation>
 <translation id="3795154175078851242">複製圖片和連結</translation>
@@ -829,6 +830,7 @@
 <translation id="4532845899244822526">選擇資料夾</translation>
 <translation id="4535755320005483982">共用的「<ph name="GROUP_TITLE" />」分頁群組</translation>
 <translation id="4537137366307982887">提示通知啟用畫面顯示在整個畫面</translation>
+<translation id="4537987892902330164">目前登入的帳戶已經是「<ph name="NAME_OR_EMAIL" />」。</translation>
 <translation id="4543131175509360848">說明沒有密碼金鑰的底部功能表</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個分頁}other{<ph name="TAB_COUNT_MANY" /> 個分頁、<ph name="TAB_COUNT_INCOGNITO" /> 個無痕分頁}}</translation>
 <translation id="4558311620361989323">網頁快速鍵</translation>
@@ -1286,6 +1288,7 @@
 <translation id="6411219469806822692">無法再向上捲動。請嘗試從上一頁開始。</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />，多選的分頁</translation>
 <translation id="641643625718530986">列印…</translation>
+<translation id="6427723330233512782">調整成與畫面等高</translation>
 <translation id="6433501201775827830">選擇搜尋引擎</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6435307030888827407">保持登出狀態</translation>
@@ -2024,9 +2027,11 @@
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />，已固定的子母畫面無痕分頁</translation>
 <translation id="945522503751344254">提供意見</translation>
+<translation id="949667118776341807">旋轉</translation>
 <translation id="95817756606698420">Chrome 可以在中國使用 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> 搜尋。你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更這項設定。</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963246339335003378">開啟工作管理員</translation>
+<translation id="966337994629449077">你目前登入的帳戶是 <ph name="FROM_EMAIL" />。\n\n 如要透過電腦繼續使用，請切換至 <ph name="TO_EMAIL" />。你將可使用這個帳戶的密碼、書籤和其他資訊。</translation>
 <translation id="970715775301869095">還剩 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>

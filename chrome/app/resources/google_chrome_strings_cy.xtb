@@ -153,6 +153,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="2580411288591421699">Methu â gosod yr un fersiwn Google Chrome sy'n rhedeg ar hyn o bryd. Caewch Google Chrome a rhowch gynnig arall arni.</translation>
 <translation id="2586406160782125153">Bydd hyn yn dileu eich data pori o'r ddyfais hon. I adfer eich data yn nes ymlaen, mewngofnodwch i Chrome fel <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Wedi methu â storio'r gosodwr sydd wedi'i lawrlwytho dros dro. Gwall: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Cael trosolwg cyflym o'r ddogfen hon a gofyn cwestiynau gyda Gemini yn Chrome</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="263447411082773721">Cadwch eich cyfrineiriau, nodau tudalen a hanes wedi'u cysoni'n berffaith ar draws dyfeisiau. Cael mynediad hawdd at y nodweddion rydych yn eu hadnabod ac yn eu caru trwy ddiweddaru eich porwr diofyn i Chrome. Bydd Chrome yn cael ei binio i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="2652691236519827073">Agor Dolen mewn Tab Chrome Newydd</translation>
 <translation id="2665296953892887393">Helpwch i wneud Google Chrome yn well drwy anfon adroddiadau toriadau a <ph name="UMA_LINK" /> at Google</translation>
 <translation id="2668094785979141847">Cliciwch i adael Google Lens</translation>
+<translation id="2674238339205910678">Ni allai ChromeOS Flex gadw data Chrome yn eich Cyfrif Google oherwydd bod manylion mewngofnodi eich cyfrif yn hen</translation>
 <translation id="2681444469812712297">Agor <ph name="URL" /> mewn tab newydd yn Google Chrome.</translation>
 <translation id="2699790011615497488">Agor Gemini yn Chrome Beta</translation>
 <translation id="2712141162840347885">Dewiswch unrhyw beth i'w chwilio gyda Google Lens neu pwyswch Escape i adael Google Lens</translation>
@@ -190,6 +192,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="2945997411976714835">Gwall gosod: Gwnaeth y broses gosodwr fethu â chychwyn.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Mewngofnodi Rhwydwaith - Chrome</translation>
 <translation id="2970681950995291301">I dynnu'ch Cyfrif Google o Chrome, allgofnodwch o Chrome yn y dudalen Gosodiadau</translation>
+<translation id="2976869732253036751">Cael hysbysiadau olrhain prisiau gyda Chrome ar eich ffôn</translation>
 <translation id="2991167882679440829">Bydd eich cyfrineiriau a data Chrome arall rydych wedi'u cadw yn eich Cyfrif Google yn cael eu tynnu o'r ddyfais hon. I'w defnyddio eto yn Chrome, mewngofnodwch eto.</translation>
 <translation id="2994465299455873643">Yn darparu gwasanaethau amgryptio a ffordd ddiogel o adennill <ph name="BROWSER_NAME" /> os yw'n mynd yn hen. Os yw'r gwasanaeth hwn wedi'i analluogi, mae'n bosib y bydd <ph name="BROWSER_NAME" /> yn colli mynediad at ddata sydd wedi'u hamgryptio, ac mae'n bosib na fydd <ph name="BROWSER_NAME" /> yn gallu adfer ei hun.</translation>
 <translation id="3003694935412297923">Pob tasg</translation>
@@ -538,6 +541,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6497147134301593682">Caewyd Chrome yn awtomatig</translation>
 <translation id="6506909944137591434">Mae angen caniatâd camera ar Chrome i greu map 3D o'ch amgylchoedd</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Datblygwr Google Chrome</translation>
+<translation id="6520608191273161151">Ni allai ChromeOS Flex gadw data Chrome yn eich Cyfrif Google oherwydd gwall wrth fewngofnodi</translation>
 <translation id="6520670145826811516">I ddefnyddio'ch lleoliad, rhowch fynediad i Chrome yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Hanes Chrome</translation>
 <translation id="6532945796722480006">Agor Gemini yn Chrome Canary</translation>
@@ -585,6 +589,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7011190694940573312">Wedi methu â gosod oherwydd ni chefnogir y fersiwn hon o'r system weithredu.</translation>
 <translation id="7024536598735240744">Gwall dadbacio: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Gallwch newid rhwng proffiliau Chrome yma</translation>
+<translation id="7026856149118332950">Cliciwch <ph name="BEGIN_BOLD" />Ie<ph name="END_BOLD" /> yn yr hysbysiad Windows i binio Chrome i'ch bar tasgau i gael mynediad cyflym.</translation>
 <translation id="7047386856539490735">Ydy'r canlyniadau hyn yn ddefnyddiol?</translation>
 <translation id="7051685429025310665">Nid ydych wedi ymweld yn ddiweddar. Mae Chrome wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personoleiddiwch Chrome</translation>
@@ -677,6 +682,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7890208801193284374">Os ydych yn rhannu cyfrifiadur, gall ffrindiau a theulu bori ar wahân a gosod Chrome yn yr union ffordd y maent eisiau.</translation>
 <translation id="7896673875602241923">Gwnaeth rhywun fewngofnodi i Chrome ar y cyfrifiadur hwn fel <ph name="ACCOUNT_EMAIL_LAST" /> yn flaenorol. Crëwch ddefnyddiwr Chrome newydd i gadw'ch gwybodaeth ar wahân.</translation>
 <translation id="7904985524660297937">Rhowch gynnig ar Gemini yn Google Chrome</translation>
+<translation id="7905880575591690197">Ni allai ChromeOS gadw data Chrome yn eich Cyfrif Google oherwydd gwall wrth fewngofnodi</translation>
 <translation id="7917876797003313048">Gallwch reoli'ch Cyfrifon Google sydd wedi'u mewngofnodi. Defnyddir eich Cyfrifon Google ar gyfer porwr Chrome, Play Store, Gmail, a rhagor. Os ydych am ychwanegu cyfrif ar gyfer rhywun arall, megis aelod o'r teulu, ychwanegwch berson newydd at eich <ph name="DEVICE_TYPE" /> yn lle. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd bod y ffeil yn dwyllodrus a gallai wneud newidiadau annisgwyl i'ch dyfais</translation>
 <translation id="7951272445806340501">Mae angen ailgychwyn ChromeOS Flex i gymhwyso'r diweddariad.</translation>
@@ -752,6 +758,7 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="8624541899164515475">Gosodiadau, yn agor mewn tab newydd.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Bydd Chrome yn ail-lansio mewn 1 funud}zero{Bydd Chrome yn ail-lansio mewn # munud}two{Bydd Chrome yn ail-lansio mewn # funud}few{Bydd Chrome yn ail-lansio mewn # munud}many{Bydd Chrome yn ail-lansio mewn # munud}other{Bydd Chrome yn ail-lansio mewn # munud}}</translation>
 <translation id="8637932705841171563">I rannu'ch ffenestr, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System</translation>
+<translation id="8642497536370021917">I wneud yn siŵr y gallwch bob amser ddefnyddio a chadw data Chrome yn eich Cyfrif Google, cadarnhewch mai chi sydd yno</translation>
 <translation id="8656634243791296665">Agor Gemini yn Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Mae hefyd yn rheoli pa dudalen sy'n cael ei dangos pan fyddwch yn dechrau Chrome.</translation>
@@ -801,6 +808,7 @@ Ni ellir cadw nodau tudalen newydd yn eich cyfrif nes i chi ddileu rhai. Os bydd
 <translation id="93760716455950538">Ailddechrau ChromeOS Flex</translation>
 <translation id="943390475793766444">Mae Chrome yn argymell sganio'r ffeil hon oherwydd y gallai fod yn beryglus.</translation>
 <translation id="945522503751344254">Danfon adborth</translation>
+<translation id="973195869036269770">Ni allai ChromeOS gadw data Chrome yn eich Cyfrif Google oherwydd bod manylion mewngofnodi eich cyfrif yn hen</translation>
 <translation id="983803489796659991">Methodd y gosodiad oherwydd nad oes gan y gweinydd diweddaru unrhyw ddata hash ar gyfer yr ap.</translation>
 <translation id="989369509083708165">Google Chrome yw eich porwr diofyn</translation>
 <translation id="989816563149873169">Gall <ph name="SHORTCUT" /> newid rhwng proffiliau Chrome</translation>

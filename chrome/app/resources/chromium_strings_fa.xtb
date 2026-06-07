@@ -20,6 +20,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">‏نصب انجام نشد چون از نسخه Windows شما پشتیبانی نمی‌شود.</translation>
 <translation id="1185134272377778587">‏درباره Chromium</translation>
+<translation id="1186645291482254714">‏با Chromium در تلفنتان، هشدارهای پیگیری قیمت را دریافت کنید</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
 <translation id="1232234696885483911">‏وقتی‌که «جستجوی تصویر» را باز می‌کنید، عنوان، نشانی وب، و محتوای صفحه (ازجمله فایل‌های PDF) به‌طور خودکار به سرور ارسال می‌شوند. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">‏اکنون که به سیستم وارد شده‌اید، می‌توانید از گذرواژه‌ها و سایر داده‌های «حساب Google» خود در Chromium استفاده کنید. برای تغییر دادن این تنظیم، به «حساب شما در Chromium» بروید.</translation>
@@ -372,7 +373,7 @@
 <translation id="5187123684706427865">‏حساب Chromium به اصالت‌سنجی مجدد نیاز دارد</translation>
 <translation id="5231355151045086930">‏خروج از سیستم Chromium</translation>
 <translation id="5234764350956374838">بستن</translation>
-<translation id="5249261924633168472">‏باز کردن پیوند در پنجره حالت &amp;ناشناس Chromium</translation>
+<translation id="5249261924633168472">‏باز کردن پیوند در پنجره حالت «&amp;ناشناس» Chromium</translation>
 <translation id="5254739261293693943">پرسش درباره این ویدیو</translation>
 <translation id="5276305953263010518">‏برای ذخیره کردن گذرواژه‌ها درحرکت، برنامه Chromium را دریافت کنید</translation>
 <translation id="5277894862589591112">‏برای اعمال تغییراتتان، Chromium را راه‌اندازی مجدد کنید</translation>

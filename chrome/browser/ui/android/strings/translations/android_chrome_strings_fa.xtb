@@ -614,6 +614,7 @@
 <translation id="3635073343384702370">‏‫Chrome زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید</translation>
 <translation id="3636940436873918441">زبان‌های ترجیحی</translation>
 <translation id="3637744895182738742">‏اگر گذرعبارت را فراموش کردید یا می‌خواهید این تنظیم را تغییر دهید، <ph name="BEGIN_LINK" />داده‌های Chrome ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090">‫<ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">‏رفتن به «صفحه اصلی برنامه Google»</translation>
 <translation id="368329460027487650">از سیستم خارج شده‌اید. گزینه‌هایی را برای ورود به سیستم باز می‌کند.</translation>
@@ -638,6 +639,7 @@
 <translation id="3739899004075612870">در <ph name="PRODUCT_NAME" /> نشانک‌گذاری شد</translation>
 <translation id="3740290940447881599">مطمئن شوید به این سایت اعتماد دارید</translation>
 <translation id="3740525748616366977">جستجوی گفتاری در این دستگاه دردسترس نیست</translation>
+<translation id="3756823472711156529">بازگرداندن گروه</translation>
 <translation id="3763110477555836428">‏وقتی با این کارت تسویه‌حساب می‌کنید، شماره کارت مجازی تکمیل می‌شود تا از جزئیات واقعی‌تان محافظت شود. در «کیف پول Google» مدیریت کنید. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">برخی‌از داده‌ها هنوز ذخیره نشده است</translation>
 <translation id="3770620323585347665">نام‌گذاری پنجره</translation>
@@ -1352,7 +1354,7 @@
 <translation id="6649642165559792194">پیش‌نمایش تصویر <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
 <translation id="6659594942844771486">برگه</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
-<translation id="6669390930482049506">مطلع شوم</translation>
+<translation id="6669390930482049506">مطلع شدن</translation>
 <translation id="6671495933530132209">کپی تصویر</translation>
 <translation id="6672697278890207089">گذرعبارت را وارد کنید</translation>
 <translation id="6672917148207387131">افزودن <ph name="DOMAIN" /></translation>

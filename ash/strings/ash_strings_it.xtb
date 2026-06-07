@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Copia i contenuti selezionati negli appunti</translation>
 <translation id="2549711466868162843">Luce migliorata</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
+<translation id="2552966063069741410">Fuso orario</translation>
 <translation id="2562459326218811217">Dispositivo collegato, ma non in carica. Prova un caricabatterie con più watt (W) o usa quello originale.</translation>
 <translation id="256712445991462162">la lente d'ingrandimento ancorata</translation>
 <translation id="2573588302192866788">Impossibile connettere <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2838379631617906747">Installazione</translation>
 <translation id="2838589015763961627">Esci dallo schermo intero per ridimensionare</translation>
 <translation id="2840766858109427815">Vai alla pagina successiva</translation>
+<translation id="2841013758207633010">Ora</translation>
 <translation id="2841907151129139818">Passaggio alla modalità tablet effettuato</translation>
 <translation id="2843560154284403323">Per completare la configurazione di Linux, aggiorna ChromeOS e riprova.</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
@@ -1272,6 +1274,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4633636853437260449">Premi Ctrl + W per eliminare</translation>
 <translation id="4633757335284074492">Effettua il backup su Google Drive. Ripristina i dati facilmente o cambia dispositivo in qualsiasi momento. Questa copia di backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Esegui il rollback del dispositivo alla versione precedente ora}=1{Esegui il rollback del dispositivo alla versione precedente entro 1 secondo}other{Esegui il rollback del dispositivo alla versione precedente entro # secondi}}</translation>
+<translation id="4641539339823703554">Impossibile impostare l'ora di sistema in Chrome. Controlla l'ora indicata sotto e correggila se necessario.</translation>
 <translation id="4642092649622328492">Acquisisce lo screenshot parziale</translation>
 <translation id="4643833688073835173">Il tuo dispositivo Chromebook usa un sensore integrato per rilevare la presenza di persone davanti allo schermo. Tutti i dati vengono subito elaborati sul dispositivo e poi eliminati. I dati del sensore non vengono mai inviati a Google.</translation>
 <translation id="4644727592819780893">Area troppo piccola per mostrare l'anteprima della fotocamera</translation>
@@ -1792,6 +1795,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6074087755403037157">Canale beta</translation>
 <translation id="6075098173600599596">Modifica lettere maiuscole</translation>
+<translation id="6080689532560039067">Controlla l'ora del sistema</translation>
 <translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Opzione disattivata dall'amministratore</translation>
 <translation id="6095008505822982596">Velocità voce</translation>

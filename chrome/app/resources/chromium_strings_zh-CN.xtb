@@ -20,6 +20,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
+<translation id="1186645291482254714">在手机上使用 Chromium 接收价格跟踪提醒</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1232234696885483911">当您打开图片搜索功能时，系统会自动将网页标题、网址和内容（包括 PDF 文件）发送给服务器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登录后，您可以在 Chromium 中使用 Google 账号中的密码等信息。如需更改此设置，请前往“设置 Chromium 账号”。</translation>

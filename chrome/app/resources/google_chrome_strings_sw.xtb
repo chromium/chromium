@@ -153,6 +153,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="2580411288591421699">Huwezi kusakinisha toleo la Google Chrome ambalo tayari linatumika. Tafadhali funga Google Chrome na ujaribu tena.</translation>
 <translation id="2586406160782125153">Hatua hii itafuta data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Imeshindwa kuweka akiba ya kisakinishaji kilichopakuliwa. Hitilafu: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Pata muhtasari wa haraka wa hati hii na uulize maswali ukitumia Gemini kwenye Chrome</translation>
 <translation id="2620436844016719705">Mfumo</translation>
 <translation id="263447411082773721">Hakikisha manenosiri, alamisho na historia yako imesawazishwa kikamilifu kwenye vifaa mbalimbali. Fikia kwa urahisi vipengele unavyovifahamu na kuvipenda kwa kusasisha kivinjari chako chaguomsingi kiwe Chrome. Chrome itabandikwa kwenye upauzana wako ili uifikie kwa haraka.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -191,6 +192,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="2945997411976714835">Hitilafu ya kusakinisha: Mchakato wa kisakinishaji umeshindwa kuanza.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Kuingia katika Akaunti ya Mtandao - Chrome</translation>
 <translation id="2970681950995291301">Ili uondoe Akaunti yako ya Google kwenye Chrome, ondoka kwenye Chrome katika ukurasa wa Mipangilio</translation>
+<translation id="2976869732253036751">Pata arifa za ufuatiliaji wa bei ukitumia Chrome kwenye simu yako</translation>
 <translation id="2991167882679440829">Manenosiri na data yako nyingine ya Chrome uliyohifadhi kwenye Akaunti yako ya Google itaondolewa kwenye kifaa hiki. Ili uzitumie tena kwenye Chrome, ingia tena katika akaunti.</translation>
 <translation id="2994465299455873643">Hutoa huduma za usimbaji fiche na njia salama ya kurejesha <ph name="BROWSER_NAME" /> ikiwa imepitwa na wakati. Huduma hii ikizimwa, huenda <ph name="BROWSER_NAME" /> ikapoteza uwezo wa kufikia data iliyosimbwa kwa njia fiche na huenda <ph name="BROWSER_NAME" /> isiweze kujirejesha.</translation>
 <translation id="3003694935412297923">Majukumu yote</translation>
@@ -756,6 +758,7 @@ Huwezi kuhifadhi alamisho mpya kwenye akaunti yako hadi ufute baadhi ya alamisho
 <translation id="8624541899164515475">Mipangilio, hufunguka katika kichupo kipya.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome itafunguka upya ndani ya dakika 1}other{Chrome itafunguka upya ndani ya dakika #}}</translation>
 <translation id="8637932705841171563">Ili uonyeshe dirisha lako, washa kinasa skrini katika Chrome kwenye Mipangilio ya Mfumo</translation>
+<translation id="8642497536370021917">Ili kuhakikisha kuwa unaweza kutumia na kuhifadhi data ya Chrome katika Akaunti yako ya Google kila wakati, thibitisha kuwa ni wewe</translation>
 <translation id="8656634243791296665">Fungua Gemini kwenye Chrome - toleo la Dev</translation>
 <translation id="8669527147644353129">Msaidizi wa Google Chrome</translation>
 <translation id="8679801911857917785">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>

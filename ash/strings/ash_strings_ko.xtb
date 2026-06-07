@@ -532,6 +532,7 @@
 <translation id="254900897760075745">클립보드에 선택한 콘텐츠 복사</translation>
 <translation id="2549711466868162843">조명 개선</translation>
 <translation id="2549985041256363841">녹화 시작</translation>
+<translation id="2552966063069741410">시간대</translation>
 <translation id="2562459326218811217">기기가 연결되었으나 충전되지 않고 있습니다. 더 높은 와트(W)의 충전기를 사용하거나 정품 충전기를 사용해 보세요.</translation>
 <translation id="256712445991462162">고정 돋보기</translation>
 <translation id="2573588302192866788"><ph name="NAME" />에 연결할 수 없음</translation>
@@ -621,6 +622,7 @@
 <translation id="2838379631617906747">설치 중</translation>
 <translation id="2838589015763961627">크기를 조절하려면 전체 화면을 종료하세요.</translation>
 <translation id="2840766858109427815">다음 페이지로 이동하기</translation>
+<translation id="2841013758207633010">시간</translation>
 <translation id="2841907151129139818">태블릿 모드로 전환됨</translation>
 <translation id="2843560154284403323">Linux 설정을 완료하려면 ChromeOS를 업데이트하고 다시 시도하세요.</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
@@ -1275,6 +1277,7 @@
 <translation id="4633636853437260449">Ctrl+W를 눌러 삭제</translation>
 <translation id="4633757335284074492">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환할 수 있습니다. 앱 데이터도 백업에 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다.</translation>
 <translation id="4635501805800894201">{0,plural, =0{지금 기기를 이전 버전으로 업데이트하세요}=1{1초 이내에 기기를 이전 버전으로 업데이트하세요}other{#초 이내에 기기를 이전 버전으로 업데이트하세요}}</translation>
+<translation id="4641539339823703554">Chrome에서 시스템 시간을 설정할 수 없습니다. 아래에서 시간을 확인한 다음 필요한 경우 수정해 주세요.</translation>
 <translation id="4642092649622328492">부분 스크린샷 찍기</translation>
 <translation id="4643833688073835173">Chromebook에 내장된 센서를 사용하여 기기 앞에 사람이 있는지 감지합니다. 모든 데이터는 기기에서 즉시 처리된 후 삭제됩니다. 센서 데이터는 Google로 전송되지 않습니다.</translation>
 <translation id="4644727592819780893">영역이 너무 작아서 카메라 미리보기를 표시할 수 없습니다.</translation>
@@ -1795,6 +1798,7 @@
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6074087755403037157">베타 채널</translation>
 <translation id="6075098173600599596">대문자 사용 변경</translation>
+<translation id="6080689532560039067">시스템 시간 확인</translation>
 <translation id="6091929401758362855">재생목록: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">관리자가 사용 중지함</translation>
 <translation id="6095008505822982596">말하기 속도</translation>

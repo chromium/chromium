@@ -31,7 +31,7 @@
 <translation id="1828808367831369073">‫<ph name="TABS_COUNT_ONE" /> زبانه گروه‌بندی شد</translation>
 <translation id="1844381456014878100">پس‌از ۷ روز غیرفعال بودن</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> زبانه}one{<ph name="TABS_COUNT_MANY" /> زبانه}other{<ph name="TABS_COUNT_MANY" /> زبانه}}</translation>
-<translation id="1894429470045525403">{TAB_COUNT,plural, =1{افزودن زبانه به فهرست خواندن}one{افزودن زبانه‌ها به فهرست خواندن}other{افزودن زبانه‌ها به فهرست خواندن}}</translation>
+<translation id="1894429470045525403">{TAB_COUNT,plural, =1{افزودن زبانه به فهرست خواندن}one{افزودن زبانه به فهرست خواندن}other{افزودن زبانه‌ها به فهرست خواندن}}</translation>
 <translation id="1909810060368225529">توجه: تغییرات این «گروه زبانه» هم‌رسانی‌شده برای همه نمایان است. همه می‌توانند در گروه‌های زبانه هم‌رسانی‌شده شما تغییراتی ایجاد کنند</translation>
 <translation id="1925363809167540686">{TAB_COUNT,plural, =1{سنجاق کردن زبانه}one{سنجاق کردن زبانه}other{سنجاق کردن زبانه‌ها}}</translation>
 <translation id="1982637982196732906">منتقل کردن به بخش غیرفعال</translation>

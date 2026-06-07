@@ -20,6 +20,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalēšana neizdevās, jo jūsu izmantotā Windows versija netiek atbalstīta.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
+<translation id="1186645291482254714">Brīdinājumu saņemšana par cenu izsekošanu, izmantojot pārlūku Chromium savā tālrunī</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
 <translation id="1232234696885483911">Kad atvērsiet attēlu meklēšanu, serverim tiks automātiski nosūtīts lapas nosaukums, vietrādis URL un saturs, tostarp PDF faili. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kamēr esat pierakstījies, pārlūkā Chromium varat izmantot savas paroles un citu saturu no Google konta. Lai to mainītu, pārejiet uz sadaļu “Jūsu konts pārlūkā Chromium”.</translation>
@@ -381,6 +382,7 @@
 <translation id="5294316920224716406">Ja veicat pārlūkošanu inkognito režīmā, pārlūkā Chromium tiks parādīts brīdinājums pirms vietnes ielādes, izmantojot nedrošu savienojumu.</translation>
 <translation id="5313228254328109263">Chromium atjauninātājs: iekšējais pakalpojums</translation>
 <translation id="5346389065299425353">Padziļiniet meklēšanu, pievienojot vairākas cilnes, failus un rīkus.</translation>
+<translation id="5348677704241861105">Iegūstiet īsu šī dokumenta kopsavilkumu un uzdodiet jautājumus, izmantojot Gemini pārlūkā Chromium</translation>
 <translation id="5352264705793813212">Pārlūkā Chromium tika atrasti daži drošības ieteikumi par jūsu atsauksmi</translation>
 <translation id="5352361688875342522">Citi Chromium profili</translation>
 <translation id="535243042947607642">ChromiumOS nevarēja saglabāt Chromium datus jūsu Google kontā, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
@@ -489,6 +491,7 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="6390800440335263989">Lai turpinātu, pierakstieties pārlūkā Chromium ar kontu <ph name="EMAIL" />. Tas nodrošinās jūsu organizācijas politiku ievērošanu.</translation>
 <translation id="6400112897226594999">Chromium logotips datora ekrānā.</translation>
 <translation id="6403826409255603130">Chromium ir tīmekļa pārlūks, kas darbina tīmekļa lapas un lietojumprogrammas zibenīgā ātrumā. Tas ir ātrs, stabils un ērti lietojams. Pārlūkojiet tīmekli vēl drošāk ar aizsardzību pret ļaunprātīgu programmatūru un pikšķerēšanu, kas iebūvēta pārlūkā Chromium.</translation>
+<translation id="6414624068245092115">Lai vienmēr varētu izmantot un saglabāt Chromium datus savā Google kontā, apstipriniet savu identitāti.</translation>
 <translation id="642132557830635295">Chromium darbojas ātrāk, un funkcijas, kurās tiek izmantota valoda JavaScript, darbojas paredzētajā veidā</translation>
 <translation id="6436260184216827876">Funkcija Attēlu meklēšana nav pieejama. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6442900851116057561">Chromium OS restartēšana</translation>

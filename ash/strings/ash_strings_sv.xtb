@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Kopiera markerat innehåll till Urklipp</translation>
 <translation id="2549711466868162843">Bättre ljus</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
+<translation id="2552966063069741410">Tidszon</translation>
 <translation id="2562459326218811217">Enheten är ansluten men laddas inte. Testa en laddare med fler watt (W) eller använd den ursprungliga laddaren.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
 <translation id="2573588302192866788">Det gick inte att ansluta <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Annars aktiveras den inbyggda styrplattan igen om <ph name="TIMEOUT_SECONDS" />.
 <translation id="2838379631617906747">Installerar</translation>
 <translation id="2838589015763961627">Avsluta helskärmsläget om du vill ändra storlek</translation>
 <translation id="2840766858109427815">Fortsätt till nästa sida</translation>
+<translation id="2841013758207633010">Tid</translation>
 <translation id="2841907151129139818">Bytte till surfplatteläge</translation>
 <translation id="2843560154284403323">Du måste uppdatera ChromeOS innan konfigureringen av Linux kan slutföras.</translation>
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
@@ -1275,6 +1277,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4633636853437260449">Radera genom att trycka på Ctrl + W</translation>
 <translation id="4633757335284074492">Säkerhetskopiera på Google Drive. Återställ data eller byt enkelt enhet när du vill. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av lösenordet till barnets Google-konto och laddas upp på Google.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Uppdatera till en tidigare version av enheten nu}=1{Uppdatera till en tidigare version av enheten inom en sekund}other{Uppdatera till en tidigare version av enheten inom # sekunder}}</translation>
+<translation id="4641539339823703554">Systemtiden kunde inte anges i Chrome. Kontrollera tiden nedan och korrigera den om det behövs.</translation>
 <translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4643833688073835173">Chromebook registrerar om någon befinner sig framför enheten med hjälp av en inbyggd sensor. All data bearbetas direkt på enheten och raderas sedan. Ingen sensordata skickas till Google.</translation>
 <translation id="4644727592819780893">Området är för litet för att visas i kameran</translation>
@@ -1795,6 +1798,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6075098173600599596">Ändra gemener/versaler</translation>
+<translation id="6080689532560039067">Kontrollera systemtiden</translation>
 <translation id="6091929401758362855">Spellista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Inaktiverad av administratören</translation>
 <translation id="6095008505822982596">Talhastighet</translation>

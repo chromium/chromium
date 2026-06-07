@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Copier le contenu sélectionné dans le presse-papiers</translation>
 <translation id="2549711466868162843">Améliorer l'éclairage</translation>
 <translation id="2549985041256363841">Démarrer l'enregistrement</translation>
+<translation id="2552966063069741410">Fuseau horaire</translation>
 <translation id="2562459326218811217">L'appareil est branché, mais ne se recharge pas. Essayez un chargeur avec plus de watts (W) ou utilisez votre chargeur d'origine.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
 <translation id="2573588302192866788">Impossible de connecter l'appareil suivant : <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Sinon, le pavé tactile intégré sera réactivé dans <ph name="TIMEOUT_SECONDS
 <translation id="2838379631617906747">Installation en cours…</translation>
 <translation id="2838589015763961627">Quitter le plein écran pour redimensionner</translation>
 <translation id="2840766858109427815">Passer à la page suivante</translation>
+<translation id="2841013758207633010">Heure</translation>
 <translation id="2841907151129139818">Mode tablette activé</translation>
 <translation id="2843560154284403323">Pour terminer la configuration de Linux, mettez à jour Chrome OS et réessayez.</translation>
 <translation id="2844169650293029770">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'avant)</translation>
@@ -1276,6 +1278,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4633636853437260449">Appuyez sur Ctrl+W pour supprimer</translation>
 <translation id="4633757335284074492">Sauvegarder dans Google Drive. Restaurez les données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Rétablir une version antérieure de l'appareil maintenant}=1{Rétablir une version antérieure de l'appareil d'ici 1 seconde}one{Rétablir une version antérieure de l'appareil d'ici # seconde}other{Rétablir une version antérieure de l'appareil d'ici # secondes}}</translation>
+<translation id="4641539339823703554">Impossible de définir l'heure du système. Veuillez vérifier l'heure ci-dessous et la corriger si nécessaire.</translation>
 <translation id="4642092649622328492">Faire une capture d'écran partielle</translation>
 <translation id="4643833688073835173">Votre Chromebook utilise un capteur intégré pour détecter si une personne se trouve devant votre appareil. Toutes les données sont traitées sur votre appareil immédiatement, puis supprimées. Les données du capteur ne sont jamais transmises à Google.</translation>
 <translation id="4644727592819780893">La surface de prise de vue est trop petite pour l'appareil photo</translation>
@@ -1797,6 +1800,7 @@ Aucun appareil connecté.</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
 <translation id="6074087755403037157">Version bêta</translation>
 <translation id="6075098173600599596">Modifier la casse</translation>
+<translation id="6080689532560039067">Vérifier l'heure du système</translation>
 <translation id="6091929401758362855">Playlist : <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Désactivé par l'administrateur</translation>
 <translation id="6095008505822982596">Vitesse d'élocution</translation>

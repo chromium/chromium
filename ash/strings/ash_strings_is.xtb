@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Afrita valið efni á klippiborð</translation>
 <translation id="2549711466868162843">Bæta lýsingu</translation>
 <translation id="2549985041256363841">Hefja upptöku</translation>
+<translation id="2552966063069741410">Tímabelti</translation>
 <translation id="2562459326218811217">Tæki stungið í samband en hleðst ekki. Prófaðu hleðslutæki með fleiri vöttum (W) eða notaðu upprunalega hleðslutækið þitt.</translation>
 <translation id="256712445991462162">stækkunargler í föstum glugga</translation>
 <translation id="2573588302192866788">Ekki tókst að tengjast <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Annars verður aftur kveikt á innbyggða snertifletinum eftir <ph name="TIMEOUT
 <translation id="2838379631617906747">Setur upp</translation>
 <translation id="2838589015763961627">Loka öllum skjánum til að breyta stærð</translation>
 <translation id="2840766858109427815">Fara áfram á næstu síðu</translation>
+<translation id="2841013758207633010">Tími</translation>
 <translation id="2841907151129139818">Skipt yfir í spjaldtölvustillingu</translation>
 <translation id="2843560154284403323">Uppfærðu ChromeOS til að ljúka við uppsetningu Linux og reyndu aftur.</translation>
 <translation id="2844169650293029770">USB-C tæki (tengi vinstra megin að framan)</translation>
@@ -1276,6 +1278,7 @@ Eitt tæki er tengt.</translation>
 <translation id="4633636853437260449">Ýttu á Ctrl+W til að eyða</translation>
 <translation id="4633757335284074492">Vista öryggisafrit á Google Drive. Endurheimtu gögn eða skiptu um tæki hvenær sem er. Þetta öryggisafrit inniheldur forritsgögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Uppfærðu tækið í fyrri útgáfu núna}=1{Uppfæra verður tækið í fyrri útgáfu innan 1 sekúndu}one{Uppfæra verður tækið í fyrri útgáfu innan # sekúndu}other{Uppfæra verður tækið í fyrri útgáfu innan # sekúndna}}</translation>
+<translation id="4641539339823703554">Chrome gat ekki stillt kerfistímann. Athugaðu tímann hér fyrir neðan og leiðréttu hann ef þörf krefur.</translation>
 <translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
 <translation id="4643833688073835173">Chromebook notar innbyggðan skynjara til að greina fólk fyrir framan tækið þitt. Öll gögn eru meðhöndluð samstundis í tækinu þínu og þeim er svo eytt. Skynjaragögn eru aldrei send til Google.</translation>
 <translation id="4644727592819780893">Svæðið er of smátt til að hægt sé að mynda það</translation>
@@ -1797,6 +1800,7 @@ Engin tæki eru tengd.</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
 <translation id="6074087755403037157">Beta-rás</translation>
 <translation id="6075098173600599596">Breyta notkun hástafa</translation>
+<translation id="6080689532560039067">Athugaðu tíma kerfisins</translation>
 <translation id="6091929401758362855">Spilunarlisti: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Gert óvirkt af stjórnanda</translation>
 <translation id="6095008505822982596">Talhraði</translation>

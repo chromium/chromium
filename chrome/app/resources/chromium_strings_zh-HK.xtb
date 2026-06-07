@@ -22,6 +22,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">你的 Windows 版本不受支援，因此無法安裝。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
+<translation id="1186645291482254714">在手機上透過 Chromium 接收價格追蹤通知</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1232234696885483911">開啟「圖片搜尋」時，網頁標題、網址和內容 (包括 PDF) 會自動傳送至伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">登入後，你可以在 Chromium 使用 Google 帳戶儲存的密碼和其他資料。如要變更此設定，請前往「你在 Chromium 的帳戶」。</translation>
@@ -383,7 +384,7 @@
 <translation id="5294316920224716406">使用無痕模式瀏覽時，Chromium 會在使用不安全的連線載入網站前顯示警告</translation>
 <translation id="5313228254328109263">Chromium 更新程式內部服務</translation>
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
-<translation id="5348677704241861105">讓 Chromium 內建 Gemini 快速歸納這份文件的摘要，並回答你的問題</translation>
+<translation id="5348677704241861105">使用 Chromium 版 Gemini 撮要文件內容和提問</translation>
 <translation id="5352264705793813212">Chromium 發現一些安全性建議需要你審核</translation>
 <translation id="5352361688875342522">其他 Chromium 設定檔</translation>
 <translation id="535243042947607642">你的帳戶登入詳細資料未更新，因此 ChromiumOS 無法將 Chromium 資料儲存至 Google 帳戶</translation>
@@ -490,7 +491,7 @@
 <translation id="6390800440335263989">如要繼續，請使用 <ph name="EMAIL" /> 登入 Chromium，以確保套用你所屬機構的政策。</translation>
 <translation id="6400112897226594999">電腦畫面中的 Chromium 圖示。</translation>
 <translation id="6403826409255603130">Chromium 網絡瀏覽器可快速開啟網頁和執行應用程式。除了迅速、穩定和易於使用外，Chromium 的內置惡意軟件與網絡釣魚防護功能，可讓您安心瀏覽網絡。</translation>
-<translation id="6414624068245092115">請驗證身分，確保你隨時可以將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料</translation>
+<translation id="6414624068245092115">為確保你可隨時在 Google 帳戶中使用和儲存 Chromium 資料，請驗證你的身分</translation>
 <translation id="642132557830635295">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作</translation>
 <translation id="6436260184216827876">無法使用「圖片搜尋」，請稍後再試。</translation>
 <translation id="6442900851116057561">重新啟動 Chromium 作業系統</translation>

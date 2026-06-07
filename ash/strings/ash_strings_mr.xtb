@@ -532,6 +532,7 @@
 <translation id="254900897760075745">निवडलेला आशय क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="2549711466868162843">लायटिंगमध्ये सुधारणा करा</translation>
 <translation id="2549985041256363841">रेकॉर्डिंग सुरू करा</translation>
+<translation id="2552966063069741410">टाईमझोन</translation>
 <translation id="2562459326218811217">डिव्हाइस प्लग इन केले आहे, पण चार्ज होत नाही. जास्त वॅटचा (W) चार्जर वापरून पहा किंवा तुमचा मूळ चार्जर वापरा.</translation>
 <translation id="256712445991462162">डॉक केलेले मॅग्निफायर</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> कनेक्ट करता आले नाही</translation>
@@ -621,6 +622,7 @@
 <translation id="2838379631617906747">इंस्टॉल करीत आहे</translation>
 <translation id="2838589015763961627">आकार बदलण्यासाठी फुलस्क्रीनमधून बाहेर पडा</translation>
 <translation id="2840766858109427815">पुढील पेजवर जा</translation>
+<translation id="2841013758207633010">वेळ</translation>
 <translation id="2841907151129139818">टॅबलेट मोडवर स्विच केले</translation>
 <translation id="2843560154284403323">Linux सेट करणे पूर्ण करण्यासाठी, ChromeOS अपडेट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2844169650293029770">USB-C डिव्‍हाइस (डाव्‍या बाजूचे पुढील पोर्ट)</translation>
@@ -1275,6 +1277,7 @@
 <translation id="4633636853437260449">हटवण्यासाठी Ctrl+W प्रेस करा</translation>
 <translation id="4633757335284074492">Google Drive वर बॅकअप घ्या. डेटा कधीही सहजपणे रिस्टोअर करा किंवा डिव्हाइस स्विच करा. या बॅकअपमध्ये अ‍ॅप डेटा समाविष्ट आहे. बॅकअप Google वर अपलोड केले जातात आणि तुमच्या मुलाचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Update device to previous version now}=1{१ सेकंदामध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}other{# सेकंदांमध्ये मागील आवृत्तीवर डिव्हाइस अपडेट करा}}</translation>
+<translation id="4641539339823703554">प्रणाली वेळ सेट करण्यात Chrome अक्षम होते. कृपया खालील वेळ तपासा आणि आवश्यक असल्यास ती दुरुस्त करा.</translation>
 <translation id="4642092649622328492">अर्धा स्क्रीनशॉट घ्या</translation>
 <translation id="4643833688073835173">तुमच्‍या डिव्‍हाइससमोरील लोक डिटेक्ट करण्‍यासाठी तुमचे Chromebook बिल्ट-इन सेन्सर वापरते. तुमच्या डिव्हाइसमध्ये सर्व डेटावर त्वरित प्रक्रिया केली जाते आणि नंतर तो हटवला जातो. सेन्सर डेटा कधीही Google ला पाठवला जात नाही.</translation>
 <translation id="4644727592819780893">कॅमेरा बसवण्यासाठी जागा खूप लहान आहे</translation>
@@ -1795,6 +1798,7 @@
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
 <translation id="6074087755403037157">बीटा चॅनल</translation>
 <translation id="6075098173600599596">कॅपिटलायझेशन बदला</translation>
+<translation id="6080689532560039067">तुमची प्रणाली वेळ तपासा</translation>
 <translation id="6091929401758362855">प्लेलिस्ट: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">ॲडमिनने बंद केलेले</translation>
 <translation id="6095008505822982596">स्पीच रेट</translation>

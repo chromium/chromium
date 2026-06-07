@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Salin kandungan yang dipilih kepada papan keratan</translation>
 <translation id="2549711466868162843">Betulkan pencahayaan</translation>
 <translation id="2549985041256363841">Mulakan rakaman</translation>
+<translation id="2552966063069741410">Zon waktu</translation>
 <translation id="2562459326218811217">Peranti dipalamkan tetapi tidak dicas. Cuba pengecas dengan watt (W) yang lebih tinggi atau gunakan pengecas asal anda.</translation>
 <translation id="256712445991462162">penggadang yang didokkan</translation>
 <translation id="2573588302192866788">Tidak dapat menyambungkan <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2838379631617906747">Memasang</translation>
 <translation id="2838589015763961627">Keluar daripada skrin penuh untuk mengubah saiz</translation>
 <translation id="2840766858109427815">Teruskan ke halaman seterusnya</translation>
+<translation id="2841013758207633010">Masa</translation>
 <translation id="2841907151129139818">Bertukar kepada mod tablet</translation>
 <translation id="2843560154284403323">Untuk menyelesaikan persediaan Linux, kemas kini Chrome OS dan cuba lagi.</translation>
 <translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
@@ -1275,6 +1277,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4633636853437260449">Tekan Ctrl+W untuk memadam</translation>
 <translation id="4633757335284074492">Sandarkan pada Google Drive. Pulihkan data atau tukar peranti dengan mudah pada bila-bila masa. Sandaran ini merangkumi data apl. Sandaran dimuat naik pada Google dan disulitkan dengan menggunakan kata laluan Google Account anak anda.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Kemas kinikan peranti kepada versi terdahulu sekarang}=1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 saat}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # saat}}</translation>
+<translation id="4641539339823703554">Chrome tidak dapat menetapkan masa sistem. Sila semak masa di bawah dan betulkan jika perlu.</translation>
 <translation id="4642092649622328492">Ambil tangkapan skrin separa</translation>
 <translation id="4643833688073835173">Chromebook anda menggunakan penderia terbina dalam untuk mengesan orang di hadapan peranti anda. Semua data diproses pada peranti anda serta-merta, kemudian dipadamkan. Data penderia tidak sekali-kali dihantar kepada Google.</translation>
 <translation id="4644727592819780893">Rantau terlalu kecil untuk dimuatkan dengan kamera</translation>
@@ -1795,6 +1798,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6073451960410192870">Hentikan rakaman</translation>
 <translation id="6074087755403037157">Saluran beta</translation>
 <translation id="6075098173600599596">Ubah penggunaan huruf besar</translation>
+<translation id="6080689532560039067">Semak masa sistem anda</translation>
 <translation id="6091929401758362855">Senarai main: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Dilumpuhkan oleh pentadbir</translation>
 <translation id="6095008505822982596">Kadar pertuturan</translation>

@@ -161,6 +161,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2668094785979141847">Fai clic para saír de Google Lens</translation>
+<translation id="2674238339205910678">ChromeOS Flex non puido gardar os datos de Chrome na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
 <translation id="2681444469812712297">Abre <ph name="URL" /> nunha nova pestana de Google Chrome.</translation>
 <translation id="2699790011615497488">Abrir Gemini en Chrome Beta</translation>
 <translation id="2712141162840347885">Selecciona o que queiras buscar con Google Lens ou preme Escape para saír da función</translation>
@@ -191,6 +192,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> (inicio de sesión de rede, Chrome)</translation>
 <translation id="2970681950995291301">Para quitar a túa Conta de Google de Chrome, vai á páxina de configuración e pecha a sesión en Chrome</translation>
+<translation id="2976869732253036751">Recibe alertas de seguimento de prezos con Chrome no teléfono</translation>
 <translation id="2991167882679440829">Os teus contrasinais e outros datos de Chrome que gardases na túa Conta de Google quitaranse deste dispositivo. Para usalos de novo en Chrome, volve iniciar sesión.</translation>
 <translation id="2994465299455873643">Fornece servizos de encriptación e unha maneira segura de recuperar <ph name="BROWSER_NAME" /> se queda desactualizado. Se o servizo se desactiva, <ph name="BROWSER_NAME" /> pode perder acceso aos datos encriptados e <ph name="BROWSER_NAME" /> pode non recuperarse.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
@@ -539,6 +541,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6497147134301593682">Chrome pechouse automaticamente</translation>
 <translation id="6506909944137591434">Chrome necesita permiso de acceso á cámara para crear un mapa 3D do que te rodea</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> (Google Chrome para programadores)</translation>
+<translation id="6520608191273161151">ChromeOS Flex non puido gardar os datos de Chrome na túa Conta de Google porque se produciu un erro ao iniciar sesión</translation>
 <translation id="6520670145826811516">Para usar a túa localización, concédelle acceso a Chrome na <ph name="BEGIN_LINK" />configuración do sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historial de Chrome</translation>
 <translation id="6532945796722480006">Abrir Gemini en Chrome Canary</translation>
@@ -586,6 +589,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Aquí podes cambiar entre perfís de Chrome</translation>
+<translation id="7026856149118332950">Fai clic en <ph name="BEGIN_BOLD" />Si<ph name="END_BOLD" /> na notificación de Windows para fixar Chrome na barra de tarefas e poder acceder ao navegador rapidamente.</translation>
 <translation id="7047386856539490735">Estes resultados son útiles?</translation>
 <translation id="7051685429025310665">Levas un tempo sen entrar. Chrome quitou os seguintes permisos: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personaliza Chrome</translation>
@@ -678,6 +682,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7890208801193284374">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chrome como prefiran.</translation>
 <translation id="7896673875602241923">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chrome neste ordenador. Crea un novo usuario de Chrome para manter a túa información por separado.</translation>
 <translation id="7904985524660297937">Proba Gemini en Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS non puido gardar os datos de Chrome na túa Conta de Google porque se produciu un erro ao iniciar sesión</translation>
 <translation id="7917876797003313048">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chrome, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome bloqueou esta descarga porque o ficheiro é enganoso e pode producir cambios inesperados no teu dispositivo</translation>
 <translation id="7951272445806340501">Chrome OS Flex debe reiniciarse para aplicar a actualización.</translation>
@@ -803,6 +808,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="93760716455950538">Reiniciar Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome recomenda analizar este ficheiro porque pode ser perigoso.</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
+<translation id="973195869036269770">ChromeOS non puido gardar os datos de Chrome na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
 <translation id="983803489796659991">Produciuse un erro na instalación porque o servidor de actualizacións non ten ningún dato de hash para a aplicación.</translation>
 <translation id="989369509083708165">Google Chrome é o teu navegador predeterminado</translation>
 <translation id="989816563149873169">O atallo <ph name="SHORTCUT" /> permite cambiar entre perfís de Chrome</translation>

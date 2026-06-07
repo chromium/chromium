@@ -306,6 +306,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1458140305240870199">Dillad isaf</translation>
 <translation id="1458770162980644530">Sgrîn telerau gwasanaeth Prynu-Nawr-Talu-Yn-Ddiweddarach. Mae'r bysellfwrdd wedi'i guddio.</translation>
 <translation id="1459693405370120464">Tywydd</translation>
+<translation id="1460317464907341501">Dilysu'r e-bost hwn yn awtomatig?</translation>
 <translation id="1461041542809785877">Perfformiad</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Defnyddio'r ffontiau ar eich cyfrifiadur fel y gallwch greu cynnwys â manwl gywirdeb</translation>
@@ -2004,6 +2005,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="412601465078863288">Mae uwchlwytho wedi cymryd gormod o amser</translation>
 <translation id="4127317221386336246">Ategolion Dillad</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 arall}zero{# arall}two{# arall}few{# arall}many{# arall}other{# arall}}</translation>
+<translation id="4129810348470013900">Aeth rhywbeth o'i le. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="4129992181550680635">Adnoddau Addysgol</translation>
 <translation id="4130226655945681476">Wrthi'n gwirio'r ceblau rhwydwaith, y modem, a'r llwybrydd</translation>
 <translation id="4132448310531350254">Dyblygu trinyddion ar gyfer file_extension "<ph name="FILE_EXTENSION" />" y cyfeirir ato gan apiau "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3021,6 +3023,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5728246486828755318">Yn gallu gofyn i ddefnyddio nodweddion argraffydd uwch</translation>
 <translation id="5729442113829771034">Addysg Plentyndod Cynnar</translation>
 <translation id="5730040223043577876">Mae Chrome yn argymell ailosod eich cyfrinair os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
+<translation id="5735174108294025227">Bydd cyfeiriadau e-bost sydd wedi'u dilysu yn ymddangos yma</translation>
 <translation id="573555826359077410">Botwm creu ffurflen, gweithredwch i greu ffurflen newydd yn Google Forms yn gyflym</translation>
 <translation id="5738385766833540397">Rheoli sut rydych yn derbyn rhybuddion gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain</translation>
 <translation id="5739619009927381786">Datgloi'ch sgrîn yn y cam nesaf, gan ddefnyddio'ch olion bysedd fel arfer. Neu, gallwch <ph name="BEGIN_LINK" />ddilysu mewn ffordd arall<ph name="END_LINK" />.</translation>

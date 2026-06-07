@@ -356,6 +356,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="253498598929009420">Il sito potrà vedere i contenuti del tuo schermo</translation>
 <translation id="2535807170289627159">Tutte le schede</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
+<translation id="2537574774089209541">Alcuni strumenti sono stati spostati per consentirti di accedere facilmente a Gemini durante la navigazione</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, scheda Incognito con audio disattivato fissata selezionata</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, scheda</translation>
@@ -404,6 +405,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2751271371269891762">Accedi come <ph name="EMAIL" /> per trovare preferiti e altri dati su tutti i tuoi dispositivi</translation>
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2762000892062317888">in questo istante</translation>
+<translation id="276378135349383280">Mostra Gemini nella barra sotto</translation>
 <translation id="276969039800130567">Accesso eseguito come <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> sec rimanenti</translation>
 <translation id="2779651927720337254">non riuscito</translation>
@@ -603,6 +605,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3602290021589620013">Anteprima</translation>
 <translation id="3614126103057878858">Insight sul prezzo</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Assicurati che <ph name="DOWNLOAD_DOMAIN" /> sia attendibile</translation>
 <translation id="3619255692378312441">Gestisci accesso</translation>
 <translation id="3622349720008044802">Gestisci finestre</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sito}other{+ # siti}}</translation>
@@ -633,6 +636,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3738139272394829648">Tocca per cercare</translation>
 <translation id="3739455665973395693">Nessuna password compromessa nel tuo Account Google</translation>
 <translation id="3739899004075612870">Aggiunto ai preferiti di <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Assicurati che il sito sia attendibile</translation>
 <translation id="3740525748616366977">Ricerca vocale non disponibile su questo dispositivo</translation>
 <translation id="3763110477555836428">Quando effettui un pagamento con questa carta, verrà inserito un numero di carta virtuale per proteggere i tuoi dati effettivi. Gestisci in Google Wallet. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Alcuni dati non sono ancora stati salvati</translation>
@@ -1532,6 +1536,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7291910923717764901">Descrizioni delle immagini aggiunte per questa pagina</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, scheda condivisa fissata selezionata</translation>
+<translation id="7304003340539141201">Chiedi a Gemini di aiutarti con le schede e le attività</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7314734791127433392">Impossibile controllare le password</translation>
 <translation id="7324354302972299151">Invia una richiesta "Do Not Track"</translation>
@@ -1878,6 +1883,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8696297579102085705">Invia al tuo dispositivo</translation>
 <translation id="8697753151306746444">Condividi una finestra o uno schermo</translation>
 <translation id="8699120352855309748">Non proporre di tradurre queste lingue</translation>
+<translation id="8700565880437506364">Ti presentiamo Gemini in Chrome</translation>
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8715286883001906001">Rafforza le password nel tuo Account Google</translation>
 <translation id="8715300232952757586">La scheda <ph name="TAB_TITLE" /> verrà chiusa</translation>
@@ -1945,6 +1951,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8996847606757455498">Scegli un altro fornitore</translation>
 <translation id="8998837250940831980">Impossibile ridurre a icona la scheda. Riprova più tardi.</translation>
 <translation id="9001604755921395912">Apri in una scheda Incognito di Chrome</translation>
+<translation id="9010094279589497751">Apri rapidamente Gemini quando ti serve</translation>
 <translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
 <translation id="9019199799064251516">Vuoi continuare senza blocco del profilo dell'auto?</translation>
 <translation id="9022774213089566801">Più visitati</translation>
@@ -2002,6 +2009,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9190355771000652811">Nella barra degli indirizzi, utilizza questa scorciatoia da tastiera con le scorciatoie per motori di ricerca e ricerca su sito.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, scheda Incognito selezionata fissata</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Eseguito 1 minuto fa}other{Eseguito # minuti fa}}</translation>
+<translation id="9202894533863490414">Scaricare da questo sito?</translation>
 <translation id="9204836675896933765">1 file rimanente</translation>
 <translation id="9205933215779845960">Impossibile trovare la pagina. Controlla l'ortografia o prova a effettuare una ricerca su <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

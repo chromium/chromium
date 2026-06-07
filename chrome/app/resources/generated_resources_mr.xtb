@@ -187,6 +187,7 @@
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (नेटिव्ह) सारखे दिसते</translation>
 <translation id="1125816658532547876">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमचे पासवर्ड वापरा</translation>
 <translation id="1125921926864945797">वॉलपेपर आणि शैली</translation>
+<translation id="1126475802377716263">{0,plural, =1{१ टॅब शेअर करत आहे}other{# टॅब शेअर करत आहे}}</translation>
 <translation id="1126696498560056882">या डिव्हाइसवरील खाती व्यवस्थापित करा</translation>
 <translation id="1128591060186966949">शोध इंजीन संपादित करा</translation>
 <translation id="1129348283834595293">सायबरपंक</translation>
@@ -1769,6 +1770,7 @@
     <ph name="BEGIN_LINK" />
     मदत केंद्र<ph name="END_LINK" /> याचा संदर्भ घ्या.</translation>
 <translation id="22649924370461580">सेव्ह केलेले टॅब गट</translation>
+<translation id="2265924028278810827">मूळ अ‍ॅप: <ph name="APP_NAME" /></translation>
 <translation id="2266957463645820432">USB (IPPUSB) वर IPP</translation>
 <translation id="2268130516524549846">ब्लूटूथ अक्षम</translation>
 <translation id="2268182915828370037">फाइल सिंक करणे बंद करायचे आहे का?</translation>
@@ -1965,6 +1967,7 @@
 <translation id="2406942743794219791">तुम्हाला हवे आहे ते डीफॉल्ट सर्च इंजीन कन्फर्म करा</translation>
 <translation id="2407671304279211586">DNS पुरवठादार निवडा</translation>
 <translation id="2408018932941436077">कार्ड सेव्ह करत आहे</translation>
+<translation id="2408601796549249241">Gemini च्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली</translation>
 <translation id="2408762424059547338">JavaScript ऑप्टिमायझेशन बंद करून हल्ल्यांपासून तुमचे अधिक चांगले संरक्षण करते</translation>
 <translation id="2408955596600435184">तुमचा पिन प्रविष्‍ट करा</translation>
 <translation id="2409378541210421746">भाषेची निवड संपादित करा</translation>
@@ -2190,7 +2193,6 @@
 <translation id="2550212893339833758">स्वॅप केलेली मेमरी</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> ला <ph name="FILE_NAME" /> उघडू द्यायचे?</translation>
 <translation id="2552230905527343195">सध्याचा टॅब जोडू शकत नाही</translation>
-<translation id="2552966063069741410">टाईमझोन</translation>
 <translation id="2553290675914258594">पडताळणी केलेला अ‍ॅक्सेस</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> <ph name="NETWORK_ID" /> शी कनेक्ट करण्यात अक्षम आहे. कृपया दुसरे नेटवर्क निवडा किंवा पुन्हा प्रयत्न करा. </translation>
 <translation id="2553440850688409052">हे प्लग-इन लपवा</translation>
@@ -2722,6 +2724,7 @@
 <translation id="2932483646085333864">साइन आउट करा नंतर सिंक सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
 <translation id="2932883381142163287">गैरवापराची तक्रार करा</translation>
 <translation id="2933632078076743449">शेवटचे अपडेट</translation>
+<translation id="2933653107553951760">गट रिस्टोअर करा</translation>
 <translation id="2934225044529065415">कॅमेरा अ‍ॅक्सेस करू शकत नाही</translation>
 <translation id="2935314715123552088">अ‍ॅक्टिव्ह eSIM प्रोफाइल बंद करा</translation>
 <translation id="2935654492420446828">शाळेचे खाते नंतर जोडा</translation>
@@ -2816,6 +2819,7 @@
 <translation id="3000461861112256445">मोनो ऑडिओ</translation>
 <translation id="3001144475369593262">लहान मुलाची खाती</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{No keys customized}=1{कस्टमाइझ केलेली १ की}other{कस्टमाइझ केलेल्या {COUNT} की}}</translation>
+<translation id="3002864108328203174">Gemini च्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली.</translation>
 <translation id="3003144360685731741">प्राधान्यीकृत नेटवर्क</translation>
 <translation id="3003253259757197230">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी आणि तुम्ही भेट देत असलेल्या पेजबद्दल तुम्हाला अतिरिक्त माहिती दाखवण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="3003623123441819449">CSS कॅशे </translation>
@@ -3858,6 +3862,7 @@
 <translation id="3756485814916578707">स्‍क्रीन कास्‍ट करत आहे</translation>
 <translation id="3756578970075173856">पिन सेट करा</translation>
 <translation id="3756806135608816820">साइट या ब्लूटूथ डिव्हाइस शोधण्याची विनंती करू शकतात</translation>
+<translation id="3756823472711156529">गट रिस्टोअर करा</translation>
 <translation id="3757567010566591880">टूलबारवरून अनपिन करा</translation>
 <translation id="3757645900890881944">शोध साधने</translation>
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
@@ -4827,6 +4832,7 @@
 <translation id="4444304522807523469">USB द्वारा संलग्न केलेल्या किंवा स्थानिक नेटवर्कवरील दस्तऐवज स्कॅनर ॲक्सेस करा</translation>
 <translation id="4444512841222467874">स्थान उपलब्ध केले नसल्यास, वापरकर्ते आणि डेटा स्वयंचलितपणे काढला जाऊ शकतो.</translation>
 <translation id="4445446646109808714">अंतिम वापरकर्ता परवान्याचा करारनामा: <ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">विभाजित दृश्य रिस्टोअर करा</translation>
 <translation id="4446933390699670756">मिरर केलेले</translation>
 <translation id="4448560527907365660">सेव्ह करा आणि आणखी पहा</translation>
 <translation id="4449247303975391730">परवानग्या व्यवस्थापित करा</translation>
@@ -4960,6 +4966,7 @@
 <translation id="4562364000855074606">या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेली ॲप्स ब्लॉक करा. ॲप्स किंवा आशय डाउनलोड करणे प्रतिबंधित करण्यासाठी, Google Play सेटिंग्ज वर जा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">चीनी आरंभिक इनपुट भाषा आहे</translation>
 <translation id="4563382028841851106">खात्यामधून काढून टाका</translation>
+<translation id="4563883094055457792">विभाजित दृश्य &amp;रिस्टोअर करा</translation>
 <translation id="4564245002465020751">तुमच्या फोनवर सेट करणे पूर्ण करा</translation>
 <translation id="456449593072900590">बाहेर पडताना हटवा</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
@@ -5067,7 +5074,6 @@
 <translation id="4638568775382459156">शेअर केलेला टॅब गट यासंबंधित ॲक्टिव्हिटी</translation>
 <translation id="4638930039313743000">ADB डीबगिंग सुरू करा</translation>
 <translation id="4639390152280993480">या पेजचे सुलभ केलेले दृश्य पाहण्यासाठी, आणखी टूल &gt; वाचन मोड वर जा</translation>
-<translation id="4641539339823703554">प्रणाली वेळ सेट करण्यात Chrome अक्षम होते. कृपया खालील वेळ तपासा आणि आवश्यक असल्यास ती दुरुस्त करा.</translation>
 <translation id="4643612240819915418">नवीन टॅबमध्ये व्हिडिओ &amp;उघडा</translation>
 <translation id="4644205769234414680">गुप्त मोडमध्ये अनुमती द्या</translation>
 <translation id="4645322559577140968">{GROUP_COUNT,plural, =1{टॅब गट हटवायचा आहे का?}other{टॅब गट हटवायचे आहेत का?}}</translation>
@@ -5866,6 +5872,7 @@
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> वरून कास्ट करता आले नाही</translation>
 <translation id="5222403284441421673">असुरक्षित डाउनलोड ब्लॉक केले</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
+<translation id="5222710719845250566">विंडो रिस्टोअर करा</translation>
 <translation id="5225324770654022472">अ‍ॅप्स शॉर्टकट दर्शवा</translation>
 <translation id="52254442782792731">सध्याचे दृश्यमानता सेटिंग अद्याप सेट केलेले नाही</translation>
 <translation id="5225463052809312700">कॅमेरा सुरू करा</translation>
@@ -6982,7 +6989,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6078752646384677957">कृपया तुमचा मायक्रोफोन आणि ऑडिओ स्तर तपासा.</translation>
 <translation id="608029822688206592">कोणतेही नेटवर्क आढळले नाही. कृपया तुमचे सिम घाला आणि पुन्हा प्रयत्न करा.</translation>
-<translation id="6080689532560039067">तुमची प्रणाली वेळ तपासा</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - नाव नसलेल्या गटाचा भाग आहे</translation>
 <translation id="6086004606538989567">तुम्ही पडताळणी केलेल्या खात्याला हे डिव्हाइस अ‍ॅक्सेस करण्याची परवानगी नाही.</translation>
 <translation id="6086350918562605938">प्रति सिस्टीम अपडेटर</translation>
@@ -7242,6 +7248,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6266984048393265562">प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> वर तुमच्या स्वतःस प्रमाणीकृत करण्यासाठी एक सर्टिफिकेट निवडा</translation>
 <translation id="6268252012308737255"><ph name="APP" /> सह उघडा</translation>
+<translation id="6269392226729599142">विभाजित दृश्य रिस्टोअर करा</translation>
 <translation id="6270309713620950855">नज म्यूट करणे</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />सिस्टीम आणि ॲप माहिती<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />मेट्रिक्स<ph name="END_LINK2" /> पाठवा</translation>
@@ -8985,6 +8992,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">स्टोरेज, पॉवर, भाषा</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी</translation>
+<translation id="7551303452605464331">विभाजित दृश्य &amp;रिस्टोअर करा</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7552191410769096467">टॅब गट शेअर करण्यासाठी किंवा त्यामध्ये सामील होण्यासाठी, साइन इन करून सिंक सुरू करणे आवश्यक आहे</translation>
 <translation id="7552196109089297786">Microsoft मधून साइन आउट करा</translation>
@@ -11140,6 +11148,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9087949559523851360">प्रतिबंधित वापरकर्ता जोडा</translation>
 <translation id="9088234649737575428">संस्‍थेच्या धोरणाद्वारे <ph name="PLUGIN_NAME" /> ब्लॉक केले आहे</translation>
 <translation id="90885733430013283">वायफाय SSID</translation>
+<translation id="9088578317174654338">Gemini च्या तळाशी असलेली शीट बंद झाली.</translation>
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="9089959054554410481">टचपॅड स्क्रोलिंगची दिशा बदला</translation>
 <translation id="9090044809052745245">तुमचे डिव्हाइस इतरांना कसे दिसते</translation>

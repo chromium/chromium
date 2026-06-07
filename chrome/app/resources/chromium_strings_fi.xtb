@@ -20,6 +20,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Asennus epäonnistui, koska käyttämääsi Windows-versiota ei tueta.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
+<translation id="1186645291482254714">Saat puhelimeen hintaseurantailmoituksia Chromiumin avulla</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="1232234696885483911">Kun avaat kuvahaun, sivun otsikko, URL-osoite ja sisältö (mukaan lukien PDF-tiedostot) lähetetään automaattisesti palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromiumissa. Jos haluat muuttaa tätä, siirry kohtaan "Tilisi Chromiumissa".</translation>
@@ -382,6 +383,7 @@
 <translation id="5294316920224716406">Kun selaat incognito-tilassa, Chromium varoittaa sinua ennen kuin sivusto ladataan suojaamattomalla yhteydellä</translation>
 <translation id="5313228254328109263">Chromiumin sisäinen päivityspalvelu</translation>
 <translation id="5346389065299425353">Tarkenna hakua lisäämällä useita välilehtiä, tiedostoja ja työkaluja</translation>
+<translation id="5348677704241861105">Nopea yleiskatsaus dokumentista ja mahdollisuus esittää kysymyksiä Gemini in Chromiumilla</translation>
 <translation id="5352264705793813212">Chromium on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
 <translation id="5352361688875342522">Muut Chromium-profiilit</translation>
 <translation id="535243042947607642">ChromiumOS ei voinut tallentaa Chromium-dataa Google-tilillesi, koska tilin kirjautumistiedot ovat vanhentuneet</translation>
@@ -490,6 +492,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6390800440335263989">Jatka kirjautumalla Chromiumiin käyttäjänä <ph name="EMAIL" />. Näin varmistat, että organisaatiosi käytännöt ovat käytössä.</translation>
 <translation id="6400112897226594999">Chromium-logo tietokoneen näytöllä.</translation>
 <translation id="6403826409255603130">Chromium on selain, jolla verkkosivut ja sovellukset toimivat salamannopeasti. Se on nopea, vakaa ja helppokäyttöinen. Chromiumin sisäänrakennettu haittaohjelma- ja tietojenkalastelusuojaus tekevät verkkoselauksesta turvallisempaa.</translation>
+<translation id="6414624068245092115">Vahvista henkilöllisyytesi, jotta voit aina käyttää ja tallentaa Chromium-dataa Google-tililläsi</translation>
 <translation id="642132557830635295">Chromium toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti</translation>
 <translation id="6436260184216827876">Kuvahaku ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="6442900851116057561">Käynnistä Chromium-käyttöjärjestelmä uudelleen</translation>

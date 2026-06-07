@@ -645,6 +645,7 @@
 <translation id="3771290962915251154">ההגדרה הזו מושבתת מאחר שבקרת ההורים מופעלת</translation>
 <translation id="3771694256347217732">‏תנאים והגבלות של Google</translation>
 <translation id="3777796259512476958">תתבצע יציאה מהחשבון ברוב האתרים</translation>
+<translation id="3786379886124795923">‏סרקת קוד QR כדי להיכנס ל-Chrome. כדי שנוכל להעביר את הסיסמאות, הסימניות ונתונים נוספים מהפרופיל הזה אנחנו צריכים אישור שלך.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
 <translation id="3792938779249970121">בחירת חשבון</translation>
 <translation id="3795154175078851242">העתקת התמונה עם הקישור</translation>
@@ -829,6 +830,7 @@
 <translation id="4532845899244822526">בחירת תיקייה</translation>
 <translation id="4535755320005483982">קבוצת הכרטיסיות המשותפת "<ph name="GROUP_TITLE" />"</translation>
 <translation id="4537137366307982887">ההצעה להצטרפות לקבלת טיפים נפתחה בגובה מלא</translation>
+<translation id="4537987892902330164">החיבור של <ph name="NAME_OR_EMAIL" /> עדיין פעיל.</translation>
 <translation id="4543131175509360848">אין גיליון של מפתחות גישה</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />)}one{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}two{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_MANY" /> כרטיסיות, <ph name="TAB_COUNT_INCOGNITO" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="4558311620361989323">קיצורי דרך בדפי אינטרנט</translation>
@@ -1286,6 +1288,7 @@
 <translation id="6411219469806822692">אי אפשר לזוז למעלה יותר. יש לנסות להתחיל מחלק גבוה יותר בדף.</translation>
 <translation id="6412215853589222273">‫<ph name="TAB_TITLE" />, כרטיסייה מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="641643625718530986">הדפסה…</translation>
+<translation id="6427723330233512782">התאמה לגובה</translation>
 <translation id="6433501201775827830">בחירת מנוע החיפוש</translation>
 <translation id="6434309073475700221">מחיקה</translation>
 <translation id="6435307030888827407">לא להיכנס לחשבון</translation>
@@ -2024,9 +2027,11 @@
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="94161319503679839">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת, במצב "תמונה בתוך תמונה"</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
+<translation id="949667118776341807">סיבוב</translation>
 <translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="963246339335003378">פתיחת מנהל המשימות</translation>
+<translation id="966337994629449077">‏נכנסת בתור <ph name="FROM_EMAIL" />.\n\nכדי להמשיך מהמחשב צריך לעבור אל <ph name="TO_EMAIL" />. הסיסמאות, הסימניות ועוד נתונים שלך מהחשבון הזה יופיעו שם.</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>

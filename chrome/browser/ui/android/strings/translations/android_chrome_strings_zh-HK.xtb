@@ -356,7 +356,7 @@
 <translation id="253498598929009420">網站將可見到您螢幕上的內容</translation>
 <translation id="2535807170289627159">所有分頁</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
-<translation id="2537574774089209541">我們調整了部分工具的位置，方便你在瀏覽時使用 Gemini</translation>
+<translation id="2537574774089209541">部分工具已移動，方便你在瀏覽時使用 Gemini</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />，揀咗已經靜音嘅固定無痕式分頁</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />，分頁</translation>
@@ -605,7 +605,7 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3614126103057878858">價格分析資料</translation>
 <translation id="3616113530831147358">音效檔案</translation>
-<translation id="3616798734782988169">請確認你信任 <ph name="DOWNLOAD_DOMAIN" /></translation>
+<translation id="3616798734782988169">請確保你信任 <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">管理存取權</translation>
 <translation id="3622349720008044802">管理視窗</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 個網站}other{+ # 個網站}}</translation>
@@ -636,7 +636,7 @@
 <translation id="3738139272394829648">輕觸搜尋</translation>
 <translation id="3739455665973395693">Google 帳戶中沒有被盜用的密碼</translation>
 <translation id="3739899004075612870">已在 <ph name="PRODUCT_NAME" /> 中新增書籤</translation>
-<translation id="3740290940447881599">請確認你信任這個網站</translation>
+<translation id="3740290940447881599">請確保你信任此網站</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
 <translation id="3763110477555836428">使用此卡結帳時，系統會填入虛擬卡號以保護你的真實資料。你可以在「Google 錢包」中管理資料。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">部分資料尚未儲存</translation>
@@ -1536,7 +1536,7 @@
 <translation id="7291910923717764901">已為此頁面新增圖片描述</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，揀咗分享緊內容嘅固定分頁</translation>
-<translation id="7304003340539141201">讓 Gemini 協助處理分頁和工作</translation>
+<translation id="7304003340539141201">讓 Gemini 助你處理分頁和工作</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
@@ -1883,7 +1883,7 @@
 <translation id="8696297579102085705">傳送至你的裝置</translation>
 <translation id="8697753151306746444">改為分享視窗或畫面</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
-<translation id="8700565880437506364">隆重推出 Chrome 內建 Gemini</translation>
+<translation id="8700565880437506364">為你介紹 Chrome 版 Gemini</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8715286883001906001">提升 Google 帳戶中的密碼強度</translation>
 <translation id="8715300232952757586">「<ph name="TAB_TITLE" />」將會關閉</translation>
@@ -1951,7 +1951,7 @@
 <translation id="8996847606757455498">選擇其他供應商</translation>
 <translation id="8998837250940831980">無法將分頁縮到最小，請稍後再試。</translation>
 <translation id="9001604755921395912">在 Chrome 無痕式分頁中開啟</translation>
-<translation id="9010094279589497751">隨時都能快速開啟 Gemini</translation>
+<translation id="9010094279589497751">需要時快速開啟 Gemini</translation>
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
 <translation id="9019199799064251516">要在不鎖定汽車設定檔的情況下繼續嗎？</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
@@ -2009,7 +2009,7 @@
 <translation id="9190355771000652811">在網址列中，將此鍵盤快速鍵與搜尋引擎和站內搜尋捷徑配合使用。</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />，已固定及選取的無痕式分頁</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
-<translation id="9202894533863490414">要從這個網站下載內容嗎？</translation>
+<translation id="9202894533863490414">要從這個網站下載嗎？</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>
 <translation id="9205933215779845960">找不到該頁面。請檢查拼字，或嘗試在 <ph name="SEARCH_ENGINE" /> 上搜尋。</translation>
 <translation id="9206873250291191720">A</translation>

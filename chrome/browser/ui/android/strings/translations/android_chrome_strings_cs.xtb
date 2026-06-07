@@ -356,6 +356,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="253498598929009420">Web bude moci vidět obsah vaší obrazovky</translation>
 <translation id="2535807170289627159">Všechny karty</translation>
 <translation id="2536728043171574184">Prohlížíte offline kopii stránky</translation>
+<translation id="2537574774089209541">Některé nástroje byly přesunuty, abyste měli při prohlížení snadno přístup k Gemini</translation>
 <translation id="2539002604555291451">Bezpatkové</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, vybraná připnutá ztlumená anonymní karta</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, karta</translation>
@@ -404,6 +405,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2751271371269891762">Pokud své záložky a další položky chcete mít na všech svých zařízeních, přihlaste se jako <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/RR</translation>
 <translation id="2762000892062317888">právě teď</translation>
+<translation id="276378135349383280">Zobrazit Gemini na spodní liště</translation>
 <translation id="276969039800130567">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Zbývá: <ph name="SECONDS" /> s</translation>
 <translation id="2779651927720337254">nezdařilo se</translation>
@@ -603,6 +605,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3602290021589620013">Náhled</translation>
 <translation id="3614126103057878858">Informace o ceně</translation>
 <translation id="3616113530831147358">Zvuk</translation>
+<translation id="3616798734782988169">Rozmyslete si, jestli webu <ph name="DOWNLOAD_DOMAIN" /> důvěřujete</translation>
 <translation id="3619255692378312441">Spravovat přístup</translation>
 <translation id="3622349720008044802">Spravovat okna</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 web}few{+ # weby}many{+ # webu}other{+ # webů}}</translation>
@@ -633,6 +636,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3738139272394829648">Vyhledání klepnutím</translation>
 <translation id="3739455665973395693">V účtu Google nemáte žádná prolomená hesla</translation>
 <translation id="3739899004075612870">Přidáno do záložek (<ph name="PRODUCT_NAME" />)</translation>
+<translation id="3740290940447881599">Rozmyslete si, jestli tomuhle webu důvěřujete</translation>
 <translation id="3740525748616366977">Hlasové vyhledávání není v tomto zařízení k dispozici</translation>
 <translation id="3763110477555836428">Při placení touto kartou se vyplní číslo virtuální karty, aby byly vaše skutečné údaje chráněny. Tuto funkci můžete spravovat v Peněžence Google. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Některá data ještě nejsou uložena</translation>
@@ -641,6 +645,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3771290962915251154">Toto nastavení je vypnuto, protože je zapnutá rodičovská kontrola</translation>
 <translation id="3771694256347217732">Smluvní podmínky společnosti Google</translation>
 <translation id="3777796259512476958">Budete odhlášeni z většiny webů</translation>
+<translation id="3786379886124795923">Naskenovali jste QR kód k přihlášení do Chromu. Potvrďte, že chcete získat hesla, záložky a další položky z tohoto profilu.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="3792938779249970121">Vybrat účet</translation>
 <translation id="3795154175078851242">Kopírovat obrázek s odkazem</translation>
@@ -825,6 +830,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4532845899244822526">Výběr složky</translation>
 <translation id="4535755320005483982">Sdílená skupina karet <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Přihlášení k odběru oznámení s tipy otevřené na celou výšku</translation>
+<translation id="4537987892902330164">Zůstali jste přihlášeni jako <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta}few{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}many{<ph name="TAB_COUNT_MANY" /> karty, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}other{<ph name="TAB_COUNT_MANY" /> karet, anonymní: <ph name="TAB_COUNT_INCOGNITO" />}}</translation>
 <translation id="4558311620361989323">Zkratky webových stránek</translation>
@@ -1282,6 +1288,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6411219469806822692">Výše už přejít nelze. Zkuste začít výše na stránce.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, jedna z několika vybraných karet</translation>
 <translation id="641643625718530986">Tisk…</translation>
+<translation id="6427723330233512782">Přizpůsobit výšce</translation>
 <translation id="6433501201775827830">Vyberte vyhledávač</translation>
 <translation id="6434309073475700221">Zahodit</translation>
 <translation id="6435307030888827407">Odhlásit trvale</translation>
@@ -1529,6 +1536,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7291910923717764901">Byly přidány popisy obrázků pro tuto stránku</translation>
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, vybraná připnutá sdílející karta</translation>
+<translation id="7304003340539141201">Požádat Gemini o pomoc s kartami a úkoly</translation>
 <translation id="7311244614769792472">Žádné výsledky</translation>
 <translation id="7314734791127433392">Hesla nelze zkontrolovat</translation>
 <translation id="7324354302972299151">Odesílat požadavek Do Not Track</translation>
@@ -1875,6 +1883,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8696297579102085705">Odeslat na vaše zařízení</translation>
 <translation id="8697753151306746444">Místo toho sdílet okno nebo obrazovku</translation>
 <translation id="8699120352855309748">Nenabízet překlad do těchto jazyků</translation>
+<translation id="8700565880437506364">Představujeme Gemini v Chromu</translation>
 <translation id="8712637175834984815">Hotovo</translation>
 <translation id="8715286883001906001">Zesilte hesla ve svém účtu Google</translation>
 <translation id="8715300232952757586">Karta <ph name="TAB_TITLE" /> se zavře</translation>
@@ -1942,6 +1951,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8996847606757455498">Vybrat jiného poskytovatele</translation>
 <translation id="8998837250940831980">Kartu se nepodařilo minimalizovat. Zkuste to později.</translation>
 <translation id="9001604755921395912">Otevřít na anonymní kartě v Chromu</translation>
+<translation id="9010094279589497751">Rychle Gemini otevřete, kdykoli potřebujete</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>
 <translation id="9019199799064251516">Pokračovat bez zámku profilu auta?</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>
@@ -1999,6 +2009,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9190355771000652811">Tuto klávesovou zkratku používejte v adresním řádku se zkratkami pro vyhledávače a vyhledávání na webech.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, vybraná připnutá anonymní karta</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
+<translation id="9202894533863490414">Stáhnout z tohoto webu?</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>
 <translation id="9205933215779845960">Stránku nelze najít. Zkontrolujte, zda jste neudělali překlep, nebo ji zkuste najít vyhledávačem <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2016,9 +2027,11 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="939598580284253335">Zadat heslovou frázi</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, připnutá anonymní karta s obrazem v obraze</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
+<translation id="949667118776341807">Otočit</translation>
 <translation id="95817756606698420">Chrome může v Číně k vyhledávání používat službu <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Tuto volbu můžete změnit v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Vymazat údaje o prohlížení</translation>
 <translation id="963246339335003378">Otevřít Správce úloh</translation>
+<translation id="966337994629449077">Jste přihlášeni jako <ph name="FROM_EMAIL" />.\n\nPokud chcete pokračovat z počítače, přepněte na účet <ph name="TO_EMAIL" />. Získáte hesla, záložky a další položky z tohoto účtu.</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>

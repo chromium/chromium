@@ -114,7 +114,6 @@
 <translation id="1369286077209859800">Ipakita ang lahat ng tab sa grupo ng tab</translation>
 <translation id="136942498637440594">Puwede mong hanapin ang mga larawan at kung ano ang makikita mo.</translation>
 <translation id="1373120905936431262">Mag-upload ng larawang ire-remix gamit ang Nano Banana</translation>
-<translation id="1377321085342047638">Numero ng Card</translation>
 <translation id="1377508275003315939">Mga Password</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} sa {count} address}one{{position} sa {count} address}other{{position} sa {count} na address}}</translation>
 <translation id="1383876407941801731">Hanapin</translation>
@@ -749,7 +748,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, pinapamahalaan ng iyong organisasyon.</translation>
 <translation id="3580448612293054698">I-update ang <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Mag-alok na mag-translate ng mga page sa iba pang wika</translation>
-<translation id="3583726884554296148">I-save ang iyong card sa Google Account mo para i-autofill ito para sa pagbiling ito at mga pagbili sa hinaharap na gagawin sa Chrome</translation>
 <translation id="3587482841069643663">Lahat</translation>
 <translation id="3587885837929752825">Nililimitahan ng iyong organisasyon kung ano ang puwede mong i-save sa iyong Google Account.</translation>
 <translation id="3588820906588687999">Buksan ang Larawan sa Bagong Tab</translation>
@@ -950,7 +948,6 @@
 <translation id="4289309730265289297">Library ng Larawan</translation>
 <translation id="429074084062258019">{count,plural, =1{Magdagdag ng Tab sa Grupo}one{Magdagdag ng Mga Tab sa Grupo}other{Magdagdag ng Mga Tab sa Grupo}}</translation>
 <translation id="4294506173142861371">Mag-sign in bilang si <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">I-scan ang card at i-autofill</translation>
 <translation id="4302061870579014542">Itakda ang posisyon</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4306349443295056740">Paglagda ng OCSP</translation>
@@ -1720,7 +1717,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6807287147325542056">Mga password sa iba pang app</translation>
 <translation id="681368974849482173">Nagawa ang item</translation>
 <translation id="681631578600400068">I-save ang lisensya sa pagmamaneho</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Na-save ang bookmark sa iyong Google Account na {email}}one{Na-save ang {count} bookmark sa iyong Google Account na {email}}other{Na-save ang {count} na bookmark sa iyong Google Account na {email}}}</translation>
 <translation id="6826004672264649705">Kasalukuyang sinusubaybayan ang produktong ito. Buksan para makita ang history ng presyo</translation>
 <translation id="6830728435402077660">Hindi secure</translation>
@@ -2285,6 +2281,7 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="8694281486652655615">Ipapakita ang item na ito</translation>
 <translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="8697136149718343437">Ilipat ang address bar sa ibaba</translation>
+<translation id="869891660844655955">Expiration date</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Magagawa mong mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="8709409604518538305">Isinara ang mga tab</translation>

@@ -614,6 +614,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3635073343384702370">Masusuri ng Chrome ang iyong mga password kapag na-save mo ang mga ito</translation>
 <translation id="3636940436873918441">Mga gustong wika</translation>
 <translation id="3637744895182738742">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" /> - <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Pumunta sa Home sa Google App</translation>
 <translation id="368329460027487650">Naka-sign out. Magbubukas ng mga opsyon sa pag-sign in.</translation>
@@ -638,6 +639,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3739899004075612870">Naka-bookmark sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="3740290940447881599">Tiyaking pinagkakatiwalaan mo ang site na ito</translation>
 <translation id="3740525748616366977">Hindi available ang Paghahanap gamit ang boses sa device na ito</translation>
+<translation id="3756823472711156529">I-restore ang grupo</translation>
 <translation id="3763110477555836428">May numero ng virtual card na ilalagay kapag nag-check out ka gamit ang card na ito para maprotektahan ang iyong mga aktwal na detalye. Pamahalaan sa Google Wallet. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual card<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Hindi pa nase-save ang ilang data</translation>
 <translation id="3770620323585347665">Pangalanan ang window</translation>

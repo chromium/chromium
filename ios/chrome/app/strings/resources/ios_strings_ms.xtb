@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Anda boleh kembali ke sini untuk membuka semula tab yang baru anda tutup</translation>
 <translation id="1016495303386450659">Item dikemas kini</translation>
+<translation id="1018804590490383958">Imbas dan autolengkap</translation>
 <translation id="1019990162050689579">Aktiviti Apl Gemini</translation>
 <translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1030376737535466765">Buka Password Manager</translation>
@@ -114,7 +115,6 @@
 <translation id="1369286077209859800">Tunjukkan semua tab dalam kumpulan tab</translation>
 <translation id="136942498637440594">Anda boleh mencari imej dan perkara yang anda lihat.</translation>
 <translation id="1373120905936431262">Muat naik imej untuk diadun semula dengan Nano Banana</translation>
-<translation id="1377321085342047638">Nombor Kad</translation>
 <translation id="1377508275003315939">Kata laluan</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} daripada {count} alamat}other{{position} daripada {count} alamat}}</translation>
 <translation id="1383876407941801731">Carian</translation>
@@ -749,7 +749,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, diurus oleh organisasi anda.</translation>
 <translation id="3580448612293054698">Kemas kinikan <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tawaran untuk menterjemah halaman dalam bahasa lain</translation>
-<translation id="3583726884554296148">Simpan kad anda dalam Google Account anda untuk membuat autolengkap kad tersebut bagi pembelian ini dan pembelian masa hadapan yang dibuat pada Chrome</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587885837929752825">Organisasi anda mengehadkan perkara yang boleh anda simpan dalam Google Account anda.</translation>
 <translation id="3588820906588687999">Buka Imej dalam Tab Baharu</translation>
@@ -950,7 +949,6 @@
 <translation id="4289309730265289297">Pustaka Foto</translation>
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab pada Kumpulan}other{Tambahkan Tab pada Kumpulan}}</translation>
 <translation id="4294506173142861371">Log masuk sebagai <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Imbas kad dan autolengkap</translation>
 <translation id="4302061870579014542">Tetapkan kedudukan</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
 <translation id="4306349443295056740">Penandatanganan OCSP</translation>
@@ -1552,6 +1550,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Pilih kedudukan bar alamat anda</translation>
 <translation id="6307241780749477694">Sahkan identiti anda untuk mendapatkan akses kepada semua kata laluan anda pada peranti ini</translation>
+<translation id="6307792728709337290">Simpan kad anda dalam Google Account anda untuk membuat autolengkap kad tersebut bagi pembelian ini dan pembelian masa hadapan yang dibuat pada Chrome.</translation>
 <translation id="6316141353357700666">Pilih kata laluan yang mahu digunakan daripada senarai yang dipaparkan.</translation>
 <translation id="6321526113093607004">Tambahkan pada Penanda Halaman</translation>
 <translation id="6327249202318869726">Gemini dimatikan untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
@@ -1720,7 +1719,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6807287147325542056">Kata laluan dalam apl lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="681631578600400068">Simpan lesen memandu</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{{count} penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="6826004672264649705">Sedang menjejaki produk ini. Buka untuk melihat sejarah harga</translation>
 <translation id="6830728435402077660">Tidak selamat</translation>
@@ -2285,6 +2283,7 @@ Untuk meneruskan proses daripada komputer anda, beralih kepada <ph name="OTHER_E
 <translation id="8694281486652655615">Menunjukkan item ini</translation>
 <translation id="8696297579102085705">Hantar kepada peranti anda</translation>
 <translation id="8697136149718343437">Alihkan bar alamat kepada bahagian bawah</translation>
+<translation id="869891660844655955">Tarikh tamat tempoh</translation>
 <translation id="8706253136355675497">Suhu</translation>
 <translation id="8706806585855470492">Anda akan dapat berkongsi, menyertai dan bekerjasama dalam kumpulan tab</translation>
 <translation id="8709409604518538305">Tab telah ditutup</translation>

@@ -153,7 +153,7 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="2580411288591421699">Nije moguće instalirati istu verziju Google Chromea koja je trenutno pokrenuta. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Na ovaj način će se podaci o pregledanju izbrisati s ovog uređaja. Da preuzmete svoje podatke kasnije, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Keširanje preuzetog programa za instaliranje nije uspjelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
-<translation id="2608461706055011366">Zatražite brzi pregled ovog dokumenta i postavite pitanja uz Gemini u Chromeu</translation>
+<translation id="2608461706055011366">Dobijte brzi pregled ovog dokumenta i postavljajte pitanja putem Geminija u Chromeu</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="263447411082773721">Održavajte lozinke, oznake i historiju savršeno sinhroniziranim na svim uređajima. Ažurirajte zadani preglednik na Chrome da lako pristupate funkcijama koje poznajete i volite. Chrome će se zakačiti na traku zadataka radi brzog pristupa.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -192,6 +192,7 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="2945997411976714835">Greška prilikom instaliranja: pokretanje postupka programa za instaliranje nije uspjelo.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
 <translation id="2970681950995291301">Da uklonite Google račun iz Chromea, odjavite se iz tog preglednika na stranici Postavke</translation>
+<translation id="2976869732253036751">Dobijajte obavještenja o praćenju cijena putem Chromea na telefonu</translation>
 <translation id="2991167882679440829">Lozinke i drugi podaci Chromea koji su sačuvani na Google računu će se ukloniti s uređaja. Da ih ponovo koristite u Chromeu, prijavite se ponovo.</translation>
 <translation id="2994465299455873643">Pruža usluge šifriranja i siguran način oporavka preglednika <ph name="BROWSER_NAME" /> ako zastari. Ako se ova usluga onemogući, <ph name="BROWSER_NAME" /> može izgubiti pristup šifriranim podacima i <ph name="BROWSER_NAME" /> se možda neće moći samostalno oporaviti.</translation>
 <translation id="3003694935412297923">Svi zadaci</translation>
@@ -757,7 +758,7 @@ Nove oznake se ne mogu sačuvati na vaš račun dok ne izbrišete neke. Ako se s
 <translation id="8624541899164515475">Postavke; otvara se na novoj kartici.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome će se ponovo pokrenuti za 1 minutu}one{Chrome će se ponovo pokrenuti za # minutu}few{Chrome će se ponovo pokrenuti za # minute}other{Chrome će se ponovo pokrenuti za # minuta}}</translation>
 <translation id="8637932705841171563">Da podijelite prozor, dozvolite snimanje ekrana za Chrome u Postavkama sistema</translation>
-<translation id="8642497536370021917">Da biste uvijek mogli upotrebljavati i spremati podatke iz Chromea na svojem Google računu, potvrdite svoj identitet</translation>
+<translation id="8642497536370021917">Da uvijek možete koristiti i pohranjivati podatke Chromea na Google računu, potvrdite identitet</translation>
 <translation id="8656634243791296665">Otvorite Gemini u Chrome Devu</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Također kontrolira koja stranica se prikazuje kada pokrenete Chrome.</translation>

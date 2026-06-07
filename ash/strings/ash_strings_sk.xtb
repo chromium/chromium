@@ -532,6 +532,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="254900897760075745">Skopírovanie vybraného obsahu do schránky</translation>
 <translation id="2549711466868162843">Zlepšenie osvetlenia</translation>
 <translation id="2549985041256363841">Spustiť zaznamenávanie</translation>
+<translation id="2552966063069741410">Časové pásmo</translation>
 <translation id="2562459326218811217">Zariadenie je pripojené, ale nenabíja sa. Skúste použiť nabíjačku s vyšším výkonom vo wattoch alebo pôvodnú.</translation>
 <translation id="256712445991462162">ukotvená lupa</translation>
 <translation id="2573588302192866788">Zariadenie <ph name="NAME" /> sa nepodarilo pripojiť</translation>
@@ -621,6 +622,7 @@ Ak to neurobíte, vstavaný touchpad sa znova aktivuje o <ph name="TIMEOUT_SECO
 <translation id="2838379631617906747">Inštalácia</translation>
 <translation id="2838589015763961627">Ak chcete zmeniť veľkosť, ukončite režim celej obrazovky</translation>
 <translation id="2840766858109427815">Prejsť na ďalšiu stranu</translation>
+<translation id="2841013758207633010">Čas</translation>
 <translation id="2841907151129139818">Prepnuté na režim tabletu</translation>
 <translation id="2843560154284403323">Ak chcete dokončiť nastavovanie systému Linux, aktualizujte Chrome OS a skúste to znova.</translation>
 <translation id="2844169650293029770">Zariadenie USB-C (port vľavo vpredu)</translation>
@@ -1277,6 +1279,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="4633636853437260449">Položku odstránite stlačením klávesov Ctrl + W</translation>
 <translation id="4633757335284074492">Zálohovanie na Disk Google. Jednoducho kedykoľvek obnovte údaje alebo prejdite na iné zariadenie. Táto záloha zahrnuje dáta aplikácií. Zálohy sa nahrajú do Googlu a zašifrujú pomocou hesla účtu Google vášho dieťaťa.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Teraz aktualizujte zariadenie na predchádzajúcu verziu}=1{Do 1 sekundy aktualizujte zariadenie na predchádzajúcu verziu}few{Do # sekúnd aktualizujte zariadenie na predchádzajúcu verziu}many{Do # sekundy aktualizujte zariadenie na predchádzajúcu verziu}other{Do # sekúnd aktualizujte zariadenie na predchádzajúcu verziu}}</translation>
+<translation id="4641539339823703554">Prehliadaču Chrome sa nepodarilo nastaviť čas systému. Skontrolujte čas nižšie a v prípade potreby ho opravte.</translation>
 <translation id="4642092649622328492">Vytvorenie čiastočnej snímky obrazovky</translation>
 <translation id="4643833688073835173">Váš Chromebook rozpoznáva ľudí pred svojou obrazovkou vstavaným senzorom. Všetky údaje sa spracúvajú vo vašom zariadení a potom sú odstránené. Dáta senzorov sa nikdy neodosielajú Googlu.</translation>
 <translation id="4644727592819780893">Oblasť je príliš malá na zobrazenie ukážky v kamere</translation>
@@ -1799,6 +1802,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="6073451960410192870">Zastaviť zaznamenávanie</translation>
 <translation id="6074087755403037157">Beta verzia</translation>
 <translation id="6075098173600599596">Zmeniť veľké písmená</translation>
+<translation id="6080689532560039067">Kontrola času systému</translation>
 <translation id="6091929401758362855">Zoznam: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Zakázané správcom</translation>
 <translation id="6095008505822982596">Rýchlosť reči</translation>

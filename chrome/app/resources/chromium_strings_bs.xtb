@@ -22,6 +22,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalacija nije uspjela jer vaša verzija Windowsa nije podržana.</translation>
 <translation id="1185134272377778587">O programu Chromium</translation>
+<translation id="1186645291482254714">Dobijajte obavještenja o praćenju cijena putem Chromiuma na telefonu</translation>
 <translation id="1203500561924088507">Hvala što ste instalirali. Morate ponovo pokrenuti preglednik prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1232234696885483911">Kada otvorite pretraživanje pomoću slika, naslov, URL i sadržaj stranice, uključujući PDF-ove, automatski će se poslati na server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromiumu. Da promijenite ovo, idite na "Vaš račun u Chromiumu".</translation>
@@ -384,7 +385,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="5294316920224716406">Prilikom pregledanja u anonimnom načinu rada Chromium će vas upozoriti prije učitavanja web lokacije putem nesigurne veze</translation>
 <translation id="5313228254328109263">Interna usluga za ažuriranje Chromiuma</translation>
 <translation id="5346389065299425353">Produbite pretraživanje dodavanjem više kartica, fajlova i alata</translation>
-<translation id="5348677704241861105">Dohvatite brzi pregled ovog dokumenta i postavite pitanja Geminiju u Chromiumu</translation>
+<translation id="5348677704241861105">Dobijte brzi pregled ovog dokumenta i postavljajte pitanja putem Geminija u Chromiumu</translation>
 <translation id="5352264705793813212">Chromium je pronašao neke sigurnosne preporuke koje trebate pregledati</translation>
 <translation id="5352361688875342522">Drugi profili u Chromiumu</translation>
 <translation id="535243042947607642">ChromiumOS nije mogao sačuvati podatke Chromiuma na Google računu jer su podaci za prijavu na račun zastarjeli</translation>
@@ -493,7 +494,7 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="6390800440335263989">Da nastavite, prijavite se u Chromium kao <ph name="EMAIL" />. Ovo osigurava da se pravila organizacije primjenjuju.</translation>
 <translation id="6400112897226594999">Logotip Chromiuma na ekranu računara.</translation>
 <translation id="6403826409255603130">Chromium je novi preglednik koji pokreće web stranice i aplikacije brzinom svjetlosti. On je brz, stabilan i jednostavan za upotrebu. Krećite se internetom u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima koji su ugrađeni u Chromium.</translation>
-<translation id="6414624068245092115">Da biste uvijek mogli upotrebljavati i spremati podatke iz Chromiuma na svojem Google računu, potvrdite svoj identitet</translation>
+<translation id="6414624068245092115">Da uvijek možete koristiti i pohranjivati podatke Chromiuma na Google računu, potvrdite identitet</translation>
 <translation id="642132557830635295">Chromium radi brže i funkcije koje koriste JavaScript bi trebale raditi kako je predviđeno</translation>
 <translation id="6436260184216827876">Pretraživanje pomoću slika nije dostupno. Pokušajte ponovo kasnije.</translation>
 <translation id="6442900851116057561">Ponovo pokrenite ChromiumOS</translation>

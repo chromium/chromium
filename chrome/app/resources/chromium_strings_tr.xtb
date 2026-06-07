@@ -20,6 +20,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Windows sürümünüz desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
+<translation id="1186645291482254714">Telefonunuzda Chromium ile fiyat takibi uyarıları alın</translation>
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
 <translation id="1232234696885483911">Görsel aramayı açtığınızda sayfa başlığı, URL'si ve içeriği (PDF'ler dahil) otomatik olarak sunucuya gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Oturumunuz açıkken Chromium'da Google Hesabınızdaki şifrelerinizi ve diğer öğeleri kullanabilirsiniz. Bunu değiştirmek için "Chromium'daki hesabınız" bölümüne gidin.</translation>
@@ -67,6 +68,7 @@
 <translation id="1749104137266986751">Chromium, HTTPS kullanılamadığında size uyarı göndermeden güvenli olmayan bir bağlantı kullanır</translation>
 <translation id="1774152462503052664">Chromium'un arka planda çalışmasına izin ver</translation>
 <translation id="1779356040007214683">Chromium'u daha güvenli bir hale getirmek için <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> altında listelenmeyen ve bilginiz dışında eklenmiş olabilecek bazı uzantıları devre dışı bıraktık.</translation>
+<translation id="1793486931176048546">Hızlı erişim için Chromium'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BEGIN_BOLD" />Evet<ph name="END_BOLD" /> düğmesini tıklayın.</translation>
 <translation id="1808667845054772817">Chromium'u yeniden yükle</translation>
 <translation id="1820835682567584003">Chromium şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697"><ph name="DEVICE_TYPE" /> cihazınızda, Chromium'u bir sonraki açışınızda Google Şifre Yöneticisi'ni kullanmanız için bir istem görürsünüz.</translation>
@@ -381,6 +383,7 @@
 <translation id="5348677704241861105">Chromium'da Gemini ile bu belgenin kısa bir özetini alın ve soru sorun</translation>
 <translation id="5352264705793813212">Chromium, incelemeniz gereken bazı güvenlik önerileri tespit etti</translation>
 <translation id="5352361688875342522">Diğer Chromium Profilleri</translation>
+<translation id="535243042947607642">ChromiumOS, hesap oturum açma bilgileriniz güncel olmadığı için Chromium verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="5358375970380395591">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Chromium profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chromium verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Ekstra kod: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Kişiselleştirme için Chromium'u Web ve Uygulama Etkinliği'ne ekleyin</translation>
@@ -715,6 +718,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8852026904190808918">Bu dil, Chromium'da menüleri, ayarları, uyarıları ve diğer metinleri görüntülemek için kullanılır</translation>
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>
 <translation id="8876044221123442390">Chromium Profili ekle</translation>
+<translation id="8890569919834781711">ChromiumOS, oturum açma sırasında yaşanan bir hata nedeniyle Chromium verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="8891709362986793894">Kuruluşunuz, Chromium'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8932992523185907506">Chromium artık varsayılan tarayıcınız değil. Chromium varsayılan tarayıcı olsun mu?</translation>

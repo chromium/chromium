@@ -22,6 +22,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
+<translation id="1186645291482254714">휴대전화에서 Chromium으로 가격 추적 알림을 받으세요</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
 <translation id="1232234696885483911">이미지 검색을 열면 페이지 제목, URL, PDF를 포함한 콘텐츠가 서버로 자동 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">로그인한 상태로 Chromium에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. 이 설정을 변경하려면 'Chromium의 내 계정'으로 이동하세요.</translation>

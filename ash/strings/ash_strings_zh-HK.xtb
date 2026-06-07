@@ -532,6 +532,7 @@
 <translation id="254900897760075745">將選取的內容複製至剪貼簿</translation>
 <translation id="2549711466868162843">改善光線</translation>
 <translation id="2549985041256363841">開始錄影</translation>
+<translation id="2552966063069741410">時區</translation>
 <translation id="2562459326218811217">裝置已接上電源但非充電中。請嘗試使用瓦特 (W) 更高的充電器，或使用原裝充電器。</translation>
 <translation id="256712445991462162">固定的放大鏡</translation>
 <translation id="2573588302192866788">無法連接「<ph name="NAME" />」</translation>
@@ -621,6 +622,7 @@
 <translation id="2838379631617906747">正在安裝</translation>
 <translation id="2838589015763961627">離開全螢幕以調整大小</translation>
 <translation id="2840766858109427815">前往下一頁</translation>
+<translation id="2841013758207633010">時間</translation>
 <translation id="2841907151129139818">已切換至平板電腦模式</translation>
 <translation id="2843560154284403323">如要完成 Linux 的設定程序，請更新 Chrome OS，然後再試一次。</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
@@ -1275,6 +1277,7 @@
 <translation id="4633636853437260449">㩒一下 Ctrl+W 就可以刪除</translation>
 <translation id="4633757335284074492">備份至「Google 雲端硬碟」。您可隨時輕鬆還原資料或改用其他裝置。備份包含應用程式資料。備份會上載至 Google，並使用您子女的 Google 帳戶密碼加密。</translation>
 <translation id="4635501805800894201">{0,plural, =0{立即將裝置更新為先前的版本}=1{在 1 秒內將裝置更新為先前的版本}other{在 # 秒內將裝置更新為先前的版本}}</translation>
+<translation id="4641539339823703554">Chrome 無法設定系統時間。請檢查下方的時間，並按需要修正。</translation>
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4643833688073835173">Chromebook 會使用內置感應器偵測裝置前的人。系統會在裝置上立即處理所有資料，然後刪除。系統不會將感應器資料傳送至 Google。</translation>
 <translation id="4644727592819780893">區域太小，無法顯示攝錄機預覽畫面</translation>
@@ -1794,6 +1797,7 @@
 <translation id="6073451960410192870">停止錄影</translation>
 <translation id="6074087755403037157">測試版</translation>
 <translation id="6075098173600599596">變更大小楷</translation>
+<translation id="6080689532560039067">請檢查您的系統時間</translation>
 <translation id="6091929401758362855">播放清單：<ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">已由管理員停用</translation>
 <translation id="6095008505822982596">語速</translation>

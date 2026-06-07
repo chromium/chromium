@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Geselecteerde content kopiëren naar klembord</translation>
 <translation id="2549711466868162843">Belichting verbeteren</translation>
 <translation id="2549985041256363841">Opname starten</translation>
+<translation id="2552966063069741410">Tijdzone</translation>
 <translation id="2562459326218811217">Apparaat is aangesloten, maar wordt niet opgeladen. Probeer een oplader met een hoger wattage (W) of gebruik je oorspronkelijke oplader.</translation>
 <translation id="256712445991462162">het vastgezette vergrootglas</translation>
 <translation id="2573588302192866788">Kan <ph name="NAME" /> niet koppelen</translation>
@@ -621,6 +622,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2838379631617906747">Installeren</translation>
 <translation id="2838589015763961627">Sluit het volledige scherm om het formaat te wijzigen</translation>
 <translation id="2840766858109427815">Ga verder naar de volgende pagina</translation>
+<translation id="2841013758207633010">Tijd</translation>
 <translation id="2841907151129139818">Overgeschakeld naar tabletmodus</translation>
 <translation id="2843560154284403323">Als je de installatie van Linux wilt afronden, update je Chrome OS en probeer je het opnieuw.</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
@@ -1275,6 +1277,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4633636853437260449">Druk op Ctrl + W om te verwijderen</translation>
 <translation id="4633757335284074492">Maak een back-up op Google Drive. Zet gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Update het apparaat nu naar een eerdere versie}=1{Update het apparaat binnen 1 seconde naar een eerdere versie}other{Update het apparaat binnen # seconden naar een eerdere versie}}</translation>
+<translation id="4641539339823703554">Chrome kan de systeemtijd niet instellen. Controleer hieronder de tijd en corrigeer deze indien nodig.</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
 <translation id="4643833688073835173">Je Chromebook gebruikt een ingebouwde sensor om mensen voor je apparaat waar te nemen. Alle gegevens worden onmiddellijk verwerkt op je apparaat en daarna verwijderd. Sensorgegevens worden nooit naar Google gestuurd.</translation>
 <translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
@@ -1795,6 +1798,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="6074087755403037157">Bètakanaal</translation>
 <translation id="6075098173600599596">Hoofdlettergebruik wijzigen</translation>
+<translation id="6080689532560039067">De systeemtijd controleren</translation>
 <translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Uitgezet door beheerder</translation>
 <translation id="6095008505822982596">Spreeksnelheid</translation>

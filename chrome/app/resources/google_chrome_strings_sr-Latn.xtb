@@ -153,6 +153,7 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="2580411288591421699">Nije moguće instalirati verziju Google Chrome pregledača koja je ista kao trenutno pokrenuta verzija. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Ovim ćete izbrisati podatke pregledanja sa uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Keširanje preuzetog instalacionog programa nije uspelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Pogledajte brz pregled ovog dokumenta i postavljajte pitanja pomoću Gemini-ja u Chrome-u</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="263447411082773721">Sinhronizujte lozinke, obeleživače i istoriju na svim uređajima. Ažurirajte podrazumevani pregledač na Chrome da biste lako pristupali funkcijama koje znate i volite. Chrome će biti zakačen na traku zadataka radi brzog pristupa.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -191,6 +192,7 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="2945997411976714835">Greška pri instalaciji: Proces instalacije nije uspeo.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijavljivanje na mrežu – Chrome</translation>
 <translation id="2970681950995291301">Da biste uklonili Google nalog iz Chrome-a, odjavite se iz Chrome-a na stranici Podešavanja</translation>
+<translation id="2976869732253036751">Dobijajte obaveštenja o praćenju cena uz Chrome na telefonu</translation>
 <translation id="2991167882679440829">Lozinke i drugi Chrome podaci koje ste sačuvali na Google nalogu biće uklonjeni sa ovog uređaja. Da biste ih ponovo koristili u Chrome-u, ponovo se prijavite.</translation>
 <translation id="2994465299455873643">Pruža usluge šifrovanja i bezbedan način za oporavak pregledača <ph name="BROWSER_NAME" /> ako postane zastareo. Ako je ova usluga onemogućena, <ph name="BROWSER_NAME" /> može da izgubi pristup šifrovanim podacima i <ph name="BROWSER_NAME" /> možda neće moći da se oporavi.</translation>
 <translation id="3003694935412297923">Svi zadaci</translation>
@@ -756,6 +758,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="8624541899164515475">Podešavanja, otvaraju se na novoj kartici.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Ponovo ćemo pokrenuti Chrome za 1 minut}one{Ponovo ćemo pokrenuti Chrome za # minut}few{Ponovo ćemo pokrenuti Chrome za # minuta}other{Ponovo ćemo pokrenuti Chrome za # minuta}}</translation>
 <translation id="8637932705841171563">Da biste delili prozor, dozvolite snimanje ekrana za Chrome u podešavanjima sistema</translation>
+<translation id="8642497536370021917">Da biste bili sigurni da uvek možete da koristite i čuvate Chrome podatke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="8656634243791296665">Otvorite Gemini u Chrome Dev-u</translation>
 <translation id="8669527147644353129">Google Chrome pomoćnik</translation>
 <translation id="8679801911857917785">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome.</translation>

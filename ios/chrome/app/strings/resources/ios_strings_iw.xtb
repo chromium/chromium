@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">הצגת כל הכרטיסיות בקבוצת הכרטיסיות</translation>
 <translation id="136942498637440594">אפשר לחפש תמונות ודברים שנמצאים בסביבה.</translation>
 <translation id="1373120905936431262">‏אפשר להעלות תמונה כדי לשנות את הסגנון שלה עם Nano Banana</translation>
-<translation id="1377321085342047638">מספר כרטיס</translation>
 <translation id="1377508275003315939">סיסמאות</translation>
 <translation id="1381022135873211423">{count,plural, =1{‫{position} מתוך כתובת אחת ({count})}one{‫{position} מתוך {count} כתובות}two{‫{position} מתוך {count} כתובות}other{‫{position} מתוך {count} כתובות}}</translation>
 <translation id="1383876407941801731">חיפוש</translation>
@@ -486,6 +485,7 @@
 <translation id="2640733327287333451">אין שם משתמש ••••••</translation>
 <translation id="264215785133931186">התבצעה בדיקה עכשיו</translation>
 <translation id="2647434099613338025">להוספת שפה</translation>
+<translation id="2648812801228676606">החיבור של <ph name="NAME_OR_EMAIL" /> עדיין פעיל</translation>
 <translation id="2649592894792404568">‏בחרת למחוק את הנתונים שלך במנהל הסיסמאות של Google</translation>
 <translation id="2652129567809778422">בחירת סיסמה</translation>
 <translation id="2658056020748144467">לא ניתן לפתוח את הקובץ</translation>
@@ -741,7 +741,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
 <translation id="3580448612293054698">לעדכן את <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
-<translation id="3583726884554296148">‏כדי למלא את פרטי הכרטיס אוטומטית ברכישה הזו וברכישות עתידיות ב-Chrome, אפשר לשמור אותו בחשבון Google</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3587885837929752825">‏הארגון שלך מגביל את סוגי הנתונים שאפשר לשמור בחשבון Google שלך.</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
@@ -939,7 +938,6 @@
 <translation id="428768789042547925">מה חדש</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
 <translation id="4294506173142861371">להיכנס לחשבון בתור <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">סריקת כרטיס ומילוי אוטומטי</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4306349443295056740">‏חתימת OCSP</translation>
@@ -1707,7 +1705,6 @@
 <translation id="6807287147325542056">סיסמאות ששמורות באפליקציות אחרות</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="681631578600400068">לשמור את רישיון הנהיגה?</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏נשמרה סימנייה בחשבון Google שלך, {email}}one{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}two{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}other{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}}</translation>
 <translation id="6826004672264649705">נכון לעכשיו מתבצע מעקב אחרי המוצר הזה. כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
 <translation id="6830728435402077660">לא מאובטח</translation>
@@ -2268,6 +2265,7 @@
 <translation id="8694281486652655615">הפריט הזה יוצג</translation>
 <translation id="8696297579102085705">שליחה למכשיר שלך</translation>
 <translation id="8697136149718343437">העברת סרגל הכתובות לתחתית</translation>
+<translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8706253136355675497">טמפרטורה</translation>
 <translation id="8706806585855470492">תהיה לך אפשרות לשתף, להצטרף ולשתף פעולה בקבוצות של כרטיסיות</translation>
 <translation id="8709409604518538305">הכרטיסיות נסגרו</translation>

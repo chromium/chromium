@@ -532,6 +532,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="254900897760075745">Skopiuj wybraną treść do schowka</translation>
 <translation id="2549711466868162843">Ulepszenie oświetlenia</translation>
 <translation id="2549985041256363841">Zacznij nagrywanie</translation>
+<translation id="2552966063069741410">Strefa czasowa</translation>
 <translation id="2562459326218811217">Urządzenie jest podłączone, ale się nie ładuje. Użyj ładowarki o większej liczbie watów (W) lub oryginalnej ładowarki.</translation>
 <translation id="256712445991462162">Lupa zadokowana</translation>
 <translation id="2573588302192866788">Nie udało się połączyć z urządzeniem <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ W przeciwnym razie za <ph name="TIMEOUT_SECONDS" /> touchpad znowu się włącz
 <translation id="2838379631617906747">Instaluję</translation>
 <translation id="2838589015763961627">Aby zmienić rozmiar, zamknij pełny ekran</translation>
 <translation id="2840766858109427815">Przejdź na następną stronę</translation>
+<translation id="2841013758207633010">Godzina</translation>
 <translation id="2841907151129139818">Przełączono na tryb tabletu</translation>
 <translation id="2843560154284403323">Aby dokończyć konfigurowanie Linuksa, zaktualizuj Chrome OS i spróbuj ponownie.</translation>
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
@@ -1277,6 +1279,7 @@ Połączono 1 urządzenie.</translation>
 <translation id="4633636853437260449">Aby usunąć, naciśnij Ctrl+W</translation>
 <translation id="4633757335284074492">Twórz kopie zapasowe na Dysku Google. W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji. Kopie zapasowe są szyfrowane za pomocą hasła do konta Google Twojego dziecka i przesyłane do Google.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego teraz}=1{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu 1 sekundy}few{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekund}many{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekund}other{Zaktualizuj urządzenie do poprzedniej wersji systemu operacyjnego w ciągu # sekundy}}</translation>
+<translation id="4641539339823703554">Chrome nie może ustawić czasu systemowego. Sprawdź i w razie potrzeby popraw godzinę poniżej.</translation>
 <translation id="4642092649622328492">Zrób zrzut części ekranu</translation>
 <translation id="4643833688073835173">Twój Chromebook korzysta z wbudowanego czujnika, który wykrywa osoby znajdujące się przed ekranem. Wszystkie dane są od razu przetwarzane na urządzeniu i potem usuwane. Czujnik nigdy nie wysyła zebranych danych do Google.</translation>
 <translation id="4644727592819780893">Region jest za mały i nie można go pokazać na podglądzie z aparatu</translation>
@@ -1799,6 +1802,7 @@ Brak połączonych urządzeń.</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
 <translation id="6074087755403037157">Wersja beta</translation>
 <translation id="6075098173600599596">Zmień wielkość liter</translation>
+<translation id="6080689532560039067">Sprawdź czas systemowy</translation>
 <translation id="6091929401758362855">Playlista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Wyłączone przez administratora</translation>
 <translation id="6095008505822982596">Prędkość mowy</translation>

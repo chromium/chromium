@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">הלבשה תחתונה</translation>
 <translation id="1458770162980644530">‏מסך התנאים וההגבלות של "קונים עכשיו, משלמים אחר כך (BNPL)". המקלדת מוסתרת.</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
+<translation id="1460317464907341501">לאמת את האימייל הזה באופן אוטומטי?</translation>
 <translation id="1461041542809785877">ביצועים</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">להשתמש בגופנים שמותקנים במחשב כדי ליצור תוכן באיכות גבוהה</translation>
@@ -2004,6 +2005,7 @@
 <translation id="412601465078863288">פג הזמן שהוקצב להעלאה</translation>
 <translation id="4127317221386336246">אביזרי הלבשה</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}one{# נוספים}two{שניים נוספים}other{# נוספים}}</translation>
+<translation id="4129810348470013900">הפעולה לא הצליחה. כדאי לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="4129992181550680635">משאבים חינוכיים</translation>
 <translation id="4130226655945681476">כדאי לבדוק את כבלי הרשת, את המודם ואת הנתב</translation>
 <translation id="4132448310531350254">‏מתבצעת הפניה לרכיבי handler כפולים עבור סיומת הקובץ '<ph name="FILE_EXTENSION" />' על ידי האפליקציות הבאות: <ph name="POLICY_IDS_LIST" />.</translation>

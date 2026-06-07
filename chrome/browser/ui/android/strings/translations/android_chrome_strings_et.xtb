@@ -645,6 +645,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3771290962915251154">See seade on keelatud, kuna vanemlik järelevalve on sisse lülitatud</translation>
 <translation id="3771694256347217732">Google’i teenusetingimused</translation>
 <translation id="3777796259512476958">Logib teid enamikult saitidelt välja</translation>
+<translation id="3786379886124795923">Skannisite Chrome'i sisselogimiseks QR-koodi. Kinnitage, et soovite sellelt profiililt paroolid, järjehoidjad ja muu sisu hankida.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="3792938779249970121">Konto valimine</translation>
 <translation id="3795154175078851242">Kopeeri pilt koos lingiga</translation>
@@ -829,6 +830,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4532845899244822526">Kausta valimine</translation>
 <translation id="4535755320005483982">Jagatud vahelehegrupp <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Nõuandemärguannete lubamine on avatud täiskõrgusel</translation>
+<translation id="4537987892902330164">Jäite sisselogituks kasutajana <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Pääsuvõtmete puudumise leht</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> vaheleht}other{<ph name="TAB_COUNT_MANY" /> vahelehte, <ph name="TAB_COUNT_INCOGNITO" /> inkognito}}</translation>
 <translation id="4558311620361989323">Veebilehe otseteed</translation>
@@ -1286,6 +1288,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6411219469806822692">Kõrgemale ei saa minna. Alustage lehel eestpoolt.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, mitmikvalikuga vaheleht</translation>
 <translation id="641643625718530986">Printimine ...</translation>
+<translation id="6427723330233512782">Sobita kõrgusega</translation>
 <translation id="6433501201775827830">Valige oma otsingumootor</translation>
 <translation id="6434309073475700221">Loobu</translation>
 <translation id="6435307030888827407">Jää väljalogituks</translation>
@@ -2024,9 +2027,11 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="939598580284253335">Sisesta parool</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, kinnitatud pilt-pildis inkognito vaheleht</translation>
 <translation id="945522503751344254">Tagasiside saatmine</translation>
+<translation id="949667118776341807">Pööra</translation>
 <translation id="95817756606698420">Chrome saab Hiinas otsimiseks kasutada teenust <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />. Seda saate muuta menüüs <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>
 <translation id="963246339335003378">Ava tegumihaldur</translation>
+<translation id="966337994629449077">Olete sisse logitud kasutajana <ph name="FROM_EMAIL" />.\n\nArvutis jätkamiseks vahetage kontot <ph name="TO_EMAIL" />. Saate selle konto paroolid, järjehoidjad ja muu.</translation>
 <translation id="970715775301869095">Jäänud on <ph name="MINUTES" /> minutit</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="983192555821071799">Sule kõik vahelehed</translation>

@@ -512,7 +512,7 @@
 <translation id="1798447301915465742">‏<ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />، چند کنش دردسترس است، برای جابه‌جایی بین آن‌ها، کلید Tab را فشار دهید</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1801812870656502108">جزئیات کارت مجازی</translation>
-<translation id="1802420021606590788">‏‫Chrome عنوان‌های صفحه و نشانی‌های وب را در فضایی خصوصی در فضای ابری پردازش می‌کند</translation>
+<translation id="1802420021606590788">‏‫Chrome عنوان‌های صفحه و نشانی‌های وب را در یک فضای خصوصی در فضای ابری پردازش می‌کند</translation>
 <translation id="1803254472779303354">قفل موشواره مجاز است</translation>
 <translation id="1803351196216024260">می‌تواند برای استفاده از میکروفون درخواست دهد</translation>
 <translation id="1804258830776932716">‏با پیوند دادن سریع حسابتان، Pix را فعال کنید</translation>
@@ -3427,7 +3427,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">مشاهده گزارش‌ها</translation>
 <translation id="6364095313648930329">‏<ph name="BEGIN_LINK" />بررسی پیکربندی پراکسی، دیوار آتش و DNS امن<ph name="END_LINK" /></translation>
-<translation id="6365513578140103119">تأیید خودکار ایمیل‌های شما</translation>
+<translation id="6365513578140103119">تأیید کردن خودکار ایمیل‌های شما</translation>
 <translation id="6366710531182496394">دو منگنه در چپ</translation>
 <translation id="6367196786591004737">حذف ورودی</translation>
 <translation id="6370022303958842211">کنش‌های دسترسی به دستگاه مثل ورود به سیستم (ازجمله دلایل ورود ناموفق به سیستم)، خروج از سیستم، قفل کردن، و باز کردن قفل.</translation>

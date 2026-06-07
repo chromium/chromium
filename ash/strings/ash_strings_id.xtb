@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Salin konten yang dipilih ke papan klip</translation>
 <translation id="2549711466868162843">Koreksi pencahayaan</translation>
 <translation id="2549985041256363841">Mulai merekam</translation>
+<translation id="2552966063069741410">Zona Waktu</translation>
 <translation id="2562459326218811217">Perangkat dicolokkan, tetapi tidak mengisi daya. Coba pengisi daya dengan lebih banyak watt (W) atau gunakan pengisi daya asli Anda.</translation>
 <translation id="256712445991462162">kaca pembesar tersemat</translation>
 <translation id="2573588302192866788">Tidak dapat menghubungkan <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Jika tidak, touchpad bawaan akan diaktifkan kembali dalam <ph name="TIMEOUT_SECO
 <translation id="2838379631617906747">Memasang</translation>
 <translation id="2838589015763961627">Keluar dari layar penuh untuk mengubah ukuran</translation>
 <translation id="2840766858109427815">Maju ke halaman berikutnya</translation>
+<translation id="2841013758207633010">Waktu</translation>
 <translation id="2841907151129139818">Beralih ke mode tablet</translation>
 <translation id="2843560154284403323">Untuk menyelesaikan penyiapan Linux, update ChromeOS lalu coba lagi.</translation>
 <translation id="2844169650293029770">Perangkat USB-C (port depan sebelah kiri)</translation>
@@ -1275,6 +1277,7 @@ Beberapa fitur dibatasi untuk meningkatkan daya tahan baterai.</translation>
 <translation id="4633636853437260449">Tekan Ctrl+W untuk menghapus</translation>
 <translation id="4633757335284074492">Cadangkan ke Google Drive. Pulihkan data atau beralih perangkat kapan saja dengan mudah. Cadangan ini mencakup data aplikasi. Cadangan diupload ke Google dan dienkripsi menggunakan sandi Akun Google anak Anda.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Ubah perangkat ke versi sebelumnya sekarang}=1{Ubah perangkat ke versi sebelumnya dalam 1 detik}other{Ubah perangkat ke versi sebelumnya dalam # detik}}</translation>
+<translation id="4641539339823703554">Chrome tidak dapat menyetel waktu sistem. Periksa waktu di bawah dan perbaiki jika perlu.</translation>
 <translation id="4642092649622328492">Mengambil screenshot sebagian</translation>
 <translation id="4643833688073835173">Chromebook menggunakan sensor bawaan untuk mendeteksi orang di depan perangkat Anda. Semua data langsung diproses di perangkat lalu dihapus. Data sensor tidak pernah dikirim ke Google.</translation>
 <translation id="4644727592819780893">Wilayah terlalu kecil untuk ditampilkan di pratinjau kamera</translation>
@@ -1795,6 +1798,7 @@ Tidak ada perangkat yang terhubung.</translation>
 <translation id="6073451960410192870">Berhenti merekam</translation>
 <translation id="6074087755403037157">Saluran Beta</translation>
 <translation id="6075098173600599596">Ubah kapitalisasi</translation>
+<translation id="6080689532560039067">Periksa waktu sistem Anda</translation>
 <translation id="6091929401758362855">Playlist: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Dinonaktifkan oleh admin</translation>
 <translation id="6095008505822982596">Kecepatan bicara</translation>

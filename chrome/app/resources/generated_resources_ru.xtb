@@ -187,6 +187,7 @@
 <translation id="1125550662859510761">Выглядит как <ph name="WIDTH" /> x <ph name="HEIGHT" /> (аппаратное разрешение)</translation>
 <translation id="1125816658532547876">Используйте свои пароли на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1125921926864945797">Обои и стиль</translation>
+<translation id="1126475802377716263">{0,plural, =1{Общий доступ к 1 вкладке}one{Общий доступ к # вкладке}few{Общий доступ к # вкладкам}many{Общий доступ к # вкладкам}other{Общий доступ к # вкладки}}</translation>
 <translation id="1126696498560056882">Управление аккаунтами на этом устройстве</translation>
 <translation id="1128591060186966949">Изменить поисковую систему</translation>
 <translation id="1129348283834595293">Киберпанк</translation>
@@ -1755,6 +1756,7 @@
 <translation id="2263371730707937087">Частота обновления экрана</translation>
 <translation id="2263679799334060788">Мы постоянно улучшаем Google Cast, поэтому ваш отзыв очень важен для нас. О том, как устранить неполадки, можно узнать в <ph name="BEGIN_LINK" />Справочном центре<ph name="END_LINK" />.</translation>
 <translation id="22649924370461580">Сохраненные группы вкладок</translation>
+<translation id="2265924028278810827">Основное приложение: <ph name="APP_NAME" />.</translation>
 <translation id="2266957463645820432">IPP через USB (IPPUSB)</translation>
 <translation id="2268130516524549846">Bluetooth отключен</translation>
 <translation id="2268182915828370037">Отключить синхронизацию файлов?</translation>
@@ -1951,6 +1953,7 @@
 <translation id="2406942743794219791">Подтвердите, какую поисковую систему вы хотите использовать по умолчанию</translation>
 <translation id="2407671304279211586">Выбрать поставщика услуг DNS</translation>
 <translation id="2408018932941436077">Сохранение карты</translation>
+<translation id="2408601796549249241">Нижний экран Gemini открыт полностью</translation>
 <translation id="2408762424059547338">Отключение оптимизации JavaScript для улучшенной защиты от атак</translation>
 <translation id="2408955596600435184">Введите PIN-код</translation>
 <translation id="2409378541210421746">Изменить язык</translation>
@@ -2176,7 +2179,6 @@
 <translation id="2550212893339833758">Память подкачки</translation>
 <translation id="2550596535588364872">Разрешить <ph name="EXTENSION_NAME" /> открыть файл <ph name="FILE_NAME" />?</translation>
 <translation id="2552230905527343195">Нельзя добавить текущую вкладку</translation>
-<translation id="2552966063069741410">Часовой пояс</translation>
 <translation id="2553290675914258594">Подтверждение доступа</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> не удалось подключиться к <ph name="NETWORK_ID" />. Выберите другую сеть или повторите попытку.</translation>
 <translation id="2553440850688409052">Скрыть подключаемый модуль</translation>
@@ -2708,6 +2710,7 @@
 <translation id="2932483646085333864">Чтобы начать синхронизацию, выйдите из аккаунта и войдите снова</translation>
 <translation id="2932883381142163287">Сообщить о нарушении</translation>
 <translation id="2933632078076743449">Последнее обновление</translation>
+<translation id="2933653107553951760">Восстановить группу</translation>
 <translation id="2934225044529065415">Камера недоступна</translation>
 <translation id="2935314715123552088">Отключить активный профиль eSIM</translation>
 <translation id="2935654492420446828">Добавьте учебный аккаунт позже</translation>
@@ -2802,6 +2805,7 @@
 <translation id="3000461861112256445">Монофо­нический звук</translation>
 <translation id="3001144475369593262">Детские аккаунты</translation>
 <translation id="3001614333383288217">{COUNT,plural, =0{Нет настроенных клавиш}=1{1 настроенная клавиша}one{{COUNT} настроенная клавиша}few{{COUNT} настроенные клавиши}many{{COUNT} настроенных клавиш}other{{COUNT} настроенной клавиши}}</translation>
+<translation id="3002864108328203174">Нижний экран Gemini открыт наполовину.</translation>
 <translation id="3003144360685731741">Предпочитаемые сети</translation>
 <translation id="3003253259757197230">Чтобы предсказывать ваши дальнейшие запросы и показывать дополнительную информацию о просматриваемых страницах, URL посещенных вами сайтов отправляются в Google.</translation>
 <translation id="3003623123441819449">Кеш CSS</translation>
@@ -3844,6 +3848,7 @@
 <translation id="3756485814916578707">Трансляция экрана…</translation>
 <translation id="3756578970075173856">Установка PIN-кода</translation>
 <translation id="3756806135608816820">Сайты могут запрашивать разрешение на поиск устройств Bluetooth</translation>
+<translation id="3756823472711156529">Восстановить группу</translation>
 <translation id="3757567010566591880">Открепить от панели инструментов</translation>
 <translation id="3757645900890881944">Инструменты поиска</translation>
 <translation id="3757733214359997190">Ничего не найдено.</translation>
@@ -4815,6 +4820,7 @@
 <translation id="4444304522807523469">Доступ к сканерам, подключенным через USB-порт или локальную сеть</translation>
 <translation id="4444512841222467874">Если вы не освободите пространство, пользователи и их данные могут быть удалены автоматически.</translation>
 <translation id="4445446646109808714">Лицензионное соглашение с конечным пользователем:<ph name="EULA_LINK" /></translation>
+<translation id="4445505059498744265">Восстановить параллельный просмотр</translation>
 <translation id="4446933390699670756">Зеркальное отображение</translation>
 <translation id="4448560527907365660">Сохранить настройки и показать ещё</translation>
 <translation id="4449247303975391730">Настроить разрешения</translation>
@@ -4948,6 +4954,7 @@
 <translation id="4562364000855074606">Вы можете блокировать приложения, установленные на этом устройстве (<ph name="DEVICE_TYPE" />). Чтобы ограничить скачивание приложений или контента, перейдите в настройки Google Play. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4563210852471260509">Первоначальный язык ввода – китайский</translation>
 <translation id="4563382028841851106">Удалить из аккаунта</translation>
+<translation id="4563883094055457792">В&amp;осстановить параллельный просмотр</translation>
 <translation id="4564245002465020751">Завершите настройку на телефоне</translation>
 <translation id="456449593072900590">Удалить при закрытии браузера</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
@@ -5055,7 +5062,6 @@
 <translation id="4638568775382459156">Действия в общей группе вкладок</translation>
 <translation id="4638930039313743000">Включить отладку с ADB</translation>
 <translation id="4639390152280993480">Чтобы открыть страницу в режиме упрощенного просмотра, нажмите "Другие инструменты &gt; Режим чтения".</translation>
-<translation id="4641539339823703554">Браузеру не удалось установить системное время. Проверьте, правильно ли оно указано, и исправьте при необходимости.</translation>
 <translation id="4643612240819915418">Открыть видео в новой вкладке</translation>
 <translation id="4644205769234414680">Разрешить использование в режиме инкогнито</translation>
 <translation id="4645322559577140968">{GROUP_COUNT,plural, =1{Удалить группу вкладок?}one{Удалить группы вкладок?}few{Удалить группы вкладок?}many{Удалить группы вкладок?}other{Удалить группы вкладок?}}</translation>
@@ -5853,6 +5859,7 @@
 <translation id="5221516927483787768">Не удалось запустить трансляцию с сайта <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
+<translation id="5222710719845250566">Восстановить окно</translation>
 <translation id="5225324770654022472">Показывать кнопку "Сервисы"</translation>
 <translation id="52254442782792731">Вы пока не указали, кому разрешено обнаруживать ваше устройство</translation>
 <translation id="5225463052809312700">Включить камеру</translation>
@@ -6967,7 +6974,6 @@
 <translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6078752646384677957">Проверьте микрофон и уровни громкости.</translation>
 <translation id="608029822688206592">Сеть не найдена. Установите SIM-карту и повторите попытку.</translation>
-<translation id="6080689532560039067">Проверка системного времени</translation>
 <translation id="608531959444400877">"<ph name="WINDOW_TITLE" />" – элемент группы без названия</translation>
 <translation id="6086004606538989567">У аккаунта, который вы подтвердили, нет доступа к этому устройству.</translation>
 <translation id="6086350918562605938">Обновление для каждой системы</translation>
@@ -7227,6 +7233,7 @@
 <translation id="6266984048393265562">Настроить профиль</translation>
 <translation id="6267166720438879315">Выберите сертификат для аутентификации на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Открыть в приложении <ph name="APP" /></translation>
+<translation id="6269392226729599142">Восстановить параллельный просмотр</translation>
 <translation id="6270309713620950855">Напоминать включить микрофон</translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6270770586500173387">Отправлять <ph name="BEGIN_LINK1" />информацию о системе и приложениях<ph name="END_LINK1" /> и различные <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
@@ -8975,6 +8982,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7550885994112799211">Хранилище, энергопотребление, язык</translation>
 <translation id="7551059576287086432">Не удалось скачать файл <ph name="FILE_NAME" /></translation>
+<translation id="7551303452605464331">В&amp;осстановить параллельный просмотр</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
 <translation id="7552191410769096467">Чтобы делиться группами вкладок и присоединяться к ним, необходимо войти в аккаунт и включить синхронизацию.</translation>
 <translation id="7552196109089297786">Выйти из аккаунта Microsoft</translation>
@@ -9846,7 +9854,7 @@
 <translation id="8168435359814927499">Контент</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавить вкладку в список для чтения}one{Добавить вкладки в список для чтения}few{Добавить вкладки в список для чтения}many{Добавить вкладки в список для чтения}other{Добавить вкладки в список для чтения}}</translation>
 <translation id="8172303073969862496">Слева</translation>
-<translation id="8174047975335711832">Сведения об устройстве</translation>
+<translation id="8174047975335711832">Информация об устройстве</translation>
 <translation id="8176332201990304395">Розовый с белым</translation>
 <translation id="8176529144855282213">Чтобы предоставить доступ к микрофону, используйте специальный физический переключатель на устройстве</translation>
 <translation id="8177196903785554304">Сведения о сети</translation>
@@ -11129,6 +11137,7 @@
 <translation id="9087949559523851360">Добавить пользователя с ограниченным доступом</translation>
 <translation id="9088234649737575428">Плагин "<ph name="PLUGIN_NAME" />" заблокирован в соответствии с корпоративной политикой</translation>
 <translation id="90885733430013283">SSID сети Wi-Fi</translation>
+<translation id="9088578317174654338">Нижний экран Gemini закрыт.</translation>
 <translation id="9089416786594320554">Способы ввода</translation>
 <translation id="9089959054554410481">Изменить направление прокрутки сенсорной панели</translation>
 <translation id="9090044809052745245">Как другие будут видеть устройство.</translation>

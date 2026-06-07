@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Kopiér valgt indhold til udklipsholderen</translation>
 <translation id="2549711466868162843">Gør belysningen bedre</translation>
 <translation id="2549985041256363841">Start optagelse</translation>
+<translation id="2552966063069741410">Tidszone</translation>
 <translation id="2562459326218811217">Enheden er tilsluttet, men den oplader ikke. Prøv en oplader med flere watt (W), eller brug den originale oplader.</translation>
 <translation id="256712445991462162">den fastgjorte lup</translation>
 <translation id="2573588302192866788">Forbindelsen til <ph name="NAME" /> kunne ikke oprettes</translation>
@@ -621,6 +622,7 @@ Ellers genaktiveres den indbyggede touchplade om <ph name="TIMEOUT_SECONDS" />.<
 <translation id="2838379631617906747">Installerer</translation>
 <translation id="2838589015763961627">Afslut fuld skærm for at tilpasse størrelsen</translation>
 <translation id="2840766858109427815">Gå videre til næste side</translation>
+<translation id="2841013758207633010">Tid</translation>
 <translation id="2841907151129139818">Skiftede til tablettilstand</translation>
 <translation id="2843560154284403323">Opdater ChromeOS, og prøv at afslutte konfigurationen af Linux igen.</translation>
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
@@ -1276,6 +1278,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="4633636853437260449">Tryk på Ctrl+W for at slette</translation>
 <translation id="4633757335284074492">Sikkerhedskopiér i Google Drev. Gendan nemt data, eller skift enhed når som helst. Denne sikkerhedskopi omfatter appdata. Sikkerhedskopier uploades til Google og krypteres ved hjælp af adgangskoden til dit barns Google-konto.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Opdater enheden til en tidligere version nu}=1{Opdater enheden til en tidligere version inden for 1 sekund}one{Opdater enheden til en tidligere version inden for # sekund}other{Opdater enheden til en tidligere version inden for # sekunder}}</translation>
+<translation id="4641539339823703554">Chrome kunne ikke indstille systemklokkeslættet. Kontrollér klokkeslættet nedenfor, og korriger det, hvis det er nødvendigt.</translation>
 <translation id="4642092649622328492">Tag et delvist screenshot</translation>
 <translation id="4643833688073835173">Din Chromebook anvender en indbygget sensor til at registrere, om der er nogen foran din enhed. Alle dataene behandles øjeblikkeligt på din enhed og slettes derefter. Sensordata sendes aldrig til Google.</translation>
 <translation id="4644727592819780893">Området er for småt til kameraet</translation>
@@ -1797,6 +1800,7 @@ Ingen enheder er forbundet.</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6074087755403037157">Betakanal</translation>
 <translation id="6075098173600599596">Skift brug af store og små bogstaver</translation>
+<translation id="6080689532560039067">Se systemklokkeslættet</translation>
 <translation id="6091929401758362855">Playliste: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Deaktiveret af administratoren</translation>
 <translation id="6095008505822982596">Talehastighed</translation>

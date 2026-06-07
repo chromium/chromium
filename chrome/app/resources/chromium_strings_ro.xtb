@@ -20,6 +20,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Instalarea nu a reușit, deoarece versiunea ta de Windows nu este acceptată.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
+<translation id="1186645291482254714">Primește alerte de urmărire a prețurilor cu Chromium pe telefon</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1232234696885483911">Când deschizi Căutarea de imagini, titlul paginii, adresa URL și conținutul, inclusiv PDF-urile, vor fi trimise automat la server. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">După ce te conectezi, poți folosi parolele și alte date din Contul Google în Chromium. Pentru a modifica această setare, accesează Contul tău în Chromium.</translation>
@@ -68,6 +69,7 @@
 <translation id="1749104137266986751">Când protocolul HTTPS nu este disponibil, Chromium va folosi o conexiune nesecurizată fără să te avertizeze</translation>
 <translation id="1774152462503052664">Permiteți Chromium să ruleze în fundal</translation>
 <translation id="1779356040007214683">Pentru mai multă siguranță în Chromium, am dezactivat câteva extensii care nu sunt incluse în <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> și care este posibil să fi fost adăugate fără știrea dvs.</translation>
+<translation id="1793486931176048546">Dă clic pe <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> în notificarea Windows ca să fixezi Chromium în bara de activități pentru acces rapid.</translation>
 <translation id="1808667845054772817">Reinstalați Chromium</translation>
 <translation id="1820835682567584003">Chromium încearcă să <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Data viitoare când deschizi Chromium pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a folosi Managerul de parole Google.</translation>
@@ -384,6 +386,7 @@
 <translation id="5348677704241861105">Obține o prezentare generală rapidă a acestui document și pune întrebări cu Gemini în Chromium</translation>
 <translation id="5352264705793813212">Chromium a găsit câteva recomandări privind siguranța pe care să le examinezi</translation>
 <translation id="5352361688875342522">Alte profiluri Chromium</translation>
+<translation id="535243042947607642">ChromiumOS nu a putut salva datele Chromium în Contul Google, deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="5358375970380395591">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Cod suplimentar: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Pentru a beneficia de personalizare, include Chromium în Activitatea de pe web și din aplicații</translation>
@@ -718,6 +721,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8852026904190808918">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chromium</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8876044221123442390">Adaugă un profil Chromium</translation>
+<translation id="8890569919834781711">ChromiumOS nu a putut salva datele Chromium în Contul Google din cauza unei erori la conectare</translation>
 <translation id="8891709362986793894">Organizația îți solicită să te conectezi la Chromium</translation>
 <translation id="8907580949721785412">Chromium încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8932992523185907506">Chromium nu mai este browserul prestabilit. Setezi Chromium ca browser prestabilit?</translation>

@@ -645,6 +645,7 @@
 <translation id="3771290962915251154">မိဘအထိန်းအချုပ်များ ဖွင့်ထားသောကြောင့် ဤဆက်တင်ကို ပိတ်ထားသည်</translation>
 <translation id="3771694256347217732">Google ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
 <translation id="3777796259512476958">ဝက်ဆိုက်အများစုမှ သင်ထွက်သွားပါမည်</translation>
+<translation id="3786379886124795923">သင်သည် Chrome သို့ လက်မှတ်ထိုးဝင်ရန် QR ကုဒ်ကို စကင်ဖတ်ထားသည်။ ဤပရိုဖိုင်မှ စကားဝှက်၊ ဝဘ်လိပ်စာ စသည်တို့ကို ရယူလိုကြောင်း အတည်ပြုပါ။</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{တဘ် ၁ ခု}other{တဘ် # ခု}}</translation>
 <translation id="3792938779249970121">အကောင့်ရွေးပါ</translation>
 <translation id="3795154175078851242">ပုံကို လင့်ခ်နှင့်အတူ မိတ္တူကူးရန်</translation>
@@ -829,6 +830,7 @@
 <translation id="4532845899244822526">ဖိုင်တွဲရွေးရန်</translation>
 <translation id="4535755320005483982">မျှဝေထားသည့် <ph name="GROUP_TITLE" /> တဘ်အုပ်စု</translation>
 <translation id="4537137366307982887">အကြံပြုချက်ဆိုင်ရာ အကြောင်းကြားချက်များ ရယူခြင်းကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်</translation>
+<translation id="4537987892902330164">သင်သည် <ph name="NAME_OR_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။</translation>
 <translation id="4543131175509360848">လျှို့ဝှက်ကီးစာမျက်နှာများ မရှိပါ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{တဘ် <ph name="TAB_COUNT_MANY" /> ခု, ရုပ်ဖျက်တဘ်<ph name="TAB_COUNT_INCOGNITO" /> ခု}}</translation>
 <translation id="4558311620361989323">ဝဘ်စာမျက်နှာ ဖြတ်လမ်းလင့်ခ်များ</translation>
@@ -1285,6 +1287,7 @@
 <translation id="6411219469806822692">အပေါ်သို့ထပ်မြှင့်၍ မရပါ။ စာမျက်နှာ၏ အပေါ်ဘက်ခပ်ဝေးဝေးမှ စကြည့်ပါ။</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားသည့် တဘ်</translation>
 <translation id="641643625718530986">ပရင့်…</translation>
+<translation id="6427723330233512782">အမြင့်အတိုင်း အံကိုက်</translation>
 <translation id="6433501201775827830">သင်၏ ရှာဖွေရေး အင်ဂျင်ကို ရွေးပါ</translation>
 <translation id="6434309073475700221">စွန့်ပစ်ရန်</translation>
 <translation id="6435307030888827407">ထွက်ထားရန်</translation>
@@ -2023,9 +2026,11 @@
 <translation id="939598580284253335">စကားစုဝှက်ကို ရိုက်ထည့်ရန်</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း ရုပ်ဖျက်တဘ်ကို ပင်ထိုးထားသည်</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
+<translation id="949667118776341807">လှည့်ရန်</translation>
 <translation id="95817756606698420">Chrome သည် တရုတ်ပြည်တွင် ရှာဖွေရန် <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ကို အသုံးပြုနိုင်ပါသည်။ ၎င်းကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> ထဲတွင် ပြောင်းလဲနိုင်သည်။</translation>
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>
 <translation id="963246339335003378">လုပ်ဆောင်ချက်မန်နေဂျာ ဖွင့်ရန်</translation>
+<translation id="966337994629449077">သင်သည် <ph name="FROM_EMAIL" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။\n\nသင့်ကွန်ပျူတာမှ ရှေ့ဆက်ရန်အတွက် <ph name="TO_EMAIL" /> သို့ ပြောင်းပါ။ ဤအကောင့်မှ စကားဝှက်၊ ဝဘ်လိပ်စာ စသည်တို့ကို ရရှိပါမည်။</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> မိနစ် ကျန်သည်</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="983192555821071799">တဘ်အားလုံး ပိတ်ရန်</translation>

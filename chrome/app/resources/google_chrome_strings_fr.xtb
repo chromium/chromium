@@ -152,6 +152,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2580411288591421699">Impossible d'installer la version de Google Chrome qui est en cours d'exécution. Fermez Google Chrome et réessayez.</translation>
 <translation id="2586406160782125153">Cette action aura pour effet de supprimer vos données de navigation de cet appareil. Pour récupérer vos données ultérieurement, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Consultez un aperçu rapide de ce document et posez des questions avec Gemini dans Chrome</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="263447411082773721">Synchronisez parfaitement vos mots de passe, vos favoris et votre historique sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et appréciez en définissant Chrome comme navigateur par défaut. Chrome sera épinglé à la barre des tâches pour un accès rapide.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -190,6 +191,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2945997411976714835">Erreur d'installation : échec de démarrage du processus d'installation.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Connexion au réseau - Chrome</translation>
 <translation id="2970681950995291301">Pour supprimer votre compte Google de Chrome, déconnectez-vous de Chrome sur la page de paramètres</translation>
+<translation id="2976869732253036751">Recevez des alertes de suivi des prix avec Chrome sur votre téléphone</translation>
 <translation id="2991167882679440829">Vos mots de passe et d'autres données Chrome enregistrés dans votre compte Google seront supprimés de cet appareil. Pour les utiliser de nouveau dans Chrome, reconnectez-vous.</translation>
 <translation id="2994465299455873643">Fournit des services de chiffrement et un moyen sécurisé de restaurer <ph name="BROWSER_NAME" /> si la version est ancienne. Si ce service est désactivé, <ph name="BROWSER_NAME" /> pourrait perdre l'accès aux données chiffrées, et <ph name="BROWSER_NAME" /> pourrait ne pas pouvoir se restaurer.</translation>
 <translation id="3003694935412297923">Toutes les tâches</translation>
@@ -755,6 +757,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome va être relancé dans 1 minute}one{Chrome va être relancé dans # minute}other{Chrome va être relancé dans # minutes}}</translation>
 <translation id="8637932705841171563">Pour partager votre fenêtre, autorisez l'enregistrement d'écran pour Chrome dans les réglages système</translation>
+<translation id="8642497536370021917">Pour toujours pouvoir utiliser et enregistrer des données Chrome dans votre compte Google, confirmez votre identité</translation>
 <translation id="8656634243791296665">Ouvrir Gemini dans Chrome Dev</translation>
 <translation id="8669527147644353129">Application d'aide de Google Chrome</translation>
 <translation id="8679801911857917785">Elle contrôle également la page qui s'affiche au démarrage de Chrome.</translation>

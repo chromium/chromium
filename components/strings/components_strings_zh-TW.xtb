@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">貼身衣物</translation>
 <translation id="1458770162980644530">「先買後付」服務條款畫面。鍵盤已隱藏。</translation>
 <translation id="1459693405370120464">天氣</translation>
+<translation id="1460317464907341501">要自動驗證這個電子郵件地址嗎？</translation>
 <translation id="1461041542809785877">效能</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用電腦上的字型，方便你建立高傳真內容</translation>
@@ -2002,6 +2003,7 @@
 <translation id="412601465078863288">上傳作業逾時</translation>
 <translation id="4127317221386336246">服飾配件</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表單資料}other{以及另外 # 項表單資料}}</translation>
+<translation id="4129810348470013900">發生錯誤，請檢查網路連線，然後再試一次。</translation>
 <translation id="4129992181550680635">教育資源</translation>
 <translation id="4130226655945681476">檢查網路線、數據機和路由器</translation>
 <translation id="4132448310531350254">應用程式「<ph name="POLICY_IDS_LIST" />」參照的 file_extension「<ph name="FILE_EXTENSION" />」被指派給多個處理常式。</translation>

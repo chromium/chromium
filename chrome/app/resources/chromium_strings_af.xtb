@@ -22,6 +22,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1184145431117212167">Installering het misluk omdat jou weergawe van Windows nie gesteun word nie.</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
+<translation id="1186645291482254714">Kry waarskuwings oor prysnasporing met Chromium op jou foon</translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="1232234696885483911">Wanneer jy Prentsoektog oopmaak, sal die bladsytitel, URL en inhoud, insluitend PDF’s, outomaties na die bediener toe gestuur word. <ph name="LEARN_MORE" /></translation>
 <translation id="123265588161106468">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer uit jou Google-rekening in Chromium gebruik. Gaan na “Jou rekening in Chromium” toe om dit te verander.</translation>
@@ -70,6 +71,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1749104137266986751">Chromium sal ’n onveilige verbinding gebruik sonder om jou te waarsku wanneer HTTPS nie beskikbaar is nie</translation>
 <translation id="1774152462503052664">Laat Chromium in die agtergrond loop</translation>
 <translation id="1779356040007214683">Om Chromium veiliger te maak, het ons sekere uitbreidings wat nie in die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> gelys is nie, gedeaktiveer en kon dit sonder jou medewete bygevoeg gewees het.</translation>
+<translation id="1793486931176048546">Klik <ph name="BEGIN_BOLD" />Ja<ph name="END_BOLD" /> in die Windows-kennisgewing om Chromium vir kitstoegang op jou taakbalk vas te speld.</translation>
 <translation id="1808667845054772817">Herinstalleer Chromium</translation>
 <translation id="1820835682567584003">Chromium probeer tans om <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Jy sal ’n porboodskap sien om Google Wagwoordbestuurder te gebruik wanneer jy volgende keer Chromium op jou <ph name="DEVICE_TYPE" /> oopmaak.</translation>
@@ -383,8 +385,10 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="5294316920224716406">Chromium sal jou waarsku voordat ’n werf met ’n onveilige verbinding gelaai word wanneer jy in Incognitomodus blaai</translation>
 <translation id="5313228254328109263">Chromium-opdateerderdiens (intern)</translation>
 <translation id="5346389065299425353">Voeg verskeie oortjies, lêers en nutsgoed by om dieper te soek</translation>
+<translation id="5348677704241861105">Kry ’n vinnige oorsig van hierdie dokument en vra vrae met Gemini in Chromium</translation>
 <translation id="5352264705793813212">Chromium het ’n paar veiligheidsaanbevelings vir jou hersiening gekry</translation>
 <translation id="5352361688875342522">Ander Chromium-profiele</translation>
+<translation id="535243042947607642">ChromiumOS kon nie Chromium-data in jou Google-rekening stoor nie omdat jou rekening se aanmeldbesonderhede verouderd is</translation>
 <translation id="5358375970380395591">Jy meld tans met 'n bestuurde rekening aan en gee sy administrateur beheer oor jou Chromium-profiel. Jou Chromium-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings, sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekening se kontroleskerm kan uitvee, maar jy sal nie hierdie data met 'n ander rekening kan assosieer nie. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Ekstra kode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Sluit Chromium by Web- en Appaktiwiteit in om personalisering te kry</translation>
@@ -490,6 +494,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="6390800440335263989">Meld aan by Chromium as <ph name="EMAIL" /> om voort te gaan. Dit maak seker dat jy jou organisasie se beleide het.</translation>
 <translation id="6400112897226594999">Chromium-logo binne ’n rekenaarskerm.</translation>
 <translation id="6403826409255603130">Chromium is 'n webblaaier wat webbladsye en programme blitsvinning laat loop. Dis vinnig, stabiel en maklik om te gebruik. Blaai veiliger deur die web met beskerming teen wanware en uitvissing wat by Chromium ingebou is.</translation>
+<translation id="6414624068245092115">Verifieer dis jy om seker te maak dat jy altyd Chromium-data in jou Google-rekening kan gebruik en stoor</translation>
 <translation id="642132557830635295">Chromium loop vinniger en kenmerke wat JavaScript gebruik, behoort volgens ontwerp te werk</translation>
 <translation id="6436260184216827876">Prentsoektog is nie beskikbaar nie. Probeer later weer.</translation>
 <translation id="6442900851116057561">Herbegin Chromium-bedryfstelsel</translation>
@@ -718,6 +723,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8852026904190808918">Hierdie taal word gebruik om kieslyste, instellings, opletberigte en ander teks in Chromium te vertoon</translation>
 <translation id="8862326446509486874">Jy het nie die gepaste regte vir stelselvlak-installering nie. Probeer om die installeerder weer te laat loop as Administrateur.</translation>
 <translation id="8876044221123442390">Voeg Chromium-profiel by</translation>
+<translation id="8890569919834781711">ChromiumOS kon weens ’n fout met aanmelding nie Chromium-data in jou Google-rekening stoor nie</translation>
 <translation id="8891709362986793894">Jou organisasie vereis dat jy by Chromium aanmeld</translation>
 <translation id="8907580949721785412">Chromium probeer tans om wagwoorde te wys. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="8932992523185907506">Chromium is nie meer jou verstekblaaier nie. Maak Chromium die verstekblaaier?</translation>

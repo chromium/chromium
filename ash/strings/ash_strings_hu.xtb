@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Kijelölt tartalom másolása a vágólapra</translation>
 <translation id="2549711466868162843">Megvilágítás javítása</translation>
 <translation id="2549985041256363841">Felvétel megkezdése</translation>
+<translation id="2552966063069741410">Időzóna</translation>
 <translation id="2562459326218811217">Az eszköz csatlakoztatva van, de nem töltődik. Próbálkozzon nagyobb teljesítményű (W) töltővel, vagy használja az eredeti töltőt.</translation>
 <translation id="256712445991462162">dokkolt nagyító</translation>
 <translation id="2573588302192866788">Nem sikerült csatlakozni a következőhöz: <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Ellenkező esetben a beépített érintőpad <ph name="TIMEOUT_SECONDS" /> múlv
 <translation id="2838379631617906747">Telepítés</translation>
 <translation id="2838589015763961627">Lépjen ki a teljes képernyős módból az átméretezéshez</translation>
 <translation id="2840766858109427815">Ugrás a következő oldalra</translation>
+<translation id="2841013758207633010">Idő</translation>
 <translation id="2841907151129139818">Visszaváltott táblagép módra</translation>
 <translation id="2843560154284403323">A Linux beállításának befejezéséhez frissítse a ChromeOS rendszert, majd próbálkozzon újra.</translation>
 <translation id="2844169650293029770">C típusú USB-vel kompatibilis eszköz (bal első port)</translation>
@@ -1276,6 +1278,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4633636853437260449">A törléshez nyomja meg a Ctrl + W billentyűkombinációt.</translation>
 <translation id="4633757335284074492">Biztonsági mentés a Google Drive-ra. Bármikor könnyedén visszaállíthatja adatait vagy lecserélheti eszközét. A biztonsági másolat alkalmazásadatokat tartalmaz. A biztonsági másolatokat a Google szervereire tölti fel a rendszer, és a gyermeke Google-fiókjához használt jelszóval titkosítja őket.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Eszköz frissítése az előző verzióra most}=1{Eszköz frissítése az előző verzióra 1 másodpercen belül}other{Eszköz frissítése az előző verzióra # másodpercen belül}}</translation>
+<translation id="4641539339823703554">A Chrome nem tudta beállítani a rendszeridőt. Kérjük, ellenőrizze az időt alább, és javítsa, ha szükséges.</translation>
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4643833688073835173">A Chromebook beépített érzékelőt használ az eszköz előtt álló emberek észleléséhez. A rendszer az összes adatot azonnal feldolgozza az eszközön, majd törli őket. A szenzoradatokat nem továbbítja a rendszer a Google-nak.</translation>
 <translation id="4644727592819780893">A terület túl kicsi, a kamera nem tud előnézetet készíteni róla</translation>
@@ -1796,6 +1799,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="6073451960410192870">Felvétel leállítása</translation>
 <translation id="6074087755403037157">Bétacsatorna</translation>
 <translation id="6075098173600599596">Kis- és nagybetűk módosítása</translation>
+<translation id="6080689532560039067">Ellenőrizze a rendszeridőt</translation>
 <translation id="6091929401758362855">Lista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Rendszergazda által kikapcsolva</translation>
 <translation id="6095008505822982596">Beszéd sebessége</translation>

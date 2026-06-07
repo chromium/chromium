@@ -645,6 +645,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3771290962915251154">Setarea este dezactivată, deoarece controlul parental este activat</translation>
 <translation id="3771694256347217732">Termenii și condițiile Google</translation>
 <translation id="3777796259512476958">Te deconectează de pe majoritatea site-urilor</translation>
+<translation id="3786379886124795923">Ai scanat un cod QR pentru a te conecta la Chrome. Confirmă că dorești să accesezi parolele, marcajele și alte date din acest profil.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{O filă}few{# file}other{# de file}}</translation>
 <translation id="3792938779249970121">Selectează un cont</translation>
 <translation id="3795154175078851242">Copiază imaginea cu linkul</translation>
@@ -829,6 +830,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4532845899244822526">Alege dosarul</translation>
 <translation id="4535755320005483982">Grupul de file comun <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Opțiunea de activare a notificărilor cu sfaturi s-a deschis la înălțime completă</translation>
+<translation id="4537987892902330164">Ai rămas conectat(ă) ca <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Nicio foaie cu chei de acces</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> filă}few{<ph name="TAB_COUNT_MANY" /> file, <ph name="TAB_COUNT_INCOGNITO" /> incognito}other{<ph name="TAB_COUNT_MANY" /> de file, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
 <translation id="4558311620361989323">Comenzi rapide pentru pagini web</translation>
@@ -1286,6 +1288,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6411219469806822692">Nu se poate selecta mai sus. Începe selecția în pagină de mai sus.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, filă cu selectare multiplă</translation>
 <translation id="641643625718530986">Printați...</translation>
+<translation id="6427723330233512782">Încadrează pe înălțime</translation>
 <translation id="6433501201775827830">Alege motorul de căutare</translation>
 <translation id="6434309073475700221">Renunță</translation>
 <translation id="6435307030888827407">Rămâi deconectat(ă)</translation>
@@ -2024,9 +2027,11 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="939598580284253335">Introdu expresia de acces</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, filă incognito picture-in-picture fixată</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
+<translation id="949667118776341807">Rotește</translation>
 <translation id="95817756606698420">Chrome poate să folosească <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> pentru căutare în China. Poți să schimbi acest lucru din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Șterge datele de navigare</translation>
 <translation id="963246339335003378">Deschide managerul de activități</translation>
+<translation id="966337994629449077">Te-ai conectat ca <ph name="FROM_EMAIL" />.\n\nPentru a continua de pe computer, treci la <ph name="TO_EMAIL" />. Vei accesa parolele, marcajele și alte date din acest cont.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min. rămase</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Închide toate filele</translation>

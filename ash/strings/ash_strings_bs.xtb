@@ -532,6 +532,7 @@ Povezano je više uređaja (ukupno <ph name="DEVICECOUNT" />).</translation>
 <translation id="254900897760075745">Kopiranje odabranog sadržaja u međumemoriju</translation>
 <translation id="2549711466868162843">Poboljšanje osvjetljenja</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
+<translation id="2552966063069741410">Vremenska zona</translation>
 <translation id="2562459326218811217">Uređaj je priključen, ali se ne puni. Isprobajte punjač s više vati (W) ili upotrijebite originalni punjač.</translation>
 <translation id="256712445991462162">fiksirano povećalo</translation>
 <translation id="2573588302192866788">Povezivanje s uređajem <ph name="NAME" /> nije uspjelo</translation>
@@ -621,6 +622,7 @@ U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za <ph name="TIME
 <translation id="2838379631617906747">Instalira se</translation>
 <translation id="2838589015763961627">Izađite iz prikaza preko cijelog ekrana da promijenite veličinu</translation>
 <translation id="2840766858109427815">Idite naprijed na sljedeću stranicu</translation>
+<translation id="2841013758207633010">Vrijeme</translation>
 <translation id="2841907151129139818">Promijenjeno u način rada za tablet</translation>
 <translation id="2843560154284403323">Da završite postavljanje Linuxa, ažurirajte ChromeOS i pokušajte ponovo.</translation>
 <translation id="2844169650293029770">USB-C uređaj (prednji priključak na lijevoj strani)</translation>
@@ -1277,6 +1279,7 @@ Povezan je 1 uređaj.</translation>
 <translation id="4633636853437260449">Pritisnite Ctrl+W da izbrišete</translation>
 <translation id="4633757335284074492">Izradite sigurnosne kopije na Google disku. Jednostavno u svakom trenutku vratite podatke ili promijenite uređaj. Ova sigurnosna kopija obuhvata podatke aplikacija. Sigurnosne kopije se otpremaju na Google i šifriraju pomoću lozinke Google računa vašeg djeteta.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Ažurirajte uređaj na prethodnu verziju sada}=1{Ažurirajte uređaj na prethodnu verziju u roku od 1 sekunde}one{Ažurirajte uređaj na prethodnu verziju u roku od # sekunde}few{Ažurirajte uređaj na prethodnu verziju u roku od # sekunde}other{Ažurirajte uređaj na prethodnu verziju u roku od # sekundi}}</translation>
+<translation id="4641539339823703554">Chrome nije postavio vrijeme sistema. Provjerite vrijeme ispod i ispravite ga ako je potrebno.</translation>
 <translation id="4642092649622328492">Napravite djelomičan snimak ekrana</translation>
 <translation id="4643833688073835173">Chromebook koristi ugrađeni senzor da otkrije osobe koje se nalaze ispred njega. Svi podaci se odmah obrađuju na uređaju, a zatim se brišu. Podaci senzora se nikada ne šalju Googleu.</translation>
 <translation id="4644727592819780893">Regija je premala da stane kamera</translation>
@@ -1799,6 +1802,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
 <translation id="6074087755403037157">Beta kanal</translation>
 <translation id="6075098173600599596">Promijeni velika/mala slova</translation>
+<translation id="6080689532560039067">Provjerite sistemsko vrijeme</translation>
 <translation id="6091929401758362855">Plejlista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Onemogućio administrator</translation>
 <translation id="6095008505822982596">Brzina govora</translation>

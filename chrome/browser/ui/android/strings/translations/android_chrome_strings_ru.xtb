@@ -614,6 +614,7 @@
 <translation id="3635073343384702370">Чтобы браузер Chrome мог проверять пароли, сохраните их</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
 <translation id="3637744895182738742">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chrome из аккаунта<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" />, <ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3674208116086565128">Открыть главную страницу приложения Google</translation>
 <translation id="368329460027487650">Выполнен выход. Открывает окно с вариантами входа.</translation>
@@ -638,6 +639,7 @@
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />: добавлена закладка</translation>
 <translation id="3740290940447881599">Убедитесь, что доверяете этому сайту.</translation>
 <translation id="3740525748616366977">Голосовой поиск недоступен на этом устройстве.</translation>
+<translation id="3756823472711156529">Восстановить группу</translation>
 <translation id="3763110477555836428">При оплате этой картой будет указан номер виртуальной. Это поможет защитить настоящие реквизиты. Изменить настройки можно в Google Кошельке. Подробнее <ph name="BEGIN_LINK1" />о виртуальных картах<ph name="END_LINK1" />…</translation>
 <translation id="376561056759077985">Некоторые данные ещё не сохранены</translation>
 <translation id="3770620323585347665">Добавить название окна</translation>

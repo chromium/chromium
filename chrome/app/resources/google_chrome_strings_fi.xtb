@@ -149,6 +149,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="2580411288591421699">Ei voi asentaa samaa Google Chromen versiota, joka tällä hetkellä on käytössä. Sulje Google Chrome ja yritä uudelleen.</translation>
 <translation id="2586406160782125153">Selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Ladatun asennusohjelman siirtäminen välimuistiin epäonnistui. Virhe: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Nopea yleiskatsaus dokumentista ja mahdollisuus esittää kysymyksiä Gemini in Chromella</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="263447411082773721">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chrome, niin saat tutut ominaisuudet helposti käyttöösi. Chrome kiinnitetään tehtäväpalkkiin, jotta voit käyttää sitä nopeasti.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -187,6 +188,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="2945997411976714835">Asennusvirhe: Asennusprosessin aloittaminen ei onnistunut.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chrome</translation>
 <translation id="2970681950995291301">Jos haluat poistaa Google-tilisi Chromesta, kirjaudu ulos Chromesta Asetukset-sivun kautta</translation>
+<translation id="2976869732253036751">Saat puhelimeen hintaseurantailmoituksia Chromen avulla</translation>
 <translation id="2991167882679440829">Salasanat ja muu Chrome-data on tallennettu Google-tilillesi, ja ne poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromessa, kirjaudu takaisin sisään.</translation>
 <translation id="2994465299455873643">Tarjoaa salauspalveluita ja turvallisen tavan palauttaa <ph name="BROWSER_NAME" />, jos se vanhenee. Jos tämä palvelu on poistettu käytöstä, <ph name="BROWSER_NAME" /> saattaa menettää pääsyn salattuun dataan, eikä <ph name="BROWSER_NAME" /> välttämättä pysty palauttamaan itseään.</translation>
 <translation id="3003694935412297923">Kaikki tehtävät</translation>
@@ -748,6 +750,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8624541899164515475">Asetukset, avautuu uudelle välilehdelle.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käynnistetään uudelleen 1 minuutin kuluttua}other{Chrome käynnistetään uudelleen # minuutin kuluttua.}}</translation>
 <translation id="8637932705841171563">Jos haluat jakaa ikkunan, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
+<translation id="8642497536370021917">Vahvista henkilöllisyytesi, jotta voit aina käyttää ja tallentaa Chrome-dataa Google-tililläsi</translation>
 <translation id="8656634243791296665">Avaa Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Määrittää myös Chromen aloitussivun.</translation>

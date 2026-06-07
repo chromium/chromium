@@ -153,6 +153,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2580411288591421699">Vous ne pouvez pas installer la version de Google Chrome qui est en cours d'exécution. Veuillez fermer Google Chrome et essayez de nouveau.</translation>
 <translation id="2586406160782125153">Cette action entraînera la suppression de vos données de navigation sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Échec de la mise en cache du programme d'installation téléchargé. Erreur : <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">Obtenez un aperçu rapide de ce document et posez des questions avec Gemini dans Chrome</translation>
 <translation id="2620436844016719705">Système</translation>
 <translation id="263447411082773721">Gardez vos mots de passe, vos favoris et votre historique parfaitement synchronisés sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et que vous aimez en mettant à jour votre navigateur par défaut vers Chrome. Chrome sera épinglé à votre barre des tâches pour un accès rapide.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="2668094785979141847">Cliquer pour quitter Lentille Google</translation>
+<translation id="2674238339205910678">ChromeOS Flex n'a pas pu enregistrer les données Chrome dans votre compte Google parce que les détails de connexion de votre compte ne sont plus à jour</translation>
 <translation id="2681444469812712297">Ouvrez l'URL <ph name="URL" /> dans un nouvel onglet dans Google Chrome.</translation>
 <translation id="2699790011615497488">Ouvrir Gemini dans la version bêta de Chrome</translation>
 <translation id="2712141162840347885">Sélectionnez n'importe quel élément pour effectuer une recherche avec Lentille Google ou appuyez sur Échap. pour quitter Lentille Google</translation>
@@ -190,6 +192,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2945997411976714835">Erreur d'installation : le processus d'installation n'a pas pu démarrer.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Connexion au réseau – Chrome</translation>
 <translation id="2970681950995291301">Pour retirer votre compte Google de Chrome, déconnectez-vous de Chrome sur la page Paramètres</translation>
+<translation id="2976869732253036751">Recevez des alertes Suivi des prix avec Chrome sur votre téléphone</translation>
 <translation id="2991167882679440829">Vos mots de passe et d'autres données Chrome que vous avez enregistrés dans votre compte Google seront retirés de cet appareil. Pour les utiliser à nouveau dans Chrome, reconnectez-vous.</translation>
 <translation id="2994465299455873643">Fournit des services de chiffrement et un moyen sécurisé de récupérer <ph name="BROWSER_NAME" /> s'il devient obsolète. Si ce service est désactivé, <ph name="BROWSER_NAME" /> peut perdre l'accès aux données chiffrées et <ph name="BROWSER_NAME" /> risque de ne pas pouvoir se récupérer.</translation>
 <translation id="3003694935412297923">Toutes les tâches</translation>
@@ -536,6 +539,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6497147134301593682">Chrome a été automatiquement fermé</translation>
 <translation id="6506909944137591434">Chrome requiert l'autorisation d'accéder à l'appareil photo pour créer une carte 3D de votre environnement</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome pour les développeurs</translation>
+<translation id="6520608191273161151">ChromeOS Flex n'a pas pu enregistrer les données Chrome dans votre compte Google en raison d'une erreur de connexion</translation>
 <translation id="6520670145826811516">Pour utiliser votre position, accordez l'accès à Chrome dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historique de Google Chrome</translation>
 <translation id="6532945796722480006">Ouvrir Gemini dans Chrome Canary</translation>
@@ -583,6 +587,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas prise en charge.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Vous pouvez basculer entre les profils Chrome ici</translation>
+<translation id="7026856149118332950">Cliquez sur <ph name="BEGIN_BOLD" />Oui<ph name="END_BOLD" /> dans la notification Windows afin d'épingler Chrome à votre barre des tâches pour un accès rapide.</translation>
 <translation id="7047386856539490735">Ces résultats sont-ils utiles?</translation>
 <translation id="7051685429025310665">Vous n'avez pas effectué de visite récemment. Chrome a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
@@ -675,6 +680,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Google Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Google Chrome pour séparer vos données.</translation>
 <translation id="7904985524660297937">Essayer Gemini dans Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS n'a pas pu enregistrer les données Chrome dans votre compte Google en raison d'une erreur de connexion</translation>
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chrome, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome a bloqué ce téléchargement, car le fichier est trompeur et pourrait apporter des modifications inattendues à votre appareil</translation>
 <translation id="7951272445806340501">Chrome OS Flex doit être redémarré pour appliquer la mise à jour.</translation>
@@ -750,6 +756,7 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="8624541899164515475">Paramètres, s'ouvre dans un nouvel onglet.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome redémarrera dans 1 minute}one{Chrome redémarrera dans # minute}other{Chrome redémarrera dans # minutes}}</translation>
 <translation id="8637932705841171563">Pour partager votre fenêtre, autorisez l'enregistrement de l'écran pour Chrome dans les Réglages système</translation>
+<translation id="8642497536370021917">Pour vous assurer de toujours pouvoir utiliser et enregistrer des données Chrome dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="8656634243791296665">Ouvrir Gemini dans Chrome pour les développeurs</translation>
 <translation id="8669527147644353129">Application d'aide de Google Chrome</translation>
 <translation id="8679801911857917785">Elle contrôle également la page qui s'affiche au démarrage de Chrome.</translation>
@@ -799,6 +806,7 @@ Vous ne pouvez pas enregistrer de nouveaux favoris dans votre compte tant que vo
 <translation id="93760716455950538">Redémarrer Chrome OS Flex</translation>
 <translation id="943390475793766444">Chrome recommande de numériser ce fichier, car il pourrait être dangereux.</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
+<translation id="973195869036269770">ChromeOS n'a pas pu enregistrer les données Chrome dans votre compte Google parce que les informations de connexion de votre compte ne sont plus à jour</translation>
 <translation id="983803489796659991">L'installation a échoué, car le serveur de mise à jour ne dispose pas de données de hachage pour cette application.</translation>
 <translation id="989369509083708165">Google Chrome est votre navigateur par défaut</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> permet de basculer entre les profils Chrome</translation>

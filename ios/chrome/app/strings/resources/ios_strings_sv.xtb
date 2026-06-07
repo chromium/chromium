@@ -32,6 +32,8 @@
 <translation id="1085677983426914530">Det gick inte att öppna <ph name="FILENAME" />.</translation>
 <translation id="1086486568852410168">Sök med Google Lens</translation>
 <translation id="1096992026380844478">Synkroniseringsinställningarna återställs utifrån den senaste säkerhetskopian. <ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
+<translation id="1097049112094133492">{count,plural, =1{1 manuell sökning har hoppats över}other{# manuella sökningar har hoppats över}}</translation>
+<translation id="1097807529207545420">{count,plural, =1{1 lösenord har verifierats direkt}other{# lösenord har verifierats direkt}}</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Lås upp med Face ID</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
@@ -60,6 +62,7 @@
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bokmärket har sparats i {title} i ditt konto, {email}}other{{count} bokmärken har sparats i {title} i ditt konto, {email}}}</translation>
 <translation id="1207493287814084192">15.30</translation>
+<translation id="1215414310909588335">{count,plural, =1{1 minut av skrivande har sparats}other{# minuter av skrivande har sparats}}</translation>
 <translation id="1217294226280635614">Delad skärm</translation>
 <translation id="1218730690561976633">Aktivera eller inaktivera användarverifiering för förbättrad autofyll</translation>
 <translation id="1219674500290482172">Det går inte att ansluta till internet.</translation>
@@ -111,7 +114,6 @@
 <translation id="1369286077209859800">Visa alla flikar i flikgruppen</translation>
 <translation id="136942498637440594">Du kan söka efter bilder och saker du ser.</translation>
 <translation id="1373120905936431262">Ladda upp en bild att remixa med Nano Banana</translation>
-<translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} av {count} adress}other{{position} av {count} adresser}}</translation>
 <translation id="1383876407941801731">Sök</translation>
@@ -169,6 +171,7 @@
 <translation id="1554043146674176775">Inaktivera AI-läge</translation>
 <translation id="1554477036522844996">Nytt fönster</translation>
 <translation id="1558391695376153246">Stäng inkognitoflikar</translation>
+<translation id="1559263013367304065">sedan du började använda Google Lens</translation>
 <translation id="1560153516220021659">Knapp för komprimerat sekundärt verktygsfält</translation>
 <translation id="1565371473877914088">Ny inkognitoflik</translation>
 <translation id="1567960978791353852">Visa läsläget</translation>
@@ -207,6 +210,7 @@
 <translation id="1671568970992212376">Spara foton i Google Foto och få åtkomst till dem när du vill.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Utifrån organisationens policyer kan den här filen innehålla känsliga uppgifter</translation>
+<translation id="1683276189281028863">Lösenordskontroll</translation>
 <translation id="168389590065701766">Nu kan du öppna Google Lens från adressfältet och söka efter det du ser</translation>
 <translation id="1689333818294560261">Kortnamn</translation>
 <translation id="169048873465870056">Vill du ta bort fliken och radera gruppen?</translation>
@@ -550,6 +554,7 @@
 <translation id="284581348330507117">Skapa unika lösenord</translation>
 <translation id="2856883624744451946">Namnge grupp</translation>
 <translation id="2858204748079866344">Av integritetsskäl fylls ditt lösenord inte i automatiskt i det här fältet.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 webbplats (fler på synkroniserade enheter)}other{# webbplatser (fler på synkroniserade enheter)}}</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2876369937070532032">Webbadresser till vissa sidor som du besöker skickas till Google när din säkerhet är utsatt för risk.</translation>
@@ -711,6 +716,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
 <translation id="349446645805573740">Välj var du vill spara <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Inställningar</translation>
+<translation id="3507556793108992994">{count,plural, =1{1 flik har rensats}other{# flikar har rensats}}</translation>
 <translation id="35083190962747987">Öppna ${url}</translation>
 <translation id="3511519535430890904">Lägg till surfningsskydd</translation>
 <translation id="3512572904898385012">Nu kan du shoppa och översätta med kameran. Tryck här för att testa.</translation>
@@ -742,7 +748,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, hanteras av organisationen.</translation>
 <translation id="3580448612293054698">Vill du uppdatera <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
-<translation id="3583726884554296148">Spara kortet i Google-kontot för att autofylla det för det här köpet och framtida köp i Chrome</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3587885837929752825">Din organisation begränsar vad du kan spara på Google-kontot.</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
@@ -848,6 +853,7 @@
 <translation id="3962326069546168954">Spara</translation>
 <translation id="3967327056943561740">Bokmärken</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
+<translation id="3968685670440571540">sedan du började använda Lösenord och Autofyll</translation>
 <translation id="3973560090698854095">Detta raderar adresser som har sparats i Google-kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Inloggad som <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="3986739045730058129">Öppna fliken</translation>
@@ -873,6 +879,7 @@
 <translation id="4047337302138771011">Dela dina lösenord</translation>
 <translation id="4049419681095579435">Paketet spåras redan</translation>
 <translation id="4049507953662678203">Kontrollera att du är ansluten till nätverket och försök igen.</translation>
+<translation id="4054290211988862686">Välj fil</translation>
 <translation id="4070132839822635162">Logga inte in</translation>
 <translation id="4092655288299341041">Visa hjälp</translation>
 <translation id="4095483462103784441">Skapa en ny flikgrupp</translation>
@@ -938,9 +945,9 @@
 <translation id="4286718549648564014">Adressen har flyttats till ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Markera som läst</translation>
 <translation id="428768789042547925">Nyheter</translation>
+<translation id="4289309730265289297">Fotobibliotek</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="4294506173142861371">Vill du logga in som <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skanna kortet och autofyll</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4306349443295056740">OCSP-signering</translation>
@@ -1343,6 +1350,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5647702255748985085">Vill du lämna gruppen?</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5652623411397330904">Produkterna du bevakar visas här.</translation>
+<translation id="565364728543769472">Spela in video</translation>
 <translation id="5656431592348714536">Förbättrad kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
 <translation id="5666313630530585305">Logga in på en webbplats.</translation>
@@ -1698,6 +1706,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6757899787818440812">Medelhögt</translation>
 <translation id="6759709389246683070">Du kan trycka länge på den här fliken för att ställa in en påminnelse om att besöka den senare</translation>
 <translation id="6761393919622941301">Ljud</translation>
+<translation id="6765551480308401897">Använd inte som standard</translation>
 <translation id="6770452996697898492">[BOKAT]</translation>
 <translation id="6779455296366983087">Din webbinformation rensas</translation>
 <translation id="6782531425936234573">Exportera data</translation>
@@ -1708,7 +1717,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6807287147325542056">Lösenord i andra appar</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
 <translation id="681631578600400068">Spara körkortet</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{{count} bokmärken har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="6826004672264649705">Bevakar för närvarande den här produkten. Öppna för att se prishistorik</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
@@ -1889,6 +1897,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7464143666517313304">Detta raderar adresser som har sparats på den här enheten.</translation>
 <translation id="7468373585447318060">Håll koll på prissänkningar för alla produkter du bevakar.</translation>
 <translation id="746872191028309255">Köp det du ser med kameran eller fotogalleriet.</translation>
+<translation id="7469215556134875318">sedan du började använda Lösenordskontroll</translation>
 <translation id="7471557245617580330">Skapa ny flik</translation>
 <translation id="7473555040328423550">Lägg till flik</translation>
 <translation id="7476548258282096076">På det här kortet visas dina mest besökta webbplatser.</translation>
@@ -1898,6 +1907,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7491161827858509164">Du kan se filer du har laddat ned tidigare i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Fortsätt redigera</translation>
 <translation id="7500244509706269886">Autofyll formulär</translation>
+<translation id="7504841985386528758">sedan du lärde dig om flikgrupper</translation>
 <translation id="750493650310597496">0 valda</translation>
 <translation id="7505402981231763928">Du måste logga in för att använda Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -1980,6 +1990,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="777637629667389858">När du är inloggad skyddas du i alla Googles tjänster.</translation>
 <translation id="7776604279034196531">Öppna läsläget från adressfältet när det är tillgängligt</translation>
 <translation id="7781829728241885113">Igår</translation>
+<translation id="7788474973847076315">Ta foto</translation>
 <translation id="7788868432173225918">Stäng utökad vy</translation>
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7795253248079882669">Tryck på <ph name="BEGIN_BOLD" />Exportera<ph name="END_BOLD" /></translation>
@@ -2023,6 +2034,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="792357691529995513">Inga problem hittades</translation>
 <translation id="7925108652071887026">Fyll i uppgifter automatiskt</translation>
 <translation id="7926975587469166629">Kortets namn</translation>
+<translation id="792762900715361006">Ta foto eller spela in video</translation>
 <translation id="7927711904086083099">Inte markerat</translation>
 <translation id="7927902634113905831">Välj det konto du vill använda för att spara <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> – <ph name="FILESIZE" /></translation>
 <translation id="7930998711684428189">En varning visas om lösenord har läckt ut vid ett dataintrång.</translation>
@@ -2269,6 +2281,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8694281486652655615">Visar det här objektet</translation>
 <translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="8697136149718343437">Flytta adressfältet längst ned</translation>
+<translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kan dela, gå med i och samarbeta i flikgrupper</translation>
 <translation id="8709409604518538305">Flikar har stängts</translation>
@@ -2295,6 +2308,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8766790350274092814">Lösenorden för <ph name="WEBSITE" /> och <ph name="SECOND_WEBSITE" /> raderas. Dina konton raderas inte.</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>
 <translation id="8781834595282316166">Ny flik i grupp</translation>
+<translation id="8784653774976848206">Välj filer</translation>
 <translation id="8786100550345425552">Redigera behörigheter</translation>
 <translation id="878871978861915380">Dölj Prisbevakning</translation>
 <translation id="8792626944327216835">mikrofon</translation>

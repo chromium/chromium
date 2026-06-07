@@ -356,6 +356,7 @@
 <translation id="253498598929009420">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଥିବା ବିଷୟବସ୍ତୁକୁ ଦେଖିବାରେ ସାଇଟ ସକ୍ଷମ ହେବ</translation>
 <translation id="2535807170289627159">ସମସ୍ତ ଟାବ</translation>
 <translation id="2536728043171574184">ଏହି ପୃଷ୍ଠାର ଏକ ଅଫ୍‌ଲାଇନ୍‌ କପି ଦେଖୁଛି</translation>
+<translation id="2537574774089209541">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣ Geminiକୁ ସହଜରେ ଆକ୍ସେସ କରିବା ପାଇଁ କିଛି ଟୁଲ ମୁଭ ହୋଇଛି</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ମ୍ୟୁଟ କରାଯାଇଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ଟାବ</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ, <ph name="EMAIL" /> ଭାବେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ଏହିକ୍ଷଣି</translation>
+<translation id="276378135349383280">ନିମ୍ନ ଟୁଲବାରରେ Gemini ଦେଖାନ୍ତୁ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ସେକେଣ୍ଡ ଅବଶିଷ୍ଟ ଅଛି</translation>
 <translation id="2779651927720337254">ବିଫଳ ହେଲା</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3614126103057878858">ମୂଲ୍ୟ ଇନସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
+<translation id="3616798734782988169">ଆପଣ <ph name="DOWNLOAD_DOMAIN" />କୁ ବିଶ୍ଵାସ କରୁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="3619255692378312441">ଆକ୍ସେସକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3622349720008044802">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1ଟି ସାଇଟ}other{+ #ଟି ସାଇଟ}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">ଟଚ୍ ଟୁ ସର୍ଚ୍ଚ</translation>
 <translation id="3739455665973395693">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ କୌଣସି ଚୋରି ହୋଇଥିବା ପାସୱାର୍ଡ ନାହିଁ</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" />ରେ ବୁକ୍‌ମାର୍କ କରାଗଲା</translation>
+<translation id="3740290940447881599">ଆପଣ ଏହି ସାଇଟକୁ ବିଶ୍ୱାସ କରୁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="3740525748616366977">ଏହି ଡିଭାଇସରେ ଭଏସ ସର୍ଚ୍ଚ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="3763110477555836428">ଆପଣଙ୍କ ପ୍ରକୃତ ବିବରଣୀକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ ଆପଣ ଏହି କାର୍ଡ ମାଧ୍ୟମରେ ଚେକ ଆଉଟ କଲେ ଏକ ଭର୍ଚୁଆଲ କାର୍ଡ ନମ୍ବର ପୂରଣ କରାଯିବ। Google Walletରେ ପରିଚାଳନା କରନ୍ତୁ। <ph name="BEGIN_LINK1" />ଭର୍ଚୁଆଲ କାର୍ଡଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">କିଛି ଡାଟା ଏପର୍ଯ୍ୟନ୍ତ ସେଭ କରାଯାଇନାହିଁ</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">ବାପାମା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ ଚାଲୁ ଥିବା ଯୋଗୁଁ ଏହି ସେଟିଂସକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="3771694256347217732">Google ସର୍ଭିସର ସର୍ତ୍ତାବଳୀ</translation>
 <translation id="3777796259512476958">ଅଧିକାଂଶ ସାଇଟରୁ ଆପଣଙ୍କୁ ସାଇନ ଆଉଟ କରିଦିଏ</translation>
+<translation id="3786379886124795923">Chromeରେ ସାଇନ ଇନ କରିବା ପାଇଁ ଆପଣ ଏକ QR କୋଡ ସ୍କାନ କରିଛନ୍ତି। ଆପଣ ଏହି ପ୍ରୋଫାଇଲରୁ ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବାକୁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1ଟି ଟାବ୍}other{#ଟି ଟାବ୍}}</translation>
 <translation id="3792938779249970121">ଆକାଉଣ୍ଟ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3795154175078851242">ଲିଙ୍କ ସହ ଥିବା ଇମେଜ କପି କରନ୍ତୁ</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="4535755320005483982">ସେୟାର କରାଯାଇଥିବା <ph name="GROUP_TITLE" /> ଟାବ ଗ୍ରୁପ</translation>
 <translation id="4537137366307982887">ଟିପ୍ସ ବିଜ୍ଞପ୍ତି ଅପ୍ଟ ଇନ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ଖୋଲାଯାଇଛି</translation>
+<translation id="4537987892902330164">ଆପଣ <ph name="NAME_OR_EMAIL" /> ଭାବେ ସାଇନ ଇନ କରି ରହିଛନ୍ତି।</translation>
 <translation id="4543131175509360848">କୌଣସି ପାସକୀ ସିଟ ନାହିଁ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />ଟି ଟାବ୍}other{<ph name="TAB_COUNT_MANY" />ଟି ଟାବ୍, <ph name="TAB_COUNT_INCOGNITO" />ଟି ଇନକଗ୍ନିଟୋ}}</translation>
 <translation id="4558311620361989323">ୱେବ୍‍ପୃଷ୍ଟା ସର୍ଟକଟ୍</translation>
@@ -1282,6 +1288,7 @@
 <translation id="6411219469806822692">ଏହାଠାରୁ ଉପରକୁ ଯାଇପାରିବ ନାହିଁ। ପୃଷ୍ଠାର ଆହୁରି ଉପରୁ ଆରମ୍ଭ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ଟାବ</translation>
 <translation id="641643625718530986">ପ୍ରିଣ୍ଟ କରନ୍ତୁ…</translation>
+<translation id="6427723330233512782">ହାଇଟରେ ଫିଟ କରନ୍ତୁ</translation>
 <translation id="6433501201775827830">ଆପଣଙ୍କର ସନ୍ଧାନ ଇଞ୍ଜିନ୍ ବାଛନ୍ତୁ</translation>
 <translation id="6434309073475700221">ବର୍ଜିତ କରନ୍ତୁ</translation>
 <translation id="6435307030888827407">ସାଇନ ଆଉଟ ହୋଇ ରୁହନ୍ତୁ</translation>
@@ -1529,6 +1536,7 @@
 <translation id="7291910923717764901">ଏହି ପୃଷ୍ଠା ପାଇଁ ଛବିର ବର୍ଣ୍ଣନା ଯୋଗ କରାଯାଇଛି</translation>
 <translation id="7293429513719260019">ଭାଷା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ସେୟାର କରୁଥିବା ଟାବ</translation>
+<translation id="7304003340539141201">ଆପଣଙ୍କ ଟାବ ଏବଂ ଟାସ୍କଗୁଡ଼ିକରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ Geminiକୁ କୁହନ୍ତୁ</translation>
 <translation id="7311244614769792472">କୌଣସି ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="7314734791127433392">ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7324354302972299151">ଏକ “Do Not Track” ଅନୁରୋଧ ପଠାନ୍ତୁ</translation>
@@ -1875,6 +1883,7 @@
 <translation id="8696297579102085705">ଆପଣଙ୍କ ଡିଭାଇସକୁ ପଠାନ୍ତୁ</translation>
 <translation id="8697753151306746444">ଏହା ପରିବର୍ତ୍ତେ ୱିଣ୍ଡୋ କିମ୍ବା ସ୍କ୍ରିନ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="8699120352855309748">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
+<translation id="8700565880437506364">Chromeରେ Gemini ଆସିଯାଇଛି</translation>
 <translation id="8712637175834984815">ବୁଝିଗଲି</translation>
 <translation id="8715286883001906001">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁଦୃଢ଼ କରନ୍ତୁ</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> ବନ୍ଦ ହୋଇଯିବ</translation>
@@ -1942,6 +1951,7 @@
 <translation id="8996847606757455498">ଅନ୍ୟ ଏକ ପ୍ରଦାନକାରୀ ବାଛନ୍ତୁ</translation>
 <translation id="8998837250940831980">ଟାବକୁ ଛୋଟ କରାଯାଇପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="9001604755921395912">ଇନକଗ୍ନିଟୋ Chrome ଟାବରେ ଖୋଲନ୍ତୁ</translation>
+<translation id="9010094279589497751">ଆପଣ ଆବଶ୍ୟକ କରିବା ସମୟରେ Geminiକୁ ଶୀଘ୍ର ଖୋଲନ୍ତୁ</translation>
 <translation id="9012585441087414258">ବିପଦଜନକ ପରି ଜଣାପଡ଼ୁଥିବା ସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନସନଗୁଡ଼ିକଠାରୁ ସୁରକ୍ଷିତ ରଖେ। ଯଦି ଏକ ପୃଷ୍ଠା କିଛି ସନ୍ଦେହଜନକ କାର୍ଯ୍ୟ କରେ, ତେବେ URL ଏବଂ ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ପଠାଯାଏ।</translation>
 <translation id="9019199799064251516">ଏକ କାର ପ୍ରୋଫାଇଲ ଲକ ବିନା ଜାରି ରଖିବେ?</translation>
 <translation id="9022774213089566801">ବାରମ୍ବାର ଭିଜିଟ୍ କରାଯାଉଥିବା</translation>
@@ -1999,6 +2009,7 @@
 <translation id="9190355771000652811">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସର୍ଚ୍ଚ ପାଇଁ ଠିକଣା ବାରରେ ସର୍ଟକଟଗୁଡ଼ିକ ସହ ଏହି କୀବୋର୍ଡ ସର୍ଟକଟକୁ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ଚୟନିତ ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ମିନିଟ୍ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}other{# ମିନିଟ୍ ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଛି}}</translation>
+<translation id="9202894533863490414">ଏହି ସାଇଟରୁ ଡାଉନଲୋଡ କରିବେ?</translation>
 <translation id="9204836675896933765">1 ଫାଇଲ୍‌ ବାକି ଅଛି</translation>
 <translation id="9205933215779845960">ସେହି ପୃଷ୍ଠାଟି ମିଳୁନାହିଁ। ଆପଣଙ୍କର ବନାନ ଯାଞ୍ଚ କରନ୍ତୁ କିମ୍ବା <ph name="SEARCH_ENGINE" />ରେ ଏକ ସର୍ଚ୍ଚ ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="9206873250291191720">ଅ</translation>
@@ -2016,9 +2027,11 @@
 <translation id="939598580284253335">ପାସ୍‌-ଫ୍ରେଜ୍ ଲେଖନ୍ତୁ</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ପିକଚର-ଇନ-ପିକଚର ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="949667118776341807">ରୋଟେଟ କରନ୍ତୁ</translation>
 <translation id="95817756606698420">ଚୀନରେ ସର୍ଚ୍ଚ ପାଇଁ, Chrome <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ବ୍ୟବହାର କରିପାରିବ। ଆପଣ ଏହାକୁ <ph name="BEGIN_LINK" />ସେଟିଂସ<ph name="END_LINK" />ରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="961856697154696964">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କର</translation>
 <translation id="963246339335003378">ଟାସ୍କ ମେନେଜର ଖୋଲନ୍ତୁ</translation>
+<translation id="966337994629449077">ଆପଣ <ph name="FROM_EMAIL" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି।\n\nଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରୁ ଜାରି ରଖିବା ପାଇଁ <ph name="TO_EMAIL" />କୁ ସ୍ୱିଚ କରନ୍ତୁ। ଆପଣ ଏହି ଆକାଉଣ୍ଟରୁ ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବେ।</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="983192555821071799">ସମସ୍ତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>

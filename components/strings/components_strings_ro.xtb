@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">Lenjerie de corp</translation>
 <translation id="1458770162980644530">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu. Tastatura este ascunsă.</translation>
 <translation id="1459693405370120464">Meteo</translation>
+<translation id="1460317464907341501">Confirmi automat această adresă de e-mail?</translation>
 <translation id="1461041542809785877">Performanță</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">să folosească fonturile de pe computer ca să poți crea conținut de înaltă fidelitate.</translation>
@@ -2004,6 +2005,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="412601465078863288">Încărcarea a expirat</translation>
 <translation id="4127317221386336246">Accesorii pentru îmbrăcăminte</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{încă 1}few{încă #}other{încă #}}</translation>
+<translation id="4129810348470013900">A apărut o eroare. Verifică dacă ai conexiune la internet și încearcă din nou.</translation>
 <translation id="4129992181550680635">Resurse educaționale</translation>
 <translation id="4130226655945681476">să verifici cablurile de rețea, modemul și routerul;</translation>
 <translation id="4132448310531350254">Handlere dublură pentru extensia de fișier <ph name="FILE_EXTENSION" /> la care fac referire aplicațiile <ph name="POLICY_IDS_LIST" />.</translation>

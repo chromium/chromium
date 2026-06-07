@@ -532,6 +532,7 @@
 <translation id="254900897760075745">選択した内容をクリップボードにコピーする</translation>
 <translation id="2549711466868162843">明るさ補正</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
+<translation id="2552966063069741410">タイムゾーン</translation>
 <translation id="2562459326218811217">デバイスは電源に接続されていますが、充電されていません。ワット（W）数の大きい充電器を使用するか、付属の充電器を使用してください。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> を接続できませんでした</translation>
@@ -621,6 +622,7 @@
 <translation id="2838379631617906747">インストール中</translation>
 <translation id="2838589015763961627">サイズを変更するには全画面表示を終了してください</translation>
 <translation id="2840766858109427815">次のページに進む</translation>
+<translation id="2841013758207633010">時間</translation>
 <translation id="2841907151129139818">タブレット モードに切り替えました</translation>
 <translation id="2843560154284403323">Linux の設定を完了するには、ChromeOS を更新してからもう一度お試しください。</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
@@ -1275,6 +1277,7 @@
 <translation id="4633636853437260449">Ctrl+W キーを押して削除します</translation>
 <translation id="4633757335284074492">Google ドライブにデータをバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ内容にはアプリのデータが含まれます。バックアップ データは Google にアップロードされ、お子様の Google アカウントのパスワードを使って暗号化されます。</translation>
 <translation id="4635501805800894201">{0,plural, =0{今すぐデバイスを以前のバージョンに更新してください}=1{1 秒以内にデバイスを以前のバージョンに更新してください}other{# 秒以内にデバイスを以前のバージョンに更新してください}}</translation>
+<translation id="4641539339823703554">Chrome はシステムの時刻を設定できませんでした。以下で時刻を確認し、必要に応じて修正してください。</translation>
 <translation id="4642092649622328492">画面の一部のスクリーンショットを撮影する</translation>
 <translation id="4643833688073835173">Chromebook では、内蔵センサーを使用してデバイスの前にいる人を検出します。すべてのデータがデバイス上ですぐに処理され、その後に削除されます。センサーデータは Google には一切送信されません。</translation>
 <translation id="4644727592819780893">領域が小さすぎてカメラに合いません</translation>
@@ -1795,6 +1798,7 @@
 <translation id="6073451960410192870">撮影を停止</translation>
 <translation id="6074087755403037157">Beta チャンネル</translation>
 <translation id="6075098173600599596">小文字と大文字を変更</translation>
+<translation id="6080689532560039067">システムの時刻の確認</translation>
 <translation id="6091929401758362855">プレイリスト: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">管理者により無効にされています</translation>
 <translation id="6095008505822982596">話す速さ</translation>

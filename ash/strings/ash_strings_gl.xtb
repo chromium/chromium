@@ -532,6 +532,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="254900897760075745">Copia o contido seleccionado no portapapeis</translation>
 <translation id="2549711466868162843">Iluminación mellorada</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
+<translation id="2552966063069741410">Fuso horario</translation>
 <translation id="2562459326218811217">O dispositivo está enchufado, pero non se está cargando. Proba un cargador con máis watts (W) ou usa un orixinal.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
 <translation id="2573588302192866788">Non se puido conectar o dispositivo (<ph name="NAME" />)</translation>
@@ -621,6 +622,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="2838379631617906747">Instalando</translation>
 <translation id="2838589015763961627">Sae da pantalla completa para cambiar o tamaño</translation>
 <translation id="2840766858109427815">Avanzar á páxina seguinte</translation>
+<translation id="2841013758207633010">Hora</translation>
 <translation id="2841907151129139818">Cambiouse ao modo de tableta</translation>
 <translation id="2843560154284403323">Para rematar de configurar Linux, actualiza Chrome OS e téntao de novo.</translation>
 <translation id="2844169650293029770">Dispositivo USB‑C (porto esquerdo frontal)</translation>
@@ -1276,6 +1278,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4633636853437260449">Preme Control + W para eliminar</translation>
 <translation id="4633757335284074492">Facer copia de seguranza en Drive. Restaura os datos facilmente ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Restaura a versión anterior no dispositivo agora}=1{Restaura a versión anterior no dispositivo no prazo de 1 segundo}other{Restaura a versión anterior no dispositivo no prazo de # segundos}}</translation>
+<translation id="4641539339823703554">Chrome non puido establecer a hora do sistema. Comproba a hora a continuación e corríxea se é necesario.</translation>
 <translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
 <translation id="4643833688073835173">O teu Chromebook utiliza un sensor integrado para detectar as persoas que se atopan diante do dispositivo. Todos os datos se procesan no teu dispositivo de inmediato e, logo, elimínanse. Os datos do sensor nunca se lle envían a Google.</translation>
 <translation id="4644727592819780893">A rexión é demasiado pequena para mostrar a vista previa da cámara</translation>
@@ -1796,6 +1799,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
 <translation id="6074087755403037157">Canle Beta</translation>
 <translation id="6075098173600599596">Cambiar uso de maiúsculas</translation>
+<translation id="6080689532560039067">Comproba a hora do sistema</translation>
 <translation id="6091929401758362855">Lista de reprodución: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Opción desactivada polo administrador</translation>
 <translation id="6095008505822982596">Velocidade da fala</translation>

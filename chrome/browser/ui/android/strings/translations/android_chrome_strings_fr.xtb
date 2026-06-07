@@ -356,6 +356,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="253498598929009420">Le site pourra voir le contenu de votre écran</translation>
 <translation id="2535807170289627159">Tous les onglets</translation>
 <translation id="2536728043171574184">Affichage d'une copie hors connexion de la page</translation>
+<translation id="2537574774089209541">Certains outils ont été déplacés pour vous permettre d'accéder facilement à Gemini pendant que vous naviguez</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé sélectionné avec son coupé</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, onglet</translation>
@@ -404,6 +405,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2751271371269891762">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/AA</translation>
 <translation id="2762000892062317888">à l'instant</translation>
+<translation id="276378135349383280">Voir Gemini dans barre d'outils inférieure</translation>
 <translation id="276969039800130567">Connecté en tant que <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> secondes restantes</translation>
 <translation id="2779651927720337254">échec</translation>
@@ -603,6 +605,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3614126103057878858">Tendances des prix</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Vérifiez que <ph name="DOWNLOAD_DOMAIN" /> est fiable</translation>
 <translation id="3619255692378312441">Gérer l'accès</translation>
 <translation id="3622349720008044802">Gérer les fenêtres</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}one{+ # site}other{+ # sites}}</translation>
@@ -633,6 +636,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3738139272394829648">Appuyer pour rechercher</translation>
 <translation id="3739455665973395693">Aucun mot de passe compromis dans votre compte Google</translation>
 <translation id="3739899004075612870">Favori ajouté dans <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Vérifiez que ce site est fiable</translation>
 <translation id="3740525748616366977">La recherche vocale n'est pas disponible sur cet appareil</translation>
 <translation id="3763110477555836428">Un numéro de carte virtuelle sera renseigné lorsque vous paierez avec cette carte pour protéger vos informations réelles. Gérez-la dans Google Wallet. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Certaines données ne sont pas encore enregistrées</translation>
@@ -1532,6 +1536,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7291910923717764901">Des descriptions d'images ont été ajoutées pour cette page</translation>
 <translation id="7293429513719260019">Sélectionner une langue</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, onglet épinglé sélectionné avec partage en cours</translation>
+<translation id="7304003340539141201">Demandez à Gemini de vous aider avec vos onglets et vos tâches</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
 <translation id="7314734791127433392">Impossible de vérifier les mots de passe</translation>
 <translation id="7324354302972299151">Envoyer une requête "Do Not Track"</translation>
@@ -1878,6 +1883,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8696297579102085705">Envoyer sur votre appareil</translation>
 <translation id="8697753151306746444">Partagez plutôt une fenêtre ou un écran</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
+<translation id="8700565880437506364">Découvrez Gemini dans Chrome</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Renforcez les mots de passe de votre compte Google</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> sera fermé</translation>
@@ -1945,6 +1951,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8996847606757455498">Sélectionner un autre fournisseur</translation>
 <translation id="8998837250940831980">Impossible de réduire l'onglet. Réessayez plus tard.</translation>
 <translation id="9001604755921395912">Ouvrir en onglet Chrome privé</translation>
+<translation id="9010094279589497751">Ouvrez rapidement Gemini quand vous en avez besoin</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. En cas d'activité suspecte sur une page, des URL et des extraits de son contenu sont envoyés à la navigation sécurisée Google.</translation>
 <translation id="9019199799064251516">Continuer sans verrouillage du profil pour la voiture ?</translation>
 <translation id="9022774213089566801">Consultés régulièrement</translation>
@@ -2002,6 +2009,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9190355771000652811">Dans la barre d'adresse, utilisez ce raccourci clavier avec les raccourcis des moteurs de recherche et de la recherche sur les sites.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, onglet de navigation privée sélectionné épinglé</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Vérification effectuée il y a 1 minute}one{Vérification effectuée il y a # minute}other{Vérification effectuée il y a # minutes}}</translation>
+<translation id="9202894533863490414">Télécharger depuis ce site ?</translation>
 <translation id="9204836675896933765">1 fichier restant</translation>
 <translation id="9205933215779845960">Page introuvable. Vérifiez l'orthographe ou effectuez une recherche sur <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

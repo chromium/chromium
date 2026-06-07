@@ -356,6 +356,7 @@
 <translation id="253498598929009420">Сайт зможе переглядати вміст вашого екрана</translation>
 <translation id="2535807170289627159">Усі вкладки</translation>
 <translation id="2536728043171574184">Перегляд копії сторінки в режимі офлайн</translation>
+<translation id="2537574774089209541">Ми перемістили деякі інструменти, щоб вам було зручніше користуватися Gemini під час вебперегляду</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" /> (вибрана анонімна вкладка, яку закріплено й на якій вимкнено звук)</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> (вкладка)</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">Щоб отримати доступ до закладок і інших даних на всіх своїх пристроях, увійдіть в обліковий запис <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">ММ / РР</translation>
 <translation id="2762000892062317888">щойно</translation>
+<translation id="276378135349383280">Показувати Gemini на нижній панелі інструментів</translation>
 <translation id="276969039800130567">Ви ввійшли як <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Залишилося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не завантажено</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3614126103057878858">Відомості про ціни</translation>
 <translation id="3616113530831147358">Аудіо</translation>
+<translation id="3616798734782988169">Переконайтеся, що сайт <ph name="DOWNLOAD_DOMAIN" /> надійний</translation>
 <translation id="3619255692378312441">Керувати доступом</translation>
 <translation id="3622349720008044802">Керувати вікнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{і ще один сайт}one{і ще # сайт}few{і ще # сайти}many{і ще # сайтів}other{і ще # сайту}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">Пошук дотиком</translation>
 <translation id="3739455665973395693">В обліковому записі Google немає зламаних паролів</translation>
 <translation id="3739899004075612870">Створено закладку в продукті <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Переконайтеся, що цей сайт надійний</translation>
 <translation id="3740525748616366977">Голосовий пошук недоступний на цьому пристрої</translation>
 <translation id="3763110477555836428">Щоб захистити дані справжньої картки, під час оплати за її допомогою натомість заповнюватиметься номер віртуальної картки. Ви можете керувати цим налаштуванням у Google Гаманці. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Деякі дані ще не збережено</translation>
@@ -641,6 +645,7 @@
 <translation id="3771290962915251154">Цей параметр вимкнено, оскільки ввімкнено батьківський контроль</translation>
 <translation id="3771694256347217732">Загальні положення та умови Google</translation>
 <translation id="3777796259512476958">Ви автоматично вийдете з облікових записів на більшості сайтів</translation>
+<translation id="3786379886124795923">Ви відсканували QR-код, щоб увійти в Chrome. Підтвердьте, що хочете отримати паролі, закладки й інші дані із цього профілю.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 вкладка}one{# вкладка}few{# вкладки}many{# вкладок}other{# вкладки}}</translation>
 <translation id="3792938779249970121">Виберіть обліковий запис</translation>
 <translation id="3795154175078851242">Копіювати зображення з посиланням</translation>
@@ -825,6 +830,7 @@
 <translation id="4532845899244822526">Вибрати папку</translation>
 <translation id="4535755320005483982"><ph name="GROUP_TITLE" /> (спільна група вкладок)</translation>
 <translation id="4537137366307982887">Вікно пропозиції отримувати сповіщення з підказками відкрито на всю висоту</translation>
+<translation id="4537987892902330164">Ви залишаєтеся в обліковому записі <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Екран "Немає ключів доступу"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}few{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}many{<ph name="TAB_COUNT_MANY" /> вкладок, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}other{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}}</translation>
 <translation id="4558311620361989323">Комбінації клавіш для роботи з веб-сторінками</translation>
@@ -1282,6 +1288,7 @@
 <translation id="6411219469806822692">Не вдається прокрутити далі вгору. Спробуйте почати вище на сторінці.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" /> (вибрана вкладка)</translation>
 <translation id="641643625718530986">Друк…</translation>
+<translation id="6427723330233512782">За висотою</translation>
 <translation id="6433501201775827830">Виберіть пошукову систему</translation>
 <translation id="6434309073475700221">Відхилити</translation>
 <translation id="6435307030888827407">Не входити</translation>
@@ -1529,6 +1536,7 @@
 <translation id="7291910923717764901">Додано описи зображень для цієї сторінки</translation>
 <translation id="7293429513719260019">Вибрати мову</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" /> (вибрана закріплена вкладка, до якої надано доступ іншим користувачам)</translation>
+<translation id="7304003340539141201">Попросіть Gemini допомогти з вкладками й завданнями</translation>
 <translation id="7311244614769792472">Результатів не знайдено</translation>
 <translation id="7314734791127433392">Не вдалося перевірити паролі</translation>
 <translation id="7324354302972299151">Надсилати запит Do Not Track</translation>
@@ -1875,6 +1883,7 @@
 <translation id="8696297579102085705">Надіслати на ваш пристрій</translation>
 <translation id="8697753151306746444">Натомість надайте доступ до вікна або екрана</translation>
 <translation id="8699120352855309748">Не пропонувати перекладати ці мови</translation>
+<translation id="8700565880437506364">Представляємо Gemini у Chrome</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8715286883001906001">Зробіть паролі в обліковому записі Google надійнішими</translation>
 <translation id="8715300232952757586">Вкладку "<ph name="TAB_TITLE" />" буде закрито</translation>
@@ -1942,6 +1951,7 @@
 <translation id="8996847606757455498">Вибрати іншого постачальника</translation>
 <translation id="8998837250940831980">Не вдалося згорнути вкладку. Повторіть спробу пізніше.</translation>
 <translation id="9001604755921395912">Відкрити анонімно в Chrome</translation>
+<translation id="9010094279589497751">Швидко відкривайте Gemini у будь-який момент</translation>
 <translation id="9012585441087414258">Захищає від відомих небезпечних веб-сайтів, завантажень і розширень. Якщо сторінка виконує підозрілі дії, URL-адреси й фрагменти контенту надсилаються в Безпечний перегляд Google.</translation>
 <translation id="9019199799064251516">Продовжити без блокування профілю автомобіля?</translation>
 <translation id="9022774213089566801">Часто відвідувані</translation>
@@ -1999,6 +2009,7 @@
 <translation id="9190355771000652811">Використайте в адресному рядку цю комбінацію клавіш і команду для пошукових систем та пошуку на сайтах.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" /> (закріплена вибрана анонімна вкладка)</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Перевірено 1 хвилину тому}one{Перевірено # хвилину тому}few{Перевірено # хвилини тому}many{Перевірено # хвилин тому}other{Перевірено # хвилини тому}}</translation>
+<translation id="9202894533863490414">Завантажити із цього сайту?</translation>
 <translation id="9204836675896933765">Залишився 1 файл</translation>
 <translation id="9205933215779845960">Не вдається знайти цю сторінку. Перевірте написання або спробуйте шукати в <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2016,9 +2027,11 @@
 <translation id="939598580284253335">Ввести парольну фразу</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка в режимі "картинка в картинці")</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
+<translation id="949667118776341807">Обернути</translation>
 <translation id="95817756606698420">Chrome може використовувати <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> для пошуку в Китаї. Це можна змінити в <ph name="BEGIN_LINK" />Налаштуваннях<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Видалити дані вебперегляду</translation>
 <translation id="963246339335003378">Відкрити Диспетчер завдань</translation>
+<translation id="966337994629449077">Ви ввійшли як <ph name="FROM_EMAIL" />.\n\nЩоб продовжити на комп’ютері, перейдіть в обліковий запис <ph name="TO_EMAIL" />. Ви отримаєте доступ до паролів, закладок і інших даних із цього облікового запису.</translation>
 <translation id="970715775301869095">Залишилося <ph name="MINUTES" /> хв</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрити всі вкладки</translation>

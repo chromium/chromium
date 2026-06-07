@@ -153,6 +153,7 @@
 <translation id="2580411288591421699">ବର୍ତ୍ତମାନ ସମୟରେ ଚାଲୁଥିବା Google Chromeର ସମାନ ସଂସ୍କରଣକୁ ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇପାରିବ ନାହିଁ। ଦୟାକରି Google Chromeକୁ ବନ୍ଦ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="2586406160782125153">ଏହା ଏହି ଡିଭାଇସ୍‍ରୁ ଆପଣଙ୍କର ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରିଦେବେ। ପରେ ଆପଣଙ୍କର ଡାଟା ପୁନଃପ୍ରାପ୍ତ କରିବାକୁ Chromeରେ <ph name="USER_EMAIL" />ରୂପେ ସାଇନ୍ ଇନ୍‌ କରନ୍ତୁ।</translation>
 <translation id="259935314519650377">ଡାଉନଲୋଡ କରାଯାଇଥିବା ଇନଷ୍ଟଲରକୁ କେଶେ କରିବାରେ ବିଫଳ ହୋଇଛି। ତ୍ରୁଟି: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
+<translation id="2608461706055011366">ଏହି ଡକ୍ୟୁମେଣ୍ଟର ଏକ କ୍ଵିକ ଓଭରଭ୍ୟୁ ପାଆନ୍ତୁ ଏବଂ Chromeରେ Gemini ମାଧ୍ୟମରେ ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ</translation>
 <translation id="2620436844016719705">ସିଷ୍ଟମ୍‌</translation>
 <translation id="263447411082773721">ସମଗ୍ର ଡିଭାଇସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡ, ବୁକମାର୍କ ଏବଂ ଇତିହାସକୁ ସଠିକ ଭାବେ ସିଙ୍କ କରି ରଖନ୍ତୁ। ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜରକୁ Chromeରେ ଅପଡେଟ କରି ଆପଣ ଜାଣିଥିବା ଏବଂ ପସନ୍ଦ କରୁଥିବା ଫିଚରଗୁଡ଼ିକୁ ସହଜରେ ଆକ୍ସେସ କରନ୍ତୁ। କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ Chromeକୁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ ପିନ କରାଯିବ।</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">ନୂଆ Chrome &amp;ଟାବ୍‌ରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="2665296953892887393">Googleକୁ କ୍ରାଶ୍ ରିପୋର୍ଟ ଏବଂ <ph name="UMA_LINK" /> ପଠାଇ Google Chromeକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="2668094785979141847">Google Lensରୁ ବାହାରିଯିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
+<translation id="2674238339205910678">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ସାଇନ-ଇନ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ ChromeOS Flex ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ସେଭ କରିପାରିଲା ନାହିଁ</translation>
 <translation id="2681444469812712297">Chromeରେ ଏକ ନୂଆ ଟାବରେ <ph name="URL" /> ଖୋଲନ୍ତୁ।</translation>
 <translation id="2699790011615497488">Chrome ବିଟାରେ Gemini ଖୋଲନ୍ତୁ</translation>
 <translation id="2712141162840347885">Google Lens ସହ ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଯେ କୌଣସି ବିଷୟକୁ ଚୟନ କରନ୍ତୁ କିମ୍ବା Google Lensରୁ ବାହାରି ଯିବା ପାଇଁ ଏସକେପ କୀ'କୁ ଦବାନ୍ତୁ</translation>
@@ -190,6 +192,7 @@
 <translation id="2945997411976714835">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ପ୍ରକ୍ରିୟା ଆରମ୍ଭ ହେବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="2970681950995291301">Chromeରୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦେବା ପାଇଁ ସେଟିଂସ ପୃଷ୍ଠାରେ Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
+<translation id="2976869732253036751">ଆପଣଙ୍କ ଫୋନରେ Chrome ସହ ମୂଲ୍ୟ ଟ୍ରାକିଂ ଆଲର୍ଟଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="2991167882679440829">ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିଥିବା ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ Chrome ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯିବ। Chromeରେ ସେଗୁଡ଼ିକୁ ପୁଣି ବ୍ୟବହାର କରିବା ପାଇଁ ଆଉ ଥରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="2994465299455873643">ଯଦି <ph name="BROWSER_NAME" /> ପୁରୁଣା ହୋଇଯାଏ, ତେବେ ଏହାକୁ ରିକଭର କରିବା ପାଇଁ ଏନକ୍ରିପସନ ସେବାଗୁଡ଼ିକ ଏବଂ ଏକ ସୁରକ୍ଷିତ ଉପାୟ ପ୍ରଦାନ କରେ। ଯଦି ଏହି ସେବାକୁ ଅକ୍ଷମ କରାଯାଏ, ତେବେ <ph name="BROWSER_NAME" /> ଏନକ୍ରିପ୍ଟ କରାଯାଇଥିବା ଡାଟାକୁ ଆକ୍ସେସ ହରାଇପାରେ ଏବଂ <ph name="BROWSER_NAME" /> ସ୍ୱତଃ ରିକଭର ହେବା ପାଇଁ ସକ୍ଷମ ହୋଇନପାରେ।</translation>
 <translation id="3003694935412297923">ସମସ୍ତ ଟାସ୍କ</translation>
@@ -537,6 +540,7 @@
 <translation id="6497147134301593682">Chrome ସ୍ୱତଃ ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="6506909944137591434">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ପାଇଁ Chrome କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ସାଇନ ଇନ କରିବାରେ ଏକ ତ୍ରୁଟି ଯୋଗୁଁ ChromeOS Flex ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ସେଭ କରିପାରିଲା ନାହିଁ</translation>
 <translation id="6520670145826811516">ଆପଣଙ୍କ ଲୋକେସନକୁ ବ୍ୟବହାର କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ସିଷ୍ଟମ ସେଟିଂସ<ph name="END_LINK" />ରେ Chromeକୁ ଆକ୍ସେସ ଦିଅନ୍ତୁ</translation>
 <translation id="652948702951888897">Chrome ଇତିବୃତ୍ତି</translation>
 <translation id="6532945796722480006">Chrome Canaryରେ Gemini ଖୋଲନ୍ତୁ</translation>
@@ -584,6 +588,7 @@
 <translation id="7011190694940573312">ଅପରେଟିଂ ସିଷ୍ଟମର ଏହି ଭର୍ସନ ସମର୍ଥିତ ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="7024536598735240744">ଅନପେକ ତ୍ରୁଟି: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025800014283535195">ଏଠାରେ ଆପଣ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରିପାରିବେ</translation>
+<translation id="7026856149118332950">କ୍ୱିକ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟାସ୍କବାରରେ Chromeକୁ ପିନ କରିବାକୁ Windows ବିଜ୍ଞପ୍ତିରେ <ph name="BEGIN_BOLD" />ହଁ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="7047386856539490735">ଏହି ଫଳାଫଳ ଉପଯୋଗୀ ଅଟେ?</translation>
 <translation id="7051685429025310665">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="7059914902409643750">Chromeକୁ ଆପଣଙ୍କ ନିଜର ବ୍ରାଉଜର୍ କରନ୍ତୁ</translation>
@@ -676,6 +681,7 @@
 <translation id="7890208801193284374">ଯଦି ଆପଣ ଗୋଟିଏ କମ୍ପ୍ୟୁଟର୍ ସେୟାର୍ କରନ୍ତି, ତେବେ, ସାଙ୍ଗମାନେ ଓ ପରିବାରର ସଦସ୍ୟମାନେ ଅଲଗା ଭାବରେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଏବଂ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସାରେ Chromeକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ।</translation>
 <translation id="7896673875602241923">ଏହି କମ୍ପ୍ୟୁଟରରେ କେହି ଜଣେ ପୂର୍ବରୁ Chromeରେ <ph name="ACCOUNT_EMAIL_LAST" /> ଭାବରେ ସାଇନ ଇନ କରିଛନ୍ତି। ଦୟାକରି ଆପଣଙ୍କ ସୂଚନାକୁ ଅଲଗା ରଖିବା ପାଇଁ ଏକ ନୂଆ Chrome ୟୁଜର ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="7904985524660297937">Google Chromeରେ Gemini ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
+<translation id="7905880575591690197">ସାଇନ ଇନ କରିବାରେ ଏକ ତ୍ରୁଟି ଯୋଗୁଁ ChromeOS ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ସେଭ କରିପାରିଲା ନାହିଁ</translation>
 <translation id="7917876797003313048">ଆପଣ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ କରାଯାଇଥିବା Google ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରିପାରିବେ। ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟଗୁଡ଼ିକ Chrome ବ୍ରାଉଜର୍, Play Store, Gmail ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇଁ ବ୍ୟବହାର କରାଯାଇଛି। ଯଦି ଆପଣ ଜଣେ ପରିବାର ସଦସ୍ୟଙ୍କ ପରି ଅନ୍ୟ କୌଣସି ବ୍ୟକ୍ତିଙ୍କ ପାଇଁ ଏକ ଆକାଉଣ୍ଟ ଯୋଗ କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ଏହା ପରିବର୍ତ୍ତେ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରେ ଜଣେ ନୂଆ ବ୍ୟକ୍ତିଙ୍କୁ ଯୋଗ କରନ୍ତୁ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome ଏହି ଡାଉନଲୋଡକୁ ବ୍ଲକ କରିଛି କାରଣ ଏହି ଫାଇଲଟି ପ୍ରତାରଣାମୂଳକ ଅଟେ ଏବଂ ଏହା ଆପଣଙ୍କ ଡିଭାଇସରେ ଅପ୍ରତ୍ୟାଶିତ ପରିବର୍ତ୍ତନ କରିପାରେ</translation>
 <translation id="7951272445806340501">ଅପଡେଟ ଲାଗୁ କରିବା ପାଇଁ ChromeOS Flexକୁ ରିଷ୍ଟାର୍ଟ କରାଯିବା ଆବଶ୍ୟକ।</translation>
@@ -751,6 +757,7 @@
 <translation id="8624541899164515475">ସେଟିଂସ, ନୂଆ ଟାବରେ ଖୋଲେ।</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 ମିନିଟ୍‌ରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}other{# ମିନିଟ୍‌ରେ Chrome ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
 <translation id="8637932705841171563">ଆପଣଙ୍କ ୱିଣ୍ଡୋ ସେୟାର କରିବାକୁ ସିଷ୍ଟମ ସେଟିଂସରେ Chrome ପାଇଁ ସ୍କ୍ରିନ ରେକର୍ଡିଂର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="8642497536370021917">ଆପଣ ସର୍ବଦା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟା ବ୍ୟବହାର ଏବଂ ସେଭ କରିପାରିବେ ବୋଲି ସୁନିଶ୍ଚିତ କରିବାକୁ ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8656634243791296665">Chrome Devରେ Gemini ଖୋଲନ୍ତୁ</translation>
 <translation id="8669527147644353129">Google Chrome ସାହାଯ୍ୟକାରୀ</translation>
 <translation id="8679801911857917785">ଏଥିରୁ ଏହା ମଧ୍ୟ ନିୟନ୍ତ୍ରଣ ହୋ‍ଇଥାଏ ଯେ ଯେତେବେଳେ ଆପଣ Chrome ଆରମ୍ଭ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ।</translation>
@@ -800,6 +807,7 @@
 <translation id="93760716455950538">ChromeOS Flexକୁ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="943390475793766444">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇପାରେ ବୋଲି Chrome ଏହାକୁ ସ୍କାନ କରିବା ପାଇଁ ସୁପାରିଶ କରୁଛି।</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
+<translation id="973195869036269770">ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ସାଇନ-ଇନ ବିବରଣୀ ପୁରୁଣା ହୋଇଯାଇଥିବା ଯୋଗୁଁ ChromeOS ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ସେଭ କରିପାରିଲା ନାହିଁ</translation>
 <translation id="983803489796659991">ଅପଡେଟ ସର୍ଭରରେ ଆପ୍ଲିକେସନ ପାଇଁ କୌଣସି ହାସ ଡାଟା ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="989369509083708165">Google Chrome ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ଅଟେ</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ବ୍ୟବହାର କରି Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରାଯାଇପାରିବ</translation>

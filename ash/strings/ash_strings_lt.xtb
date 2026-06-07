@@ -532,6 +532,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="254900897760075745">Kopijuoti pasirinktą turinį į iškarpinę</translation>
 <translation id="2549711466868162843">Apšvietimo tobulinimas</translation>
 <translation id="2549985041256363841">Pradėti įrašymą</translation>
+<translation id="2552966063069741410">Laiko juosta</translation>
 <translation id="2562459326218811217">Įrenginys prijungtas, bet neįkraunamas. Išbandykite didesnės galios (W) kroviklį arba naudokite originalų kroviklį.</translation>
 <translation id="256712445991462162">prie doko prijungtas didintuvas</translation>
 <translation id="2573588302192866788">Nepavyko susieti „<ph name="NAME" />“</translation>
@@ -621,6 +622,7 @@ Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po <ph name="TIMEOUT_
 <translation id="2838379631617906747">Diegiama</translation>
 <translation id="2838589015763961627">Norėdami pakeisti dydį, išjunkite viso ekrano režimą</translation>
 <translation id="2840766858109427815">Eiti į kitą puslapį</translation>
+<translation id="2841013758207633010">Laikas</translation>
 <translation id="2841907151129139818">Perjungta į planšetinio kompiuterio režimą</translation>
 <translation id="2843560154284403323">Jei norite baigti „Linux“ nustatymą, atnaujinkite „Chrome“ OS ir bandykite dar kartą.</translation>
 <translation id="2844169650293029770">USB-C įrenginys (prievadas kairėje, priekinėje dalyje)</translation>
@@ -1278,6 +1280,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="4633636853437260449">Paspauskite „Ctrl“ + W, kad ištrintumėte</translation>
 <translation id="4633757335284074492">Sukurkite atsarginę kopiją „Google“ diske. Lengvai atkurkite duomenis arba perjunkite įrenginį bet kuriuo metu. Į šią atsarginę kopiją įtraukiami programų. Atsarginės kopijos įkeliamos į sistemą „Google“ ir šifruojamos naudojant vaiko „Google“ paskyros slaptažodį.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Grąžinkite ankstesnę įrenginio versiją dabar}=1{Grąžinkite ankstesnę įrenginio versiją per sekundę}one{Grąžinkite ankstesnę įrenginio versiją per # sekundę}few{Grąžinkite ankstesnę įrenginio versiją per # sekundes}many{Grąžinkite ankstesnę įrenginio versiją per # sekundės}other{Grąžinkite ankstesnę įrenginio versiją per # sekundžių}}</translation>
+<translation id="4641539339823703554">„Chrome“ nepavyko nustatyti sistemos laiko. Toliau patikrinkite laiką ir ištaisykite jį, jei reikia.</translation>
 <translation id="4642092649622328492">Padaryti dalinę ekrano kopiją</translation>
 <translation id="4643833688073835173">Jūsų „Chromebook“ naudoja įtaisytą jutiklį žmonėms priešais įrenginį aptikti. Visi duomenys iš karto apdorojami įrenginyje, tada ištrinami. Jutiklių duomenys niekada nesiunčiami „Google“.</translation>
 <translation id="4644727592819780893">Sritis per maža, kad būtų galima pateikti fotoaparato peržiūroje</translation>
@@ -1801,6 +1804,7 @@ Nėra jokių prijungtų įrenginių.</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
 <translation id="6074087755403037157">Beta kanalas</translation>
 <translation id="6075098173600599596">Pakeisti rašymą didžiosiomis raidėmis</translation>
+<translation id="6080689532560039067">Patikrinkite sistemos laiką</translation>
 <translation id="6091929401758362855">Grojaraštis: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Išjungė administratorius</translation>
 <translation id="6095008505822982596">Kalbėjimo sparta</translation>

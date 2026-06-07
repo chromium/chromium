@@ -532,6 +532,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="254900897760075745">Copia el contingut seleccionat al porta-retalls</translation>
 <translation id="2549711466868162843">Millora la il·luminació</translation>
 <translation id="2549985041256363841">Inicia la gravació</translation>
+<translation id="2552966063069741410">Zona horària</translation>
 <translation id="2562459326218811217">El dispositiu està endollat, però no s'està carregant. Prova un carregador amb més watts (W) o utilitza el carregador original.</translation>
 <translation id="256712445991462162">la lupa acoblada</translation>
 <translation id="2573588302192866788">No s'han pogut connectar els <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a <ph name="TIM
 <translation id="2838379631617906747">S'està instal·lant</translation>
 <translation id="2838589015763961627">Surt de la pantalla completa per canviar la mida</translation>
 <translation id="2840766858109427815">Ves a la pàgina següent</translation>
+<translation id="2841013758207633010">Hora</translation>
 <translation id="2841907151129139818">S'ha canviat a mode de tauleta</translation>
 <translation id="2843560154284403323">Per acabar de configurar Linux, actualitza Chrome OS i torna-ho a provar.</translation>
 <translation id="2844169650293029770">Dispositiu USB-C (port frontal esquerre)</translation>
@@ -1275,6 +1277,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="4633636853437260449">Prem Ctrl+W per suprimir</translation>
 <translation id="4633757335284074492">Crea còpies de seguretat a Google Drive. Canvia de dispositiu o restaura'n les dades fàcilment en qualsevol moment. Aquesta còpia de seguretat inclou dades d'aplicacions. Les còpies de seguretat es pengen a Google i s'encripten amb la contrasenya del Compte de Google del teu fill.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Actualitza el dispositiu a la versió anterior ara}=1{Actualitza el dispositiu a la versió anterior en el termini d'1 segon}other{Actualitza el dispositiu a la versió anterior en el termini de # segons}}</translation>
+<translation id="4641539339823703554">Chrome no ha pogut establir l'hora del sistema. Comproveu-la més avall i corregiu-la si cal.</translation>
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
 <translation id="4643833688073835173">El Chromebook utilitza un sensor integrat per detectar persones davant del dispositiu. Totes les dades es processen immediatament al dispositiu i, a continuació, se suprimeixen. Les dades del sensor no s'envien mai a Google.</translation>
 <translation id="4644727592819780893">La zona és massa petita perquè s'ajusti a la càmera</translation>
@@ -1795,6 +1798,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="6074087755403037157">Canal Beta</translation>
 <translation id="6075098173600599596">Canvia l'ús de les majúscules</translation>
+<translation id="6080689532560039067">Comprova l'hora del sistema</translation>
 <translation id="6091929401758362855">Llista de reproducció: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Desactivat per l'administrador</translation>
 <translation id="6095008505822982596">Velocitat de parla</translation>

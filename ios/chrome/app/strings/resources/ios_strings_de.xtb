@@ -32,6 +32,8 @@
 <translation id="1085677983426914530"><ph name="FILENAME" /> konnte nicht geöffnet werden</translation>
 <translation id="1086486568852410168">Mit Google Lens suchen</translation>
 <translation id="1096992026380844478">Deine Synchronisierungseinstellungen werden auf Grundlage deiner letzten Sicherung wiederhergestellt. <ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst.<ph name="END_LINK" /></translation>
+<translation id="1097049112094133492">{count,plural, =1{1 manuelle Suche übersprungen}other{# manuelle Suchen übersprungen}}</translation>
+<translation id="1097807529207545420">{count,plural, =1{1 Passwort wurde sofort bestätigt}other{# Passwörter wurden sofort bestätigt}}</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
 <translation id="1110772719190051587">Mit Face ID entsperren</translation>
 <translation id="1112015203684611006">Fehler beim Drucken.</translation>
@@ -60,6 +62,7 @@
 <translation id="1201402288615127009">Weiter</translation>
 <translation id="1204075260022434100">{count,plural, =1{Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}other{{count} Lesezeichen unter „{title}“ in deinem Konto {email} gespeichert}}</translation>
 <translation id="1207493287814084192">17:30 Uhr</translation>
+<translation id="1215414310909588335">{count,plural, =1{1 Minute Tipparbeit gespart}other{# Minuten Tipparbeit gespart}}</translation>
 <translation id="1217294226280635614">Geteilte Ansicht</translation>
 <translation id="1218730690561976633">Erweiterte Autofill-Nutzerbestätigung ein-/ausschalten</translation>
 <translation id="1219674500290482172">Internetverbindung kann nicht hergestellt werden.</translation>
@@ -111,7 +114,6 @@
 <translation id="1369286077209859800">Alle Tabs in Tabgruppe anzeigen</translation>
 <translation id="136942498637440594">Du kannst nach Bildern und dem, was du siehst, suchen.</translation>
 <translation id="1373120905936431262">Bild hochladen, um es mit Nano Banana zu remixen</translation>
-<translation id="1377321085342047638">Kartennummer</translation>
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} von {count} Adresse}other{{position} von {count} Adressen}}</translation>
 <translation id="1383876407941801731">Suchen</translation>
@@ -169,6 +171,7 @@
 <translation id="1554043146674176775">KI‑Modus deaktivieren</translation>
 <translation id="1554477036522844996">Neues Fenster</translation>
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
+<translation id="1559263013367304065">seitdem du Google Lens verwendest</translation>
 <translation id="1560153516220021659">Button für die minimierte Toolbar in der sekundären Toolbar</translation>
 <translation id="1565371473877914088">Neuer Inkognitotab</translation>
 <translation id="1567960978791353852">Lesemodus anzeigen</translation>
@@ -207,6 +210,7 @@
 <translation id="1671568970992212376">Du kannst Fotos in Google Fotos speichern und jederzeit auf sie zugreifen.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Aufgrund der Richtlinien deiner Organisation kann diese Datei vertrauliche Informationen enthalten</translation>
+<translation id="1683276189281028863">Passwortcheck</translation>
 <translation id="168389590065701766">Du kannst Google Lens jetzt über die Adressleiste öffnen und nach allem suchen, was du siehst</translation>
 <translation id="1689333818294560261">Alias</translation>
 <translation id="169048873465870056">Tab entfernen und Gruppe löschen?</translation>
@@ -362,7 +366,7 @@
 <translation id="2196428379625389579">Im Web suchen</translation>
 <translation id="2199562093267256223">Dadurch wird die Gruppe von allen Geräten gelöscht, die im Konto <ph name="USER_EMAIL" /> angemeldet sind.</translation>
 <translation id="2202084845446535117">Keine E‑Mail-Konten</translation>
-<translation id="2214453882118345682">Nutze deine Kamera zum Einkaufen, Übersetzen und um mehr über Dinge zu erfahren, die du siehst.</translation>
+<translation id="2214453882118345682">Über deine Kamera kannst du das, was du siehst, kaufen, übersetzen oder identifizieren.</translation>
 <translation id="2216366330550244277">Zur Produktseite</translation>
 <translation id="2219935992754556187">Chrome trägt mit Face ID dazu bei, deine sensiblen Daten zu schützen</translation>
 <translation id="2220529011494928058">Problem melden</translation>
@@ -550,6 +554,7 @@
 <translation id="284581348330507117">Erstelle unterschiedliche Passwörter</translation>
 <translation id="2856883624744451946">Gruppe benennen</translation>
 <translation id="2858204748079866344">Um deine Daten zu schützen, füllt Chrome dieses Feld nicht automatisch mit deinem Passwort aus.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 Website (weitere auf synchronisierten Geräten)}other{# Websites (weitere auf synchronisierten Geräten)}}</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">URLs einiger von mir besuchter Seiten an Google senden, wenn meine Sicherheit gefährdet ist</translation>
@@ -637,7 +642,7 @@
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="3208260410153224535">Deine Organisation hat die Anmeldung deaktiviert. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
 <translation id="3211969308836412674">Website loslösen</translation>
-<translation id="3213807041830307252">Kaufe ein, übersetze und finde mit deiner Kamera und Fotogalerie heraus, was du gerade siehst.</translation>
+<translation id="3213807041830307252">Per Kamera und Fotogalerie kannst du das, was du siehst, kaufen, übersetzen oder identifizieren.</translation>
 <translation id="3214379938835224220">Du wurdest beim Zurücksetzen deines iPads abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="3218296450292600703">Wenn du dich mit deinem verwalteten Konto anmeldest, kannst du die mit deiner Organisation verbundenen Browserdaten wie Tabs, Verlauf und Passwörter besser von deinen anderen Browserdaten trennen</translation>
 <translation id="3224075676564434205">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird von allen Geräten gelöscht, die im Konto <ph name="USER_EMAIL" /> angemeldet sind.</translation>
@@ -711,6 +716,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu vorgeschlagenen Inhalten</translation>
 <translation id="349446645805573740">Wähle einen Speicherort für die Datei <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> aus</translation>
 <translation id="3504377992102007712">Einstellungen</translation>
+<translation id="3507556793108992994">{count,plural, =1{1 Tab aufgeräumt}other{# Tabs aufgeräumt}}</translation>
 <translation id="35083190962747987">${url} öffnen</translation>
 <translation id="3511519535430890904">Browsing-Schutz hinzufügen</translation>
 <translation id="3512572904898385012">Du kannst jetzt mit deiner Kamera einkaufen und Texte übersetzen lassen. Tippe, um es auszuprobieren.</translation>
@@ -742,7 +748,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, von deiner Organisation verwaltet.</translation>
 <translation id="3580448612293054698">„<ph name="ENTITY_TYPE" />“ aktualisieren?</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
-<translation id="3583726884554296148">Du kannst deine Karte in deinem Google-Konto speichern, um sie bei diesem und zukünftigen Käufen in Chrome automatisch ausfüllen zu lassen</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Deine Organisation legt fest, was du in deinem Google-Konto speichern kannst.</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
@@ -848,6 +853,7 @@
 <translation id="3962326069546168954">Speichern</translation>
 <translation id="3967327056943561740">Lesezeichen</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
+<translation id="3968685670440571540">seitdem du „Passwörter und Autofill“ verwendest</translation>
 <translation id="3973560090698854095">Dadurch werden Adressen gelöscht, die in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="398604237578616937">Angemeldet als <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
 <translation id="3986739045730058129">Zum Tab</translation>
@@ -873,6 +879,7 @@
 <translation id="4047337302138771011">Passwörter teilen</translation>
 <translation id="4049419681095579435">Paket wird bereits verfolgt</translation>
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
+<translation id="4054290211988862686">Datei auswählen</translation>
 <translation id="4070132839822635162">Nicht anmelden</translation>
 <translation id="4092655288299341041">Hilfe anzeigen</translation>
 <translation id="4095483462103784441">Neue Tabgruppe erstellen</translation>
@@ -938,9 +945,9 @@
 <translation id="4286718549648564014">Die Adresse wurde in dein Konto <ph name="USER_EMAIL" /> verschoben</translation>
 <translation id="4287172530684295552">Als gelesen markieren</translation>
 <translation id="428768789042547925">Neuheiten</translation>
+<translation id="4289309730265289297">Fotogalerie</translation>
 <translation id="429074084062258019">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4294506173142861371">Als <ph name="FIRST_NAME" /> anmelden?</translation>
-<translation id="4300830875340617674">Karte scannen und automatisch ausfüllen</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4306349443295056740">OCSP-Signierung</translation>
@@ -1343,6 +1350,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5647702255748985085">Gruppe verlassen?</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5652623411397330904">Hier werden die von dir beobachteten Produkte angezeigt.</translation>
+<translation id="565364728543769472">Video aufnehmen</translation>
 <translation id="5656431592348714536">Verbesserter Kalender</translation>
 <translation id="5659593005791499971">E-Mail</translation>
 <translation id="5666313630530585305">Melde dich auf einer Website an.</translation>
@@ -1698,6 +1706,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6757899787818440812">Mittlere Höhe</translation>
 <translation id="6759709389246683070">Du kannst diesen Tab gedrückt halten, um eine Erinnerung dafür einzurichten, dass du ihn später noch einmal aufrufen möchtest</translation>
 <translation id="6761393919622941301">Audio</translation>
+<translation id="6765551480308401897">Nicht als Standard festlegen</translation>
 <translation id="6770452996697898492">[GEBUCHT]</translation>
 <translation id="6779455296366983087">Deine Browserdaten werden gelöscht</translation>
 <translation id="6782531425936234573">Daten exportieren</translation>
@@ -1708,7 +1717,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6807287147325542056">Passwörter in anderen Apps</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="681631578600400068">Führerschein speichern</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Lesezeichen in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen in deinem Google-Konto {email} gespeichert}}</translation>
 <translation id="6826004672264649705">Dieses Produkt wird derzeit beobachtet. Öffnen, um die Preisentwicklung zu sehen.</translation>
 <translation id="6830728435402077660">Nicht sicher</translation>
@@ -1838,7 +1846,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
-<translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>
+<translation id="7300448350764260141">Du kannst dich noch besser vor Onlinebedrohungen schützen lassen.</translation>
 <translation id="7311244614769792472">Keine Ergebnisse gefunden</translation>
 <translation id="7312823817809783355">Meine Aufgaben</translation>
 <translation id="7313347584264171202">Hier werden deine Inkognitotabs angezeigt</translation>
@@ -1889,6 +1897,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7464143666517313304">Dadurch werden auf diesem Gerät gespeicherte Adressen gelöscht.</translation>
 <translation id="7468373585447318060">Du wirst über Preissenkungen für alle Produkte informiert, die du beobachtest.</translation>
 <translation id="746872191028309255">Du kannst ganz einfach kaufen, was du mit deiner Kamera oder in der Fotogalerie siehst.</translation>
+<translation id="7469215556134875318">seitdem du den Passwortcheck verwendest</translation>
 <translation id="7471557245617580330">Neuen Tab erstellen</translation>
 <translation id="7473555040328423550">Tab hinzufügen</translation>
 <translation id="7476548258282096076">Auf dieser Karte werden deine am häufigsten besuchten Websites angezeigt.</translation>
@@ -1898,6 +1907,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="7491161827858509164">Wenn du Dateien sehen möchtest, die du zuvor heruntergeladen hast, öffne die App <ph name="BEGIN_LINK" />Dateien<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Weiter bearbeiten</translation>
 <translation id="7500244509706269886">Autofill-Formular</translation>
+<translation id="7504841985386528758">seitdem du von Tabgruppen erfahren hast</translation>
 <translation id="750493650310597496">0 ausgewählt</translation>
 <translation id="7505402981231763928">Melde dich an, um Gemini zu verwenden</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -1980,6 +1990,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="777637629667389858">Wenn du angemeldet bist, bist du in allen Google-Diensten besser geschützt.</translation>
 <translation id="7776604279034196531">Über die Adressleiste auf den Lesemodus zugreifen, wenn verfügbar</translation>
 <translation id="7781829728241885113">Gestern</translation>
+<translation id="7788474973847076315">Foto aufnehmen</translation>
 <translation id="7788868432173225918">Erweiterte Ansicht schließen</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7795253248079882669">Tippe auf <ph name="BEGIN_BOLD" />Exportieren<ph name="END_BOLD" /></translation>
@@ -2023,6 +2034,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="792357691529995513">Keine Probleme gefunden</translation>
 <translation id="7925108652071887026">Autofill-Daten</translation>
 <translation id="7926975587469166629">Kartenalias</translation>
+<translation id="792762900715361006">Foto/Video aufnehmen</translation>
 <translation id="7927711904086083099">Nicht ausgewählt</translation>
 <translation id="7927902634113905831">Wähle das Konto aus, mit dem du die Datei <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> (<ph name="FILESIZE" />) speichern möchtest</translation>
 <translation id="7930998711684428189">Du wirst gewarnt, wenn Passwörter durch eine Datenpanne preisgegeben werden.</translation>
@@ -2269,6 +2281,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8694281486652655615">Dieses Element wird angezeigt</translation>
 <translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8697136149718343437">Adressleiste nach unten verschieben</translation>
+<translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kannst dann Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten</translation>
 <translation id="8709409604518538305">Tabs wurden geschlossen</translation>
@@ -2295,6 +2308,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8766790350274092814">Passwörter für <ph name="WEBSITE" /> und <ph name="SECOND_WEBSITE" /> werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
+<translation id="8784653774976848206">Dateien auswählen</translation>
 <translation id="8786100550345425552">Berechtigungen bearbeiten</translation>
 <translation id="878871978861915380">Preis-Tracking ausblenden</translation>
 <translation id="8792626944327216835">Mikrofon</translation>

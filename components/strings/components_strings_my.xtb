@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">အတွင်းခံအဝတ်အစား</translation>
 <translation id="1458770162980644530">‘အခုဝယ်-နောက်မှပေး’ ဝန်ဆောင်မှုစည်းမျဉ်းများ စခရင်။ ကီးဘုတ် ဖျောက်ထားသည်။</translation>
 <translation id="1459693405370120464">မိုးလေဝသ</translation>
+<translation id="1460317464907341501">ဤအီးမေးလ်ကို အလိုအလျောက် အတည်ပြုမလား</translation>
 <translation id="1461041542809785877">ဆောင်ရွက်မှု</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ရှင်းလင်းထင်ရှားသော အကြောင်းအရာများ ရေးသားနိုင်ရန် သင့်ကွန်ပျူတာရှိဖောင့်များ အသုံးပြုမည်</translation>
@@ -2004,6 +2005,7 @@
 <translation id="412601465078863288">အပ်လုဒ် အချိန်ကုန်သွားသည်</translation>
 <translation id="4127317221386336246">အဝတ်အစား အသုံးအဆောင်ပစ္စည်း</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{အခြား ၁ ခု}other{အခြား # ခု}}</translation>
+<translation id="4129810348470013900">တစ်ခုခုမှားသွားသည်။ သင်၏ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="4129992181550680635">ပညာရေးရင်းမြစ်</translation>
 <translation id="4130226655945681476">ကွန်ရက် ကြိုးများ၊ မော်ဒင်နှင့် ရောက်တားကို စစ်ဆေးနေသည်</translation>
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />” အက်ပ်များမှ ညွှန်းထားသော file_extension “<ph name="FILE_EXTENSION" />” အတွက် စီမံသူများ ထပ်နေသည်။</translation>

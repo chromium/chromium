@@ -356,6 +356,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="253498598929009420">Sajt će moći da vidi sadržaj vašeg ekrana</translation>
 <translation id="2535807170289627159">Sve kartice</translation>
 <translation id="2536728043171574184">Pregledate oflajn kopiju ove stranice</translation>
+<translation id="2537574774089209541">Neke alatke smo premestili da biste lakše pristupali Gemini-ju dok pregledate</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, izabrana zakačena kartica bez arhiviranja sa isključenim zvukom</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, kartica</translation>
@@ -404,6 +405,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2751271371269891762">Da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima, prijavite se kao <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM/GG</translation>
 <translation id="2762000892062317888">malopre</translation>
+<translation id="276378135349383280">Prikaži Gemini na traci s alatkama u dnu</translation>
 <translation id="276969039800130567">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Još <ph name="SECONDS" /> sek</translation>
 <translation id="2779651927720337254">nije uspelo</translation>
@@ -603,6 +605,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3614126103057878858">Uvid u cene</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Uverite se da je domen <ph name="DOWNLOAD_DOMAIN" /> pouzdan</translation>
 <translation id="3619255692378312441">Upravljajte pristupom</translation>
 <translation id="3622349720008044802">Upravljajte prozorima</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{i još 1 sajt}one{i još # sajt}few{i još # sajta}other{i još # sajtova}}</translation>
@@ -611,6 +614,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3635073343384702370">Chrome može da proverava lozinke kada ih sačuvate</translation>
 <translation id="3636940436873918441">Željeni jezici</translation>
 <translation id="3637744895182738742">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
+<translation id="3649090831059057090"><ph name="WINDOW_TITLE" />–<ph name="TAB_COUNT" /></translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3674208116086565128">Idi na početnu stranicu aplikacije Google</translation>
 <translation id="368329460027487650">Odjavljeni ste. Otvara opcije za prijavljivanje.</translation>
@@ -633,7 +637,9 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3738139272394829648">Dodirni za pretragu</translation>
 <translation id="3739455665973395693">Nema ugroženih lozinki na Google nalogu</translation>
 <translation id="3739899004075612870">Obeleženo u <ph name="PRODUCT_NAME" />-u</translation>
+<translation id="3740290940447881599">Proverite da li ovaj sajt možete da smatrate pouzdanim</translation>
 <translation id="3740525748616366977">Glasovna pretraga nije dostupna na ovom uređaju</translation>
+<translation id="3756823472711156529">Vrati grupu</translation>
 <translation id="3763110477555836428">Broj virtuelne kartice će biti popunjen pri plaćanju ovom karticom radi zaštite stvarnih podataka. Upravljajte u Google novčaniku. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Neki podaci još nisu sačuvani</translation>
 <translation id="3770620323585347665">Imenujte prozor…</translation>
@@ -1532,6 +1538,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7291910923717764901">Dodati su opisi slika za ovu stranicu</translation>
 <translation id="7293429513719260019">Izaberite jezik</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, izabrana zakačena kartica za deljenje</translation>
+<translation id="7304003340539141201">Zatražite od Gemini-ja da vam pomogne sa karticama i zadacima</translation>
 <translation id="7311244614769792472">Nije pronađen nijedan rezultat</translation>
 <translation id="7314734791127433392">Provera lozinki nije uspela</translation>
 <translation id="7324354302972299151">Pošaljite zahtev „Do Not Track“</translation>
@@ -1878,6 +1885,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8696297579102085705">Pošalji na uređaj</translation>
 <translation id="8697753151306746444">Delite prozor ili ekran</translation>
 <translation id="8699120352855309748">Ne nudi prevod ovih jezika</translation>
+<translation id="8700565880437506364">Predstavljamo Gemini u Chrome-u</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8715286883001906001">Ojačajte lozinke na Google nalogu</translation>
 <translation id="8715300232952757586">Kartica <ph name="TAB_TITLE" /> će se zatvoriti</translation>
@@ -1945,6 +1953,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="8996847606757455498">Odaberite drugog dobavljača</translation>
 <translation id="8998837250940831980">Umanjivanje kartice nije uspelo. Probajte ponovo kasnije.</translation>
 <translation id="9001604755921395912">Chrome kartica bez arhiviranja</translation>
+<translation id="9010094279589497751">Brzo otvorite Gemini kada vam zatreba</translation>
 <translation id="9012585441087414258">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Ako stranica uradi nešto sumnjivo, URL-ovi i delovi sadržaja stranice se šalju u Google bezbedno pregledanje.</translation>
 <translation id="9019199799064251516">Želite da nastavite bez zaključavanja profila za automobil?</translation>
 <translation id="9022774213089566801">Često posećivano</translation>
@@ -2002,6 +2011,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9190355771000652811">U traci za adresu koristite ovu tastersku prečicu sa prečicama za pretraživače i pretragu sajta.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, izabrana zakačena kartica bez arhiviranja</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provereno pre 1 minut}one{Provereno pre # minut}few{Provereno pre # minuta}other{Provereno pre # minuta}}</translation>
+<translation id="9202894533863490414">Želite da preuzmete sa ovog sajta?</translation>
 <translation id="9204836675896933765">Preostala je 1 datoteka</translation>
 <translation id="9205933215779845960">Nismo uspeli da pronađemo tu stranicu. Proverite pravopis ili probajte da pretražite na <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

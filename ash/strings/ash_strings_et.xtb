@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Valitud sisu kopeerimine lõikelauale</translation>
 <translation id="2549711466868162843">Valgustuse parandamine</translation>
 <translation id="2549985041256363841">Alusta salvestamist</translation>
+<translation id="2552966063069741410">Ajavöönd</translation>
 <translation id="2562459326218811217">Seade on laadijaga ühendatud, kuid ei lae. Kasutage laadijat, mille võimsus vattides (W) on suurem, või originaallaadijat.</translation>
 <translation id="256712445991462162">dokitud luup</translation>
 <translation id="2573588302192866788">Seadmega <ph name="NAME" /> ühendamine ebaõnnestus</translation>
@@ -621,6 +622,7 @@ Muidu lubatakse sisseehitatud puuteplaat uuesti pärast ajavahemikku <ph name="T
 <translation id="2838379631617906747">Installimine</translation>
 <translation id="2838589015763961627">Suuruse muutmiseks väljuge täisekraaani vaatest</translation>
 <translation id="2840766858109427815">Edasi järgmisele lehele</translation>
+<translation id="2841013758207633010">Aeg</translation>
 <translation id="2841907151129139818">Lülitati tahvelarvutirežiimile</translation>
 <translation id="2843560154284403323">Linuxi seadistamise lõpetamiseks värskendage Chrome OS-i ja proovige uuesti.</translation>
 <translation id="2844169650293029770">C-tüüpi USB-seade (eesmine vasakpoolne port)</translation>
@@ -1276,6 +1278,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4633636853437260449">Kustutamiseks vajutage klahve Ctrl + W</translation>
 <translation id="4633757335284074492">Andmete varundamine Google Drive'i. Teil on alati võimalik andmed hõlpsalt taastada või seadet vahetada. Varukoopia hõlmab rakenduste andmeid. Varukoopiad laaditakse Google'isse üles ja krüpteeritakse teie lapse Google'i konto parooliga.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Viige nüüd seade tagasi eelmisele versioonile}=1{Viige seade tagasi eelmisele versioonile ühe sekundi jooksul}other{Viige seade tagasi eelmisele versioonile # sekundi jooksul}}</translation>
+<translation id="4641539339823703554">Chrome'il ei õnnestunud süsteemiaega määrata. Kontrollige allolevat aega ja vajaduse korral parandage seda.</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4643833688073835173">Teie Chromebook kasutab sisseehitatud andurit, et tuvastada seadme ees olevaid inimesi. Kõiki andmeid töödeldakse kohe seadmes ja seejärel need kustutatakse. Anduri andmeid ei saadeta mitte kunagi Google'ile.</translation>
 <translation id="4644727592819780893">Ala on kaamera mahutamiseks liiga väike</translation>
@@ -1796,6 +1799,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6073451960410192870">Peata salvestamine</translation>
 <translation id="6074087755403037157">Beetakanal</translation>
 <translation id="6075098173600599596">Suurtähtede kasutuse muutmine</translation>
+<translation id="6080689532560039067">Süsteemiaja kontrollimine</translation>
 <translation id="6091929401758362855">Esitusloend: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Administraator on keelanud</translation>
 <translation id="6095008505822982596">Kõne kiirus</translation>

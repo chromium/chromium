@@ -356,6 +356,7 @@
 <translation id="253498598929009420">Сайт атрымае доступ да змесціва вашага экрана</translation>
 <translation id="2535807170289627159">Усе ўкладкі</translation>
 <translation id="2536728043171574184">Вы праглядаеце пазасеткавую копію гэтай старонкі</translation>
+<translation id="2537574774089209541">Некаторыя інструменты перамешчаны, каб вам было зручна карыстацца Gemini падчас прагляду вэб-старонак</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка ў рэжыме інкогніта з выключаным гукам</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, укладка</translation>
@@ -404,6 +405,7 @@
 <translation id="2751271371269891762">Каб выкарыстоўваць свае закладкі і іншыя даныя на ўсіх сваіх прыладах, увайдзіце ў сістэму як <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">ММ / ГГ</translation>
 <translation id="2762000892062317888">толькі што</translation>
+<translation id="276378135349383280">Паказваць Gemini на ніжн. панэлі</translation>
 <translation id="276969039800130567">Вы ўвайшлі як <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Засталося <ph name="SECONDS" /> с</translation>
 <translation id="2779651927720337254">не выканана</translation>
@@ -603,6 +605,7 @@
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3614126103057878858">Статыстыка цэн</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
+<translation id="3616798734782988169">Упэўніцеся, давяраеце сайту <ph name="DOWNLOAD_DOMAIN" /> можна давяраць</translation>
 <translation id="3619255692378312441">Кіраванне доступам</translation>
 <translation id="3622349720008044802">Кіраванне вокнамі</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}one{+ # сайт}few{+ # сайты}many{+ # сайтаў}other{+ # сайта}}</translation>
@@ -633,6 +636,7 @@
 <translation id="3738139272394829648">Пошук дотыкам</translation>
 <translation id="3739455665973395693">У вашым Уліковым запісе Google няма раскрытых пароляў</translation>
 <translation id="3739899004075612870">Закладка дададзена ў <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Упэўніцеся, што гэтаму сайту можна давяраць</translation>
 <translation id="3740525748616366977">Галасавы пошук недаступны на гэтай прыладзе</translation>
 <translation id="3763110477555836428">Пры аплаце гэтай карткай будзе ўказвацца нумар віртуальнай карткі, каб абараніць вашы рэальныя даныя. Кіраваць гэтай наладай можна ў Google Кашальку. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Некаторыя даныя яшчэ не захаваны</translation>
@@ -1532,6 +1536,7 @@
 <translation id="7291910923717764901">Дададзены апісанні відарысаў на гэтай старонцы</translation>
 <translation id="7293429513719260019">Выбраць мову</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, выбраная замацаваная ўкладка, змесціва якой абагульваецца</translation>
+<translation id="7304003340539141201">Папрасіць Gemini дапамагчы з укладкамі і задачамі</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
 <translation id="7314734791127433392">Не ўдалося праверыць паролі</translation>
 <translation id="7324354302972299151">Адправіць запыт “Do Not Track”</translation>
@@ -1878,6 +1883,7 @@
 <translation id="8696297579102085705">Адправіць на прыладу</translation>
 <translation id="8697753151306746444">Вы можаце абагуліць акно або экран</translation>
 <translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
+<translation id="8700565880437506364">Пазнаёмцеся з Gemini ў Chrome</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8715286883001906001">Зрабіце паролі ў сваім Уліковым запісе Google больш надзейнымі</translation>
 <translation id="8715300232952757586">Укладка "<ph name="TAB_TITLE" />" будзе закрыта</translation>
@@ -1945,6 +1951,7 @@
 <translation id="8996847606757455498">Выбраць іншага пастаўшчыка</translation>
 <translation id="8998837250940831980">Не ўдалося згарнуць укладку. Паўтарыце спробу пазней.</translation>
 <translation id="9001604755921395912">Адкрыць ва ўкладцы інкогніта</translation>
+<translation id="9010094279589497751">Хутка адкрывайце Gemini ў любы момант</translation>
 <translation id="9012585441087414258">Абараняе ад заведама небяспечных сайтаў, спамповак і пашырэнняў. Калі старонка выконвае падазроныя дзеянні, URL-адрасы разам з фрагментамі змесціва старонкі адпраўляюцца на сервер Google Бяспечнага прагляду.</translation>
 <translation id="9019199799064251516">Працягнуць без блакіроўкі профілю аўтамабіля?</translation>
 <translation id="9022774213089566801">Часта наведваюцца</translation>
@@ -2002,6 +2009,7 @@
 <translation id="9190355771000652811">Выкарыстоўвайце ў адрасным радку гэта спалучэнне клавіш для выканання хуткіх каманд у пошукавых сістэмах і для пошуку на сайтах.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, замацаваная выбраная ўкладка ў рэжыме інкогніта</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Праверка праводзілася хвіліну таму}one{Праверка праводзілася # хвіліну таму}few{Праверка праводзілася # хвіліны таму}many{Праверка праводзілася # хвілін таму}other{Праверка праводзілася # хвіліны таму}}</translation>
+<translation id="9202894533863490414">Спампаваць з гэтага сайта?</translation>
 <translation id="9204836675896933765">Застаўся 1 файл</translation>
 <translation id="9205933215779845960">Не ўдалося знайсці старонку. Праверце правільнасць напісання запыту або паспрабуйце ўвесці запыт у пошукавай сістэме <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

@@ -356,6 +356,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="253498598929009420">Tovuti hii itaweza kuangalia maudhui yaliyo kwenye skrini yako</translation>
 <translation id="2535807170289627159">Vichupo vyote</translation>
 <translation id="2536728043171574184">Unaangalia nakala ya nje ya mtandao ya ukurasa huu</translation>
+<translation id="2537574774089209541">Baadhi ya zana zimehamishwa ili ufikie Gemini kwa urahisi unapovinjari</translation>
 <translation id="2539002604555291451">Sans Serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, Umechagua Kichupo cha Faragha Ulichobandika na Kuzima Sauti</translation>
 <translation id="2542548955756682219">Kichupo, <ph name="TAB_TITLE" /></translation>
@@ -404,6 +405,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2751271371269891762">Ili upate alamisho zako na mengineyo kwenye vifaa vyako vyote, ingia katika akaunti ukitumia <ph name="EMAIL" /></translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">sasa hivi tu</translation>
+<translation id="276378135349383280">Onyesha Gemini kwenye upau wa vidhibiti wa chini</translation>
 <translation id="276969039800130567">Umeingia ukitumia <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="2779651927720337254">imeshindwa</translation>
@@ -603,6 +605,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3602290021589620013">Hakiki</translation>
 <translation id="3614126103057878858">Maarifa ya bei</translation>
 <translation id="3616113530831147358">Sauti</translation>
+<translation id="3616798734782988169">Hakikisha kuwa unaiamini <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Kudhibiti uwezo wa kufikia</translation>
 <translation id="3622349720008044802">Dhibiti madirisha</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{Tovuti zaidi ya 1}other{Tovuti zaidi ya #}}</translation>
@@ -633,6 +636,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3738139272394829648">Gusa ili Utafute</translation>
 <translation id="3739455665973395693">Hakuna manenosiri yaliyoathiriwa katika Akaunti yako ya Google</translation>
 <translation id="3739899004075612870">Imealamishwa katika <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Hakikisha kuwa unaiamini tovuti hii</translation>
 <translation id="3740525748616366977">Kipengele cha kutafuta kwa kutamka hakipatikani kwenye kifaa hiki</translation>
 <translation id="3763110477555836428">Namba ya kadi pepe itajazwa unaponunua ukitumia kadi hii ili kulinda maelezo yako halisi. Dhibiti kwenye Pochi ya Google. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu kadi pepe<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Bado hujahifadhi baadhi ya data</translation>
@@ -1532,6 +1536,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7291910923717764901">Maelezo ya picha yamewekwa kwenye ukurasa huu</translation>
 <translation id="7293429513719260019">Chagua lugha</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, Umechagua Kichupo Ulichobandika ambacho Kinawasilisha</translation>
+<translation id="7304003340539141201">Iombe Gemini ikusaidie katika majukumu na vichupo vyako</translation>
 <translation id="7311244614769792472">Hakuna matokeo yaliyopatikana</translation>
 <translation id="7314734791127433392">Imeshindwa kukagua manenosiri</translation>
 <translation id="7324354302972299151">Kutuma ombi la “Do Not Track”</translation>
@@ -1878,6 +1883,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8696297579102085705">Tuma kwenye kifaa chako</translation>
 <translation id="8697753151306746444">Onyesha dirisha au skrini badala yake</translation>
 <translation id="8699120352855309748">Usionyeshe chaguo la kutafsiri lugha hizi</translation>
+<translation id="8700565880437506364">Tunakuletea Gemini kwenye Chrome</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8715286883001906001">Weka manenosiri thabiti katika Akaunti yako ya Google</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> itafungwa</translation>
@@ -1945,6 +1951,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8996847606757455498">Chagua mtoa huduma mwingine</translation>
 <translation id="8998837250940831980">Imeshindwa kupunguza kichupo. Jaribu tena baadaye.</translation>
 <translation id="9001604755921395912">Fungua katika kichupo cha Faraghani cha Chrome</translation>
+<translation id="9010094279589497751">Fungua Gemini kwa haraka wakati unaihitaji</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>
 <translation id="9019199799064251516">Endelea bila kufuli la wasifu kwenye gari?</translation>
 <translation id="9022774213089566801">Unazotembelea mara kwa mara</translation>
@@ -2002,6 +2009,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="9190355771000652811">Katika sehemu ya anwani, tumia mikato hii ya kibodi pamoja na njia za mkato za mitambo ya kutafuta na utafutaji wa tovuti.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, Umebandika Kichupo cha Faragha Ulichochagua</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Imekaguliwa dakika moja iliyopita}other{Imekaguliwa dakika # zilizopita}}</translation>
+<translation id="9202894533863490414">Ungependa kupakua kutoka kwenye tovuti hii?</translation>
 <translation id="9204836675896933765">Imesalia faili 1</translation>
 <translation id="9205933215779845960">Imeshindwa kupata ukurasa huo. Kagua tahajia zako au jaribu kutafuta kwenye <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>

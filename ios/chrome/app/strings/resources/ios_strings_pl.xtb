@@ -32,6 +32,8 @@
 <translation id="1085677983426914530">Nie udało się otworzyć pliku <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
 <translation id="1096992026380844478">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
+<translation id="1097049112094133492">{count,plural, =1{Pominięto 1 wyszukiwanie ręczne}few{Pominięto # wyszukiwania ręczne}many{Pominięto # wyszukiwań ręcznych}other{Pominięto # wyszukiwania ręcznego}}</translation>
+<translation id="1097807529207545420">{count,plural, =1{Błyskawicznie zweryfikowano 1 hasło}few{Błyskawicznie zweryfikowano # hasła}many{Błyskawicznie zweryfikowano # haseł}other{Błyskawicznie zweryfikowano # hasła}}</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Odblokuj za pomocą Face ID</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
@@ -60,6 +62,7 @@
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1204075260022434100">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{{count} zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{{count} zakładek zostało zapisanych w folderze „{title}” na Twoim koncie {email}}other{{count} zakładki zostało zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
+<translation id="1215414310909588335">{count,plural, =1{Zaoszczędzono minutę pisania}few{Zaoszczędzono # minuty pisania}many{Zaoszczędzono # minut pisania}other{Zaoszczędzono # minuty pisania}}</translation>
 <translation id="1217294226280635614">Widok dzielony</translation>
 <translation id="1218730690561976633">Włącz lub wyłącz weryfikację użytkownika w ulepszonym autouzupełnianiu</translation>
 <translation id="1219674500290482172">Nie można połączyć się z internetem.</translation>
@@ -111,7 +114,6 @@
 <translation id="1369286077209859800">Pokaż wszystkie karty w grupie kart</translation>
 <translation id="136942498637440594">Możesz wyszukiwać obrazy i sprawdzać, co widzisz.</translation>
 <translation id="1373120905936431262">Prześlij obraz, aby go zremiksować za pomocą Nano Banana</translation>
-<translation id="1377321085342047638">Numer karty</translation>
 <translation id="1377508275003315939">Hasła</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} z {count} adresu}few{{position} z {count} adresów}many{{position} z {count} adresów}other{{position} z {count} adresu}}</translation>
 <translation id="1383876407941801731">Szukaj</translation>
@@ -169,6 +171,7 @@
 <translation id="1554043146674176775">Wyłącz Tryb AI</translation>
 <translation id="1554477036522844996">Nowe okno</translation>
 <translation id="1558391695376153246">Zamknij karty incognito</translation>
+<translation id="1559263013367304065">od kiedy używasz Obiektywu Google</translation>
 <translation id="1560153516220021659">Przycisk zwiniętego dodatkowego paska narzędzi</translation>
 <translation id="1565371473877914088">Nowa karta incognito</translation>
 <translation id="1567960978791353852">Pokaż Tryb czytania</translation>
@@ -207,6 +210,7 @@
 <translation id="1671568970992212376">Zapisuj zdjęcia w Zdjęciach Google i uzyskuj do nich dostęp w dowolnym momencie.</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Zgodnie z zasadami obowiązującymi w organizacji ten plik może zawierać informacje poufne</translation>
+<translation id="1683276189281028863">Sprawdzanie haseł</translation>
 <translation id="168389590065701766">Teraz możesz otwierać Obiektyw Google z poziomu paska adresu i wyszukiwać wszystko, co widzisz</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="169048873465870056">Usunąć kartę i grupę?</translation>
@@ -550,6 +554,7 @@
 <translation id="284581348330507117">Utwórz niepowtarzalne hasła</translation>
 <translation id="2856883624744451946">Nazwij grupę</translation>
 <translation id="2858204748079866344">Aby chronić Twoją prywatność, Chrome nie będzie autouzupełniać hasła w tym polu.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 witryna (więcej na zsynchronizowanych urządzeniach)}few{# witryny (więcej na zsynchronizowanych urządzeniach)}many{# witryn (więcej na zsynchronizowanych urządzeniach)}other{# witryny (więcej na zsynchronizowanych urządzeniach)}}</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2876369937070532032">Gdy Twoje bezpieczeństwo jest zagrożone, wysyła do Google adresy URL odwiedzanych stron</translation>
@@ -711,6 +716,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
 <translation id="349446645805573740">Wybierz, gdzie zapisać plik „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Ustawienia</translation>
+<translation id="3507556793108992994">{count,plural, =1{Uporządkowano 1 kartę}few{Uporządkowano # karty}many{Uporządkowano # kart}other{Uporządkowano # karty}}</translation>
 <translation id="35083190962747987">Otwórz ${url}</translation>
 <translation id="3511519535430890904">Dodaj Bezpieczne przeglądanie</translation>
 <translation id="3512572904898385012">Teraz możesz kupować i tłumaczyć za pomocą aparatu. Kliknij, aby spróbować.</translation>
@@ -742,7 +748,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, zarządzane przez Twoją organizację.</translation>
 <translation id="3580448612293054698">Zaktualizować: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
-<translation id="3583726884554296148">Zapisz kartę na koncie Google, żeby uzupełniać ją automatycznie podczas tego i przyszłych zakupów w Chrome</translation>
 <translation id="3587482841069643663">Wszystkie</translation>
 <translation id="3587885837929752825">Twoja organizacja nie zezwala na zapisywanie niektórych typów danych na koncie Google.</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
@@ -848,6 +853,7 @@
 <translation id="3962326069546168954">Zapisz</translation>
 <translation id="3967327056943561740">Zakładki</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
+<translation id="3968685670440571540">od kiedy używasz haseł i autouzupełniania</translation>
 <translation id="3973560090698854095">Spowoduje to usunięcie adresów zapisanych na koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Zalogowano jako <ph name="USER_EMAIL" />. Otwórz menu konta.</translation>
 <translation id="3986739045730058129">Przejdź do karty</translation>
@@ -873,6 +879,7 @@
 <translation id="4047337302138771011">Udostępniaj hasła</translation>
 <translation id="4049419681095579435">Przesyłka jest już śledzona</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
+<translation id="4054290211988862686">Wybierz plik</translation>
 <translation id="4070132839822635162">Nie loguj się</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4095483462103784441">Utwórz nową grupę kart</translation>
@@ -938,9 +945,9 @@
 <translation id="4286718549648564014">Adres został przeniesiony na konto <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Oznacz jako przeczytane</translation>
 <translation id="428768789042547925">Nowe funkcje</translation>
+<translation id="4289309730265289297">Biblioteka zdjęć</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
 <translation id="4294506173142861371">Chcesz się zalogować jako <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Zeskanuj kartę i wypełnij automatycznie</translation>
 <translation id="4302061870579014542">Ustaw pozycję</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4306349443295056740">Podpisywanie OCSP</translation>
@@ -1343,6 +1350,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5647702255748985085">Opuścić grupę?</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5652623411397330904">Produkty, których ceny monitorujesz, pojawią się tutaj.</translation>
+<translation id="565364728543769472">Nagraj film</translation>
 <translation id="5656431592348714536">Ulepszony kalendarz</translation>
 <translation id="5659593005791499971">E-mail</translation>
 <translation id="5666313630530585305">Zaloguj się na stronie.</translation>
@@ -1698,6 +1706,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6757899787818440812">Średnia wysokość</translation>
 <translation id="6759709389246683070">Możesz nacisnąć i przytrzymać tę kartę, aby ustawić przypomnienie, że chcesz wyświetlić ją później</translation>
 <translation id="6761393919622941301">Dźwięk</translation>
+<translation id="6765551480308401897">Nie ustawiaj jako domyślnego</translation>
 <translation id="6770452996697898492">[ZAREZERWOWANO]</translation>
 <translation id="6779455296366983087">Dane przeglądania zostaną usunięte</translation>
 <translation id="6782531425936234573">Eksportuj dane</translation>
@@ -1708,7 +1717,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6807287147325542056">Hasła w innych aplikacjach</translation>
 <translation id="681368974849482173">Utworzono element</translation>
 <translation id="681631578600400068">Zapisz prawo jazdy</translation>
-<translation id="6820686453637990663">Kod CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{{count} zakładki zostały zapisane na Twoim koncie Google {email}}many{{count} zakładek zostało zapisanych na Twoim koncie Google {email}}other{{count} zakładki zostało zapisane na Twoim koncie Google {email}}}</translation>
 <translation id="6826004672264649705">Obecnie śledzisz ten produkt. Otwórz, aby zobaczyć historię cen</translation>
 <translation id="6830728435402077660">Niezabezpieczona</translation>
@@ -1889,6 +1897,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7464143666517313304">Spowoduje to usunięcie adresów zapisanych na tym urządzeniu.</translation>
 <translation id="7468373585447318060">Bądź na bieżąco z obniżkami cen wszystkich produktów, które śledzisz.</translation>
 <translation id="746872191028309255">Kupuj to, co widzisz na obrazie z aparatu lub w galerii zdjęć.</translation>
+<translation id="7469215556134875318">od kiedy używasz Sprawdzania haseł</translation>
 <translation id="7471557245617580330">Utwórz nową kartę</translation>
 <translation id="7473555040328423550">Dodaj kartę</translation>
 <translation id="7476548258282096076">Ta karta pokazuje strony, które najczęściej odwiedzasz.</translation>
@@ -1898,6 +1907,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="7491161827858509164">Aby zobaczyć wcześniej pobrane pliki, otwórz <ph name="BEGIN_LINK" />Pliki<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Edytuj dalej</translation>
 <translation id="7500244509706269886">Automatycznie uzupełnij formularz</translation>
+<translation id="7504841985386528758">od kiedy używasz grup kart</translation>
 <translation id="750493650310597496">Nic nie wybrałeś</translation>
 <translation id="7505402981231763928">Aby korzystać z Gemini, musisz się zalogować</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -1980,6 +1990,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="777637629667389858">Gdy się zalogujesz, chroni Cię we wszystkich usługach Google.</translation>
 <translation id="7776604279034196531">Otwieraj tryb czytania z paska adresu, gdy jest dostępny</translation>
 <translation id="7781829728241885113">Wczoraj</translation>
+<translation id="7788474973847076315">Zrób zdjęcie</translation>
 <translation id="7788868432173225918">Zamknij widok rozwinięty</translation>
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7795253248079882669">Kliknij <ph name="BEGIN_BOLD" />Eksportuj<ph name="END_BOLD" /></translation>
@@ -2023,6 +2034,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="792357691529995513">Nie znaleziono problemów</translation>
 <translation id="7925108652071887026">Dane autouzupełniania</translation>
 <translation id="7926975587469166629">Nazwa karty</translation>
+<translation id="792762900715361006">Zrób zdjęcie lub nagraj film</translation>
 <translation id="7927711904086083099">Niewybrany</translation>
 <translation id="7927902634113905831">Wybierz konto, którego chcesz użyć do zapisania pliku „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />” – <ph name="FILESIZE" /></translation>
 <translation id="7930998711684428189">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł.</translation>
@@ -2269,6 +2281,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8694281486652655615">Wyświetla ten element</translation>
 <translation id="8696297579102085705">Wyślij na swoje urządzenie</translation>
 <translation id="8697136149718343437">Przenieś pasek adresu na dół</translation>
+<translation id="869891660844655955">Data wygaśnięcia</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Będziesz mieć możliwość udostępniania grup kart, dołączania do nich i używania ich do współpracy</translation>
 <translation id="8709409604518538305">Karty zostały zamknięte</translation>
@@ -2295,6 +2308,7 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="8766790350274092814">Hasła do stron <ph name="WEBSITE" /> i <ph name="SECOND_WEBSITE" /> zostaną usunięte. Twoje konta nie zostaną usunięte.</translation>
 <translation id="8775144690796719618">Nieprawidłowy URL</translation>
 <translation id="8781834595282316166">Nowa karta w grupie</translation>
+<translation id="8784653774976848206">Wybierz pliki</translation>
 <translation id="8786100550345425552">Edytuj uprawnienia</translation>
 <translation id="878871978861915380">Ukryj „Śledzenie cen”</translation>
 <translation id="8792626944327216835">mikrofon</translation>

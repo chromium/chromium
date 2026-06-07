@@ -416,6 +416,7 @@
 <translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
 <translation id="1282436639288565079">פרטי קבוצת הכרטיסיות</translation>
 <translation id="1282577885428483870">אתרים וחשבונות</translation>
+<translation id="1282689009629709205">גלריית המיומנויות</translation>
 <translation id="1284277788676816155">אין לאפשר שמירת נתונים</translation>
 <translation id="1285320974508926690">לא לתרגם את האתר הזה</translation>
 <translation id="1285484354230578868">‏אחסון נתונים בחשבון Google Drive</translation>
@@ -1393,6 +1394,7 @@
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="1995916364271252349">בדף הזה אפשר לשלוט על המידע שאתרים יכולים להשתמש בו ולהציג אותו (מיקום, מצלמה, חלונות קופצים ועוד)</translation>
 <translation id="199610894463449797">{0,plural, =1{סגירת הפרופיל הזה}one{סגירת הפרופיל הזה (# חלונות)}two{סגירת הפרופיל הזה (# חלונות)}other{סגירת הפרופיל הזה (# חלונות)}}</translation>
+<translation id="1996557034791506430">להסיר את ההרשאה?</translation>
 <translation id="1997433994358798851">‏כדי להתחבר למכשיר, נדרשת ל-Chrome הרשאה להשתמש ב-Bluetooth</translation>
 <translation id="1997616988432401742">האישורים שלך</translation>
 <translation id="1998715278591719161">יש הרשאה לעקוב אחר תנועות הידיים שלך</translation>
@@ -2184,7 +2186,6 @@
 <translation id="2550212893339833758">זיכרון מוחלף</translation>
 <translation id="2550596535588364872">האם להתיר ל-<ph name="EXTENSION_NAME" /> לפתוח את <ph name="FILE_NAME" />?</translation>
 <translation id="2552230905527343195">אי אפשר להוסיף את הכרטיסייה הנוכחית</translation>
-<translation id="2552966063069741410">אזור זמן</translation>
 <translation id="2553290675914258594">גישה מאומתת</translation>
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> לא הצליח להתחבר אל <ph name="NETWORK_ID" />. יש לבחור רשת אחרת או לנסות שוב.</translation>
 <translation id="2553440850688409052">הסתרת הפלאגין</translation>
@@ -2370,6 +2371,7 @@
 <translation id="2692503699962701720">שינוי גובה הצליל כשמזכירים סוגים שונים של רכיבים וטקסט מעוצב</translation>
 <translation id="2692901429679246677">טורקיז</translation>
 <translation id="2693134906590795721">צלילי טעינה</translation>
+<translation id="2694330288297637442">‏המשימה בטיפול. יש לך שאלה ל-Gemini?</translation>
 <translation id="2695943520968279338">תוספים שכדאי להכיר</translation>
 <translation id="2696675923413008404">‏התוכן מהאתר הזה, כולל כתובת ה-URL שלו, נשלח אל Google ויכול להיות שבודקים אנושיים יראו אותו כדי לשפר את התכונה הזו</translation>
 <translation id="2698147581454716013">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
@@ -3068,6 +3070,7 @@
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="3189187154924005138">סמן גדול</translation>
 <translation id="3189533916970342007">{PASSWORD_COUNT,plural, =1{‏סיסמה אחת ופריטים נוספים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}one{‏‫{PASSWORD_COUNT} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}two{‏‫{PASSWORD_COUNT} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}other{‏‫{PASSWORD_COUNT} סיסמאות ופריטים אחרים שמורים רק במכשיר הזה. כדי להשתמש בהם במכשירים אחרים, צריך לשמור אותם בחשבון Google.}}</translation>
+<translation id="3190404390992636561">אי אפשר להשתמש במיומנויות</translation>
 <translation id="319044078641740013">כדי לחזור בקלות לאתרים שביקרת בהם, צריך לסנכרן את ההיסטוריה והכרטיסיות עם <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3190558889382726167">הסיסמה נשמרה</translation>
 <translation id="3192586965067888278">‏יש לתאר בפירוט את הבעיה. המשוב יישלח אל Google לבדיקה אנושית, ויכול להיות שנשתמש בו כדי לשפר או לפתח מוצרים ושירותים של Google.</translation>
@@ -4185,6 +4188,7 @@
 <translation id="3978732922947854545">‏‫Chrome מקל על העבודה עם קובצי PDF</translation>
 <translation id="3979093622823535817">הצטרפות לפגישה <ph name="MEETING_TITLE" /></translation>
 <translation id="3979395879372752341">תוסף חדש נוסף (<ph name="EXTENSION_NAME" />)</translation>
+<translation id="3980708588513986958">פתיחה וניהול המיומנויות</translation>
 <translation id="398095528354975981">הסתרת הכרטיסיות האלה</translation>
 <translation id="3981058120448670012">המכשיר גלוי למכשירים בקרבת מקום בתור <ph name="DEVICE_NAME" /> למשך <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981760180856053153">הוזן סוג שמירה לא חוקי.</translation>
@@ -5054,7 +5058,6 @@
 <translation id="4638568775382459156">פעילות בקבוצת הכרטיסיות המשותפת</translation>
 <translation id="4638930039313743000">‏הפעלה של ניפוי באגים באמצעות ADB</translation>
 <translation id="4639390152280993480">כדי לראות את הדף הזה בתצוגה פשוטה יותר, צריך לעבור אל 'כלים נוספים' &gt; 'מצב קריאה'</translation>
-<translation id="4641539339823703554">‏Chrome לא הצליח להגדיר את שעת המערכת. יש לבדוק את השעה המצוינת בהמשך ולתקן אותה במקרה הצורך.</translation>
 <translation id="4643612240819915418">&amp;פתיחת סרטון בכרטיסייה חדשה</translation>
 <translation id="4644205769234414680">לאפשר במצב פרטי</translation>
 <translation id="4645322559577140968">{GROUP_COUNT,plural, =1{למחוק את קבוצת הכרטיסיות?}one{למחוק את קבוצות הכרטיסיות?}two{למחוק את קבוצות הכרטיסיות?}other{למחוק את קבוצות הכרטיסיות?}}</translation>
@@ -5752,6 +5755,7 @@
 <translation id="5149602533174716626">העתקת הפריים</translation>
 <translation id="5150254825601720210">‏שם שרת SSL של אישור Netscape</translation>
 <translation id="5151354047782775295">אם לא מפנים שטח אחסון, ייבחרו נתונים למחיקה אוטומטית</translation>
+<translation id="5152381187352661267">‏מיומנויות ב-Chrome</translation>
 <translation id="5153074793829217329">אפשר לשלוט בסמן העכבר באמצעות המקלדת או במקלדת נומרית</translation>
 <translation id="5153234146675181447">מחיקת הטלפון</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -6966,7 +6970,6 @@
 <translation id="6078323886959318429">הוספת קיצור דרך</translation>
 <translation id="6078752646384677957">יש לבדוק את עוצמת הקול למיקרופון ולאודיו.</translation>
 <translation id="608029822688206592">‏לא נמצאה רשת. יש להכניס את כרטיס ה-SIM ולנסות שוב.</translation>
-<translation id="6080689532560039067">יש לבדוק את שעת המערכת</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – חלק מקבוצה ללא שם</translation>
 <translation id="6086004606538989567">לחשבון המאומת אין הרשאת גישה למכשיר.</translation>
 <translation id="6086350918562605938">התקנת העדכון למערכת</translation>
@@ -7010,6 +7013,7 @@
 <translation id="6112727384379533756">הוספת כרטיס</translation>
 <translation id="6113434369102685411">‏עליך להגדיר את מנוע החיפוש שיוגדר כברירת המחדל לדפדפן Chrome ולמרכז האפליקציות של <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113832060210023016">מרכז האפליקציות + לחיצה</translation>
+<translation id="6116004140911290070">‏הפעלת מיומנויות ב-Chrome</translation>
 <translation id="6116921718742659598">שינוי הגדרות הקלט והשפה</translation>
 <translation id="6119008366402292080">אין מדפסות זמינות</translation>
 <translation id="6119972796024789243">תיקון צבע</translation>
@@ -7712,6 +7716,7 @@
 <translation id="663569763553406962">הצגת התוספים שיש להם הרשאה לקרוא או לשנות אתר</translation>
 <translation id="6636258750460740634">היסטוריה</translation>
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
+<translation id="6639405694338292402">‏התכונה "מיומנויות" מושבתת עכשיו. כדי להתחיל, צריך לעדכן את ההגדרות של Chrome.</translation>
 <translation id="6639554308659482635">‏זיכרון SQLite </translation>
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
 <translation id="664271268954513498">ערך המדיניות</translation>
@@ -8013,6 +8018,7 @@
 <translation id="6843264316370513305">ניפוי באגים ברשת</translation>
 <translation id="6843404741389995311">אפשר לקנות, לתרגם ולזהות את מה שרואים באמצעות המצלמה וגלריית התמונות</translation>
 <translation id="6843725295806269523">השתקה</translation>
+<translation id="6843919992766261684">מעכשיו, <ph name="ISSUER" /> לא תאשר את האימייל הזה באופן אוטומטי</translation>
 <translation id="6844548824283407900">AES-256</translation>
 <translation id="6845038076637626672">פתיחה בגודל מרבי</translation>
 <translation id="6845231585063669905">סדר אלפביתי עולה</translation>

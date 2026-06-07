@@ -532,6 +532,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="254900897760075745">Kopiranje izbrane vsebine v odložišče</translation>
 <translation id="2549711466868162843">Izboljšanje osvetlitve</translation>
 <translation id="2549985041256363841">Začetek snemanja</translation>
+<translation id="2552966063069741410">Časovni pas</translation>
 <translation id="2562459326218811217">Naprava je priklopljena, vendar se ne polni. Uporabite polnilnik z več vati (W) ali originalni polnilnik.</translation>
 <translation id="256712445991462162">zasidrana lupa</translation>
 <translation id="2573588302192866788">Ni bilo mogoče povezati naprave <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez <ph n
 <translation id="2838379631617906747">Nameščanje</translation>
 <translation id="2838589015763961627">Za spreminjanje velikosti zaprite celozaslonski način</translation>
 <translation id="2840766858109427815">Naprej na naslednjo stran</translation>
+<translation id="2841013758207633010">Čas</translation>
 <translation id="2841907151129139818">Preklopljeno v način tabličnega računalnika</translation>
 <translation id="2843560154284403323">Če želite dokončati nastavitev Linuxa, posodobite Chrome OS in poskusite znova.</translation>
 <translation id="2844169650293029770">Naprava USB-C (vrata levo spredaj)</translation>
@@ -1278,6 +1280,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4633636853437260449">Pritisnite Ctrl + W, če želite izbrisati.</translation>
 <translation id="4633757335284074492">Varnostno kopiranje v Google Drive. Kadar koli lahko preprosto obnovite podatke v napravi ali zamenjate napravo z drugo. Te varnostne kopije vključujejo podatke aplikacij. Varnostne kopije so naložene v Google in šifrirane z geslom za račun Google otroka.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Posodobite napravo na prejšnjo različico}=1{Posodobite napravo na prejšnjo različico v 1 sekundi}one{Posodobite napravo na prejšnjo različico v # sekundi}two{Posodobite napravo na prejšnjo različico v # sekundah}few{Posodobite napravo na prejšnjo različico v # sekundah}other{Posodobite napravo na prejšnjo različico v # sekundah}}</translation>
+<translation id="4641539339823703554">Chrome ni mogel nastaviti sistemskega časa. Preverite spodaj navedeni čas in ga po potrebi popravite.</translation>
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4643833688073835173">Chromebook uporablja vgrajeno tipalo za zaznavanje oseb pred napravo. Vsi podatki so v napravi takoj obdelani in nato izbrisani. Podatki tipal niso nikoli poslani Googlu.</translation>
 <translation id="4644727592819780893">Območje je premajhno za prikaz kamere</translation>
@@ -1801,6 +1804,7 @@ Nobena naprava ni povezana.</translation>
 <translation id="6073451960410192870">Ustavi snemanje</translation>
 <translation id="6074087755403037157">Preizkusna različica (beta)</translation>
 <translation id="6075098173600599596">Sprememba uporabe velikih začetnic</translation>
+<translation id="6080689532560039067">Preverjanje sistemskega časa</translation>
 <translation id="6091929401758362855">Seznam predvajanja: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Onemogočil skrbnik</translation>
 <translation id="6095008505822982596">Hitrost govora</translation>

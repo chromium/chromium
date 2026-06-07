@@ -306,6 +306,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1458140305240870199">Roupa interior</translation>
 <translation id="1458770162980644530">Pantalla das condicións de servizo do pago aprazado. Teclado oculto.</translation>
 <translation id="1459693405370120464">O tempo</translation>
+<translation id="1460317464907341501">Queres verificar este correo electrónico automaticamente?</translation>
 <translation id="1461041542809785877">Rendemento</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar os tipos de letra do teu ordenador para que poidas crear contido de alta fidelidade</translation>
@@ -2004,6 +2005,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="412601465078863288">Esgotouse o tempo de espera para a carga</translation>
 <translation id="4127317221386336246">Accesorios de moda</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
+<translation id="4129810348470013900">Produciuse un erro. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="4129992181550680635">Recursos educativos</translation>
 <translation id="4130226655945681476">Comproba os cables de rede, o módem e o router</translation>
 <translation id="4132448310531350254">Controladores duplicados para o parámetro file_extension "<ph name="FILE_EXTENSION" />", ao que fan referencia as aplicacións "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3321,7 +3323,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6203231073485539293">Comproba a túa conexión a Internet</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
 <translation id="6212314149070368045">Continuo estadounidense</translation>
-<translation id="6213685130162740188">Números de viaxeiro coñecido (KTN)</translation>
+<translation id="6213685130162740188">Números de viaxeiro coñecido</translation>
 <translation id="6215936431492593050">Metal (satinado)</translation>
 <translation id="6217950634729714357">Mobles de cociña e comedor</translation>
 <translation id="6218305986815100395">Non se puido activar a tarxeta virtual</translation>

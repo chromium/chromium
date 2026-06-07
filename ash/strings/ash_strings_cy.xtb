@@ -532,6 +532,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="254900897760075745">Copïo'r cynnwys a ddewiswyd i'r clipfwrdd</translation>
 <translation id="2549711466868162843">Gwella goleuo</translation>
 <translation id="2549985041256363841">Dechrau recordio</translation>
+<translation id="2552966063069741410">Cylchfa amser</translation>
 <translation id="2562459326218811217">Dyfais wedi'i phlygio i mewn, ond ddim yn gwefru. Rhowch gynnig ar wefrydd gyda mwy o watiau (W) neu defnyddiwch eich gwefrydd gwreiddiol.</translation>
 <translation id="256712445991462162">y chwyddwydr sydd wedi'i ddocio</translation>
 <translation id="2573588302192866788">Ni fu modd cysylltu <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="2838379631617906747">Wrthi’n gosod</translation>
 <translation id="2838589015763961627">Gadewch y sgrîn lawn i newid maint</translation>
 <translation id="2840766858109427815">Mynd ymlaen i'r dudalen nesaf</translation>
+<translation id="2841013758207633010">Amser</translation>
 <translation id="2841907151129139818">Wedi newid i'r modd llechen</translation>
 <translation id="2843560154284403323">I orffen gosod Linux, diweddarwch ChromeOS a rhowch gynnig arall arni.</translation>
 <translation id="2844169650293029770">Dyfais USB-C (porth chwith ar y blaen)</translation>
@@ -1279,6 +1281,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4633636853437260449">Pwyswch Ctrl+W i ddileu</translation>
 <translation id="4633757335284074492">Gwneud copi wrth gefn yn Google Drive. Adfer data neu newid dyfais yn hawdd ar unrhyw adeg. Mae hyn yn cynnwys data apiau. Mae copïau wrth gefn yn cael eu huwchlwytho i Google a'u hamgryptio gan ddefnyddio cyfrinair Cyfrif Google eich plentyn.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Diweddaru dyfais i fersiwn flaenorol nawr}=1{Diweddaru dyfais i'r fersiwn flaenorol o fewn 1 eiliad}two{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}few{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}many{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}other{Diweddaru dyfais i'r fersiwn flaenorol o fewn # eiliad}}</translation>
+<translation id="4641539339823703554">Nid oedd Chrome yn gallu gosod amser y system. Gwiriwch yr amser isod a chywirwch hi os oes angen.</translation>
 <translation id="4642092649622328492">Tynnu sgrinlun rhannol</translation>
 <translation id="4643833688073835173">Mae'ch Chromebook yn defnyddio synhwyrydd integredig i ganfod pobl o flaen eich dyfais. Mae data i gyd yn cael eu prosesu ar eich dyfais ar unwaith ac yna yn cael eu dileu. Ni anfonir data synhwyrydd byth at Google.</translation>
 <translation id="4644727592819780893">Rhanbarth yn rhy fach i ffitio camera</translation>
@@ -1803,6 +1806,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6073451960410192870">Stopio recordio</translation>
 <translation id="6074087755403037157">Sianel Beta</translation>
 <translation id="6075098173600599596">Newid priflythrennu</translation>
+<translation id="6080689532560039067">Gwiriwch amser eich system</translation>
 <translation id="6091929401758362855">Rhestr chwarae: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Analluogwyd gan y gweinyddwr</translation>
 <translation id="6095008505822982596">Cyfradd lleferydd</translation>

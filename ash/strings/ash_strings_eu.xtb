@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Kopiatu hautatutako edukia arbelean</translation>
 <translation id="2549711466868162843">Hobetu argiztapena</translation>
 <translation id="2549985041256363841">Hasi grabatzen</translation>
+<translation id="2552966063069741410">Ordu-zona</translation>
 <translation id="2562459326218811217">Gailua entxufatuta dago, baina ez da ari kargatzen. Probatu watt (W) gehiago dauzkan kargagailu batekin edo erabili jatorrizko kargagailua.</translation>
 <translation id="256712445991462162">ainguratutako lupa</translation>
 <translation id="2573588302192866788">Ezin izan da konektatu <ph name="NAME" /></translation>
@@ -621,6 +622,7 @@ Bestela, <ph name="TIMEOUT_SECONDS" /> barru gaituko da berriro ukipen-panel int
 <translation id="2838379631617906747">Instalatzen</translation>
 <translation id="2838589015763961627">Tamaina aldatzeko, irten pantaila osoko modutik</translation>
 <translation id="2840766858109427815">Joan hurrengo orrira</translation>
+<translation id="2841013758207633010">Ordua</translation>
 <translation id="2841907151129139818">Tableta modura aldatu da</translation>
 <translation id="2843560154284403323">Linux konfiguratzen amaitzeko, eguneratu Chrome OS eta saiatu berriro.</translation>
 <translation id="2844169650293029770">USB-C gailua (ezkerraldeko aurreko ataka)</translation>
@@ -1276,6 +1278,7 @@ Gailu bat dago konektatuta.</translation>
 <translation id="4633636853437260449">Sakatu Ktrl+W ezabatzeko</translation>
 <translation id="4633757335284074492">Egin babeskopiak Google Drive-n. Leheneratu gailu honen datuak edo aldatu gailua edonoiz. Aplikazioetako datuak ere sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuko pasahitza erabilita.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Itzuli gailuaren aurreko bertsiora orain}=1{Itzuli gailuaren aurreko bertsiora segundo bat barru}other{Itzuli gailuaren aurreko bertsiora # segundo barru}}</translation>
+<translation id="4641539339823703554">Chrome-k ezin izan du sistemaren ordua ezarri. Egiaztatu beheko ordua eta, beharrezkoa bada, zuzen ezazu.</translation>
 <translation id="4642092649622328492">Atera eremu baten pantaila-argazkia</translation>
 <translation id="4643833688073835173">Chromebook-ak sentsore integratu bat dauka gailuaren aurrean dauden pertsonak hautemateko. Datu guztiak berehala prozesatzen dira gailuan eta, gero, ezabatu egiten dira. Sentsorearen datuak ez dira inoiz bidaltzen Google-ra.</translation>
 <translation id="4644727592819780893">Eremua txikiegia da kameraren aurrebistan erakusteko</translation>
@@ -1796,6 +1799,7 @@ Ez dago gailurik konektatuta.</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
 <translation id="6074087755403037157">Beta-kanala</translation>
 <translation id="6075098173600599596">Aldatu maiuskulen eta minuskulen erabilera</translation>
+<translation id="6080689532560039067">Egiaztatu sistemako ordua</translation>
 <translation id="6091929401758362855">Erreprodukzio-zerrenda: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Administratzaileak desgaitu du</translation>
 <translation id="6095008505822982596">Hizketaren abiadura</translation>

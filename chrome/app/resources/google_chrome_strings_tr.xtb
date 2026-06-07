@@ -157,6 +157,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2652691236519827073">Bağlantıyı Yeni Chrome &amp;sekmesinde aç</translation>
 <translation id="2665296953892887393">Kilitlenme raporlarını ve <ph name="UMA_LINK" /> bilgilerini Google'a göndererek Google Chrome'u daha iyi hale getirmeye yardımcı olun</translation>
 <translation id="2668094785979141847">Google Lens'ten çıkmak için tıklayın</translation>
+<translation id="2674238339205910678">Hesap oturum açma bilgileriniz güncel olmadığı için ChromeOS Flex, Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="2681444469812712297">Google Chrome'da yeni bir sekmede <ph name="URL" /> adresini açın.</translation>
 <translation id="2699790011615497488">Chrome Beta'da Gemini'ı aç</translation>
 <translation id="2712141162840347885">Google Lens ile aramak istediğiniz öğeyi seçin veya Google Lens'ten çıkmak için Escape tuşuna basın</translation>
@@ -187,6 +188,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2945997411976714835">Yükleme hatası: Yükleyici işlemi başlatılamadı.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chrome</translation>
 <translation id="2970681950995291301">Google Hesabınızı Chrome'dan kaldırmak için Ayarlar sayfasında Chrome oturumunu kapatın</translation>
+<translation id="2976869732253036751">Telefonunuzda Chrome ile fiyat takibi uyarıları alın</translation>
 <translation id="2991167882679440829">Google Hesabınıza kaydettiğiniz şifreler ve diğer Chrome verileri bu cihazdan kaldırılır. Bu bilgileri Chrome'da tekrar kullanmak için yeniden oturum açın.</translation>
 <translation id="2994465299455873643">Şifreleme hizmetlerinin yanı sıra güncelliğini yitirdiği takdirde <ph name="BROWSER_NAME" /> tarayıcıyı kurtarmanın güvenli bir yolunu sunar. Bu hizmet devre dışı bırakılırsa <ph name="BROWSER_NAME" />, şifrelenmiş verilere erişimi kaybedebilir ve <ph name="BROWSER_NAME" /> kendisini kurtaramayabilir.</translation>
 <translation id="3003694935412297923">Tüm görevler</translation>
@@ -532,6 +534,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6497147134301593682">Chrome otomatik olarak kapatıldı</translation>
 <translation id="6506909944137591434">Çevrenizin 3D haritasını oluşturmak için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex, oturum açma hatası nedeniyle Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="6520670145826811516">Konumunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
 <translation id="652948702951888897">Chrome geçmişi</translation>
 <translation id="6532945796722480006">Chrome Canary'de Gemini'ı aç</translation>
@@ -579,6 +582,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Chrome profilleri arasında burada geçiş yapabilirsiniz</translation>
+<translation id="7026856149118332950">Hızlı erişim için Chrome'u görev çubuğunuza sabitlemek isterseniz Windows bildiriminde <ph name="BEGIN_BOLD" />Evet<ph name="END_BOLD" /> düğmesini tıklayın.</translation>
 <translation id="7047386856539490735">Bu sonuçları yararlı buldunuz mu?</translation>
 <translation id="7051685429025310665">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ve <ph name="PERMISSION_3" /> iznini kaldırdı.</translation>
 <translation id="7059914902409643750">Chrome'u Kendinize Uyarlayın</translation>
@@ -671,6 +675,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7890208801193284374">Bir bilgisayarı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="7896673875602241923">Birisi daha önce bu bilgisayarda <ph name="ACCOUNT_EMAIL_LAST" /> olarak Chrome oturumu açmış. Bilgilerinizi ayrı tutmak için yeni bir Chrome kullanıcısı oluşturun.</translation>
 <translation id="7904985524660297937">Google Chrome'da Gemini'ı deneyin</translation>
+<translation id="7905880575591690197">ChromeOS, oturum açma sırasında yaşanan bir hata nedeniyle Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="7917876797003313048">Oturum açılmış Google Hesaplarınızı yönetebilirsiniz. Google Hesaplarınız; Chrome tarayıcı, Play Store, Gmail ve daha başka yerlerde kullanılır. Aile üyesi gibi başka bir kullanıcı için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza yeni bir kişi ekleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="7951272445806340501">Güncellemenin uygulanması için ChromeOS Flex yeniden başlatılmalıdır.</translation>
@@ -796,6 +801,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="93760716455950538">ChromeOS Flex'i yeniden başlatın</translation>
 <translation id="943390475793766444">Chrome, tehlikeli olabileceği için bu dosyanın taranmasını öneriyor.</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
+<translation id="973195869036269770">ChromeOS, hesap oturum açma bilgileriniz güncel olmadığı için Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="983803489796659991">Güncelleme sunucusunda uygulamanın karma verisi bulunmadığından yükleme işlemi başarısız oldu.</translation>
 <translation id="989369509083708165">Google Chrome varsayılan tarayıcınız</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" />, Chrome profilleri arasında geçiş yapabilir</translation>

@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Kopioi valittu sisältö leikepöydälle</translation>
 <translation id="2549711466868162843">Valaistuksen parantaminen</translation>
 <translation id="2549985041256363841">Aloita tallennus</translation>
+<translation id="2552966063069741410">Aikavyöhyke</translation>
 <translation id="2562459326218811217">Laite on kytketty pistokkeeseen, mutta se ei lataudu. Kokeile laturia, jossa on enemmän watteja (W), tai käytä alkuperäistä laturia.</translation>
 <translation id="256712445991462162">kiinnitetty näytön suurentaja</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ei ole yhdistettävissä</translation>
@@ -621,6 +622,7 @@ Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön, kun <ph 
 <translation id="2838379631617906747">Asennetaan</translation>
 <translation id="2838589015763961627">Muuta kokoa poistumalla koko näytön tilasta</translation>
 <translation id="2840766858109427815">Siirry seuraavalle sivulle</translation>
+<translation id="2841013758207633010">Aika</translation>
 <translation id="2841907151129139818">Siirrytty tablettitilaan</translation>
 <translation id="2843560154284403323">Viimeistele Linuxin käyttöönotto päivittämällä Chrome-käyttöjärjestelmä ja yrittämällä uudelleen.</translation>
 <translation id="2844169650293029770">C-tyypin USB-laite (vasemman sivun etummainen portti)</translation>
@@ -1275,6 +1277,7 @@ Yksi laite yhdistetty.</translation>
 <translation id="4633636853437260449">Poista painamalla Ctrl + W</translation>
 <translation id="4633757335284074492">Varmuuskopioi Google Driveen. Palauta dataa tai ota uusi laite käyttöön kätevästi milloin tahansa. Tämä varmuuskopio sisältää sovellusdatan. Varmuuskopiot ladataan Googleen ja salataan lapsesi Google-tilin salasanalla.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Päivitä laite aiempaan versioon nyt}=1{Päivitä laite edelliseen versioon sekunnin kuluessa}other{Päivitä laite edelliseen versioon # sekunnin kuluessa}}</translation>
+<translation id="4641539339823703554">Chrome ei voinut asettaa järjestelmän aikaa. Tarkista aika alta ja korjaa sitä tarvittaessa.</translation>
 <translation id="4642092649622328492">Ota osittainen kuvakaappaus</translation>
 <translation id="4643833688073835173">Chromebook käyttää sisäänrakennettua anturia, jonka avulla se havaitsee laitteesi edessä olevat ihmiset. Kaikki data käsitellään heti laitteellasi ja poistetaan sitten. Anturidataa ei koskaan lähetetä Googlelle.</translation>
 <translation id="4644727592819780893">Alue on liian pieni kameralle</translation>
@@ -1795,6 +1798,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="6074087755403037157">Betaversio</translation>
 <translation id="6075098173600599596">Muuta isojen kirjainten käyttöä</translation>
+<translation id="6080689532560039067">Tarkista järjestelmän aika</translation>
 <translation id="6091929401758362855">Soittolista: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Järjestelmänvalvojan estämä</translation>
 <translation id="6095008505822982596">Puheen nopeus</translation>

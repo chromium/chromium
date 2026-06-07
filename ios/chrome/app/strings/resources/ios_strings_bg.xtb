@@ -32,6 +32,8 @@
 <translation id="1085677983426914530">Файлът „<ph name="FILENAME" />“ не бе отворен</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
 <translation id="1096992026380844478">Настройките ви за синхронизиране ще бъдат възстановени въз основа на най-скорошното ви резервно копие. <ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
+<translation id="1097049112094133492">{count,plural, =1{1 ръчно търсене бе пропуснато}other{# ръчни търсения бяха пропуснати}}</translation>
+<translation id="1097807529207545420">{count,plural, =1{1 парола бе потвърдена мигновено}other{# пароли бяха потвърдени мигновено}}</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Отключване с Face ID</translation>
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
@@ -60,6 +62,7 @@
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1204075260022434100">{count,plural, =1{Отметката е запазена в папката „{title}“ в профила ви {email}}other{{count} отметки са запазени в папката „{title}“ в профила ви {email}}}</translation>
 <translation id="1207493287814084192">17:30 ч.</translation>
+<translation id="1215414310909588335">{count,plural, =1{Спестена бе 1 минута писане}other{Спестени бяха # минути писане}}</translation>
 <translation id="1217294226280635614">Разделен изглед</translation>
 <translation id="1218730690561976633">Превключване на удостоверяването на потребителя за подобреното автоматично попълване</translation>
 <translation id="1219674500290482172">Не може да се установи връзка с интернет.</translation>
@@ -111,7 +114,6 @@
 <translation id="1369286077209859800">Показване на всички раздели в групата раздели</translation>
 <translation id="136942498637440594">Можете да търсите изображения и това, което виждате.</translation>
 <translation id="1373120905936431262">Качете изображение, което да ремиксирате с Nano Banana</translation>
-<translation id="1377321085342047638">№ на картата</translation>
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} от {count} адрес}other{{position} от {count} адреса}}</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -169,6 +171,7 @@
 <translation id="1554043146674176775">Изключване на режима с AI</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
 <translation id="1558391695376153246">Раздели „инкогнито“: Затв.</translation>
+<translation id="1559263013367304065">откакто използвате Google Обектив</translation>
 <translation id="1560153516220021659">Свит бутон във вторичната лента с инструменти</translation>
 <translation id="1565371473877914088">Нов раздел в режим „инкогнито“</translation>
 <translation id="1567960978791353852">Показване на режима на четене</translation>
@@ -207,6 +210,7 @@
 <translation id="1671568970992212376">Запазвайте снимки в Google Снимки и осъществявайте достъп до тях по всяко време.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Въз основа на правилата на организацията ви този файл може да съдържа поверителна информация</translation>
+<translation id="1683276189281028863">Проверка на паролите</translation>
 <translation id="168389590065701766">Вече можете да отваряте Google Обектив от адресната лента и да търсите всичко, което виждате</translation>
 <translation id="1689333818294560261">Псевдоним</translation>
 <translation id="169048873465870056">Искате ли да премахнете раздела и да изтриете групата?</translation>
@@ -550,6 +554,7 @@
 <translation id="284581348330507117">Създайте уникални пароли</translation>
 <translation id="2856883624744451946">Наименуване на групата</translation>
 <translation id="2858204748079866344">За да защити поверителността ви, Chrome няма да попълни автоматично паролата ви в това поле.</translation>
+<translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (още на синхронизираните устройства)}other{# сайта (още на синхронизираните устройства)}}</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Когато сигурността ви е застрашена, изпраща до Google URL адресите на някои от страниците, които посещавате.</translation>
@@ -711,6 +716,7 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за предложеното съдържание</translation>
 <translation id="349446645805573740">Изберете къде да се запази <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Настройки</translation>
+<translation id="3507556793108992994">{count,plural, =1{1 раздел бе премахнат}other{# раздела бяха премахнати}}</translation>
 <translation id="35083190962747987">Отваряне на ${url}</translation>
 <translation id="3511519535430890904">Добавяне на защита при сърфиране</translation>
 <translation id="3512572904898385012">Вече можете да пазарувате и да превеждате с камерата си. Докоснете, за да изпробвате.</translation>
@@ -742,7 +748,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />. Управлява се от организацията ви.</translation>
 <translation id="3580448612293054698">Да се актуализира ли „<ph name="ENTITY_TYPE" />“?</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
-<translation id="3583726884554296148">Запазете картата си в профила си в Google, за да се попълват автоматично данните ѝ за тази и бъдещи покупки в Chrome</translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3587885837929752825">Организацията ви ограничава това, което можете да запазвате в профила си в Google.</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
@@ -848,6 +853,7 @@
 <translation id="3962326069546168954">Запазване</translation>
 <translation id="3967327056943561740">Отметки</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
+<translation id="3968685670440571540">откакто използвате „Пароли и автоматично попълване“</translation>
 <translation id="3973560090698854095">Това ще изтрие адресите, запазени в профила ви в Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Влезли сте като <ph name="USER_EMAIL" />. Отваряне на менюто на профила.</translation>
 <translation id="3986739045730058129">Към раздела</translation>
@@ -873,6 +879,7 @@
 <translation id="4047337302138771011">Споделяне на паролите ви</translation>
 <translation id="4049419681095579435">Пратката вече се проследява</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
+<translation id="4054290211988862686">Избор на файл</translation>
 <translation id="4070132839822635162">Без влизане в профила</translation>
 <translation id="4092655288299341041">Показване на помощна информация</translation>
 <translation id="4095483462103784441">Създаване на нова група раздели</translation>
@@ -938,9 +945,9 @@
 <translation id="4286718549648564014">Адресът бе преместен в профила ви <ph name="USER_EMAIL" /></translation>
 <translation id="4287172530684295552">Означаване като прочетено</translation>
 <translation id="428768789042547925">Новите неща</translation>
+<translation id="4289309730265289297">Библиотека със снимки</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="4294506173142861371">Искате ли да влезете като <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Сканиране на картата и автоматично попълване</translation>
 <translation id="4302061870579014542">Задаване на позиция</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4306349443295056740">Подписване на OCSP</translation>
@@ -1343,6 +1350,7 @@
 <translation id="5647702255748985085">Искате ли да напуснете групата?</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5652623411397330904">Продуктите, които следите, ще се показват тук.</translation>
+<translation id="565364728543769472">Заснемане на видеоклип</translation>
 <translation id="5656431592348714536">Подобрен календар</translation>
 <translation id="5659593005791499971">Имейл</translation>
 <translation id="5666313630530585305">Влезте в уебсайт.</translation>
@@ -1698,6 +1706,7 @@
 <translation id="6757899787818440812">Средна височина</translation>
 <translation id="6759709389246683070">Можете да докоснете и задържите този раздел, за да зададете напомняне за повторно посещение по-късно</translation>
 <translation id="6761393919622941301">Аудио</translation>
+<translation id="6765551480308401897">Без задаване като основен браузър</translation>
 <translation id="6770452996697898492">[РЕЗЕРВИРАНО]</translation>
 <translation id="6779455296366983087">Данните за сърфирането ви ще бъдат изтрити</translation>
 <translation id="6782531425936234573">Експортиране на данни</translation>
@@ -1708,7 +1717,6 @@
 <translation id="6807287147325542056">Пароли в други приложения</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="681631578600400068">Запазване на шофьорската книжка</translation>
-<translation id="6820686453637990663">Код за сигурност</translation>
 <translation id="6825078212112407882">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
 <translation id="6826004672264649705">Понастоящем проследявате този продукт. Отворете, за да видите историята на цената</translation>
 <translation id="6830728435402077660">Няма защита</translation>
@@ -1889,6 +1897,7 @@
 <translation id="7464143666517313304">Така ще се изтрият адресите, запазени на това устройство.</translation>
 <translation id="7468373585447318060">Следете пониженията на цените на всички проследявани от вас продукти.</translation>
 <translation id="746872191028309255">Пазарувайте това, което виждате с камерата или във фотогалерията си.</translation>
+<translation id="7469215556134875318">откакто използвате функцията за проверка на паролите</translation>
 <translation id="7471557245617580330">Създаване на нов раздел</translation>
 <translation id="7473555040328423550">Добавяне на раздел</translation>
 <translation id="7476548258282096076">Тази карта показва най-посещаваните от вас сайтове.</translation>
@@ -1898,6 +1907,7 @@
 <translation id="7491161827858509164">За да видите файловете, които сте изтеглили преди, отворете <ph name="BEGIN_LINK" />Файлове<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Продължаване с редактирането</translation>
 <translation id="7500244509706269886">Автоматично попълване на формуляра</translation>
+<translation id="7504841985386528758">откакто научихте за групите раздели</translation>
 <translation id="750493650310597496">Избрахте 0</translation>
 <translation id="7505402981231763928">Трябва да влезете в профила си, за да използвате Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -1980,6 +1990,7 @@
 <translation id="777637629667389858">Защитава ви в услугите на Google, когато сте влезли в профила си.</translation>
 <translation id="7776604279034196531">Осъществяване на достъп до режима на четене от адресната лента, когато е налице</translation>
 <translation id="7781829728241885113">Вчера</translation>
+<translation id="7788474973847076315">Правене на снимка</translation>
 <translation id="7788868432173225918">Отхвърляне на разгънатия изглед</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7795253248079882669">Докоснете <ph name="BEGIN_BOLD" />Export<ph name="END_BOLD" /></translation>
@@ -2023,6 +2034,7 @@
 <translation id="792357691529995513">Няма открити проблеми</translation>
 <translation id="7925108652071887026">Автоматично попълване на данни</translation>
 <translation id="7926975587469166629">Псевдоним на картата</translation>
+<translation id="792762900715361006">Правене на снимка или видеоклип</translation>
 <translation id="7927711904086083099">Не е избрано</translation>
 <translation id="7927902634113905831">Изберете профила, който искате да използвате, за да запазите <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> – <ph name="FILESIZE" /></translation>
 <translation id="7930998711684428189">Предупреждава ви, ако пароли са разкрити при нарушение на сигурността на данните.</translation>
@@ -2269,6 +2281,7 @@
 <translation id="8694281486652655615">Показва този елемент</translation>
 <translation id="8696297579102085705">Изпращане до устройството ви</translation>
 <translation id="8697136149718343437">Преместване на адресната лента в долната част</translation>
+<translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Ще можете да споделяте, да се присъединявате и да си сътрудничите в групи раздели</translation>
 <translation id="8709409604518538305">Разделите бяха затворени</translation>
@@ -2295,6 +2308,7 @@
 <translation id="8766790350274092814">Паролите за <ph name="WEBSITE" /> и <ph name="SECOND_WEBSITE" /> ще бъдат изтрити. Профилите ви няма да бъдат изтрити.</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
 <translation id="8781834595282316166">Нов раздел в групата</translation>
+<translation id="8784653774976848206">Избор на файлове</translation>
 <translation id="8786100550345425552">Редактиране на разрешенията</translation>
 <translation id="878871978861915380">Скриване на „Проследяване на цената“</translation>
 <translation id="8792626944327216835">микрофон</translation>

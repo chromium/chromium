@@ -645,6 +645,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3771290962915251154">Ebeveyn denetimleri açık olduğu için bu ayar devre dışı bırakıldı</translation>
 <translation id="3771694256347217732">Google Hizmet Şartları</translation>
 <translation id="3777796259512476958">Çoğu sitedeki oturumunuz kapatılır.</translation>
+<translation id="3786379886124795923">Chrome'da oturum açmak için bir QR kodu taradınız. Bu profildeki şifreler, yer işaretleri ve diğer öğeleri almak istediğinizi onaylayın.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="3792938779249970121">Hesap seçin</translation>
 <translation id="3795154175078851242">Resmi bağlantıyla birlikte kopyala</translation>
@@ -829,6 +830,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4532845899244822526">Klasör seçin</translation>
 <translation id="4535755320005483982">Paylaşılan <ph name="GROUP_TITLE" /> sekme grubu</translation>
 <translation id="4537137366307982887">İpucu bildirimlerini etkinleştirme sayfası tam ekranda açıldı</translation>
+<translation id="4537987892902330164"><ph name="NAME_OR_EMAIL" /> olarak oturumunuz açık kaldı.</translation>
 <translation id="4543131175509360848">Geçiş anahtarı yok sayfası</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> sekme}other{<ph name="TAB_COUNT_MANY" /> sekme, <ph name="TAB_COUNT_INCOGNITO" /> gizli mod}}</translation>
 <translation id="4558311620361989323">Web sayfası kısayolları</translation>
@@ -1286,6 +1288,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6411219469806822692">Daha yukarı çıkılamıyor. Sayfanın daha yukarısından başlamayı deneyin.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, Birden Çok Seçili Sekme</translation>
 <translation id="641643625718530986">Yazdır…</translation>
+<translation id="6427723330233512782">Yüksekliğe sığdır</translation>
 <translation id="6433501201775827830">Arama motorunuzu seçin</translation>
 <translation id="6434309073475700221">Kapat</translation>
 <translation id="6435307030888827407">Oturumu kapalı tut</translation>
@@ -2024,9 +2027,11 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, Sabit Pencere İçinde Pencere Gizli Sekmesi</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
+<translation id="949667118776341807">Döndür</translation>
 <translation id="95817756606698420">Chrome, Çin'de arama yapmak için <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />'yu kullanabilir. Bu seçimi <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'da değiştirebilirsiniz.</translation>
 <translation id="961856697154696964">Tarama verilerini sil</translation>
 <translation id="963246339335003378">Görev yöneticisini aç</translation>
+<translation id="966337994629449077"><ph name="FROM_EMAIL" /> olarak oturum açtınız.\n\nBilgisayarınızdan devam etmek için <ph name="TO_EMAIL" /> hesabına geçin. Bu hesaptaki şifreler, yer işaretleri ve diğer öğeler kullanılabilir.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dk. kaldı</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="983192555821071799">Tüm sekmeleri kapat</translation>

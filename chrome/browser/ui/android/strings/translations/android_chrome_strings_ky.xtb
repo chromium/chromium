@@ -356,6 +356,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="253498598929009420">Сайт экраныңыздагы нерселерди көрө алат</translation>
 <translation id="2535807170289627159">Бардык өтмөктөр</translation>
 <translation id="2536728043171574184">Бул барактын оффлайндагы көчүрмөсү көрсөтүлүүдө</translation>
+<translation id="2537574774089209541">Серептеп жатканда Gemini'ды оңой колдонуу үчүн айрым куралдар жылдырылды</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, тандалган жана кадалган жашыруун өтмөктө үн басылган</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, өтмөк</translation>
@@ -404,6 +405,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2751271371269891762">Бардык түзмөктөрүңүздө кыстармаларды жана башка нерселерди алуу үчүн <ph name="EMAIL" /> аккаунту менен кириңиз</translation>
 <translation id="2760805590727089264">АА / ЖЖ</translation>
 <translation id="2762000892062317888">жаңы эле</translation>
+<translation id="276378135349383280">Gemini куралдар тилкесинен көрсөтүлсүн</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> катары кирди.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> сек. калды</translation>
 <translation id="2779651927720337254">ката</translation>
@@ -603,6 +605,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
 <translation id="3614126103057878858">Баалардын статистикасы</translation>
 <translation id="3616113530831147358">Аудио</translation>
+<translation id="3616798734782988169"><ph name="DOWNLOAD_DOMAIN" /> ишенимдүү экенин текшериңиз</translation>
 <translation id="3619255692378312441">Кирүү мүмкүнчүлүгүн тескөө</translation>
 <translation id="3622349720008044802">Терезелерди башкаруу</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайт}}</translation>
@@ -633,6 +636,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3738139272394829648">Издөө үчүн Басуу</translation>
 <translation id="3739455665973395693">Google аккаунтуңузда сырсөздөр уурдалган эмес</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> кызматына жаңы кыстарма кошулду</translation>
+<translation id="3740290940447881599">Бул сайт ишенимдүү экенин текшериңиз</translation>
 <translation id="3740525748616366977">Бул түзмөктө айтып издөө мүмкүнчүлүгү жок</translation>
 <translation id="3763110477555836428">Чыныгы маалыматыңызды коргоо үчүн бул карта менен төлөгөнүңүздө виртуалдык картанын номери толтурулат. Параметрлерди Google Капчыктан өзгөртө аласыз. <ph name="BEGIN_LINK1" />Виртуалдык карталар жөнүндө кеңири маалымат алыңыз<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Айрым маалымат азырынча сактала элек</translation>
@@ -1532,6 +1536,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7291910923717764901">Сүрөттүн бул баракка кошулган сүрөттөмөлөрү</translation>
 <translation id="7293429513719260019">Тил тандоо</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, тандалган жана кадалган өтмөктө контент бөлүшүлүүдө</translation>
+<translation id="7304003340539141201">Gemini'дан өтмөктөр жана тапшырмалар боюнча жардам берүүнү сураныңыз</translation>
 <translation id="7311244614769792472">Эч нерсе табылган жок</translation>
 <translation id="7314734791127433392">Сырсөздөрдү текшерүү мүмкүн болбой жатат</translation>
 <translation id="7324354302972299151">"Do Not Track" сурамын жөнөтүңүз</translation>
@@ -1878,6 +1883,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8696297579102085705">Түзмөгүңүзгө жөнөтүү</translation>
 <translation id="8697753151306746444">Анын ордуна терезени же экранды бөлүшүңүз</translation>
 <translation id="8699120352855309748">Төмөнкү тилдерди которуу сунушталбасын</translation>
+<translation id="8700565880437506364">Chrome'догу Gemini'га кош келиңиз</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8715286883001906001">Google аккаунтуңуздагы сырсөздөрүңүздү бекемдеңиз</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> жабылат</translation>
@@ -1945,6 +1951,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8996847606757455498">Башка провайдерди тандоо</translation>
 <translation id="8998837250940831980">Өтмөк кичирейген жок. Кийинчерээк кайталап көрүңүз.</translation>
 <translation id="9001604755921395912">Жашыруун Chrome өтмөгүндө ачуу</translation>
+<translation id="9010094279589497751">Керек болгондо Gemini'ды тез ачыңыз</translation>
 <translation id="9012585441087414258">Кооптуу деп таанылган сайттардан, жүктөлүп алынган файлдардан жана кеңейтүүлөрдөн коргойт. Эгер барак шектүү аракетти жасаса, анын URL даректери жана контентинин үлгүлөрү Google Коопсуз серептөөгө жөнөтүлөт.</translation>
 <translation id="9019199799064251516">Унаа профилинин кулпусу жок улантасызбы?</translation>
 <translation id="9022774213089566801">Көп каралгандар</translation>
@@ -2002,6 +2009,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="9190355771000652811">Дарек тилкесинде бул ыкчам баскычты издөө куралдары жана сайттан издөө ыкчам баскычтары менен колдонуңуз.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, Кадалган, тандалган жашыруун өтмөк</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 мүнөт мурда текшерилди}other{# мүнөт мурда текшерилди}}</translation>
+<translation id="9202894533863490414">Бул сайттан жүктөп аласызбы?</translation>
 <translation id="9204836675896933765">1 файл калды</translation>
 <translation id="9205933215779845960">Ал бет табылбай жатат. Ал туура жазылганын текшериңиз же <ph name="SEARCH_ENGINE" /> аркылуу издеп көрүңүз.</translation>
 <translation id="9206873250291191720">А</translation>

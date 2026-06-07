@@ -532,6 +532,7 @@
 <translation id="254900897760075745">Kopieer geselekteerde inhoud na knipbord</translation>
 <translation id="2549711466868162843">Verbeter Beligting</translation>
 <translation id="2549985041256363841">Begin opname</translation>
+<translation id="2552966063069741410">Tydsone</translation>
 <translation id="2562459326218811217">Toestel is ingeprop, maar dit laai nie. Probeer ’n batterylaaier met meer watts (W) of gebruik jou oorspronklike batterylaaier.</translation>
 <translation id="256712445991462162">die gedokte vergrootglas</translation>
 <translation id="2573588302192866788">Kon nie <ph name="NAME" /> koppel nie</translation>
@@ -621,6 +622,7 @@ Anders sal die ingeboude raakpaneel binne <ph name="TIMEOUT_SECONDS" /> geherakt
 <translation id="2838379631617906747">Installeer tans</translation>
 <translation id="2838589015763961627">Verlaat volskerm om grootte te verander</translation>
 <translation id="2840766858109427815">Gaan vorentoe na volgende bladsy</translation>
+<translation id="2841013758207633010">Tyd</translation>
 <translation id="2841907151129139818">Het na tabletmodus oorgeskakel</translation>
 <translation id="2843560154284403323">Dateer Chrome-bedryfstelsel op en probeer weer om Linux klaar op te stel.</translation>
 <translation id="2844169650293029770">USB C-toestel (voorste poort aan linkerkant)</translation>
@@ -1276,6 +1278,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4633636853437260449">Druk Ctrl+W om uit te vee</translation>
 <translation id="4633757335284074492">Rugsteun in Google Drive. Laai data maklik terug of wissel enige tyd jou toestel. Hierdie rugsteun sluit programdata in. Rugsteune word na Google toe opgelaai en met jou kind se Google-rekeningwagwoord geënkripteer.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Dateer nou toestel na vorige weergawe op}=1{Dateer toestel binne 1 sekonde na vorige weergawe op}other{Dateer toestel binne # sekondes na vorige weergawe op}}</translation>
+<translation id="4641539339823703554">Chrome kon nie die stelsel se tyd stel nie. Gaan asseblief die tyd hieronder na en stel dit reg indien nodig.</translation>
 <translation id="4642092649622328492">Neem gedeeltelike skermkiekie</translation>
 <translation id="4643833688073835173">Jou Chromebook gebruik 'n ingeboude sensor om mense voor jou toestel te bespeur. Alle data word onmiddellik op jou toestel verwerk en dan uitgevee. Sensordata word nooit na Google toe gestuur nie.</translation>
 <translation id="4644727592819780893">Streek is te klein om kameravoorskou te wys</translation>
@@ -1796,6 +1799,7 @@ Geen toestelle is gekoppel nie.</translation>
 <translation id="6073451960410192870">Stop opname</translation>
 <translation id="6074087755403037157">Beta-kanaal</translation>
 <translation id="6075098173600599596">Verander hooflettergebruik</translation>
+<translation id="6080689532560039067">Gaan jou stelseltyd na</translation>
 <translation id="6091929401758362855">Snitlys: <ph name="PLAYLIST_TITLE" /></translation>
 <translation id="6093867385179428431">Gedeaktiveer deur admin</translation>
 <translation id="6095008505822982596">Spraaktempo</translation>
