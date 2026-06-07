@@ -152,19 +152,26 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
     // we should remove it.
     // If the task was cancelled, it should also be removed from the bubble.
     actor_task_list_bubble_rows_.erase(task_id);
-  } else {
-    const auto duration = manager->GetDuration(task_id);
-    glic::mojom::FeatureMode feature_mode = manager->GetFeatureMode(task_id);
-    actor_task_list_bubble_rows_[task_id] =
-        RequiresTaskProcessing(state.value(), feature_mode);
+    return;
+  }
 
-    if (ShouldShowBubble(state.value(), duration, feature_mode)) {
-      // Notify the bubble only if a task now requires processing. This callback
-      // will open the task list bubble and make it active, in order to bring it
-      // to the user's attention. This is also necessary for when a user
-      // switches windows in order to show the bubble in the active window.
-      task_list_bubble_change_callback_list_.Notify();
-    }
+  glic::mojom::FeatureMode feature_mode = manager->GetFeatureMode(task_id);
+  if (feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
+      state.value() == actor::ActorTask::State::kActing &&
+      actor_task_list_bubble_rows_.contains(task_id)) {
+    return;
+  }
+
+  const auto duration = manager->GetDuration(task_id);
+  actor_task_list_bubble_rows_[task_id] =
+      RequiresTaskProcessing(state.value(), feature_mode);
+
+  if (ShouldShowBubble(state.value(), duration, feature_mode)) {
+    // Notify the bubble only if a task now requires processing. This callback
+    // will open the task list bubble and make it active, in order to bring it
+    // to the user's attention. This is also necessary for when a user
+    // switches windows in order to show the bubble in the active window.
+    task_list_bubble_change_callback_list_.Notify();
   }
 }
 
