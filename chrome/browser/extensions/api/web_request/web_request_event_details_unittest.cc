@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/check_deref.h"
+#include "base/no_destructor.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
@@ -104,8 +105,10 @@ std::unique_ptr<WebRequestInfo> CreateFakeRequestInfoWithSSL(
 // Checks that a string is formatted properly as sha256 fingerprint
 // which is formatted as 31 pairs of "XX:" followed by one "XX".
 bool IsSha256Fingerprint(const std::string& input) {
-  static const re2::RE2 kPattern("([0-9A-F]{2}:){31}[0-9A-F]{2}");
-  return re2::RE2::FullMatch(input, kPattern);
+  // Use static so the exppression is only compiled once and base::NoDestructor
+  // to avoid an exit-time destructor.
+  static base::NoDestructor<re2::RE2> pattern("([0-9A-F]{2}:){31}[0-9A-F]{2}");
+  return re2::RE2::FullMatch(input, *pattern);
 }
 
 // Tests that if no SSLInfo is provided (e.g. HTTP request)

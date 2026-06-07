@@ -1801,10 +1801,6 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
 
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   sources = [
     "activity_log/activity_database_unittest.cc",
     "activity_log/activity_log_enabled_unittest.cc",
@@ -2132,6 +2128,9 @@ source_set("unit_tests") {
     }
 
     if (is_chromeos && use_cups) {
+      # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+      # enable the diagnostic by removing this line.
+      configs += [ "//build/config/compiler:no_exit_time_destructors" ]
       sources += [
         "api/printing/printing_api_handler_unittest.cc",
         "api/printing/printing_api_utils_unittest.cc",

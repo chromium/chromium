@@ -59,7 +59,7 @@ using ::content::NavigationThrottle;
 const char kMatchingUrl[] = "http://google.com/";
 const char kMatchingPrefsUrl[] = "http://prefs.com/";
 const char kNotMatchingUrl[] = "http://example.com/";
-const ExtensionId kTestExtensionId = "behllobkkfkfnphdnhnkndlbkcpglgmj";
+const char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 
 // Yoinked from manifest_unittest.cc.
 std::optional<base::DictValue> LoadManifestFile(const base::FilePath path,

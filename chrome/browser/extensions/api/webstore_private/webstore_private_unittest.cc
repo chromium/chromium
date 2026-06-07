@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -743,9 +744,9 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
 }
 
 struct FrictionDialogTestCase {
-  std::string test_name;
+  const char* test_name;
   bool esb_user;
-  std::string esb_allowlist;
+  const char* esb_allowlist;
   bool expected_friction_shown;
   ScopedTestDialogAutoConfirm::AutoConfirm dialog_action =
       ScopedTestDialogAutoConfirm::ACCEPT;
@@ -817,14 +818,14 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
   function->SetRenderFrameHost(web_contents->GetPrimaryMainFrame());
   ScopedTestDialogAutoConfirm auto_confirm(test_case.dialog_action);
 
+  std::string_view esb_allowlist = test_case.esb_allowlist;
   std::string args =
-      test_case.esb_allowlist == "undefined"
+      esb_allowlist == "undefined"
           ? base::StringPrintf(R"([{"id":"%s", "manifest":"%s"}])",
                                kExtensionId, kExtensionManifest)
           : base::StringPrintf(
                 R"([{"id":"%s", "manifest":"%s", "esbAllowlist":%s}])",
-                kExtensionId, kExtensionManifest,
-                test_case.esb_allowlist.c_str());
+                kExtensionId, kExtensionManifest, esb_allowlist.data());
 
   if (test_case.dialog_action == ScopedTestDialogAutoConfirm::ACCEPT) {
     std::optional<base::Value> response =
