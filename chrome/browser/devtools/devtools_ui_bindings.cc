@@ -176,6 +176,18 @@ const char kConfigNetworkDiscoveryConfig[] = "networkDiscoveryConfig";
 // content/shell/browser/layout_test/devtools_protocol_test_bindings.cc.
 const size_t kMaxMessageChunkSize = IPC::mojom::kChannelMaximumMessageSize / 4;
 
+// DevTools Google Developer Profiles are not supported on Android.
+// If enabled, the underlying OAuth token request for the
+// "devprofiles.full_control" scope fails with a RestrictedClient error, which
+// can sign the user out of Chrome.
+bool IsDevToolsGdpProfilesSupported() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  return true;
+#endif
+}
+
 base::DictValue CreateFileSystemValue(
     DevToolsFileHelper::FileSystem file_system) {
   base::DictValue file_system_value;
@@ -2114,8 +2126,7 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
   // default, this dict can be removed.
   if (base::FeatureList::IsEnabled(::features::kDevToolsGdpProfiles)) {
     base::DictValue gdp_profiles_dict;
-    gdp_profiles_dict.Set("enabled", base::FeatureList::IsEnabled(
-                                         ::features::kDevToolsGdpProfiles));
+    gdp_profiles_dict.Set("enabled", IsDevToolsGdpProfilesSupported());
     gdp_profiles_dict.Set("badgesEnabled",
                           features::kDevToolsGdpProfilesBadgesEnabled.Get());
     gdp_profiles_dict.Set(
@@ -2131,7 +2142,8 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
 
   base::DictValue gdp_profiles_availability_dict;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  gdp_profiles_availability_dict.Set("enabled", true);
+  gdp_profiles_availability_dict.Set("enabled",
+                                     IsDevToolsGdpProfilesSupported());
 #else
   gdp_profiles_availability_dict.Set("enabled", false);
 #endif
