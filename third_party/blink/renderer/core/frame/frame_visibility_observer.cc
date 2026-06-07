@@ -9,9 +9,13 @@
 namespace blink {
 
 FrameVisibilityObserver::FrameVisibilityObserver(LocalFrame* frame) {
+  // `frame` can be nullptr if a frame is not readily available - e.g. an
+  // HTML element that is not yet attached to a document.
   if (frame) {
-    frame->AddVisibilityObserver(this);
+    frame->GetFrameVisibilityObserverSet().insert(this);
   }
 }
+
+FrameVisibilityObserver::~FrameVisibilityObserver() = default;
 
 }  // namespace blink

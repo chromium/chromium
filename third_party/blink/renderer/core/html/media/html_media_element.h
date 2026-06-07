@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
-#include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/html/track/track_base.h"
@@ -110,7 +109,6 @@ class CORE_EXPORT HTMLMediaElement
       public Supplementable<HTMLMediaElement>,
       public ActiveScriptWrappable<HTMLMediaElement>,
       public ExecutionContextLifecycleStateObserver,
-      public FrameVisibilityObserver,
       public media::mojom::blink::MediaPlayer,
       public media::RemotePlaybackClientWrapper,
       private MediaPlayerClient {
@@ -641,10 +639,6 @@ class CORE_EXPORT HTMLMediaElement
   void OnRemotePlaybackDisabled(bool disabled) override;
   void OnCdmAttached(const media::CdmConfig& cdm_config) override {}
 
-  // FrameVisibilityObserver implementation.
-  void OnFrameHidden() override;
-  void OnFrameShown() override;
-
   // Returns a reference to the mojo remote for the MediaPlayerHost interface,
   // requesting it first from the BrowserInterfaceBroker if needed. It is an
   // error to call this method before having access to the document's frame.
@@ -722,13 +716,6 @@ class CORE_EXPORT HTMLMediaElement
   // This does not check user gesture restrictions.
   void PlayInternal();
 
-  // Processes any play requests that were deferred because the frame's
-  // visibility state was unknown (is_frame_hidden_ was nullopt).
-  void ProcessDeferredPlay();
-
-  // Returns the error message for a rejected promise `play()` promise.
-  String GetPlayErrorMessage(DOMExceptionCode code) const;
-
   // This does not stop autoplay visibility observation.
   // By default, will pause the video and speech.
   void PauseInternal(WebMediaPlayer::PauseReason pause_reason);
@@ -803,11 +790,8 @@ class CORE_EXPORT HTMLMediaElement
   // allows this media element to play while not visible.
   bool CanPlayWhileHidden() const;
 
-  // Returns true if the iframe containing the media element is not rendered.
-  // This can happen for example when the iframe's "visibility" or "display" CSS
-  // properties are respectively set to "hidden" or "none". This can also happen
-  // if the iframe's area is zero(width or height is zero).
-  bool IsFrameHidden() const { return is_frame_hidden_.value_or(false); }
+  // Returns true if the element is in a frame that is not being rendered.
+  bool IsFrameHidden() const;
 
   // Adds a new MediaPlayerObserver remote that will be notified about media
   // player events and returns a receiver that an observer implementation can
@@ -950,17 +934,6 @@ class CORE_EXPORT HTMLMediaElement
   bool is_remote_rendering_ = false;
   // Whether the media content is encrypted.
   bool is_encrypted_media_ = false;
-
-  // Whether the frame containing the media element is hidden. This is nullopt
-  // if the visibility state of the frame is not yet known - e.g. during frame
-  // initialization.
-  std::optional<bool> is_frame_hidden_;
-
-  // When the media-playback-while-not-visible policy is active and the frame's
-  // visibility is not yet known, play requests are deferred here until the
-  // visibility state is resolved.
-  HeapVector<Member<ScriptPromiseResolverBase>>
-      deferred_play_promise_resolvers_;
 
   WebString remote_device_friendly_name_;
   std::optional<media::AudioCodec> audio_codec_;

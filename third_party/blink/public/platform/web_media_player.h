@@ -481,15 +481,6 @@ class WebMediaPlayer {
   virtual void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) = 0;
-
-  // Called when the media element's frame becomes hidden. This happens when:
-  // - The frame visibility property is set to "hidden";
-  // - The frame display property is set to "none";
-  // - The frame rendered area is 0 (width or height is 0).
-  virtual void OnFrameHidden() {}
-  // Called when the media element's frame becomes visible. See the comment for
-  // `OnFrameHidden()` for details.
-  virtual void OnFrameShown() {}
 };
 
 }  // namespace blink

@@ -100,6 +100,15 @@ class CORE_EXPORT AutoplayPolicy final
   // gesture is currently being processed.
   bool IsGestureNeededForPlayback() const;
 
+  // Returns whether the media-playback-while-not-visible permission policy
+  // allows this media element to play while not visible.
+  bool CanPlayWhileHidden() const;
+
+  // Returns true if the iframe containing the media element not rendered. This
+  // can happen for example when the "visibility" and "display" CSS properties
+  // are respectively set to "hidden" and "none".
+  bool IsFrameHidden() const;
+
   // Returns an error string to be used by the HTMLMediaElement when the play()
   // method fails because of autoplay restrictions.
   String GetPlayErrorMessage() const;

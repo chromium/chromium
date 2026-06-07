@@ -219,8 +219,6 @@ class MockWebMediaPlayerClient : public MediaPlayerClient {
   MOCK_METHOD1(DidUseAudioServiceChange, void(bool uses_audio_service));
   MOCK_METHOD1(DidPlayerSizeChange, void(const gfx::Size&));
   MOCK_METHOD1(OnRemotePlaybackDisabled, void(bool));
-  MOCK_METHOD0(OnFrameHidden, void());
-  MOCK_METHOD0(OnFrameShown, void());
   MOCK_METHOD0(DidBufferUnderflow, void());
   MOCK_METHOD0(DidSeek, void());
   MOCK_METHOD2(OnFirstFrame, void(base::TimeTicks, size_t));
@@ -295,6 +293,8 @@ class MockWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
 
   bool IsPageHidden() override { return is_page_hidden_; }
 
+  bool IsFrameHidden() override { return is_frame_hidden_; }
+
   void SetIdleForTesting(bool is_idle) { is_idle_ = is_idle; }
 
   void SetStaleForTesting(bool is_stale) {
@@ -316,6 +316,10 @@ class MockWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
     is_page_hidden_ = is_page_hidden;
   }
 
+  void SetFrameHiddenForTesting(bool is_frame_hidden) {
+    is_frame_hidden_ = is_frame_hidden;
+  }
+
   int player_id() { return player_id_; }
 
  private:
@@ -324,6 +328,7 @@ class MockWebMediaPlayerDelegate : public WebMediaPlayerDelegate {
   bool is_idle_ = false;
   bool is_stale_ = false;
   bool is_page_hidden_ = false;
+  bool is_frame_hidden_ = false;
 };
 
 class MockSurfaceLayerBridge : public WebSurfaceLayerBridge {
@@ -671,11 +676,13 @@ class WebMediaPlayerImplTest
   }
 
   void HidePlayerFrame() {
+    delegate_.SetFrameHiddenForTesting(true);
     SetWasSuspendedForFrameClosed(false);
     wmpi_->OnFrameHidden();
   }
 
   void ShowPlayerFrame() {
+    delegate_.SetFrameHiddenForTesting(false);
     SetWasSuspendedForFrameClosed(false);
     wmpi_->OnFrameShown();
   }

@@ -284,10 +284,9 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // WebMediaPlayerDelegate::Observer implementation.
   void OnPageHidden() override;
   void OnPageShown() override;
-  void OnIdleTimeout() override;
-
   void OnFrameHidden() override;
   void OnFrameShown() override;
+  void OnIdleTimeout() override;
 
   void RequestRemotePlaybackDisabled(bool disabled) override;
   void RequestMediaRemoting() override;
@@ -1122,11 +1121,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // suspended.
   bool pending_oneshot_suspend_ = false;
 
-  // Last rendered status sent to the player from the containing frame.
-  bool is_frame_hidden_ = false;
-
-  // Whether we should pause playback when the frame is hidden due to the
-  // "media-playback-while-not-visible" permission policy.
   bool should_pause_when_frame_is_hidden_ = false;
 
   bool is_dominant_visible_content_ = false;

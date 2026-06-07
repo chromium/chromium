@@ -455,8 +455,6 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tag_name,
   if (frame) {
     remote_playback_client_ =
         frame->Client()->CreateRemotePlaybackClient(*this);
-    frame->AddVisibilityObserver(this);
-    is_frame_hidden_ = frame->IsHiddenForMediaPlayback();
   }
 
   SetHasCustomStyleCallbacks();
@@ -504,6 +502,7 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
   if (cue_timeline_) {
     cue_timeline_->DidMoveToNewDocument(old_document);
   }
+
 
   if (should_delay_load_event_) {
     GetDocument().IncrementLoadEventDelayCount();
@@ -674,11 +673,16 @@ bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
 }
 
 bool HTMLMediaElement::CanPlayWhileHidden() const {
-  ExecutionContext* context = GetDocument().GetExecutionContext();
-  return context &&
-         context->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::
-                                       kMediaPlaybackWhileNotVisible,
-                                   ReportOptions::kDoNotReport);
+  return GetDocument().GetExecutionContext()->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kMediaPlaybackWhileNotVisible,
+      ReportOptions::kDoNotReport);
+}
+
+bool HTMLMediaElement::IsFrameHidden() const {
+  auto* view = GetDocument().View();
+  return view && (view->GetFrameVisibility().value_or(
+                      mojom::blink::FrameVisibility::kRenderedInViewport) ==
+                  mojom::blink::FrameVisibility::kNotRendered);
 }
 
 void HTMLMediaElement::AttachToNewFrame() {
@@ -871,9 +875,6 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
 
   HTMLElement::InsertedInto(insertion_point);
   if (insertion_point.isConnected()) {
-    if (auto* frame = insertion_point.GetDocument().GetFrame()) {
-      frame->AddVisibilityObserver(this);
-    }
     // Cancel any pending removed-from-document timer: the element has been
     // (re-)inserted into a document, so it should not be paused by that timer.
     removed_from_document_timer_.Stop();
@@ -905,10 +906,6 @@ void HTMLMediaElement::RemovedFrom(ContainerNode& insertion_point) {
   if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
       lazy_media_load_state_ == LazyMediaLoadState::kDeferred) {
     LazyMediaHelper::StopMonitoring(this);
-  }
-
-  if (auto* frame = insertion_point.GetDocument().GetFrame()) {
-    frame->RemoveVisibilityObserver(this);
   }
 
   HTMLElement::RemovedFrom(insertion_point);
@@ -3094,23 +3091,25 @@ ScriptPromise<IDLUndefined> HTMLMediaElement::playForBindings(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
-
-  // When the media-playback-while-not-visible policy is active and the frame's
-  // visibility state is not yet known, defer the play request until the
-  // visibility state is resolved.
-  if (!CanPlayWhileHidden() && !is_frame_hidden_.has_value()) {
-    deferred_play_promise_resolvers_.push_back(resolver);
-    return promise;
-  }
-
   play_promise_resolvers_.push_back(resolver);
 
   std::optional<DOMExceptionCode> code = Play();
   if (code) {
     DCHECK(!play_promise_resolvers_.empty());
     play_promise_resolvers_.pop_back();
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        code.value(), GetPlayErrorMessage(code.value())));
+
+    String message;
+    switch (code.value()) {
+      case DOMExceptionCode::kNotAllowedError:
+        message = autoplay_policy_->GetPlayErrorMessage();
+        break;
+      case DOMExceptionCode::kNotSupportedError:
+        message = "The element has no supported sources.";
+        break;
+      default:
+        NOTREACHED();
+    }
+    resolver->Reject(MakeGarbageCollected<DOMException>(code.value(), message));
     return promise;
   }
 
@@ -3124,7 +3123,7 @@ std::optional<DOMExceptionCode> HTMLMediaElement::Play() {
       autoplay_policy_->RequestPlay();
 
   if (exception_code == DOMExceptionCode::kNotAllowedError) {
-    if (is_frame_hidden_.value_or(false) && web_media_player_ &&
+    if (IsFrameHidden() && web_media_player_ &&
         web_media_player_->GetShouldPauseWhenFrameIsHidden()) {
       // The HTMLMediaElement is not allowed to start because the frame has the
       // MediaPlaybackWhileNotVisible policy applied and is hidden. Record this
@@ -4251,15 +4250,8 @@ void HTMLMediaElement::UpdatePlayState(
 
     GetCueTimeline().OnPause();
   }
-  if (pause_reason == WebMediaPlayer::PauseReason::kFrameHidden) {
-    // FrameHidden updates can be delivered during
-    // `LocalFrameView::RunPostLifecycleSteps`, which disallows layout
-    // invalidations. Make `UpdateLayoutObject` run async to avoid this.
-    GetDocument().GetAgent().event_loop()->EnqueueMicrotask(BindOnce(
-        &HTMLMediaElement::UpdateLayoutObject, WrapWeakPersistent(this)));
-  } else {
-    UpdateLayoutObject();
-  }
+
+  UpdateLayoutObject();
 
   if (web_media_player_)
     web_media_player_->OnTimeUpdate();
@@ -4781,7 +4773,6 @@ void HTMLMediaElement::Trace(Visitor* visitor) const {
   visitor->Trace(play_promise_resolvers_);
   visitor->Trace(play_promise_resolve_list_);
   visitor->Trace(play_promise_reject_list_);
-  visitor->Trace(deferred_play_promise_resolvers_);
   visitor->Trace(audio_source_provider_);
   visitor->Trace(src_object_stream_descriptor_);
   visitor->Trace(src_object_media_source_handle_);
@@ -4974,19 +4965,13 @@ void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,
                                           const String& message) {
   play_promise_reject_list_.append_range(play_promise_resolvers_);
   play_promise_resolvers_.clear();
-
-  // Also reject any deferred play promises that were waiting for visibility.
-  play_promise_reject_list_.append_range(deferred_play_promise_resolvers_);
-  deferred_play_promise_resolvers_.clear();
-
   RejectPlayPromisesInternal(code, message);
 }
 
 void HTMLMediaElement::RejectPlayPromisesInternal(DOMExceptionCode code,
                                                   const String& message) {
   DCHECK(code == DOMExceptionCode::kAbortError ||
-         code == DOMExceptionCode::kNotSupportedError ||
-         code == DOMExceptionCode::kNotAllowedError);
+         code == DOMExceptionCode::kNotSupportedError);
   for (auto& resolver : play_promise_reject_list_)
     resolver->Reject(MakeGarbageCollected<DOMException>(code, message));
 
@@ -5169,65 +5154,6 @@ void HTMLMediaElement::OnRemotePlaybackDisabled(bool disabled) {
     return;
   is_remote_playback_disabled_ = disabled;
   OnRemotePlaybackMetadataChange();
-}
-
-void HTMLMediaElement::OnFrameHidden() {
-  if (is_frame_hidden_.has_value() && is_frame_hidden_.value()) {
-    return;
-  }
-
-  bool was_visibility_unknown = !is_frame_hidden_.has_value();
-  is_frame_hidden_ = true;
-  if (was_visibility_unknown) {
-    ProcessDeferredPlay();
-  }
-
-  if (web_media_player_) {
-    web_media_player_->OnFrameHidden();
-  }
-}
-
-void HTMLMediaElement::OnFrameShown() {
-  if (is_frame_hidden_.has_value() && !is_frame_hidden_.value()) {
-    return;
-  }
-
-  bool was_visibility_unknown = !is_frame_hidden_.has_value();
-  is_frame_hidden_ = false;
-  if (was_visibility_unknown) {
-    ProcessDeferredPlay();
-  }
-
-  if (web_media_player_) {
-    web_media_player_->OnFrameShown();
-  }
-}
-
-void HTMLMediaElement::ProcessDeferredPlay() {
-  if (deferred_play_promise_resolvers_.empty()) {
-    return;
-  }
-
-  // Move deferred promise resolvers into the main play promise list before
-  // calling Play(), so they participate in the normal resolve/reject flow.
-  play_promise_resolvers_.append_range(deferred_play_promise_resolvers_);
-  deferred_play_promise_resolvers_.clear();
-
-  std::optional<DOMExceptionCode> code = Play();
-  if (code) {
-    RejectPlayPromises(code.value(), GetPlayErrorMessage(code.value()));
-  }
-}
-
-String HTMLMediaElement::GetPlayErrorMessage(DOMExceptionCode code) const {
-  switch (code) {
-    case DOMExceptionCode::kNotAllowedError:
-      return autoplay_policy_->GetPlayErrorMessage();
-    case DOMExceptionCode::kNotSupportedError:
-      return "The element has no supported sources.";
-    default:
-      NOTREACHED();
-  }
 }
 
 media::mojom::blink::MediaPlayerHost&

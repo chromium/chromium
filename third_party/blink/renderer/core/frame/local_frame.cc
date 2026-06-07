@@ -4248,14 +4248,6 @@ void LocalFrame::NotifyFrameVisibilityChanged(
   }
 }
 
-void LocalFrame::AddVisibilityObserver(FrameVisibilityObserver* observer) {
-  frame_visibility_observers_.insert(observer);
-}
-
-void LocalFrame::RemoveVisibilityObserver(FrameVisibilityObserver* observer) {
-  frame_visibility_observers_.erase(observer);
-}
-
 void LocalFrame::OnFrameVisibilityChangedForMediaPlayback(bool is_hidden) {
   if (is_hidden_for_media_playback_.has_value() &&
       *is_hidden_for_media_playback_ == is_hidden) {
