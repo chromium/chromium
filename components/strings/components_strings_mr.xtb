@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">अंतर्वस्‍त्रे</translation>
 <translation id="1458770162980644530">आता विकत घ्या, नंतर पैसे द्या यासंबंधित सेवा अटींची स्क्रीन. कीबोर्ड लपवलेला आहे.</translation>
 <translation id="1459693405370120464">हवामान</translation>
+<translation id="1460317464907341501">या ईमेलची आपोआप पडताळणी करायची आहे का?</translation>
 <translation id="1461041542809785877">कार्यप्रदर्शन</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">तुमच्या कॉंप्युटरवरील फॉंट वापरा जेणेकरून, तुम्ही उच्च फायडेलिटी आशय तयार करू शकाल</translation>
@@ -2004,6 +2005,7 @@
 <translation id="412601465078863288">अपलोड करणे टाइम आउट झाले</translation>
 <translation id="4127317221386336246">कपड्यांसाठीच्या अ‍ॅक्सेसरी</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{अन्य 1}other{अन्य #}}</translation>
+<translation id="4129810348470013900">काहीतरी चुकले. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="4129992181550680635">शैक्षणिक स्रोत</translation>
 <translation id="4130226655945681476">नेटवर्क केबल, मोडेम आणि राउटर तपासत आहे</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />". अ‍ॅप्सद्वारे संदर्भ दिलेल्या file_extension "<ph name="FILE_EXTENSION" />" साठी डुप्लिकेट हँडलर.</translation>

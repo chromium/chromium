@@ -306,6 +306,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1458140305240870199">Spodní prádlo</translation>
 <translation id="1458770162980644530">Obrazovka se smluvními podmínkami platební metody Koupit teď, zaplatit později. Klávesnice je skrytá.</translation>
 <translation id="1459693405370120464">Počasí</translation>
+<translation id="1460317464907341501">Ověřit tento e‑mail automaticky?</translation>
 <translation id="1461041542809785877">Výkon</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Použít písma nainstalovaná v počítači, abyste mohli vytvářet obsah ve vysoké kvalitě</translation>
@@ -2001,6 +2002,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="412601465078863288">Časový limit nahrávání vypršel</translation>
 <translation id="4127317221386336246">Oděvní doplňky</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 další}few{# další}many{# další}other{# dalších}}</translation>
+<translation id="4129810348470013900">Něco se pokazilo. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="4129992181550680635">Vzdělávací zdroje</translation>
 <translation id="4130226655945681476">Zkontrolovat síťové kabely, modem a směrovač</translation>
 <translation id="4132448310531350254">Aplikace <ph name="POLICY_IDS_LIST" /> odkazují na duplicitní obslužné nástroje pro příponu souboru <ph name="FILE_EXTENSION" />.</translation>
@@ -3018,6 +3020,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5728246486828755318">Může žádat o použití pokročilých funkcí tiskáren</translation>
 <translation id="5729442113829771034">Vzdělávání v raném věku</translation>
 <translation id="5730040223043577876">Pokud jste heslo použili na jiném webu, doporučujeme vám ho resetovat.</translation>
+<translation id="5735174108294025227">Zde se budou zobrazovat ověřené e‑mailové adresy</translation>
 <translation id="573555826359077410">Tlačítko Vytvořit formulář, aktivací rychle vytvoříte nový formulář ve Formulářích Google</translation>
 <translation id="5738385766833540397">Nastavte, jak chcete dostávat upozornění na pokles cen produktů, které sledujete</translation>
 <translation id="5739619009927381786">V dalším kroku odemkněte obrazovku, obvykle otiskem prstu. Nebo můžete <ph name="BEGIN_LINK" />ověření provést jiným způsobem<ph name="END_LINK" />.</translation>

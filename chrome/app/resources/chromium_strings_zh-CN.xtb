@@ -67,6 +67,7 @@
 <translation id="1749104137266986751">如果 HTTPS 不可用，Chromium 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
 <translation id="1779356040007214683">为了提高 Chromium 的安全性，系统停用了一些未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />中、可能是在您不知情的情况下添加的扩展程序。</translation>
+<translation id="1793486931176048546">点击 Windows 通知中的<ph name="BEGIN_BOLD" />是<ph name="END_BOLD" />，将 Chromium 固定到任务栏，以便快速访问。</translation>
 <translation id="1808667845054772817">重新安装Chromium</translation>
 <translation id="1820835682567584003">Chromium 正在尝试<ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">下次在<ph name="DEVICE_TYPE" />上打开 Chromium 时，您会看到使用 Google 密码管理工具的提示。</translation>
@@ -380,8 +381,10 @@
 <translation id="5294316920224716406">当您在无痕模式下浏览内容时，Chromium 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="5313228254328109263">Chromium Updater Internal Service</translation>
 <translation id="5346389065299425353">添加多个标签页、文件和工具，让搜索更深入、更精准</translation>
+<translation id="5348677704241861105">使用 Chromium 中的 Gemini 快速了解此文档的概要信息并提出问题</translation>
 <translation id="5352264705793813212">Chromium 找到了一些供您审查的安全建议</translation>
 <translation id="5352361688875342522">其他 Chromium 个人资料</translation>
+<translation id="535243042947607642">由于您的账号登录详细信息已过期，ChromiumOS 无法将 Chromium 数据保存到您的 Google 账号</translation>
 <translation id="5358375970380395591">您目前登录的账号是一个受管理账号，该账号的管理员将能够控制您的 Chromium 个人资料。您的 Chromium 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 账号信息中心删除这些数据，但无法将这些数据与其他账号相关联。<ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">额外代码：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5377622451696208284">若要获得个性化体验，请在“网络与应用活动记录”中包含 Chromium</translation>
@@ -487,6 +490,7 @@
 <translation id="6390800440335263989">如需继续操作，请以 <ph name="EMAIL" /> 的身份登录 Chromium。这样可以确保应用所属组织的政策。</translation>
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
+<translation id="6414624068245092115">为了确保您可以一直通过 Google 账号使用和保存 Chromium 数据，请验证是您本人在操作</translation>
 <translation id="642132557830635295">Chromium 的运行速度会更快，并且使用 JavaScript 的功能应该能按预期运行</translation>
 <translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>
 <translation id="6442900851116057561">重启 Chromium 操作系统</translation>
@@ -716,6 +720,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8852026904190808918">使用此语言显示 Chromium 中的菜单、设置、提醒和其他文字</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8876044221123442390">添加 Chromium 个人资料</translation>
+<translation id="8890569919834781711">由于登录时发生错误，ChromiumOS 无法将 Chromium 数据保存到您的 Google 账号</translation>
 <translation id="8891709362986793894">您的组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8932992523185907506">Chromium 不再是默认浏览器。要将 Chromium 设置为默认浏览器吗？</translation>

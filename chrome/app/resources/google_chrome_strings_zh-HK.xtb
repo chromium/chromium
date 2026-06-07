@@ -154,6 +154,7 @@
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取已下載的安裝程式。錯誤代碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2608461706055011366">使用 Chrome 版 Gemini 撮要文件內容並提問</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="263447411082773721">讓密碼、書籤和記錄在所有裝置上完美同步。將預設瀏覽器更新為 Chrome，即可輕鬆存取你熟悉和喜愛的功能。Chrome 會固定在工作列，方便你快速取用。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -161,6 +162,7 @@
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2668094785979141847">按一下即可離開「Google 智能鏡頭」</translation>
+<translation id="2674238339205910678">你的帳戶登入詳細資料尚未更新，因此 ChromeOS Flex 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="2681444469812712297">在 Google Chrome 中的新分頁開啟 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">開啟 Chrome Beta 版 Gemini</translation>
 <translation id="2712141162840347885">揀任何要用「Google 智能鏡頭」搜尋嘅內容，㩒 Esc 掣就可以退出「Google 智能鏡頭」</translation>
@@ -538,6 +540,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據您身處的環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
+<translation id="6520608191273161151">登入時發生錯誤，因此 ChromeOS Flex 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="6520670145826811516">如要使用位置，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6532945796722480006">開啟 Chrome Canary 版 Gemini</translation>
@@ -585,6 +588,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">您可在此處切換不同的 Chrome 設定檔</translation>
+<translation id="7026856149118332950">在 Windows 通知中點擊 [是]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />，即可將 Chrome 固定至工作列，以便快速存取。</translation>
 <translation id="7047386856539490735">這些結果有用嗎？</translation>
 <translation id="7051685429025310665">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和、<ph name="PERMISSION_3" />權限。</translation>
 <translation id="7059914902409643750">自訂屬於您的 Chrome</translation>
@@ -677,6 +681,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chrome。請建立新的 Chrome 使用者以個別保存您的資料。</translation>
 <translation id="7904985524660297937">試用 Google Chrome 版 Gemini</translation>
+<translation id="7905880575591690197">登入時發生錯誤，因此 ChromeOS 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="7917876797003313048">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chrome 已禁止下載</translation>
 <translation id="7951272445806340501">ChromeOS Flex 必須重新啟動，才能套用更新。</translation>
@@ -752,6 +757,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8624541899164515475">設定，喺新分頁打開。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 將於 1 分鐘後重新啟動}other{Chrome 將於 # 分鐘後重新啟動}}</translation>
 <translation id="8637932705841171563">如要分享視窗，請前往「系統設定」允許 Chrome 螢幕錄影</translation>
+<translation id="8642497536370021917">為確保你可隨時在 Google 帳戶中使用和儲存 Chrome 資料，請驗證你的身分</translation>
 <translation id="8656634243791296665">開啟 Chrome 開發人員版 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 輔助工具</translation>
 <translation id="8679801911857917785">這個擴充功能也會管制 Chrome 啟動時所顯示的網頁。</translation>
@@ -801,6 +807,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="93760716455950538">重新啟動 ChromeOS Flex</translation>
 <translation id="943390475793766444">此檔案可能不安全，因此 Chrome 建議掃瞄檔案。</translation>
 <translation id="945522503751344254">提供意見反映</translation>
+<translation id="973195869036269770">你的帳戶登入詳細資料尚未更新，因此 ChromeOS 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="983803489796659991">由於更新伺服器沒有應用程式的任何雜湊資料，因此無法安裝。</translation>
 <translation id="989369509083708165">Google Chrome 現為您的預設瀏覽器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可以轉換唔同嘅 Chrome 設定檔</translation>

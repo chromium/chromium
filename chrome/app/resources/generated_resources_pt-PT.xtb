@@ -7727,6 +7727,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6646696210740573446">Envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Google</translation>
 <translation id="6647228709620733774">URL de revogação da autoridade de certificação Netscape</translation>
 <translation id="6647690760956378579">Pré-visualização da voz natural</translation>
+<translation id="6648602807077169189">Devolver tarefa</translation>
 <translation id="6648911618876616409">Existe uma nova atualização crítica pronta para instalação. Inicie sessão para começar.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar a sua identidade</translation>
 <translation id="6650206238642452078">Subscrever eventos do sistema ChromeOS</translation>
@@ -9098,6 +9099,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7650920359639954963">Não ativada: <ph name="REASON" /></translation>
 <translation id="7651182181030187705">Para ter este marcador em todos os seus dispositivos, valide a sua identidade</translation>
 <translation id="7651400349472467012">Zona Wi-Fi instantânea disponível</translation>
+<translation id="7651754152638505879">Tarefa pausada</translation>
 <translation id="7651784568388208829">Continuação da tarefa do Phone Hub</translation>
 <translation id="7652954539215530680">Crie um PIN</translation>
 <translation id="7654941827281939388">Esta conta já está a ser utilizada neste computador.</translation>
@@ -10982,6 +10984,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8991694323904646277">Nenhuma câmara</translation>
 <translation id="8991766915726096402">Recuperação de dados locais</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Utilização de memória – <ph name="MEMORY_VALUE" /></translation>
+<translation id="8993030412405061612">Tarefa concluída</translation>
 <translation id="8993059306046735527">Caso se esqueça da sua palavra-passe do <ph name="DEVICE_TYPE" />, ainda pode restaurar os seus dados locais. Vai ter de iniciar sessão na sua Conta Google ou usar a recuperação de conta.</translation>
 <translation id="8993198843374358393">Copiar hash do certificado <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Fornece controlos para acelerar, abrandar e pausar a voz de leitura.</translation>

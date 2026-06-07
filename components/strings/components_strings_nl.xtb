@@ -306,6 +306,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1458140305240870199">Onderkleding</translation>
 <translation id="1458770162980644530">Scherm met servicevoorwaarden voor Koop nu, betaal later. Toetsenbord verborgen.</translation>
 <translation id="1459693405370120464">Weer</translation>
+<translation id="1460317464907341501">Dit e-mailadres automatisch laten verifiëren?</translation>
 <translation id="1461041542809785877">Prestaties</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Gebruik de lettertypen op je computer voor de fraaiste weergave van je content</translation>
@@ -1999,6 +2000,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="412601465078863288">Time-out bij uploaden</translation>
 <translation id="4127317221386336246">Kledingaccessoires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
+<translation id="4129810348470013900">Er ging iets mis. Check je internetverbinding en probeer het opnieuw.</translation>
 <translation id="4129992181550680635">Onderwijsinformatie</translation>
 <translation id="4130226655945681476">Controleer de netwerkkabels, modem en router</translation>
 <translation id="4132448310531350254">Dubbele handlers voor bestandsextensie <ph name="FILE_EXTENSION" /> waarnaar wordt verwezen door apps <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3016,6 +3018,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5728246486828755318">Kan vragen om geavanceerde printerfuncties te gebruiken</translation>
 <translation id="5729442113829771034">Peuteronderwijs</translation>
 <translation id="5730040223043577876">Chrome raadt je aan je wachtwoord opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
+<translation id="5735174108294025227">Hier worden geverifieerde e-mailadressen getoond</translation>
 <translation id="573555826359077410">Knop Formulier maken. Activeer deze om snel een nieuw formulier in Google Formulieren te maken.</translation>
 <translation id="5738385766833540397">Beheren hoe je meldingen over prijsdalingen krijgt voor producten die je volgt</translation>
 <translation id="5739619009927381786">Ontgrendel je scherm in de volgende stap, meestal met je vingerafdruk. Je kunt ook <ph name="BEGIN_LINK" />een andere verificatiemethode gebruiken<ph name="END_LINK" />.</translation>

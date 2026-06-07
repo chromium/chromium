@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">Sous-vêtements</translation>
 <translation id="1458770162980644530">L'écran des conditions d'utilisation d'Acheter maintenant, payer plus tard. Clavier masqué.</translation>
 <translation id="1459693405370120464">Météo</translation>
+<translation id="1460317464907341501">Vérifier automatiquement cette adresse courriel?</translation>
 <translation id="1461041542809785877">Performance</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Utiliser les polices de votre ordinateur afin que vous puissiez créer du contenu haute-fidélité</translation>
@@ -2005,6 +2006,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="412601465078863288">Le téléversement a dépassé le délai</translation>
 <translation id="4127317221386336246">Accessoires vestimentaires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 autre élément}one{# autre élément}other{# autres éléments}}</translation>
+<translation id="4129810348470013900">Un problème est survenu. Vérifiez votre connexion Internet et réessayez.</translation>
 <translation id="4129992181550680635">Ressources pédagogiques</translation>
 <translation id="4130226655945681476">De vérifier les câbles réseau, le modem et le routeur</translation>
 <translation id="4132448310531350254">Modules de traitement en double pour l'extension de fichier « <ph name="FILE_EXTENSION" /> » référencée par les applications « <ph name="POLICY_IDS_LIST" /> ».</translation>
@@ -3022,6 +3024,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5728246486828755318">Peut demander d'utiliser des fonctionnalités avancées de l'imprimante</translation>
 <translation id="5729442113829771034">Éducation de la petite enfance</translation>
 <translation id="5730040223043577876">Chrome recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
+<translation id="5735174108294025227">Les adresses courriel validées s'afficheront ici</translation>
 <translation id="573555826359077410">Bouton Créer un formulaire, activez-le pour créer rapidement un nouveau formulaire dans Google Formulaires</translation>
 <translation id="5738385766833540397">Gérez la façon dont vous recevez des alertes de réduction pour les produits que vous suivez</translation>
 <translation id="5739619009927381786">Déverrouillez votre écran à l'étape suivante, habituellement à l'aide de votre empreinte digitale. Vous pouvez également <ph name="BEGIN_LINK" />effectuer la vérification d'une autre façon<ph name="END_LINK" />.</translation>

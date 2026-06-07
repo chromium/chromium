@@ -1025,7 +1025,7 @@
 <translation id="7685589220304187312">tlbar</translation>
 <translation id="7693840228159394336">Vorheriges Optionsfeld</translation>
 <translation id="7696631298608145306">zum nächsten Wort wechseln</translation>
-<translation id="7701040980221191251">Keine</translation>
+<translation id="7701040980221191251">Keine Einträge</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7708242671340939466">.input {$$COUNT :number} .match $$COUNT 1{{Bindestrich}} *{{{$$COUNT} Bindestriche}}</translation>
 <translation id="7714340021005120797">Kein nächstes Kombinationsfeld</translation>

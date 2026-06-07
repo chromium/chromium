@@ -646,6 +646,7 @@
 <translation id="3771290962915251154">पालक नियंत्रणे सुरू असल्यामुळे हे सेटिंग बंद केलेले आहे</translation>
 <translation id="3771694256347217732">Google सेवा अटी</translation>
 <translation id="3777796259512476958">तुम्हाला बहुतांश साइटवरून साइन आउट करते</translation>
+<translation id="3786379886124795923">Chrome मध्ये साइन इन करण्यासाठी तुम्ही QR कोड स्कॅन केला. तुम्हाला या प्रोफाइलमधील पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टी मिळवायच्या आहेत हे कन्फर्म करा.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{एक टॅब}other{# टॅब}}</translation>
 <translation id="3792938779249970121">खाते निवडा</translation>
 <translation id="3795154175078851242">लिंकसह इमेज कॉपी करा</translation>
@@ -831,6 +832,7 @@
 <translation id="4532845899244822526">फोल्डर निवडा</translation>
 <translation id="4535755320005483982">शेअर केलेला <ph name="GROUP_TITLE" /> टॅब गट</translation>
 <translation id="4537137366307982887">टिपा यांसाठीच्या नोटिफिकेशनची निवड पूर्ण उंचीवर उघडली आहे</translation>
+<translation id="4537987892902330164">तुम्ही <ph name="NAME_OR_EMAIL" /> म्हणून साइन इन केलेले आहे.</translation>
 <translation id="4543131175509360848">कोणतीही पासकी शीट नाही</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त मोड}}</translation>
 <translation id="4558311620361989323">वेबपेज शॉर्टकट</translation>
@@ -1288,6 +1290,7 @@
 <translation id="6411219469806822692">यापेक्षा वर जाऊ शकत नाही. पेजच्या आणखी वरून सुरुवात करून पहा.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला टॅब</translation>
 <translation id="641643625718530986">प्रिंट करा...</translation>
+<translation id="6427723330233512782">उंचीनुसार फिट करा</translation>
 <translation id="6433501201775827830">तुमचे शोध इंजीन निवडा</translation>
 <translation id="6434309073475700221">टाकून द्या</translation>
 <translation id="6435307030888827407">साइन आउट केलेले रहा</translation>
@@ -2025,9 +2028,11 @@
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, पिन केलेला चित्रात-चित्र गुप्त टॅब</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
+<translation id="949667118776341807">फिरवा</translation>
 <translation id="95817756606698420">Chrome चीनमध्ये शोध करण्‍यासाठी <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> चा वापर करू शकते. तुम्ही हे <ph name="BEGIN_LINK" />सेटिंग्जमध्ये<ph name="END_LINK" /> बदलू शकता.</translation>
 <translation id="961856697154696964">ब्राउझिंग डेटा हटवा</translation>
 <translation id="963246339335003378">टास्क मॅनेजर उघडा</translation>
+<translation id="966337994629449077">तुम्ही <ph name="FROM_EMAIL" /> म्हणून साइन इन केले आहे.\n\nतुमच्या काँप्युटरवरून पुढे सुरू ठेवण्यासाठी <ph name="TO_EMAIL" /> वर स्विच करा. तुम्हाला या खात्यावरून पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टी मिळतील.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनिटे शिल्लक</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>

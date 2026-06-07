@@ -306,6 +306,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1458140305240870199">Apatinis trikotažas</translation>
 <translation id="1458770162980644530">Funkcijos „Pirkite dabar, mokėkite vėliau“ paslaugų teikimo sąlygų ekranas. Klaviatūra paslėpta.</translation>
 <translation id="1459693405370120464">Oras</translation>
+<translation id="1460317464907341501">Patvirtinti šį el. pašto adresą automatiškai?</translation>
 <translation id="1461041542809785877">Našumas</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Naudokite kompiuterio šriftus, kad galėtumėte kurti didelio tikslumo turinį</translation>
@@ -2006,6 +2007,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="412601465078863288">Baigėsi įkėlimo skirtasis laikas</translation>
 <translation id="4127317221386336246">Drabužių priedai</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Dar 1}one{Dar #}few{Dar #}many{Dar #}other{Dar #}}</translation>
+<translation id="4129810348470013900">Kažkas nepavyko. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="4129992181550680635">Švietimo šaltiniai</translation>
 <translation id="4130226655945681476">Patikrinti tinklo laidus, modemą ir maršruto parinktuvą</translation>
 <translation id="4132448310531350254">Pasikartojančios failo plėtinio „<ph name="FILE_EXTENSION" />“ doroklės, kurias nurodo programos „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3023,6 +3025,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5728246486828755318">Gali būti prašoma naudoti išplėstines spausdintuvo funkcijas</translation>
 <translation id="5729442113829771034">Švietimas ankstyvoje vaikystėje</translation>
 <translation id="5730040223043577876">„Chrome“ rekomenduoja iš naujo nustatyti slaptažodį, jei naudojate jį kitose svetainėse.</translation>
+<translation id="5735174108294025227">Patvirtinti el. pašto adresai bus rodomi čia</translation>
 <translation id="573555826359077410">Mygtukas „Sukurti formą“; suaktyvinkite, jei norite sparčiai sukurti naują formą „Google“ formose</translation>
 <translation id="5738385766833540397">Tvarkykite, kaip gausite įspėjimus apie sumažintas stebimų produktų kainas</translation>
 <translation id="5739619009927381786">Atrakinkite ekraną atlikdami kitą žingsnį, paprastai naudodami piršto atspaudą. Arba galite <ph name="BEGIN_LINK" />patvirtinti naudodami kitą būdą<ph name="END_LINK" />.</translation>

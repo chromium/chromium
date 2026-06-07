@@ -69,6 +69,7 @@
 <translation id="1749104137266986751">HTTPS를 사용할 수 없는 경우, Chromium에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="1774152462503052664">백그라운드에서 Chromium을 실행</translation>
 <translation id="1779356040007214683">Google에서는 Chromium의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자 모르게 추가되었을 수 있는 일부 확장 프로그램의 사용을 중지했습니다.</translation>
+<translation id="1793486931176048546">빠른 액세스를 위해 Windows 알림에서 <ph name="BEGIN_BOLD" />예<ph name="END_BOLD" /> 버튼을 클릭하여 Chromium을 태스크 바에 고정합니다.</translation>
 <translation id="1808667845054772817">Chromium 재설치</translation>
 <translation id="1820835682567584003">Chromium에서 <ph name="AUTHENTICATION_PURPOSE" />을(를) 시도하는 중입니다.</translation>
 <translation id="183031085822326697">다음번에 <ph name="DEVICE_TYPE" />에서 Chromium을 열면 Google 비밀번호 관리자를 사용하라는 메시지가 표시됩니다.</translation>
@@ -382,8 +383,10 @@
 <translation id="5294316920224716406">시크릿 모드로 탐색할 때 Chromium에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
 <translation id="5313228254328109263">Chromium 업데이터 내부 서비스</translation>
 <translation id="5346389065299425353">여러 탭, 파일, 도구를 추가하여 심층적으로 검색하세요.</translation>
+<translation id="5348677704241861105">Chromium의 Gemini를 사용하여 이 문서의 간략한 개요를 확인하고 질문하세요</translation>
 <translation id="5352264705793813212">Chromium에서 발견한 보안 권장사항을 검토해 주세요</translation>
 <translation id="5352361688875342522">기타 Chromium 프로필</translation>
+<translation id="535243042947607642">Google 계정의 로그인 정보가 오래되어 ChromiumOS에서 Google 계정에 Chromium 데이터를 저장할 수 없습니다</translation>
 <translation id="5358375970380395591">관리 계정으로 로그인하고 Chromium 프로필에 대한 관리자 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정 등 Chromium 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">추가 코드: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">맞춤설정을 사용하려면 웹 및 앱 활동에 Chromium을 포함하세요</translation>
@@ -489,6 +492,7 @@
 <translation id="6390800440335263989">계속하려면 <ph name="EMAIL" /> 계정으로 Chromium에 로그인하세요. 이렇게 하면 조직의 정책을 준수할 수 있습니다.</translation>
 <translation id="6400112897226594999">컴퓨터 화면에 표시된 Chromium 로고입니다.</translation>
 <translation id="6403826409255603130">Chromium은 빠른 속도로 웹페이지와 애플리케이션을 실행하는 웹 브라우저입니다. 빠르고 안정적이며 사용하기에 편리합니다. Chromium에 내장된 멀웨어 및 악성 코드 방지 기능을 사용하여 더욱 안전하게 웹을 검색하세요.</translation>
+<translation id="6414624068245092115">언제든지 Chromium 데이터를 사용하고 Google 계정에 저장할 수 있도록 본인 인증을 진행하세요</translation>
 <translation id="642132557830635295">Chromium이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함</translation>
 <translation id="6436260184216827876">이미지 검색을 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6442900851116057561">ChromiumOS 다시 시작</translation>
@@ -718,6 +722,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8852026904190808918">Chromium에서 메뉴, 설정, 알림, 기타 텍스트를 표시하는 데 사용되는 언어입니다</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8876044221123442390">Chromium 프로필 추가</translation>
+<translation id="8890569919834781711">로그인 중에 오류가 발생하여 ChromiumOS에서 Google 계정에 Chromium 데이터를 저장할 수 없습니다</translation>
 <translation id="8891709362986793894">조직에서 Chromium에 로그인할 것을 요구합니다</translation>
 <translation id="8907580949721785412">Chromium에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="8932992523185907506">Chromium이 더 이상 기본 브라우저가 아닙니다. Chromium을 기본 브라우저로 설정하시겠습니까?</translation>

@@ -306,6 +306,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1458140305240870199">Mga Panloob na Damit</translation>
 <translation id="1458770162980644530">Screen ng mga tuntunin ng serbisyo ng Buy-Now-Pay-Later. Naka-hide ang keyboard.</translation>
 <translation id="1459693405370120464">Lagay ng Panahon</translation>
+<translation id="1460317464907341501">Awtomatikong i-verify ang email na ito?</translation>
 <translation id="1461041542809785877">Pagganap</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Gamitin ang mga font sa iyong computer para makagawa ka ng lubos na tumpak na content</translation>
@@ -2005,6 +2006,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="412601465078863288">Nag-time out ang pag-upload</translation>
 <translation id="4127317221386336246">Mga Accessory sa Pananamit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 pa}one{# pa}other{# pa}}</translation>
+<translation id="4129810348470013900">Nagkaproblema. Tingnan ang iyong koneksyon sa internet at subukan ulit.</translation>
 <translation id="4129992181550680635">Mga Pang-edukasyong Resource</translation>
 <translation id="4130226655945681476">Suriin ang mga cable, modem at router ng network</translation>
 <translation id="4132448310531350254">Duplicate na mga tagapangasiwa para sa file_extension na "<ph name="FILE_EXTENSION" />" na ni-reference ng mga app na "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3024,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5728246486828755318">Puwedeng humiling na gumamit ng mga advanced na feature ng printer</translation>
 <translation id="5729442113829771034">Edukasyon sa Early Childhood</translation>
 <translation id="5730040223043577876">Inirerekomenda ng Chrome na i-reset ang iyong password kung ginamit mo ito sa iba pang site.</translation>
+<translation id="5735174108294025227">Lalabas dito ang mga na-verify na email address</translation>
 <translation id="573555826359077410">Button na Gumawa ng form, i-activate para mabilis na makagawa ng bagong form sa Google Forms</translation>
 <translation id="5738385766833540397">Pamahalaan kung paano mo matatanggap ang mga alerto sa pagbaba ng presyo para sa mga produktong tina-track mo</translation>
 <translation id="5739619009927381786">I-unlock ang iyong screen sa susunod na hakbang, karaniwang gamit ang fingerprint mo. O puwede kang <ph name="BEGIN_LINK" />mag-verify sa ibang paraan<ph name="END_LINK" />.</translation>

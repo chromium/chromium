@@ -306,6 +306,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1458140305240870199">İç Çamaşırları</translation>
 <translation id="1458770162980644530">"Şimdi al sonra öde" Hizmet Şartları ekranı. Klavye gizli.</translation>
 <translation id="1459693405370120464">Hava durumu</translation>
+<translation id="1460317464907341501">Bu e-posta adresi otomatik olarak doğrulansın mı?</translation>
 <translation id="1461041542809785877">Performans</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Farklı platformlarda tutarlı görünen bir içerik oluşturabilmeniz için bilgisayarınızdaki yazı tiplerini kullanma</translation>
@@ -2005,6 +2006,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="412601465078863288">Yükleme zaman aşımına uğradı</translation>
 <translation id="4127317221386336246">Giyim Aksesuarları</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 öğe daha}other{# öğe daha}}</translation>
+<translation id="4129810348470013900">Bir sorun oldu. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="4129992181550680635">Eğitsel Kaynaklar</translation>
 <translation id="4130226655945681476">Ağ kabloları, modem ve yönlendirici kontrol ediliyor</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" uygulamaları tarafından başvurulan "<ph name="FILE_EXTENSION" />" dosya uzantısı için kopya işleyiciler.</translation>
@@ -2456,7 +2458,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4864406669374375262">Sürüm dizesi, panoya kopyalandı</translation>
 <translation id="486459320933704969">Annenizin/babanızın veya velinizin, bu web sitesini ziyaret etmenizin uygun olduğunu belirtmesi gerekir.</translation>
 <translation id="4864801646102013152">Ev Tadilatı</translation>
-<translation id="4865063548323785458">Sitelerde ve uygulamalarda kolayca oturum açmak için şifrelerinizi kaydedin ve otomatik olarak doldurun</translation>
+<translation id="4865063548323785458">Şifrelerinizi kaydedip otomatik doldurarak site ve uygulamalarda kolayca oturum açın</translation>
 <translation id="4866506163384898554">İmlecinizi göstermek için |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| tuşlarına basın</translation>
 <translation id="4868277513442568587">Ortak sekme gruplarınızı kullanmaya devam etmek için Chrome'u güncelleyin</translation>
 <translation id="4873616204573862158">Gözlükler</translation>
@@ -3022,6 +3024,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5728246486828755318">Gelişmiş yazıcı özelliklerini kullanmak için izin isteyebilir</translation>
 <translation id="5729442113829771034">Okul Öncesi Eğitim</translation>
 <translation id="5730040223043577876">Chrome, şifrenizi başka sitelerde kullandıysanız sıfırlamanızı önerir.</translation>
+<translation id="5735174108294025227">Doğrulanmış e-posta adresleri burada gösterilir</translation>
 <translation id="573555826359077410">Form oluştur düğmesi, Google Formlar'da hızlıca yeni bir form oluşturmak için etkinleştirin</translation>
 <translation id="5738385766833540397">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarılarını nasıl alacağınızı yönetin</translation>
 <translation id="5739619009927381786">Sonraki adımda ekranınızın kilidini açın (genellikle parmak iziniz kullanılır). <ph name="BEGIN_LINK" />Başka bir doğrulama yöntemini<ph name="END_LINK" /> de kullanabilirsiniz.</translation>
@@ -4981,7 +4984,7 @@ Ek ayrıntılar:
 <translation id="8814707942599948500">Zarf C8</translation>
 <translation id="881559332211266856">Redress numarasını güncelleyin</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ayarlarınızdan Chrome'u güncellemek için Sekme'ye, sonra Enter'a basın</translation>
-<translation id="8819155700324279105">İnternet ortamındaki tehditlere karşı ek koruma katmanı sağlayın</translation>
+<translation id="8819155700324279105">İnternet ortamındaki tehditlere karşı ek koruma katmanı</translation>
 <translation id="8819855907485254989">Ulaşım biletini Cüzdan'a kaydedin</translation>
 <translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="882338992931677877">Manuel Yuva</translation>

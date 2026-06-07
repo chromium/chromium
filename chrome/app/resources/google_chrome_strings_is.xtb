@@ -162,6 +162,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
 <translation id="2665296953892887393">Hjálpaðu til við að bæta Google Chrome með því að senda tilkynningar um hrun og <ph name="UMA_LINK" /> til Google.</translation>
 <translation id="2668094785979141847">Smelltu til að loka Google-linsu</translation>
+<translation id="2674238339205910678">ChromeOS Flex gat ekki vistað Chrome-gögn á Google-reikningnum þínum vegna þess að innskráningarupplýsingar reikningsins eru úreltar</translation>
 <translation id="2681444469812712297">Opna <ph name="URL" /> í nýjum flipa í Google Chrome.</translation>
 <translation id="2699790011615497488">Opna Gemini í Chrome Beta</translation>
 <translation id="2712141162840347885">Veldu hvað sem er til að leita með Google-linsu eða ýttu á Esc til að loka Linsunni</translation>
@@ -540,6 +541,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6497147134301593682">Chrome var lokað sjálfkrafa</translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">ChromeOS Flex gat ekki vistað Chrome-gögn á Google-reikningnum þínum vegna innskráningarvillu</translation>
 <translation id="6520670145826811516">Veittu Chrome aðgang að staðsetningunni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
 <translation id="652948702951888897">Chrome-ferill</translation>
 <translation id="6532945796722480006">Opna Gemini í Chrome Canary</translation>
@@ -587,6 +589,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7011190694940573312">Uppsetning mistókst vegna þess að þessi útgáfa af stýrikerfinu er ekki studd.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Hér geturðu skipt á milli Chrome prófíla</translation>
+<translation id="7026856149118332950">Smelltu á <ph name="BEGIN_BOLD" />Já<ph name="END_BOLD" /> í Windows-tilkynningunni til að festa Chrome við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="7047386856539490735">Eru þessar niðurstöður gagnlegar?</translation>
 <translation id="7051685429025310665">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>
@@ -679,6 +682,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7890208801193284374">Ef nokkrir eru um sömu tölvu geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best.</translation>
 <translation id="7896673875602241923">Einhver hefur skráð sig inn á Chrome í þessari tölvu sem <ph name="ACCOUNT_EMAIL_LAST" />. Búðu til nýjan notanda í Chrome til að halda upplýsingum ykkar aðskildum.</translation>
 <translation id="7904985524660297937">Prófaðu Gemini í Google Chrome</translation>
+<translation id="7905880575591690197">ChromeOS gat ekki vistað Chrome-gögn á Google-reikningnum þínum vegna innskráningarvillu</translation>
 <translation id="7917876797003313048">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chrome vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome lokaði á þetta niðurhal vegna þess að skráin er blekkjandi og gæti gert óvæntar breytingar á tækinu þínu</translation>
 <translation id="7951272445806340501">Endurræsa þarf ChromeOS Flex til að nota uppfærsluna.</translation>
@@ -803,6 +807,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="93760716455950538">Endurræsa ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome mælir með að skanna þessa skrá þar sem hún gæti verið hættuleg.</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
+<translation id="973195869036269770">ChromeOS gat ekki vistað Chrome-gögn á Google-reikningnum þínum vegna þess að innskráningarupplýsingar reikningsins eru úreltar</translation>
 <translation id="983803489796659991">Uppsetning mistókst vegna þess að uppfærsluþjónninn er ekki með tætigögn fyrir forritið.</translation>
 <translation id="989369509083708165">Google Chrome er sjálfgefinn vafri</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> getur skipt á milli Chrome prófíla</translation>

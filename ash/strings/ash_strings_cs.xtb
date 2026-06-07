@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Zobrazit další smajlíky</translation>
 <translation id="2328561734797404498">Chcete-li používat aplikaci <ph name="APP_NAME" />, restartujte zařízení.</translation>
 <translation id="2335091074961603075">Váš Chromebook nebo zařízení Bluetooth používá starší verzi rozhraní Bluetooth. Pro lepší kvalitu zvuku použijte interní mikrofon.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vyžaduje stažení aktualizace. Připojte se proto dnes k Wi-Fi a stáhněte ji. Případně můžete aktualizaci stáhnout přes měřené připojení (mohou být účtovány poplatky).}few{<ph name="MANAGER" /> vyžaduje stažení aktualizace. Připojte se proto před stanoveným termínem k Wi-Fi a stáhněte ji. Případně můžete aktualizaci stáhnout přes měřené připojení (mohou být účtovány poplatky).}many{<ph name="MANAGER" /> vyžaduje stažení aktualizace. Připojte se proto před stanoveným termínem k Wi-Fi a stáhněte ji. Případně můžete aktualizaci stáhnout přes měřené připojení (mohou být účtovány poplatky).}other{<ph name="MANAGER" /> vyžaduje stažení aktualizace. Připojte se proto před stanoveným termínem k Wi-Fi a stáhněte ji. Případně můžete aktualizaci stáhnout přes měřené připojení (mohou být účtovány poplatky).}}</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Klepnutím na tlačítko dotykového pera na poličce můžete pořídit poznámku nebo snímek obrazovky, případně použít laserové ukazovátko nebo lupu.</translation>
 <translation id="2341729377289034582">Uzamknuto na výšku</translation>
@@ -568,6 +569,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2687510499067466116">Klávesová zkratka se změnila</translation>
 <translation id="2689613560355655046">Plocha 8</translation>
 <translation id="2692092709110488417">Pokud chcete vybranou oblast aktivovat a posouvat, stiskněte tabulátor</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Poslední den k aktualizaci zařízení <ph name="DEVICE_TYPE" />}few{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_DAYS} dne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Zobrazit nastavení klávesnice. Je vybrán řádek <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Pomocí aplikace Přenos obsahu přesuňte data ze svého školního účtu na osobní</translation>
@@ -794,6 +796,7 @@ Když to neuděláte, vestavěný touchpad se za <ph name="TIMEOUT_SECONDS" /> z
 <translation id="334927402682780278">Vybrat text od kurzoru po konec řádku</translation>
 <translation id="3349345708646875009">Otevřít správce úloh</translation>
 <translation id="3353786022389205125">Zapněte možnost „Při probuzení z režimu spánku zobrazit obrazovku uzamčení“ a zkuste to znovu</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Do 1 týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}few{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}many{Do {NUM_WEEKS} týdne zařízení <ph name="DEVICE_TYPE" /> aktualizujte}other{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> aktualizujte}}</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
 <translation id="3365281428003534650">Nastavit časovač, úkol a hudbu</translation>
 <translation id="3365977133351922112">Telefon je moc daleko. Dejte ho blíž.</translation>
@@ -953,6 +956,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="3741482431277446954">Pravé tlačítko myši</translation>
 <translation id="3742055079367172538">Byl vytvořen snímek obrazovky</translation>
 <translation id="3743775386021959186">Zaměření je zapnuté, zbývající čas: <ph name="REMAINING_TIME" /></translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a ještě dnes toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}few{<ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do stanoveného termínu toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}many{<ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do stanoveného termínu toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}other{<ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do stanoveného termínu toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}}</translation>
 <translation id="3750403286520637847">Skrýt návrh počasí</translation>
 <translation id="3752253558646317685">Nechte dítě opakovaně přikládat a zvedat prst, aby se uložil celý otisk prstu</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Data aplikací mohou zahrnovat jakákoliv data, která uložila aplikace (v závislosti na nastavení vývojáře), včetně dat, jako jsou kontakty, zprávy a fotky.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,11 @@ Připojte zařízení k napájení.</translation>
 <translation id="412298498316631026">okno</translation>
 <translation id="4123259114412175274">Pokud chcete odemknout Chromebook, zkontrolujte, zda je na telefonu zapnutý Bluetooth</translation>
 <translation id="4123868835475902435">Toto byly jen základy. Pokračujte ve zkoumání pomocí Explore, naší integrované aplikace s tipy a nápovědou. Najdete v ní tipy pro začátek, speciální nabídky a nejnovější funkce zařízení <ph name="PRODUCT_NAME" />.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundu automaticky zamkne.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}few{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundy automaticky zamkne.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}many{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundy automaticky zamkne.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}other{Zařízení <ph name="DEVICE_TYPE" /> se za # sekund automaticky zamkne.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}}</translation>
 <translation id="4125970834901680537">V režimu tabletu aplikace streamovat nelze. Zkuste to znovu v režimu notebooku.</translation>
 <translation id="4131973331381812765">Teplota: <ph name="TEMPERATURE" /> °C – aktuální rychlost: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Do východu slunce zapnuto</translation>
@@ -1385,6 +1394,7 @@ Je připojeno 1 zařízení.</translation>
 <translation id="4964188651935955085">Když vypnete Bluetooth, od zařízení <ph name="DEVICE_TYPE" /> se odpojí toto externí zařízení:</translation>
 <translation id="4966431234408005599">Zvýšit hlasitost</translation>
 <translation id="496999337731226334">Krok <ph name="STEP" /> z <ph name="TOTAL_STEPS" /> v prohlídce. Často používané ovládací prvky, jako jsou Wi-Fi, Bluetooth a hlasitost, jsou v Rychlém nastavení. Můžete pomocí něj také pořídit snímky obrazovky. Stisknutím kombinace kláves Alt + Shift + S otevřete Rychlé nastavení.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vyžaduje, abyste dnes stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}few{<ph name="MANAGER" /> vyžaduje, abyste do stanoveného termínu stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}many{<ph name="MANAGER" /> vyžaduje, abyste do stanoveného termínu stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}other{<ph name="MANAGER" /> vyžaduje, abyste do stanoveného termínu stáhli aktualizaci. Aktualizace se stáhne automaticky, jakmile se připojíte k internetu.}}</translation>
 <translation id="4975771730019223894">Označování aplikací odznakem</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1471,7 @@ Můžete také použít klávesovou zkratku. Nejdříve zvýrazněte text a pak
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
 <translation id="5187627942836026988">Zobrazit podrobnosti o hotspotu. Administrátor hotspot zakázal.</translation>
 <translation id="5188648870018555788">Používat polohu. Povolit aplikacím, webům a službám pro Chrome OS a Android s oprávněním pro přístup k poloze používat polohu vašeho zařízení. Přesnost určování polohy poskytuje aplikacím pro Android a službám přesnější polohu. Za tímto účelem Google pravidelně zpracovává informace o senzorech a bezdrátových signálech z vašeho zařízení, aby prostřednictvím crowdsourcingu určil umístění zdrojů bezdrátových signálů v okolí. Tento proces vás nijak neidentifikuje. Účelem je vylepšování přesnosti určování polohy, zlepšování služeb založených na poloze a vylepšování, poskytování a správa služeb Google na základě oprávněných zájmů společnosti Google a třetích stran ve snaze sloužit potřebám uživatelů. <ph name="BEGIN_LINK1" />Další informace o používání polohy<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Do {NUM_WEEKS} týdne zařízení <ph name="DEVICE_TYPE" /> vraťte}few{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> vraťte}many{Do {NUM_WEEKS} týdne zařízení <ph name="DEVICE_TYPE" /> vraťte}other{Do {NUM_WEEKS} týdnů zařízení <ph name="DEVICE_TYPE" /> vraťte}}</translation>
 <translation id="5198039720391525849">Vybrané GIFy</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, počet událostí: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> byla sloučena s aplikací <ph name="IN_PLACE_APP" /> a byla vytvořena nová složka.</translation>
@@ -1778,6 +1789,11 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Za <ph name="LOGOUT_TIME_LEFT" /> budete automaticky odhlášeni.</translation>
 <translation id="6068258534237496331">Ovládací prvky videohovorů</translation>
+<translation id="6070081109266557120">{0,plural, =1{Za # sekundu budete automaticky odhlášeni.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}few{Za # sekundy budete automaticky odhlášeni.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}many{Za # sekundy budete automaticky odhlášeni.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}other{Za # sekund budete automaticky odhlášeni.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}}</translation>
 <translation id="6071576563962215370">Systému se nepodařilo nastavit zámek atributů z doby instalace.</translation>
 <translation id="6072442788591997866">Aplikace <ph name="APP_NAME" /> na tomto zařízení není povolena. Kontaktujte administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Zastavit nahrávání</translation>
@@ -2127,6 +2143,8 @@ Nová instalace</translation>
 <translation id="7076878155205969899">Vypnout zvuk</translation>
 <translation id="7083848064787091821">Soustředění</translation>
 <translation id="7084678090004350185">Přepnout hotspot. Hotspot je zapnutý, je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
+<translation id="7086438436964931440">Teď budete automaticky odhlášeni.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.</translation>
 <translation id="7086931198345821656">Tato aktualizace vyžaduje vymazání zařízení <ph name="DEVICE_TYPE" /> metodou Powerwash. Všechna data budou smazána. Další informace o nejnovější aktualizaci systému <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="7088960765736518739">Ovládání přepínači</translation>
 <translation id="709015856939120012">Přiblížit stránku</translation>
@@ -2528,6 +2546,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8220076512072059941">Přidat <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Skrýt tento návrh</translation>
 <translation id="8230305195727960608">Režim převrácení barev</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Zařízení je třeba okamžitě vrátit}few{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> vraťte}many{Do {NUM_DAYS} dne zařízení <ph name="DEVICE_TYPE" /> vraťte}other{Do {NUM_DAYS} dní zařízení <ph name="DEVICE_TYPE" /> vraťte}}</translation>
 <translation id="8236042855478648955">Čas na přestávku</translation>
 <translation id="8237964652943995219">Další plocha: <ph name="DESK_NAME" />. Plocha <ph name="DESK_INDEX" /> z <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Projděte si rychlou prohlídku a naučte se v zařízení <ph name="PRODUCT_NAME" /> orientovat. K rozjezdu stačí pět kroků.</translation>
@@ -2702,6 +2721,8 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8756799553341497810">Až toto zobrazení opustíte, můžete si začít upravovat rozvržení aplikací.</translation>
 <translation id="8759408218731716181">Vícenásobné přihlášení nelze nastavit</translation>
 <translation id="8759753423332885148">Další informace</translation>
+<translation id="8760172428247796445">Vaše zařízení <ph name="DEVICE_TYPE" /> se teď uzamkne.
+        <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.</translation>
 <translation id="8763883995157866248">Přepnout zařízení do režimu spánku</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, instalovaná aplikace, blokováno</translation>
 <translation id="8782565991310229362">Spouštění aplikací pro režim veřejného terminálu bylo zrušeno.</translation>

@@ -357,6 +357,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="253498598929009420">De site kan de content van je scherm bekijken</translation>
 <translation id="2535807170289627159">Alle tabbladen</translation>
 <translation id="2536728043171574184">Een offline exemplaar van deze pagina bekijken</translation>
+<translation id="2537574774089209541">Sommige tools zijn verplaatst zodat je makkelijk toegang hebt tot Gemini terwijl je browst</translation>
 <translation id="2539002604555291451">Sans serif</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, geselecteerd vastgezet incognitotabblad met geluid uit</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, tabblad</translation>
@@ -405,6 +406,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2751271371269891762">Log in met het e-mailadres <ph name="EMAIL" /> om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="2760805590727089264">MM/JJ</translation>
 <translation id="2762000892062317888">zojuist</translation>
+<translation id="276378135349383280">Gemini tonen in onderste werkbalk</translation>
 <translation id="276969039800130567">Ingelogd als <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> seconden resterend</translation>
 <translation id="2779651927720337254">mislukt</translation>
@@ -604,6 +606,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3614126103057878858">Prijsinzichten</translation>
 <translation id="3616113530831147358">Audio</translation>
+<translation id="3616798734782988169">Zorg dat je <ph name="DOWNLOAD_DOMAIN" /> vertrouwt</translation>
 <translation id="3619255692378312441">Toegang beheren</translation>
 <translation id="3622349720008044802">Vensters beheren</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
@@ -634,6 +637,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3738139272394829648">Tikken om te zoeken</translation>
 <translation id="3739455665973395693">Geen gehackte wachtwoorden in je Google-account</translation>
 <translation id="3739899004075612870">Bookmark toegevoegd in <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Zorg dat je deze site vertrouwt</translation>
 <translation id="3740525748616366977">Gesproken zoekopdracht is niet beschikbaar op dit apparaat</translation>
 <translation id="3763110477555836428">Er wordt een virtueel kaartnummer ingevuld als je afrekent met deze kaart om je daadwerkelijke gegevens te beschermen. Beheer het in Google Wallet. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Sommige gegevens zijn nog niet opgeslagen</translation>
@@ -642,6 +646,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3771290962915251154">Deze instelling staat uit omdat ouderlijk toezicht is aangezet</translation>
 <translation id="3771694256347217732">Servicevoorwaarden van Google</translation>
 <translation id="3777796259512476958">Hiermee word je uitgelogd van de meeste sites</translation>
+<translation id="3786379886124795923">Je hebt een QR-code gescand om in te loggen bij Chrome. Bevestig dat je onder andere de wachtwoorden en bookmarks van dit profiel wilt ophalen.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="3792938779249970121">Account selecteren</translation>
 <translation id="3795154175078851242">Afbeelding kopiëren met link</translation>
@@ -827,6 +832,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4532845899244822526">Map kiezen</translation>
 <translation id="4535755320005483982">Gedeelde tabbladgroep <ph name="GROUP_TITLE" /></translation>
 <translation id="4537137366307982887">Aanmelding voor meldingen met tips is op volledige hoogte geopend</translation>
+<translation id="4537987892902330164">Je bent ingelogd gebleven als <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4543131175509360848">Blad Geen toegangssleutels</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tabblad}other{<ph name="TAB_COUNT_MANY" /> tabbladen, <ph name="TAB_COUNT_INCOGNITO" /> incognitotabbladen}}</translation>
 <translation id="4558311620361989323">Sneltoetsen voor webpagina's</translation>
@@ -1284,6 +1290,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6411219469806822692">Kan niet verder omhoog gaan. Probeer hoger op de pagina te beginnen.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, tabblad met meerdere selecties</translation>
 <translation id="641643625718530986">Afdrukken…</translation>
+<translation id="6427723330233512782">Aanpassen aan hoogte</translation>
 <translation id="6433501201775827830">Je zoekmachine kiezen</translation>
 <translation id="6434309073475700221">Verwijderen</translation>
 <translation id="6435307030888827407">Uitgelogd blijven</translation>
@@ -1530,6 +1537,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7291910923717764901">Afbeeldingsbeschrijvingen toegevoegd voor deze pagina</translation>
 <translation id="7293429513719260019">Taal selecteren</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, geselecteerd vastgezet tabblad voor content delen</translation>
+<translation id="7304003340539141201">Vraag Gemini om hulp bij je tabbladen en taken</translation>
 <translation id="7311244614769792472">Geen resultaten gevonden</translation>
 <translation id="7314734791127433392">Kan wachtwoorden niet checken</translation>
 <translation id="7324354302972299151">Een Do Not Track-verzoek sturen</translation>
@@ -1876,6 +1884,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8696297579102085705">Naar je apparaat sturen</translation>
 <translation id="8697753151306746444">In plaats daarvan venster of scherm delen</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
+<translation id="8700565880437506364">Maak kennis met Gemini in Chrome</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8715286883001906001">Je wachtwoorden in je Google-account beter beveiligen</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> wordt gesloten</translation>
@@ -1943,6 +1952,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8996847606757455498">Een andere provider kiezen</translation>
 <translation id="8998837250940831980">Kan tabblad niet minimaliseren. Probeer het later opnieuw.</translation>
 <translation id="9001604755921395912">Openen in Chrome-incognitotabblad</translation>
+<translation id="9010094279589497751">Open Gemini snel wanneer je het nodig hebt</translation>
 <translation id="9012585441087414258">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als een pagina iets verdachts doet, worden URL's en delen van de paginacontent naar Google Safe Browsing gestuurd.</translation>
 <translation id="9019199799064251516">Doorgaan zonder profielvergrendeling voor de auto?</translation>
 <translation id="9022774213089566801">Veelbezocht</translation>
@@ -2000,6 +2010,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9190355771000652811">Je kunt in de adresbalk deze sneltoetsen met snelkoppelingen voor zoekmachines en het doorzoeken van sites gebruiken.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, vastgezet geselecteerd incognitotabblad</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
+<translation id="9202894533863490414">Downloaden van deze site?</translation>
 <translation id="9204836675896933765">1 bestand over</translation>
 <translation id="9205933215779845960">Kan die pagina niet vinden. Check je spelling of voer een zoekopdracht uit met <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2017,9 +2028,11 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="939598580284253335">Wachtwoordzin invoeren</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, vastgezet incognitotabblad voor scherm-in-scherm</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
+<translation id="949667118776341807">Draaien</translation>
 <translation id="95817756606698420">Chrome kan <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> gebruiken voor zoekopdrachten in China. Je kunt dit wijzigen in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>
 <translation id="963246339335003378">Taakbeheer openen</translation>
+<translation id="966337994629449077">Je bent ingelogd als <ph name="FROM_EMAIL" />.\n\nWissel naar <ph name="TO_EMAIL" /> om door te gaan vanaf je computer. Je krijgt onder andere de wachtwoorden en bookmarks van dit account.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuten resterend</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>

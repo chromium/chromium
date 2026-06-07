@@ -440,6 +440,7 @@
 <translation id="2326112202058075478">Dangos rhagor o emojis</translation>
 <translation id="2328561734797404498">Ailgychwynnwch eich dyfais i ddefnyddio <ph name="APP_NAME" />.</translation>
 <translation id="2335091074961603075">Mae eich dyfais Chromebook neu Bluetooth yn defnyddio fersiwn hŷn o Bluetooth. Defnyddiwch y meicroffon mewnol ar gyfer gwell ansawdd sain.</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi heddiw i lawrlwytho diweddariad. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}zero{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}two{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}few{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}many{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}other{Mae <ph name="MANAGER" /> yn gofyn i chi gysylltu â Wi-Fi a lawrlwytho diweddariad cyn y dyddiad cau. Neu, gallwch lawrlwytho o gysylltiad â mesurydd (gall taliadau fod yn berthnasol).}}</translation>
 <translation id="2336381494582898602">Clirio'n gyfan gwbl</translation>
 <translation id="2339073806695260576">Tapiwch y botwm pin ysgrifennu ar y silff i gymryd nodiadau, sgrinlun, defnyddio'r pwyntydd laser neu'r chwyddwydr.</translation>
 <translation id="2341729377289034582">Wedi'i gloi i fertigol</translation>
@@ -568,6 +569,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2687510499067466116">Mae'r llwybr byr bysellfwrdd wedi newid</translation>
 <translation id="2689613560355655046">Desg 8</translation>
 <translation id="2692092709110488417">Pwyswch dab i ffocysu a symud yr ardal a ddewiswyd</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Diwrnod olaf i ddiweddaru <ph name="DEVICE_TYPE" />}zero{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}two{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} ddiwrnod}few{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}many{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}other{Diweddarwch <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}}</translation>
 <translation id="2695305337569143674">y we</translation>
 <translation id="2697697418792422688">Dangos y gosodiadau bysellfwrdd. Mae <ph name="KEYBOARD_NAME" /> wedi'i ddewis.</translation>
 <translation id="2699913284398121653">Defnyddiwch yr ap Trosglwyddo Cynnwys i symud data eich cyfrif ysgol i'ch cyfrif personol</translation>
@@ -794,6 +796,7 @@ Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn <ph name="T
 <translation id="334927402682780278">Dewis testun o'r cyrchwr i ddiwedd y llinell</translation>
 <translation id="3349345708646875009">Agor y rheolwr tasgau</translation>
 <translation id="3353786022389205125">Trowch "Dangos clo sgrîn wrth ailgychwyn ar ôl cysgu" ymlaen a rhowch gynnig arall arni</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Diweddaru <ph name="DEVICE_TYPE" /> o fewn 1 wythnos}zero{Diweddaru <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}two{Diweddaru <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}few{Diweddaru <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}many{Diweddaru <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}other{Diweddaru <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}}</translation>
 <translation id="3364721542077212959">Offer Pwyntil</translation>
 <translation id="3365281428003534650">Gosod amserydd, tasg a cherddoriaeth</translation>
 <translation id="3365977133351922112">Mae'ch ffôn yn rhy bell i ffwrdd. Dewch â'ch ffôn yn agosach.</translation>
@@ -953,6 +956,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="3741482431277446954">Botwm de y llygoden</translation>
 <translation id="3742055079367172538">Wedi tynnu sgrinlun</translation>
 <translation id="3743775386021959186">Mae Ffocysu ymlaen, <ph name="REMAINING_TIME" /> ar ôl</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn heddiw.}zero{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn cyn y dyddiad cau.}two{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn cyn y dyddiad cau.}few{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn cyn y dyddiad cau.}many{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn cyn y dyddiad cau.}other{Mae <ph name="MANAGER" /> yn gofyn i chi wneud copïau wrth gefn o'ch data a dychwelyd y <ph name="DEVICE_TYPE" /> hwn cyn y dyddiad cau.}}</translation>
 <translation id="3750403286520637847">Cuddio awgrymiadau tywydd</translation>
 <translation id="3752253558646317685">Gofynnwch i'ch plentyn barhau i godi ei fys i gadw'r ôl bys</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Gall data apiau fod yn unrhyw ddata y mae ap wedi'u cadw (yn seiliedig ar y gosodiadau datblygwr), gan gynnwys data megis cysylltiadau, negeseuon a lluniau.<ph name="END_PARAGRAPH1" />
@@ -1077,6 +1081,13 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="412298498316631026">ffenestr</translation>
 <translation id="4123259114412175274">I ddatgloi eich Chromebook, gwnewch yn siŵr bod Bluetooth eich ffôn ymlaen</translation>
 <translation id="4123868835475902435">Dyna oedd yr hanfodion! Parhewch yn Explore, ein hap integredig i gael awgrymiadau a chymorth. Byddwch yn gweld awgrymiadau ar gyfer dechrau arni, cynigion arbennig, a'r nodweddion <ph name="PRODUCT_NAME" /> diweddaraf.</translation>
+<translation id="4124779003103520737">{0,plural, =1{Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}zero{Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}two{Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}few{Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}many{Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}other{Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}}</translation>
 <translation id="4125970834901680537">Methu â ffrydio apiau yn y modd llechen. Rhowch gynnig arall arni yn y modd gliniadur.</translation>
 <translation id="4131973331381812765">Tymheredd: <ph name="TEMPERATURE" />°C - Cyflymder presennol: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" />GHz</translation>
 <translation id="4136724716305260864">Ymlaen tan godiad haul</translation>
@@ -1385,6 +1396,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="4964188651935955085">Pan fyddwch yn diffodd Bluetooth, bydd y ddyfais allanol hon yn datgysylltu o'ch <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Troi'r sain i fyny</translation>
 <translation id="496999337731226334">Cam <ph name="STEP" /> o <ph name="TOTAL_STEPS" /> y daith. Mae rheolyddion a ddefnyddir yn aml megis Wi-Fi, Bluetooth a lefel sain yn ymddangos yn y Gosodiadau Cyflym. Gallwch hefyd fynd yma i gymryd sgrinluniau. Pwyswch Alt + Shift + S i agor Gosodiadau Cyflym.</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{Mae <ph name="MANAGER" /> yn gofyn i chi lawrlwytho diweddariad heddiw. Bydd y diweddariad yn cael ei lawrlwytho'n awtomatig pan fyddwch yn cysylltu â'r rhyngrwyd.}zero{Mae <ph name="MANAGER" /> yn gofyn i chi lawrlwytho diweddariad cyn y dyddiad cau. Bydd y diweddariad yn cael ei lawrlwytho'n awtomatig pan fyddwch yn cysylltu â'r rhyngrwyd.}two{Mae <ph name="MANAGER" /> yn gofyn i chi lawrlwytho diweddariad cyn y dyddiad cau. Bydd y diweddariad yn cael ei lawrlwytho'n awtomatig pan fyddwch yn cysylltu â'r rhyngrwyd.}few{Mae <ph name="MANAGER" /> yn gofyn i chi lawrlwytho diweddariad cyn y dyddiad cau. Bydd y diweddariad yn cael ei lawrlwytho'n awtomatig pan fyddwch yn cysylltu â'r rhyngrwyd.}many{Mae <ph name="MANAGER" /> yn gofyn i chi lawrlwytho diweddariad cyn y dyddiad cau. Bydd y diweddariad yn cael ei lawrlwytho'n awtomatig pan fyddwch yn cysylltu â'r rhyngrwyd.}other{Mae <ph name="MANAGER" /> yn gofyn i chi lawrlwytho diweddariad cyn y dyddiad cau. Bydd y diweddariad yn cael ei lawrlwytho'n awtomatig pan fyddwch yn cysylltu â'r rhyngrwyd.}}</translation>
 <translation id="4975771730019223894">Rhoi bathodynnau i apiau</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
@@ -1461,6 +1473,7 @@ Gallwch hefyd ddefnyddio'r llwybr byr bysellfwrdd. Yn gyntaf, amlygwch y testun,
 <translation id="5176318573511391780">Recordio sgrîn rannol</translation>
 <translation id="5187627942836026988">Dangos manylion y boethfan. Ma'r boethfan yn cael ei rhwystro gan eich gweinyddwr.</translation>
 <translation id="5188648870018555788">Defnyddio lleoliad. Caniatáu i apiau, gwefannau a gwasanaethau Android a ChromeOS sydd â chaniatâd lleoliad ddefnyddio lleoliad eich dyfais. Mae Cywirdeb Lleoliad yn darparu lleoliad mwy cywir ar gyfer apiau a gwasanaethau Android. I wneud hyn, mae Google yn prosesu gwybodaeth o bryd i'w gilydd am synwyryddion dyfais a signalau diwifr o'ch dyfais er mwyn canfod lleoliadau signal diwifr drwy gyfrannu torfol. Defnyddir y rhain heb eich adnabod i wella cywirdeb lleoliad a gwasanaethau seiliedig ar leoliad ac i wella, darparu, a chynnal gwasanaethau Google yn seiliedig ar fuddiannau cyfreithlon Google a thrydydd parti i wasanaethu anghenion defnyddwyr. <ph name="BEGIN_LINK1" />Dysgu rhagor am ddefnyddio lleoliad<ph name="END_LINK1" /></translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}zero{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}two{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}few{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}many{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}other{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_WEEKS} wythnos}}</translation>
 <translation id="5198039720391525849">GIFs dan sylw</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> o ddigwyddiadau</translation>
 <translation id="5198715732953550718">Mae <ph name="MOVED_APP_NAME" /> wedi'i gyfuno â <ph name="IN_PLACE_APP" /> i greu ffolder newydd.</translation>
@@ -1778,6 +1791,13 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
 <translation id="6062360702481658777">Byddwch yn cael eich allgofnodi yn awtomatig <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Rheolyddion Galwadau Fideo</translation>
+<translation id="6070081109266557120">{0,plural, =1{Byddwch yn cael eich allgofnodi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}zero{Byddwch yn cael eich allgofnodi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}two{Byddwch yn cael eich allgofnodi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}few{Byddwch yn cael eich allgofnodi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}many{Byddwch yn cael eich allgofnodi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}other{Byddwch yn cael eich allgofnodi'n awtomatig mewn # eiliad.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.}}</translation>
 <translation id="6071576563962215370">Methodd y system â sefydlu clo priodweddau amser gosod y ddyfais.</translation>
 <translation id="6072442788591997866">Ni chaniateir <ph name="APP_NAME" /> ar y ddyfais hon. Cysylltwch â'ch gweinyddwr. Cod gwall: <ph name="ERROR_CODE" />.</translation>
 <translation id="6073451960410192870">Stopio recordio</translation>
@@ -2127,6 +2147,8 @@ Gosodiad newydd</translation>
 <translation id="7076878155205969899">Distewi sain</translation>
 <translation id="7083848064787091821">Ffocysu</translation>
 <translation id="7084678090004350185">Toglo'r boethfan. Mae'r boethfan ymlaen, mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu.</translation>
+<translation id="7086438436964931440">Byddwch yn cael eich allgofnodi'n awtomatig nawr.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.</translation>
 <translation id="7086931198345821656">Rhaid i chi ddefnyddio Powerwash ar eich <ph name="DEVICE_TYPE" /> er mwyn cynnal y diweddariad hwn. Bydd y data i gyd yn cael eu dileu. Dysgu rhagor am y diweddariad <ph name="SYSTEM_APP_NAME" /> diweddaraf.</translation>
 <translation id="7088960765736518739">Mynediad Switsh</translation>
 <translation id="709015856939120012">Chwyddo ar y dudalen</translation>
@@ -2529,6 +2551,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8220076512072059941">Ychwanegwch <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Cuddio'r awgrym hwn</translation>
 <translation id="8230305195727960608">Modd Gwrthdroad Lliw</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Angen dychwelyd ar unwaith}zero{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}two{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} ddiwrnod}few{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}many{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}other{Dychwelyd <ph name="DEVICE_TYPE" /> o fewn {NUM_DAYS} diwrnod}}</translation>
 <translation id="8236042855478648955">Amser am egwyl</translation>
 <translation id="8237964652943995219">Desg nesaf: <ph name="DESK_NAME" />. Desg <ph name="DESK_INDEX" /> o <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Ewch ar daith gyflym i ddysgu sut i lywio'ch <ph name="PRODUCT_NAME" />. Gallwch gychwyn arni mewn 5 cam.</translation>
@@ -2704,6 +2727,8 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8756799553341497810">Gallwch ddechrau addasu cynllun eich ap ar ôl i chi adael y golwg hwn.</translation>
 <translation id="8759408218731716181">Ni ellir gosod mewngofnodi o sawl cyfrif</translation>
 <translation id="8759753423332885148">Dysgu rhagor.</translation>
+<translation id="8760172428247796445">Bydd eich <ph name="DEVICE_TYPE" /> yn cael ei gloi nawr.
+        Mae angen i chi gadw'ch cerdyn clyfar wedi'i fewnosod ar gyfer <ph name="DOMAIN" />.</translation>
 <translation id="8763883995157866248">Rhoi'r ddyfais yn y modd cysgu</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Ap wedi'i Osod, Wedi'i Rwystro</translation>
 <translation id="8782565991310229362">Mae lansio'r ap Kiosk wedi'i ganslo.</translation>

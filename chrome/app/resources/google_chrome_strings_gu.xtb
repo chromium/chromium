@@ -153,6 +153,7 @@
 <translation id="2580411288591421699">હાલમાં ચાલી રહ્યું છે તે જ Google Chrome વર્ઝનને ઇન્સ્ટૉલ કરી શકાતું નથી. કૃપા કરીને Google Chrome બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="2586406160782125153">આ, તમારા બ્રાઉઝિંગ ડેટાને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="259935314519650377">ડાઉનલોડ કરેલા ઇન્સ્ટૉલરને કૅશ મેમરીમાં સાચવવામાં નિષ્ફળ રહ્યાં. ભૂલ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
+<translation id="2608461706055011366">આ દસ્તાવેજનો ઝડપી ઓવરવ્યૂ મેળવો અને Gemini in Chrome વડે પ્રશ્નો પૂછો</translation>
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="263447411082773721">તમારા પાસવર્ડ, બુકમાર્ક અને ઇતિહાસને બધા ડિવાઇસ પર સંપૂર્ણ રીતે સિંક કરેલા રાખો. તમારા ડિફૉલ્ટ બ્રાઉઝરને Chrome પર અપડેટ કરીને તમે જાણતા હો એવી અને તમને ગમતી હોય એવી સુવિધાઓને સરળતાથી ઍક્સેસ કરો. ઝડપી ઍક્સેસ માટે Chromeને તમારા ટાસ્કબાર પર પિન કરવામાં આવશે.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -160,6 +161,7 @@
 <translation id="2652691236519827073">નવા Chrome &amp;ટૅબમાં લિંક ખોલો</translation>
 <translation id="2665296953892887393">ક્રૅશ રિપોર્ટ અને <ph name="UMA_LINK" /> Googleને મોકલીને Google Chromeને વધુ સારું બનાવવામાં મદદ કરો.</translation>
 <translation id="2668094785979141847">Google Lensમાંથી બહાર નીકળવા માટે ક્લિક કરો</translation>
+<translation id="2674238339205910678">તમારા એકાઉન્ટની સાઇન ઇન વિગતો જૂની હોવાને કારણે ChromeOS Flex તમારા Google એકાઉન્ટમાં Chrome ડેટા સાચવી શક્યું નથી</translation>
 <translation id="2681444469812712297">Google Chromeમાં નવા ટૅબમાં <ph name="URL" /> ખોલો.</translation>
 <translation id="2699790011615497488">Chrome બીટામાં Gemini ખોલો</translation>
 <translation id="2712141162840347885">Google Lens વડે શોધવા માટે કંઈપણ પસંદ કરો અથવા Google Lensમાંથી બહાર નીકળવા માટે Esc કી દબાવો</translation>
@@ -538,6 +540,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6497147134301593682">Chrome ઑટોમેટિક રીતે બંધ થઈ ગયું હતું</translation>
 <translation id="6506909944137591434">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6520608191273161151">સાઇન ઇન કરવામાં ભૂલ આવવાને કારણે, ChromeOS Flex તમારા Google એકાઉન્ટમાં Chrome ડેટા સાચવી શક્યું નથી</translation>
 <translation id="6520670145826811516">તમારા લોકેશનનો ઉપયોગ કરવા માટે, <ph name="BEGIN_LINK" />સિસ્ટમના સેટિંગ<ph name="END_LINK" />માં જઈને Chromeને ઍક્સેસ આપો</translation>
 <translation id="652948702951888897">Chrome ઇતિહાસ</translation>
 <translation id="6532945796722480006">Chrome Canaryમાં Gemini ખોલો</translation>
@@ -585,6 +588,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7011190694940573312">ઑપરેટિંગ સિસ્ટમનું આ વર્ઝન સપોર્ટેડ ન હોવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="7024536598735240744">અનપૅક કરવામાં ભૂલ: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">તમે અહીં એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
+<translation id="7026856149118332950">ઝડપી ઍક્સેસ માટે Chromeને તમારા ટાસ્કબાર પર પિન કરવા માટે Windows નોટિફિકેશનમાં <ph name="BEGIN_BOLD" />હા<ph name="END_BOLD" /> પર ક્લિક કરો</translation>
 <translation id="7047386856539490735">શું આ પરિણામો ઉપયોગી છે?</translation>
 <translation id="7051685429025310665">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chrome દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />ની પરવાનગીઓ કાઢી નાખવામાં આવી.</translation>
 <translation id="7059914902409643750">Chrome કસ્ટમાઇઝ કરો</translation>
@@ -677,6 +681,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7890208801193284374">જો તમે કમ્પ્યુટરને શેર કરો છો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેમને જોઈએ તેમ Chrome ને સેટ કરી શકે છે.</translation>
 <translation id="7896673875602241923">કોઈએ આ કમ્પ્યુટર પર પહેલા <ph name="ACCOUNT_EMAIL_LAST" /> તરીકે Chromeમાં સાઇન ઇન કર્યું છે. તમારી માહિતી અલગ રાખવા માટે કૃપા કરીને નવો Chrome વપરાશકર્તા બનાવો.</translation>
 <translation id="7904985524660297937">Google Chromeમાં Gemini અજમાવો</translation>
+<translation id="7905880575591690197">સાઇન ઇન કરવામાં ભૂલ આવવાને કારણે, ChromeOS તમારા Google એકાઉન્ટમાં Chromeનો ડેટા સાચવી શક્યું નથી</translation>
 <translation id="7917876797003313048">તમે તમારા સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરી શકો છો. તમારા Google એકાઉન્ટનો ઉપયોગ Chrome બ્રાઉઝર, Play Store, Gmail અને વધુ માટે થાય છે. જો તમે કોઈ બીજા, જેમકે તમારા કુટુંબના સભ્ય માટે એકાઉન્ટ ઉમેરવા માંગતા હો, તો તેના બદલે નવી વ્યક્તિને તમારા <ph name="DEVICE_TYPE" />માં ઉમેરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે આ ફાઇલ છેતરામણી છે અને તે તમારા ડિવાઇસમાં અનપેક્ષિત ફેરફારો કરે તેમ બની શકે છે</translation>
 <translation id="7951272445806340501">અપડેટ લાગુ કરવા માટે ChromeOS Flexને ફરી શરૂ કરવાની જરૂર છે.</translation>
@@ -752,6 +757,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8624541899164515475">સેટિંગ, નવા ટૅબમાં ખૂલે છે.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 મિનિટમાં ફરીથી લૉન્ચ થશે}one{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}other{Chrome # મિનિટમાં ફરીથી લૉન્ચ થશે}}</translation>
 <translation id="8637932705841171563">તમારી વિન્ડો શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો</translation>
+<translation id="8642497536370021917">તમે હંમેશાં તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરી શકો અને તેને સાચવી શકો તેની ખાતરી કરવા માટે, આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="8656634243791296665">Chrome Devમાં Gemini ખોલો</translation>
 <translation id="8669527147644353129">Google Chrome સહાયક</translation>
 <translation id="8679801911857917785">જ્યારે તમે Chrome શરૂ કરો ત્યારે કયું પેજ બતાવવામાં આવે તે તેનું પણ નિયંત્રણ કરે છે.</translation>
@@ -801,6 +807,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="93760716455950538">ChromeOS Flex ફરી શરૂ કરો</translation>
 <translation id="943390475793766444">Chrome આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે.</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
+<translation id="973195869036269770">તમારા એકાઉન્ટની સાઇન ઇન વિગતો જૂની હોવાને કારણે ChromeOS તમારા Google એકાઉન્ટમાં Chrome ડેટા સાચવી શક્યું નથી</translation>
 <translation id="983803489796659991">અપડેટ સર્વર પાસે ઍપ્લિકેશન માટે કોઈ હૅશ સંબંધી ડેટા ન હોવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="989369509083708165">Google Chrome તમારું ડિફૉલ્ટ બ્રાઉઝર છે</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> વડે એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકાય છે</translation>

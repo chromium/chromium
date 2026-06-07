@@ -306,6 +306,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1458140305240870199">Azpiko arropa</translation>
 <translation id="1458770162980644530">Epekako ordainketaren zerbitzu-baldintzen pantaila. Teklatua ezkutatuta dago.</translation>
 <translation id="1459693405370120464">Eguraldia</translation>
+<translation id="1460317464907341501">Helbide elektronikoa automatikoki egiaztatu nahi duzu?</translation>
 <translation id="1461041542809785877">Errendimendua</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Ordenagailuko letrak erabili goi-fidelitateko edukia sor dezazun.</translation>
@@ -2001,6 +2002,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="412601465078863288">Kargatzeko denbora-muga gainditu da</translation>
 <translation id="4127317221386336246">Jantzien osagarriak</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
+<translation id="4129810348470013900">Arazoren bat izan da. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="4129992181550680635">Hezkuntza-baliabideak</translation>
 <translation id="4130226655945681476">Sareko kablea, modema eta bideratzailea egiaztatu.</translation>
 <translation id="4132448310531350254"><ph name="FILE_EXTENSION" /> fitxategi-luzapenaren kudeatzaile bikoiztuei egiten diete erreferentzia <ph name="POLICY_IDS_LIST" /> darabilten aplikazioek.</translation>
@@ -3018,6 +3020,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5728246486828755318">Inprimagailuaren eginbide aurreratuak erabiltzeko eska dezake</translation>
 <translation id="5729442113829771034">Haur-hezkuntza goiztiarra</translation>
 <translation id="5730040223043577876">Pasahitza beste webgune batzuetan ere erabili baduzu, hura berrezartzea gomendatzen du Chrome-k.</translation>
+<translation id="5735174108294025227">Hemen agertuko dira egiaztatutako helbide elektronikoak</translation>
 <translation id="573555826359077410">Inprimaki bat sortzeko botoia: aktiba ezazu Google Inprimakiak zerbitzuan inprimaki bat bizkor sortzeko</translation>
 <translation id="5738385766833540397">Kudeatu jarraipena egiten diezun produktuei dagozkien prezio-jaitsieren alertak jasotzeko modua</translation>
 <translation id="5739619009927381786">Desblokeatu pantaila hurrengo estekan, normalean hatz-marka erabiliz. Bestela, <ph name="BEGIN_LINK" />beste modu batean egin dezakezu egiaztapena<ph name="END_LINK" />.</translation>
@@ -3172,7 +3175,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5995727681868049093">Kudeatu Google-ko kontuko informazioa, pribatutasuna eta segurtasuna</translation>
 <translation id="5996255674476750320">Ibilgailuen erakusketak</translation>
 <translation id="5997247540087773573">Erabili berri duzun pasahitza datuen isilpekotasunaren urratze batean aurkitu da. Kontuak babesteko, Google-ren Pasahitz-kudeatzailea zerbitzuak pasahitza orain aldatzea gomendatzen du, eta gordeta dauzkazun pasahitzak seguruak direla egiaztatzea.</translation>
-<translation id="5997915162652837008">Denbora aurrezteko, aktibatu fitxak elkarrizketa-hari guztiekin automatikoki partekatzeko aukera. Lortu informazio gehiago</translation>
+<translation id="5997915162652837008">Denbora aurrezteko, aktibatu fitxak automatikoki partekatzeko aukera elkarrizketa-hari guztietan. Lortu informazio gehiago</translation>
 <translation id="6000528814684428358">Hard rocka eta rock progresiboa</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" bilaketak <ph name="RESULT_COUNT" /> emaitza ditu</translation>
 <translation id="6002122790816966947">Zure gailuak</translation>

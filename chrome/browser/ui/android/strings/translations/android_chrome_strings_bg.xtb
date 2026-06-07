@@ -357,6 +357,7 @@
 <translation id="253498598929009420">Сайтът ще може да вижда съдържанието на екрана ви</translation>
 <translation id="2535807170289627159">Всички раздели</translation>
 <translation id="2536728043171574184">Преглеждате офлайн копие на страницата</translation>
+<translation id="2537574774089209541">Някои инструменти са преместени, за да ви осигурят лесен достъп до Gemini, докато сърфирате</translation>
 <translation id="2539002604555291451">Безсерифен</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" /> – избран фиксиран раздел в режим „инкогнито“, чийто звук е спрян</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" /> – раздел</translation>
@@ -405,6 +406,7 @@
 <translation id="2751271371269891762">Влезте с профила <ph name="EMAIL" />, за да получите отметките си и др. на всичките си устройства</translation>
 <translation id="2760805590727089264">ММ/ГГ</translation>
 <translation id="2762000892062317888">току-що</translation>
+<translation id="276378135349383280">Gemini: Показв. в долната лента с инстр.</translation>
 <translation id="276969039800130567">Влезли сте като <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="2777555524387840389">Остават <ph name="SECONDS" /> сек</translation>
 <translation id="2779651927720337254">неуспешно</translation>
@@ -604,6 +606,7 @@
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3614126103057878858">Статистика за цените</translation>
 <translation id="3616113530831147358">Аудио</translation>
+<translation id="3616798734782988169">Уверете се, че имате доверие на <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="3619255692378312441">Управление на достъпа</translation>
 <translation id="3622349720008044802">Управление на прозорците</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 сайт}other{+ # сайта}}</translation>
@@ -634,6 +637,7 @@
 <translation id="3738139272394829648">Търсене чрез докосване</translation>
 <translation id="3739455665973395693">В профила ви в Google няма компрометирани пароли</translation>
 <translation id="3739899004075612870">Отметката бе запазена в/ъв <ph name="PRODUCT_NAME" /></translation>
+<translation id="3740290940447881599">Уверете се, че имате доверие на този сайт</translation>
 <translation id="3740525748616366977">На това устройство не може да се търси с глас</translation>
 <translation id="3763110477555836428">Когато плащате с тази карта, ще бъде попълнен номер на виртуална карта, за да се защитят действителните ви данни. Управлявайте настройките в Google Wallet. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">Някои данни още не са запазени</translation>
@@ -1533,6 +1537,7 @@
 <translation id="7291910923717764901">Бяха добавени описания за изображенията на тази страница</translation>
 <translation id="7293429513719260019">Избор на език</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" /> – избран фиксиран раздел, който споделя</translation>
+<translation id="7304003340539141201">Поискайте от Gemini да ви помогне с разделите и задачите ви</translation>
 <translation id="7311244614769792472">Няма намерени резултати</translation>
 <translation id="7314734791127433392">Паролите не могат да бъдат проверени</translation>
 <translation id="7324354302972299151">Изпращане на заявка Do Not Track</translation>
@@ -1879,6 +1884,7 @@
 <translation id="8696297579102085705">Изпращане до устройството ви</translation>
 <translation id="8697753151306746444">Вместо това споделяне на прозорец или екран</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
+<translation id="8700565880437506364">Представяме ви Gemini в Chrome</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8715286883001906001">Подобрете паролите в профила си в Google</translation>
 <translation id="8715300232952757586">Разделът „<ph name="TAB_TITLE" />“ ще бъде затворен</translation>
@@ -1946,6 +1952,7 @@
 <translation id="8996847606757455498">Избиране на друг доставчик</translation>
 <translation id="8998837250940831980">Разделът не бе намален. Опитайте отново по-късно.</translation>
 <translation id="9001604755921395912">Отваряне в режим „инкогнито“</translation>
+<translation id="9010094279589497751">Бързо отваряне на Gemini, когато е необходимо</translation>
 <translation id="9012585441087414258">Защитава срещу сайтове, изтегляния и разширения, за които е известно, че са опасни. Ако дадена страница направи нещо подозрително, URL адресите и част от съдържанието ѝ се изпращат до Google Безопасно сърфиране.</translation>
 <translation id="9019199799064251516">Искате ли да продължите без опция за заключване на потребителския профил за автомобила?</translation>
 <translation id="9022774213089566801">Често посещавани</translation>
@@ -2003,6 +2010,7 @@
 <translation id="9190355771000652811">В адресната лента използвайте тази клавишна комбинация заедно с преки пътища за търсещи машини и търсене в сайтове.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" /> – избран е фиксиран раздел в режим „инкогнито“</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
+<translation id="9202894533863490414">Да се изтегли ли от този сайт?</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9205933215779845960">Страницата не е намерена. Проверете изписването или потърсете с <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="9206873250291191720">А</translation>

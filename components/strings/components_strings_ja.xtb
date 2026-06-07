@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">下着</translation>
 <translation id="1458770162980644530">後払い決済の利用規約画面。キーボードは非表示です。</translation>
 <translation id="1459693405370120464">天気</translation>
+<translation id="1460317464907341501">このメールアドレスを自動的に確認しますか？</translation>
 <translation id="1461041542809785877">パフォーマンス</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">パソコンのフォントを使用して高品質のコンテンツを作成できます</translation>
@@ -779,7 +780,7 @@
 <translation id="2213606439339815911">エントリを取得しています...</translation>
 <translation id="2213612003795704869">ページが印刷された</translation>
 <translation id="2214086901479959524">共有タブグループを引き続き使用するには、Chrome を更新してください</translation>
-<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
+<translation id="2214453882118345682">カメラを使って、写っているものを購入、翻訳、特定できます。</translation>
 <translation id="2215368073167343359">Google 自動入力</translation>
 <translation id="2215539479425228550">登山</translation>
 <translation id="2215727959747642672">ファイルの編集</translation>
@@ -2005,6 +2006,7 @@
 <translation id="412601465078863288">アップロードがタイムアウトしました</translation>
 <translation id="4127317221386336246">服飾雑貨</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
+<translation id="4129810348470013900">エラーが発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="4129992181550680635">教育リソース</translation>
 <translation id="4130226655945681476">ネットワーク ケーブル、モデム、ルーターを確認する</translation>
 <translation id="4132448310531350254">アプリ「<ph name="POLICY_IDS_LIST" />」で参照されている file_extension「<ph name="FILE_EXTENSION" />」のハンドラが重複しています。</translation>
@@ -3022,6 +3024,7 @@
 <translation id="5728246486828755318">高度なプリンタ機能の使用を要求できます</translation>
 <translation id="5729442113829771034">幼児教育</translation>
 <translation id="5730040223043577876">パスワードを他のサイトで再使用した場合、Chrome ではパスワードの再設定を促すメッセージが表示されます。</translation>
+<translation id="5735174108294025227">確認済みのメールアドレスがここに表示されます</translation>
 <translation id="573555826359077410">[フォームを作成] ボタンです。実行すると、Google フォームで新しいフォームをすばやく作成できます</translation>
 <translation id="5738385766833540397">トラッキングしている商品の値下げアラートを受け取る方法を管理します</translation>
 <translation id="5739619009927381786">次のステップで画面のロックを解除します（通常は指紋認証を使用します）。<ph name="BEGIN_LINK" />別の方法で確認<ph name="END_LINK" />することもできます。</translation>
@@ -4981,7 +4984,7 @@
 <translation id="8814707942599948500">C8 封筒</translation>
 <translation id="881559332211266856">Redress 番号を更新</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で Chrome を更新します</translation>
-<translation id="8819155700324279105">オンラインの脅威に対する保護を強化</translation>
+<translation id="8819155700324279105">オンラインの脅威からの保護を強化します</translation>
 <translation id="8819855907485254989">交通機関のチケットをウォレットに保存</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="882338992931677877">手動スロット</translation>

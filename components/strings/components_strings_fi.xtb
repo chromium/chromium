@@ -306,6 +306,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1458140305240870199">Alusasut</translation>
 <translation id="1458770162980644530">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö. Näppäimistö piilotettu.</translation>
 <translation id="1459693405370120464">Sää</translation>
+<translation id="1460317464907341501">Vahvistetaanko tämä sähköposti automaattisesti?</translation>
 <translation id="1461041542809785877">Suorituskyky</translation>
 <translation id="1462245070427461050">JIS B9 (45 mm x 64 mm)</translation>
 <translation id="1462951478840426066">käyttää tietokoneesi fontteja, jotta voit luoda tasokasta sisältöä</translation>
@@ -2006,6 +2007,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="412601465078863288">Lataus aikakatkaistu</translation>
 <translation id="4127317221386336246">Asusteet</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
+<translation id="4129810348470013900">Jotain meni pieleen. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="4129992181550680635">Koulutusmateriaalit</translation>
 <translation id="4130226655945681476">Tarkista verkkojohdot, modeemi ja reititin.</translation>
 <translation id="4132448310531350254">Sovellukset (<ph name="POLICY_IDS_LIST" />) viittaavat päällekkäisiin tiedostotunnisteen "<ph name="FILE_EXTENSION" />" käsittelijöihin</translation>
@@ -3023,6 +3025,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5728246486828755318">Voi pyytää lupaa käyttää tulostimen lisäominaisuuksia</translation>
 <translation id="5729442113829771034">Varhaisopetus</translation>
 <translation id="5730040223043577876">Chrome suosittelee salasanan vaihtamista, jos olet käyttänyt sitä myös muilla sivustoilla.</translation>
+<translation id="5735174108294025227">Vahvistetut sähköpostiosoitteet näkyvät täällä</translation>
 <translation id="573555826359077410">Luo lomake ‑painike, aktivoi luodaksesi uusi lomake nopeasti Google Formsissa</translation>
 <translation id="5738385766833540397">Valitse, miten saat hinnanlaskuilmoituksia seuraamistasi tuotteista</translation>
 <translation id="5739619009927381786">Avaa näytön lukitus seuraavassa vaiheessa, yleensä sormenjäljellä. Voit myös <ph name="BEGIN_LINK" />vahvistaa toisella tavalla<ph name="END_LINK" />.</translation>

@@ -1242,7 +1242,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1887442540531652736">Inloggningsfel</translation>
 <translation id="1888692623866312036">Färdigheten har sparats</translation>
 <translation id="1890026367080681123">Öppna inställningarna för inbäddat innehåll</translation>
-<translation id="189035593835762169">Användarvillkor</translation>
+<translation id="189035593835762169">Villkor</translation>
 <translation id="189210018541388520">Öppna helskärmsläge</translation>
 <translation id="1892341345406963517">Hej <ph name="PARENT_NAME" /></translation>
 <translation id="1892453608039100484">1. Klicka på <ph name="BUTTON_LABEL" /> nedan
@@ -7738,6 +7738,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6646696210740573446">En obfuskerad del av webbadressen skickas till Google via en integritetsserver som döljer din IP-adress. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Google tillsammans med delar av sidinnehållet.</translation>
 <translation id="6647228709620733774">Webbadress till Netscapes spärrlista för certifikatutfärdare</translation>
 <translation id="6647690760956378579">Förhandsgranska naturlig röst</translation>
+<translation id="6648602807077169189">Ge tillbaka uppgiften</translation>
 <translation id="6648911618876616409">En viktig uppdatering är klar för installation. Logga in för att komma igång.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="6650206238642452078">Prenumerera på systemhändelser för ChromeOS</translation>
@@ -9109,6 +9110,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7650920359639954963">Inte aktiverad: <ph name="REASON" /></translation>
 <translation id="7651182181030187705">Verifiera din identitet för att få tillgång till detta bokmärke på alla dina enheter</translation>
 <translation id="7651400349472467012">Snabb surfzon tillgänglig</translation>
+<translation id="7651754152638505879">Uppgiften har pausats</translation>
 <translation id="7651784568388208829">Återuppta uppgifter med Phone Hub</translation>
 <translation id="7652954539215530680">Skapa en pinkod</translation>
 <translation id="7654941827281939388">Kontot används redan på den här datorn.</translation>
@@ -10993,6 +10995,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8991694323904646277">Ingen kamera</translation>
 <translation id="8991766915726096402">Återställning av lokal data</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – Minnesanvändning – <ph name="MEMORY_VALUE" /></translation>
+<translation id="8993030412405061612">Uppgiften har slutförts</translation>
 <translation id="8993059306046735527">Om du glömmer lösenordet för din <ph name="DEVICE_TYPE" /> kan du fortfarande återställa lokal data. Du måste logga in på ditt Google-konto eller använda kontoåterställning.</translation>
 <translation id="8993198843374358393">Kopiera certifikathashvärdet för <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Reglage som du kan använda för att göra uppläsningen snabbare eller långsammare eller pausa den</translation>

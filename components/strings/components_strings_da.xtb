@@ -306,6 +306,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1458140305240870199">Undertøj</translation>
 <translation id="1458770162980644530">Skærm med servicevilkår for Køb nu, betal senere. Tastaturet er skjult.</translation>
 <translation id="1459693405370120464">Vejr</translation>
+<translation id="1460317464907341501">Vil du verificere denne mailadresse automatisk?</translation>
 <translation id="1461041542809785877">Effektivitet</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Brug skrifttyperne på din computer, så du kan oprette indhold i høj kvalitet</translation>
@@ -2005,6 +2006,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="412601465078863288">Uploaden fik timeout</translation>
 <translation id="4127317221386336246">Tøjtilbehør</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 anden/andet}one{# anden/andet}other{# andre}}</translation>
+<translation id="4129810348470013900">Noget gik galt. Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="4129992181550680635">Uddannelsesressourcer</translation>
 <translation id="4130226655945681476">Tjekke netværkskabler, modem og router</translation>
 <translation id="4132448310531350254">Identiske handlere for filtypen "<ph name="FILE_EXTENSION" />", som der henvises til i applikationerne "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3024,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5728246486828755318">Kan anmode om at anvende avancerede printerfunktioner</translation>
 <translation id="5729442113829771034">Børnehaver og vuggestuer</translation>
 <translation id="5730040223043577876">Chrome anbefaler, at du nulstiller din adgangskode, hvis du har brugt den på andre websites.</translation>
+<translation id="5735174108294025227">Verificerede mailadresser vises her</translation>
 <translation id="573555826359077410">Knappen Opret formular, aktivér for hurtigt at oprette en ny formular i Google Analyse</translation>
 <translation id="5738385766833540397">Administrer, hvordan du modtager underretninger om prisfald på produkter, du holder øje med</translation>
 <translation id="5739619009927381786">Lås din skærm op i næste trin – typisk ved hjælp af dit fingeraftryk. Du kan også vælge at <ph name="BEGIN_LINK" />verificere med en anden metode<ph name="END_LINK" />.</translation>

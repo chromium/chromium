@@ -150,6 +150,7 @@
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
 <translation id="259935314519650377">未能缓存所下载的安装程序。错误：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
+<translation id="2608461706055011366">使用 Chrome 中的 Gemini 快速了解此文档的概要信息并提出问题</translation>
 <translation id="2620436844016719705">系统</translation>
 <translation id="263447411082773721">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chrome，即可轻松使用您熟悉和喜爱的功能。Chrome 将固定到任务栏，以便您快速访问。</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
@@ -157,6 +158,7 @@
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
+<translation id="2674238339205910678">由于您的账号登录详细信息已过期，ChromeOS Flex 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新标签页中打开 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">打开 Chrome Beta 版中的 Gemini</translation>
 <translation id="2712141162840347885">选择任意内容即可使用 Google 智能镜头进行搜索，按 Esc 键可退出 Google 智能镜头</translation>
@@ -530,6 +532,7 @@
 <translation id="6497147134301593682">Chrome 已自动关闭</translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
+<translation id="6520608191273161151">由于登录时发生错误，ChromeOS Flex 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="6520670145826811516">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="652948702951888897">Chrome 历史记录</translation>
 <translation id="6532945796722480006">打开 Chrome Canary 版中的 Gemini</translation>
@@ -577,6 +580,7 @@
 <translation id="7011190694940573312">安装失败，因为此版本的操作系统不受支持。</translation>
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">您可在此处切换 Chrome 个人资料</translation>
+<translation id="7026856149118332950">点击 Windows 通知中的<ph name="BEGIN_BOLD" />是<ph name="END_BOLD" />，将 Chrome 固定到任务栏，以便快速访问。</translation>
 <translation id="7047386856539490735">这些结果有用吗？</translation>
 <translation id="7051685429025310665">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
 <translation id="7059914902409643750">定制您的专属 Chrome</translation>
@@ -669,6 +673,7 @@
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的账号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
 <translation id="7904985524660297937">试用 Google Chrome 中的 Gemini</translation>
+<translation id="7905880575591690197">由于登录时发生错误，ChromeOS 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="7917876797003313048">您可以管理您已登录的 Google 账号。您可通过登录自己的 Google 账号使用 Chrome 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的账号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7936702483636872823">Chrome 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
@@ -744,6 +749,7 @@
 <translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>
 <translation id="8637932705841171563">若要共享窗口，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
+<translation id="8642497536370021917">为了确保您可以一直通过 Google 账号使用和保存 Chrome 数据，请验证是您本人在操作</translation>
 <translation id="8656634243791296665">打开 Chrome 开发者版中的 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
@@ -793,6 +799,7 @@
 <translation id="93760716455950538">重启 ChromeOS Flex</translation>
 <translation id="943390475793766444">Chrome 建议您扫描此文件，因为它可能包含危险因素。</translation>
 <translation id="945522503751344254">发送反馈</translation>
+<translation id="973195869036269770">由于您的账号登录详细信息已过期，ChromeOS 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="983803489796659991">更新服务器没有应用的任何哈希数据，因此安装失败。</translation>
 <translation id="989369509083708165">Google Chrome 是您的默认浏览器</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可用于切换 Chrome 个人资料</translation>

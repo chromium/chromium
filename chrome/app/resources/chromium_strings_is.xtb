@@ -70,6 +70,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1749104137266986751">Ef HTTPS er ekki í boði mun Chromium notast við ótrygga tengingu án þess að vara þig við</translation>
 <translation id="1774152462503052664">Leyfa Chromium að keyra í bakgrunni</translation>
 <translation id="1779356040007214683">Til að gera Chromium öruggara höfum við slökkt á vissum viðbótum sem ekki eru á skrá hjá <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> og kann að hafa verið bætt við án þinnar vitneskju.</translation>
+<translation id="1793486931176048546">Smelltu á <ph name="BEGIN_BOLD" />Já<ph name="END_BOLD" /> í Windows-tilkynningunni til að festa Chromium við forritastikuna þína til að auðvelda aðgang.</translation>
 <translation id="1808667845054772817">Setja Chromium upp aftur</translation>
 <translation id="1820835682567584003">Chromium er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Næst þegar þú opnar Chromium í <ph name="DEVICE_TYPE" /> muntu sjá ábendingu um að nota Google-aðgangsorðastjórnun.</translation>
@@ -386,6 +387,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="5348677704241861105">Fáðu snöggt yfirlit yfir þetta skjal og spyrðu spurninga með Gemini í Chromium</translation>
 <translation id="5352264705793813212">Chromium fann öryggistillögur sem þú þarft að fara yfir</translation>
 <translation id="5352361688875342522">Aðrir Chromium-prófílar</translation>
+<translation id="535243042947607642">ChromiumOS gat ekki vistað Chromium-gögn á Google-reikningnum þínum vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar</translation>
 <translation id="5358375970380395591">Þú ert að skrá þig inn með stýrðum reikningi og veitir stjórnanda hans vald yfir Chromium prófílnum þínum. Chromium gögnin þín, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google-reikninga en getur ekki tengt þau öðrum reikningi. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Viðbótarkóði: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Hafðu Chromium með í vef- og forritavirkni til að fá aðgang að sérsniði</translation>
@@ -720,6 +722,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8852026904190808918">Þetta tungumál er notað til að birta valmyndir, stillingar, viðvaranir og annan texta í Chromium</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
 <translation id="8876044221123442390">Bæta við Chromium-prófíl</translation>
+<translation id="8890569919834781711">ChromiumOS gat ekki vistað Chromium-gögn á Google-reikningnum þínum vegna innskráningarvillu</translation>
 <translation id="8891709362986793894">Fyrirtækið þitt krefst þess að þú skráir þig inn í Chromium</translation>
 <translation id="8907580949721785412">Chromium er að reyna að sýna aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að heimila þetta.</translation>
 <translation id="8932992523185907506">Chromium er ekki lengur sjálfgefni vafrinn þinn. Gera Chromium að sjálfgefnum vafra?</translation>

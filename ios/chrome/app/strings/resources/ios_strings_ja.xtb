@@ -363,7 +363,7 @@
 <translation id="2196428379625389579">ウェブで検索</translation>
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> にログインしているすべてのデバイスからグループを削除します。</translation>
 <translation id="2202084845446535117">メール アカウントがありません</translation>
-<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
+<translation id="2214453882118345682">カメラを使って、写っているものを購入、翻訳、特定できます。</translation>
 <translation id="2216366330550244277">商品のページに移動します</translation>
 <translation id="2219935992754556187">Chrome で Face ID を使用してセンシティブ データを保護します</translation>
 <translation id="2220529011494928058">問題を報告</translation>
@@ -487,6 +487,7 @@
 <translation id="2640733327287333451">ユーザー名が指定されていません ••••••••</translation>
 <translation id="264215785133931186">前回の確認: たった今</translation>
 <translation id="2647434099613338025">言語を追加</translation>
+<translation id="2648812801228676606">現在、<ph name="NAME_OR_EMAIL" /> としてログインしています</translation>
 <translation id="2649592894792404568">Google パスワード マネージャーのデータを削除しようとしています</translation>
 <translation id="2652129567809778422">パスワードを選択</translation>
 <translation id="2658056020748144467">ファイルを開けません</translation>
@@ -637,7 +638,7 @@
 <translation id="3190736958609431397">トラッキングを停止</translation>
 <translation id="3208260410153224535">ログインは組織によってオフにされています。新しいブックマークやパスワードなどは、このデバイスにのみ保存されます。</translation>
 <translation id="3211969308836412674">サイトの固定を解除</translation>
-<translation id="3213807041830307252">カメラとフォト ギャラリーを使って、見たものを購入、翻訳、特定できます。</translation>
+<translation id="3213807041830307252">カメラやフォト ギャラリーを使って、写っているものを購入、翻訳、特定できます。</translation>
 <translation id="3214379938835224220">iPad をリセットする途中でログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="3218296450292600703">管理対象アカウントでログインすると、組織に関連するブラウジング（タブ、履歴、パスワードなど）を他のブラウジングと分けて管理できます</translation>
 <translation id="3224075676564434205">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます。</translation>
@@ -1838,7 +1839,7 @@
 <translation id="7280980607183752256">このファイルはインポートできません</translation>
 <translation id="7282197670900591579">シトロンのテーマ</translation>
 <translation id="7293429513719260019">言語を選択</translation>
-<translation id="7300448350764260141">オンラインの脅威に対する保護を強化しましょう。</translation>
+<translation id="7300448350764260141">オンラインの脅威に対する保護を強化できます。</translation>
 <translation id="7311244614769792472">一致する結果は見つかりませんでした</translation>
 <translation id="7312823817809783355">タスク</translation>
 <translation id="7313347584264171202">シークレット タブはここに表示されます</translation>
@@ -2309,7 +2310,7 @@
 <translation id="8814719628147284151">続行</translation>
 <translation id="881559332211266856">Redress 番号を更新</translation>
 <translation id="8817524703470045896">価格をトラッキングしたり、サイトで値下げがあった場合に通知を受け取ったりできます</translation>
-<translation id="8819155700324279105">オンラインの脅威に対する保護を強化</translation>
+<translation id="8819155700324279105">オンラインの脅威からの保護を強化します</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8822421075653507124">デバイスを安全に使用できるようにするため、組織で必要に応じてオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認する場合があります。</translation>
 <translation id="882557203579758546">ページ内を検索…</translation>
@@ -2397,7 +2398,7 @@
 <translation id="9107664647686727385">不正使用されたパスワードがないか確認します</translation>
 <translation id="9119764377203471454">添付ファイルを追加できません</translation>
 <translation id="9124387962554796433">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
-<translation id="9124978074365039456">カメラとフォト ギャラリーを使って、見たものを購入、翻訳、特定できます</translation>
+<translation id="9124978074365039456">カメラやフォト ギャラリーを使って、写っているものを購入、翻訳、特定できます</translation>
 <translation id="9130317582644834675">[テキストを拡大] を非表示</translation>
 <translation id="913036870884277353">他のアプリで簡単にリンクを開くことができます。</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>

@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">ملابس داخلية</translation>
 <translation id="1458770162980644530">‏تم فتح شاشة بنود خدمة "الدفع الآجل" (BNPL). لوحة المفاتيح مخفية.</translation>
 <translation id="1459693405370120464">الطقس</translation>
+<translation id="1460317464907341501">تأكيد هذا البريد الإلكتروني تلقائيًا؟</translation>
 <translation id="1461041542809785877">الأداء</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">استخدام الخطوط المثبَّتة على جهاز الكمبيوتر حتى تتمكّن من إنشاء محتوى عالي الدقة</translation>
@@ -2005,6 +2006,7 @@
 <translation id="412601465078863288">انتهت مهلة التحميل</translation>
 <translation id="4127317221386336246">إكسسوارات ملابس</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{عنصر واحد آخر}zero{# عنصر آخر}two{عنصران آخران (#)}few{# عناصر أخرى}many{# عنصرًا آخر}other{# عنصر آخر}}</translation>
+<translation id="4129810348470013900">حدث خطأ. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="4129992181550680635">مراجع تعليمية</translation>
 <translation id="4130226655945681476">التحقق من كابلات الشبكة، والمودم، وجهاز التوجيه</translation>
 <translation id="4132448310531350254">تم رصد أكثر من معالج لامتداد الملف "<ph name="FILE_EXTENSION" />" ضِمن التطبيقات التالية: "<ph name="POLICY_IDS_LIST" />".</translation>

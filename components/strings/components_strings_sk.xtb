@@ -306,6 +306,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1458140305240870199">Spodná bielizeň</translation>
 <translation id="1458770162980644530">Obrazovka so zmluvnými podmienkami platby Kúpte hneď, plaťte neskôr. Klávesnica je skrytá.</translation>
 <translation id="1459693405370120464">Počasie</translation>
+<translation id="1460317464907341501">Chcete automaticky overiť tento e‑mail?</translation>
 <translation id="1461041542809785877">Výkonnosť</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Používať písma vo vašom počítači, aby ste mohli vytvárať obsah, ktorý sa bude zobrazovať s vysokou presnosťou</translation>
@@ -2001,6 +2002,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="412601465078863288">Vypršal čas nahrania</translation>
 <translation id="4127317221386336246">Odevné doplnky</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ďalšia}few{# ďalšie}many{# ďalšej}other{# ďalších}}</translation>
+<translation id="4129810348470013900">Niečo sa pokazilo. Skontrolujte internetové pripojenie a skúste to znova.</translation>
 <translation id="4129992181550680635">Vzdelávacie zdroje</translation>
 <translation id="4130226655945681476">Skontrolovať sieťové káble, modem a smerovač</translation>
 <translation id="4132448310531350254">Duplicitné obslužné nástroje prípony súboru <ph name="FILE_EXTENSION" /> uvádzané aplikáciami <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3018,6 +3020,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5728246486828755318">Môže požiadať o povolenie používať pokročilé funkcie tlačiarne</translation>
 <translation id="5729442113829771034">Predškolské vzdelávanie</translation>
 <translation id="5730040223043577876">Ak ste heslo použili aj na iných weboch, Chrome ho odporúča obnoviť.</translation>
+<translation id="5735174108294025227">Tu sa zobrazia overené e‑mailové adresy</translation>
 <translation id="573555826359077410">Tlačidlo Vytvoriť formulár, ktorého aktivovaním rýchlo vytvoríte nový formulár Google</translation>
 <translation id="5738385766833540397">Spravujte, ako dostávate upozornenia na pokles cien výrobkov, ktoré sledujete</translation>
 <translation id="5739619009927381786">V ďalšom kroku odomknite obrazovku (zvyčajne odtlačkom prsta). Prípadne môžete vykonať <ph name="BEGIN_LINK" />overenie iným spôsobom<ph name="END_LINK" />.</translation>

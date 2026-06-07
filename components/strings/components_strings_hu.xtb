@@ -306,6 +306,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1458140305240870199">Alsóruházat</translation>
 <translation id="1458770162980644530">A Késleltetett fizetés Általános Szerződési Feltételek képernyője. A billentyűzet el van rejtve.</translation>
 <translation id="1459693405370120464">Időjárás</translation>
+<translation id="1460317464907341501">Automatikusan szeretné megerősíteni ezt az e-mail-címet?</translation>
 <translation id="1461041542809785877">Teljesítmény</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">A számítógépen lévő betűtípusok használata nagy pontosságú tartalmak készítéséhez</translation>
@@ -2002,6 +2003,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="412601465078863288">Időtúllépés történt a feltöltés során</translation>
 <translation id="4127317221386336246">Ruházati kiegészítők</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
+<translation id="4129810348470013900">Hiba történt. Ellenőrizze az internetkapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="4129992181550680635">Oktatási anyagok</translation>
 <translation id="4130226655945681476">A hálózati kábelek, a modem és a router ellenőrzése</translation>
 <translation id="4132448310531350254">A(z) „<ph name="POLICY_IDS_LIST" />” alkalmazások által hivatkozott „<ph name="FILE_EXTENSION" />” file_extension ismétlődő kezelői.</translation>
@@ -3019,6 +3021,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5728246486828755318">Kérheti a speciális nyomtatófunkciók használatát</translation>
 <translation id="5729442113829771034">Korai gyermekoktatás</translation>
 <translation id="5730040223043577876">A Chrome azt javasolja, hogy adjon meg új jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
+<translation id="5735174108294025227">Itt jelennek majd meg az ellenőrzött e-mail-címek</translation>
 <translation id="573555826359077410">Űrlap létrehozása gomb. A gombot megnyomva gyorsan létrehozhat új űrlapot a Google Űrlapok szolgáltatással.</translation>
 <translation id="5738385766833540397">Kezelheti a nyomon követett termékekkel kapcsolatos árcsökkenési értesítések fogadásának módját</translation>
 <translation id="5739619009927381786">A következő lépésben oldja fel a képernyőt, például az ujjlenyomatával. Vagy próbálja <ph name="BEGIN_LINK" />másképp végrehajtani az igazolást<ph name="END_LINK" />.</translation>

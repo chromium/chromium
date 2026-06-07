@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">內衣</translation>
 <translation id="1458770162980644530">「先買後付」嘅服務條款畫面。隱藏咗鍵盤。</translation>
 <translation id="1459693405370120464">天氣</translation>
+<translation id="1460317464907341501">要自動驗證此電郵嗎？</translation>
 <translation id="1461041542809785877">效能</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用電腦上的字型，以便製作高傳真度內容</translation>
@@ -2004,6 +2005,7 @@
 <translation id="412601465078863288">上載逾時</translation>
 <translation id="4127317221386336246">服裝配飾</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表格資料}other{以及另外 # 項表格資料}}</translation>
+<translation id="4129810348470013900">發生問題，請檢查你的互聯網連線，然後再試一次。</translation>
 <translation id="4129992181550680635">教育資源</translation>
 <translation id="4130226655945681476">檢查網絡連接線、數據機或路由器</translation>
 <translation id="4132448310531350254">應用程式「<ph name="POLICY_IDS_LIST" />」參照的 file_extension「<ph name="FILE_EXTENSION" />」被指派給多個處理常式。</translation>
@@ -2213,7 +2215,7 @@
 <translation id="4434045419905280838">彈出式視窗和重新導向</translation>
 <translation id="443673843213245140">雖然已停用 Proxy，不過已明確指定了 Proxy 設定。</translation>
 <translation id="4438821706955556403">一般價格</translation>
-<translation id="4439687924334332880">自動分享此視窗中與此對話串相關的已開啟分頁，以獲得更切合需要的答覆。你可以在「設定」中為所有訊息串開啟此功能。</translation>
+<translation id="4439687924334332880">如果此視窗中開啟的分頁與此對話串相關，便自動分享以獲得更合適的答覆。你可以在「設定」中為所有訊息串開啟此功能。</translation>
 <translation id="4441832193888514600">由於此政策只能設定為雲端使用者政策，因此系統已忽略。</translation>
 <translation id="4444062564459679679">已傳送至 <ph name="DEVICE_NAME" /> 上的 Chrome</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒 Enter 掣就可以搜尋分頁</translation>
@@ -3021,6 +3023,7 @@
 <translation id="5728246486828755318">可以要求使用進階打印機功能</translation>
 <translation id="5729442113829771034">幼兒教育</translation>
 <translation id="5730040223043577876">如果您已在其他網站上重用密碼，Chrome 建議您重設密碼。</translation>
+<translation id="5735174108294025227">已驗證的電郵地址會在這裡顯示</translation>
 <translation id="573555826359077410">建立表格按鈕，啟動之後就可以喺喺「Google 表格」度快速建立新表格</translation>
 <translation id="5738385766833540397">管理如何接收已追蹤產品的減價通知</translation>
 <translation id="5739619009927381786">在下一個步驟中解鎖螢幕，通常是使用指紋。你亦可<ph name="BEGIN_LINK" />透過其他方法驗證<ph name="END_LINK" />。</translation>
@@ -3175,7 +3178,7 @@
 <translation id="5995727681868049093">在 Google 帳戶管理您的資料、私隱權和安全設定</translation>
 <translation id="5996255674476750320">車展</translation>
 <translation id="5997247540087773573">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，「Google 密碼管理工具」建議您立即變更密碼，並檢查已儲存的密碼。</translation>
-<translation id="5997915162652837008">你可以開啟所有訊息串的自動分享分頁功能，節省時間。進一步瞭解</translation>
+<translation id="5997915162652837008">為所有訊息串開啟自動分享分頁功能即可節省時間。進一步瞭解</translation>
 <translation id="6000528814684428358">重搖滾和前衛音樂</translation>
 <translation id="6000758707621254961">有 <ph name="RESULT_COUNT" /> 個同「<ph name="SEARCH_TEXT" />」相關嘅搜尋結果</translation>
 <translation id="6002122790816966947">您的裝置</translation>
@@ -3320,7 +3323,7 @@
 <translation id="6203231073485539293">檢查互聯網連線</translation>
 <translation id="6205314730813004066">廣告私隱權</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
-<translation id="6213685130162740188">已知旅客編號</translation>
+<translation id="6213685130162740188">已知旅客號碼</translation>
 <translation id="6215936431492593050">金屬 (光滑)</translation>
 <translation id="6217950634729714357">廚房及飯廳傢私</translation>
 <translation id="6218305986815100395">無法啟用虛擬卡</translation>
@@ -3740,7 +3743,7 @@
 <translation id="6874604403660855544">重做新增(&amp;R)</translation>
 <translation id="6875873347995743859">傳送俾數碼助理</translation>
 <translation id="6875894866901426843">管理員將於<ph name="DATE_TIME" />刪除你的本機檔案，包括任何在「垃圾桶」中的檔案。</translation>
-<translation id="6880812263216766325">要一律分享已開啟的分頁，以獲得更佳的答覆嗎？</translation>
+<translation id="6880812263216766325">要一律分享開啟的分頁，以獲得更佳的答覆嗎？</translation>
 <translation id="6880941331070119097">高價選項</translation>
 <translation id="6881240511396774766">快速建立新的 Google 文件</translation>
 <translation id="6883221904761970440">閂咗安全付款憑證驗證工作表</translation>
@@ -4211,7 +4214,7 @@
 <translation id="7569490014721427265">高爾夫球</translation>
 <translation id="7569952961197462199">要從 Chrome 中移除信用卡資料嗎？</translation>
 <translation id="7569983096843329377">黑色</translation>
-<translation id="7570862164055912832">身分識別碼</translation>
+<translation id="7570862164055912832">補救號碼</translation>
 <translation id="7571813784389228510">Google AI 模式</translation>
 <translation id="7574998639136359461">冬季運動用品</translation>
 <translation id="7575207903026901870">移除建議按鈕，㩒一下 Enter 鍵就可以移除呢個建議</translation>
@@ -4723,7 +4726,7 @@
 <translation id="8381674639488873545">這些費用可能是一次性或會重複收取，而收費時亦可能難以察覺。<ph name="BEGIN_LINK" />仍要顯示<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">自動進入全螢幕模式</translation>
 <translation id="838307841291975086">房車</translation>
-<translation id="838953173259347825">自動分享此視窗中與此對話串相關的已開啟分頁，以獲得更切合需要的答覆。如要為所有訊息串開啟此功能，請前往</translation>
+<translation id="838953173259347825">如果此視窗中開啟的分頁與此對話串相關，便自動分享以獲得更合適的答覆。如要為所有訊息串開啟此功能，請前往</translation>
 <translation id="8389532092404711541">一般為 <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">改裝車和性能車</translation>
 <translation id="8390725133630534698">管理員政策已禁止將資料由 <ph name="ORIGIN_NAME" /> 分享到 <ph name="VM_NAME" /></translation>
@@ -5008,7 +5011,7 @@
 <translation id="8861482055962701239">資料無法儲存至「Google 錢包」，因此已改為儲存至此裝置上的 Chrome。Chrome 會在你下次使用時詢問是否要儲存至「錢包」。</translation>
 <translation id="8863218129525348270">將付款卡儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="8864939224504814334">套裝和上班服裝</translation>
-<translation id="8865650218866129025">要自動分享此訊息串已開啟的分頁，以獲得更佳的答覆嗎？</translation>
+<translation id="8865650218866129025">要自動分享開啟的分頁，以在此訊息串中獲得更相關的答覆嗎？</translation>
 <translation id="8866132857352163524">原聲帶</translation>
 <translation id="8866481888320382733">解析政策設定時發生錯誤</translation>
 <translation id="8866928039507595380">對摺</translation>

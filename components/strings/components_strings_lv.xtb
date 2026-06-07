@@ -306,6 +306,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1458140305240870199">Apakšveļa</translation>
 <translation id="1458770162980644530">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” pakalpojumu sniegšanas noteikumu ekrāns. Tastatūra ir paslēpta.</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
+<translation id="1460317464907341501">Vai automātiski verificēt šo e-pasta adresi?</translation>
 <translation id="1461041542809785877">Veiktspēja</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">izmantot jūsu datorā pieejamos fontus, lai jūs varētu veidot saturu ar augstu precizitāti</translation>
@@ -2003,6 +2004,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="412601465078863288">Augšupielādei iestājās noildze</translation>
 <translation id="4127317221386336246">Apģērbu piederumi</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{vēl 1}zero{vēl #}one{vēl #}other{vēl #}}</translation>
+<translation id="4129810348470013900">Radās kļūda. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="4129992181550680635">Izglītojoši materiāli</translation>
 <translation id="4130226655945681476">Pārbaudiet tīkla kabeļus, modemu un maršrutētāju</translation>
 <translation id="4132448310531350254">Faila paplašinājumam “<ph name="FILE_EXTENSION" />” ir dublēti apdarinātāji, kas norādīti lietotnēs: “<ph name="POLICY_IDS_LIST" />”.</translation>
@@ -3020,6 +3022,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5728246486828755318">Var pieprasīt atļauju izmantot printera papildu funkcijas</translation>
 <translation id="5729442113829771034">Izglītība agrā bērnībā</translation>
 <translation id="5730040223043577876">Chrome iesaka atiestatīt jūsu paroli, ja izmantojāt to citās vietnēs.</translation>
+<translation id="5735174108294025227">Šeit tiks rādītas verificētās e-pasta adreses.</translation>
 <translation id="573555826359077410">Poga “Izveidot veidlapu”. Aktivizējiet, lai pakalpojumā Google veidlapas ātri izveidotu jaunu veidlapu.</translation>
 <translation id="5738385766833540397">Pārvaldiet, kā saņemt paziņojumus par izsekoto produktu cenu kritumu</translation>
 <translation id="5739619009927381786">Nākamajā darbībā atbloķējiet ekrānu (parasti izmantojot pirksta nospiedumu). Varat arī <ph name="BEGIN_LINK" />veikt verifikāciju citā veidā<ph name="END_LINK" />.</translation>

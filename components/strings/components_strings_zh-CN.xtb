@@ -306,6 +306,7 @@
 <translation id="1458140305240870199">内衣</translation>
 <translation id="1458770162980644530">“先买后付”服务条款界面。键盘已隐藏。</translation>
 <translation id="1459693405370120464">天气</translation>
+<translation id="1460317464907341501">自动验证此邮箱？</translation>
 <translation id="1461041542809785877">性能</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
@@ -2001,6 +2002,7 @@
 <translation id="412601465078863288">上传超时</translation>
 <translation id="4127317221386336246">服装配饰</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
+<translation id="4129810348470013900">出了点问题。请检查网络连接情况，然后重试。</translation>
 <translation id="4129992181550680635">教育资源</translation>
 <translation id="4130226655945681476">检查网线、调制解调器和路由器</translation>
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />”政策中指定的应用所引用的文件扩展名“<ph name="FILE_EXTENSION" />”被分配了多个处理程序。</translation>
@@ -3018,6 +3020,7 @@
 <translation id="5728246486828755318">可以请求使用高级打印机功能</translation>
 <translation id="5729442113829771034">儿童早期教育</translation>
 <translation id="5730040223043577876">如果您在其他网站上重复使用了您的密码，Chrome 建议您重置该密码。</translation>
+<translation id="5735174108294025227">经过验证的邮箱将显示在此处</translation>
 <translation id="573555826359077410">“创建表单”按钮，激活它即可在 Google 表单中快速创建新表单</translation>
 <translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5739619009927381786">在下一步中解锁屏幕，通常使用指纹解锁，也可<ph name="BEGIN_LINK" />使用其他验证方式<ph name="END_LINK" />。</translation>

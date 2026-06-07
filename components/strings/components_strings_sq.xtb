@@ -306,6 +306,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1458140305240870199">Veshje të brendshme</translation>
 <translation id="1458770162980644530">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë". Tastiera është e fshehur.</translation>
 <translation id="1459693405370120464">Moti</translation>
+<translation id="1460317464907341501">Të verifikohet automatikisht ky email?</translation>
 <translation id="1461041542809785877">Cilësia e funksionimit</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Përdor fontet në kompjuterin tënd që të mund të krijosh përmbajtje me saktësi të lartë</translation>
@@ -2005,6 +2006,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="412601465078863288">Koha e ngarkimit skadoi</translation>
 <translation id="4127317221386336246">Aksesorë veshjesh</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 tjetër}other{# të tjerë}}</translation>
+<translation id="4129810348470013900">Ndodhi një gabim. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="4129992181550680635">Burime edukative</translation>
 <translation id="4130226655945681476">Të kontrollosh kabllot e rrjetit, modemin dhe router-in</translation>
 <translation id="4132448310531350254">Përpunues dublikatë për file_extension "<ph name="FILE_EXTENSION" />" që i referohen aplikacionet "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3024,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5728246486828755318">Mund të kërkojë të përdorë veçoritë e përparuara të printerit</translation>
 <translation id="5729442113829771034">Arsimi në fëmijërinë e hershme</translation>
 <translation id="5730040223043577876">Chrome rekomandon rivendosjen e fjalëkalimit tënd nëse e ke ripërdorur në sajte të tjera.</translation>
+<translation id="5735174108294025227">Adresat e verifikuara të email-it do të shfaqen këtu</translation>
 <translation id="573555826359077410">Butoni "Krijo formular". Aktivizoje për të krijuar me shpejtësi një formular të ri te "Formularët e Google"</translation>
 <translation id="5738385766833540397">Menaxho se si i merr sinjalizimet për uljet e çmimeve për produktet që monitoron</translation>
 <translation id="5739619009927381786">Shkyç ekranin në hapin tjetër, zakonisht duke përdorur gjurmën tënde të gishtit. Ndryshe, mund të <ph name="BEGIN_LINK" />verifikohesh në një mënyrë tjetër<ph name="END_LINK" />.</translation>
@@ -3320,7 +3323,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6203231073485539293">Kontrollo lidhjen e internetit.</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6212314149070368045">Palosje fizarmonikë (SHBA)</translation>
-<translation id="6213685130162740188">Numrat e udhëtarëve të njohur</translation>
+<translation id="6213685130162740188">Numrat e udhëtarit të njohur</translation>
 <translation id="6215936431492593050">Metal (saten)</translation>
 <translation id="6217950634729714357">Mobilie për kuzhinën dhe dhomën e ngrënies</translation>
 <translation id="6218305986815100395">Karta virtuale nuk mund të aktivizohet</translation>

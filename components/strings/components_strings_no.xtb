@@ -306,6 +306,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1458140305240870199">Undertøy</translation>
 <translation id="1458770162980644530">Skjerm med vilkår for bruk av Kjøp nå, betal senere. Tastaturet er skjult.</translation>
 <translation id="1459693405370120464">Vær</translation>
+<translation id="1460317464907341501">Vil du bekrefte denne e-posten automatisk?</translation>
 <translation id="1461041542809785877">Ytelse</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">bruke skrifttypene på datamaskinen din, slik at du kan lage innhold av høy kvalitet</translation>
@@ -2005,6 +2006,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="412601465078863288">Opplastingen ble tidsavbrutt</translation>
 <translation id="4127317221386336246">Tilbehør til klær</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 til}other{# til}}</translation>
+<translation id="4129810348470013900">Noe gikk galt. Sjekk internettilkoblingen, og prøv på nytt.</translation>
 <translation id="4129992181550680635">Utdanningsressurser</translation>
 <translation id="4130226655945681476">Sjekk nettverkskablene, modemet og ruteren</translation>
 <translation id="4132448310531350254">Appene «<ph name="POLICY_IDS_LIST" />» henviser til dupliserte behandlere for filetternavnet «<ph name="FILE_EXTENSION" />».</translation>

@@ -186,6 +186,7 @@
 <translation id="1605658421715042784">Copia la imatge</translation>
 <translation id="1606899876897213121">Tanca el resum de l'activitat recent</translation>
 <translation id="1612754831519568745">La funció Navegació segura està desactivada en aquest moment. Obtén protecció contra baixades, extensions i llocs web perillosos.</translation>
+<translation id="1617300545081951343">S'hi apliquen les nostres <ph name="BEGIN_LINK" />condicions<ph name="END_LINK" />, les <ph name="BEGIN_LINK" />condicions del servei d'ubicació de Corea<ph name="END_LINK" /> i l’<ph name="BEGIN_LINK" />avís de privadesa<ph name="END_LINK" />. Gemini és una IA i pot cometre errors, també sobre persones.</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1622717322707146952">Selecciona Afegeix a Google Calendar o Afegeix a Calendari d'Apple.</translation>
 <translation id="1629162218487290695">Verifica la teva identitat…</translation>
@@ -486,6 +487,7 @@
 <translation id="2640733327287333451">Sense nom d'usuari ••••••</translation>
 <translation id="264215785133931186">Comprovada ara mateix</translation>
 <translation id="2647434099613338025">Afegeix un idioma</translation>
+<translation id="2648812801228676606">Has mantingut la sessió iniciada com a <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Estàs a punt de suprimir les dades del gestor de contrasenyes de Google</translation>
 <translation id="2652129567809778422">Selecciona una contrasenya</translation>
 <translation id="2658056020748144467">No es pot obrir el fitxer</translation>
@@ -611,6 +613,7 @@
 <translation id="3119874402040566234">Es tancarà la teva sessió i se suprimiran les dades de navegació</translation>
 <translation id="3124568093781685165">Comparteix les teves contrasenyes amb la família</translation>
 <translation id="3130863904455712965">Historial i més</translation>
+<translation id="3130973487775218359">Mira: <ph name="BEGIN_LINK" />5 coses que cal saber sobre la IA generativa<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Desa el número Redress</translation>
 <translation id="3132584647087998639">Importa les teves dades</translation>
 <translation id="313283613037595347">Crea una pestanya d'incògnit.</translation>
@@ -943,6 +946,7 @@
 <translation id="4306349443295056740">Signatura OCSP</translation>
 <translation id="4309403553630140242">Fes doble toc per obtenir més informació</translation>
 <translation id="4310738531374808763">Personalitza la pàgina d'inici</translation>
+<translation id="4316794575239200608">Els revisors humans no revisaran ni les teves converses amb Gemini ni les teves <ph name="BEGIN_LINK" />dades de Google Workspace<ph name="END_LINK" />, i aquestes dades tampoc no es faran servir per millorar els models d'IA generativa.</translation>
 <translation id="4320848494125124980">Recents</translation>
 <translation id="4322394346347055525">Tanca les altres pestanyes</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1028,6 +1032,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> contrasenyes reutilitzades</translation>
 <translation id="4632655012900268062">Personalitza les targetes</translation>
 <translation id="4634124774493850572">Utilitza la contrasenya</translation>
+<translation id="4634633632339959267">Els xats es revisen i s'utilitzen per millorar la IA de Google. <ph name="BEGIN_LINK" />Obtén informació sobre les teves opcions<ph name="END_LINK" />. Amb la teva activitat, també s'emmagatzema <ph name="BEGIN_LINK" />informació sobre la ubicació<ph name="END_LINK" />.</translation>
 <translation id="4636930964841734540">Informació</translation>
 <translation id="4641425577292284174">Esbrina si tens la configuració més segura o si has de revisar alguna cosa</translation>
 <translation id="4642472735733036929">S'ha aturat el seguiment dels preus</translation>
@@ -1579,6 +1584,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6435236283694032571">Afegeix a la llista de lectura</translation>
 <translation id="6435307030888827407">Continua sense iniciar la sessió</translation>
 <translation id="6436318499800111867">Compartit amb mi: <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respecta la privadesa dels altres<ph name="END_LINK" /> i demana'ls permís abans de gravar-los o incloure'ls en un xat Live.</translation>
 <translation id="6442697326824312960">Deixa de fixar la pestanya</translation>
 <translation id="6443118737398455446">La data de caducitat no és vàlida</translation>
 <translation id="6444435711855078002">Més opcions</translation>
@@ -1827,6 +1833,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7253951228444156601">S'estan comprovant les contrasenyes…</translation>
 <translation id="7261217796641151584">Comparteix el grup</translation>
 <translation id="7266578100016339897">Això t'ajuda a mantenir l'organització. Pots canviar-ho en qualsevol moment a la configuració.</translation>
+<translation id="7270491814777319521">S'hi apliquen les <ph name="BEGIN_LINK" />condicions de Google<ph name="END_LINK" /> i l’<ph name="BEGIN_LINK" />avís de privadesa de les aplicacions de Gemini<ph name="END_LINK" />. Gemini és una IA i pot cometre errors, també sobre persones.</translation>
 <translation id="7272437679830969316">No es pot verificar la teva identitat. La contrasenya no s'ha copiat.</translation>
 <translation id="728025568708172005">Mostra'm la zona</translation>
 <translation id="7280980607183752256">Aquest fitxer no es pot importar</translation>
@@ -2147,6 +2154,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8345328955902001853">{count,plural, =1{Completa 1 tasca més per pujar de nivell}other{Completa {count} tasques més per pujar de nivell}}</translation>
 <translation id="8348530355586151720">Toca el menú de tres punts</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
+<translation id="8360164927489392419">Les gravacions de les teves interaccions amb Live i el contingut que hi comparteixes es desen i es tracten d'acord amb l’<ph name="BEGIN_LINK" />avís de privadesa de les aplicacions de Gemini<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{S'ha importat {count} adreça d'interès}other{S'han importat {count} adreces d'interès}}</translation>
 <translation id="8363484128299778310">Recuperació temporal en cas de problemes</translation>
 <translation id="8364563001733875155">Per canviar el PIN, configura primer una contrasenya al dispositiu.</translation>

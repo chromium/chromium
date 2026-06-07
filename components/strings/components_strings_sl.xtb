@@ -306,6 +306,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1458140305240870199">Spodnje perilo</translation>
 <translation id="1458770162980644530">Zaslon s pogoji storitve za »Kupi zdaj, plačaj pozneje«. Tipkovnica je skrita.</translation>
 <translation id="1459693405370120464">Vreme</translation>
+<translation id="1460317464907341501">Želite ta e-poštni naslov preveriti samodejno?</translation>
 <translation id="1461041542809785877">Učinkovitost delovanja</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">uporabiti pisave v računalniku, da boste lahko ustvarjali vsebino visoke kakovosti.</translation>
@@ -2005,6 +2006,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="412601465078863288">Časovna omejitev za nalaganje je potekla</translation>
 <translation id="4127317221386336246">Modni dodatki</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{in še 1 drug}one{in še # drug}two{in še # druga}few{in še # drugi}other{in še # drugih}}</translation>
+<translation id="4129810348470013900">Prišlo je do napake. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="4129992181550680635">Izobraževalni viri</translation>
 <translation id="4130226655945681476">preveriti omrežne kable, modem in usmerjevalnik</translation>
 <translation id="4132448310531350254">Podvojene rutine za obravnavo za pripono datoteke »<ph name="FILE_EXTENSION" />«, navedene v aplikacijah »<ph name="POLICY_IDS_LIST" />«.</translation>

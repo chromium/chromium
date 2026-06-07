@@ -487,6 +487,7 @@
 <translation id="2640733327287333451">Không có tên người dùng ••••••</translation>
 <translation id="264215785133931186">Vừa kiểm tra xong</translation>
 <translation id="2647434099613338025">Thêm ngôn ngữ</translation>
+<translation id="2648812801228676606">Bạn vẫn đang đăng nhập bằng tài khoản <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Bạn sắp xoá dữ liệu trong Trình quản lý mật khẩu của Google</translation>
 <translation id="2652129567809778422">Chọn mật khẩu</translation>
 <translation id="2658056020748144467">Không thể mở tệp</translation>
@@ -637,7 +638,7 @@
 <translation id="3190736958609431397">Bỏ theo dõi</translation>
 <translation id="3208260410153224535">Tổ chức của bạn đã tắt tính năng đăng nhập. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu vào thiết bị này.</translation>
 <translation id="3211969308836412674">Bỏ ghim trang web</translation>
-<translation id="3213807041830307252">Mua sản phẩm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera và thư viện ảnh của bạn.</translation>
+<translation id="3213807041830307252">Mua sắm, dịch văn bản và nhận dạng đối tượng mà bạn nhìn thấy bằng camera và thư viện ảnh của bạn.</translation>
 <translation id="3214379938835224220">Bạn đã bị đăng xuất trong quá trình đặt lại iPad. Nhấn vào Tiếp tục bên dưới để đăng nhập.</translation>
 <translation id="3218296450292600703">Khi đăng nhập bằng tài khoản được quản lý, bạn có thể tách biệt hoạt động duyệt web liên quan đến tổ chức (trong đó có các thẻ, nhật ký và mật khẩu) với hoạt động duyệt web khác của bạn</translation>
 <translation id="3224075676564434205">Các thẻ sẽ vẫn mở trên thiết bị này nhưng nhóm sẽ bị xoá khỏi mọi thiết bị đã đăng nhập vào <ph name="USER_EMAIL" />.</translation>

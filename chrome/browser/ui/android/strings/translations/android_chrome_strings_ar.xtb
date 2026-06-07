@@ -647,6 +647,7 @@
 <translation id="3771290962915251154">لقد تم إيقاف هذا الإعداد بسبب تفعيل "أدوات رقابة الأهل".</translation>
 <translation id="3771694256347217732">‏بنود خدمة Google</translation>
 <translation id="3777796259512476958">يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية.</translation>
+<translation id="3786379886124795923">‏لقد مسحت رمز استجابة سريعة ضوئيًا لتسجيل الدخول إلى Chrome. يُرجى تأكيد رغبتك في الحصول على كلمات المرور والإشارات المرجعية وغيرها من هذا الملف الشخصي.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{علامة تبويب واحدة}zero{# علامة تبويب}two{علامتا تبويب}few{# علامات تبويب}many{# علامة تبويب}other{# علامة تبويب}}</translation>
 <translation id="3792938779249970121">اختيار حساب</translation>
 <translation id="3795154175078851242">نسخ الصورة مع الرابط</translation>
@@ -832,6 +833,7 @@
 <translation id="4532845899244822526">اختيار مجلد</translation>
 <translation id="4535755320005483982">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />" التي تمت مشاركتها</translation>
 <translation id="4537137366307982887">تم فتح البطاقة السفلية لتفعيل إشعارات النصائح بطول الشاشة</translation>
+<translation id="4537987892902330164">لقد سجّلت الدخول بحساب <ph name="NAME_OR_EMAIL" /> مسبقًا.</translation>
 <translation id="4543131175509360848">صفحة "ما من مفاتيح مرور"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب عاديتان (<ph name="TAB_COUNT_MANY" />) وعلامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_INCOGNITO" />)}few{<ph name="TAB_COUNT_MANY" /> علامات تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="4558311620361989323">اختصارات صفحة الويب</translation>
@@ -1289,6 +1291,7 @@
 <translation id="6411219469806822692">لا يمكن السحب أعلى من ذلك. يمكنك بدء سحب نافذة لقطة الشاشة من موضع أعلى في الصفحة.</translation>
 <translation id="6412215853589222273">‫"<ph name="TAB_TITLE" />"، علامة تبويب تم اختيارها عدة مرات</translation>
 <translation id="641643625718530986">طباعة…</translation>
+<translation id="6427723330233512782">ملاءمة طول الصفحة مع الشاشة</translation>
 <translation id="6433501201775827830">اختر محرك البحث</translation>
 <translation id="6434309073475700221">تجاهل</translation>
 <translation id="6435307030888827407">البقاء في وضع تسجيل الخروج</translation>
@@ -2029,9 +2032,11 @@
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="94161319503679839">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة في "وضع التصفّح المتخفي" تعرض فيديو في وضع "نافذة ضمن النافذة"</translation>
 <translation id="945522503751344254">إرسال ملاحظات</translation>
+<translation id="949667118776341807">تدوير</translation>
 <translation id="95817756606698420">‏يمكن لـ Chrome استخدام <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> للبحث في الصين. ويمكنك تغيير هذا في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>
 <translation id="963246339335003378">فتح "إدارة المهام"</translation>
+<translation id="966337994629449077">‏لقد سجّلت الدخول باستخدام حساب <ph name="FROM_EMAIL" />.\n\nللمتابعة من جهاز الكمبيوتر، يُرجى التبديل إلى حساب <ph name="TO_EMAIL" />. بإمكانك الوصول إلى كلمات المرور والإشارات المرجعية وغيرها من هذا الحساب.</translation>
 <translation id="970715775301869095">عدد الدقائق المتبقية: <ph name="MINUTES" /></translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>

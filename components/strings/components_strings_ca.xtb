@@ -306,6 +306,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1458140305240870199">Roba interior</translation>
 <translation id="1458770162980644530">Pantalla de les condicions del servei de Compra ara, paga més tard. El teclat està amagat.</translation>
 <translation id="1459693405370120464">Temps</translation>
+<translation id="1460317464907341501">Vols verificar automàticament aquesta adreça electrònica?</translation>
 <translation id="1461041542809785877">Rendiment</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Utilitza els tipus de lletra del teu ordinador per crear continguts d'alta fidelitat</translation>
@@ -2005,6 +2006,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="412601465078863288">S'ha esgotat el temps d'espera per a la pujada</translation>
 <translation id="4127317221386336246">Accessoris de moda</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 element més}other{# elements més}}</translation>
+<translation id="4129810348470013900">Hi ha hagut un error. Comprova la connexió a Internet i torna-ho a provar.</translation>
 <translation id="4129992181550680635">Recursos educatius</translation>
 <translation id="4130226655945681476">Comprova els cables de xarxa, el mòdem i l'encaminador.</translation>
 <translation id="4132448310531350254">Hi ha gestors duplicats per a l'extensió de fitxer "<ph name="FILE_EXTENSION" />" a què fan referència les aplicacions de "<ph name="POLICY_IDS_LIST" />".</translation>

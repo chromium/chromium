@@ -487,6 +487,7 @@
 <translation id="2640733327287333451">Aucun nom d'utilisateur ••••••</translation>
 <translation id="264215785133931186">Vérification effectuée à l'instant</translation>
 <translation id="2647434099613338025">Ajouter une langue</translation>
+<translation id="2648812801228676606">Vous êtes resté connecté en tant que <ph name="NAME_OR_EMAIL" /></translation>
 <translation id="2649592894792404568">Vous êtes sur le point de supprimer vos données du Gestionnaire de mots de passe de Google</translation>
 <translation id="2652129567809778422">Sélectionner un mot de passe</translation>
 <translation id="2658056020748144467">Impossible ouvrir fichier</translation>
@@ -1106,7 +1107,7 @@
 <translation id="4854068532375923088">Autorisez Gemini à utiliser votre appareil photo</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4861953997778766866">Tout le monde peut modifier vos groupes d'onglets partagés</translation>
-<translation id="4865063548323785458">Enregistrez et saisissez automatiquement vos mots de passe pour vous connecter facilement à des sites et applis</translation>
+<translation id="4865063548323785458">Enregistrez et saisissez automatiquement vos mots de passe pour vous connecter facilement à des sites et applis.</translation>
 <translation id="4867608294647017606">Supprimer l'image de la recherche</translation>
 <translation id="4869146460927742717">Position de la barre d'adresse</translation>
 <translation id="4870911314065352661">Fermer tous les onglets ?</translation>
@@ -2309,7 +2310,7 @@ Pour continuer depuis votre ordinateur, connectez-vous à <ph name="OTHER_EMAIL"
 <translation id="8814719628147284151">Continuer</translation>
 <translation id="881559332211266856">Mettez à jour le numéro de recours</translation>
 <translation id="8817524703470045896">Suivez des prix et recevez des alertes en cas de baisse de prix sur un site</translation>
-<translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>
+<translation id="8819155700324279105">Ajoutez un niveau de sécurité accru contre les menaces en ligne.</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8822421075653507124">Pour une utilisation sécurisée de cet appareil, votre organisation peut avoir besoin d'informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
 <translation id="882557203579758546">Rechercher sur la page</translation>

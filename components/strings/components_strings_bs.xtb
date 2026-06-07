@@ -306,6 +306,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1458140305240870199">Donji veš</translation>
 <translation id="1458770162980644530">Ekran uslova korištenja usluge za naknadno plaćanje. Tastatura je sakrivena.</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
+<translation id="1460317464907341501">Automatski potvrditi ovu adresu e-pošte?</translation>
 <translation id="1461041542809785877">Performanse</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Koristite fontove na računaru da kreirate sadržaj visoke vrijednosti</translation>
@@ -2005,6 +2006,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="412601465078863288">Otpremanje je isteklo</translation>
 <translation id="4127317221386336246">Odjevni dodaci</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
+<translation id="4129810348470013900">Nešto nije uredu. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="4129992181550680635">Obrazovni izvori</translation>
 <translation id="4130226655945681476">Provjeriti mrežne kablove, modem i ruter</translation>
 <translation id="4132448310531350254">Duplicirani obrađivači za stavku file_extension "<ph name="FILE_EXTENSION" />" koja se spominje u pravilima aplikacija "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3024,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5728246486828755318">Može zatražiti da koristi napredne funkcije štampača</translation>
 <translation id="5729442113829771034">Obrazovanje u ranom djetinjstvu</translation>
 <translation id="5730040223043577876">Chrome preporučuje da ponovo postavite lozinku ako ste je koristili više puta na drugim web lokacijama.</translation>
+<translation id="5735174108294025227">Ovdje će se prikazivati potvrđene adrese e-pošte</translation>
 <translation id="573555826359077410">Dugme Kreiraj obrazac, aktivirajte da brzo kreirate novi obrazac na usluzi Google Forms</translation>
 <translation id="5738385766833540397">Upravljajte načinom na koji primate obavještenja o padu cijene za proizvode koje pratite</translation>
 <translation id="5739619009927381786">U sljedećem koraku otključajte ekran, obično pomoću otiska prsta. Ili možete <ph name="BEGIN_LINK" />potvrditi na drugi način<ph name="END_LINK" />.</translation>

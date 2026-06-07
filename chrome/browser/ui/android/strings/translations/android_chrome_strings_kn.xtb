@@ -357,6 +357,7 @@
 <translation id="253498598929009420">ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ವಿಷಯಗಳನ್ನು ನೋಡಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ</translation>
 <translation id="2535807170289627159">ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="2536728043171574184">ಈ ಪುಟದ ಆಫ್‌ಲೈನ್ ಕಾಪಿಯನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2537574774089209541">ನೀವು ಬ್ರೌಸ್ ಮಾಡುವಾಗ Gemini ಗೆ ಸುಲಭ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಒದಗಿಸಲು ಕೆಲವು ಟೂಲ್‌ಗಳನ್ನು ಮೂವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2539002604555291451">ಸ್ಯಾನ್ಸ್ ಸೆರಿಫ್</translation>
 <translation id="2542094237868555728"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಲಾದ, ಆಯ್ಕೆಮಾಡಿರುವ, ಮ್ಯೂಟ್ ಆಗಿರುವ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="2542548955756682219"><ph name="TAB_TITLE" />, ಟ್ಯಾಬ್</translation>
@@ -405,6 +406,7 @@
 <translation id="2751271371269891762">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, <ph name="EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2760805590727089264">MM / YY</translation>
 <translation id="2762000892062317888">ಈಗತಾನೇ</translation>
+<translation id="276378135349383280">ಕೆಳ ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿ Gemini ತೋರಿಸಿ</translation>
 <translation id="276969039800130567"><ph name="USER_EMAIL_ADDRESS" /> ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2777555524387840389"><ph name="SECONDS" /> ಸೆಕೆಂಡುಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="2779651927720337254">ವಿಫಲವಾಗಿದೆ</translation>
@@ -604,6 +606,7 @@
 <translation id="3602290021589620013">ಪೂರ್ವವೀಕ್ಷಣೆ</translation>
 <translation id="3614126103057878858">ದರದ ಒಳನೋಟಗಳು</translation>
 <translation id="3616113530831147358">ಆಡಿಯೋ</translation>
+<translation id="3616798734782988169">ನಿಮಗೆ <ph name="DOWNLOAD_DOMAIN" /> ಮೇಲೆ ನಂಬಿಕೆಯಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="3619255692378312441">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3622349720008044802">ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 ಸೈಟ್}one{+ # ಸೈಟ್‌ಗಳು}other{+ # ಸೈಟ್‌ಗಳು}}</translation>
@@ -634,6 +637,7 @@
 <translation id="3738139272394829648">ಹುಡುಕಲು ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="3739455665973395693">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಯಾವುದೇ ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="3739899004075612870"><ph name="PRODUCT_NAME" /> ನಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="3740290940447881599">ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ನಂಬುತ್ತೀರಿ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="3740525748616366977">ಈ ಸಾಧನದಲ್ಲಿ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ.</translation>
 <translation id="3763110477555836428">ನಿಮ್ಮ ನೈಜ ವಿವರಗಳನ್ನು ರಕ್ಷಿಸಲು, ಈ ಕಾರ್ಡ್ ಮೂಲಕ ನೀವು ಚೆಕ್ ಔಟ್ ಮಾಡಿದಾಗ ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಭರ್ತಿ ಮಾಡಲಾಗುತ್ತದೆ. Google Wallet ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ. <ph name="BEGIN_LINK1" />ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK1" /></translation>
 <translation id="376561056759077985">ಕೆಲವು ಡೇಟಾವನ್ನು ಇನ್ನೂ ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
@@ -642,6 +646,7 @@
 <translation id="3771290962915251154">ಪೋಷಕರ ನಿಯಂತ್ರಣಗಳು ಆನ್ ಆಗಿರುವ ಕಾರಣ, ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3771694256347217732">Google ಸೇವಾ ನಿಯಮಗಳು</translation>
 <translation id="3777796259512476958">ಬಹುತೇಕ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತದೆ</translation>
+<translation id="3786379886124795923">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿದ್ದೀರಿ. ಈ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ನೀವು ಬಯಸುತ್ತೀರಿ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ.</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ಟ್ಯಾಬ್}one{# ಟ್ಯಾಬ್‌ಗಳು}other{# ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="3792938779249970121">ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3795154175078851242">ಚಿತ್ರವನ್ನು ಲಿಂಕ್‌ನೊಂದಿಗೆ ಕಾಪಿ ಮಾಡಿ</translation>
@@ -826,6 +831,7 @@
 <translation id="4532845899244822526">ಫೋಲ್ಡರ್‌ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4535755320005483982">ಹಂಚಿಕೊಳ್ಳಲಾಗಿರುವ <ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="4537137366307982887">ಸಲಹೆಗಳ ನೋಟಿಫಿಕೇಶನ್‌ಗಳ ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
+<translation id="4537987892902330164">ನೀವು <ph name="NAME_OR_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದ್ದೀರಿ.</translation>
 <translation id="4543131175509360848">ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳ ಶೀಟ್ ಇಲ್ಲ</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}other{<ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು, <ph name="TAB_COUNT_INCOGNITO" /> ಅಜ್ಞಾತ}}</translation>
 <translation id="4558311620361989323">ವೆಬ್‌ಪುಟ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
@@ -1283,6 +1289,7 @@
 <translation id="6411219469806822692">ಮೇಲಕ್ಕೆ ಹೋಗಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪುಟದ ಇನ್ನು ಮೇಲಿನಿಂದ ಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6412215853589222273"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಮಾಡಿದ ಟ್ಯಾಬ್</translation>
 <translation id="641643625718530986">ಮುದ್ರಿಸು...</translation>
+<translation id="6427723330233512782">ಎತ್ತರಕ್ಕೆ ತಕ್ಕಂತೆ ಹೊಂದಿಸಿ</translation>
 <translation id="6433501201775827830">ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇಂಜಿನ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6434309073475700221">ತಿರಸ್ಕರಿಸಿ</translation>
 <translation id="6435307030888827407">ಸೈನ್ ಔಟ್ ಆಗಿಯೇ ಇರಿ</translation>
@@ -1529,6 +1536,7 @@
 <translation id="7291910923717764901">ಈ ಪುಟಕ್ಕಾಗಿ ಚಿತ್ರ ವಿವರಣೆಯನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7293429513719260019">ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />, ಆಯ್ಕೆಮಾಡಿದ ಪಿನ್ ಮಾಡಿರುವ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಟ್ಯಾಬ್</translation>
+<translation id="7304003340539141201">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಕಾರ್ಯಗಳಿಗೆ ಸಹಾಯ ಮಾಡಲು Gemini ಅನ್ನು ಕೇಳಿ</translation>
 <translation id="7311244614769792472">ಯಾವ ಫಲಿತಾಂಶಗಳೂ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="7314734791127433392">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="7324354302972299151">"ಟ್ರ್ಯಾಕ್ ಮಾಡಬೇಡಿ" ವಿನಂತಿಯನ್ನು ಕಳುಹಿಸಿ</translation>
@@ -1875,6 +1883,7 @@
 <translation id="8696297579102085705">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8697753151306746444">ಬದಲಿಗೆ ವಿಂಡೋ ಅಥವಾ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="8699120352855309748">ಈ ಭಾಷೆಗಳನ್ನು ಅನುವಾದಿಸುವ ಪ್ರಸ್ತಾಪ ಮಾಡಬೇಡಿ</translation>
+<translation id="8700565880437506364">Chrome ನಲ್ಲಿ Gemini ಅನ್ನು ಪರಿಚಯಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="8715286883001906001">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಲಪಡಿಸಿ</translation>
 <translation id="8715300232952757586"><ph name="TAB_TITLE" /> ಅನ್ನು ಮುಚ್ಚಲಾಗುವುದು</translation>
@@ -1942,6 +1951,7 @@
 <translation id="8996847606757455498">ಬೇರೆ ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8998837250940831980">ಟ್ಯಾಬ್ ಅನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="9001604755921395912">ಅಜ್ಞಾತ Chrome ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="9010094279589497751">ನಿಮಗೆ ಅಗತ್ಯವಿರುವಾಗ Gemini ಅನ್ನು ತ್ವರಿತವಾಗಿ ತೆರೆಯಿರಿ</translation>
 <translation id="9012585441087414258">ಅಪಾಯಕಾರಿ ಎಂದು ತಿಳಿದಿರುವ ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳ ವಿರುದ್ಧ ರಕ್ಷಿಸುತ್ತದೆ. ಯಾವುದೇ ಪುಟವು ಅನುಮಾನಾಸ್ಪದವಾಗಿದ್ದರೆ, URL ಗಳು, ಪುಟದ ಕಂಟೆಂಟ್ ಬಿಟ್‌ಗಳನ್ನು Google Safe Browsing ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="9019199799064251516">ಕಾರ್ ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಇಲ್ಲದೆಯೇ ಮುಂದುವರಿಯಬೇಕೆ?</translation>
 <translation id="9022774213089566801">ಆಗಾಗ್ಗೆ ಭೇಟಿ ನೀಡಿರುವುದು</translation>
@@ -1999,6 +2009,7 @@
 <translation id="9190355771000652811">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ, ಸರ್ಚ್ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟಕ್ಕಾಗಿ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಜೊತೆಗೆ ಈ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿದ, ಆಯ್ಕೆ ಮಾಡಲಾದ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 ನಿಮಿಷದ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ನಿಮಿಷಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ನಿಮಿಷಗಳ ಹಿಂದೆ ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
+<translation id="9202894533863490414">ಈ ಸೈಟ್‌ನಿಂದ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="9204836675896933765">1 ಫೈಲ್ ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="9205933215779845960">ಆ ಪುಟ ಕಂಡುಬರುತ್ತಿಲ್ಲ. ನಿಮ್ಮ ಕಾಗುಣಿತವನ್ನು ಪರಿಶೀಲಿಸಿ ಅಥವಾ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಿ ನೋಡಿ.</translation>
 <translation id="9206873250291191720">A</translation>
@@ -2016,9 +2027,11 @@
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿರುವ ಪಿಕ್ಚರ್-ಇನ್-ಪಿಕ್ಚರ್ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>
+<translation id="949667118776341807">ತಿರುಗಿಸಿ</translation>
 <translation id="95817756606698420">Chrome ಚೀನಾದಲ್ಲಿ ಹುಡುಕಲು <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ಬಳಸಬಹುದು. ನೀವು ಇದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು<ph name="END_LINK" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="963246339335003378">ಟಾಸ್ಕ್‌ ಮ್ಯಾನೇಜರ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="966337994629449077">ನೀವು <ph name="FROM_EMAIL" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ.\n\nನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಿಂದ ಮುಂದುವರಿಯಲು, <ph name="TO_EMAIL" /> ಗೆ ಬದಲಿಸಿ. ಈ ಖಾತೆಯಿಂದ ನೀವು ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="983192555821071799">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>

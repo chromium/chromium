@@ -70,6 +70,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1749104137266986751">Če HTTPS ni na voljo, Chromium uporabi povezavo, ki ni varna, ne da bi vas opozoril</translation>
 <translation id="1774152462503052664">Naj se Chromium izvaja v ozadju</translation>
 <translation id="1779356040007214683">Zaradi večje varnosti smo v Chromiumu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
+<translation id="1793486931176048546">Kliknite <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> v obvestilu sistema Windows, če želite Chromium pripeti v opravilno vrstico za hitri dostop.</translation>
 <translation id="1808667845054772817">Vnovična namestitev Chromiuma</translation>
 <translation id="1820835682567584003">Chromium poskuša <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="183031085822326697">Ko boste naslednjič odprli Chromium v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za uporabo Googlovega upravitelja gesel.</translation>
@@ -386,6 +387,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5348677704241861105">Pridobite hiter pregled tega dokumenta in postavljajte vprašanja z Geminijem v Chromiumu</translation>
 <translation id="5352264705793813212">Chromium je za vaš pregled našel nekaj varnostnih priporočil</translation>
 <translation id="5352361688875342522">Drugi profili v Chromiumu</translation>
+<translation id="535243042947607642">ChromiumOS ni mogel shraniti podatkov v Chromiumu v račun Google, ker so podatki za prijavo v račun zastareli</translation>
 <translation id="5358375970380395591">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">Dodatna koda: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Če želite omogočiti osebno prilagajanje, vključite Chromium v dejavnost v spletu in aplikacijah</translation>
@@ -721,6 +723,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8852026904190808918">Ta jezik se uporablja za prikaz menijev, nastavitev, opozoril in drugega besedila v Chromiumu</translation>
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>
 <translation id="8876044221123442390">Dodaj profil v Chromiumu</translation>
+<translation id="8890569919834781711">ChromiumOS ni mogel shraniti podatkov v Chromiumu v račun Google zaradi napake pri prijavi</translation>
 <translation id="8891709362986793894">Vaša organizacija zahteva, da se prijavite v Chromium</translation>
 <translation id="8907580949721785412">Chromium poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="8932992523185907506">Chromium ni več privzeti brskalnik. Želite Chromium nastaviti kot privzeti brskalnik?</translation>

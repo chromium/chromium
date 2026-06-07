@@ -306,6 +306,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1458140305240870199">Ropa interior</translation>
 <translation id="1458770162980644530">Pantalla de Términos del Servicio del pago aplazado. Teclado oculto.</translation>
 <translation id="1459693405370120464">Información meteorológica</translation>
+<translation id="1460317464907341501">¿Verificar este correo automáticamente?</translation>
 <translation id="1461041542809785877">Rendimiento</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar las fuentes del ordenador para que puedas crear contenido de alta fidelidad</translation>
@@ -2005,6 +2006,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="412601465078863288">Tiempo de espera de subida agotado</translation>
 <translation id="4127317221386336246">Accesorios de vestir</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Uno más}other{# más}}</translation>
+<translation id="4129810348470013900">Se ha producido un error. Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="4129992181550680635">Recursos educativos</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4132448310531350254">Controladores duplicados de la extensión de archivo <ph name="FILE_EXTENSION" /> a los que hacen referencia las aplicaciones <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3022,6 +3024,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5728246486828755318">Puede solicitar permiso para usar funciones avanzadas de la impresora</translation>
 <translation id="5729442113829771034">Educación infantil</translation>
 <translation id="5730040223043577876">Chrome te recomienda que cambies tu contraseña si la has vuelto a utilizar en otros sitios.</translation>
+<translation id="5735174108294025227">Las direcciones de correo verificadas aparecerán aquí</translation>
 <translation id="573555826359077410">Botón Crear formulario: actívalo para crear un nuevo formulario en Formularios de Google rápidamente</translation>
 <translation id="5738385766833540397">Gestiona cómo recibes las alertas de bajadas de precio de los productos que sigues</translation>
 <translation id="5739619009927381786">Desbloquea la pantalla en el siguiente paso, normalmente con tu huella digital. También puedes hacer la <ph name="BEGIN_LINK" />verificación usando otro método<ph name="END_LINK" />.</translation>

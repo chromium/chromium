@@ -317,6 +317,13 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="1214639335214075459">Attiva decodifica video hardware GPU</translation>
 <translation id="1214942205301731697">Non consentire l'utilizzo della modalità sviluppatore nella pagina delle estensioni</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
+<translation id="1217033439268053263">Questa policy è deprecata. È possibile utilizzare la policy <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />, che sostituisce questa policy e consente un perfezionamento più preciso.
+
+      Forza la Modalità con restrizioni di livello medio su <ph name="YOUTUBE_PRODUCT_NAME" /> e impedisce agli utenti di modificare questa impostazione.
+
+      Se questa impostazione viene attivata, viene sempre forzata l'applicazione almeno della Modalità con restrizioni di livello medio su <ph name="YOUTUBE_PRODUCT_NAME" />.
+
+      Se questa impostazione viene disattivata o non viene impostato alcun valore, non viene forzata da <ph name="PRODUCT_NAME" /> l'applicazione della Modalità con restrizioni su <ph name="YOUTUBE_PRODUCT_NAME" />. Tuttavia, la Modalità con restrizioni potrebbe essere comunque applicata in modo forzato da policy esterne, come quelle di <ph name="YOUTUBE_PRODUCT_NAME" />.</translation>
 <translation id="1219027971768347970">Utilizza la configurazione predefinita per la sandbox audio</translation>
 <translation id="1219036692926668273">Utilizzo dell'algoritmo <ph name="HAPPY_EYEBALLS_V3" />.</translation>
 <translation id="1221359380862872747">Carica gli URL specificati all'accesso demo</translation>
@@ -557,6 +564,7 @@ Questa policy non viene applicata né funziona in modalità Incognito.</translat
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
 <translation id="1419020637569060510">Aggiungi limitazioni all'utilizzo di un account gestito come account secondario su ChromeOS</translation>
+<translation id="1423311643274506889">Forza l'uso almeno del livello medio di SafeSearch nella Ricerca Google e della Modalità con restrizioni di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="1423359855587524289">Se la policy viene attivata o se non viene configurata, l'app può utilizzare
 l'autorizzazione delle notifiche "temporanee" di iOS per presentare le notifiche nel
 Centro notifiche di iOS.
@@ -2147,6 +2155,7 @@ L'utente può scegliere un'immagine di Google Foto come sfondo se questa policy 
 <translation id="2393862222659066027">Apri un elenco di URL e ripristina l'ultima sessione</translation>
 <translation id="239416486107542256">Le impostazioni di F11 usano la scorciatoia che contiene i tasti di modifica Ctrl e Maiusc</translation>
 <translation id="2394429297128584919">Non consentire alle pagine di inviare richieste XHR sincrone durante la chiusura delle pagine</translation>
+<translation id="2398817690049129302">Forza l'applicazione della modalità provvisoria di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="2399987589969059485">La configurazione di questa policy consente di specificare quali varianti è possibile applicare in <ph name="PRODUCT_NAME" />.
 
       Le varianti forniscono un mezzo per apportare modifiche a <ph name="PRODUCT_NAME" /> senza inviare una nuova versione del browser, attivando o disattivando in modo selettivo le funzionalità già esistenti. Per ulteriori informazioni, vai all'indirizzo https://support.google.com/chrome/a?p=Manage_the_Chrome_variations_framework.
@@ -2620,6 +2629,7 @@ Se questa policy viene impostata su Disattivata o se non viene configurata, tutt
 Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le limitazioni relative a <ph name="PRIVATE_NETWORK_ACCESS" />.</translation>
 <translation id="2600005880585324062">Consenti a <ph name="PRODUCT_NAME" /> di decidere quali origini isolare da altre origini nello stesso sito.</translation>
 <translation id="26023406105317310">Configura account Kerberos</translation>
+<translation id="2603163741218691337">Non limitare l'eliminazione dei cookie di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="2603237557651009842">Blocca l'API WebPrinting su questi siti</translation>
 <translation id="2603382859270873566">Attiva il supporto dell'API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configura le norme relative alla funzione Condivisioni file di rete</translation>
@@ -3400,6 +3410,7 @@ Se la policy è impostata su Disattivata o non è impostata, il menu Accessibili
 <translation id="3142410959002029864">La configurazione di questa policy consente di sostituire la modalità di stampa fronte/retro predefinita. Se la modalità non è disponibile, questa policy viene ignorata.</translation>
 <translation id="3143203373436771188">Quando si accede a documenti Office gestiti da <ph name="BASIC_EDITOR_NAME" />, aprili in <ph name="BASIC_EDITOR_NAME" /></translation>
 <translation id="3144173889708944482">Se per la policy <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLOCKLIST" />, la configurazione della policy <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. Gli utenti avranno a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questa policy. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
+<translation id="3144419820067745871"><ph name="YOUTUBE_PRODUCT_NAME" /> (supportato a partire dalla versione 135)</translation>
 <translation id="3146711617256415776">Non consentire le voci di sintesi vocale di rete migliorate durante l'utilizzo di Seleziona per ascoltare</translation>
 <translation id="315013437951136266">Attiva la funzionalità <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="3150351525324499342">Non mostrare l'icona <ph name="PRODUCT_NAME" /> nella barra degli strumenti per impostazione predefinita, ma lascia la scelta agli utenti</translation>
@@ -4277,6 +4288,7 @@ Se la imposti su Attivata o se non la configuri, i tuoi utenti potranno attivare
 Questa policy è deprecata a partire dalla versione 144 di <ph name="PRODUCT_NAME" /> con il ritiro dell'API Protected Audience.</translation>
 <translation id="3733014427925403568">Giorno della settimana dell'intervallo.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
+<translation id="3741204225338304131">Forza l'applicazione di un livello minimo della Modalità con restrizioni di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="3744984310825999317">Consenti a <ph name="PEPPER_NAME" /> di usare un nuovo decodificatore per la decodifica video con accelerazione hardware.</translation>
 <translation id="3749259744154402564">Opzione non supportata</translation>
 <translation id="3749511622128647337">Disattiva l'output audio</translation>
@@ -5613,6 +5625,7 @@ Vecchio comportamento precedente: in "beforeunload", la chiamata di "event.preve
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
 <translation id="4624417808625504735">Impedisci a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="46321462262887935">Imposta i tasti della fila superiore come tasti funzione, ma consenti la modifica da parte degli utenti</translation>
+<translation id="4635757219046879316">Forza almeno l'applicazione della Modalità con restrizioni di livello medio su <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="4636354638176939375">Disattiva la creazione di utenti supervisionati</translation>
 <translation id="4637701328641064644">Questa policy consente di stabilire se gli URL dei BLOB vengono partizionati durante il recupero e la navigazione.
 Se questa policy viene impostata su Attivata o se non viene configurata, gli URL dei BLOB verranno partizionati.
@@ -6212,6 +6225,7 @@ La configurazione della policy consente di controllare la presentazione dei cont
 
       Vedi la policy <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> per bloccare app nella barra delle app di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
+<translation id="4947257516265472776">Forza l'applicazione della Modalità con restrizioni di livello massimo per <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="494924690085329212">Riavvia all'uscita dell'utente se Android è stato avviato.</translation>
 <translation id="4950447493143157880">Non utilizzare mai il client DNS integrato</translation>
 <translation id="4953541641325278286">Non consentire ad alcun sito di rilevare lo stato di inattività dell'utente</translation>
@@ -6839,6 +6853,13 @@ Se questa policy viene impostata su Disattivata o non viene configurata, il brow
       Se la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> viene definita in una richiesta <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, tutte le schermate vengono acquisite automaticamente senza chiedere esplicitamente l'autorizzazione dell'utente.
       Se la policy non viene configurata, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> non è disponibile per alcuna applicazione web.
 Per migliorare la privacy, a partire dalla versione 116 di <ph name="PRODUCT_NAME" />, questa policy non supporterà più l'aggiornamento dinamico. Pertanto, l'utente potrà assicurarsi che dopo l'accesso le altre pagine non saranno in grado di acquisire le schermate, se non era già stato consentito all'inizio della sessione.</translation>
+<translation id="5351894784463048975">Questa policy è deprecata, al suo posto usa <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" /> e <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" />. Questa policy viene ignorata se è impostata una delle policy <ph name="FORCE_GOOGLE_SAFE_SEARCH_POLICY_NAME" />, <ph name="FORCE_YOUTUBE_RESTRICT_POLICY_NAME" /> o la policy (deprecata) <ph name="FORCE_YOUTUBE_SAFETY_MODE_POLICY_NAME" />.
+
+      Forza l'esecuzione delle query nella Ricerca Google con l'opzione SafeSearch attiva e impedisce agli utenti di modificare questa impostazione. Questa impostazione forza anche la Modalità con restrizioni di livello medio su <ph name="YOUTUBE_PRODUCT_NAME" />.
+
+      Se attivi questa impostazione, SafeSearch nella Ricerca Google e la Modalità con restrizioni di livello medio di <ph name="YOUTUBE_PRODUCT_NAME" /> saranno sempre attivi.
+
+      Se disattivi questa impostazione o non configuri un valore, l'applicazione di SafeSearch nella Ricerca Google e della Modalità con restrizioni in <ph name="YOUTUBE_PRODUCT_NAME" /> non sarà forzata.</translation>
 <translation id="5361167871898066799">Controlla la funzionalità di correzione automatica sulla tastiera fisica</translation>
 <translation id="5361708558735884308">La configurazione della policy consente di fornire l'accesso agli URL elencati, sotto forma di eccezioni a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Leggi la descrizione della policy per conoscere il formato delle voci di questo elenco. Ad esempio, se imposti la policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> su *, tutte le richieste verranno bloccate e puoi utilizzare questa policy per consentire l'accesso a un elenco limitato di URL. Utilizzalo per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito. La policy <ph name="URL_ALLOWLIST_POLICY_NAME" /> ha la precedenza sulla policy <ph name="URL_BLOCKLIST_POLICY_NAME" />. Per questa policy è possibile definire al massimo 1000 voci.
 
@@ -7156,6 +7177,7 @@ Consulta anche https://wiki.samba.org/index.php/Samba_4.6_Features_added/changed
 
       Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="554903022911579950">Kerberos</translation>
+<translation id="5549325536554939195">Forza l'applicazione almeno del livello medio della Modalità con restrizioni di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="555022085242359084">Attiva l'alto contrasto nella schermata di accesso</translation>
 <translation id="555077880566103058">Consenti l'esecuzione automatica del plug-in <ph name="FLASH_PLUGIN_NAME" /> in tutti i siti</translation>
 <translation id="5555361544583789006">Se la policy viene impostata su true o se non viene configurata, <ph name="PRODUCT_NAME" /> mostra agli utenti informazioni sul prodotto come contenuti a scheda intera.
@@ -7624,6 +7646,15 @@ gli utenti non potranno modificarla o eseguirne l'override.</translation>
       Il valore <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> può essere una versione esatta, ad esempio "13305.0.0" oppure un prefisso di versione, ad esempio "13305".
       I valori <ph name="WARNING_PERIOD_PROPERTY_NAME" /> e <ph name="AUE_WARNING_PERIOD_PROPERTY_NAME" /> sono facoltativi e specificati in numero di giorni. Il valore predefinito è 0, a indicare nessun periodo di avviso.
       Il valore <ph name="UNMANAGED_USER_RESTRICTED_PROPERTY_NAME" /> è una proprietà facoltativa, il cui valore predefinito è False.</translation>
+<translation id="5876812185674131521">Impedisce l'eliminazione manuale dei cookie di <ph name="YOUTUBE_PRODUCT_NAME" />.
+
+Questa policy ha lo scopo di impedire agli utenti di effettuare un accesso non autorizzato a <ph name="YOUTUBE_PRODUCT_NAME" /> dopo aver cancellato manualmente i cookie di <ph name="YOUTUBE_PRODUCT_NAME" /> dalla pagina delle impostazioni del sito.
+
+Se la policy viene attivata, i cookie di <ph name="YOUTUBE_PRODUCT_NAME" /> non possono essere eliminati manualmente.
+
+Se la policy viene disattivata o se non viene configurata, i cookie di <ph name="YOUTUBE_PRODUCT_NAME" /> possono essere eliminati normalmente.
+
+Nota: questa policy impedisce solo l'eliminazione manuale dall'interfaccia utente delle impostazioni del sito. Non impedisce l'eliminazione automatica da parte della policy <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> o della policy<ph name="BROWSING_DATA_LIFETIME_POLICY_NAME" />. Inoltre, se la policy <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> è attivata, gli utenti possono comunque cancellare tutti i cookie tramite la finestra di dialogo Cancella dati di navigazione.</translation>
 <translation id="5879014913445067283">Consente di controllare la funzione Condivisioni file di rete tramite il protocollo <ph name="NETBIOS_NAME" /></translation>
 <translation id="588135807064822874">Attiva la funzione Tocca per cercare</translation>
 <translation id="5882345429632338713">Ritardo prima di avviare il browser alternativo (in millisecondi)</translation>
@@ -7872,6 +7903,7 @@ Questa policy è stata ritirata a partire dalla versione M124.</translation>
 <translation id="6035597431797865964">Consenti di memorizzare le proprietà di visualizzazione della sessione Ospite gestita</translation>
 <translation id="6036459377708946958">Il giorno del mese [1-31] in cui dovrebbe essere eseguito il controllo della disponibilità di aggiornamenti, nel fuso orario locale del dispositivo. Questa policy viene usata soltanto se il valore della policy "frequency" è "MONTHLY". Se questo numero supera il numero di giorni massimo presente in un mese specifico, verrà scelto l'ultimo giorno del mese.</translation>
 <translation id="6036523166753287175">Abilita attraversamento firewall da host di accesso remoto</translation>
+<translation id="6037328895573728112">Limita l'eliminazione dei cookie di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="603768430528561926">Se la policy viene impostata su Attivata o se non viene configurata, gli utenti dei dispositivi aziendali possono riscattare le offerte tramite la registrazione a <ph name="PRODUCT_OS_NAME" />.
 
       Se viene impostata su Disattivata, gli utenti non possono riscattare tali offerte.</translation>
@@ -8612,6 +8644,7 @@ Vedi anche la policy <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
 Se viene disattivata, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> non è disponibile in nessuna pagina web.
 
 Le funzionalità di IA generativa che fanno parte di questa funzionalità non sono disponibili per gli account aziendali o scolastici.</translation>
+<translation id="6466693757921765054">Questa policy non ha effetto sull'app <ph name="YOUTUBE_PRODUCT_NAME" /> su <ph name="ANDROID_NAME" />. Se è necessario forzare la modalità provvisoria su <ph name="YOUTUBE_PRODUCT_NAME" />, l'installazione dell'app <ph name="YOUTUBE_PRODUCT_NAME" /> su <ph name="ANDROID_NAME" /> non deve essere ammessa.</translation>
 <translation id="6467613372414922590">Consenti host di messaggistica nativi a livello di utente (installati senza privilegi di amministratore)</translation>
 <translation id="6467707081687600148">Programma un riavvio automatico dopo l'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" />.
 
@@ -9118,6 +9151,7 @@ la configurazione.</translation>
 
       chrome://flags e qualsiasi altro metodo per attivare e disattivare le funzionalità del browser continueranno a comportarsi come previsto a prescindere dall'attivazione o meno di questa policy.</translation>
 <translation id="6794273802619210652">Attiva la funzione di accessibilità controlli con il volto</translation>
+<translation id="6795338611092628062">Non forzare l'applicazione di SafeSearch nella Ricerca Google o della Modalità con restrizioni di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="6795485990775913659">Consenti la stampa solo senza PIN</translation>
 <translation id="6796215185873669533">Usa per impostazione predefinita le impostazioni del browser per la versione della stringa user agent.</translation>
 <translation id="6800181452282128474">Non inviare query a Quirks Server</translation>
@@ -9453,6 +9487,13 @@ Se la policy non viene configurata, in pratica equivale a impostarla su "<ph nam
        Non configurare questa policy se hai selezionato una qualsiasi altra modalità per le policy di impostazione del proxy.
 
        Nota: per esempi approfonditi, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
+<translation id="7001463504545085491">L'attivazione della policy forza l'applicazione di un livello minimo della Modalità con restrizioni su <ph name="YOUTUBE_PRODUCT_NAME" /> e impedisce agli utenti di sceglierne uno meno restrittivo. Se l'impostazione è su:
+
+      * Livello massimo, la Modalità con restrizioni di livello massimo su <ph name="YOUTUBE_PRODUCT_NAME" /> è sempre attiva.
+
+      * Livello medio: l'utente può scegliere solo tra la Modalità con restrizioni di livello medio e quella di livello massimo su <ph name="YOUTUBE_PRODUCT_NAME" />, ma non può disattivare la Modalità con restrizioni.
+
+      * Disattivata o non viene configurato alcun valore, Chrome non forza l'applicazione della Modalità con restrizioni su <ph name="YOUTUBE_PRODUCT_NAME" />. Le policy esterne, come quelle di <ph name="YOUTUBE_PRODUCT_NAME" />, potrebbero comunque forzare l'applicazione della Modalità con restrizioni.</translation>
 <translation id="7001915679435065291">Se la policy viene impostata su 1, tutti i siti web possono mostrare immagini. Se la policy viene impostata su 2, la visualizzazione delle immagini viene negata.
 
 Se non viene configurata, le immagini sono consentite, ma gli utenti possono cambiare l'impostazione.</translation>
@@ -9878,6 +9919,7 @@ Nota: se utilizzi questa policy per risolvere automaticamente il fuso orario, no
 <translation id="7179187054027029272">Se la policy è impostata su True o se non viene configurata, con le autorizzazioni adeguate, gli utenti, le app e le estensioni possono utilizzare la modalità a schermo intero (in cui vengono visualizzati solo i contenuti web).
 
       Se la policy è impostata su False, gli utenti, le app e le estensioni non possono utilizzare la modalità a schermo intero.</translation>
+<translation id="7180529638251181928">Non forzare l'applicazione della Modalità con restrizioni su <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="718126088895133062">Questa policy consente di specificare l'ID utente della licenza <ph name="PLUGIN_VM_NAME" /> di questo dispositivo.</translation>
 <translation id="7185078796915954712">TLS 1.3</translation>
 <translation id="7185630966939835143">Usa un servizio web di Google per correggere gli errori ortografici</translation>
@@ -11434,6 +11476,7 @@ Per una descrizione dettagliata di tutti i valori di gestione, consulta la sezio
 <translation id="82530263956734297">ID delle estensioni da escludere dalla lista bloccata</translation>
 <translation id="8254749125469750814">Non convalidare se un'estensione può essere installata o meno con un servizio cloud.</translation>
 <translation id="8256006033157034334">Questa policy è deprecata e non è supportata. Utilizza la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME_POLICY_NAME" />.</translation>
+<translation id="8256324351037372224">Non forzare l'applicazione della Modalità con restrizioni di <ph name="YOUTUBE_PRODUCT_NAME" /></translation>
 <translation id="8256688113167012935">Controlla il nome account visualizzato da <ph name="PRODUCT_OS_NAME" /> nella schermata di accesso per il corrispondente account del dispositivo.
 
       Se la policy è impostata, la schermata di accesso utilizzerà la stringa specificata nel selettore di accesso basato su immagine per il corrispondente account del dispositivo.

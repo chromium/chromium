@@ -306,6 +306,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1458140305240870199">Sous-vêtements</translation>
 <translation id="1458770162980644530">Écran des Conditions d'utilisation Acheter maintenant, payer plus tard. Clavier masqué.</translation>
 <translation id="1459693405370120464">Météo</translation>
+<translation id="1460317464907341501">Valider automatiquement cette adresse e-mail ?</translation>
 <translation id="1461041542809785877">Performances</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Utiliser les polices installées sur votre ordinateur pour créer des contenus haute fidélité</translation>
@@ -2005,6 +2006,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="412601465078863288">Délai d'importation dépassé</translation>
 <translation id="4127317221386336246">Accessoires vestimentaires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 autre}one{# autre}other{# autres}}</translation>
+<translation id="4129810348470013900">Un problème est survenu. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="4129992181550680635">Ressources pédagogiques</translation>
 <translation id="4130226655945681476">Vérifiez les câbles réseau, le modem et le routeur.</translation>
 <translation id="4132448310531350254">Gestionnaires en double pour l'extension de fichier "<ph name="FILE_EXTENSION" />" référencée par les applis "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -2456,7 +2458,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4864406669374375262">Chaîne de version copiée dans le presse-papiers</translation>
 <translation id="486459320933704969">Un parent ou un représentant légal doit approuver l'accès à ce site Web.</translation>
 <translation id="4864801646102013152">Bricolage et décoration</translation>
-<translation id="4865063548323785458">Enregistrez et saisissez automatiquement vos mots de passe pour vous connecter facilement à des sites et applis</translation>
+<translation id="4865063548323785458">Enregistrez et saisissez automatiquement vos mots de passe pour vous connecter facilement à des sites et applis.</translation>
 <translation id="4866506163384898554">Appuyez sur |<ph name="ACCELERATOR1" />|+|<ph name="ACCELERATOR2" />| pour afficher le curseur</translation>
 <translation id="4868277513442568587">Pour continuer à utiliser vos groupes d'onglets partagés, mettez à jour Chrome</translation>
 <translation id="4873616204573862158">Lunettes</translation>
@@ -3022,6 +3024,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5728246486828755318">Peut demander à utiliser les fonctionnalités avancées d'imprimante</translation>
 <translation id="5729442113829771034">Crèches et jardins d'enfants</translation>
 <translation id="5730040223043577876">L'équipe Chrome vous recommande de réinitialiser votre mot de passe si vous l'avez réutilisé sur d'autres sites.</translation>
+<translation id="5735174108294025227">Les adresses e-mail validées s'afficheront ici</translation>
 <translation id="573555826359077410">Bouton "Créer un formulaire" à activer pour créer rapidement un formulaire dans Google Forms</translation>
 <translation id="5738385766833540397">Gérez la réception d'alertes en cas de baisse de prix des produits que vous suivez</translation>
 <translation id="5739619009927381786">Déverrouillez votre écran à l'étape suivante, généralement à l'aide de votre empreinte digitale. Vous pouvez aussi <ph name="BEGIN_LINK" />utiliser une autre méthode de validation<ph name="END_LINK" />.</translation>
@@ -4981,7 +4984,7 @@ Informations supplémentaires :
 <translation id="8814707942599948500">Enveloppe C8</translation>
 <translation id="881559332211266856">Mettez à jour le numéro de recours</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis Entrée pour mettre à jour Chrome depuis les paramètres du navigateur</translation>
-<translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>
+<translation id="8819155700324279105">Ajoutez un niveau de sécurité accru contre les menaces en ligne.</translation>
 <translation id="8819855907485254989">Enregistrez le titre de transport dans Wallet</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="882338992931677877">Emplacement manuel</translation>

@@ -68,6 +68,7 @@
 <translation id="1749104137266986751">‏سيستخدم Chromium اتصالاً غير آمن بدون تحذيرك في حال عدم توفُّر بروتوكول HTTPS.</translation>
 <translation id="1774152462503052664">‏دع Chromium يعمل في الخلفية</translation>
 <translation id="1779356040007214683">‏لجعل Chromium أكثر أمانًا، تم إيقاف بعض الإضافات غير المدرجة في <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> والتي ربما تمت إضافتها بدون علمك.</translation>
+<translation id="1793486931176048546">‏انقر على <ph name="BEGIN_BOLD" />نعم<ph name="END_BOLD" /> في إشعار Windows لتثبيت Chromium في شريط التطبيقات والوصول إليه بسرعة.</translation>
 <translation id="1808667845054772817">‏إعادة تثبيت Chromium</translation>
 <translation id="1820835682567584003">‏يحاول Chromium <ph name="AUTHENTICATION_PURPOSE" />.</translation>
 <translation id="183031085822326697">‏عند فتح Chromium على <ph name="DEVICE_TYPE" /> في المرة القادمة، ستظهر لك رسالة تطلب منك استخدام "مدير كلمات المرور في Google".</translation>
@@ -384,6 +385,7 @@
 <translation id="5348677704241861105">‏يمكنك الحصول على نظرة عامة سريعة على هذا المستند وطرح أسئلة باستخدام "Gemini في Chromium"</translation>
 <translation id="5352264705793813212">‏عثَر Chromium على بعض اقتراحات الأمان المطلوب مراجعتها</translation>
 <translation id="5352361688875342522">‏الملفات الشخصية الأخرى على Chromium</translation>
+<translation id="535243042947607642">‏تعذَّر على ChromiumOS حفظ بيانات Chromium في حسابك على Google لأنّ تفاصيل تسجيل الدخول إلى حسابك قديمة</translation>
 <translation id="5358375970380395591">‏أنت تسجل الدخول باستخدام حساب يخضع للإدارة وتتيح للمشرف إمكانية التحكم في ملفك الشخصي على Chromium. وستكون بياناتك في Chromium مثل تطبيقاتك وإشاراتك المرجعية وسجلك وكلمات المرور التابعة لك والإعدادات الأخرى مرتبطة دائمًا بالمستخدم <ph name="USER_NAME" />. ستتمكن من حذف هذه البيانات عبر لوحة تحكم حسابات Google، ولكنك لن تتمكن من إقران هذه البيانات بحساب آخر. <ph name="LEARN_MORE" /></translation>
 <translation id="5368118228313795342">الرمز البرمجي الإضافي: <ph name="EXTRA_CODE" /></translation>
 <translation id="5377622451696208284">‏للحصول على خيارات مخصَّصة، يُرجى تضمين متصفّح Chromium في "النشاط على الويب وفي التطبيقات"</translation>
@@ -719,6 +721,7 @@
 <translation id="8852026904190808918">‏تُستخدم هذه اللغة لعرض القوائم والإعدادات والتنبيهات والنصوص الأخرى في Chromium</translation>
 <translation id="8862326446509486874">لا تملك الحقوق الكافية للتثبيت على مستوى النظام. جرّب تشغيل المثبِّت بصفة مشرف.</translation>
 <translation id="8876044221123442390">‏إضافة ملف شخصي على Chromium</translation>
+<translation id="8890569919834781711">‏تعذَّر على ChromiumOS حفظ بيانات Chromium في حسابك على Google بسبب حدوث خطأ أثناء تسجيل الدخول</translation>
 <translation id="8891709362986793894">‏تطلُب المؤسسة منك تسجيل الدخول إلى Chromium</translation>
 <translation id="8907580949721785412">‏يحاول Chromium عرض كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="8932992523185907506">‏لم يعُد Chromium متصفّحك التلقائي. جعل Chromium المتصفح التلقائي؟</translation>

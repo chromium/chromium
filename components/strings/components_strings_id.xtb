@@ -306,6 +306,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1458140305240870199">Pakaian Dalam</translation>
 <translation id="1458770162980644530">Layar persyaratan layanan Beli Sekarang, Bayar Nanti. Keyboard disembunyikan.</translation>
 <translation id="1459693405370120464">Cuaca</translation>
+<translation id="1460317464907341501">Verifikasi email ini secara otomatis?</translation>
 <translation id="1461041542809785877">Performa</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Menggunakan font di komputer Anda agar Anda dapat membuat konten dengan kualitas akurasi tinggi</translation>
@@ -2005,6 +2006,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="412601465078863288">Waktu upload habis</translation>
 <translation id="4127317221386336246">Aksesori Pakaian</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
+<translation id="4129810348470013900">Terjadi error. Periksa koneksi internet Anda, lalu coba lagi.</translation>
 <translation id="4129992181550680635">Referensi Pendidikan</translation>
 <translation id="4130226655945681476">Periksa kabel jaringan, modem, dan router</translation>
 <translation id="4132448310531350254">Pengendali duplikat untuk file_extension "<ph name="FILE_EXTENSION" />" yang direferensikan oleh aplikasi "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3022,6 +3024,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5728246486828755318">Dapat meminta untuk menggunakan fitur printer lanjutan</translation>
 <translation id="5729442113829771034">Pendidikan Anak Usia Dini</translation>
 <translation id="5730040223043577876">Chrome menyarankan untuk menyetel ulang sandi jika Anda juga menggunakannya di situs lain.</translation>
+<translation id="5735174108294025227">Alamat email terverifikasi akan muncul di sini</translation>
 <translation id="573555826359077410">Tombol Buat formulir, aktifkan untuk membuat formulir baru di Google Formulir dengan cepat</translation>
 <translation id="5738385766833540397">Kelola cara Anda menerima notifikasi diskon untuk produk yang dipantau</translation>
 <translation id="5739619009927381786">Buka kunci layar Anda di langkah berikutnya, biasanya menggunakan sidik jari Anda. Atau, Anda dapat <ph name="BEGIN_LINK" />memverifikasi dengan cara lain<ph name="END_LINK" />.</translation>

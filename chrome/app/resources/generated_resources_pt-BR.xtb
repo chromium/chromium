@@ -7741,6 +7741,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6646696210740573446">Envia apenas uma parte ofuscada do URL ao Google por um servidor de privacidade que oculta seu endereço IP. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar o URL, incluindo partes do conteúdo da página, ao Google.</translation>
 <translation id="6647228709620733774">URL da revogação da Autoridade de certificação do Netscape</translation>
 <translation id="6647690760956378579">Prévia de voz natural</translation>
+<translation id="6648602807077169189">Devolver a tarefa</translation>
 <translation id="6648911618876616409">Uma atualização crítica está pronta para ser instalada. Faça login para começar.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quer confirmar sua identidade</translation>
 <translation id="6650206238642452078">Inscreva-se em eventos do sistema ChromeOS</translation>
@@ -9112,6 +9113,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7650920359639954963">Não ativada: <ph name="REASON" /></translation>
 <translation id="7651182181030187705">Para acessar este favorito em todos os seus dispositivos, confirme sua identidade</translation>
 <translation id="7651400349472467012">Ponto de acesso instantâneo disponível</translation>
+<translation id="7651754152638505879">Tarefa pausada</translation>
 <translation id="7651784568388208829">Continuação da tarefa no recurso Seu smartphone</translation>
 <translation id="7652954539215530680">Criar um PIN</translation>
 <translation id="7654941827281939388">Esta conta já está sendo utilizada neste computador.</translation>
@@ -10996,6 +10998,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8991694323904646277">Sem câmera</translation>
 <translation id="8991766915726096402">Recuperação de dados locais</translation>
 <translation id="8992671062738341478">Uso da memória em <ph name="WINDOW_TITLE" />: <ph name="MEMORY_VALUE" /></translation>
+<translation id="8993030412405061612">Tarefa concluída</translation>
 <translation id="8993059306046735527">Se você esquecer a senha do <ph name="DEVICE_TYPE" />, ainda poderá restaurar seus dados locais. Faça login na sua Conta do Google ou use a recuperação de conta.</translation>
 <translation id="8993198843374358393">Copiar hash do certificado para <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Fornece controles para pausar e aumentar ou reduzir a velocidade da voz da leitura</translation>
