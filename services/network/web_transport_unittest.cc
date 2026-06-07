@@ -753,7 +753,8 @@ TEST_F(WebTransportTest, EchoOnUnidirectionalStreams) {
   bool stream_created;
   transport_remote->CreateStream(
       std::move(readable_for_outgoing),
-      /*writable=*/{}, base::BindLambdaForTesting([&](bool b, uint32_t id) {
+      /*writable=*/{}, /*priority=*/nullptr,
+      base::BindLambdaForTesting([&](bool b, uint32_t id) {
         stream_created = b;
         stream_id = id;
         run_loop_for_stream_creation.Quit();
@@ -830,6 +831,7 @@ TEST_F(WebTransportTest, DeleteClientWithStreamsOpen) {
     transport_remote->CreateStream(
         std::move(readable_for_outgoing),
         /*writable=*/{},
+        /*priority=*/nullptr,
         base::BindLambdaForTesting([&](bool b, uint32_t /*id*/) {
           stream_created = b;
           run_loop_for_stream_creation.Quit();
@@ -884,6 +886,7 @@ TEST_F(WebTransportTest, DISABLED_EchoOnBidirectionalStream) {
   bool stream_created;
   transport_remote->CreateStream(
       std::move(readable_for_outgoing), std::move(writable_for_incoming),
+      /*priority=*/nullptr,
       base::BindLambdaForTesting([&](bool b, uint32_t id) {
         stream_created = b;
         stream_id = id;

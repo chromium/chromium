@@ -81,6 +81,11 @@ base::TimeDelta ToTimeDelta(absl::Duration duration) {
   return base::Microseconds(absl::ToInt64Microseconds(duration));
 }
 
+webtransport::StreamPriority ToStreamPriority(
+    const mojom::WebTransportStreamPriority& p) {
+  return {p.send_group_id.value_or(0), p.send_order};
+}
+
 mojom::WebTransportStatsPtr StatsToMojom(
     const webtransport::SessionStats& stats) {
   mojom::WebTransportStatsPtr result = mojom::WebTransportStats::New();
@@ -495,6 +500,7 @@ void WebTransport::SendDatagram(base::span<const uint8_t> data,
 void WebTransport::CreateStream(
     mojo::ScopedDataPipeConsumerHandle readable,
     mojo::ScopedDataPipeProducerHandle writable,
+    mojom::WebTransportStreamPriorityPtr priority,
     base::OnceCallback<void(bool, uint32_t)> callback) {
   // |readable| is non-nullable, |writable| is nullable.
   DCHECK(readable);
@@ -519,6 +525,9 @@ void WebTransport::CreateStream(
     quic::WebTransportStream* const stream =
         session->OpenOutgoingBidirectionalStream();
     DCHECK(stream);
+    if (priority) {
+      stream->SetPriority(ToStreamPriority(*priority));
+    }
     streams_.insert(std::make_pair(
         stream->GetStreamId(),
         std::make_unique<Stream>(this, stream, std::move(readable),
@@ -538,6 +547,9 @@ void WebTransport::CreateStream(
   quic::WebTransportStream* const stream =
       session->OpenOutgoingUnidirectionalStream();
   DCHECK(stream);
+  if (priority) {
+    stream->SetPriority(ToStreamPriority(*priority));
+  }
   streams_.insert(std::make_pair(
       stream->GetStreamId(),
       std::make_unique<Stream>(this, stream, std::move(readable))));

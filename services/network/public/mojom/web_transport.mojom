@@ -69,6 +69,20 @@ struct WebTransportStats {
   uint64 datagrams_lost_outgoing;
 };
 
+// Represents the priority of a WebTransport stream.
+// https://w3c.github.io/webtransport/#dictdef-webtransportsendoptions
+// Default values (null send_group_id, send_order=0) match QUICHE's
+// webtransport::StreamPriority defaults (send_group_id=0, send_order=0),
+// where null maps to 0 via value_or(0).
+struct WebTransportStreamPriority {
+  // https://w3c.github.io/webtransport/#dom-webtransportsendoptions-sendgroup
+  // Null means "no group" (ungrouped / default group), mapped to
+  // SendGroupId 0 in QUICHE via value_or(0).
+  uint32? send_group_id;
+  // https://w3c.github.io/webtransport/#dom-webtransportsendoptions-sendorder
+  int64 send_order = 0;
+};
+
 // A mojo interface for https://w3c.github.io/web-transport/#web-transport.
 // This is typically implemented in the network service, and used by renderer.
 // WebTransport represents a WebTransport over HTTP/3 session, which has
@@ -102,9 +116,14 @@ interface WebTransport {
   // Stream creation initiated by the client. |succeeded| represents whether
   // the stream is created successfully, and |stream_id| is meaningful only
   // when |succeeded| is true. |writable| is nullable, to support both
-  // unidirectional and bidirectional streams.
+  // unidirectional and bidirectional streams. |priority| optionally sets the
+  // stream's scheduling priority; when null, the stream uses QUICHE's defaults
+  // (send_group_id=0, send_order=0). Passing a struct with those same default
+  // values is functionally equivalent but triggers a redundant SetPriority()
+  // call in the network service.
   CreateStream(handle<data_pipe_consumer> readable,
-               handle<data_pipe_producer>? writable)
+               handle<data_pipe_producer>? writable,
+               WebTransportStreamPriority? priority)
       => (bool succeeded, uint32 stream_id);
 
   // Accepts a bidirectional stream created by the server.

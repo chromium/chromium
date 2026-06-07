@@ -911,8 +911,13 @@ ScriptPromise<WritableStream> WebTransport::createUnidirectionalStream(
   // strong reference the group could be garbage-collected if JS drops all
   // references before the callback fires. nullptr is safe — Persistent<T>
   // accepts null.
+  // Build a Mojo priority struct only when there is a non-default send_group
+  // or send_order.  Passing nullptr avoids a redundant SetPriority() call in
+  // the network service.
+  auto mojo_priority = BuildMojoPriority(*stream_options);
   transport_remote_->CreateStream(
       std::move(data_pipe_consumer), mojo::ScopedDataPipeProducerHandle(),
+      std::move(mojo_priority),
       BindOnce(&WebTransport::OnCreateSendStreamResponse,
                WrapWeakPersistent(this), WrapWeakPersistent(resolver),
                std::move(data_pipe_producer),
@@ -969,8 +974,10 @@ ScriptPromise<BidirectionalStream> WebTransport::createBidirectionalStream(
   create_stream_resolvers_.insert(resolver);
   // See createUnidirectionalStream — send_group captured via WrapPersistent
   // to survive the Mojo round-trip; the registry uses WeakMember.
+  auto mojo_priority = BuildMojoPriority(*stream_options);
   transport_remote_->CreateStream(
       std::move(outgoing_consumer), std::move(incoming_producer),
+      std::move(mojo_priority),
       BindOnce(&WebTransport::OnCreateBidirectionalStreamResponse,
                WrapWeakPersistent(this), WrapWeakPersistent(resolver),
                std::move(outgoing_producer), std::move(incoming_consumer),
@@ -1903,8 +1910,8 @@ V8WebTransportCongestionControl WebTransport::congestionControl() const {
 WebTransportSendGroup* WebTransport::createSendGroup(
     ExceptionState& exception_state) {
   if (next_send_group_id_ == std::numeric_limits<uint32_t>::max()) {
-    exception_state.ThrowRangeError(
-        "Cannot create more send groups: group ID limit reached.");
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Too many send groups.");
     return nullptr;
   }
   uint32_t group_id = next_send_group_id_;
@@ -1912,6 +1919,19 @@ WebTransportSendGroup* WebTransport::createSendGroup(
   auto* group = MakeGarbageCollected<WebTransportSendGroup>(this, group_id);
   send_groups_.insert(group);
   return group;
+}
+
+// static
+network::mojom::blink::WebTransportStreamPriorityPtr
+WebTransport::BuildMojoPriority(const SendStreamOptions& options) {
+  if (!options.send_group && options.send_order == 0) {
+    return nullptr;
+  }
+  return network::mojom::blink::WebTransportStreamPriority::New(
+      options.send_group
+          ? std::make_optional<uint32_t>(options.send_group->group_id())
+          : std::nullopt,
+      options.send_order);
 }
 
 std::optional<WebTransport::SendStreamOptions>

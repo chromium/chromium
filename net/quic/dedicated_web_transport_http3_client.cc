@@ -199,7 +199,8 @@ class DedicatedWebTransportHttp3ClientSession
                                     supported_versions,
                                     connection,
                                     server_id,
-                                    crypto_config),
+                                    crypto_config,
+                                    quic::QuicPriorityType::kWebTransport),
         client_(client) {}
 
   bool OnSettingsFrame(const quic::SettingsFrame& frame) override {

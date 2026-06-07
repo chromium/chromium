@@ -73,6 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebTransport final
                     base::OnceCallback<void(bool)> callback) override;
   void CreateStream(mojo::ScopedDataPipeConsumerHandle readable,
                     mojo::ScopedDataPipeProducerHandle writable,
+                    mojom::WebTransportStreamPriorityPtr priority,
                     base::OnceCallback<void(bool, uint32_t)> callback) override;
   void AcceptBidirectionalStream(
       BidirectionalStreamAcceptanceCallback callback) override;
