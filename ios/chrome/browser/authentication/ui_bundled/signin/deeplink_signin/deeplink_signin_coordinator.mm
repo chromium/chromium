@@ -123,6 +123,7 @@
           changeProfileContinuationProvider:_changeProfileContinuationProvider];
   coordinator.delegate = self;
   coordinator.identity = _selectedIdentity;
+  coordinator.canSwitchAccount = YES;
   _childCoordinator = coordinator;
   [_childCoordinator start];
 }
