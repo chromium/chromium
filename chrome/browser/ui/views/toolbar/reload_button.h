@@ -134,6 +134,9 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   // The currently-visible mode - this may differ from the intended mode.
   Mode visible_mode_ = Mode::kReload;
 
+  // If true, we will animate the transitions between reload and stop.
+  bool animate_transitions_ = false;
+
   // The delay times for the timers.  These are members so that tests can modify
   // them.
   base::TimeDelta double_click_timer_delay_;
