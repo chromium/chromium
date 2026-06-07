@@ -7076,43 +7076,118 @@ TEST_F(RenderTextTest, HarfBuzz_TextDefaultEmojiVS16ProducesGlyphs) {
   }
 }
 
+// Returns true when `typeface` is one of the platform color-emoji typefaces
+// the emoji pre-pass in render_text_harfbuzz.cc may route runs through.
+// Mirrors the checks performed by gfx::TypefaceMayRenderColorEmoji.
+bool TypefaceMayRenderColorEmojiForTest(SkTypeface* typeface) {
+  if (!typeface) {
+    return false;
+  }
+
+  if (typeface->getTableSize(SkSetFourByteTag('C', 'O', 'L', 'R')) > 0 ||
+      typeface->getTableSize(SkSetFourByteTag('C', 'B', 'D', 'T')) > 0 ||
+      typeface->getTableSize(SkSetFourByteTag('s', 'b', 'i', 'x')) > 0) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  // No platform color-emoji font to match by name on these platforms.
+  return false;
+#else
+  // Some color-emoji typefaces (notably Segoe UI Emoji via DirectWrite) don't
+  // expose a color table to Skia, so fall back to matching the known platform
+  // family names. Checking all of them regardless of platform keeps this
+  // simple and is harmless.
+  SkString family_name;
+  typeface->getFamilyName(&family_name);
+  return base::EqualsCaseInsensitiveASCII(family_name.c_str(),
+                                          "Segoe UI Emoji") ||
+         base::EqualsCaseInsensitiveASCII(family_name.c_str(),
+                                          "Apple Color Emoji") ||
+         base::EqualsCaseInsensitiveASCII(family_name.c_str(),
+                                          "Noto Color Emoji");
+#endif
+}
+
+// The emoji pre-pass in RenderTextHarfBuzz::ShapeRuns must route bare
+// default-emoji codepoints (Unicode `Emoji_Presentation=Yes`, no trailing
+// VS-16) through the platform color-emoji typeface so they render in color
+// on native UI surfaces (tab titles, etc.). Without the pre-pass these
+// codepoints can render monochrome on Windows because GetFallbackFont
+// returns Segoe UI Symbol (which has a B&W glyph) instead of Segoe UI Emoji.
+// See crbug.com/519440127.
+TEST_F(RenderTextTest, HarfBuzz_DefaultEmojiCodepointProducesGlyphs) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // U+1F004 MAHJONG TILE RED DRAGON: canonical default-emoji codepoint in
+  //   the U+1F000-U+1F02F Mahjong/Domino/Playing-Card block that Windows
+  //   text-font fallback historically mishandled.
+  // U+1F0CF PLAYING CARD BLACK JOKER: same block.
+  // U+1F3B2 GAME DIE: outside the Mahjong block; also Emoji_Presentation=Yes.
+  for (const char16_t* sequence :
+       {u"\xD83C\xDC04", u"\xD83C\xDCCF", u"\xD83C\xDFB2"}) {
+    SCOPED_TRACE(sequence);
+    render_text->SetText(sequence);
+    render_text->SetDisplayRect(Rect(1000, 50));
+    const internal::TextRunList* run_list = GetHarfBuzzRunList();
+    ASSERT_GE(run_list->size(), 1U);
+    size_t total_glyphs = 0;
+    for (const auto& run : run_list->runs()) {
+      total_glyphs += run->shape.glyph_count;
+#if !BUILDFLAG(IS_FUCHSIA)
+      // Fuchsia does not bundle a suitable font to resolve all glyphs.
+      EXPECT_EQ(0U, run->CountMissingGlyphs());
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+      // The pre-pass must have routed the run through the platform color
+      // emoji typeface. On Linux/CrOS we can't reliably assert this in tests
+      // because the bot image may not have Noto Color Emoji installed.
+      EXPECT_TRUE(
+          TypefaceMayRenderColorEmojiForTest(run->font_params.skia_face.get()))
+          << "Default-emoji codepoint was not routed through the platform "
+             "color emoji font";
+#endif
+    }
+    EXPECT_GT(total_glyphs, 0U);
+  }
+}
+
+// Locks in the current run-level behavior of the emoji pre-pass: an
+// emoji-default codepoint adjacent to a text-default codepoint in the same
+// Unicode block forms a single run that is shaped entirely with the platform
+// color emoji font. This mirrors the run-level trade-off already accepted for
+// VS-16 sequences (e.g. "\u00A9\uFE0F\u2600" colors the trailing \u2600 too)
+// and Blink's segment-level FontFallbackPriority::kEmojiEmoji. Splitting runs
+// by effective emoji presentation and forcing text-default runs through a text
+// font is left as a possible follow-up; see crbug.com/520656242.
+TEST_F(RenderTextTest,
+       HarfBuzz_MixedDefaultAndTextEmojiInSameRunUsesEmojiPrePass) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // U+2614 UMBRELLA WITH RAIN DROPS (Emoji_Presentation=Yes) followed by
+  // U+2600 BLACK SUN WITH RAYS (Emoji_Presentation=No, text-default). Both
+  // live in the Miscellaneous Symbols block (U+2600-U+26FF) and end up in a
+  // single run.
+  render_text->SetText(u"\u2614\u2600");
+  render_text->SetDisplayRect(Rect(1000, 50));
+  const internal::TextRunList* run_list = GetHarfBuzzRunList();
+  ASSERT_EQ(1U, run_list->size())
+      << "Expected a single run; if FindRunBreakingCharacter starts splitting "
+         "on emoji presentation, update this test and the mixed-run guard.";
+  const auto& run = run_list->runs()[0];
+  EXPECT_GT(run->shape.glyph_count, 0U);
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia does not bundle a suitable font to resolve all glyphs.
+  EXPECT_EQ(0U, run->CountMissingGlyphs());
+#endif
+}
+
 // Verifies that emoji-default codepoints followed by VS-15 (U+FE0E) route
 // through a non-color-emoji typeface. This is the dual of the VS-16
 // pre-pass: VS-15 explicitly requests text presentation, so the native
 // gfx::RenderText path must refuse to shape such runs with a color-emoji
 // typeface even when one of the system fallback fonts happens to be one.
 TEST_F(RenderTextTest, HarfBuzz_EmojiDefaultVS15PrefersTextPresentation) {
-  // Same color-emoji table set used by render_text_harfbuzz.cc, plus the
-  // known platform color emoji family. The family check covers platform
-  // typefaces where table probing is unavailable or incomplete.
-  auto typeface_may_render_color_emoji = [](SkTypeface* typeface) {
-    if (!typeface) {
-      return false;
-    }
-
-    const bool has_color_emoji_table =
-        typeface->getTableSize(SkSetFourByteTag('C', 'O', 'L', 'R')) > 0 ||
-        typeface->getTableSize(SkSetFourByteTag('C', 'B', 'D', 'T')) > 0 ||
-        typeface->getTableSize(SkSetFourByteTag('s', 'b', 'i', 'x')) > 0;
-
-#if BUILDFLAG(IS_WIN)
-    constexpr const char* kPlatformColorEmojiFontName = "Segoe UI Emoji";
-#elif BUILDFLAG(IS_APPLE)
-    constexpr const char* kPlatformColorEmojiFontName = "Apple Color Emoji";
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    constexpr const char* kPlatformColorEmojiFontName = "Noto Color Emoji";
-#else
-    constexpr const char* kPlatformColorEmojiFontName = nullptr;
-#endif
-
-    SkString family_name;
-    typeface->getFamilyName(&family_name);
-    return has_color_emoji_table ||
-           (kPlatformColorEmojiFontName &&
-            base::EqualsCaseInsensitiveASCII(family_name.c_str(),
-                                             kPlatformColorEmojiFontName));
-  };
-
   RenderTextHarfBuzz* render_text = GetRenderText();
 
   // U+1F310 GLOBE WITH MERIDIANS: emoji-default; the canonical case from
@@ -7133,7 +7208,7 @@ TEST_F(RenderTextTest, HarfBuzz_EmojiDefaultVS15PrefersTextPresentation) {
       EXPECT_EQ(0U, run->CountMissingGlyphs()) << "VS-15 run rendered as tofu";
 #endif
       EXPECT_FALSE(
-          typeface_may_render_color_emoji(run->font_params.skia_face.get()))
+          TypefaceMayRenderColorEmojiForTest(run->font_params.skia_face.get()))
           << "VS-15 run was shaped with a color-emoji typeface";
     }
   }

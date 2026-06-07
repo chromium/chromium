@@ -116,10 +116,14 @@ bool IsEmojiRelatedCodepoint(UChar32 codepoint) {
 constexpr UChar32 kVariationSelector15 = 0xFE0E;
 constexpr UChar32 kVariationSelector16 = 0xFE0F;
 
-// Returns true if `text` contains U+FE0F (VS-16). Per Unicode UTS #51, VS-16
-// is the canonical signal that the user wants the preceding character
-// rendered with emoji presentation. Treating any VS-16 occurrence as a
-// request is intentional and conservative:
+// Returns true if `text` requests emoji (color) presentation, either via
+// an explicit U+FE0F (VS-16) selector or via a codepoint whose Unicode
+// `Emoji_Presentation` property is Yes (i.e. defaults to emoji style even
+// without VS-16, such as U+1F004 MAHJONG TILE RED DRAGON or U+1F3B2 GAME
+// DIE). Per Unicode UTS #51, VS-16 is the canonical signal that the user
+// wants the preceding character rendered with emoji presentation, and
+// `Emoji_Presentation=Yes` codepoints already imply that signal on their
+// own. Treating either as a request is intentional and conservative:
 //
 //   * If the run is `<text-default emoji> + VS-16` (e.g. "♦\uFE0F",
 //     "©\uFE0F"), the platform color emoji font has a glyph and the run is
@@ -143,9 +147,24 @@ constexpr UChar32 kVariationSelector16 = 0xFE0F;
 // in the longer string were absent from the system text font and forced a
 // fallback that incidentally colored the rest). Treating VS-16 as the
 // trigger removes that dependency on incidental font coverage and aligns
-// native UI with how Blink treats VS-16 in Web content.
+// native UI with how Blink treats VS-16 in Web content. Extending the
+// trigger to `Emoji_Presentation=Yes` codepoints fixes the analogous
+// Windows-only issue where bare default-emoji codepoints (notably the
+// U+1F000-U+1F02F Mahjong/Domino/Playing-Card block) rendered monochrome
+// because the OS font fallback returned Segoe UI Symbol instead of Segoe
+// UI Emoji; macOS already gets this right via CoreText's cascade list.
+// VS-15 (text presentation) is handled separately by
+// RunRequestsTextPresentation at the call site and takes precedence.
 bool RunRequestsEmojiPresentation(std::u16string_view text) {
-  return text.find(kVariationSelector16) != std::u16string_view::npos;
+  if (text.find(kVariationSelector16) != std::u16string_view::npos) {
+    return true;
+  }
+  for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
+    if (u_hasBinaryProperty(iter.get(), UCHAR_EMOJI_PRESENTATION)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Returns true if `text` contains U+FE0E (VS-15). Per Unicode UTS #51, VS-15
@@ -2281,6 +2300,11 @@ bool RenderTextHarfBuzz::ShapeRuns(
       }
     }
     if (!text_emoji_runs.empty()) {
+      // Cache the matched runs before shaping to avoid re-evaluating
+      // RunRequestsTextPresentation inside the std::erase_if below.
+      const std::set<internal::TextRunHarfBuzz*> matched(
+          text_emoji_runs.begin(), text_emoji_runs.end());
+
       Font text_emoji_font(text_emoji_font_name, font_params.font_size);
       internal::TextRunHarfBuzz::FontParams text_emoji_font_params =
           font_params;
@@ -2290,14 +2314,10 @@ bool RenderTextHarfBuzz::ShapeRuns(
         fallback_font_candidates.push_back(text_emoji_font);
       }
 
-      std::set<internal::TextRunHarfBuzz*> unresolved_text_emoji_runs(
+      const std::set<internal::TextRunHarfBuzz*> unresolved(
           text_emoji_runs.begin(), text_emoji_runs.end());
       std::erase_if(runs, [&](internal::TextRunHarfBuzz* run) {
-        if (!RunRequestsTextPresentation(
-                text.substr(run->range.start(), run->range.length()))) {
-          return false;
-        }
-        return !unresolved_text_emoji_runs.contains(run);
+        return matched.contains(run) && !unresolved.contains(run);
       });
     }
     if (runs.empty()) {
@@ -2341,6 +2361,11 @@ bool RenderTextHarfBuzz::ShapeRuns(
       }
     }
     if (!emoji_runs.empty()) {
+      // Cache the matched runs before shaping to avoid re-evaluating
+      // RunRequestsEmojiPresentation inside the std::erase_if below.
+      const std::set<internal::TextRunHarfBuzz*> matched(emoji_runs.begin(),
+                                                        emoji_runs.end());
+
       Font emoji_font(color_emoji_font_name, font_params.font_size);
       internal::TextRunHarfBuzz::FontParams emoji_font_params = font_params;
       if (emoji_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
@@ -2355,14 +2380,10 @@ bool RenderTextHarfBuzz::ShapeRuns(
 
       // Keep run order stable for index-to-glyph mapping. Only remove emoji
       // runs that were fully shaped in the pre-pass.
-      std::set<internal::TextRunHarfBuzz*> unresolved_emoji_runs(
-          emoji_runs.begin(), emoji_runs.end());
+      const std::set<internal::TextRunHarfBuzz*> unresolved(emoji_runs.begin(),
+                                                           emoji_runs.end());
       std::erase_if(runs, [&](internal::TextRunHarfBuzz* run) {
-        if (!RunRequestsEmojiPresentation(
-                text.substr(run->range.start(), run->range.length()))) {
-          return false;
-        }
-        return !unresolved_emoji_runs.contains(run);
+        return matched.contains(run) && !unresolved.contains(run);
       });
     }
     if (runs.empty()) {
