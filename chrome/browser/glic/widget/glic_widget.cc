@@ -183,7 +183,16 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
 
     // GlicWidget should claim mouse events that fall within the draggable
     // region.
-    return !glic_view()->IsPointWithinDraggableRegion(location);
+    if (glic_view()->IsPointWithinDraggableRegion(location)) {
+      return false;
+    }
+
+    // Only descend into child windows for events that fall within the client
+    // area. Non-client areas, such as window borders or captions, should be
+    // handled by the parent widget to ensure proper window management (e.g.,
+    // resizing or moving).
+    const int hit_test = GetWidget()->GetNonClientComponent(location);
+    return hit_test == HTCLIENT;
   }
 #endif  // defined(USE_AURA)
 
