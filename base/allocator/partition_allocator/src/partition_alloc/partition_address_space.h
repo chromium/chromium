@@ -388,6 +388,19 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     ThreadIsolationOption thread_isolation_;
 #endif
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+    std::array<std::ptrdiff_t, kMaxPoolHandle> offsets_to_metadata_ = {
+        0, 0, 0, 0,
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+        0,
+#endif  // PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+    };
+    uintptr_t metadata_region_start_ = kUninitializedPoolBaseAddress;
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+    size_t metadata_region_size_ = 0;
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   };
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static_assert(sizeof(PoolSetup) % SystemPageSize() == 0,
@@ -407,14 +420,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
   static size_t zero_segment_size_;
 #endif
-
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  static std::array<std::ptrdiff_t, kMaxPoolHandle> offsets_to_metadata_;
-  static uintptr_t metadata_region_start_;
-#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  static size_t metadata_region_size_;
-#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   // If we use thread isolation, we need to write-protect its metadata.

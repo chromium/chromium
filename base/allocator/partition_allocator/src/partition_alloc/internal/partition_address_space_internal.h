@@ -140,7 +140,7 @@ PA_ALWAYS_INLINE constexpr size_t PartitionAddressSpace::MetadataRegionSize() {
 // the metadata for the SuperPage.
 PA_ALWAYS_INLINE std::ptrdiff_t PartitionAddressSpace::MetadataOffset(
     pool_handle pool) {
-  return offsets_to_metadata_[pool];
+  return setup_.offsets_to_metadata_[pool];
 }
 
 PA_ALWAYS_INLINE std::ptrdiff_t PartitionAddressSpace::MetadataOffsetFromAddr(
@@ -151,8 +151,8 @@ PA_ALWAYS_INLINE std::ptrdiff_t PartitionAddressSpace::MetadataOffsetFromAddr(
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
 PA_ALWAYS_INLINE bool PartitionAddressSpace::IsInMetadataRegion(
     uintptr_t address) {
-  return metadata_region_start_ <= address &&
-         address < metadata_region_start_ + MetadataRegionSize();
+  return setup_.metadata_region_start_ <= address &&
+         address < setup_.metadata_region_start_ + MetadataRegionSize();
 }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
