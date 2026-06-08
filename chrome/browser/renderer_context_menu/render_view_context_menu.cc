@@ -3911,14 +3911,22 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_VIEW_SOURCE:
+    case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
+      // The policy on the source_web_contents_ applies; when performing the
+      // action, do it on the appropriate target (the embedder_web_contents_ or
+      // the RenderFrameHost, respectively).
       if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
           !DevToolsWindow::AllowDevToolsFor(GetProfile(),
-                                            embedder_web_contents_)) {
+                                            source_web_contents_)) {
 #if !BUILDFLAG(IS_ANDROID)
-        DevToolsPolicyDialog::Show(embedder_web_contents_);
+        DevToolsPolicyDialog::Show(source_web_contents_);
 #endif
       } else {
-        embedder_web_contents_->GetPrimaryMainFrame()->ViewSource();
+        if (id == IDC_VIEW_SOURCE) {
+          embedder_web_contents_->GetPrimaryMainFrame()->ViewSource();
+        } else if (GetRenderFrameHost()) {
+          GetRenderFrameHost()->ViewSource();
+        }
       }
       break;
 
@@ -3948,12 +3956,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_RELOADFRAME:
       source_web_contents_->ReloadFocusedFrame();
-      break;
-
-    case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
-      if (GetRenderFrameHost()) {
-        GetRenderFrameHost()->ViewSource();
-      }
       break;
 
     case IDC_CONTENT_CONTEXT_UNDO:
