@@ -113,11 +113,20 @@ bool CanShare() {
   // when the next task is pumped. See https://crbug.com/40829755.
   base::HangWatcher::InvalidateActiveExpectations();
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   // Using a real URL instead of empty string to avoid system log about relative
   // URLs in the pasteboard. This URL will not actually be shared to, just used
   // to fetch sharing services that can handle the NSURL type.
+  //
+  // +[NSSharingService sharingServicesForItems:] is deprecated in macOS 13, but
+  // the replacement is not adequate for our usage. It creates a menu item that
+  // shows a picker that we're not in control of, and conflicts with existing
+  // menu items. See https://crbug.com/40846334 for the investigation into the
+  // replacement API and why it can't be used.
   NSArray* services = [NSSharingService
       sharingServicesForItems:@[ [NSURL URLWithString:@"https://google.com"] ]];
+#pragma clang diagnostic pop
   NSMenuItem* email = [[NSMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_EMAIL_LINK_MAC)
              action:@selector(emailLink:)

@@ -26,7 +26,7 @@ declare_args() {
   # in availability and deprecation, which is why it is often changed
   # separately from `mac_min_system_version` when dropping support for older
   # macOSes.
-  mac_deployment_target = "12.0"
+  mac_deployment_target = "13.0"
 
   # The value of the `LSMinimumSystemVersion` in `Info.plist` files. This value
   # controls the minimum OS version that may launch the application, and OS
@@ -35,7 +35,7 @@ declare_args() {
   # `mac_deployment_target` to increase the system requirement without changing
   # how Chromium is compiled. This must be greater than or equal to the
   # `mac_deployment_target` version.
-  mac_min_system_version = "12.0"
+  mac_min_system_version = "13.0"
 
   # Path to a specific version of the Mac SDK, not including a slash at the end.
   # If empty, the path to the lowest version greater than or equal to

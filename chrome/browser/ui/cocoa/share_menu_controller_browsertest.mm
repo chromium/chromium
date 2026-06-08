@@ -87,8 +87,13 @@ class ShareMenuControllerTest : public InProcessBrowserTest {
 // TODO(crbug.com/439676515): Renable this test once the flakiness is addressed.
 IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, DISABLED_PopulatesMenu) {
   NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Share"];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  // See the comment in -[ShareMenuController menuNeedsUpdate:] for more info on
+  // this usage of deprecated API.
   NSArray* sharing_services_for_url = [NSSharingService
       sharingServicesForItems:@[ [NSURL URLWithString:@"http://example.com"] ]];
+#pragma clang diagnostic pop
   EXPECT_GT(sharing_services_for_url.count, 0U);
 
   [controller_ menuNeedsUpdate:menu];
