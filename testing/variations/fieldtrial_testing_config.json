@@ -24446,6 +24446,33 @@
             ]
         }
     ],
+    "UseAndroidCustomFrameDeadlines": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_PresentationOffset0",
+                    "params": {
+                        "presentation_offset": "0"
+                    },
+                    "enable_features": [
+                        "UseAndroidCustomFrameDeadlines"
+                    ]
+                },
+                {
+                    "name": "Enabled_PresentationOffsetMinus1",
+                    "params": {
+                        "presentation_offset": "-1"
+                    },
+                    "enable_features": [
+                        "UseAndroidCustomFrameDeadlines"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseAppTaskForCustomTabActivation": [
         {
             "platforms": [
