@@ -549,6 +549,35 @@ IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
   EXPECT_EQ("\"Error: SmartCardError\"", message);
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest,
+                       ListReadersUnknownCardError) {
+  ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
+
+  content::DOMMessageQueue message_queue(app_frame());
+  const std::string kScript = R"(
+    (async () => {
+      try {
+        const context = await navigator.smartCard.establishContext();
+        await context.listReaders();
+        window.domAutomationController.send(
+          "Failure: Should have thrown error");
+      } catch (e) {
+        window.domAutomationController.send("Error: " +
+            e.name + " - " + e.message);
+      }
+    })();
+  )";
+  content::ExecuteScriptAsync(app_frame(), kScript);
+
+  HandleEstablishContext();
+  HandleListReaders({}, 123, "unknown-card");
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_THAT(message, testing::HasSubstr(
+                           "The specified smart card name is not recognized."));
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardEmulationBrowserTest, ConnectAndReportSuccess) {
   ASSERT_THAT(SendCommand("SmartCardEmulation.enable"), IsSuccess());
 
