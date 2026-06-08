@@ -234,7 +234,7 @@ TEST_F(PasswordExportControllerTest, PasswordExport) {
               SetDestination(temp_file_path()));
 
   controller().SetExporterForTesting(std::move(mock_password_manager_exporter));
-  EXPECT_TRUE(controller().Export(web_contents()->GetWeakPtr()));
+  EXPECT_TRUE(controller().Export(web_contents()));
 }
 
 TEST_F(PasswordExportControllerTest, ExportInProgressPreventsSubsequentExport) {
@@ -250,7 +250,7 @@ TEST_F(PasswordExportControllerTest, ExportInProgressPreventsSubsequentExport) {
   controller().SetExporterForTesting(std::move(mock_exporter_ptr));
 
   // Try to start another export. It should return false immediately.
-  EXPECT_FALSE(controller().Export(web_contents()->GetWeakPtr()));
+  EXPECT_FALSE(controller().Export(web_contents()));
 }
 
 TEST_F(PasswordExportControllerTest, CancelExportFileSelection) {
@@ -267,7 +267,7 @@ TEST_F(PasswordExportControllerTest, CancelExportFileSelection) {
   EXPECT_CALL(*mock_password_manager_exporter, Cancel());
 
   controller().SetExporterForTesting(std::move(mock_password_manager_exporter));
-  controller().Export(web_contents()->GetWeakPtr());
+  controller().Export(web_contents());
 }
 
 TEST_F(PasswordExportControllerTest, CancelExport) {
@@ -282,7 +282,7 @@ TEST_F(PasswordExportControllerTest, CancelExport) {
   EXPECT_CALL(*mock_password_manager_exporter, Cancel());
 
   controller().SetExporterForTesting(std::move(mock_password_manager_exporter));
-  controller().Export(web_contents()->GetWeakPtr());
+  controller().Export(web_contents());
   controller().CancelExport();
 }
 

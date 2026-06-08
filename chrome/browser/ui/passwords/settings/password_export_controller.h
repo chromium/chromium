@@ -41,7 +41,7 @@ class PasswordExportController : public PasswordExportControllerInterface,
   ~PasswordExportController() override;
 
   // PasswordExportControllerInterface:
-  bool Export(base::WeakPtr<content::WebContents> web_contents) override;
+  bool Export(content::WebContents* web_contents) override;
   void CancelExport() override;
   password_manager::ExportProgressStatus GetExportProgressStatus() override;
 

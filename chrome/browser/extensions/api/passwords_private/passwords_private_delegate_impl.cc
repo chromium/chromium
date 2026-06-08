@@ -1268,7 +1268,7 @@ void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
     return;
   }
 
-  bool accepted = password_export_controller_->Export(web_contents);
+  bool accepted = password_export_controller_->Export(web_contents.get());
   std::move(accepted_callback)
       .Run(accepted ? std::string() : kExportInProgress);
 }

@@ -61,8 +61,7 @@ PasswordExportController::~PasswordExportController() {
   }
 }
 
-bool PasswordExportController::Export(
-    base::WeakPtr<content::WebContents> web_contents) {
+bool PasswordExportController::Export(content::WebContents* web_contents) {
   if (exporter_ && exporter_->GetProgressStatus() ==
                        password_manager::ExportProgressStatus::kInProgress) {
     return false;
@@ -78,7 +77,7 @@ bool PasswordExportController::Export(
 
   // Start serialising while the user selects a file.
   exporter_->PreparePasswordsForExport();
-  PresentExportFileSelector(web_contents.get());
+  PresentExportFileSelector(web_contents);
 
   return true;
 }
