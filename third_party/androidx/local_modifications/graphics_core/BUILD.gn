@@ -37,7 +37,6 @@ source_set("graphics_core_native") {
   ]
   deps = [
     ":graphics_core_jni_headers",
-    "//base",
     "//third_party/jni_zero",
   ]
 }
