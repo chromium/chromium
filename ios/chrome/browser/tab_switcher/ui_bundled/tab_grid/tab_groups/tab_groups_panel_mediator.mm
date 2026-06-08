@@ -323,7 +323,6 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  CHECK(!IsChromeNextIaEnabled());
   // Start the tab group creation.
   [self.tabGroupsCommands showTabGroupCreationWithoutTabs];
   base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
