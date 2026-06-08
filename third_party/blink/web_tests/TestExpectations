@@ -9158,8 +9158,6 @@ crbug.com/446167772 [ Linux ] external/wpt/webcodecs/audio-encoder-codec-specifi
 crbug.com/487985494 [ Linux ] webaudio/ScriptProcessor/scriptprocessor-offlineaudiocontext.html [ Pass Timeout ]
 
 # Gardener 2026-03-11
-crbug.com/478186112 external/wpt/pointerevents/pointerevent_attributes.optional.html?touch [ Pass Timeout ]
-crbug.com/478186112 external/wpt/pointerevents/pointerevent_attributes.html?touch [ Pass Timeout ]
 crbug.com/492386032 [ Linux ] external/wpt/html/dom/partial-updates/tentative/template-for-mutation-records.html [ Failure Pass ]
 
 # Flakey on all platforms
