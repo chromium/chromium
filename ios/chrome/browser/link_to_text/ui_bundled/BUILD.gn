@@ -63,7 +63,6 @@ source_set("eg2_tests") {
     "//ios/web/common:features",
     "//ios/web/public/navigation",
     "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server",
     "//net",
     "//net:test_support",
     "//ui/base",

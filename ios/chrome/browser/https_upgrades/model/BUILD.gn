@@ -121,7 +121,6 @@ source_set("eg2_tests") {
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:features",
     "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server",
     "//net:test_support",
     "//ui/base",
     "//url",

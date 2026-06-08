@@ -424,7 +424,6 @@ source_set("eg_test_support+eg2") {
     "//ios/third_party/gtx:gtx+link",
     "//ios/web/common:features",
     "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server",
     "//net:test_support",
     "//third_party/metrics_proto",
     "//ui/base",
