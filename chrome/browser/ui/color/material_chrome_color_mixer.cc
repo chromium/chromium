@@ -119,6 +119,22 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorSysStateDisabledContainer};
   mixer[kColorDownloadManagerProgress] = {ui::kColorSysPrimary};
 
+  // General WebUI page colors.
+  mixer[kColorWebuiCardBackground] = {ui::kColorSysSurfaceSection};
+  mixer[kColorWebuiDialogBackground] = {ui::kColorSysSurface};
+  mixer[kColorWebuiDialogContainerBackground] = {
+      ui::kColorSysBaseContainerOnSurface};
+  mixer[kColorWebuiPageBackground] = {ui::kColorSysSurface};
+
+  // Nav menu item colors.
+  mixer[kColorNavMenuItem] = {ui::kColorSysOnSurface};
+  mixer[kColorNavMenuItemSelected] = {ui::kColorSysPrimary};
+  mixer[kColorNavMenuItemBackgroundHover] = {ui::kColorSysStateHover};
+  mixer[kColorNavMenuItemBackgroundSelected] = {ui::kColorSysBaseContainer};
+
+  /* cr-tab colors. */
+  mixer[kColorTabNavItemSelected] = {ui::kColorSysPrimary};
+
   // Extensions colors.
   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
   mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
@@ -377,12 +393,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorMultiContentsViewInactiveContentOutline] = {
       ui::kColorSysNeutralOutline};
 
-  // Nav menu item colors.
-  mixer[kColorNavMenuItem] = {ui::kColorSysOnSurface};
-  mixer[kColorNavMenuItemSelected] = {ui::kColorSysPrimary};
-  mixer[kColorNavMenuItemBackgroundHover] = {ui::kColorSysStateHover};
-  mixer[kColorNavMenuItemBackgroundSelected] = {ui::kColorSysBaseContainer};
-
   mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(
       ui::kColorSysStateFocusRing,
       ui::GetResultingPaintColor(kColorNewTabButtonBackgroundFrameActive,
@@ -440,9 +450,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabAlertPipPlayingInactiveFrameActive] = {ui::kColorSysPrimary};
   mixer[kColorTabAlertPipPlayingInactiveFrameInactive] = {ui::kColorSysPrimary};
 
-  /* cr-tab colors. */
-  mixer[kColorTabNavItemSelected] = {ui::kColorSysPrimary};
-
   // Hover card tab alert colors.
   mixer[kColorHoverCardTabAlertMediaRecordingIcon] = {ui::kColorSysError};
   mixer[kColorHoverCardTabAlertPipPlayingIcon] = {ui::kColorSysPrimary};
@@ -491,13 +498,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorGlicSelectionOverlayToast] = {ui::kColorSysInverseSurfacePrimary};
   mixer[kColorGlicSelectionOverlayToastCancelButton] = {
       ui::kColorSysInversePrimary};
-
-  // General WebUI page colors.
-  mixer[kColorWebuiCardBackground] = {ui::kColorSysSurfaceSection};
-  mixer[kColorWebuiDialogBackground] = {ui::kColorSysSurface};
-  mixer[kColorWebuiDialogContainerBackground] = {
-      ui::kColorSysBaseContainerOnSurface};
-  mixer[kColorWebuiPageBackground] = {ui::kColorSysSurface};
 
   ApplyChromeRefresh2026ColorOverrides(mixer);
 }
