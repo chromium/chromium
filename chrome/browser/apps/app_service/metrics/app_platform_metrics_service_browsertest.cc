@@ -1095,4 +1095,32 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTime) {
   CloseBrowserSynchronously(browser);
 }
 
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTimeUkm) {
+  Browser* browser = CreateBrowserWindow();
+
+  // Set the browser window active.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+
+  sync_service()->SetAllowedByEnterprisePolicy(false);
+
+  // Fast forward by 2 hours and verify no usage data is reported to UKM.
+  FastForwardBy(base::Hours(2));
+  VerifyNoAppUsageTimeUkm();
+
+  sync_service()->SetAllowedByEnterprisePolicy(true);
+
+  static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
+  FastForwardBy(kAppUsageDuration);
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kInactiveInstanceState);
+
+  // Fast forward by 2 hours and verify usage data reported to UKM only includes
+  // usage data since sync was last enabled.
+  FastForwardBy(base::Hours(2));
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, kAppUsageDuration,
+                        AppTypeName::kChromeBrowser);
+  CloseBrowserSynchronously(browser);
+}
+
 }  // namespace apps

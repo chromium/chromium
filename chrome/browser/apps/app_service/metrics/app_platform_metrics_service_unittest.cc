@@ -1116,33 +1116,6 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentage) {
 
 
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
-  std::unique_ptr<Browser> browser = CreateBrowserWindow();
-
-  // Set the browser window active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(), kActiveInstanceState);
-
-  sync_service()->SetAllowedByEnterprisePolicy(false);
-
-  // Fast forward by 2 hours and verify no usage data is reported to UKM.
-  task_environment_.FastForwardBy(base::Hours(2));
-  VerifyNoAppUsageTimeUkm();
-
-  sync_service()->SetAllowedByEnterprisePolicy(true);
-
-  static constexpr base::TimeDelta kAppUsageDuration = base::Hours(1);
-  task_environment_.FastForwardBy(kAppUsageDuration);
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-
-  // Fast forward by 2 hours and verify usage data reported to UKM only includes
-  // usage data since sync was last enabled.
-  task_environment_.FastForwardBy(base::Hours(2));
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, kAppUsageDuration,
-                        AppTypeName::kChromeBrowser);
-}
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
   std::unique_ptr<Browser> browser = CreateBrowserWindow();
