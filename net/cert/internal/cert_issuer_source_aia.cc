@@ -8,6 +8,7 @@
 
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/strings/string_view_util.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/x509_util.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
@@ -68,16 +69,14 @@ bool ParseCertsFromCms(base::span<const uint8_t> data,
   return any_succeeded;
 }
 
-bool ParseCertFromPem(const uint8_t* data,
-                      size_t length,
+bool ParseCertFromPem(base::span<const uint8_t> data,
                       bssl::ParsedCertificateList* results) {
-  std::string_view data_strpiece(reinterpret_cast<const char*>(data), length);
-
-  bssl::PEMTokenizer pem_tokenizer(data_strpiece, {"CERTIFICATE"});
-  if (!pem_tokenizer.GetNext())
+  bssl::PEMTokenizer tokenizer(base::as_string_view(data), {"CERTIFICATE"});
+  if (!tokenizer.GetNext()) {
     return false;
+  }
 
-  return ParseCertFromDer(base::as_byte_span(pem_tokenizer.data()), results);
+  return ParseCertFromDer(base::as_byte_span(tokenizer.data()), results);
 }
 
 class AiaRequest : public bssl::CertIssuerSource::Request {
@@ -147,7 +146,7 @@ bool AiaRequest::AddCompletedFetchToResults(
   // is not part of RFC 5280's profile.
   return ParseCertFromDer(fetched_bytes, results) ||
          ParseCertsFromCms(fetched_bytes, results) ||
-         ParseCertFromPem(fetched_bytes.data(), fetched_bytes.size(), results);
+         ParseCertFromPem(fetched_bytes, results);
 }
 
 }  // namespace
