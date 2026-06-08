@@ -7,10 +7,13 @@ import("//build/config/android/rules.gni")
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/bottom_bar_promo_illustration.xml",
     "java/res/drawable/bottom_bar_new_tab_background.xml",
+    "java/res/drawable/bottom_bar_promo_illustration.xml",
     "java/res/layout/bottom_bar_generic_template.xml",
     "java/res/layout/bottom_bar_layout.xml",
     "java/res/layout/bottom_bar_list_menu_template.xml",
+    "java/res/layout/bottom_bar_promo_dialog_view.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/bars_common:java_resources",
@@ -39,6 +42,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarPromoDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarProperties.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarUtils.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarView.java",
