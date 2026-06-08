@@ -132,6 +132,111 @@ public class ViewFinder {
         return waitForView(View.class, matcher);
     }
 
+    /**
+     * Expects a View of a specific subclass of View that matches |matcher| in one of the
+     * |activity|'s subwindows immediately.
+     *
+     * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
+     *
+     * @param <ViewT> the type of View to find.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
+     */
+    public static <ViewT extends View> ViewPresence<ViewT> expectView(
+            Class<ViewT> viewClass,
+            Activity activity,
+            Matcher<View> matcher,
+            ViewElement.Options options) {
+        return noopTo().withTimeout(0)
+                .enterState(
+                        ViewPresence.create(
+                                viewClass,
+                                matcher,
+                                ViewElement.newOptions()
+                                        .initFrom(options)
+                                        .rootSpec(RootSpec.activityRoot(activity))
+                                        .build()));
+    }
+
+    /**
+     * Expects a View of a specific subclass of View that matches |matcher| in one of the
+     * |activity|'s subwindows immediately.
+     *
+     * @param <ViewT> the type of View to find.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
+     */
+    public static <ViewT extends View> ViewPresence<ViewT> expectView(
+            Class<ViewT> viewClass, Activity activity, Matcher<View> matcher) {
+        return expectView(viewClass, activity, matcher, ViewElement.Options.DEFAULT);
+    }
+
+    /**
+     * Expects a View that matches |matcher| in one of the |activity|'s subwindows immediately.
+     *
+     * @return A {@link ViewPresence} to get/interact with the View.
+     */
+    public static ViewPresence<View> expectView(Activity activity, Matcher<View> matcher) {
+        return expectView(View.class, activity, matcher);
+    }
+
+    /**
+     * Expects a View of a specific subclass of View that matches |matcher| in any root immediately.
+     *
+     * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
+     *
+     * @param <ViewT> the type of View to find.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
+     */
+    public static <ViewT extends View> ViewPresence<ViewT> expectView(
+            Class<ViewT> viewClass, Matcher<View> matcher, ViewElement.Options options) {
+        RootSpec rootSpec = options.mRootSpec;
+        // If not specified, default to focusedRoot().
+        if (rootSpec == null) {
+            rootSpec = RootSpec.focusedRoot();
+        }
+
+        return noopTo().withTimeout(0)
+                .enterState(
+                        ViewPresence.create(
+                                viewClass,
+                                matcher,
+                                ViewElement.newOptions()
+                                        .initFrom(options)
+                                        .rootSpec(rootSpec)
+                                        .build()));
+    }
+
+    /**
+     * Expects a View of a specific subclass of View that matches |matcher| in any root immediately.
+     *
+     * @param <ViewT> the type of View to find.
+     * @return A {@link ViewPresence} to get/interact with the ViewT.
+     */
+    public static <ViewT extends View> ViewPresence<ViewT> expectView(
+            Class<ViewT> viewClass, Matcher<View> matcher) {
+        return expectView(viewClass, matcher, ViewElement.Options.DEFAULT);
+    }
+
+    /**
+     * Expects a View that matches |matcher| in any root immediately.
+     *
+     * <p>Pass |options| to override minimum required displayed %, enabled state, etc.
+     *
+     * @return A {@link ViewPresence} to get/interact with the View.
+     */
+    public static ViewPresence<View> expectView(
+            Matcher<View> matcher, ViewElement.Options options) {
+        return expectView(View.class, matcher, options);
+    }
+
+    /**
+     * Expects a View that matches |matcher| in any root immediately.
+     *
+     * @return A {@link ViewPresence} to get/interact with the View.
+     */
+    public static ViewPresence<View> expectView(Matcher<View> matcher) {
+        return expectView(View.class, matcher);
+    }
+
     /** Waits for a View that matches |matcher| to no longer be displayed. */
     public static void waitForNoView(Matcher<View> matcher) {
         noopTo().waitFor(new NotDisplayedAnymoreCondition(RootSpec::anyRoot, matcher));
@@ -140,6 +245,22 @@ public class ViewFinder {
     /** Waits for a View that matches |matcher| to no longer be displayed in an activity. */
     public static void waitForNoView(Activity activity, Matcher<View> matcher) {
         noopTo().waitFor(
+                        new NotDisplayedAnymoreCondition(
+                                () -> RootSpec.activityRoot(activity), matcher));
+    }
+
+    /** Expects a View that matches |matcher| to no longer be displayed immediately. */
+    public static void expectNoView(Matcher<View> matcher) {
+        noopTo().withTimeout(0)
+                .waitFor(new NotDisplayedAnymoreCondition(RootSpec::anyRoot, matcher));
+    }
+
+    /**
+     * Expects a View that matches |matcher| to no longer be displayed in an activity immediately.
+     */
+    public static void expectNoView(Activity activity, Matcher<View> matcher) {
+        noopTo().withTimeout(0)
+                .waitFor(
                         new NotDisplayedAnymoreCondition(
                                 () -> RootSpec.activityRoot(activity), matcher));
     }
