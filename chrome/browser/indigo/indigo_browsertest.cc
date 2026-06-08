@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -20,6 +21,9 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/indigo/indigo_toolbar.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/common/chrome_features.h"
@@ -611,6 +615,94 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, DISABLED_HideToolbarOnReload) {
       PressButton(kReloadButtonElementId),
       // Verify the toolbar is hidden.
       WaitForHide(IndigoToolbar::kToolbarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, InvokeActionClickRecordsMetrics) {
+  const GURL url = embedded_test_server()->GetURL("/image.html");
+  const GURL url2 = embedded_test_server()->GetURL("/transform.html");
+  base::UserActionTester user_action_tester;
+
+  RunTestSequence(
+      // Navigation to first page displays Anchored Message
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      WaitForShow(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+
+      PressButton(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+      WaitForShow(IndigoToolbar::kToolbarElementId),
+
+      Check([&]() {
+        return user_action_tester.GetActionCount("Indigo.PageAction.Click") ==
+               1;
+      }),
+      Check([&]() {
+        return user_action_tester.GetActionCount(
+                   "Indigo.PageAction.AnchoredMessage.Click") == 1;
+      }),
+      Check([&]() {
+        return user_action_tester.GetActionCount(
+                   "Indigo.PageAction.SuggestionChip.Click") == 0;
+      }),
+
+      PressButton(IndigoToolbar::kCloseButtonElementId),
+      WaitForHide(IndigoToolbar::kToolbarElementId),
+
+      // Open a second tab and switch to it. Since the anchored message reset
+      // duration has not expired, this tab will display a suggestion chip
+      // instead.
+      AddInstrumentedTab(kSecondTabId, url2),
+      WaitForShow(kIndigoPageActionIconElementId), Check([&]() {
+        return user_action_tester.GetActionCount("Indigo.PageAction.Show") ==
+                   1 &&
+               user_action_tester.GetActionCount(
+                   "Indigo.PageAction.ShowAnchoredMessage") == 0;
+      }),
+      // Ensure Anchored Message is NOT showing
+      EnsureNotPresent(
+          page_actions::AnchoredMessageBubbleView::kAnchoredMessageChipId),
+
+      PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(IndigoToolbar::kToolbarElementId),
+
+      Check([&]() {
+        return user_action_tester.GetActionCount("Indigo.PageAction.Click") ==
+               2;
+      }),
+      Check([&]() {
+        return user_action_tester.GetActionCount(
+                   "Indigo.PageAction.AnchoredMessage.Click") == 1;
+      }),
+      Check([&]() {
+        return user_action_tester.GetActionCount(
+                   "Indigo.PageAction.SuggestionChip.Click") == 1;
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToastRetryClickRecordsMetrics) {
+  const GURL url = embedded_test_server()->GetURL("/image.html");
+  base::UserActionTester user_action_tester;
+
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ToastController* const toast_controller =
+      ToastController::MaybeGetForTabInterface(tab);
+  ASSERT_TRUE(toast_controller);
+
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url), Do([&]() {
+                    toast_controller->MaybeShowToast(
+                        ToastParams(ToastId::kIndigoInvokeError));
+                  }),
+                  WaitForShow(toasts::ToastView::kToastViewId),
+                  WaitForShow(toasts::ToastView::kToastActionButton),
+                  PressButton(toasts::ToastView::kToastActionButton),
+                  WaitForHide(toasts::ToastView::kToastViewId), Check([&]() {
+                    return user_action_tester.GetActionCount(
+                               "Indigo.ErrorToast.Retry.Click") == 1 &&
+                           user_action_tester.GetActionCount(
+                               "Indigo.PageAction.Click") == 0;
+                  }));
 }
 
 }  // namespace

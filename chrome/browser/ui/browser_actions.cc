@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -65,6 +66,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_string_utils.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
@@ -1750,7 +1752,20 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 auto* controller =
                     indigo::IndigoPageActionController::From(tab);
                 if (controller) {
-                  controller->InvokeAction();
+                  auto entry_point = [&]() {
+                    auto raw_entry_point =
+                        static_cast<page_actions::PageActionEntryPoint>(
+                            context.GetProperty(
+                                page_actions::kPageActionEntryPointKey));
+                    switch (raw_entry_point) {
+                      case page_actions::PageActionEntryPoint::kSuggestionChip:
+                        return indigo::EntryPoint::kSuggestionChip;
+                      case page_actions::PageActionEntryPoint::kAnchoredMessage:
+                        return indigo::EntryPoint::kAnchoredMessage;
+                    }
+                    NOTREACHED();
+                  }();
+                  controller->InvokeAction(entry_point);
                 }
               },
               bwi))

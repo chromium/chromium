@@ -633,7 +633,7 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionTriggersEligibilityCheck) {
             std::move(callback).Run(RemoteEligibility{});
           }));
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kSuggestionChip);
   EXPECT_TRUE(fetcher_called.Wait());
 }
 
@@ -810,7 +810,7 @@ TEST_F(IndigoPageActionControllerTest,
       url, tab_interface_->GetContents());
   navigation->Commit();
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 }
 
 TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicForSuggestionChip) {
@@ -849,7 +849,7 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicForSuggestionChip) {
     navigation2->Commit();
   }
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kSuggestionChip);
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -873,7 +873,7 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionTriggerReauthWhenPaused) {
                    /*enable_sync=*/false, signin_metrics::AccessPoint::kIndigo,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kSuggestionChip);
 
   histogram_tester.ExpectUniqueSample(
       "Indigo.Transformation.Result",
@@ -907,7 +907,7 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithProtoPrompt) {
       url, tab_interface_->GetContents());
   navigation->Commit();
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -937,7 +937,7 @@ TEST_F(IndigoPageActionControllerTest,
       url, tab_interface_->GetContents());
   navigation->Commit();
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 }
 
 TEST_F(IndigoPageActionControllerTest,
@@ -964,7 +964,7 @@ TEST_F(IndigoPageActionControllerTest,
       url, tab_interface_->GetContents());
   navigation->Commit();
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
 }
 
 TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithSkill) {
@@ -997,7 +997,49 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithSkill) {
       url, tab_interface_->GetContents());
   navigation->Commit();
 
-  controller_->InvokeAction();
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       InvokeActionSuggestionChipRecordsMetrics) {
+  CreateController();
+  base::UserActionTester user_action_tester;
+  controller_->InvokeAction(EntryPoint::kSuggestionChip);
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.PageAction.Click"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.SuggestionChip.Click"),
+            1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.AnchoredMessage.Click"),
+            0);
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       InvokeActionAnchoredMessageRecordsMetrics) {
+  CreateController();
+  base::UserActionTester user_action_tester;
+  controller_->InvokeAction(EntryPoint::kAnchoredMessage);
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.PageAction.Click"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.SuggestionChip.Click"),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.AnchoredMessage.Click"),
+            1);
+}
+
+TEST_F(IndigoPageActionControllerTest, InvokeActionErrorToastRecordsMetrics) {
+  CreateController();
+  base::UserActionTester user_action_tester;
+  controller_->InvokeAction(EntryPoint::kErrorToast);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.SuggestionChip.Click"),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "Indigo.PageAction.AnchoredMessage.Click"),
+            0);
+  EXPECT_EQ(user_action_tester.GetActionCount("Indigo.ErrorToast.Retry.Click"),
+            1);
 }
 
 TEST_F(IndigoPageActionControllerTest, OnPageActionAnchoredMessageShown) {

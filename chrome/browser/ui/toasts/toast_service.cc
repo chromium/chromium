@@ -591,7 +591,8 @@ void ToastService::RegisterToasts(
                               window->GetActiveTabInterface()) {
                         if (auto* controller =
                                 indigo::IndigoPageActionController::From(tab)) {
-                          controller->InvokeAction();
+                          controller->InvokeAction(
+                              indigo::EntryPoint::kErrorToast);
                         }
                       }
                     },

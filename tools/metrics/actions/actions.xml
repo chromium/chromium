@@ -16860,6 +16860,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Indigo.ErrorToast.Retry.Click">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    User clicked the Indigo try again button from the invocation error toast.
+  </description>
+</action>
+
 <action name="Indigo.Onboarding.Complete">
   <owner>jbroman@chromium.org</owner>
   <owner>adithyas@chromium.org</owner>
@@ -16872,6 +16881,15 @@ should be able to be added at any place in this file.
   <owner>adithyas@chromium.org</owner>
   <owner>baranerf@google.com</owner>
   <description>User triggered the onboarding process.</description>
+</action>
+
+<action name="Indigo.PageAction.AnchoredMessage.Click">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    User clicked the Indigo page action from an anchored message.
+  </description>
 </action>
 
 <action name="Indigo.PageAction.Click">
@@ -16894,6 +16912,15 @@ should be able to be added at any place in this file.
   <owner>baranerf@google.com</owner>
   <description>
     The indigo page action was displayed as an anchored message.
+  </description>
+</action>
+
+<action name="Indigo.PageAction.SuggestionChip.Click">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    User clicked the Indigo page action from a suggestion chip.
   </description>
 </action>
 

@@ -77,6 +77,12 @@ enum class OnboardingDisposition {
   kReplacePhoto,
 };
 
+enum class EntryPoint {
+  kSuggestionChip = 0,
+  kAnchoredMessage = 1,
+  kErrorToast = 2,
+};
+
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
 class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
@@ -101,7 +107,7 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // it does not exist.
   static IndigoPageActionController* From(tabs::TabInterface* tab);
 
-  void InvokeAction();
+  void InvokeAction(EntryPoint entry_point);
 
   // Resets all image replacements and hides the toolbar.
   void Reset(ResetType reset_type);

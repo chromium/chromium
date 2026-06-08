@@ -108,6 +108,25 @@ void RecordTransformationResultCannotGenerateImage(
 
   base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
 }
+
+void RecordInvokeEntryPointMetrics(EntryPoint entry_point) {
+  switch (entry_point) {
+    case EntryPoint::kSuggestionChip:
+      base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
+      base::RecordAction(
+          base::UserMetricsAction("Indigo.PageAction.SuggestionChip.Click"));
+      break;
+    case EntryPoint::kAnchoredMessage:
+      base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
+      base::RecordAction(
+          base::UserMetricsAction("Indigo.PageAction.AnchoredMessage.Click"));
+      break;
+    case EntryPoint::kErrorToast:
+      base::RecordAction(
+          base::UserMetricsAction("Indigo.ErrorToast.Retry.Click"));
+      break;
+  }
+}
 }  // namespace
 
 DEFINE_USER_DATA(IndigoPageActionController);
@@ -182,8 +201,8 @@ IndigoPageActionController* IndigoPageActionController::From(
   return Get(tab->GetUnownedUserDataHost());
 }
 
-void IndigoPageActionController::InvokeAction() {
-  base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
+void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {
+  RecordInvokeEntryPointMetrics(entry_point);
 
   if (!indigo_service_) {
     return;
