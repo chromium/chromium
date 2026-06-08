@@ -40,7 +40,6 @@ include_rules = [
   "+chrome/browser/extensions/updater/extension_updater.h",
   "+chrome/browser/extensions/updater/extension_updater_factory.h",
   "+chrome/browser/net",
-  "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/login",

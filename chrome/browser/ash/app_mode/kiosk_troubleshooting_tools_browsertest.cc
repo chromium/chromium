@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -26,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/browser/developer_tools_availability.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -36,9 +36,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
-
-using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
-using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
 
 namespace ash {
 
@@ -82,8 +79,9 @@ class KioskTroubleshootingToolsTest : public MixinBasedInProcessBrowserTest {
   }
 
   void EnableDevTools() const {
-    CurrentProfile().GetPrefs()->SetInteger(::prefs::kDevToolsAvailability,
-                                            static_cast<int>(kAllowed));
+    CurrentProfile().GetPrefs()->SetInteger(
+        ::prefs::kDevToolsAvailability,
+        static_cast<int>(policy::DeveloperToolsAvailability::kAllowed));
   }
 
   void ExpectOpenBrowser(chromeos::KioskBrowserWindowType window_type) const {
