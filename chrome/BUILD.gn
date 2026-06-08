@@ -1222,10 +1222,6 @@ if (is_win) {
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
     ]
 
-    if (is_chrome_branded) {
-      bundle_deps += [ ":preinstalled_apps" ]
-    }
-
     if (!use_static_angle) {
       bundle_deps += [ ":angle_binaries" ]
     }
@@ -1549,35 +1545,6 @@ group("extra_resources") {
   ]
 }
 
-if (is_chrome_branded && !is_android) {
-  if (!is_mac) {
-    _preinstalled_apps_target_type = "copy"
-  } else {
-    _preinstalled_apps_target_type = "bundle_data"
-  }
-
-  target(_preinstalled_apps_target_type, "preinstalled_apps") {
-    visibility = [ ":packed_resources" ]
-    if (is_mac) {
-      visibility += [
-        ":chrome_framework",
-        ":chrome_framework_shared_library",
-      ]
-    }
-
-    sources = [ "browser/resources/default_apps/external_extensions.json" ]
-
-    if (!is_mac) {
-      outputs = [ "$root_out_dir/default_apps/{{source_file_part}}" ]
-    } else {
-      outputs = [ "{{bundle_contents_dir}}/Default Apps/{{source_file_part}}" ]
-    }
-
-    # Force anybody that depends on this to get the default apps as data files.
-    data = process_file_template(sources, outputs)
-  }
-}
-
 if (!is_android) {
   chrome_paks("packed_resources") {
     if (is_mac) {
@@ -1591,10 +1558,6 @@ if (!is_android) {
     if (enable_resource_allowlist_generation) {
       repack_allowlist = _chrome_resource_allowlist
       deps = [ ":resource_allowlist" ]
-    }
-
-    if (is_chrome_branded && !is_mac) {
-      public_deps = [ ":preinstalled_apps" ]
     }
   }
 }

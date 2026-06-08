@@ -1913,7 +1913,6 @@ source_set("unit_tests") {
     "permissions/scripting_permissions_modifier_unittest.cc",
     "permissions_based_management_policy_provider_unittest.cc",
     "policy_handlers_unittest.cc",
-    "preinstalled_apps_unittest.cc",
     "profile_util_unittest.cc",
     "shared_module_service_unittest.cc",
     "standard_management_policy_provider_unittest.cc",
@@ -2006,6 +2005,10 @@ source_set("unit_tests") {
     "//ui/display:test_support",
     "//ui/menus",
   ]
+
+  if (!is_chromeos) {
+    sources += [ "preinstalled_apps_unittest.cc" ]
+  }
 
   if (enable_extensions) {
     sources += [

@@ -83,12 +83,6 @@ elevation_service.exe: %(VersionDir)s\
 os_update_handler.exe: %(VersionDir)s\
 
 #
-# Sub directories living in the version dir
-#
-default_apps\*.crx: %(VersionDir)s\default_apps\
-default_apps\external_extensions.json: %(VersionDir)s\default_apps\
-
-#
 # VisualElements sub-dir.
 #
 LogoBeta.png: %(VersionDir)s\VisualElements\

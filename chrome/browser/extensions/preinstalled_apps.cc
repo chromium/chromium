@@ -13,6 +13,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -165,8 +166,7 @@ Provider::Provider(Profile* profile,
 void Provider::VisitRegisteredExtension() {
   if (!preinstalled_apps_enabled_) {
     // If pre-installed apps aren't enabled for the profile, we short-circuit
-    // the flow to load them from the file (which happens as a result of
-    // VisitRegisteredExtension()), and immediately set empty prefs.
+    // the flow to add them and immediately set empty prefs.
     ExternalProviderImpl::SetPrefs(base::DictValue());
     return;
   }
@@ -177,18 +177,15 @@ void Provider::VisitRegisteredExtension() {
 void Provider::SetPrefs(base::DictValue prefs) {
   DCHECK(preinstalled_apps_enabled_);
 
-  // TODO(crbug.com/517655721): Use this mechanism on Win/Mac/Linux as well.
-#if BUILDFLAG(IS_ANDROID)
   // Load a hard-coded list of external extensions. These are not component
   // extensions; they are installed from the webstore and don't get access to
   // component only APIs. Must be used with ManifestLocation::kInternal to allow
   // CWS to download certain extensions.
-  if (perform_new_installation_) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (perform_new_installation_) {
     AddExtension(extension_misc::kDocsOfflineExtensionId, prefs);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   // First, check if this is for a migration from around 2013. Likely not.

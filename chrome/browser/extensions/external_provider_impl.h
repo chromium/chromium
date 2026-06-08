@@ -101,6 +101,8 @@ class ExternalProviderImpl : public ExternalProviderInterface {
 
   void set_allow_updates(bool allow_updates) { allow_updates_ = allow_updates; }
 
+  const std::optional<base::DictValue>& prefs_for_test() { return prefs_; }
+
  private:
   bool HandleMinProfileVersion(const base::DictValue& extension,
                                const std::string& extension_id,
