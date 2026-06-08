@@ -198,6 +198,11 @@ class CodeSignConfig(object):
         return False
 
     @property
+    def shared_libvulkan_on_mac(self):
+        """Returns True if ANGLE uses the shared Vulkan loader on Mac."""
+        return True
+
+    @property
     def main_executable_pinned_geometry(self):
         """An optional tuple of pinned architecture offset pairs. If set the
         pinned offsets will be compared with the apps signed main executable

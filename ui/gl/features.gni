@@ -9,6 +9,9 @@ declare_args() {
   # Should ANGLE be linked statically?
   use_static_angle = is_android || is_ios
 
+  # Should ANGLE use the shared Vulkan loader on Mac?
+  shared_libvulkan_on_mac = true
+
   # Should Dawn support be compiled to back the WebGPU implementation?
   # Also controls linking Dawn dependencies in such as SPIRV-Tools or
   # Vulkan Validation Layers.

@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//chrome/version.gni")
 import("//testing/test.gni")
+import("//ui/gl/features.gni")
 import("mac_signing_sources.gni")
 
 if (is_chrome_branded) {
@@ -44,6 +45,10 @@ process_version_rc_template("sign_config") {
   if (enable_updater) {
     _enable_updater = "True"
   }
+  _shared_libvulkan_on_mac = "False"
+  if (shared_libvulkan_on_mac) {
+    _shared_libvulkan_on_mac = "True"
+  }
 
   extra_args = [
     "-e",
@@ -52,6 +57,8 @@ process_version_rc_template("sign_config") {
     "IS_CHROME_BRANDED=$_local_chrome_branded",
     "-e",
     "ENABLE_UPDATER=$_enable_updater",
+    "-e",
+    "SHARED_LIBVULKAN_ON_MAC=$_shared_libvulkan_on_mac",
   ]
 }
 
