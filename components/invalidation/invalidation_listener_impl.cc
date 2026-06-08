@@ -111,9 +111,11 @@ InvalidationListenerImpl::~InvalidationListenerImpl() {
 
 // InvalidationListener overrides.
 void InvalidationListenerImpl::AddObserver(Observer* observer) {
-  const std::string type = observer->GetType();
-  CHECK(!type_to_handler_.contains(type));
-  CHECK(!observers_.HasObserver(observer));
+  const std::string& type = observer->GetType();
+  CHECK(!type_to_handler_.contains(type))
+      << "Observer already exists for type: " << type;
+  CHECK(!observers_.HasObserver(observer))
+      << "Observer already subscribed for type: " << observer;
 
   observers_.AddObserver(observer);
   type_to_handler_[type] = observer;
@@ -132,7 +134,8 @@ bool InvalidationListenerImpl::HasObserver(const Observer* observer) const {
 void InvalidationListenerImpl::RemoveObserver(const Observer* observer) {
   const std::string& type = observer->GetType();
   auto it = type_to_handler_.find(type);
-  CHECK(it != type_to_handler_.end());
+  CHECK(it != type_to_handler_.end())
+      << "Observer not found for type: " << type;
   type_to_handler_.erase(it);
   observers_.RemoveObserver(observer);
 }
