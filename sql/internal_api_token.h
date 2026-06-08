@@ -6,6 +6,7 @@
 #define SQL_INTERNAL_API_TOKEN_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/types/expected.h"
 
 namespace base {
 class FilePath;
@@ -13,9 +14,12 @@ class FilePath;
 
 namespace sql {
 
+class Database;
+
 namespace test {
 struct ColumnInfo;
 bool CorruptSizeInHeader(const base::FilePath&);
+base::expected<int, int> GetUncheckpointedFrameCount(const Database& db);
 }  // namespace test
 
 // Restricts access to APIs internal to the //sql package.
@@ -32,6 +36,8 @@ class InternalApiToken {
   friend class Transaction;
   friend struct test::ColumnInfo;
   friend bool test::CorruptSizeInHeader(const base::FilePath&);
+  friend base::expected<int, int> test::GetUncheckpointedFrameCount(
+      const Database& db);
 
   FRIEND_TEST_ALL_PREFIXES(DatabaseDiskFullTest, SqliteFullAbortsTransactions);
   FRIEND_TEST_ALL_PREFIXES(DatabaseDiskFullTest,

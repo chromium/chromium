@@ -24,6 +24,9 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/expected.h"
+#include "sql/database.h"
+#include "sql/internal_api_token.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -357,6 +360,18 @@ ColumnInfo ColumnInfo::Create(Database* db,
 
   return {std::string(data_type), std::string(collation_sequence),
           not_null != 0, primary_key != 0, auto_increment != 0};
+}
+
+base::expected<int, int> GetUncheckpointedFrameCount(const Database& db) {
+  int log_size = 0;      // Total number of frames in the log file.
+  int checkpointed = 0;  // Number of frames checkpointed.
+  int result = sqlite3_wal_checkpoint_v2(
+      db.db(InternalApiToken()), /*zDb=*/nullptr,
+      /*eMode=*/SQLITE_CHECKPOINT_NOOP, &log_size, &checkpointed);
+  if (result != SQLITE_OK) {
+    return base::unexpected(result);
+  }
+  return base::ok(log_size - checkpointed);
 }
 
 }  // namespace sql::test
