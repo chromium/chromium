@@ -1,0 +1,55 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_COMPONENT_UPDATER_PLATFORM_RUNTIME_COMPONENT_INSTALLER_H_
+#define CHROME_BROWSER_COMPONENT_UPDATER_PLATFORM_RUNTIME_COMPONENT_INSTALLER_H_
+
+#include <stdint.h>
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/files/file_path.h"
+#include "base/values.h"
+#include "components/component_updater/component_installer.h"
+
+namespace component_updater {
+
+class ComponentUpdateService;
+
+class PlatformRuntimeComponentInstallerPolicy
+    : public ComponentInstallerPolicy {
+ public:
+  PlatformRuntimeComponentInstallerPolicy() = default;
+  PlatformRuntimeComponentInstallerPolicy(
+      const PlatformRuntimeComponentInstallerPolicy&) = delete;
+  PlatformRuntimeComponentInstallerPolicy& operator=(
+      const PlatformRuntimeComponentInstallerPolicy&) = delete;
+
+ private:
+  // ComponentInstallerPolicy overrides:
+  bool SupportsGroupPolicyEnabledComponentUpdates() const override;
+  bool RequiresNetworkEncryption() const override;
+  update_client::CrxInstaller::Result OnCustomInstall(
+      const base::DictValue& manifest,
+      const base::FilePath& install_dir) override;
+  void OnCustomUninstall() override;
+  bool VerifyInstallation(const base::DictValue& manifest,
+                          const base::FilePath& install_dir) const override;
+  void ComponentReady(const base::Version& version,
+                      const base::FilePath& install_dir,
+                      base::DictValue manifest) override;
+  base::FilePath GetRelativeInstallDir() const override;
+  void GetHash(std::vector<uint8_t>* hash) const override;
+  std::string GetName() const override;
+  update_client::InstallerAttributes GetInstallerAttributes() const override;
+};
+
+void RegisterPlatformRuntimeComponent(ComponentUpdateService* cus);
+
+}  // namespace component_updater
+
+#endif  // CHROME_BROWSER_COMPONENT_UPDATER_PLATFORM_RUNTIME_COMPONENT_INSTALLER_H_
