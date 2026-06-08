@@ -145,8 +145,12 @@ VisibleSelectionInFlatTree FrameSelection::ComputeVisibleSelectionInFlatTree()
   return selection_editor_->ComputeVisibleSelectionInFlatTree();
 }
 
-const SelectionInDOMTree& FrameSelection::GetSelectionInDOMTree() const {
+const SelectionInDomTree& FrameSelection::GetSelectionInDomTree() const {
   return selection_editor_->GetSelectionInDOMTree();
+}
+
+const SelectionInDOMTree& FrameSelection::GetSelectionInDOMTree() const {
+  return GetSelectionInDomTree();
 }
 
 Element* FrameSelection::RootEditableElementOrDocumentElement() const {
@@ -180,8 +184,8 @@ VisibleSelection FrameSelection::ComputeVisibleSelectionInDomTreeDeprecated()
     const {
   // TODO(editing-dev): Hoist UpdateStyleAndLayout
   // to caller. See http://crbug.com/590369 for more details.
-  Position anchor = GetSelectionInDOMTree().Anchor();
-  Position focus = GetSelectionInDOMTree().Focus();
+  Position anchor = GetSelectionInDomTree().Anchor();
+  Position focus = GetSelectionInDomTree().Focus();
   std::optional<DisplayLockUtilities::ScopedForcedUpdate> force_locks;
   if (anchor != focus && anchor.ComputeContainerNode() &&
       focus.ComputeContainerNode()) {
@@ -373,7 +377,7 @@ void FrameSelection::DidSetSelectionDeprecated(
   // https://w3c.github.io/selection-api/#selectionchange-event
   if (RuntimeEnabledFeatures::DispatchSelectionchangeEventPerElementEnabled()) {
     TextControlElement* text_control =
-        EnclosingTextControl(GetSelectionInDOMTree().Anchor());
+        EnclosingTextControl(GetSelectionInDomTree().Anchor());
     if (text_control && !text_control->IsInShadowTree()) {
       text_control->ScheduleSelectionchangeEvent();
     } else {
@@ -495,7 +499,7 @@ bool FrameSelection::Modify(SelectionModifyAlteration alter,
                             SelectionModifyDirection direction,
                             TextGranularity granularity,
                             SetSelectionBy set_selection_by) {
-  SelectionModifier selection_modifier(*GetFrame(), GetSelectionInDOMTree(),
+  SelectionModifier selection_modifier(*GetFrame(), GetSelectionInDomTree(),
                                        x_pos_for_vertical_arrow_navigation_);
   selection_modifier.SetSelectionIsDirectional(IsDirectional());
   const bool modified =
@@ -680,8 +684,9 @@ bool FrameSelection::IsHidden() const {
     return true;
 
   // The selection doesn't have focus, so hide everything but range selections.
-  if (!GetSelectionInDOMTree().IsRange())
+  if (!GetSelectionInDomTree().IsRange()) {
     return true;
+  }
 
   // Here we know we have an unfocused range selection. Let's say that
   // selection resides inside a text control. Since the selection doesn't have
@@ -758,8 +763,9 @@ CaretShape FrameSelection::GetCaretShape() const {
 
 bool FrameSelection::ComputeAbsoluteBounds(gfx::Rect& anchor,
                                            gfx::Rect& focus) const {
-  if (!IsAvailable() || GetSelectionInDOMTree().IsNone())
+  if (!IsAvailable() || GetSelectionInDomTree().IsNone()) {
     return false;
+  }
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -837,8 +843,9 @@ void FrameSelection::SelectFrameElementInParentIfFullySelected() {
 
   // Check if the selection contains the entire frame contents; if not, then
   // there is nothing to do.
-  if (!GetSelectionInDOMTree().IsRange())
+  if (!GetSelectionInDomTree().IsRange()) {
     return;
+  }
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -1014,7 +1021,7 @@ void FrameSelection::NotifyAccessibilityForSelectionChange() {
   AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
   if (!cache)
     return;
-  Node* anchor = GetSelectionInDOMTree().Focus().ComputeContainerNode();
+  Node* anchor = GetSelectionInDomTree().Focus().ComputeContainerNode();
   if (anchor) {
     cache->SelectionChanged(anchor);
   } else {
@@ -1116,7 +1123,7 @@ void FrameSelection::UpdateAppearance() {
 void FrameSelection::NotifyTextControlOfSelectionChange(
     SetSelectionBy set_selection_by) {
   TextControlElement* text_control =
-      EnclosingTextControl(GetSelectionInDOMTree().Anchor());
+      EnclosingTextControl(GetSelectionInDomTree().Anchor());
   if (!text_control)
     return;
   text_control->SelectionChanged(set_selection_by == SetSelectionBy::kUser);
@@ -1184,7 +1191,7 @@ static EphemeralRangeInFlatTree ComputeRangeForSerialization(
 static String ExtractSelectedText(const FrameSelection& selection,
                                   TextIteratorBehavior behavior) {
   const EphemeralRangeInFlatTree& range =
-      ComputeRangeForSerialization(selection.GetSelectionInDOMTree());
+      ComputeRangeForSerialization(selection.GetSelectionInDomTree());
   // We remove '\0' characters because they are not visibly rendered to the
   // user.
   return PlainText(range, behavior).Replace(0, "");
@@ -1192,7 +1199,7 @@ static String ExtractSelectedText(const FrameSelection& selection,
 
 String FrameSelection::SelectedHTMLForClipboard() const {
   const EphemeralRangeInFlatTree& range =
-      ComputeRangeForSerialization(GetSelectionInDOMTree());
+      ComputeRangeForSerialization(GetSelectionInDomTree());
   return CreateMarkup(range.StartPosition(), range.EndPosition(),
                       CreateMarkupOptions::Builder()
                           .SetShouldAnnotateForInterchange(true)

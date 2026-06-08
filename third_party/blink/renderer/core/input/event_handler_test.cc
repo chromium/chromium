@@ -300,10 +300,10 @@ TEST_F(EventHandlerTest, dragSelectionAfterScroll) {
                    .GetSelectionController()
                    .MouseDownMayStartSelect());
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsRange());
   Range* range =
-      CreateRange(EphemeralRange(Selection().GetSelectionInDOMTree().Anchor(),
-                                 Selection().GetSelectionInDOMTree().Focus()));
+      CreateRange(EphemeralRange(Selection().GetSelectionInDomTree().Anchor(),
+                                 Selection().GetSelectionInDomTree().Focus()));
   ASSERT_TRUE(range);
   EXPECT_EQ("Line 1\nLine 2", range->GetText());
 }
@@ -320,33 +320,33 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTap) {
   TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDomTree().Anchor());
 
   // Multi-tap events on editable elements should trigger selection, just
   // like multi-click events.
   TapEventBuilder double_tap_event(gfx::PointF(0, 0), 2);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsRange());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDomTree().Anchor());
   if (GetDocument()
           .GetFrame()
           ->GetEditor()
           .IsSelectTrailingWhitespaceEnabled()) {
-    EXPECT_EQ(Position(line, 4), Selection().GetSelectionInDOMTree().Focus());
+    EXPECT_EQ(Position(line, 4), Selection().GetSelectionInDomTree().Focus());
     EXPECT_EQ("One ", Selection().SelectedText().Utf8());
   } else {
-    EXPECT_EQ(Position(line, 3), Selection().GetSelectionInDOMTree().Focus());
+    EXPECT_EQ(Position(line, 3), Selection().GetSelectionInDomTree().Focus());
     EXPECT_EQ("One", Selection().SelectedText().Utf8());
   }
 
   TapEventBuilder triple_tap_event(gfx::PointF(0, 0), 3);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       triple_tap_event);
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
-  EXPECT_EQ(Position(line, 13), Selection().GetSelectionInDOMTree().Focus());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsRange());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDomTree().Anchor());
+  EXPECT_EQ(Position(line, 13), Selection().GetSelectionInDomTree().Focus());
   EXPECT_EQ("One Two Three", Selection().SelectedText().Utf8());
 }
 
@@ -361,21 +361,21 @@ TEST_F(EventHandlerTest, multiClickSelectionFromTapDisabledIfNotEditable) {
   TapEventBuilder single_tap_event(gfx::PointF(0, 0), 1);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDomTree().Anchor());
 
   // As the text is readonly, multi-tap events should not trigger selection.
   TapEventBuilder double_tap_event(gfx::PointF(0, 0), 2);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDomTree().Anchor());
 
   TapEventBuilder triple_tap_event(gfx::PointF(0, 0), 3);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       triple_tap_event);
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
-  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDOMTree().Anchor());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+  EXPECT_EQ(Position(line, 0), Selection().GetSelectionInDomTree().Anchor());
 }
 
 TEST_F(EventHandlerTest, draggedInlinePositionTest) {
@@ -934,7 +934,7 @@ TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_FALSE(Selection().IsHandleVisible());
 }
 
@@ -945,7 +945,7 @@ TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 }
 
@@ -956,7 +956,7 @@ TEST_F(EventHandlerTest, NewlineDivInsertionOnTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 }
 
@@ -967,7 +967,7 @@ TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnLongPress) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 
   // Single Tap on an empty edit field should clear insertion handle
@@ -975,7 +975,7 @@ TEST_F(EventHandlerTest, EmptyTextfieldInsertionOnLongPress) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_FALSE(Selection().IsHandleVisible());
 }
 
@@ -986,7 +986,7 @@ TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnLongPress) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 }
 
@@ -1015,13 +1015,13 @@ TEST_F(EventHandlerTest, SelectionOnDoublePress) {
       single_tap_event);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_down_event);
-  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsRange());
   EXPECT_EQ(Selection().SelectedText(), "selection");
 
   // Releasing double tap should keep the selection.
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
-  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsRange());
   EXPECT_EQ(Selection().SelectedText(), "selection");
 }
 
@@ -1061,12 +1061,12 @@ TEST_F(EventHandlerTest, SelectionOnDoublePressPreventDefaultMousePress) {
       single_tap_event);
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_down_event);
-  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsNone());
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsNone());
 
   // Releasing double tap also should not select anything.
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       double_tap_event);
-  EXPECT_TRUE(Selection().GetSelectionInDOMTree().IsNone());
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsNone());
 }
 
 // Regression test for crbug.com/427367148:
@@ -1156,7 +1156,7 @@ TEST_F(EventHandlerTest, ClearHandleAfterTap) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       long_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 
   // Tap away from text area should clear handle
@@ -1175,7 +1175,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       left_mouse_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_FALSE(Selection().IsHandleVisible());
 
   MousePressEventBuilder right_mouse_press_event(
@@ -1183,7 +1183,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       right_mouse_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_FALSE(Selection().IsHandleVisible());
 
   MousePressEventBuilder double_click_mouse_press_event(
@@ -1191,7 +1191,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       double_click_mouse_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsRange());
   ASSERT_FALSE(Selection().IsHandleVisible());
 
   MousePressEventBuilder triple_click_mouse_press_event(
@@ -1199,7 +1199,7 @@ TEST_F(EventHandlerTest, HandleNotShownOnMouseEvents) {
   GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(
       triple_click_mouse_press_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsRange());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsRange());
   ASSERT_FALSE(Selection().IsHandleVisible());
 }
 
@@ -1232,7 +1232,7 @@ TEST_F(EventHandlerTest,
         <span style="user-select:text">there|</span>
       </div>)HTML",
             SelectionSample::GetSelectionText(
-                *GetDocument().body(), Selection().GetSelectionInDOMTree()));
+                *GetDocument().body(), Selection().GetSelectionInDomTree()));
 }
 
 TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
@@ -1249,13 +1249,13 @@ TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
       single_tap_event);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 
   GetDocument().GetFrame()->GetEventHandler().ShowNonLocatedContextMenu(
       nullptr, ui::mojom::blink::MenuSourceType::kTouchHandle);
 
-  ASSERT_TRUE(Selection().GetSelectionInDOMTree().IsCaret());
+  ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
 }
 
