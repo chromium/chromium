@@ -270,8 +270,23 @@ public class UrlUtilities {
     }
 
     /**
-     * Escapes characters in text suitable for use as a query parameter value.
-     * This method calls into base::EscapeQueryParamValue.
+     * Strips a trailing slash from the given URL string if it exists.
+     *
+     * @param url A URL string.
+     * @return The URL string with the trailing slash stripped.
+     */
+    public static String stripTrailingSlash(String url) {
+        String trimmed = url.trim();
+        if (trimmed.endsWith("/")) {
+            return trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+
+    /**
+     * Escapes characters in text suitable for use as a query parameter value. This method calls
+     * into base::EscapeQueryParamValue.
+     *
      * @param text string to be escaped.
      * @param usePlus whether or not to use "+" in place of spaces.
      * @return the escaped string.

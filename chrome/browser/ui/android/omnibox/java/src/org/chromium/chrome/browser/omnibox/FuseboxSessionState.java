@@ -157,9 +157,13 @@ public class FuseboxSessionState implements UserData {
         // On eligible LFF devices the Omnibox should, by default, present the
         // current page URL (if the URL is eligible for display).
         if (OmniboxCapabilities.hasDesktopExperience(context)
-                && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
-            var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
-            mAutocompleteInput.setInitialUserText(editUrl);
+                && UrlBarData.shouldShowUrl(
+                        mAutocompleteInput.getPageUrl(), /* isOffTheRecord= */ false)) {
+            String initialUserText = mAutocompleteInput.getPageUrl().getSpec();
+            // Roughly mirror UrlFormatter#formatUrlForDisplayOmitScheme().
+            initialUserText = UrlUtilities.stripScheme(initialUserText);
+            initialUserText = UrlUtilities.stripTrailingSlash(initialUserText);
+            mAutocompleteInput.setInitialUserText(initialUserText);
         } else {
             mAutocompleteInput.setInitialUserText("");
         }

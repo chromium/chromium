@@ -95,6 +95,18 @@ public class UrlUtilitiesUnitTest {
 
     @Test
     @SmallTest
+    public void testStripTrailingSlash() {
+        assertEquals("google.com", UrlUtilities.stripTrailingSlash("google.com/"));
+        assertEquals("google.com", UrlUtilities.stripTrailingSlash("google.com"));
+        assertEquals("google.com/path", UrlUtilities.stripTrailingSlash("google.com/path/"));
+        assertEquals("google.com/path", UrlUtilities.stripTrailingSlash("google.com/path"));
+        assertEquals("", UrlUtilities.stripTrailingSlash(""));
+        assertEquals("", UrlUtilities.stripTrailingSlash(" "));
+        assertEquals("google.com", UrlUtilities.stripTrailingSlash("  google.com/  "));
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(EmbedderSupportFeatures.ANDROID_CHROME_SCHEME_NAVIGATION_KILL_SWITCH_NAME)
     public void testIsAcceptedScheme() {
         assertTrue(UrlUtilities.isAcceptedScheme(new GURL("about:awesome")));

@@ -237,7 +237,7 @@ public class FuseboxSessionStateUnitTest {
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
 
-        assertEquals("www.google.com/", session.getAutocompleteInput().getUserText());
+        assertEquals("www.google.com", session.getAutocompleteInput().getUserText());
     }
 
     @Test
