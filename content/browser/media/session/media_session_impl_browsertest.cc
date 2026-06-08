@@ -3657,8 +3657,16 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
   EXPECT_TRUE(player_observer->IsPlaying(1));
 }
 
+// TODO(crbug.com/521159836): Re-enable on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_RecordsUkm_BrowserInitiated_AutoPip_IsDryRun \
+  DISABLED_RecordsUkm_BrowserInitiated_AutoPip_IsDryRun
+#else
+#define MAYBE_RecordsUkm_BrowserInitiated_AutoPip_IsDryRun \
+  RecordsUkm_BrowserInitiated_AutoPip_IsDryRun
+#endif
 IN_PROC_BROWSER_TEST_P(MediaSessionImplUkmBrowserTest,
-                       RecordsUkm_BrowserInitiated_AutoPip_IsDryRun) {
+                       MAYBE_RecordsUkm_BrowserInitiated_AutoPip_IsDryRun) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("example.com",
                                               "/media/session/position.html")));
