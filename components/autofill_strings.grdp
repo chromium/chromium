@@ -670,7 +670,7 @@
   <!-- Autofill and passwords entry point summaries - mobile only -->
   <if expr="is_android">
     <message name="IDS_AUTOFILL_AND_PASSWORDS_PASSWORD_MANAGER_SUMMARY" desc="Summary for the Google Password Manager entry in the Autofill and passwords settings." formatter_data="android_java">
-      Passwords and passkeys
+      Passwords · Passkeys
     </message>
     <message name="IDS_AUTOFILL_AND_PASSWORDS_PAYMENTS_SUMMARY" desc="Summary for the Payments entry in the Autofill and passwords settings." formatter_data="android_java">
       Credit &amp; debit cards · IBANs · Loyalty cards
