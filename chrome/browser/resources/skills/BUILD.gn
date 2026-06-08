@@ -11,6 +11,7 @@ build_webui("build") {
     "favicon.png",
     "skills.html",
     "skills_dialog.html",
+    "v2/skills.html",
   ]
 
   ts_composite = true

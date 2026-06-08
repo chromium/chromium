@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}" $i18n{webuiRefresh2026}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
-  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <link rel="stylesheet" href="chrome://theme/colors.css?sets=ui,chrome">
   <title>$i18n{skillsTitle}</title>
-  <link rel="icon" type="image/png" sizes="24x24" href="favicon.png">
+  <link rel="icon" type="image/png" sizes="24x24" href="../favicon.png">
   <style>
     html,
     body {
       height: 100%;
       margin: 0;
-      scrollbar-gutter: stable;
+      overflow: hidden;
+    }
+    webview {
+      display: block;
+      border: none;
+      width: 100%;
+      height: 100%;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -29,7 +33,6 @@
   </style>
 </head>
 <body>
-  <skills-app></skills-app>
-  <script type="module" src="app.js"></script>
+  <webview id="webview" autosize="on"></webview>
 </body>
 </html>

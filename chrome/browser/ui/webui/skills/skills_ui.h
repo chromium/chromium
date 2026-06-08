@@ -56,8 +56,6 @@ class SkillsUI : public ui::MojoWebUIController,
   void CreateDialogHandler(
       mojo::PendingReceiver<skills::mojom::DialogHandler> receiver) override;
 
-  bool ShouldDisableBrowseSkillsPage() const;
-
   // The entry point from which this dialog instance was initiated (i.e. web
   // client, management page). This is set at creation time and used for metrics
   // logging.
