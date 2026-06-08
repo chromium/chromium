@@ -77,7 +77,8 @@ void AutofillAiSaveUpdateEntityPromptController::DisplayPrompt() {
 
 std::u16string AutofillAiSaveUpdateEntityPromptController::GetTitle() const {
   return GetPromptTitle(entity_instance_.type().name(),
-                        /*is_save_prompt=*/!old_entity_instance_.has_value());
+                        /*is_save_prompt=*/!old_entity_instance_.has_value(),
+                        /*is_server_wallet=*/IsWalletableEntity());
 }
 
 std::u16string

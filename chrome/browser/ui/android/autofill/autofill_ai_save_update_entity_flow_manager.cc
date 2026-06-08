@@ -131,10 +131,12 @@ AutofillAiSaveUpdateEntityFlowManager::CreateMessageModel(
   auto message = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::SAVE_UPDATE_ENTITY);
 
-  message->SetTitle(GetPromptTitle(entity.type().name(), !old_entity));
-  message->SetDescription(GetMessageDescription(
-      web_contents_,
-      entity.record_type() == EntityInstance::RecordType::kServerWallet));
+  const bool is_server_wallet =
+      entity.record_type() == EntityInstance::RecordType::kServerWallet;
+  message->SetTitle(GetPromptTitle(entity.type().name(), !old_entity,
+                                   is_server_wallet));
+  message->SetDescription(
+      GetMessageDescription(web_contents_, is_server_wallet));
   message->SetDescriptionMaxLines(kDescriptionMaxLines);
   message->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(GetPrimaryButtonTextId(!old_entity)));

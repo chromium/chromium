@@ -11,7 +11,9 @@
 
 namespace autofill {
 
-std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt);
+std::u16string GetPromptTitle(EntityTypeName type_name,
+                              bool is_save_prompt,
+                              bool is_server_wallet);
 
 int GetPrimaryButtonTextId(bool is_save_prompt);
 

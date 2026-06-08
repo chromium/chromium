@@ -1318,6 +1318,25 @@
       Save redress number
     </message>
 
+    <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_ANDROID_BRANDED" desc="The title of a dialog that prompts the user to save information they just filled in on a form, with Google Wallet branding.">
+      Save driver's license in Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE_ANDROID_BRANDED" desc="The title of a dialog that prompts the user to save information they just filled in on a form, with Google Wallet branding.">
+      Save identity card in Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE_ANDROID_BRANDED" desc="The title of a dialog that prompts the user to save information they just filled in on a form, with Google Wallet branding.">
+      Save passport in Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE_ANDROID_BRANDED" desc="The title of a dialog that prompts the user to save information they just filled in on a form, with Google Wallet branding.">
+      Save vehicle in Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE_ANDROID_BRANDED" desc="The title of a dialog that prompts the user to save information they just filled in on a form, with Google Wallet branding.">
+      Save Known Traveler Number in Google Wallet
+    </message>
+    <message name="IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE_ANDROID_BRANDED" desc="The title of a dialog that prompts the user to save information they just filled in on a form, with Google Wallet branding.">
+      Save redress number in Google Wallet
+    </message>
+
     <message name="IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE_ANDROID" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their driver’s license. Now, the user is filling out a new form either with additional details associated with the driver’s license or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the driver’s license that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
       Update driver's license
     </message>

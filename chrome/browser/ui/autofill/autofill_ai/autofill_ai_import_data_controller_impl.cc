@@ -161,7 +161,8 @@ AutofillAiImportDataControllerImpl::GetUpdatedAttributesDetails() const {
 std::u16string AutofillAiImportDataControllerImpl::GetSaveUpdateDialogTitle()
     const {
   return GetPromptTitle(GetSaveUpdateState().new_entity.type().name(),
-                        IsSavePrompt());
+                        IsSavePrompt(),
+                        /*is_server_wallet=*/IsWalletableEntity());
 }
 
 bool AutofillAiImportDataControllerImpl::IsWalletableEntity() const {
