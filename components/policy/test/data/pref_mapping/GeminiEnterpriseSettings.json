@@ -6,16 +6,284 @@
       "linux",
       "chromeos"
     ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "glic.gemini_enterprise_settings",
-      "default_value": {},
-      "values_to_test": [
-        {
-          "project_id": "test-project",
-          "app_id": "test-app",
-          "location": "test-location"
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set)",
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
         }
-      ]
-    }
+      },
+      {
+        "note": "Valid policy settings (standard)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "value": {
+              "project_id": "test-project",
+              "app_id": "test-app",
+              "location": "global"
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Valid policy settings (minimal lengths and edge cases)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "a",
+            "app_id": "a",
+            "location": "a"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "value": {
+              "project_id": "a",
+              "app_id": "a",
+              "location": "a"
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Valid policy settings (location ends with digit)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "a-cde-f",
+            "app_id": "a-1",
+            "location": "us-central1"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "value": {
+              "project_id": "a-cde-f",
+              "app_id": "a-1",
+              "location": "us-central1"
+            },
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid project_id (contains uppercase)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "Invalid-Project",
+            "app_id": "test-app",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid project_id (too long)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "1234567890123456789012345678901",
+            "app_id": "test-app",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid project_id (contains underscore)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test_project",
+            "app_id": "test-app",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid app_id (starts with uppercase)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "Test-App",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid app_id (starts with underscore)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "_test-app",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid app_id (starts with hyphen)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "-test-app",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid app_id (too long)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv",
+            "location": "global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid location (ends with hyphen)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "test-location-"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid location (contains underscore)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "test_location"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid location (starts with digit)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "1test"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid location (starts with hyphen)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "-test"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid location (contains uppercase)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "Global"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid location (too long)",
+        "policies": {
+          "GeminiEnterpriseSettings": {
+            "project_id": "test-project",
+            "app_id": "test-app",
+            "location": "axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxb"
+          }
+        },
+        "prefs": {
+          "glic.gemini_enterprise_settings": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      }
+    ]
   }
 ]

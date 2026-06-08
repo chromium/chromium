@@ -17,8 +17,8 @@ desc: |-
   All settings of this policy must match the configuration of <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> project in <ph name="GOOGLE_CLOUD_PRODUCT_NAME">Google Cloud</ph> Console. Any mismatch will cause unexpected behavior while using <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph>.
 
 example_value:
-  project_id: "1234567890"
-  app_id: "acme_corp_v1"
+  project_id: "acme-project"
+  app_id: "acme-corp-v1"
   location: "global"
 
 future_on:
@@ -36,12 +36,15 @@ schema:
   properties:
     project_id:
       type: string
-      description: The ID of the <ph name="GOOGLE_CLOUD_PRODUCT_NAME">Google Cloud</ph> project corresponding to the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> instance to be enabled.
+      pattern: '^[a-z0-9-]{1,30}$'
+      description: The ID or number of the <ph name="GOOGLE_CLOUD_PRODUCT_NAME">Google Cloud</ph> project corresponding to the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> instance to be enabled. Learn more about project IDs at https://docs.cloud.google.com/resource-manager/docs/creating-managing-projects.
     app_id:
       type: string
-      description: The unique identifier for the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> app.
+      pattern: '^[a-z0-9][a-z0-9-_]{0,62}$'
+      description: The unique identifier of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> engine. The format must be 1-63 characters matching the pattern [a-z0-9][a-z0-9-_]*. Learn more at https://docs.cloud.google.com/gemini/enterprise/docs/reference/rest/v1/projects.locations.collections.engines#Engine.
     location:
       type: string
+      pattern: '^[a-z]([a-z0-9-]{0,48}[a-z0-9])?$'
       description: The multi-region or location of the <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> app. Learn more about <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME">Gemini Enterprise</ph> location at https://docs.cloud.google.com/gemini/enterprise/docs/locations.
   required:
   - project_id
