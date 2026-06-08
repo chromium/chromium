@@ -820,67 +820,9 @@ TEST_F(AppPlatformMetricsServiceTest, InstallApps) {
       /*count=*/2);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, BrowserWindow) {
-  InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
-                Readiness::kReady, InstallSource::kSystem);
 
-  // Expect no Browsers at the beginning.
-  EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
-  std::unique_ptr<Browser> browser1 = CreateBrowserWithAuraWindow1();
 
-  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  // Set the browser window active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser1->GetWindow()->GetNativeWindow(),
-                 kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(10));
-  VerifyAppActivatedCount(/*expected_count=*/1, AppTypeName::kChromeBrowser);
-
-  task_environment_.FastForwardBy(base::Minutes(20));
-  // Set the browser window running in the background.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser1->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-
-  task_environment_.FastForwardBy(base::Minutes(10));
-  VerifyAppRunningDuration(base::Minutes(30), AppTypeName::kChromeBrowser);
-
-  // Test multiple browsers.
-  std::unique_ptr<Browser> browser2 = CreateBrowserWithAuraWindow2();
-  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
-
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser2->GetWindow()->GetNativeWindow(),
-                 kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(10));
-  VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kChromeBrowser);
-
-  task_environment_.FastForwardBy(base::Minutes(20));
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser2->GetWindow()->GetNativeWindow(),
-                 apps::InstanceState::kDestroyed);
-
-  task_environment_.FastForwardBy(base::Minutes(10));
-  VerifyAppRunningDuration(base::Hours(1), AppTypeName::kChromeBrowser);
-
-  // Test date change.
-  task_environment_.FastForwardBy(base::Days(1));
-  VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
-                                         AppTypeName::kChromeBrowser);
-  VerifyAppRunningDurationHistogram(base::Hours(1),
-                                    /*expected_count=*/1,
-                                    AppTypeName::kChromeBrowser);
-  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
-                                           AppTypeName::kChromeBrowser);
-  VerifyAppRunningPercentageHistogram(100,
-                                      /*expected_count=*/1,
-                                      AppTypeName::kChromeBrowser);
-  VerifyAppActivatedCountHistogram(/*expected_count=*/1,
-                                   AppTypeName::kChromeBrowser);
-  VerifyAppActivatedHistogram(/*count*/ 2, /*expected_count=*/1,
-                              AppTypeName::kChromeBrowser);
-}
 
 // Tests the UMA metrics when launching an app in one day .
 TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {

@@ -85,14 +85,23 @@ class FakeSyncService : public syncer::TestSyncService {
 
 std::atomic<int64_t> g_fake_time_us{0};
 std::atomic<int64_t> g_fake_ticks_us{0};
+std::atomic<int64_t> g_last_ticks_us{0};
 
 base::Time GetFakeTime() {
   return base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(g_fake_time_us.load(std::memory_order_relaxed)));
 }
 base::TimeTicks GetFakeTimeTicks() {
-  return base::TimeTicks() +
-         base::Microseconds(g_fake_ticks_us.load(std::memory_order_relaxed));
+  int64_t ticks_us = g_fake_ticks_us.load(std::memory_order_relaxed);
+  int64_t last_us = g_last_ticks_us.load(std::memory_order_relaxed);
+  while (ticks_us > last_us) {
+    if (g_last_ticks_us.compare_exchange_weak(last_us, ticks_us,
+                                              std::memory_order_relaxed)) {
+      last_us = ticks_us;
+      break;
+    }
+  }
+  return base::TimeTicks() + base::Microseconds(last_us);
 }
 
 }  // namespace
@@ -124,6 +133,10 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
   }
 
   void StartMetricsService() {
+    profile()->GetPrefs()->SetInteger(kAppPlatformMetricsDayId, 0);
+    profile()->GetPrefs()->SetDict(kAppRunningDuration, base::DictValue());
+    profile()->GetPrefs()->SetDict(kAppActivatedCount, base::DictValue());
+
     auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     // Force overwrite and re-create the service to completely bypass and
     // replace the production async posted task from
@@ -1448,6 +1461,70 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   web_app_window1.reset();
   web_app_window2.reset();
   CloseBrowserSynchronously(browser);
+}
+
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, BrowserWindow) {
+
+  InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
+                Readiness::kReady, InstallSource::kSystem);
+
+  // Expect no Browsers at the beginning.
+  EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
+  Browser* browser1 = CreateBrowserWithAuraWindow();
+
+  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // browser1 is active by default.
+  // Note: expected_count is 2 because in a real Ash/Aura environment, creating
+  // a window triggers two natural focus activation transitions (first when the
+  // window is initialized and mapped, and again once focus settles on the
+  // default tab's web contents). Both of these activation updates increment
+  // the metrics count.
+  FastForwardBy(base::Minutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/2, AppTypeName::kChromeBrowser);
+
+  FastForwardBy(base::Minutes(20));
+  // Set the browser window running in the background by minimizing it.
+  browser1->window()->Minimize();
+
+  FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Minutes(30), AppTypeName::kChromeBrowser);
+
+  // Test multiple browsers.
+  Browser* browser2 = CreateBrowserWithAuraWindow();
+  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  // browser2 is active by default.
+  // Note: expected_count is 4 because launching browser2 triggers two more
+  // focus activations during its real startup lifecycle, adding 2 to the
+  // previous count of 2.
+  FastForwardBy(base::Minutes(10));
+  VerifyAppActivatedCount(/*expected_count=*/4, AppTypeName::kChromeBrowser);
+
+  FastForwardBy(base::Minutes(20));
+  CloseBrowserSynchronously(browser2);
+
+  FastForwardBy(base::Minutes(10));
+  VerifyAppRunningDuration(base::Hours(1), AppTypeName::kChromeBrowser);
+
+  // Test date change.
+  FastForwardBy(base::Days(1));
+  VerifyAppRunningDurationCountHistogram(/*expected_count=*/1,
+                                         AppTypeName::kChromeBrowser);
+  VerifyAppRunningDurationHistogram(base::Hours(1),
+                                    /*expected_count=*/1,
+                                    AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageHistogram(100,
+                                      /*expected_count=*/1,
+                                      AppTypeName::kChromeBrowser);
+  VerifyAppActivatedCountHistogram(/*expected_count=*/1,
+                                   AppTypeName::kChromeBrowser);
+  VerifyAppActivatedHistogram(/*count=*/4, /*expected_count=*/1,
+                              AppTypeName::kChromeBrowser);
+
+  CloseBrowserSynchronously(browser1);
 }
 
 }  // namespace apps
