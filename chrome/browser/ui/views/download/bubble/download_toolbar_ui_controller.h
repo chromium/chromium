@@ -5,16 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_UI_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_UI_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/download/download_bubble_row_list_view_info.h"
 #include "chrome/browser/ui/download/download_display.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/offline_items_collection/core/offline_item.h"
@@ -23,6 +26,8 @@
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
+
+enum class GetAnchorFailureReason;
 
 namespace offline_items_collection {
 struct ContentId;
@@ -35,7 +40,6 @@ class Widget;
 
 class BrowserView;
 class DownloadDisplayController;
-class DownloadBubbleContentsView;
 class DownloadBubbleUIController;
 class ProfileBrowserCollection;
 
@@ -107,6 +111,8 @@ class DownloadToolbarUIController
   // Deactivates the automatic closing of the partial bubble.
   void DeactivateAutoClose();
 
+  // Invoke download UI.  If the download bubble isn't showing, this will show
+  // it, otherwise it will open chrome://downloads.
   void InvokeUI();
 
   // If |has_pending_download_started_animation_| is true, shows an animation of
@@ -149,7 +155,7 @@ class DownloadToolbarUIController
   // bubble.
   class BubbleCloser : public ui::EventObserver, public views::WidgetObserver {
    public:
-    BubbleCloser(views::Button* toolbar_button,
+    BubbleCloser(views::BubbleAnchor anchor,
                  views::Widget* bubble_widget,
                  base::WeakPtr<DownloadDisplay> download_display);
 
@@ -171,8 +177,25 @@ class DownloadToolbarUIController
         bubble_widget_observation_{this};
   };
 
-  void CreateBubbleDialogDelegate();
+  // Show the bubble with `mode` mode. This operation may complete
+  // asynchronously if the anchor is pending. Concurrent attempts to show the
+  // bubble will be deduped with DownloadBubbleMode.kComplete bubble creation
+  // taking precedence over DownloadBubbleMode.kPartial bubble creation.
+  // `content_id`, if set, indicates some offline content to show in the
+  // security page.
+  void ShowBubble(DownloadBubbleMode mode,
+                  std::optional<offline_items_collection::ContentId>
+                      content_id = std::nullopt);
+
+  // Actually show the bubble anchored to `anchor`, now that `anchor` is
+  // available.
+  void OnBubbleAnchorAssembled(
+      base::expected<views::BubbleAnchor, GetAnchorFailureReason> anchor);
+
   void OnBubbleClosing();
+
+  // Show a security page with `content_id` content.
+  void ShowSecurityPage(const offline_items_collection::ContentId& content_id);
 
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();
@@ -204,7 +227,7 @@ class DownloadToolbarUIController
   void OnAnyRowRemoved() override;
 
   raw_ptr<BrowserView> browser_view_;
-  bool is_primary_partial_view_ = false;
+  DownloadBubbleMode primary_view_mode_ = DownloadBubbleMode::kComplete;
   raw_ptr<actions::ActionItem> action_item_ = nullptr;
   // Controller for the DownloadToolbarButton UI.
   std::unique_ptr<DownloadDisplayController> controller_;
@@ -212,6 +235,13 @@ class DownloadToolbarUIController
   std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   raw_ptr<DownloadBubbleContentsView> bubble_contents_ = nullptr;
+
+  // Set when a bubble is going to be created, i.e. `bubble_delegate_`
+  // will likely be non-null soon if this is true.
+  bool pending_bubble_ = false;
+
+  // Security page content to show when the bubble finishes being created.
+  std::optional<offline_items_collection::ContentId> pending_security_content_;
 
   // Whether the progress ring in the icon should be updated continuously
   // (false), or the icon should be displayed as dormant (true). This is a

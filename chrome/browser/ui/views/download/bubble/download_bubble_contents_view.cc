@@ -61,7 +61,7 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     base::WeakPtr<Browser> browser,
     base::WeakPtr<DownloadBubbleUIController> bubble_controller,
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
-    bool primary_view_is_partial_view,
+    DownloadBubbleMode mode,
     std::unique_ptr<DownloadBubbleContentsViewInfo> info,
     views::BubbleDialogDelegate* bubble_delegate)
     : info_(std::move(info)),
@@ -74,16 +74,19 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   std::unique_ptr<DownloadBubblePrimaryView> primary_view;
-  if (primary_view_is_partial_view) {
-    primary_view = std::make_unique<DownloadBubblePartialView>(
-        browser, bubble_controller, navigation_handler,
-        info_->row_list_view_info(),
-        base::BindOnce(&DownloadBubbleNavigationHandler::OnDialogInteracted,
-                       navigation_handler));
-  } else {
-    primary_view = std::make_unique<DownloadDialogView>(
-        browser, bubble_controller, navigation_handler,
-        info_->row_list_view_info());
+  switch (mode) {
+    case DownloadBubbleMode::kPartial:
+      primary_view = std::make_unique<DownloadBubblePartialView>(
+          browser, bubble_controller, navigation_handler,
+          info_->row_list_view_info(),
+          base::BindOnce(&DownloadBubbleNavigationHandler::OnDialogInteracted,
+                         navigation_handler));
+      break;
+    case DownloadBubbleMode::kComplete:
+      primary_view = std::make_unique<DownloadDialogView>(
+          browser, bubble_controller, navigation_handler,
+          info_->row_list_view_info());
+      break;
   }
 
   primary_view_ = AddChildView(std::move(primary_view));

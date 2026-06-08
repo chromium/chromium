@@ -13,6 +13,14 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+// Type of downloads to show in the download bubble primary view.
+enum class DownloadBubbleMode {
+  // Shows all recent downloads finished within the last 24 hours.
+  kComplete,
+  // Shows only in-progress and uninteracted downloads.
+  kPartial,
+};
+
 class Browser;
 class DownloadBubbleNavigationHandler;
 class DownloadBubblePrimaryView;
@@ -49,7 +57,7 @@ class DownloadBubbleContentsView : public views::View,
       base::WeakPtr<DownloadBubbleUIController> bubble_controller,
       base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
       // Whether the primary view is the partial view.
-      bool primary_view_is_partial_view,
+      DownloadBubbleMode mode,
       std::unique_ptr<DownloadBubbleContentsViewInfo> info,
       // The owning bubble's delegate.
       views::BubbleDialogDelegate* bubble_delegate);
