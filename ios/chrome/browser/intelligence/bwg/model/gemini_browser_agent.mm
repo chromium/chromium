@@ -404,12 +404,6 @@ bool GeminiBrowserAgent::IsGeminiAvailableForActiveWebState() const {
   return tab_helper && tab_helper->IsGeminiAvailableForWebState();
 }
 
-bool GeminiBrowserAgent::IsGeminiChatAvailableForActiveWebState() const {
-  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
-  GeminiTabHelper* tab_helper = GetActiveTabHelper(web_state);
-  return tab_helper && tab_helper->IsGeminiChatAvailableForWebState();
-}
-
 bool GeminiBrowserAgent::IsInGeminiLiveMode() const {
   return IsGeminiLiveEnabled() && ios::provider::GetCurrentMode() ==
                                       ios::provider::GeminiViewMode::kLive;
@@ -483,6 +477,10 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   }
 
   is_keyboard_visible_ = is_visible;
+  if (IsGeminiLiveEnabled()) {
+    ios::provider::SetLiveCaptionsNumberOfLines(is_visible ? 1 : -1);
+  }
+
   if (is_visible) {
     // If the floaty is expanded but not thinking or temporarily hidden, the
     // floaty should not be hidden on keyboard updates. However, focusing the
@@ -1338,20 +1336,24 @@ bool GeminiBrowserAgent::ShouldIgnoreKeyboardUpdate() const {
          (is_expanded_not_thinking || is_floaty_temporarily_hidden_);
 }
 
-bool GeminiBrowserAgent::IsChatEligiblePage() const {
-  return IsGeminiChatAvailableForActiveWebState();
-}
-
 void GeminiBrowserAgent::UpdateLiveModeUI() {
   if (!IsInGeminiLiveMode()) {
     return;
   }
-  ios::provider::SetLiveStopButtonHidden(!IsChatEligiblePage());
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  bool is_eligible =
+      tab_helper && tab_helper->IsGeminiChatAvailableForWebState();
+  ios::provider::SetLiveStopButtonHidden(!is_eligible);
 }
 
 bool GeminiBrowserAgent::UpdateLiveModeUIAndMaybeContext() {
   UpdateLiveModeUI();
-  if (IsChatEligiblePage()) {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (tab_helper && tab_helper->IsGeminiChatAvailableForWebState()) {
     UpdateFloatyWithPartialPageContext();
     RequestPageContextGeneration();
     return true;
@@ -1430,7 +1432,39 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
   if (!is_floaty_invoked_) {
     return;
   }
-  ApplyUserPrefsToPageContext(gemini_page_context);
+
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  bool is_eligible =
+      tab_helper && tab_helper->IsGeminiChatAvailableForWebState();
+
+  // Handle programmatic blocking/detachment for ineligible or hidden pages.
+  if (!is_eligible) {
+    gemini_page_context.geminiPageContextComputationState =
+        ios::provider::GeminiPageContextComputationState::kBlocked;
+    gemini_page_context.geminiPageContextAttachmentState =
+        ios::provider::GetCurrentPageContextAttachmentState();
+    gemini_page_context.uniquePageContext = nullptr;
+  } else {
+    // Apply user settings.
+    ApplyUserPrefsToPageContext(gemini_page_context);
+
+    // Persists manual detachment across navigations. If the user explicitly
+    // detached the context via the paperclip UI, respect that choice over the
+    // default attached state. Skip for Gemini Live where the paperclip UI
+    // is absent and context streams continuously.
+    if (IsGeminiCopresenceEnabled() &&
+        gemini_page_context.geminiPageContextAttachmentState ==
+            ios::provider::GeminiPageContextAttachmentState::kAttached &&
+        ios::provider::GetCurrentPageContextAttachmentState() ==
+            ios::provider::GeminiPageContextAttachmentState::kDetached &&
+        !IsInGeminiLiveMode()) {
+      gemini_page_context.geminiPageContextAttachmentState =
+          ios::provider::GeminiPageContextAttachmentState::kDetached;
+    }
+  }
+
   ios::provider::UpdatePageContext(gemini_page_context);
 }
 
@@ -1561,26 +1595,10 @@ void GeminiBrowserAgent::ResetFullscreenDisabler() {
 
 void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
     GeminiPageContext* gemini_page_context) {
-  if (!IsChatEligiblePage()) {
-    gemini_page_context.geminiPageContextComputationState =
-        ios::provider::GeminiPageContextComputationState::kBlocked;
-    gemini_page_context.geminiPageContextAttachmentState =
-        ios::provider::GeminiPageContextAttachmentState::kDetached;
-    gemini_page_context.uniquePageContext = nullptr;
-    return;
-  }
-
-  // Disable the page context attachment state based on user prefs.
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
   if (!pref_service->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
     gemini_page_context.geminiPageContextAttachmentState =
         ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
-  } else if (IsGeminiCopresenceEnabled() && is_floaty_invoked_ &&
-             ios::provider::GetCurrentPageContextAttachmentState() ==
-                 ios::provider::GeminiPageContextAttachmentState::kDetached &&
-             !IsInGeminiLiveMode()) {
-    gemini_page_context.geminiPageContextAttachmentState =
-        ios::provider::GeminiPageContextAttachmentState::kDetached;
   } else {
     // If page context is not disabled by the user, page context is always
     // available and should be attached. Note page context is only partially

@@ -92,9 +92,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns true if Gemini is available for the active web state.
   bool IsGeminiAvailableForActiveWebState() const;
 
-  // Returns true if Gemini Chat mode is available for the active web state.
-  bool IsGeminiChatAvailableForActiveWebState() const;
-
   // Returns true if Gemini Live mode is currently active.
   bool IsInGeminiLiveMode() const;
 
@@ -296,9 +293,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Returns true if the keyboard update should be ignored.
   bool ShouldIgnoreKeyboardUpdate() const;
-
-  // Returns true if the current page is eligible for standard Gemini Chat mode.
-  bool IsChatEligiblePage() const;
 
   // Recalculates and updates the Gemini Live mode UI elements.
   void UpdateLiveModeUI();
