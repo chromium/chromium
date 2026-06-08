@@ -182,10 +182,13 @@ bool XRFrameTransport::FrameSubmit(
       auto mojom_layer_update = device::mojom::blink::XRLayerUpdate::New();
       mojom_layer_update->layer_id = layer.layer_id;
       if (layer.current_frame_image) {
-        mojom_layer_update->sync_token = layer.current_frame_image->sync_token;
-        delegate->VerifySyncToken(mojom_layer_update->sync_token);
+        delegate->VerifySyncToken(layer.current_frame_image->sync_token);
+        mojom_layer_update->shared_image_export_result =
+            layer.current_frame_image->shared_image->EndImport(
+                layer.current_frame_image->sync_token);
       } else {
-        mojom_layer_update->sync_token = gpu::SyncToken();
+        mojom_layer_update->shared_image_export_result =
+            gpu::SharedImageExportResult::CreateEmptyResult();
       }
       mojom_layer_updates.push_back(std::move(mojom_layer_update));
     }

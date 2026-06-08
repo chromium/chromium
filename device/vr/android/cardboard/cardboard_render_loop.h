@@ -103,7 +103,7 @@ class CardboardRenderLoop : public base::android::JavaHandlerThread,
   bool IsSubmitFrameExpected(int16_t frame_index);
 
   void ProcessFrameDrawnIntoTexture(
-      const gpu::SyncToken& sync_token,
+      gpu::SharedImageExportResult shared_image_export_result,
       const std::vector<gpu::SyncToken>& camera_sync_tokens);
   void OnWebXrTokenSignaled(std::unique_ptr<gfx::GpuFence> gpu_fence);
 

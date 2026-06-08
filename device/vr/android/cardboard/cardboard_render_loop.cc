@@ -493,11 +493,12 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
   webxr_->ProcessOrDefer(
       base::BindOnce(&CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
                      weak_ptr_factory_.GetWeakPtr(),
-                     layer_updates[0]->sync_token, camera_sync_tokens));
+                     std::move(layer_updates[0]->shared_image_export_result),
+                     camera_sync_tokens));
 }
 
 void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
-    const gpu::SyncToken& sync_token,
+    gpu::SharedImageExportResult shared_image_export_result,
     const std::vector<gpu::SyncToken>& camera_sync_tokens) {
   // The current function is run immediately after the animating frame is
   // moved to processing, so GetProcessingFrame() is guaranteed to be valid.
@@ -511,7 +512,8 @@ void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
 
   std::vector<gpu::SyncToken> combined_sync_tokens;
   combined_sync_tokens.reserve(camera_sync_tokens.size() + 1);
-  combined_sync_tokens.push_back(sync_token);
+  combined_sync_tokens.push_back(
+      shared_images[0]->EndExport(std::move(shared_image_export_result)));
   for (auto& camera_sync_token : camera_sync_tokens) {
     combined_sync_tokens.push_back(camera_sync_token);
   }

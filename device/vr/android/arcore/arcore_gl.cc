@@ -1236,7 +1236,8 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(
   // The previous sync token has been consumed by the renderer process, so we
   // need to set this one for use by the compositor.
   webxr_->GetAnimatingFrame()->shared_buffer->sync_token =
-      layer_updates[0]->sync_token;
+      webxr_->GetAnimatingFrame()->shared_buffer->shared_image->EndExport(
+          std::move(layer_updates[0]->shared_image_export_result));
   webxr_->GetAnimatingFrame()->camera_image_shared_buffer->sync_token =
       camera_sync_token;
 

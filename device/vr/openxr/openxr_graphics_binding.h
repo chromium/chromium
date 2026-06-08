@@ -232,10 +232,12 @@ class OpenXrGraphicsBinding {
       mojom::XRCompositionLayerDataPtr layer_data,
       gpu::SharedImageInterface* shared_image_interface);
 
-  // Get the ClientSharedImages for the base layer and the layers specified in
-  // the input.
-  std::vector<scoped_refptr<gpu::ClientSharedImage>> GetSharedImages(
-      const std::vector<LayerId>& layers);
+  // End the export of updated layers; return layer ClientSharedImages and
+  // output SyncTokens unpacked from XRLayerUpdates via the `out_sync_tokens`
+  // parameter.
+  std::vector<scoped_refptr<gpu::ClientSharedImage>> EndSharedImagesExport(
+      const std::vector<device::mojom::XRLayerUpdatePtr>& layers,
+      std::vector<gpu::SyncToken>& out_sync_tokens);
 
   // Get a composition layer by its layer id. Returns nullptr
   // if the layer id doesn't exist.

@@ -1187,10 +1187,10 @@ interface XRFrameDataProvider {
           environment_provider);
 };
 
-// Wrapper for layer id and the SyncToken associated with that layer.
+// Wrapper for layer's id and associated SharedImageExportResult.
 struct XRLayerUpdate {
   LayerId layer_id;
-  gpu.mojom.SyncToken sync_token;
+  gpu.mojom.SharedImageExportResult shared_image_export_result;
 };
 
 // Provides the necessary functionality for sending frames to a headset.
