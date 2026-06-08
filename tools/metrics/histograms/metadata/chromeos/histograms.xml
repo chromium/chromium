@@ -1194,7 +1194,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.CWP.CollectPerf"
-    enum="ChromeOSProfileCollectionStatus" expires_after="2026-06-22">
+    enum="ChromeOSProfileCollectionStatus" expires_after="2027-06-22">
   <owner>gmx@chromium.org</owner>
   <owner>aalexand@google.com</owner>
   <owner>cwp-team@google.com</owner>
