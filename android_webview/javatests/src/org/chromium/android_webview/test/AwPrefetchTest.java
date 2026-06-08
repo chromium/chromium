@@ -263,7 +263,34 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-    public void testPrefetchRequestDuplicate() throws Throwable {
+    public void testPrefetchRequestDuplicate_UIThread() throws Throwable {
+        testPrefetchRequestDuplicate(/* runOnWorkerThread= */ false);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "disable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestDuplicate_WorkerThread_OMTDisabled() throws Throwable {
+        testPrefetchRequestDuplicate(/* runOnWorkerThread= */ true);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchRequestDuplicate_WorkerThread_OMTEnabled() throws Throwable {
+        testPrefetchRequestDuplicate(/* runOnWorkerThread= */ true);
+    }
+
+    private void testPrefetchRequestDuplicate(boolean runOnWorkerThread) throws Throwable {
+        boolean omtEnabled = AwPrefetchManager.isWebViewPrefetchOffTheMainThreadEnabled();
         // Prepare PrefetchParameters
         AwNoVarySearchData expectedNoVarySearch =
                 new AwNoVarySearchData(false, false, new String[] {"ts", "uid"}, null);
@@ -271,7 +298,8 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 new AwPrefetchParameters(null, expectedNoVarySearch, true);
 
         // Do the prefetch request.
-        TestAwPrefetchCallback callback = startPrefetchingAndWait(mPrefetchUrl, prefetchParameters);
+        TestAwPrefetchCallback callback =
+                startPrefetchAndWaitV2(runOnWorkerThread, mPrefetchUrl, prefetchParameters);
 
         // wait then do the checks
         callback.mOnStatusUpdatedHelper.waitForNext();
@@ -284,22 +312,61 @@ public class AwPrefetchTest extends AwParameterizedTest {
 
         // Do another prefetch request but add the ignored query parameters.
         String prefetchUrlWithQueryParams = mPrefetchUrl + "?ts=1000&uid=007";
-        TestAwPrefetchCallback callback2 =
-                startPrefetchingAndWait(prefetchUrlWithQueryParams, prefetchParameters);
+        TestAwPrefetchCallback callback2;
+        if (runOnWorkerThread && omtEnabled) {
+            CountDownLatch latch = new CountDownLatch(1);
+            callback2 = new TestAwPrefetchCallback();
+            // We call `startPrefetchRequestAsync()` directly instead of
+            // `startPrefetchAndWaitV2()` because when OMT is enabled, this
+            // duplicate request fails PrePrefetch and falls back to the UI
+            // thread. This runs the key listener on the UI thread, which
+            // violates `startPrefetchAndWaitV2()`'s assertion that it runs
+            // on the worker thread.
+            // TODO(crbug.com/519611014): Consider revisiting this behavior
+            // where PrePrefetch duplication failure falls back to a normal
+            // Prefetch.
+            mPrefetchManager.startPrefetchRequestAsync(
+                    SystemClock.uptimeMillis(),
+                    prefetchUrlWithQueryParams,
+                    prefetchParameters,
+                    callback2,
+                    Runnable::run,
+                    prefetchKey -> {
+                        callback2.setPrefetchKey(prefetchKey);
+                        latch.countDown();
+                    });
+            Assert.assertTrue("Prefetch should start", latch.await(5, TimeUnit.SECONDS));
+        } else {
+            callback2 =
+                    startPrefetchAndWaitV2(
+                            runOnWorkerThread, prefetchUrlWithQueryParams, prefetchParameters);
+        }
 
         // wait then do the checks
         callback2.mOnStatusUpdatedHelper.waitForNext();
-        Assert.assertEquals(1, callback2.getOnStatusUpdatedHelper().getCallCount());
         Assert.assertEquals(
                 AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
                 callback2.getOnStatusUpdatedHelper().getStatusCode());
         Assert.assertNull(callback2.getOnStatusUpdatedHelper().getExtras());
         Assert.assertNull(callback2.getOnErrorHelper().mError);
 
+        if (runOnWorkerThread && omtEnabled) {
+            // TODO(crbug.com/519611014): PrePrefetch failure fallback triggers a second duplicate
+            // check on the UI thread, causing the duplicate callback to run twice.
+            callback2.mOnStatusUpdatedHelper.waitForNext();
+            Assert.assertEquals(2, callback2.getOnStatusUpdatedHelper().getCallCount());
+            Assert.assertEquals(
+                    AwPrefetchCallback.StatusCode.DUPLICATE_REQUEST,
+                    callback2.getOnStatusUpdatedHelper().getStatusCode());
+        } else {
+            Assert.assertEquals(1, callback2.getOnStatusUpdatedHelper().getCallCount());
+        }
+
         // Finally, do a third request with an unexpected query parameter.
         String prefetchUrlWithUnexpectedQueryParam = prefetchUrlWithQueryParams + "&q=help";
         TestAwPrefetchCallback callback3 =
-                startPrefetchingAndWait(prefetchUrlWithUnexpectedQueryParam, prefetchParameters);
+                startPrefetchAndWaitV2(
+                        runOnWorkerThread, prefetchUrlWithUnexpectedQueryParam, prefetchParameters);
 
         // wait then do the checks
         callback3.mOnStatusUpdatedHelper.waitForNext();
@@ -1359,14 +1426,6 @@ public class AwPrefetchTest extends AwParameterizedTest {
         } else {
             return startPrefetchAsyncAndWait(url, prefetchParameters, prefetchManager);
         }
-    }
-
-    private TestAwPrefetchCallback startPrefetchingAndWait(
-            String url, AwPrefetchParameters prefetchParameters) {
-        return startPrefetchingAndWait(
-                url,
-                prefetchParameters,
-                mActivityTestRule.getAwBrowserContext().getPrefetchManager());
     }
 
     private TestAwPrefetchCallback startPrefetchingAndWait(
