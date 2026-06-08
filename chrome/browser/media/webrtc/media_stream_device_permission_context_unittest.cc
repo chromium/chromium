@@ -23,11 +23,23 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/permissions/permission_request_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/view_type_utils.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #endif
 
 namespace {
@@ -220,3 +232,49 @@ TEST_F(MediaStreamDevicePermissionContextTests, TestCameraUseFakeUiSwitchDeny) {
   TestUseFakeUiSwitch(ContentSettingsType::MEDIASTREAM_CAMERA,
                       true /* use_deny_switch */);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(MediaStreamDevicePermissionContextTests,
+       AppMediaPermissionAutoApproved) {
+  scoped_refptr<const extensions::Extension> app =
+      extensions::ExtensionBuilder(
+          "Test App", extensions::ExtensionBuilder::Type::PLATFORM_APP)
+          .AddAPIPermission("audioCapture")
+          .Build();
+
+  extensions::ExtensionRegistry::Get(profile())->AddEnabled(app);
+  extensions::RendererStartupHelperFactory::GetForBrowserContext(profile())
+      ->OnExtensionLoaded(*app);
+
+  extensions::SetViewType(
+      web_contents(), extensions::mojom::ViewType::kExtensionBackgroundPage);
+
+  GURL app_url = app->GetResourceURL("index.html");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(app_url);
+
+  content::ChildProcessId process_id = main_rfh()->GetProcess()->GetID();
+  extensions::ProcessMap::Get(profile())->Insert(app->id(), process_id);
+
+  TestPermissionContext permission_context(
+      profile(), ContentSettingsType::MEDIASTREAM_MIC);
+
+  permissions::PermissionRequestID request_id(
+      main_rfh(), permissions::PermissionRequestID::RequestLocalId(1));
+
+  auto request_data = std::make_unique<permissions::PermissionRequestData>(
+      blink::mojom::PermissionDescriptor::New(), request_id,
+      /*user_gesture=*/true, url::Origin::Create(app_url).GetURL(),
+      url::Origin::Create(app_url).GetURL());
+
+  base::RunLoop run_loop;
+  permission_context.DecidePermission(
+      std::move(request_data),
+      base::BindOnce(
+          [](base::OnceClosure quit_closure, content::PermissionResult result) {
+            EXPECT_EQ(blink::mojom::PermissionStatus::GRANTED, result.status);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)

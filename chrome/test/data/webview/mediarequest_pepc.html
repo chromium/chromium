@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--
+This page:
+1. Waits for a message, and records the source.
+2. Appends a <usermedia> PEPC element.
+3. Yields to event loop for layout using double requestAnimationFrame.
+4. Clicks the element and waits for promptaction.
+5. Sends a message back to the source, telling it whether it was given media
+   access.
+-->
+<script>
+  function waitForSource() {
+    const {promise, resolve} = Promise.withResolvers();
+    window.addEventListener('message', (e) => {
+      if (e.source) {
+        resolve(e.source);
+      }
+    });
+    return promise;
+  }
+
+  async function requestMediaPEPC() {
+    const pepc = document.createElement('usermedia');
+    pepc.type = 'microphone';
+    pepc.setConstraints({audio: {}});
+    document.body.appendChild(pepc);
+
+    const status = await navigator.permissions.query({name: 'microphone'});
+
+    if (status.state !== 'prompt') {
+      // If the permission state is already 'granted' or 'denied', the PEPC
+      // <usermedia> element is not active (either in no-op or disabled state)
+      // and clicking it will not trigger a prompt. We bypass the click and
+      // verify the aggregate state using standard getUserMedia instead.
+      try {
+        const stream =
+            await navigator.mediaDevices.getUserMedia({audio: true});
+        return stream.getAudioTracks().length > 0;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    // Wait for two animation frames to ensure the PEPC element is fully laid
+    // out and rendered by the browser before we simulate the click.
+    // Programmatic clicks on unrendered elements are ignored by Blink's
+    // security engine.
+    await new Promise((resolve) => {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(resolve);
+      });
+    });
+
+    const {promise, resolve} = Promise.withResolvers();
+    pepc.addEventListener('promptaction', () => {
+      resolve(pepc.matches(':granted'));
+    });
+
+    pepc.click();
+    return promise;
+  }
+
+  async function run() {
+    const source = await waitForSource();
+    const granted = await requestMediaPEPC();
+    source.postMessage({granted}, '*');
+  }
+
+  run();
+</script>

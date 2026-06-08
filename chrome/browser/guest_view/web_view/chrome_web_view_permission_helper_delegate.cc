@@ -307,6 +307,64 @@ void ChromeWebViewPermissionHelperDelegate::OnPointerLockPermissionResponse(
   std::move(callback).Run(allow && web_view_guest()->attached());
 }
 
+void ChromeWebViewPermissionHelperDelegate::RequestMediaPermission(
+    ContentSettingsType type,
+    const GURL& requesting_frame_origin,
+    bool user_gesture,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::MEDIASTREAM_CAMERA);
+  if (web_view_guest()->attached() &&
+      web_view_guest()->IsOwnedByControlledFrameEmbedder()) {
+    const network::mojom::PermissionsPolicyFeature feature =
+        (type == ContentSettingsType::MEDIASTREAM_MIC)
+            ? network::mojom::PermissionsPolicyFeature::kMicrophone
+            : network::mojom::PermissionsPolicyFeature::kCamera;
+    if (!IsFeatureEnabledByEmbedderPermissionsPolicy(
+            web_view_guest(), feature,
+            url::Origin::Create(requesting_frame_origin))) {
+      std::move(callback).Run(false);
+      return;
+    }
+  }
+
+  base::DictValue request_info;
+  request_info.Set(guest_view::kUrl, requesting_frame_origin.spec());
+
+  WebViewPermissionHelper::PermissionResponseCallback permission_callback =
+      base::BindOnce(
+          &ChromeWebViewPermissionHelperDelegate::OnMediaPermissionResponse,
+          weak_factory_.GetWeakPtr(), type, user_gesture,
+          base::BindOnce(&CallbackWrapper, std::move(callback)));
+  web_view_permission_helper()->RequestPermission(
+      WEB_VIEW_PERMISSION_TYPE_MEDIA, std::move(request_info),
+      std::move(permission_callback), /*allowed_by_default=*/false);
+}
+
+void ChromeWebViewPermissionHelperDelegate::OnMediaPermissionResponse(
+    ContentSettingsType type,
+    bool user_gesture,
+    base::OnceCallback<void(content::PermissionResult)> callback,
+    bool allow,
+    const std::string& user_input) {
+  CHECK(type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::MEDIASTREAM_CAMERA);
+  if (!allow) {
+    std::move(callback).Run(content::PermissionResult(
+        blink::mojom::PermissionStatus::DENIED,
+        content::PermissionStatusSource::UNSPECIFIED));
+    return;
+  }
+
+  const blink::PermissionType permission_type =
+      (type == ContentSettingsType::MEDIASTREAM_MIC)
+          ? blink::PermissionType::AUDIO_CAPTURE
+          : blink::PermissionType::VIDEO_CAPTURE;
+
+  RequestEmbedderFramePermission(user_gesture, std::move(callback),
+                                 permission_type);
+}
+
 void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
     const GURL& requesting_frame,
     bool user_gesture,

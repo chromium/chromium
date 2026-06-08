@@ -51,6 +51,7 @@
 #include "extensions/common/extension_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
+#include "third_party/blink/public/common/features.h"
 
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
@@ -211,6 +212,19 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
       web_ui_config_registration_;
 };
 
+class WebUIWebViewBrowserPEPCTest : public WebUIWebViewBrowserTest {
+ public:
+  WebUIWebViewBrowserPEPCTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kUserMediaElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // This test verifies that various types of network requests (defined in
 // chrome/test/data/webview/request_interception_coverage_guest.js) are
 // correctly intercepted by the extensions::WebRequestAPI. The same test logic
@@ -317,6 +331,20 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_MediaRequestDenyOnGlic) {
   set_test_loader_host("glic");
   RunBasicTestCase("MediaRequestDenyOnGlic",
                    GetTestUrl("webview/mediarequest.html").spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserPEPCTest,
+                       MediaRequestPEPCAllowOnGlic) {
+  set_test_loader_host("glic");
+  RunBasicTestCase("MediaRequestPEPCAllowOnGlic",
+                   GetTestUrl("webview/mediarequest_pepc.html").spec());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserPEPCTest,
+                       MediaRequestPEPCDenyOnGlic) {
+  set_test_loader_host("glic");
+  RunBasicTestCase("MediaRequestPEPCDenyOnGlic",
+                   GetTestUrl("webview/mediarequest_pepc.html").spec());
 }
 
 // TODO(crbug.com/444024595): Flaky on Linux and Windows

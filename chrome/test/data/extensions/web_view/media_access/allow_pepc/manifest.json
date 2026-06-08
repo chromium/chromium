@@ -1,0 +1,15 @@
+{
+  "name": "Platform App Test: <webview> media PEPC",
+  "description": "Loads a guest which requests media access permission via PEPC",
+  "version": "2",
+  "manifest_version": 2,
+  "permissions": [
+    "webview",
+    "audioCapture"
+  ],
+  "app": {
+    "background": {
+      "scripts": ["test.js"]
+    }
+  }
+}

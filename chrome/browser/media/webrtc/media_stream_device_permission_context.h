@@ -10,12 +10,14 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 
-#if BUILDFLAG(IS_ANDROID)
 namespace permissions {
-struct PermissionPromptDecision;
 struct PermissionRequestData;
+#if BUILDFLAG(IS_ANDROID)
+struct PermissionPromptDecision;
+#endif
 }  // namespace permissions
 
+#if BUILDFLAG(IS_ANDROID)
 namespace content {
 struct PermissionResult;
 }
@@ -36,6 +38,9 @@ class MediaStreamDevicePermissionContext
   ~MediaStreamDevicePermissionContext() override;
 
   // PermissionContextBase:
+  void DecidePermission(
+      std::unique_ptr<permissions::PermissionRequestData> request_data,
+      permissions::BrowserPermissionCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void NotifyPermissionSet(
       const permissions::PermissionRequestData& request_data,

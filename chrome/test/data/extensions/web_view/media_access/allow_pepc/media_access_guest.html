@@ -1,0 +1,51 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+  <head>
+    <script type="text/javascript">
+      var embedderWindowChannel = null;
+
+      var notifyEmbedder = function(msg) {
+        embedderWindowChannel.postMessage(msg, '*');
+      };
+
+      var onPostMessageReceived = function(e) {
+        var data = JSON.parse(e.data);
+        var testName = data[0];
+        var testCase = data[1];
+        if (testName === 'check-media-permission') {
+          embedderWindowChannel = e.source;
+
+          // Trigger click on PEPC element
+          var usermedia = document.getElementById('mic');
+          usermedia.click();
+        }
+      };
+      window.addEventListener('message', onPostMessageReceived, false);
+
+      onload = function() {
+        var usermedia = document.getElementById('mic');
+        usermedia.setConstraints({audio: {}});
+        usermedia.addEventListener('promptaction', function(e) {
+          if (usermedia.matches(':granted')) {
+             notifyEmbedder(JSON.stringify(['access-granted', 'test1']));
+          } else {
+             notifyEmbedder(JSON.stringify(['access-denied', 'test1']));
+          }
+        });
+      };
+    </script>
+    <style>
+      usermedia {
+        font-size: xxx-large;
+      }
+    </style>
+  </head>
+  <body>
+    <div>This is a guest that requests audio media via PEPC.</div>
+    <usermedia id="mic" type="microphone"></usermedia>
+  </body>
+</html>

@@ -65,6 +65,10 @@ class ChromeWebViewPermissionHelperDelegate
       bool user_gesture,
       bool last_unlocked_by_target,
       base::OnceCallback<void(bool)> callback) override;
+  void RequestMediaPermission(ContentSettingsType type,
+                              const GURL& requesting_frame_origin,
+                              bool user_gesture,
+                              base::OnceCallback<void(bool)> callback) override;
   void RequestGeolocationPermission(
       const GURL& requesting_frame,
       bool user_gesture,
@@ -113,6 +117,13 @@ class ChromeWebViewPermissionHelperDelegate
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback,
+      bool allow,
+      const std::string& user_input);
+
+  void OnMediaPermissionResponse(
+      ContentSettingsType type,
+      bool user_gesture,
+      base::OnceCallback<void(content::PermissionResult)> callback,
       bool allow,
       const std::string& user_input);
 

@@ -327,6 +327,15 @@ void WebViewPermissionHelper::RequestPointerLockPermission(
       user_gesture, last_unlocked_by_target, std::move(callback));
 }
 
+void WebViewPermissionHelper::RequestMediaPermission(
+    ContentSettingsType type,
+    const GURL& requesting_frame_origin,
+    bool user_gesture,
+    base::OnceCallback<void(bool)> callback) {
+  web_view_permission_helper_delegate_->RequestMediaPermission(
+      type, requesting_frame_origin, user_gesture, std::move(callback));
+}
+
 void WebViewPermissionHelper::RequestGeolocationPermission(
     const GURL& requesting_frame_url,
     bool user_gesture,

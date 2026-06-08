@@ -5,12 +5,15 @@
 #include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/guest_view/web_view/web_view_apitest.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "media/base/media_switches.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace extensions {
 namespace {
@@ -219,6 +222,29 @@ IN_PROC_BROWSER_TEST_F(WebViewMediaAccessAPITest,
   LaunchApp(app_location);
 
   RunTest("testNoPreventDefaultImpliesDeny");
+  StopTestServer();
+}
+
+class WebViewMediaAccessPEPCAPITest : public WebViewMediaAccessAPITest {
+ public:
+  WebViewMediaAccessPEPCAPITest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kUserMediaElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebViewMediaAccessPEPCAPITest, TestAllowPEPC) {
+  std::string app_location = "web_view/media_access/allow_pepc";
+  StartTestServer(app_location);
+  LaunchApp(app_location);
+
+  RunTest("testAllowPEPC");
+
   StopTestServer();
 }
 

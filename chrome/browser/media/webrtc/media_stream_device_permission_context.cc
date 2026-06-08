@@ -12,6 +12,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -19,6 +20,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
@@ -32,6 +34,15 @@
 #include "content/public/browser/web_contents.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/browser/suggest_permission_util.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/permissions/permissions_data.h"
+#endif
+
 namespace {
 
 network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
@@ -43,6 +54,17 @@ network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
   DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
   return network::mojom::PermissionsPolicyFeature::kCamera;
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+void CallbackPermissionStatusWrapper(
+    base::OnceCallback<void(content::PermissionResult)> callback,
+    bool allowed) {
+  std::move(callback).Run(content::PermissionResult(
+      allowed ? blink::mojom::PermissionStatus::GRANTED
+              : blink::mojom::PermissionStatus::DENIED,
+      content::PermissionStatusSource::UNSPECIFIED));
+}
+#endif
 
 }  // namespace
 
@@ -280,6 +302,64 @@ void MediaStreamDevicePermissionContext::UpdateTabContext(
   // should be empty.
 }
 #endif
+
+void MediaStreamDevicePermissionContext::DecidePermission(
+    std::unique_ptr<permissions::PermissionRequestData> request_data,
+    permissions::BrowserPermissionCallback callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_data->id.global_render_frame_host_id());
+  if (rfh) {
+    extensions::WebViewPermissionHelper* web_view_permission_helper =
+        extensions::WebViewPermissionHelper::FromRenderFrameHost(rfh);
+    if (web_view_permission_helper) {
+      // TODO(crbug.com/521370750): This is part of the plumbing to support
+      // PEPC inside <webview> guests. Track full support/enablement here.
+      web_view_permission_helper->RequestMediaPermission(
+          content_settings_type_, request_data->requesting_origin,
+          request_data->user_gesture,
+          base::BindOnce(&CallbackPermissionStatusWrapper,
+                         std::move(callback)));
+      return;
+    }
+
+    extensions::ExtensionRegistry* extension_registry =
+        extensions::ExtensionRegistry::Get(browser_context());
+    url::Origin requesting_origin = rfh->GetLastCommittedOrigin();
+    const extensions::Extension* extension =
+        extension_registry->enabled_extensions().GetExtensionOrAppByURL(
+            requesting_origin.GetURL());
+    if (extension) {
+      extensions::mojom::APIPermissionID permission_id =
+          (content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC)
+              ? extensions::mojom::APIPermissionID::kAudioCapture
+              : extensions::mojom::APIPermissionID::kVideoCapture;
+      bool has_permission = false;
+      if (extension->is_platform_app()) {
+        has_permission =
+            extensions::IsExtensionWithPermissionOrSuggestInConsole(
+                permission_id, extension, rfh->GetMainFrame());
+      } else {
+        has_permission =
+            extension->permissions_data()->HasAPIPermission(permission_id);
+      }
+      if (has_permission) {
+        if (extensions::ProcessMap::Get(browser_context())
+                ->Contains(
+                    extension->id(),
+                    request_data->id.global_render_frame_host_id().child_id)) {
+          std::move(callback).Run(content::PermissionResult(
+              blink::mojom::PermissionStatus::GRANTED,
+              content::PermissionStatusSource::UNSPECIFIED));
+          return;
+        }
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  permissions::ContentSettingPermissionContextBase::DecidePermission(
+      std::move(request_data), std::move(callback));
+}
 
 void MediaStreamDevicePermissionContext::ResetPermission(
     const GURL& requesting_origin,

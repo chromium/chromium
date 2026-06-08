@@ -59,6 +59,14 @@ class WebViewPermissionHelperDelegate {
       bool last_unlocked_by_target,
       base::OnceCallback<void(bool)> callback) {}
 
+  // Requests Media Permission from the embedder (for Page Embedded Permission
+  // Control).
+  virtual void RequestMediaPermission(ContentSettingsType type,
+                                      const GURL& requesting_frame_origin,
+                                      bool user_gesture,
+                                      base::OnceCallback<void(bool)> callback) {
+  }
+
   // Requests Geolocation Permission from the embedder.
   virtual void RequestGeolocationPermission(
       const GURL& requesting_frame_url,

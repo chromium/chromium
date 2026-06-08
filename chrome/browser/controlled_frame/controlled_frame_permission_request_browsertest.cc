@@ -36,6 +36,7 @@
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 using testing::Contains;
 using testing::StartsWith;
@@ -506,5 +507,137 @@ IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest,
   EXPECT_EQ("SUCCESS: NO_DEVICES",
             content::EvalJs(controlled_frame, kTestScript).ExtractString());
 }
+
+class ControlledFramePermissionRequestPEPCTest
+    : public ControlledFramePermissionRequestTest {
+ public:
+  ControlledFramePermissionRequestPEPCTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kUserMediaElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestPEPCTest, Camera) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      const pepc = document.createElement('usermedia');
+      pepc.type = 'camera';
+      pepc.setConstraints({video: {}});
+      document.body.appendChild(pepc);
+
+      const status = await navigator.permissions.query({name: 'camera'});
+
+      if (status.state !== 'prompt') {
+        // If the permission state is already 'granted' or 'denied', the PEPC
+        // <usermedia> element is not active (either in no-op or disabled state)
+        // and clicking it will not trigger a prompt. We bypass the click and
+        // verify the aggregate state using standard getUserMedia instead.
+        try {
+          const stream =
+              await navigator.mediaDevices.getUserMedia({video: true});
+          return (stream.getVideoTracks().length > 0) ? 'SUCCESS' : 'FAIL';
+        } catch (err) {
+          return 'FAIL';
+        }
+      }
+
+      // Wait for two animation frames to ensure the PEPC element is fully laid
+      // out and rendered by the browser before we simulate the click.
+      // Programmatic clicks on unrendered elements are ignored by Blink's
+      // security engine.
+      await new Promise((resolve) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(resolve);
+        });
+      });
+
+      const promise = new Promise((resolve) => {
+        pepc.addEventListener('promptaction', () => {
+          resolve(pepc.matches(':granted') ? 'SUCCESS' : 'FAIL');
+        });
+      });
+
+      pepc.click();
+      return await promise;
+    })();
+  )";
+  test_case.permission_name = "media";
+  test_case.policy_features.insert(
+      {network::mojom::PermissionsPolicyFeature::kCamera});
+  test_case.content_settings_type.insert(
+      {ContentSettingsType::MEDIASTREAM_CAMERA});
+
+  PermissionRequestTestParam test_param = GetParam();
+  VerifyEnabledPermission(test_case, test_param);
+}
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestPEPCTest, Microphone) {
+  PermissionRequestTestCase test_case;
+  test_case.test_script = R"(
+    (async function() {
+      const pepc = document.createElement('usermedia');
+      pepc.type = 'microphone';
+      pepc.setConstraints({audio: {}});
+      document.body.appendChild(pepc);
+
+      const status = await navigator.permissions.query({name: 'microphone'});
+
+      if (status.state !== 'prompt') {
+        // If the permission state is already 'granted' or 'denied', the PEPC
+        // <usermedia> element is not active (either in no-op or disabled state)
+        // and clicking it will not trigger a prompt. We bypass the click and
+        // verify the aggregate state using standard getUserMedia instead.
+        try {
+          const stream =
+              await navigator.mediaDevices.getUserMedia({audio: true});
+          return (stream.getAudioTracks().length > 0) ? 'SUCCESS' : 'FAIL';
+        } catch (err) {
+          return 'FAIL';
+        }
+      }
+
+      // Wait for two animation frames to ensure the PEPC element is fully laid
+      // out and rendered by the browser before we simulate the click.
+      // Programmatic clicks on unrendered elements are ignored by Blink's
+      // security engine.
+      await new Promise((resolve) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(resolve);
+        });
+      });
+
+      const promise = new Promise((resolve) => {
+        pepc.addEventListener('promptaction', () => {
+          resolve(pepc.matches(':granted') ? 'SUCCESS' : 'FAIL');
+        });
+      });
+
+      pepc.click();
+      return await promise;
+    })();
+  )";
+  test_case.permission_name = "media";
+  test_case.policy_features.insert(
+      {network::mojom::PermissionsPolicyFeature::kMicrophone});
+  test_case.content_settings_type.insert(
+      {ContentSettingsType::MEDIASTREAM_MIC});
+
+  PermissionRequestTestParam test_param = GetParam();
+  VerifyEnabledPermission(test_case, test_param);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ControlledFramePEPC,
+    ControlledFramePermissionRequestPEPCTest,
+    testing::ValuesIn(GetDefaultPermissionRequestTestParams()),
+    [](const testing::TestParamInfo<PermissionRequestTestParam>& info) {
+      return info.param.name;
+    });
 
 }  // namespace controlled_frame

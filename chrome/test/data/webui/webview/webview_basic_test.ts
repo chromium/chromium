@@ -90,4 +90,10 @@ suite('WebviewBasicTest', function() {
   test('MediaRequestAllowOnSignIn', async () => {
     assertFalse(await testMediaRequest(true));
   });
+  test('MediaRequestPEPCAllowOnGlic', async () => {
+    assertTrue(await testMediaRequest(true));
+  });
+  test('MediaRequestPEPCDenyOnGlic', async () => {
+    assertFalse(await testMediaRequest(false));
+  });
 });
