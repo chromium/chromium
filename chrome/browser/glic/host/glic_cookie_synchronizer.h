@@ -31,6 +31,22 @@ enum class SetAccountsInCookieResult;
 
 namespace glic {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicCookieSyncResult)
+enum class GlicCookieSyncResult {
+  kSuccess = 0,
+  kDestroyedWithPendingCallbacks = 1,
+  kNoStoragePartition = 2,
+  kDevSyncFailure = 3,
+  kUserNotSignedIn = 4,
+  kAuthTransientError = 5,
+  kAuthPersistentError = 6,
+  kTimeout = 7,
+  kMaxValue = kTimeout,
+};
+// LINT.ThenChange(tools/metrics/histograms/metadata/glic/enums.xml:GlicCookieSyncResult)
+
 // Helper to sync cookies to the webview storage partition.
 class GlicCookieSynchronizer
     : public signin::AccountsCookieMutator::PartitionDelegate,
@@ -82,7 +98,7 @@ class GlicCookieSynchronizer
   class Metrics {
    public:
     void BeginSync();
-    void EndSync(bool success);
+    void EndSync(GlicCookieSyncResult result);
 
    private:
     base::TimeTicks sync_start_time_;
@@ -109,7 +125,7 @@ class GlicCookieSynchronizer
 
   // Handles the webview authentication result.
   void OnAuthFinished(signin::SetAccountsInCookieResult cookie_result);
-  void CompleteAuth(bool is_success);
+  void CompleteAuth(GlicCookieSyncResult result);
   void OnTimeout();
 
   bool has_cleared_cookies_ = false;
