@@ -23,15 +23,15 @@ CrossDeviceSigninURLInterceptor::CrossDeviceSigninURLInterceptor(
 
 CrossDeviceSigninURLInterceptor::~CrossDeviceSigninURLInterceptor() = default;
 
-void CrossDeviceSigninURLInterceptor::OnIntercept(const UrlLoadParams& params) {
+bool CrossDeviceSigninURLInterceptor::OnIntercept(const UrlLoadParams& params) {
   if (params.in_incognito) {
-    return;
+    return false;
   }
 
   std::optional<signin::SigninDeepLinkParser> parser =
       signin::SigninDeepLinkParser::CreateForCrossDeviceSigninIfEnabled();
   if (!parser.has_value()) {
-    return;
+    return false;
   }
 
   std::optional<signin::SigninDeepLinkPayload> payload =
@@ -39,5 +39,8 @@ void CrossDeviceSigninURLInterceptor::OnIntercept(const UrlLoadParams& params) {
   if (payload.has_value() && payload->HasAllRequiredFields()) {
     CHECK(payload->email.has_value());
     callback_.Run(payload->email.value());
+    return true;
   }
+
+  return false;
 }

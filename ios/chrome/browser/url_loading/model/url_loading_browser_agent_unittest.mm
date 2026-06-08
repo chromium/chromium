@@ -41,11 +41,13 @@ class TestInterceptor : public URLInterceptor {
  public:
   TestInterceptor() { set_active(true); }
 
-  void OnIntercept(const UrlLoadParams& params) override {
+  bool OnIntercept(const UrlLoadParams& params) override {
     intercepted_ = true;
+    return should_succeed_;
   }
 
   bool intercepted_ = false;
+  bool should_succeed_ = true;
 };
 
 class URLLoadingBrowserAgentTest : public BlockCleanupTest {
@@ -509,6 +511,27 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorPreventsLoad) {
   EXPECT_TRUE(interceptor_ptr->intercepted_);
 }
 
+// Tests that when an interceptor fails (returns false), the normal URL loading
+// flow is NOT prevented, even if prevent_normal_flow is configured to true.
+TEST_F(URLLoadingBrowserAgentTest, TestInterceptorFailsAndDoesNotPreventLoad) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+  TestInterceptor* interceptor_ptr = interceptor.get();
+
+  interceptor->set_prevent_normal_flow(true);
+  interceptor->should_succeed_ = false;
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(0, web_state_list->count());
+
+  loader_->Load(UrlLoadParams::InNewTab(url));
+
+  // Load should NOT be prevented, so a tab should be created.
+  EXPECT_EQ(1, web_state_list->count());
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
 // Tests that an interceptor does not prevent the normal URL loading flow if
 // configured not to.
 TEST_F(URLLoadingBrowserAgentTest, TestInterceptorDoesNotPreventLoad) {
@@ -542,6 +565,24 @@ TEST_F(URLLoadingBrowserAgentTest, TestInterceptorDeactivatesOnMatch) {
 
   // The interceptor should deactivate itself after a successful match.
   EXPECT_FALSE(interceptor_ptr->active());
+  EXPECT_TRUE(interceptor_ptr->intercepted_);
+}
+
+// Tests that an interceptor does NOT deactivate itself if it matches but fails.
+TEST_F(URLLoadingBrowserAgentTest,
+       TestInterceptorDoesNotDeactivateOnFailedMatch) {
+  GURL url("http://test/1");
+  auto interceptor = std::make_unique<TestInterceptor>();
+  interceptor->set_deactivates_on_match(true);
+  interceptor->should_succeed_ = false;
+
+  TestInterceptor* interceptor_ptr = interceptor.get();
+  EXPECT_TRUE(loader_->AddInterceptor(url, std::move(interceptor)));
+
+  loader_->Load(UrlLoadParams::InNewTab(url));
+
+  // The interceptor should NOT deactivate itself since it failed.
+  EXPECT_TRUE(interceptor_ptr->active());
   EXPECT_TRUE(interceptor_ptr->intercepted_);
 }
 

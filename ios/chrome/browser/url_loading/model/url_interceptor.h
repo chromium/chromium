@@ -17,7 +17,9 @@ class URLInterceptor {
   virtual ~URLInterceptor() = default;
 
   // The logic that executes when a matching URL is intercepted.
-  virtual void OnIntercept(const UrlLoadParams& params) = 0;
+  // Returns true if the interception succeeded fully and successfully, or
+  // false otherwise.
+  virtual bool OnIntercept(const UrlLoadParams& params) = 0;
 
   // Determines whether the interceptor is currently enabled. When this is
   // `false`, the interceptor is ignored and the interceptor will not run.
