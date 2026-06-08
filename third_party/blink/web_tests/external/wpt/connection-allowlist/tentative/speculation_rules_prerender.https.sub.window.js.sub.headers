@@ -1,2 +1,0 @@
-
-Connection-Allowlist: (response-origin "*://{{hosts[][www1]}}:*" "*://*:*/*\\?*&ignore-allowlist=true*")
