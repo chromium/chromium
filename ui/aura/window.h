@@ -784,6 +784,9 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // True if this window is being destroyed.
   bool is_destroying_ = false;
+  // True if this window is being destroyed and past the point that
+  // it should no longer be used.
+  bool is_destroyed_ = false;
 
   // True if the Window is owned by its parent - i.e. it will be deleted by its
   // parent during its parents destruction.

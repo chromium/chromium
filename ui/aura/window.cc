@@ -218,6 +218,12 @@ Window::~Window() {
   if (host)
     host->dispatcher()->OnPostNotifiedWindowDestroying(this);
 
+  // Once pre-destruction phase is completed, the window is technically defunct
+  // and should not be used except for accessors (id, name) or getting
+  // information using properties. `GetToplevelWindow()` is also banned because
+  // it will no longer return a correct value.
+  is_destroyed_ = true;
+
   // The window should have already had its state cleaned up in
   // WindowEventDispatcher::OnWindowHidden(), but there have been some crashes
   // involving windows being destroyed without being hidden first. See
@@ -294,6 +300,7 @@ void Window::SetType(client::WindowType type) {
   DCHECK(!layer());
   if (type == type_)
     return;
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   type_ = type;
   TriggerChangedCallback(&type_);
 }
@@ -306,6 +313,7 @@ const std::string& Window::GetName() const {
 void Window::SetName(const std::string& name) {
   if (name == GetName())
     return;
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   SetProperty(client::kNameKey, name);
   if (layer())
     UpdateLayerName();
@@ -331,6 +339,7 @@ bool Window::GetTransparent() const {
 
 void Window::SetTransparent(bool transparent) {
   CHECK(layer());
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   if (transparent == transparent_)
     return;
   transparent_ = transparent;
@@ -343,6 +352,7 @@ void Window::SetTransparent(bool transparent) {
 
 void Window::SetFillsBoundsCompletely(bool fills_bounds) {
   CHECK(layer());
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   layer()->SetFillsBoundsCompletely(fills_bounds);
 }
 
@@ -367,6 +377,7 @@ const WindowTreeHost* Window::GetHost() const {
 
 void Window::Show() {
   CHECK(layer());
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   CHECK_EQ(visible_, layer()->GetTargetVisibility());
 
   // It is not allowed that a window is visible but the layers alpha is fully
@@ -456,6 +467,7 @@ gfx::Rect Window::GetActualBoundsInScreen() const {
 
 void Window::SetTransform(const gfx::Transform& transform) {
   CHECK(layer());
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
   for (WindowObserver& observer : observers_)
     observer.OnWindowTargetTransformChanging(this, transform);
@@ -468,6 +480,7 @@ void Window::SetLayoutManager(std::nullptr_t) {
 
 std::unique_ptr<WindowTargeter> Window::SetEventTargeter(
     std::unique_ptr<WindowTargeter> targeter) {
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   std::unique_ptr<WindowTargeter> old_targeter = std::move(targeter_);
   if (old_targeter)
     old_targeter->OnInstalled(nullptr);
@@ -479,6 +492,7 @@ std::unique_ptr<WindowTargeter> Window::SetEventTargeter(
 
 void Window::SetBounds(const gfx::Rect& new_bounds) {
   CHECK(layer());
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   if (parent_ && parent_->layout_manager()) {
     parent_->layout_manager()->SetChildBounds(this, new_bounds);
   } else {
@@ -736,6 +750,7 @@ bool Window::HasObserver(const WindowObserver* observer) const {
 
 void Window::SetEventTargetingPolicy(EventTargetingPolicy policy) {
   CHECK(layer());
+  DUMP_WILL_BE_CHECK(!is_destroying_);
 
   // If the event targeting is blocked on the window, do not allow change event
   // targeting policy until all event targeting blockers are removed from the
@@ -824,6 +839,9 @@ Window* Window::GetEventHandlerForPoint(const gfx::Point& local_point) {
 }
 
 Window* Window::GetToplevelWindow() {
+  // Once the window is destroyed and removed from the tree, this method returns
+  // the incorrect value.
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
   Window* topmost_window_with_delegate = nullptr;
   for (aura::Window* window = this; window != nullptr;
        window = window->parent()) {
@@ -873,6 +891,7 @@ void Window::SetCapture() {
   client::CaptureClient* capture_client = client::GetCaptureClient(root_window);
   if (!capture_client)
     return;
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   capture_client->SetCapture(this);
 }
 
@@ -910,6 +929,9 @@ std::unique_ptr<ScopedKeyboardHook> Window::CaptureSystemKeyEvents(
 // {Set,Get,Clear}Property are implemented in class_property.h.
 
 void Window::SetNativeWindowProperty(const char* key, void* value) {
+  // Updating properties is necessary during the deletion to notify
+  // observers.
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
   SetPropertyInternal(key, key, nullptr, reinterpret_cast<int64_t>(value), 0);
 }
 
@@ -1044,6 +1066,8 @@ void Window::SetEmbedFrameSinkIdImpl(const viz::FrameSinkId& frame_sink_id) {
     return;
   }
 
+  DUMP_WILL_BE_CHECK(!is_destroying_);
+
   UnregisterFrameSinkId();
 
   frame_sink_id_ = frame_sink_id;
@@ -1071,6 +1095,7 @@ bool Window::HitTest(const gfx::Point& local_point) {
 }
 
 void Window::SetBoundsInternal(const gfx::Rect& new_bounds) {
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   gfx::Rect old_bounds = GetTargetBounds();
 
   // Always need to set the layer's bounds -- even if it is to the same thing.
@@ -1127,6 +1152,8 @@ void Window::SetOcclusionInfo(OcclusionState occlusion_state,
       occluded_region_in_root_ == occluded_region) {
     return;
   }
+
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   OcclusionState old_occlusion_state = occlusion_state_;
   occlusion_state_ = occlusion_state;
   occluded_region_in_root_ = occluded_region;
@@ -1535,6 +1562,7 @@ std::string_view Window::WindowTypeToString(client::WindowType type) {
 
 void Window::SetOpaqueRegionsForOcclusion(
     const std::vector<gfx::Rect>& opaque_regions_for_occlusion) {
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   // Opaque regions for occlusion do not apply to opaque windows, so only
   // allow opaque regions for occlusion to be set for them if they are the
   // same as the window bounds size.
@@ -1581,6 +1609,9 @@ void Window::OnPaintLayer(const ui::PaintContext& context) {
 
 void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
                                   ui::PropertyChangeReason reason) {
+  // This may still be called while finishing animation during destruction.
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
+
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   ScopedDeleteBlocker blocker(this);
@@ -1773,6 +1804,9 @@ std::unique_ptr<ui::Layer> Window::RecreateLayer() {
 }
 
 void Window::SetLayer(std::unique_ptr<ui::Layer> alayer) {
+  // A layer maybe recreated in destroying phase.
+  DUMP_WILL_BE_CHECK(!is_destroyed_);
+
   LayerOwner::SetLayer(std::move(alayer));
   if (number_of_capture_requests_) {
     // If this window was marked for capture before, then the new layer that we
@@ -1914,6 +1948,8 @@ void Window::SetLayoutManagerImpl(
   layout_manager_ = std::move(layout_manager);
   if (!layout_manager_)
     return;
+
+  DUMP_WILL_BE_CHECK(!is_destroying_);
   // If we're changing to a new layout manager, ensure it is aware of all the
   // existing child windows.
   for (Windows::const_iterator it = children_.begin(); it != children_.end();
