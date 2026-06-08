@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -152,8 +153,15 @@ IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
   EXPECT_NE(nullptr, service);
 }
 
+// TODO(crbug.com/521197173): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EnhancedProtection_EmptyResponse \
+  DISABLED_EnhancedProtection_EmptyResponse
+#else
+#define MAYBE_EnhancedProtection_EmptyResponse EnhancedProtection_EmptyResponse
+#endif
 IN_PROC_BROWSER_TEST_F(GeminiAntiscamProtectionServiceBrowserTest,
-                       EnhancedProtection_EmptyResponse) {
+                       MAYBE_EnhancedProtection_EmptyResponse) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
                                                true);
   ASSERT_TRUE(
