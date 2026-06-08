@@ -511,11 +511,20 @@ void IndentOutdentCommand::OutdentRegion(
       if (original_selection_end.IsNotNull())
         builder.Collapse(original_selection_end);
       SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(SelectionForUndoStep::From(builder.Build()));
+      }
     } else {
       SetEndingSelection(SelectionForUndoStep::From(
           SelectionInDOMTree::Builder()
               .Collapse(end_of_current_paragraph.DeepEquivalent())
               .Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(SelectionForUndoStep::From(
+            SelectionInDomTree::Builder()
+                .Collapse(end_of_current_paragraph.DeepEquivalent())
+                .Build()));
+      }
     }
 
     OutdentParagraph(editing_state);
@@ -556,6 +565,12 @@ void IndentOutdentCommand::SetEndingSelectionToListChildIfListItem() {
         SelectionInDOMTree::Builder()
             .Collapse(Position::LastPositionInNode(*list_child_node))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::LastPositionInNode(*list_child_node))
+              .Build()));
+    }
   }
 }
 

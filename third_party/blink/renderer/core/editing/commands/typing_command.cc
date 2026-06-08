@@ -339,8 +339,16 @@ void TypingCommand::UpdateSelectionIfDifferentFromCurrentSelection(
 
   typing_command->SetStartingSelection(
       SelectionForUndoStep::From(current_selection));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    typing_command->SetStartingDomSelection(
+        SelectionForUndoStep::From(current_selection));
+  }
   typing_command->SetEndingSelection(
       SelectionForUndoStep::From(current_selection));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    typing_command->SetEndingDomSelection(
+        SelectionForUndoStep::From(current_selection));
+  }
 }
 
 void TypingCommand::InsertText(Document& document,
@@ -386,6 +394,9 @@ void TypingCommand::AdjustSelectionAfterIncrementalInsertion(
   const SelectionInDOMTree& selection =
       CreateSelection(new_end, new_end, element);
   SetEndingSelection(SelectionForUndoStep::From(selection));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(selection));
+  }
 }
 
 // FIXME: We shouldn't need to take selectionForInsertion. It should be
@@ -461,8 +472,16 @@ void TypingCommand::InsertText(
         passed_selection_for_insertion_as_undo_step) {
       last_typing_command->SetStartingSelection(
           passed_selection_for_insertion_as_undo_step);
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        last_typing_command->SetStartingDomSelection(
+            passed_selection_for_insertion_as_undo_step);
+      }
       last_typing_command->SetEndingSelection(
           passed_selection_for_insertion_as_undo_step);
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        last_typing_command->SetEndingDomSelection(
+            passed_selection_for_insertion_as_undo_step);
+      }
     }
 
     last_typing_command->SetCompositionType(composition_type);
@@ -488,7 +507,15 @@ void TypingCommand::InsertText(
       passed_selection_for_insertion_as_undo_step.AsSelection();
   if (change_selection) {
     command->SetStartingSelection(passed_selection_for_insertion_as_undo_step);
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      command->SetStartingDomSelection(
+          passed_selection_for_insertion_as_undo_step);
+    }
     command->SetEndingSelection(passed_selection_for_insertion_as_undo_step);
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      command->SetEndingDomSelection(
+          passed_selection_for_insertion_as_undo_step);
+    }
   }
   command->is_incremental_insertion_ = is_incremental_insertion;
   command->selection_start_ = selection_start;
@@ -501,6 +528,10 @@ void TypingCommand::InsertText(
         frame->Selection().GetSelectionInDOMTree();
     command->SetEndingSelection(
         SelectionForUndoStep::From(current_selection_as_dom));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      command->SetEndingDomSelection(
+          SelectionForUndoStep::From(current_selection_as_dom));
+    }
     frame->Selection().SetSelection(
         current_selection_as_dom,
         SetSelectionOptions::Builder()
@@ -741,6 +772,9 @@ void TypingCommand::InsertTextInternal(const String& text,
           .Build();
 
   SetEndingSelection(SelectionForUndoStep::From(new_selection));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(new_selection));
+  }
 }
 
 void TypingCommand::InsertTextRunWithoutNewlines(const String& text,
@@ -762,7 +796,13 @@ void TypingCommand::InsertTextRunWithoutNewlines(const String& text,
   }
 
   command->SetStartingSelection(EndingSelection());
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    command->SetStartingDomSelection(EndingDomSelection());
+  }
   command->SetEndingSelection(EndingSelection());
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    command->SetEndingDomSelection(EndingDomSelection());
+  }
   ApplyCommandToComposite(command, editing_state);
   if (editing_state->IsAborted())
     return;
@@ -842,6 +882,9 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
                          .SetIsDirectional(SelectionIsDirectional())
                          .Build());
   SetEndingSelection(SelectionForUndoStep::From(new_selection));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(new_selection));
+  }
 
   RemoveAllChildrenIfPossible(root, editing_state);
   if (editing_state->IsAborted() || root->firstChild())
@@ -996,6 +1039,9 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
             .Extend(EndingSelection().Start())
             .Build();
     SetEndingSelection(SelectionForUndoStep::From(selection));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(selection));
+    }
     TypingAddedToOpenCommand(kDeleteKey);
     return;
   }
@@ -1051,8 +1097,12 @@ void TypingCommand::DeleteKeyPressedInternal(
   // text insertion and then delete more text than you insert.  In that case all
   // of the text that was around originally should be selected.
   if (frame->GetEditor().Behavior().ShouldUndoOfDeleteSelectText() &&
-      opened_by_backward_delete_)
+      opened_by_backward_delete_) {
     SetStartingSelection(selection_after_undo);
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetStartingDomSelection(selection_after_undo);
+    }
+  }
   frame->GetEditor().NotifyAccessibilityOfDeletionOrInsertionInTextField(
       selection_to_delete, /* is_deletion */ true);
   DeleteSelectionIfRange(selection_to_delete, editing_state);
@@ -1138,6 +1188,9 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
                 Position::AfterNode(*downstream_end.ComputeContainerNode()))
             .Build();
     SetEndingSelection(SelectionForUndoStep::From(selection));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(selection));
+    }
     TypingAddedToOpenCommand(kForwardDeleteKey);
     return;
   }
@@ -1195,8 +1248,12 @@ void TypingCommand::ForwardDeleteKeyPressedInternal(
                                          .ToNormalizedEphemeralRange());
   }
   // Make undo select what was deleted on Mac alone
-  if (frame->GetEditor().Behavior().ShouldUndoOfDeleteSelectText())
+  if (frame->GetEditor().Behavior().ShouldUndoOfDeleteSelectText()) {
     SetStartingSelection(selection_after_undo);
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetStartingDomSelection(selection_after_undo);
+    }
+  }
   DeleteSelectionIfRange(selection_to_delete, editing_state);
   if (editing_state->IsAborted())
     return;

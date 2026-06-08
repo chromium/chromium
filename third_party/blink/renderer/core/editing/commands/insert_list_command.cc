@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -178,6 +179,9 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
     if (new_end.IsNotNull())
       builder.Extend(new_end.DeepEquivalent());
     SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(builder.Build()));
+    }
     if (!RootEditableElementOf(EndingSelection().Anchor())) {
       return;
     }
@@ -253,6 +257,12 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
           SelectionInDOMTree::Builder()
               .Collapse(start_of_current_paragraph.DeepEquivalent())
               .Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(SelectionForUndoStep::From(
+            SelectionInDomTree::Builder()
+                .Collapse(start_of_current_paragraph.DeepEquivalent())
+                .Build()));
+      }
 
       // Save and restore visibleEndOfSelection and startOfLastParagraph when
       // necessary since moveParagraph and movePragraphWithClones can remove
@@ -308,6 +318,12 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(visible_end_of_selection.DeepEquivalent())
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(visible_end_of_selection.DeepEquivalent())
+              .Build()));
+    }
   }
   DoApplyForSingleParagraph(force_list_creation, list_tag, *current_selection,
                             editing_state);
@@ -342,6 +358,15 @@ void InsertListCommand::DoApply(EditingState* editing_state) {
               visible_start_of_selection.DeepEquivalent(),
               visible_end_of_selection.DeepEquivalent())
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(
+        SelectionInDomTree::Builder()
+            .SetAffinity(visible_start_of_selection.Affinity())
+            .SetBaseAndExtentDeprecated(
+                visible_start_of_selection.DeepEquivalent(),
+                visible_end_of_selection.DeepEquivalent())
+            .Build()));
+  }
 }
 
 InputEvent::InputType InsertListCommand::GetInputType() const {
@@ -468,6 +493,12 @@ bool InsertListCommand::DoApplyForSingleParagraph(
           SelectionInDOMTree::Builder()
               .Collapse(Position::FirstPositionInNode(*new_list))
               .Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(SelectionForUndoStep::From(
+            SelectionInDomTree::Builder()
+                .Collapse(Position::FirstPositionInNode(*new_list))
+                .Build()));
+      }
 
       return true;
     }
@@ -823,11 +854,21 @@ void InsertListCommand::MoveParagraphOverPositionIntoEmptyListItem(
       initial_selection.Focus().IsConnected()) {
     SetEndingSelection(
         SelectionForUndoStep::From(initial_selection.AsSelection()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(
+          SelectionForUndoStep::From(initial_selection.AsSelection()));
+    }
   } else {
     SetEndingSelection(SelectionForUndoStep::From(
         SelectionInDOMTree::Builder()
             .Collapse(Position::FirstPositionInNode(*list_item_element))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::FirstPositionInNode(*list_item_element))
+              .Build()));
+    }
   }
 }
 

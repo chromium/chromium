@@ -210,6 +210,10 @@ void DeleteSelectionCommand::SetStartingSelectionOnSmartDelete(
       CreateVisibleSelection(builder.Build());
   SetStartingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetStartingDomSelection(
+        SelectionForUndoStep::From(visible_selection.AsSelection()));
+  }
 }
 
 // This assumes that it starts in editable content.
@@ -1346,6 +1350,10 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
         CreateVisibleSelection(builder.Build());
     SetEndingSelection(
         SelectionForUndoStep::From(visible_selection.AsSelection()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(
+          SelectionForUndoStep::From(visible_selection.AsSelection()));
+    }
     ClearTransientState();
     RebalanceWhitespace();
     return;
@@ -1416,6 +1424,10 @@ void DeleteSelectionCommand::DoApply(EditingState* editing_state) {
       CreateVisibleSelection(builder.Build());
   SetEndingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(visible_selection.AsSelection()));
+  }
 
   if (relocatable_reference_position->GetPosition().IsNull()) {
     ClearTransientState();

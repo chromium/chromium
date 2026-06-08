@@ -197,6 +197,10 @@ void ApplyStyleCommand::UpdateStartEnd(const EphemeralRange& range) {
       CreateVisibleSelection(builder.Build());
   SetEndingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(visible_selection.AsSelection()));
+  }
   start_ = range.StartPosition();
   end_ = range.EndPosition();
 }

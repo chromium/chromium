@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -415,6 +416,12 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(Position::FirstPositionInNode(*parent))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::FirstPositionInNode(*parent))
+              .Build()));
+    }
     return;
   }
 
@@ -487,6 +494,10 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(insertion_position)
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder().Collapse(insertion_position).Build()));
+    }
     return;
   }
 
@@ -514,6 +525,12 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
           SelectionInDOMTree::Builder()
               .Collapse(insertion_position)
               .Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(
+            SelectionForUndoStep::From(SelectionInDomTree::Builder()
+                                           .Collapse(insertion_position)
+                                           .Build()));
+      }
       return;
     }
   }
@@ -674,6 +691,12 @@ void InsertParagraphSeparatorCommand::DoApply(EditingState* editing_state) {
       SelectionInDOMTree::Builder()
           .Collapse(Position::FirstPositionInNode(*block_to_insert))
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(
+        SelectionInDomTree::Builder()
+            .Collapse(Position::FirstPositionInNode(*block_to_insert))
+            .Build()));
+  }
   ApplyStyleAfterInsertion(start_block, editing_state);
 }
 

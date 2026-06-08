@@ -172,6 +172,12 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(Position::BeforeNode(*node_to_insert))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::BeforeNode(*node_to_insert))
+              .Build()));
+    }
   } else if (pos.ComputeEditingOffset() <= CaretMinOffset(pos.AnchorNode())) {
     InsertNodeAt(node_to_insert, pos, editing_state);
     if (editing_state->IsAborted())
@@ -201,6 +207,12 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(Position::InParentAfterNode(*node_to_insert))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::InParentAfterNode(*node_to_insert))
+              .Build()));
+    }
     // If we're inserting after all of the rendered text in a text node, or into
     // a non-text node, a simple insertion is sufficient.
   } else if (!pos.AnchorNode()->IsTextNode() ||
@@ -213,6 +225,12 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(Position::InParentAfterNode(*node_to_insert))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::InParentAfterNode(*node_to_insert))
+              .Build()));
+    }
   } else if (auto* text_node = DynamicTo<Text>(pos.AnchorNode())) {
     // Split a text node
     SplitTextNode(text_node, pos.ComputeOffsetInContainerNode());
@@ -247,6 +265,10 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
         SelectionInDOMTree::Builder()
             .Collapse(ending_position)
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder().Collapse(ending_position).Build()));
+    }
   }
 
   // Handle the case where there is a typing style.
@@ -282,6 +304,10 @@ void InsertLineBreakCommand::DoApply(EditingState* editing_state) {
     }
     SetEndingSelection(SelectionForUndoStep::From(
         SelectionInDOMTree::Builder().Collapse(end_pos).Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder().Collapse(end_pos).Build()));
+    }
   }
 
   RebalanceWhitespace();

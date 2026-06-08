@@ -90,6 +90,9 @@ void ApplyBlockElementCommand::DoApply(EditingState* editing_state) {
     if (new_end.IsNotNull())
       builder.Extend(new_end);
     SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(builder.Build()));
+    }
     ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().VisibleStart().IsNull());
     ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().VisibleEnd().IsNull());
   }
@@ -139,6 +142,13 @@ void ApplyBlockElementCommand::DoApply(EditingState* editing_state) {
               .Collapse(start.ToPositionWithAffinity())
               .Extend(end.DeepEquivalent())
               .Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(SelectionForUndoStep::From(
+            SelectionInDomTree::Builder()
+                .Collapse(start.ToPositionWithAffinity())
+                .Extend(end.DeepEquivalent())
+                .Build()));
+      }
     }
   }
 }
@@ -170,6 +180,12 @@ void ApplyBlockElementCommand::FormatSelection(
         SelectionInDOMTree::Builder()
             .Collapse(Position::BeforeNode(*placeholder))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::BeforeNode(*placeholder))
+              .Build()));
+    }
     return;
   }
 

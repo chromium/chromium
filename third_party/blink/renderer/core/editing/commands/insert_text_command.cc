@@ -92,6 +92,13 @@ void InsertTextCommand::SetEndingSelectionWithoutValidation(
           .Collapse(start_position)
           .Extend(end_position)
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(SelectionInDomTree::Builder()
+                                       .Collapse(start_position)
+                                       .Extend(end_position)
+                                       .Build()));
+  }
 }
 
 // This avoids the expense of a full fledged delete operation, and avoids a
@@ -146,6 +153,12 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
                         ? EndingSelection().End()
                         : EndingVisibleSelection().End())
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(SelectionInDomTree::Builder()
+                                       .Collapse(EndingVisibleSelection().End())
+                                       .Build()));
+  }
   return true;
 }
 
@@ -347,6 +360,9 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
     builder.Collapse(selection_end);
   }
   SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(builder.Build()));
+  }
 }
 
 Position InsertTextCommand::InsertTab(const Position& pos,

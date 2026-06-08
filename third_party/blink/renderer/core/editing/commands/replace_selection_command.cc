@@ -1391,6 +1391,12 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
             SelectionInDOMTree::Builder()
                 .Collapse(NextPositionOf(start_after_delete).DeepEquivalent())
                 .Build()));
+        if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+          SetEndingDomSelection(SelectionForUndoStep::From(
+              SelectionInDomTree::Builder()
+                  .Collapse(NextPositionOf(start_after_delete).DeepEquivalent())
+                  .Build()));
+        }
       } else {
         InsertParagraphSeparator(editing_state);
       }
@@ -1408,6 +1414,12 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
             SelectionForUndoStep::From(SelectionInDOMTree::Builder()
                                            .Collapse(next.DeepEquivalent())
                                            .Build()));
+        if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+          SetEndingDomSelection(
+              SelectionForUndoStep::From(SelectionInDomTree::Builder()
+                                             .Collapse(next.DeepEquivalent())
+                                             .Build()));
+        }
       } else {
         InsertParagraphSeparator(editing_state);
         if (editing_state->IsAborted())
@@ -1456,6 +1468,14 @@ void ReplaceSelectionCommand::InsertParagraphSeparatorIfNeeds(
                   PreviousPositionOf(EndingVisibleSelection().VisibleStart())
                       .DeepEquivalent())
               .Build()));
+      if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+        SetEndingDomSelection(SelectionForUndoStep::From(
+            SelectionInDomTree::Builder()
+                .Collapse(
+                    PreviousPositionOf(EndingVisibleSelection().VisibleStart())
+                        .DeepEquivalent())
+                .Build()));
+      }
     }
   }
 }
@@ -1927,6 +1947,13 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
                 .Collapse(
                     Position::AfterNode(*inserted_nodes.LastLeafInserted()))
                 .Build()));
+        if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+          SetEndingDomSelection(SelectionForUndoStep::From(
+              SelectionInDomTree::Builder()
+                  .Collapse(
+                      Position::AfterNode(*inserted_nodes.LastLeafInserted()))
+                  .Build()));
+        }
         // Select up to the paragraph separator that was added.
         last_position_to_select =
             EndingVisibleSelection().VisibleStart().DeepEquivalent();
@@ -1935,6 +1962,12 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
             SelectionInDOMTree::Builder()
                 .Collapse(end_of_inserted_content.DeepEquivalent())
                 .Build()));
+        if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+          SetEndingDomSelection(SelectionForUndoStep::From(
+              SelectionInDomTree::Builder()
+                  .Collapse(end_of_inserted_content.DeepEquivalent())
+                  .Build()));
+        }
         Element* enclosing_block_element = EnclosingBlock(
             end_of_inserted_content.DeepEquivalent().AnchorNode());
         if (IsListItem(enclosing_block_element)) {
@@ -1948,6 +1981,12 @@ void ReplaceSelectionCommand::DoApply(EditingState* editing_state) {
               SelectionInDOMTree::Builder()
                   .Collapse(Position::FirstPositionInNode(*new_list_item))
                   .Build()));
+          if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+            SetEndingDomSelection(SelectionForUndoStep::From(
+                SelectionInDomTree::Builder()
+                    .Collapse(Position::FirstPositionInNode(*new_list_item))
+                    .Build()));
+          }
         } else {
           // Use a default paragraph element (a plain div) for the empty
           // paragraph, using the last paragraph block's style seems to annoy
@@ -2185,6 +2224,12 @@ void ReplaceSelectionCommand::CompleteHTMLReplacement(
         SelectionInDOMTree::Builder()
             .SetBaseAndExtentDeprecated(start, end)
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(
+          SelectionForUndoStep::From(SelectionInDomTree::Builder()
+                                         .SetBaseAndExtentDeprecated(start, end)
+                                         .Build()));
+    }
     return;
   }
 
@@ -2193,9 +2238,16 @@ void ReplaceSelectionCommand::CompleteHTMLReplacement(
         SelectionInDOMTree::Builder()
             .Collapse(end)
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder().Collapse(end).Build()));
+    }
     return;
   }
   SetEndingSelection(SelectionForUndoStep());
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep());
+  }
 }
 
 void ReplaceSelectionCommand::MergeTextNodesAroundPosition(
@@ -2571,6 +2623,12 @@ bool ReplaceSelectionCommand::PerformTrivialReplace(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtentDeprecated(select_replacement_ ? start : end, end)
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(
+        SelectionInDomTree::Builder()
+            .SetBaseAndExtentDeprecated(select_replacement_ ? start : end, end)
+            .Build()));
+  }
 
   return true;
 }

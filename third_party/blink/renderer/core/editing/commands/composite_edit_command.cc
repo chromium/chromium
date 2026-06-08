@@ -1211,6 +1211,10 @@ void CompositeEditCommand::PushAnchorElementDown(Element* anchor_node,
       SelectionInDOMTree::Builder().SelectAllChildren(*anchor_node).Build());
   SetEndingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(visible_selection.AsSelection()));
+  }
   ApplyStyledElement(anchor_node, editing_state);
   if (editing_state->IsAborted())
     return;
@@ -1419,6 +1423,10 @@ void CompositeEditCommand::MoveParagraphWithClones(
 
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(
+        SelectionInDomTree::Builder().Collapse(start).Extend(end).Build()));
+  }
   if (!DeleteSelection(
           editing_state,
           DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build()))
@@ -1626,11 +1634,19 @@ void CompositeEditCommand::MoveParagraphs(
           RemoveSelectionCanonicalizationInMoveParagraphEnabled()) {
     SetEndingSelection(SelectionForUndoStep::From(
         SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder().Collapse(start).Extend(end).Build()));
+    }
   } else {
     const VisibleSelection& selection_to_delete = CreateVisibleSelection(
         SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build());
     SetEndingSelection(
         SelectionForUndoStep::From(selection_to_delete.AsSelection()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(
+          SelectionForUndoStep::From(selection_to_delete.AsSelection()));
+    }
   }
 
   if (RuntimeEnabledFeatures::
@@ -1708,6 +1724,10 @@ void CompositeEditCommand::MoveParagraphs(
   }
   SetEndingSelection(
       SelectionForUndoStep::From(destination_selection.AsSelection()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(destination_selection.AsSelection()));
+  }
   ReplaceSelectionCommand::CommandOptions options =
       ReplaceSelectionCommand::kSelectReplacement |
       ReplaceSelectionCommand::kMovingParagraph;
@@ -1764,6 +1784,10 @@ void CompositeEditCommand::MoveParagraphs(
                                  .Build());
   SetEndingSelection(
       SelectionForUndoStep::From(visible_selection.AsSelection()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(visible_selection.AsSelection()));
+  }
 }
 
 // FIXME: Send an appropriate shouldDeleteRange call.
@@ -1881,6 +1905,12 @@ bool CompositeEditCommand::BreakOutOfEmptyListItem(
       SelectionInDOMTree::Builder()
           .Collapse(Position::FirstPositionInNode(*new_block))
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(SelectionForUndoStep::From(
+        SelectionInDomTree::Builder()
+            .Collapse(Position::FirstPositionInNode(*new_block))
+            .Build()));
+  }
 
   style->PrepareToApplyAt(EndingSelection().Start());
   if (!style->IsEmpty()) {
@@ -1943,6 +1973,12 @@ bool CompositeEditCommand::BreakOutOfEmptyMailBlockquotedParagraph(
       SelectionInDOMTree::Builder()
           .Collapse(at_br.ToPositionWithAffinity())
           .Build()));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    SetEndingDomSelection(
+        SelectionForUndoStep::From(SelectionInDomTree::Builder()
+                                       .Collapse(at_br.ToPositionWithAffinity())
+                                       .Build()));
+  }
 
   // If this is an empty paragraph there must be a line break here.
   if (!LineBreakExistsAtVisiblePosition(caret))
@@ -2246,6 +2282,10 @@ void CompositeEditCommand::AppliedEditing() {
     }
     last_edit_command->EnsureUndoStep()->SetEndingSelection(
         EnsureUndoStep()->EndingSelection());
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      last_edit_command->EnsureUndoStep()->SetEndingDomSelection(
+          EnsureUndoStep()->EndingDomSelection());
+    }
     last_edit_command->GetUndoStep()->SetSelectionIsDirectional(
         GetUndoStep()->SelectionIsDirectional());
     editor.GetUndoStack().DidSetEndingSelection(

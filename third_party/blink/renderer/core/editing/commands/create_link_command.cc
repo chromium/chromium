@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -63,6 +64,13 @@ void CreateLinkCommand::DoApply(EditingState* editing_state) {
             .Collapse(Position::FirstPositionInNode(*anchor_element))
             .Extend(Position::LastPositionInNode(*anchor_element))
             .Build()));
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      SetEndingDomSelection(SelectionForUndoStep::From(
+          SelectionInDomTree::Builder()
+              .Collapse(Position::FirstPositionInNode(*anchor_element))
+              .Extend(Position::LastPositionInNode(*anchor_element))
+              .Build()));
+    }
   }
 }
 
