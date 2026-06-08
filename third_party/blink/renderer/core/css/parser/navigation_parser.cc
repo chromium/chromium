@@ -62,46 +62,18 @@ URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
       pattern_str);
 }
 
-std::optional<NavigationPreposition> PrepositionFromIdent(
-    CSSParserToken token) {
-  DCHECK_EQ(token.GetType(), kIdentToken);
-  if (EqualIgnoringAsciiCase(token.Value(), "at")) {
-    return NavigationPreposition::kAt;
-  }
-  if (EqualIgnoringAsciiCase(token.Value(), "from")) {
-    return NavigationPreposition::kFrom;
-  }
-  if (EqualIgnoringAsciiCase(token.Value(), "to")) {
-    return NavigationPreposition::kTo;
-  }
-  if (EqualIgnoringAsciiCase(token.Value(), "with")) {
-    return NavigationPreposition::kWith;
-  }
-  return std::nullopt;
-}
+}  // anonymous namespace
 
-// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-test
-// https://github.com/w3c/csswg-drafts/blob/main/css-view-transitions-2/two-phase-transition-explainer.md
-//
-// <navigation-test> = <navigation-location-test> | <navigation-type-test> |
-// preview
-//
-// <navigation-location-test> =
-//   <navigation-location-keyword> : <navigation-location>
-// <navigation-location-keyword> = at | from | to
-// <navigation-location> = <route-name> | <url-pattern()>
-// <route-name> = <dashed-ident>
-//
-// <navigation-type-test> = history : <navigation-type-keyword>
-// <navigation-type-keyword> = traverse | back | forward | reload
-NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
-                                              const Document& document) {
+NavigationTestExpression* NavigationParser::ParseNavigationTest(
+    CSSParserTokenStream& stream,
+    const Document& document) {
   if (stream.Peek().GetType() != kIdentToken) {
     return nullptr;
   }
   CSSParserToken token = stream.ConsumeIncludingWhitespace();
   if (EqualIgnoringAsciiCase(token.Value(), "preview") &&
       RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled()) {
+    // TODO(crbug.com/436805487): Not in the spec.
     return MakeGarbageCollected<NavigationPreviewTestExpression>();
   }
   if (stream.Peek().GetType() != kColonToken) {
@@ -109,7 +81,8 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
   }
   stream.ConsumeIncludingWhitespace();
   if (EqualIgnoringAsciiCase(token.Value(), "history")) {
-    // <navigation-type-test>
+    // <navigation-type-test> = history : <navigation-type-keyword>
+    // <navigation-type-keyword> = traverse | back | forward | reload
     if (stream.Peek().GetType() != kIdentToken) {
       return nullptr;
     }
@@ -131,7 +104,8 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
   }
 
   if (EqualIgnoringAsciiCase(token.Value(), "phase")) {
-    // <navigation-phase-test>
+    // <navigation-phase-test> = phase : <navigation-phase-keyword>
+    // <navigation-phase-keyword> = loading | ready | committed
     if (stream.Peek().GetType() != kIdentToken) {
       return nullptr;
     }
@@ -150,40 +124,25 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
     return MakeGarbageCollected<NavigationPhaseTestExpression>(phase);
   }
 
+  // <navigation-location-test> =
+  //   <navigation-location-keyword> : <route-location>
+  // <navigation-location-keyword> = at | from | to | with
+  // <route-location> = <route-name> | <url-pattern()>
+  // <route-name> = <dashed-ident>
   std::optional<NavigationPreposition> preposition =
-      PrepositionFromIdent(token);
+      ParsePrepositionIdent(token);
   if (!preposition) {
     return nullptr;
   }
 
-  AtomicString route_name;
-  URLPatternParseResult url_pattern_result;
-  if (stream.Peek().GetType() == kIdentToken) {
-    route_name = stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
-  } else {
-    url_pattern_result = ParseURLPattern(stream, document);
-    if (!url_pattern_result.IsSuccess()) {
-      return nullptr;
-    }
-  }
-  if (!stream.AtEnd()) {
+  RouteLocation* route_location = ParseLocation(stream, document);
+  if (!route_location || !stream.AtEnd()) {
     return nullptr;
-  }
-
-  RouteLocation* route_location;
-  if (url_pattern_result.IsSuccess()) {
-    route_location = MakeGarbageCollected<RouteLocation>(
-        url_pattern_result.url_pattern, url_pattern_result.original_string);
-  } else {
-    DCHECK(!route_name.empty());
-    route_location = MakeGarbageCollected<RouteLocation>(route_name);
   }
 
   return MakeGarbageCollected<NavigationLocationTestExpression>(*route_location,
                                                                 *preposition);
 }
-
-}  // anonymous namespace
 
 NavigationQuery* NavigationParser::ParseQuery(CSSParserTokenStream& stream,
                                               const Document& document) {
@@ -212,7 +171,20 @@ RouteLocation* NavigationParser::ParseLocation(CSSParserTokenStream& stream,
 
 std::optional<NavigationPreposition> NavigationParser::ParsePrepositionIdent(
     CSSParserToken token) {
-  return PrepositionFromIdent(token);
+  DCHECK_EQ(token.GetType(), kIdentToken);
+  if (EqualIgnoringAsciiCase(token.Value(), "at")) {
+    return NavigationPreposition::kAt;
+  }
+  if (EqualIgnoringAsciiCase(token.Value(), "from")) {
+    return NavigationPreposition::kFrom;
+  }
+  if (EqualIgnoringAsciiCase(token.Value(), "to")) {
+    return NavigationPreposition::kTo;
+  }
+  if (EqualIgnoringAsciiCase(token.Value(), "with")) {
+    return NavigationPreposition::kWith;
+  }
+  return std::nullopt;
 }
 
 const ConditionalExpNode* NavigationParser::ConsumeLeaf(
