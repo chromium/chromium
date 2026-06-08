@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -17,11 +18,15 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
+#include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#if defined(USE_AURA)
+#include "ui/aura/env.h"
+#endif
 
 namespace {
 
@@ -32,6 +37,10 @@ constexpr base::TimeDelta kHoverCardSlideDuration = base::Milliseconds(200);
 
 // static
 bool ToolbarActionHoverCardController::disable_animations_for_testing_ = false;
+
+// static
+std::optional<gfx::Point>
+    ToolbarActionHoverCardController::test_mouse_location_;
 
 //-------------------------------------------------------------------
 // ToolbarActionHoverCardController::EventSniffer
@@ -146,9 +155,18 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
   }
 
   if (action_view && extensions_container_->GetCurrentWebContents()) {
+    delayed_hide_timer_.Stop();
     UpdateOrShowHoverCard(action_view, update_type);
   } else {
-    HideHoverCard();
+    if (update_type == ToolbarActionHoverCardUpdateType::kHover &&
+        !disable_animations_for_testing_) {
+      delayed_hide_timer_.Start(
+          FROM_HERE, kTriggerDelay,
+          base::BindOnce(&ToolbarActionHoverCardController::HideHoverCard,
+                         weak_ptr_factory_.GetWeakPtr(), /*force=*/false));
+    } else {
+      HideHoverCard(/*force=*/true);
+    }
   }
 }
 
@@ -234,7 +252,8 @@ void ToolbarActionHoverCardController::CreateHoverCard(
     ToolbarActionView* action_view) {
   DCHECK(action_view);
 
-  hover_card_ = new ToolbarActionHoverCardBubbleView(action_view);
+  hover_card_ = new ToolbarActionHoverCardBubbleView(
+      action_view, weak_ptr_factory_.GetWeakPtr());
   hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);
 
@@ -281,7 +300,11 @@ void ToolbarActionHoverCardController::ShowHoverCard(
   fade_animator_->FadeIn();
 }
 
-void ToolbarActionHoverCardController::HideHoverCard() {
+void ToolbarActionHoverCardController::HideHoverCard(bool force) {
+  if (!force && (IsMouseOverHoverCard() || IsMouseOverAnchorView())) {
+    return;
+  }
+
   if (!hover_card_ || hover_card_->GetWidget()->IsClosed()) {
     return;
   }
@@ -371,6 +394,7 @@ void ToolbarActionHoverCardController::OnViewIsDeleting(
     views::View* observed_view) {
   if (hover_card_ == observed_view) {
     delayed_show_timer_.Stop();
+    delayed_hide_timer_.Stop();
     hover_card_observation_.Reset();
     event_sniffer_.reset();
     slide_progressed_subscription_ = base::CallbackListSubscription();
@@ -402,4 +426,50 @@ void ToolbarActionHoverCardController::OnViewVisibilityChanged(
   if (!visible) {
     OnViewIsDeleting(observed_view);
   }
+}
+
+void ToolbarActionHoverCardController::OnHoverCardMouseEntered() {
+  delayed_hide_timer_.Stop();
+}
+
+void ToolbarActionHoverCardController::OnHoverCardMouseExited() {
+  if (IsMouseOverAnchorView()) {
+    return;
+  }
+  delayed_hide_timer_.Start(
+      FROM_HERE, kTriggerDelay,
+      base::BindOnce(&ToolbarActionHoverCardController::HideHoverCard,
+                     weak_ptr_factory_.GetWeakPtr(), /*force=*/false));
+}
+
+bool ToolbarActionHoverCardController::IsMouseOverHoverCard() const {
+  if (!hover_card_ || !hover_card_->GetWidget()) {
+    return false;
+  }
+  gfx::Rect bounds = hover_card_->GetWidget()->GetWindowBoundsInScreen();
+  if (test_mouse_location_.has_value()) {
+    return bounds.Contains(test_mouse_location_.value());
+  }
+#if defined(USE_AURA)
+  if (bounds.Contains(aura::Env::GetInstance()->last_mouse_location())) {
+    return true;
+  }
+#endif
+  return bounds.Contains(display::Screen::Get()->GetCursorScreenPoint());
+}
+
+bool ToolbarActionHoverCardController::IsMouseOverAnchorView() const {
+  if (!target_action_view_) {
+    return false;
+  }
+  gfx::Rect bounds = target_action_view_->GetBoundsInScreen();
+  if (test_mouse_location_.has_value()) {
+    return bounds.Contains(test_mouse_location_.value());
+  }
+#if defined(USE_AURA)
+  if (bounds.Contains(aura::Env::GetInstance()->last_mouse_location())) {
+    return true;
+  }
+#endif
+  return bounds.Contains(display::Screen::Get()->GetCursorScreenPoint());
 }

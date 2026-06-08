@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACTION_HOVER_CARD_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -13,6 +14,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/animation/bubble_slide_animator.h"
 #include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/view.h"
@@ -34,15 +36,25 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
   // device.
   static bool UseAnimations();
 
+  static void SetMouseLocationForTesting(std::optional<gfx::Point> location) {
+    test_mouse_location_ = location;
+  }
+
   bool IsHoverCardVisible() const;
   bool IsHoverCardShowingForAction(ToolbarActionView* action_view) const;
   void UpdateHoverCard(ToolbarActionView* action_view,
                        ToolbarActionHoverCardUpdateType update_type);
 
+  void OnHoverCardMouseEntered();
+  void OnHoverCardMouseExited();
+
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;
 
   class EventSniffer;
+
+  bool IsMouseOverHoverCard() const;
+  bool IsMouseOverAnchorView() const;
 
   void UpdateOrShowHoverCard(ToolbarActionView* action_view,
                              ToolbarActionHoverCardUpdateType update_type);
@@ -50,7 +62,7 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
 
   void CreateHoverCard(ToolbarActionView* action_view);
   void ShowHoverCard(bool is_initial, const ToolbarActionView* action_view);
-  void HideHoverCard();
+  void HideHoverCard(bool force = false);
 
   bool ShouldShowImmediately(const ToolbarActionView* action_view) const;
 
@@ -92,6 +104,7 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
   std::unique_ptr<views::WidgetFadeAnimator> fade_animator_;
   // Fade animations interfere with browser tests so we disable them in tests.
   static bool disable_animations_for_testing_;
+  static std::optional<gfx::Point> test_mouse_location_;
 
   // Used to animate the tab hover card's movement between tabs.
   std::unique_ptr<views::BubbleSlideAnimator> slide_animator_;
@@ -102,6 +115,7 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
 
   // Ensure that this timer is destroyed before anything else is cleaned up.
   base::OneShotTimer delayed_show_timer_;
+  base::OneShotTimer delayed_hide_timer_;
   base::WeakPtrFactory<ToolbarActionHoverCardController> weak_ptr_factory_{
       this};
 };

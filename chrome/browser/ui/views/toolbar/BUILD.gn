@@ -427,6 +427,7 @@ if (!is_android && !is_chromeos_device) {
       "//testing/gtest",
       "//ui/base",
       "//ui/base:ozone_buildflags",
+      "//ui/events:test_support",
       "//ui/views",
     ]
   }

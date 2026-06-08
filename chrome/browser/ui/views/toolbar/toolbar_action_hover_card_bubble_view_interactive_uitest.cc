@@ -2,14 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -27,9 +34,14 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget_utils.h"
+#if defined(USE_AURA)
+#include "ui/aura/env.h"
+#endif
 
 namespace {
 
@@ -84,9 +96,23 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
       const ToolbarActionHoverCardBubbleViewUITest&) = delete;
   ~ToolbarActionHoverCardBubbleViewUITest() override = default;
 
+  void set_disable_animations_for_testing(bool disable) {
+    ToolbarActionHoverCardController::disable_animations_for_testing_ = disable;
+  }
+
   ToolbarActionHoverCardBubbleView* hover_card() {
     return GetExtensionsToolbarDesktop()
         ->action_hover_card_controller_->hover_card_;
+  }
+
+  bool IsHideTimerRunning() {
+    return GetExtensionsToolbarDesktop()
+        ->action_hover_card_controller_->delayed_hide_timer_.IsRunning();
+  }
+
+  void FireHideTimer() {
+    GetExtensionsToolbarDesktop()
+        ->action_hover_card_controller_->delayed_hide_timer_.FireNow();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -474,13 +500,73 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // when we check afterwards. Depending on platform, the destruction could be
   // synchronous or asynchronous.
   SafeWidgetDestroyedWaiter widget_destroyed_waiter(widget);
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(GetExtensionsToolbarDesktop()->GetWidget()));
+#if BUILDFLAG(IS_MAC)
+  event_generator.set_target(ui::test::EventGenerator::Target::APPLICATION);
+#endif
+  event_generator.PressAndReleaseKey(ui::VKEY_DOWN);
 
   // Note, fade in/out animations are disabled for testing so this should be
   // relatively quick.
   widget_destroyed_waiter.Wait();
   EXPECT_EQ(hover_card(), nullptr);
+}
+
+// Verify that the hover card is persistent when hovered over.
+IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
+                       WidgetPersistsOnHoverCardHover) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ShowUi("");
+  views::Widget* const widget = hover_card()->GetWidget();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Now enable the timers/animations for testing so that we don't hide
+  // immediately.
+  set_disable_animations_for_testing(false);
+
+  // Hover over the hover card.
+  gfx::Point hover_card_center =
+      widget->GetWindowBoundsInScreen().CenterPoint();
+  ToolbarActionHoverCardController::SetMouseLocationForTesting(
+      hover_card_center);
+
+  ToolbarActionHoverCardBubbleView* const hover_card_view = hover_card();
+  ASSERT_TRUE(hover_card_view);
+
+  ui::MouseEvent enter_event(ui::EventType::kMouseEntered, gfx::Point(),
+                             gfx::Point(), base::TimeTicks(), ui::EF_NONE,
+                             ui::EF_NONE);
+  hover_card_view->OnMouseEntered(enter_event);
+
+  // Trigger hover exit from the extension container.
+  MouseExitsFromExtensionsContainer();
+
+  // Fire the hide timer immediately to check if it would close the card.
+  EXPECT_TRUE(IsHideTimerRunning());
+  FireHideTimer();
+
+  // The hover card should still be visible because the mouse is hovering over
+  // it.
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Move the mouse away from the hover card.
+  ToolbarActionHoverCardController::SetMouseLocationForTesting(
+      gfx::Point(0, 0));
+  ui::MouseEvent exit_event(ui::EventType::kMouseExited, gfx::Point(),
+                            gfx::Point(), base::TimeTicks(), ui::EF_NONE,
+                            ui::EF_NONE);
+  hover_card_view->OnMouseExited(exit_event);
+
+  // The hover card should now be closed after the delay.
+  SafeWidgetDestroyedWaiter widget_destroyed_waiter(widget);
+  widget_destroyed_waiter.Wait();
+  EXPECT_EQ(hover_card(), nullptr);
+
+  // Restore state.
+  ToolbarActionHoverCardController::SetMouseLocationForTesting(std::nullopt);
+  set_disable_animations_for_testing(true);
 }
 
 class ToolbarActionHoverCardBubbleViewDisabledFeatureUITest

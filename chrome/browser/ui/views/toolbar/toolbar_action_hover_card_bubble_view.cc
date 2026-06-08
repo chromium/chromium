@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,11 +49,13 @@ constexpr int kHoverCardLabelMaxLines = 3;
 }  // namespace
 
 ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
-    ToolbarActionView* action_view)
+    ToolbarActionView* action_view,
+    base::WeakPtr<ToolbarActionHoverCardController> controller)
     : BubbleDialogDelegateView(action_view,
                                views::BubbleBorder::TOP_LEFT,
                                views::BubbleBorder::STANDARD_SHADOW),
-      action_view_model_(action_view->view_model()) {
+      action_view_model_(action_view->view_model()),
+      controller_(controller) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -71,9 +74,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   // window will not become active. Setting this to false creates the need to
   // explicitly hide the hovercard on press, touch, and keyboard events.
   SetCanActivate(false);
-#if BUILDFLAG(IS_MAC)
-  set_accept_events(false);
-#endif
 
   // Set so that the toolbar action hover card is not focus traversable when
   // keyboard navigating through the tab strip.
@@ -151,7 +151,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  GetBubbleFrameView()->set_hit_test_transparent(true);
 
   const int corner_radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
@@ -263,6 +262,22 @@ bool ToolbarActionHoverCardBubbleView::IsPolicySeparatorVisible() const {
 
 bool ToolbarActionHoverCardBubbleView::IsPolicyLabelVisible() const {
   return policy_label_->GetVisible();
+}
+
+void ToolbarActionHoverCardBubbleView::OnMouseEntered(
+    const ui::MouseEvent& event) {
+  BubbleDialogDelegateView::OnMouseEntered(event);
+  if (controller_) {
+    controller_->OnHoverCardMouseEntered();
+  }
+}
+
+void ToolbarActionHoverCardBubbleView::OnMouseExited(
+    const ui::MouseEvent& event) {
+  BubbleDialogDelegateView::OnMouseExited(event);
+  if (controller_) {
+    controller_->OnHoverCardMouseExited();
+  }
 }
 
 ToolbarActionHoverCardBubbleView::~ToolbarActionHoverCardBubbleView() = default;
