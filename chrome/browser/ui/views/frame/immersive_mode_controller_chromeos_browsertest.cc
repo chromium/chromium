@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
@@ -421,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(UpdateFullscreenTest, NoImmersiveUI) {
             return true;  // continue iterating (inner lambda)
           }
 
-          if (browser->GetBrowserForMigrationOnly()
+          if (WindowMetadataController::From(browser)
                   ->GetWindowTitleForCurrentTab(
                       /*include_app_name=*/false) != u"Hello") {
             return true;  // continue iterating (inner lambda)

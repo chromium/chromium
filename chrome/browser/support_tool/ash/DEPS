@@ -22,4 +22,7 @@ specific_include_rules = {
   "shill_data_collector\.cc": [
     "+dbus/object_path.h",
   ],
+  "ui_hierarchy_data_collector_browsertest\.cc": [
+    "+chrome/browser/ui/window_metadata/window_metadata_controller.h",
+  ],
 }

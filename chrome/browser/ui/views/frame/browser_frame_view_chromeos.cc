@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -466,8 +467,9 @@ void BrowserFrameViewChromeOS::UpdateWindowTitle() {
 
   browser_widget()->GetNativeWindow()->SetProperty(
       chromeos::kWindowOverviewTitleKey,
-      GetBrowserView()->browser()->GetWindowTitleForCurrentTab(
-          /*include_app_name=*/false));
+      WindowMetadataController::From(GetBrowserView()->browser())
+          ->GetWindowTitleForCurrentTab(
+              /*include_app_name=*/false));
 }
 
 void BrowserFrameViewChromeOS::SizeConstraintsChanged() {}

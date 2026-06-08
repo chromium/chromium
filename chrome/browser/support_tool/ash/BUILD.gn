@@ -94,6 +94,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/window_metadata",
     "//chrome/test:test_support",
     "//components/feedback/redaction_tool",
     "//content/test:test_support",

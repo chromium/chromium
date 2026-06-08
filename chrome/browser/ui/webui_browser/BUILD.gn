@@ -109,6 +109,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/util",
     "//chrome/browser/ui/webui/webui_toolbar:impl",
+    "//chrome/browser/ui/window_metadata",
     "//chrome/browser/ui/zoom:browser_window_zoom_observer",
     "//chrome/common:chrome_features",
     "//components/browser_apis/tab_strip/resources",

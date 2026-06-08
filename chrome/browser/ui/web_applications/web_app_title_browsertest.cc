@@ -5,6 +5,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_feature_histogram_tester.h"
@@ -46,7 +47,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
 
   // Validate app title has app title.
   EXPECT_EQ(u"A Web App - ApplicationTitle",
-            app_browser->GetWindowTitleForCurrentTab(false));
+            WindowMetadataController::From(app_browser)
+                ->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -71,7 +73,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, WithoutAppTitle) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate app title is the same as page title.
-  EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                              ->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -97,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // Validate that app title matches page title.
-  EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                              ->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -115,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
     EXPECT_TRUE(content::ExecJs(web_contents, add_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
     EXPECT_EQ(u"A Web App - ApplicationTitle",
-              app_browser->GetWindowTitleForCurrentTab(false));
+              WindowMetadataController::From(app_browser)
+                  ->GetWindowTitleForCurrentTab(false));
   }
 
   {
@@ -126,8 +131,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
         "'New'";
     EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-    EXPECT_EQ(u"A Web App - New",
-              app_browser->GetWindowTitleForCurrentTab(false));
+    EXPECT_EQ(u"A Web App - New", WindowMetadataController::From(app_browser)
+                                      ->GetWindowTitleForCurrentTab(false));
   }
 
   {
@@ -137,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
         "remove()";
     EXPECT_TRUE(content::ExecJs(web_contents, remove_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-    EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+    EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                                ->GetWindowTitleForCurrentTab(false));
   }
 
   // Navigate away to flush use counters.
@@ -164,24 +170,28 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
 
   // Validate app title has app title.
   EXPECT_EQ(u"A Web App - ApplicationTitle",
-            app_browser->GetWindowTitleForCurrentTab(false));
+            WindowMetadataController::From(app_browser)
+                ->GetWindowTitleForCurrentTab(false));
 
   // Navigate to page without app title.
   const GURL page_without_url = embedded_https_test_server().GetURL(
       "/web_apps/page_without_app_title.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser, page_without_url));
-  EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                              ->GetWindowTitleForCurrentTab(false));
 
   // Navigate to page with app title.
   web_contents->GetController().GoBack();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   EXPECT_EQ(u"A Web App - ApplicationTitle",
-            app_browser->GetWindowTitleForCurrentTab(false));
+            WindowMetadataController::From(app_browser)
+                ->GetWindowTitleForCurrentTab(false));
 
   // Navigate again to page without app title.
   web_contents->GetController().GoForward();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+  EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                              ->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -210,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
 
   // Validate app title has app title.
   EXPECT_EQ(u"A Web App - ApplicationTitle",
-            app_browser->GetWindowTitleForCurrentTab(false));
+            WindowMetadataController::From(app_browser)
+                ->GetWindowTitleForCurrentTab(false));
   // Navigate away to flush use counters.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -224,7 +235,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
         "content = ''";
     EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-    EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+    EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                                ->GetWindowTitleForCurrentTab(false));
   }
 
   // Update app title to space via script and validate title is updated.
@@ -234,7 +246,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
         "content = ' '";
     EXPECT_TRUE(content::ExecJs(web_contents, update_app_title));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-    EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
+    EXPECT_EQ(u"A Web App", WindowMetadataController::From(app_browser)
+                                ->GetWindowTitleForCurrentTab(false));
   }
 }
 

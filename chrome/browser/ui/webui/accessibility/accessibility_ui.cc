@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"  // nogncheck crbug.com/40147906
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -188,7 +189,7 @@ base::DictValue BuildTargetDescriptor(content::RenderViewHost* rvh) {
 base::DictValue BuildTargetDescriptor(BrowserWindowInterface* browser) {
   base::DictValue target_data;
   target_data.Set(kSessionIdField, browser->GetSessionID().id());
-  target_data.Set(kNameField, browser->GetBrowserForMigrationOnly()
+  target_data.Set(kNameField, WindowMetadataController::From(browser)
                                   ->GetWindowTitleForCurrentTab(false));
   target_data.Set(kTypeField, kBrowser);
   return target_data;

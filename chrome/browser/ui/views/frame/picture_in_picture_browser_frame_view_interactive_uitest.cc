@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -1120,9 +1121,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
   // The window title for the document picture-in-picture window should use the
   // title from the opener page.
   EXPECT_EQ(u"Document Picture-in-Picture",
-            pip_frame_view()
-                ->GetBrowserView()
-                ->browser()
+            WindowMetadataController::From(
+                pip_frame_view()->GetBrowserView()->browser())
                 ->GetWindowTitleForCurrentTab(
                     /*include_app_name=*/false));
 }

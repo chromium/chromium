@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -894,8 +895,9 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MoveTabsToExistingWindow) {
   EXPECT_EQ(submenu->GetLabelAt(0),
             l10n_util::GetStringUTF16(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW));
   EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
-  EXPECT_EQ(submenu->GetLabelAt(2), app_browser->GetWindowTitleForCurrentTab(
-                                        /*include_app_name=*/false));
+  EXPECT_EQ(submenu->GetLabelAt(2), WindowMetadataController::From(app_browser)
+                                        ->GetWindowTitleForCurrentTab(
+                                            /*include_app_name=*/false));
 
   submenu->ExecuteCommand(submenu->GetCommandIdAt(2), 0);
 

@@ -461,11 +461,8 @@ class Browser : public TabStripModelObserver,
 
   GURL GetNewTabURL() const;
 
-  // TODO(crbug.com/496674143): Remove once callsites migrated to
-  // WindowMetadataController::From().
-  // Gets the title of the window based on the selected tab's title.
-  // Disables additional formatting when |include_app_name| is false or if the
-  // window is an app window.
+  // Deprecated: Use
+  // WindowMetadataController::From()->GetWindowTitleForCurrentTab instead.
   std::u16string GetWindowTitleForCurrentTab(bool include_app_name) const;
 
   // OnBeforeUnload handling //////////////////////////////////////////////////

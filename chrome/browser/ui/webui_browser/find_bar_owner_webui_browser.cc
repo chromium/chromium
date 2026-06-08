@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/view.h"
@@ -71,7 +72,8 @@ views::Widget* FindBarOwnerWebUIBrowser::GetWidgetForAnchoring() {
 std::u16string FindBarOwnerWebUIBrowser::GetFindBarAccessibleWindowTitle() {
   return l10n_util::GetStringFUTF16(
       IDS_FIND_IN_PAGE_ACCESSIBLE_TITLE,
-      window_->browser()->GetWindowTitleForCurrentTab(false));
+      WindowMetadataController::From(window_->browser())
+          ->GetWindowTitleForCurrentTab(false));
 }
 
 void FindBarOwnerWebUIBrowser::OnFindBarVisibilityChanged(

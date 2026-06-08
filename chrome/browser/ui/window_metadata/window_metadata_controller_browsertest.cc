@@ -78,9 +78,4 @@ IN_PROC_BROWSER_TEST_F(WindowMetadataControllerBrowserTest,
   browser()->SetWindowUserTitle("Delegate Test");
   EXPECT_EQ("Delegate Test", controller->user_title());
   EXPECT_EQ("Delegate Test", browser()->user_title());
-
-  EXPECT_EQ(browser()->GetWindowTitleForCurrentTab(true),
-            controller->GetWindowTitleForCurrentTab(true));
-  EXPECT_EQ(browser()->GetWindowTitleForCurrentTab(false),
-            controller->GetWindowTitleForCurrentTab(false));
 }

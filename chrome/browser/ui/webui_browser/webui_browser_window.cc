@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_web_contents_delegate.h"
 #include "chrome/browser/ui/webui_browser/webui_stub_location_bar.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -1204,8 +1205,8 @@ views::ClientView* WebUIBrowserWindow::WidgetDelegate::CreateClientView(
 std::u16string WebUIBrowserWindow::WidgetDelegate::GetWindowTitle() const {
   // TODO(webium):  BrowserView::GetWindowTitle() has some magic for media
   // on Mac.
-  return browser_window_->browser()->GetWindowTitleForCurrentTab(
-      true /* include_app_name */);
+  return WindowMetadataController::From(browser_window_->browser())
+      ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 }
 
 bool WebUIBrowserWindow::WidgetDelegate::ShouldDescendIntoChildForEventHandling(

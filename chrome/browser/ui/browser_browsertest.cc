@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/window_metadata/window_metadata_controller.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -461,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitle) {
                      base::FilePath(kTitle1File))));
   EXPECT_EQ(
       LocaleWindowCaptionFromPageTitle(u"title1.html"),
-      browser()->GetWindowTitleForCurrentTab(true /* include_app_name */));
+      WindowMetadataController::From(browser())->GetWindowTitleForCurrentTab(
+          true /* include_app_name */));
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(u"title1.html", tab_title);
@@ -521,7 +523,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
   const std::u16string test_title(u"Title Of Awesomeness");
   EXPECT_EQ(
       LocaleWindowCaptionFromPageTitle(test_title),
-      browser()->GetWindowTitleForCurrentTab(true /* include_app_name */));
+      WindowMetadataController::From(browser())->GetWindowTitleForCurrentTab(
+          true /* include_app_name */));
   std::u16string tab_title;
   ASSERT_TRUE(ui_test_utils::GetCurrentTabTitle(browser(), &tab_title));
   EXPECT_EQ(test_title, tab_title);
@@ -541,19 +544,18 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
       captive_portal::CaptivePortalWindowType::kPopup;
   ui_test_utils::NavigateToURL(&captive_portal_params);
   std::u16string captive_portal_window_title =
-      GlobalBrowserCollection::GetInstance()
-          ->FindBrowserWithTab(
-              captive_portal_params.navigated_or_inserted_contents)
-          ->GetBrowserForMigrationOnly()
+      WindowMetadataController::From(
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              captive_portal_params.navigated_or_inserted_contents))
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
   NavigateParams normal_params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   normal_params.disposition = WindowOpenDisposition::NEW_POPUP;
   ui_test_utils::NavigateToURL(&normal_params);
   std::u16string normal_window_title =
-      GlobalBrowserCollection::GetInstance()
-          ->FindBrowserWithTab(normal_params.navigated_or_inserted_contents)
-          ->GetBrowserForMigrationOnly()
+      WindowMetadataController::From(
+          GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              normal_params.navigated_or_inserted_contents))
           ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 
   ASSERT_NE(captive_portal_window_title, normal_window_title);

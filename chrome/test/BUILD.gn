@@ -10748,6 +10748,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
       "//chrome/browser/ui/webui/skills",
       "//chrome/browser/ui/webui/whats_new:interactive_ui_tests",
+      "//chrome/browser/ui/window_metadata",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",

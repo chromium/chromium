@@ -3577,7 +3577,8 @@ bool BrowserView::CanActivate() const {
 
 std::u16string BrowserView::GetWindowTitle() const {
   std::u16string title =
-      browser_->GetWindowTitleForCurrentTab(true /* include_app_name */);
+      WindowMetadataController::From(browser_.get())
+          ->GetWindowTitleForCurrentTab(true /* include_app_name */);
 #if BUILDFLAG(IS_MAC)
   bool any_tab_playing_audio = false;
   bool any_tab_playing_muted_audio = false;
@@ -3620,7 +3621,8 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
         tabs::GetAccessibleTabLabel(browser_->tab_strip_model()->GetActiveTab(),
                                     /*is_for_tab=*/false);
   } else {
-    title = browser_->GetWindowTitleForCurrentTab(false /* include_app_name */);
+    title = WindowMetadataController::From(browser_.get())
+                ->GetWindowTitleForCurrentTab(false /* include_app_name */);
   }
 
   // Add the name of the browser, unless this is an app window.
