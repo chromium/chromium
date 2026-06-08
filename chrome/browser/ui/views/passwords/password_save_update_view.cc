@@ -14,7 +14,6 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/password_manager/factories/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
@@ -45,7 +44,6 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,6 +61,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -96,7 +95,7 @@ class CancelSplitButton : public views::View,
         never_callback_(std::move(never_callback)) {
     // create layout manager
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 2));
+        views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 1));
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kStretch);
     // create "no thanks" button
@@ -115,17 +114,9 @@ class CancelSplitButton : public views::View,
     caret_button_->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_MORE_OPTIONS));
     caret_button_->SetImageModel(views::Button::STATE_NORMAL,
-                                 ui::ImageModel::FromVectorIcon(
-                                     features::IsRoundedIconsEnabled()
-                                         ? vector_icons::kKeyboardArrowDownIcon
-                                         : vector_icons::kCaretDownOldIcon,
-                                     ui::kColorIcon, kCaretIconSize));
-    caret_button_->SetImageModel(
-        views::Button::STATE_PRESSED,
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kKeyboardArrowUpIcon
-                                           : vector_icons::kCaretUpOldIcon,
-                                       ui::kColorIcon, kCaretIconSize));
+                                 GetCaretImageModel(/*pointing_up=*/false));
+    caret_button_->SetImageModel(views::Button::STATE_PRESSED,
+                                 GetCaretImageModel(/*pointing_up=*/true));
     caret_button_->SetStyle(ui::ButtonStyle::kTonal);
     caret_button_->SetMinSize(gfx::Size(0, 0));
     caret_button_->SetBorder(views::CreateEmptyBorder(kCaretButtonBorders));
@@ -150,8 +141,14 @@ class CancelSplitButton : public views::View,
   }
 
  private:
-  static constexpr int kCaretIconSize = 20;
-  static constexpr auto kCaretButtonBorders{gfx::Insets::TLBR(0, 12, 0, 12)};
+  static constexpr int kCaretIconSize = 26;
+  static constexpr auto kCaretButtonBorders{gfx::Insets::TLBR(0, 4, 0, 8)};
+
+  static ui::ImageModel GetCaretImageModel(bool pointing_up) {
+    return ui::ImageModel::FromVectorIcon(
+        pointing_up ? views::kArrowDropUpIcon : views::kArrowDropDownIcon,
+        ui::kColorIcon, kCaretIconSize);
+  }
 
   void OnNoThanksClicked() {
     if (no_thanks_callback_) {
@@ -165,13 +162,8 @@ class CancelSplitButton : public views::View,
       return;
     }
 
-    caret_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? vector_icons::kKeyboardArrowUpIcon
-                                           : vector_icons::kCaretUpOldIcon,
-                                       ui::kColorIcon, kCaretIconSize));
-    caret_button_->SetCornerRadii(gfx::RoundedCornersF(GetOuterRadius()));
+    caret_button_->SetImageModel(views::Button::STATE_NORMAL,
+                                 GetCaretImageModel(/*pointing_up=*/true));
     caret_button_->SetBorder(views::CreateEmptyBorder(kCaretButtonBorders));
 
     if (auto* focus_manager = GetWidget()->GetFocusManager()) {
@@ -191,13 +183,8 @@ class CancelSplitButton : public views::View,
 
   void OnMenuClosed() {
     caret_button_->SetImageModel(views::Button::STATE_NORMAL,
-                                 ui::ImageModel::FromVectorIcon(
-                                     features::IsRoundedIconsEnabled()
-                                         ? vector_icons::kKeyboardArrowDownIcon
-                                         : vector_icons::kCaretDownOldIcon,
-                                     ui::kColorIcon, kCaretIconSize));
+                                 GetCaretImageModel(/*pointing_up=*/false));
     caret_button_->SetBorder(views::CreateEmptyBorder(kCaretButtonBorders));
-    caret_button_->SetCornerRadii(GetCaretButtonRadii());
 
     focus_observation_.Reset();
   }
@@ -215,25 +202,16 @@ class CancelSplitButton : public views::View,
         not_now_button_->GetPreferredSize());
   }
 
-  int GetInnerRadius() const {
-    return views::LayoutProvider::Get()->GetCornerRadiusMetric(
-        views::Emphasis::kLow, not_now_button_->GetPreferredSize());
-  }
-
   gfx::RoundedCornersF GetNotNowButtonRadii() const {
     int outer = GetOuterRadius();
-    int inner = GetInnerRadius();
-    return base::i18n::IsRTL()
-               ? gfx::RoundedCornersF(inner, outer, outer, inner)
-               : gfx::RoundedCornersF(outer, inner, inner, outer);
+    return base::i18n::IsRTL() ? gfx::RoundedCornersF(0, outer, outer, 0)
+                               : gfx::RoundedCornersF(outer, 0, 0, outer);
   }
 
   gfx::RoundedCornersF GetCaretButtonRadii() const {
     int outer = GetOuterRadius();
-    int inner = GetInnerRadius();
-    return base::i18n::IsRTL()
-               ? gfx::RoundedCornersF(outer, inner, inner, outer)
-               : gfx::RoundedCornersF(inner, outer, outer, inner);
+    return base::i18n::IsRTL() ? gfx::RoundedCornersF(outer, 0, 0, outer)
+                               : gfx::RoundedCornersF(0, outer, outer, 0);
   }
 
   base::RepeatingClosure no_thanks_callback_;

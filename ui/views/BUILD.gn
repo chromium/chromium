@@ -27,6 +27,7 @@ aggregate_vector_icons("views_vector_icons") {
     "account_box_old.icon",
     "arrow_drop_down.icon",
     "arrow_drop_down_old.icon",
+    "arrow_drop_up.icon",
     "arrow_outward.icon",
     "cancel.icon",
     "check.icon",
