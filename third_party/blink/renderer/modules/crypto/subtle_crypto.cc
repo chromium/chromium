@@ -235,7 +235,7 @@ bool supportsInternal(ScriptState* script_state,
 
 SubtleCrypto::SubtleCrypto() = default;
 
-ScriptPromise<IDLAny> SubtleCrypto::encrypt(
+ScriptPromise<DOMArrayBuffer> SubtleCrypto::encrypt(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     CryptoKey* key,
@@ -258,7 +258,7 @@ ScriptPromise<IDLAny> SubtleCrypto::encrypt(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 
@@ -283,7 +283,7 @@ ScriptPromise<IDLAny> SubtleCrypto::encrypt(
   return promise;
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::decrypt(
+ScriptPromise<DOMArrayBuffer> SubtleCrypto::decrypt(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     CryptoKey* key,
@@ -306,7 +306,7 @@ ScriptPromise<IDLAny> SubtleCrypto::decrypt(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 
@@ -331,7 +331,7 @@ ScriptPromise<IDLAny> SubtleCrypto::decrypt(
   return promise;
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::sign(
+ScriptPromise<DOMArrayBuffer> SubtleCrypto::sign(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     CryptoKey* key,
@@ -354,7 +354,7 @@ ScriptPromise<IDLAny> SubtleCrypto::sign(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 
@@ -432,7 +432,7 @@ ScriptPromise<IDLBoolean> SubtleCrypto::verifySignature(
   return promise;
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::digest(
+ScriptPromise<DOMArrayBuffer> SubtleCrypto::digest(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     const V8BufferSource* raw_data,
@@ -454,7 +454,7 @@ ScriptPromise<IDLAny> SubtleCrypto::digest(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
 
   HistogramAlgorithm(ExecutionContext::From(script_state),
@@ -648,7 +648,7 @@ ScriptPromise<IDLAny> SubtleCrypto::exportKey(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::wrapKey(
+ScriptPromise<DOMArrayBuffer> SubtleCrypto::wrapKey(
     ScriptState* script_state,
     const String& raw_format,
     CryptoKey* key,
@@ -677,7 +677,7 @@ ScriptPromise<IDLAny> SubtleCrypto::wrapKey(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 

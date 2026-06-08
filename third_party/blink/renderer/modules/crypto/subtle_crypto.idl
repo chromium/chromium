@@ -39,15 +39,15 @@ typedef (object or DOMString) AlgorithmIdentifier;
     Exposed=(Window,Worker,SharedStorageWorklet)
 ] interface SubtleCrypto {
     [CallWith=ScriptState, MeasureAs=SubtleCryptoEncrypt, RaisesException]
-    Promise<any> encrypt(
+    Promise<ArrayBuffer> encrypt(
         AlgorithmIdentifier algorithm, CryptoKey key, BufferSource data);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoDecrypt, RaisesException]
-    Promise<any> decrypt(
+    Promise<ArrayBuffer> decrypt(
         AlgorithmIdentifier algorithm, CryptoKey key, BufferSource data);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoSign, RaisesException]
-    Promise<any> sign(
+    Promise<ArrayBuffer> sign(
         AlgorithmIdentifier algorithm, CryptoKey key, BufferSource data);
 
     [CallWith=ScriptState, ImplementedAs=verifySignature,
@@ -59,7 +59,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
         BufferSource data);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoDigest, RaisesException]
-    Promise<any> digest(AlgorithmIdentifier algorithm, BufferSource data);
+    Promise<ArrayBuffer> digest(AlgorithmIdentifier algorithm, BufferSource data);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoGenerateKey, RaisesException]
     Promise<(CryptoKey or CryptoKeyPair)> generateKey(
@@ -93,7 +93,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
     Promise<any> exportKey(KeyFormat format, CryptoKey key);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoWrapKey, RaisesException]
-    Promise<any> wrapKey(
+    Promise<ArrayBuffer> wrapKey(
         KeyFormat format,
         CryptoKey key,
         CryptoKey wrappingKey,
