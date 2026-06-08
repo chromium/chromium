@@ -25,13 +25,18 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace personal_context {
 
 namespace {
 
+constexpr char kAuthorizationBearerPrefix[] = "Bearer ";
+constexpr char kFetchContextMethod[] = ":fetchContext";
+constexpr char kFetchPiiEntitiesMethod[] = ":fetchPiiEntities";
 constexpr char kGoogleAPITypeName[] = "type.googleapis.com/";
+constexpr char kHttpPostMethod[] = "POST";
 constexpr char kRequestContentType[] = "application/x-protobuf";
 constexpr char kServerTimeoutHeader[] = "X-Server-Timeout";
 
@@ -141,11 +146,57 @@ PersonalContextFetcher::PersonalContextFetcher(
       url_loader_factory_(std::move(url_loader_factory)) {}
 
 PersonalContextFetcher::~PersonalContextFetcher() {
-  if (fetch_callback_) {
-    std::move(fetch_callback_)
-        .Run(base::unexpected(ContextMemoryError::FromExecutionError(
-            ContextMemoryError::ExecutionError::kCancelled)));
+  RunErrorCallback(ContextMemoryError::FromExecutionError(
+      ContextMemoryError::ExecutionError::kCancelled));
+}
+
+void PersonalContextFetcher::RunErrorCallback(ContextMemoryError error) {
+  std::visit(absl::Overload{
+                 [&](FetchContextResponseCallback& callback) {
+                   if (callback) {
+                     std::move(callback).Run(base::unexpected(error));
+                   }
+                 },
+                 [&](FetchPiiEntitiesResponseCallback& callback) {
+                   if (callback) {
+                     std::move(callback).Run(base::unexpected(error));
+                   }
+                 },
+                 [](std::monostate) {},
+             },
+             callback_);
+}
+
+template <typename RequestProto, typename CallbackType>
+void PersonalContextFetcher::Fetch(proto::ContextMemoryFeature feature,
+                                   const RequestProto& request,
+                                   std::string_view rpc_method,
+                                   std::optional<base::TimeDelta> timeout,
+                                   CallbackType callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Only one fetch request can be in progress at a time.
+  if (!std::holds_alternative<std::monostate>(callback_)) {
+    std::move(callback).Run(
+        base::unexpected(ContextMemoryError::FromExecutionError(
+            ContextMemoryError::ExecutionError::kGenericFailure)));
+    return;
   }
+
+  callback_ = std::move(callback);
+
+  std::string serialized_request;
+  request.SerializeToString(&serialized_request);
+
+  GURL endpoint_url(
+      base::StrCat({features::kContextMemoryServiceBaseUrl.Get(), rpc_method}));
+
+  HandleTokenRequestFlow(
+      identity_manager_, signin::OAuthConsumerId::kContextMemoryService,
+      base::BindOnce(&PersonalContextFetcher::OnAccessTokenReceived,
+                     weak_ptr_factory_.GetWeakPtr(), feature,
+                     std::move(endpoint_url), std::move(serialized_request),
+                     timeout));
 }
 
 void PersonalContextFetcher::FetchContext(
@@ -153,54 +204,43 @@ void PersonalContextFetcher::FetchContext(
     const google::protobuf::MessageLite& request_metadata,
     std::optional<base::TimeDelta> timeout,
     FetchContextResponseCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Fetch(feature, ToFetchContextRequest(feature, request_metadata),
+        kFetchContextMethod, timeout, std::move(callback));
+}
 
-  // Only one fetch request can be in progress at a time.
-  if (fetch_callback_) {
-    std::move(callback).Run(
-        base::unexpected(ContextMemoryError::FromExecutionError(
-            ContextMemoryError::ExecutionError::kGenericFailure)));
-    return;
-  }
-
-  fetch_callback_ = std::move(callback);
-
-  proto::FetchContextRequest request =
-      ToFetchContextRequest(feature, request_metadata);
-  std::string serialized_request;
-  request.SerializeToString(&serialized_request);
-
-  HandleTokenRequestFlow(
-      identity_manager_, signin::OAuthConsumerId::kContextMemoryService,
-      base::BindOnce(&PersonalContextFetcher::OnAccessTokenReceived,
-                     weak_ptr_factory_.GetWeakPtr(), feature,
-                     std::move(serialized_request), timeout));
+void PersonalContextFetcher::FetchPiiEntities(
+    proto::ContextMemoryFeature feature,
+    const proto::FetchPiiEntitiesRequest& request,
+    std::optional<base::TimeDelta> timeout,
+    FetchPiiEntitiesResponseCallback callback) {
+  Fetch(feature, request, kFetchPiiEntitiesMethod, timeout,
+        std::move(callback));
 }
 
 void PersonalContextFetcher::OnAccessTokenReceived(
     proto::ContextMemoryFeature feature,
+    GURL endpoint_url,
     std::string serialized_request,
     std::optional<base::TimeDelta> timeout,
     std::string_view access_token) {
   if (access_token.empty()) {
-    std::move(fetch_callback_)
-        .Run(base::unexpected(ContextMemoryError::FromExecutionError(
-            ContextMemoryError::ExecutionError::kPermissionDenied)));
+    RunErrorCallback(ContextMemoryError::FromExecutionError(
+        ContextMemoryError::ExecutionError::kPermissionDenied));
     return;
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(base::StrCat(
-      {features::kContextMemoryServiceBaseUrl.Get(), ":fetchContext"}));
+  resource_request->url = endpoint_url;
 
-  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                      base::StrCat({"Bearer ", access_token}));
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({kAuthorizationBearerPrefix, access_token}));
   if (timeout && timeout->is_positive()) {
     resource_request->headers.SetHeader(
         kServerTimeoutHeader, base::NumberToString(timeout->InSeconds()));
   }
 
-  resource_request->method = "POST";
+  resource_request->method = kHttpPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   active_url_loader_ = network::SimpleURLLoader::Create(
@@ -229,23 +269,45 @@ void PersonalContextFetcher::OnURLLoadComplete(
   active_url_loader_.reset();
 
   if (net_error != net::OK || response_code != net::HTTP_OK) {
-    std::move(fetch_callback_)
-        .Run(base::unexpected(ContextMemoryError::FromHttpStatusCode(
-            static_cast<net::HttpStatusCode>(
-                response_code > 0 ? response_code
-                                  : net::HTTP_INTERNAL_SERVER_ERROR))));
+    RunErrorCallback(
+        ContextMemoryError::FromHttpStatusCode(static_cast<net::HttpStatusCode>(
+            response_code > 0 ? response_code
+                              : net::HTTP_INTERNAL_SERVER_ERROR)));
     return;
   }
 
-  proto::FetchContextResponse fetch_response;
-  if (!response_body || !fetch_response.ParseFromString(*response_body)) {
-    std::move(fetch_callback_)
-        .Run(base::unexpected(ContextMemoryError::FromExecutionError(
-            ContextMemoryError::ExecutionError::kGenericFailure)));
-    return;
-  }
-
-  std::move(fetch_callback_).Run(base::ok(fetch_response));
+  std::visit(
+      absl::Overload{
+          [&](FetchContextResponseCallback& callback) {
+            if (!callback) {
+              return;
+            }
+            proto::FetchContextResponse fetch_response;
+            if (!response_body ||
+                !fetch_response.ParseFromString(*response_body)) {
+              std::move(callback).Run(
+                  base::unexpected(ContextMemoryError::FromExecutionError(
+                      ContextMemoryError::ExecutionError::kGenericFailure)));
+              return;
+            }
+            std::move(callback).Run(base::ok(fetch_response));
+          },
+          [&](FetchPiiEntitiesResponseCallback& callback) {
+            if (!callback) {
+              return;
+            }
+            proto::FetchPiiEntitiesResponse pii_response;
+            if (!response_body ||
+                !pii_response.ParseFromString(*response_body)) {
+              std::move(callback).Run(
+                  base::unexpected(ContextMemoryError::FromExecutionError(
+                      ContextMemoryError::ExecutionError::kGenericFailure)));
+              return;
+            }
+            std::move(callback).Run(base::ok(pii_response));
+          },
+          [](std::monostate) {},
+      },
+      callback_);
 }
-
 }  // namespace personal_context
