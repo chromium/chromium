@@ -159,6 +159,18 @@ void reset_is_desktop_for_testing() {
   Java_DeviceInfo_resetIsDesktopForTesting(AttachCurrentThread());  // IN-TEST
   get_holder().reset();
 }
+
+void set_is_foldable_for_testing(bool is_foldable) {
+  Java_DeviceInfo_setIsFoldableForTesting(AttachCurrentThread(),
+                                          is_foldable);  // IN-TEST
+  get_holder().reset();
+}
+
+void reset_is_foldable_for_testing() {
+  Java_DeviceInfo_resetIsFoldableForTesting(AttachCurrentThread());  // IN-TEST
+  get_holder().reset();
+}
+
 }  // namespace base::android::device_info
 
 DEFINE_JNI(DeviceInfo)
