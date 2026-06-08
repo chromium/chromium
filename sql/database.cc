@@ -1008,7 +1008,7 @@ std::string Database::CollectCorruptionInfo() {
   // If the file cannot be accessed it is unlikely that an integrity check will
   // turn up actionable information.
   const base::FilePath db_path = DbPath();
-  std::optional<int64_t> db_size = GetFileSize(db_path);
+  std::optional<int64_t> db_size = base::GetFileSize(db_path);
   if (db_size && *db_size < 0) {
     return std::string();
   }
