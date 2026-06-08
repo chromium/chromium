@@ -491,9 +491,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
                 contextual_tasks_entry_point_eligibility_manager_.get());
 
     if (contextual_tasks::kShowEntryPoint.Get() ==
-            contextual_tasks::EntryPointOption::kToolbarRevisit ||
-        contextual_tasks::kShowEntryPoint.Get() ==
-            contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
       contextual_tasks_ephemeral_button_controller_ =
           GetUserDataFactory()
               .CreateInstance<ContextualTasksEphemeralButtonController>(

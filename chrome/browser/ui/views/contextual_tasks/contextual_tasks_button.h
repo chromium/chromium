@@ -59,7 +59,6 @@ class ContextualTasksButton
 
  private:
   void OnButtonPress();
-  void OnPinStateChanged();
   void OnSidePanelAlignmentChanged();
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
@@ -67,7 +66,6 @@ class ContextualTasksButton
   void UpdateDropShadowLayerBounds();
   ui::ImageModel GetButtonImage();
 
-  BooleanPrefMember pin_state_;
   BooleanPrefMember side_panel_alignment_;
   base::CallbackListSubscription should_update_visibility_subscription_;
   base::CallbackListSubscription eligibility_change_subscription_;

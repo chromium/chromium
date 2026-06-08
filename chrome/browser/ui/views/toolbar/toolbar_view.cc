@@ -444,22 +444,16 @@ void ToolbarView::Init() {
         AddChildView(std::make_unique<SplitTabsToolbarButton>(browser_));
   }
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+      contextual_tasks::kShowEntryPoint.Get() ==
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     auto button = std::make_unique<ContextualTasksButton>(browser_);
-    if (contextual_tasks::kShowEntryPoint.Get() ==
-        contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-      auto* vts_controller =
-          tabs::VerticalTabStripStateController::From(browser_);
-      if (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) {
-        button->SetProperty(views::kMarginsKey, gfx::Insets());
-      }
-      AddChildViewAt(std::move(button), 0);
-    } else if (contextual_tasks::kShowEntryPoint.Get() ==
-                   contextual_tasks::EntryPointOption::kToolbarPermanent ||
-               contextual_tasks::kShowEntryPoint.Get() ==
-                   contextual_tasks::EntryPointOption::kToolbarRevisit) {
-      AddChildView(std::move(button));
+    auto* vts_controller =
+        tabs::VerticalTabStripStateController::From(browser_);
+    if (!vts_controller || !vts_controller->ShouldDisplayVerticalTabs()) {
+      button->SetProperty(views::kMarginsKey, gfx::Insets());
     }
+    AddChildViewAt(std::move(button), 0);
   }
 
   if (location_bar_view) {

@@ -8,7 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -20,7 +19,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -104,11 +102,6 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
     InitializeActionIdStringMapping();
     BrowserWithTestWindowTest::SetUp();
 
-    feature_list_.InitWithFeaturesAndParameters(
-        {{contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEntryPoint", "toolbar-permanent"}}}},
-        {});
-
     // Open a tab to get a webcontents in the same browser.
     AddTab(browser(), GURL("about:blank"));
 
@@ -155,7 +148,6 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
 
  protected:
   testing::NiceMock<MockPage> mock_page_;
-  base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<MockPinnedToolbarActionsModel> mock_pinned_toolbar_actions_model_;
   raw_ptr<PinnedToolbarActionsModel::Observer>
@@ -249,8 +241,6 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
   //     side_panel::customize_chrome::mojom::ActionId::kShowChromeLabs));
   EXPECT_TRUE(contains_action(
       side_panel::customize_chrome::mojom::ActionId::kSplitTab));
-  EXPECT_TRUE(contains_action(
-      side_panel::customize_chrome::mojom::ActionId::kContextualTasks));
 }
 
 TEST_F(CustomizeToolbarHandlerTest, PinAction) {
@@ -308,20 +298,6 @@ TEST_F(CustomizeToolbarHandlerTest, PinSplitTab) {
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
 }
 
-TEST_F(CustomizeToolbarHandlerTest, PinContextualTasks) {
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
-
-  handler().PinAction(
-      side_panel::customize_chrome::mojom::ActionId::kContextualTasks, false);
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
-
-  handler().PinAction(
-      side_panel::customize_chrome::mojom::ActionId::kContextualTasks, true);
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
-}
 
 TEST_F(CustomizeToolbarHandlerTest, ActionsChanged) {
   EXPECT_CALL(mock_page_, NotifyActionsUpdated).Times(1);
@@ -384,25 +360,6 @@ TEST_F(CustomizeToolbarHandlerTest, SplitTabPrefUpdated) {
   EXPECT_EQ(pin, true);
 }
 
-TEST_F(CustomizeToolbarHandlerTest, PinContextualTaskPrefUpdated) {
-  bool pin;
-  side_panel::customize_chrome::mojom::ActionId id;
-  EXPECT_CALL(mock_page_, SetActionPinned)
-      .Times(2)
-      .WillRepeatedly(DoAll(SaveArg<0>(&id), SaveArg<1>(&pin)));
-
-  profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, false);
-  mock_page_.FlushForTesting();
-  EXPECT_EQ(id,
-            side_panel::customize_chrome::mojom::ActionId::kContextualTasks);
-  EXPECT_EQ(pin, false);
-
-  profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, true);
-  mock_page_.FlushForTesting();
-  EXPECT_EQ(id,
-            side_panel::customize_chrome::mojom::ActionId::kContextualTasks);
-  EXPECT_EQ(pin, true);
-}
 
 TEST_F(CustomizeToolbarHandlerTest, ResetToDefault) {
   EXPECT_CALL(mock_pinned_toolbar_actions_model(), ResetToDefault).Times(1);
@@ -417,12 +374,10 @@ TEST_F(CustomizeToolbarHandlerTest, GetIsCustomizedForNonPinnedActions) {
       });
 
   // Initially, everything is default.
-  // Home: False, Forward: True, SplitTab: False, ContextualTasks: True
+  // Home: False, Forward: True, SplitTab: False
   ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
   ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
-  ASSERT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
 
   {
     base::MockCallback<CustomizeToolbarHandler::GetIsCustomizedCallback>
@@ -438,15 +393,11 @@ TEST_F(CustomizeToolbarHandlerTest, GetIsCustomizedForNonPinnedActions) {
                       false);
   handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kSplitTab,
                       true);
-  handler().PinAction(
-      side_panel::customize_chrome::mojom::ActionId::kContextualTasks, false);
 
   // Verify all prefs changed.
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
 
   // Verify GetIsCustomized returns true.
   {
@@ -463,8 +414,6 @@ TEST_F(CustomizeToolbarHandlerTest, GetIsCustomizedForNonPinnedActions) {
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
   EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
   EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetBoolean(prefs::kPinContextualTaskButton));
 
   // Verify GetIsCustomized returns false.
   {
