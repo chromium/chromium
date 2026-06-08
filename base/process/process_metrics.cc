@@ -27,7 +27,9 @@ int CalculateEventsPerSecond(uint64_t event_count,
   if (*last_event_count != 0) {
     const uint64_t events_delta = event_count - *last_event_count;
     const base::TimeDelta time_delta = time - *last_calculated;
-    DCHECK(!time_delta.is_zero());
+    if (time_delta.is_zero()) {
+      return 0;
+    }
     events_per_second = ClampRound(events_delta / time_delta.InSecondsF());
   }
 
