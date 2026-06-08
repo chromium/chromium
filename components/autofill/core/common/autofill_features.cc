@@ -368,7 +368,7 @@ BASE_FEATURE(kAutofillAiWithDataSchema,
 // When enabled, autofill will fill not skip filling fields that had an initial
 // value which was modified.
 BASE_FEATURE(kAutofillAllowFillingModifiedInitialValues,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the ambient autofill experience is enabled in Chrome.
 BASE_FEATURE(kAutofillAmbientAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
