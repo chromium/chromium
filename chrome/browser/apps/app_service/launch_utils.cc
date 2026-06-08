@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -36,6 +35,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -304,7 +304,8 @@ AppIdsToLaunchForUrl::~AppIdsToLaunchForUrl() = default;
 AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
                                               const GURL& url) {
   // Navigation Capturing also enables launching of browser-tab apps.
-  bool exclude_browser_tab_apps = !features::IsNavigationCapturingReimplEnabled();
+  bool exclude_browser_tab_apps =
+      !base::FeatureList::IsEnabled(features::kPwaNavigationCapturing);
   AppIdsToLaunchForUrl result;
   result.candidates =
       proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true, exclude_browser_tab_apps);

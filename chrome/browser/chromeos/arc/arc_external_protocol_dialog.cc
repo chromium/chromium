@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <map>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
@@ -33,6 +33,7 @@
 #include "content/public/common/referrer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
@@ -44,6 +45,44 @@ using content::WebContents;
 namespace arc {
 
 namespace {
+
+bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
+                                bool allow_form_submit,
+                                bool is_in_fenced_frame_tree,
+                                bool has_user_gesture) {
+  // Navigations inside fenced frame trees are marked with
+  // PAGE_TRANSITION_AUTO_SUBFRAME in order not to add session history items
+  // (see https://crrev.com/c/3265344). So we only check |has_user_gesture|.
+  if (is_in_fenced_frame_tree) {
+    DCHECK(ui::PageTransitionCoreTypeIs(page_transition,
+                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    return has_user_gesture;
+  }
+
+  // Mask out any redirect qualifiers
+  page_transition = ui::PageTransitionFromInt(
+      page_transition & ~ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
+
+  if (!ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_LINK) &&
+      !(allow_form_submit &&
+        ui::PageTransitionCoreTypeIs(page_transition,
+                                     ui::PAGE_TRANSITION_FORM_SUBMIT))) {
+    // Do not handle the |url| if this event wasn't spawned by the user clicking
+    // on a link.
+    return false;
+  }
+
+  if (std::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
+      0) {
+    // Qualifiers indicate that this navigation was the result of a click on a
+    // forward/back button, or typing in the URL bar. Don't handle any of those
+    // types of navigations.
+    return false;
+  }
+
+  return true;
+}
 
 // The proxy activity for launching an ARC IME's settings activity. These names
 // have to be in sync with the ones used in ArcInputMethodManagerService.java on
@@ -719,14 +758,12 @@ void RunArcExternalProtocolDialog(
   DCHECK(!url.SchemeIsHTTPOrHTTPS()) << url;
 
   // For external protocol navigation, always ignore the FROM_API qualifier.
-  const ui::PageTransition masked_page_transition =
-      apps::LinkCapturingNavigationThrottle::MaskOutPageTransition(
-          page_transition, ui::PAGE_TRANSITION_FROM_API);
+  const ui::PageTransition masked_page_transition = ui::PageTransitionFromInt(
+      page_transition & ~ui::PAGE_TRANSITION_FROM_API);
 
-  if (!apps::LinkCapturingNavigationThrottle::IsCapturableLinkNavigation(
-          masked_page_transition,
-          /*allow_form_submit=*/true, is_in_fenced_frame_tree,
-          has_user_gesture)) {
+  if (!IsCapturableLinkNavigation(masked_page_transition,
+                                  /*allow_form_submit=*/true,
+                                  is_in_fenced_frame_tree, has_user_gesture)) {
     LOG(WARNING) << "RunArcExternalProtocolDialog: ignoring " << url
                  << " with PageTransition=" << masked_page_transition
                  << ", is_in_fenced_frame_tree=" << is_in_fenced_frame_tree

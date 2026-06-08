@@ -25,7 +25,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
@@ -288,6 +287,7 @@ bool ShouldThrottleCaptureNavigation(
           launch_app_id);
   debug_dict->Set("is_for_cros_experiment_app", is_for_cros_experiment_app);
   if (app_type == AppType::kWeb && !is_for_projector_swa) {
+    // TODO(crbug.com/377760841): Remove this flag check as it is dead code.
     if (!base::FeatureList::IsEnabled(
             features::kNavigationCapturingOnExistingFrames) &&
         !is_for_cros_experiment_app) {
@@ -350,7 +350,7 @@ bool ShouldThrottleCaptureNavigation(
 // static
 bool ChromeOsReimplNavigationCapturingThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  if (!features::IsNavigationCapturingReimplEnabled()) {
+  if (!base::FeatureList::IsEnabled(::features::kPwaNavigationCapturing)) {
     return false;
   }
 

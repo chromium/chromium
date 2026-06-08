@@ -252,7 +252,7 @@ bool IsNavigationCapturingReimplExperimentEnabled(
     return false;
   }
   // Enabling the generic flag turns it on for all navigations.
-  if (apps::features::IsNavigationCapturingReimplEnabled()) {
+  if (base::FeatureList::IsEnabled(features::kPwaNavigationCapturing)) {
     if (!features::kForcedOffCapturingAppsOnFirstNavigation.Get().empty() &&
         controlling_app_id.has_value()) {
       std::vector<std::string> forced_capturing_off_app_ids = base::SplitString(

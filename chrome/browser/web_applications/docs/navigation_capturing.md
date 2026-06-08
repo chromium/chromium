@@ -115,30 +115,31 @@ and feature flags:
 - **[NavigationCapturingRedirectionThrottle](https://source.chromium.org/search?q=class:NavigationCapturingRedirectionThrottle)**:
   Handles the redirection phase of the navigation capturing flow, working in
   tandem with `NavigationCapturingProcess`.
+
   - *Status*: **Enabled by default on Windows, Mac, and Linux** (via the
     `kPwaNavigationCapturing` flag). **Disabled by default on ChromeOS** (the
     default state is set to off, but can be enabled by user preference or
     settings).
-- **[LinkCapturingNavigationThrottle](https://source.chromium.org/search?q=class:LinkCapturingNavigationThrottle)**:
-  The legacy link capturing throttle. It uses delegates (e.g.,
-  `WebAppLinkCapturingDelegate`, `ChromeOsLinkCapturingDelegate`) to determine
-  if a navigation should be intercepted and routed to an app.
-  - *Status*: **Disabled by default on all platforms** when the new navigation
-    capturing re-implementation is active.
+
 - **[ChromeOsReimplNavigationCapturingThrottle](https://source.chromium.org/search?q=class:ChromeOsReimplNavigationCapturingThrottle)**:
   A ChromeOS-specific throttle that implements parts of the navigation capturing
   reimplementation that are not covered by `NavigationCapturingProcess`.
+
   - *Status*: **Enabled by default on ChromeOS** (when `kPwaNavigationCapturing`
     is active).
+
 - **[TabbedWebAppNavigationThrottle](https://source.chromium.org/search?q=class:TabbedWebAppNavigationThrottle)**:
   Handles navigation routing specifically inside tabbed web apps (e.g., ensuring
   links clicked in a pinned home tab open in a new app tab instead of replacing
   the home tab).
+
   - *Status*: **Enabled by default on ChromeOS**. **Disabled by default on
     Windows, Mac, and Linux** (depends on the experimental
     `kDesktopPWAsTabStrip` feature).
+
 - **[WebUIWebAppNavigationThrottle](https://source.chromium.org/search?q=class:WebUIWebAppNavigationThrottle)**:
   Assists WebUI-based web apps in routing navigations to the correct tabs.
+
   - *Status*: **Enabled by default on all platforms** (unconditional, runs for
     WebUI web apps).
 

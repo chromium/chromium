@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/navigation_capturing_settings.h"
 
-#include "chrome/browser/web_applications/link_capturing_features.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/ui_base_features.h"
 
@@ -29,7 +28,7 @@ const base::FeatureParam<bool> kEnableAuxContextKeepSameContainer{
 bool NavigationCapturingSettings::ShouldAuxiliaryContextsKeepSameContainer(
     const std::optional<webapps::AppId>& source_browser_app_id,
     const GURL& url) {
-  return apps::features::IsNavigationCapturingReimplEnabled() &&
+  return base::FeatureList::IsEnabled(features::kPwaNavigationCapturing) &&
          kEnableAuxContextKeepSameContainer.Get();
 }
 

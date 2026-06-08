@@ -14,7 +14,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -79,16 +78,10 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
     task_runner_->AdvanceMockTickClock(forward_by);
   }
 
-  void SetUpMockClock(bool use_v2) {
-    if (use_v2) {
-      clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
-          apps::ChromeOsReimplNavigationCapturingThrottle::SetClockForTesting(
-              task_runner_->GetMockTickClock()));
-    } else {
-      clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
-          apps::ChromeOsLinkCapturingDelegate::SetClockForTesting(
-              task_runner_->GetMockTickClock()));
-    }
+  void SetUpMockClock() {
+    clock_reset_ = std::make_unique<base::AutoReset<const base::TickClock*>>(
+        apps::ChromeOsReimplNavigationCapturingThrottle::SetClockForTesting(
+            task_runner_->GetMockTickClock()));
   }
 
  protected:
@@ -137,8 +130,7 @@ class ProjectorNavigationCapturingParameterizedTest
 // the SWA.
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
                        NavigationRedirects) {
-  SetUpMockClock(feature_version() ==
-                 LinkCapturingFeatureVersion::kV2DefaultOff);
+  SetUpMockClock();
   base::HistogramTester histogram_tester;
 
   std::string url = kChromeUIUntrustedProjectorPwaUrl;
@@ -273,7 +265,7 @@ class ProjectorNavigationThrottleRedirectionParameterized
 
 IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
                        NoBlankTab) {
-  SetUpMockClock(GetParam() == LinkCapturingFeatureVersion::kV2DefaultOff);
+  SetUpMockClock();
   // Prior to navigation, there is only one browser available.
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
 

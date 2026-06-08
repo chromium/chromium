@@ -10,6 +10,7 @@
 
 namespace apps::features {
 
+// TODO(crbug.com/377760841): Remove dead code flag; never enabled.
 BASE_DECLARE_FEATURE(kNavigationCapturingOnExistingFrames);
 
 // When enabled, updates the app settings string labels for browser-tab PWAs
@@ -22,16 +23,6 @@ BASE_DECLARE_FEATURE(kUpdateAppStringsOnSettings);
 // to true on desktop platforms if kPwaNavigationCapturing is enabled, and
 // always on CrOS.
 bool ShouldShowLinkCapturingUX();
-
-// Returns true if the `kPwaNavigationCapturing` flag is enabled with the
-// reimplementation parameters set.
-//
-// NOTE: the reimplementation can also be enabled for particular applications
-// even if this flag is off. Hence only the `true` return value can be fully
-// trusted, but if `false` is returned extra considerations are required. See
-// `IsNavigationCapturingReimplExperimentEnabled()` at
-// //c/b/ui/web_applications/web_app_launch_utils.cc.
-bool IsNavigationCapturingReimplEnabled();
 
 }  // namespace apps::features
 
