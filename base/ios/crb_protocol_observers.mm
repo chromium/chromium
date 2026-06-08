@@ -140,9 +140,11 @@ id Iterator::GetNext() {
     return;
   }
   Iterator it(self);
-  id observer;
-  while ((observer = it.GetNext()) != nil) {
-    callback(observer);
+  @autoreleasepool {
+    id observer;
+    while ((observer = it.GetNext()) != nil) {
+      callback(observer);
+    }
   }
 }
 
@@ -183,10 +185,12 @@ id Iterator::GetNext() {
   }
   SEL selector = [invocation selector];
   Iterator it(self);
-  id observer;
-  while ((observer = it.GetNext()) != nil) {
-    if ([observer respondsToSelector:selector]) {
-      [invocation invokeWithTarget:observer];
+  @autoreleasepool {
+    id observer;
+    while ((observer = it.GetNext()) != nil) {
+      if ([observer respondsToSelector:selector]) {
+        [invocation invokeWithTarget:observer];
+      }
     }
   }
 }
