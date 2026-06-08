@@ -5,18 +5,87 @@
 #include "media/formats/dts/dts_util.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/bit_reader.h"
-#include "media/formats/dts/dts_stream_parser.h"
 
 namespace media {
 
 namespace dts {
 
 namespace {
+
+constexpr uint32_t kDTSCoreSyncWord = 0x7ffe8001;
+constexpr size_t kDTSCoreHeaderSizeInBytes = 15;
+
+struct Header {
+  size_t frame_size = 0;
+  int sample_count = 0;
+};
+
+std::optional<Header> ParseHeader(base::span<const uint8_t> data) {
+  if (data.empty() || data.size() < kDTSCoreHeaderSizeInBytes) {
+    return std::nullopt;
+  }
+
+  BitReader reader(data);
+
+  // Read and validate Sync word.
+  uint32_t sync_word = 0;
+  if (!reader.ReadBits(32, &sync_word) || sync_word != kDTSCoreSyncWord) {
+    return std::nullopt;
+  }
+
+  uint16_t fsize = 0;
+  uint8_t ext_audio = 0, ext_audio_id = 0, nblks = 0, sfreq = 0;
+
+  // Skip ftype(1-bit) + DeficitSample Count(5-bits) + CRC Present Flag(1-bit)
+  const bool success =
+      reader.SkipBits(7) && reader.ReadBits(7, &nblks) &&
+      reader.ReadBits(14, &fsize) && reader.SkipBits(6) &&  // Skip AMODE
+      reader.ReadBits(4, &sfreq) &&
+      reader.SkipBits(10) &&  // Skip: RATE, FixedBit, DNYF, TIMEF, AUSX, HDCD
+      reader.ReadBits(3, &ext_audio_id) && reader.ReadBits(1, &ext_audio);
+  if (!success) {
+    return std::nullopt;
+  }
+
+  constexpr auto kSampleRateCore =
+      std::to_array<size_t>({0, 8000, 16000, 32000, 0, 0, 11025, 22050, 44100,
+                             0, 0, 12000, 24000, 48000, 0, 0});
+
+  if (fsize < 95) {  // Invalid values of FSIZE is 0-94.
+    return std::nullopt;
+  }
+
+  if (nblks < 5 || nblks > 127) {  // Valid values of nblks is 5-127.
+    return std::nullopt;
+  }
+
+  if (kSampleRateCore[sfreq] == 0) {  // Table value of 0 indicates invalid
+    return std::nullopt;
+  }
+
+  // extended audio may modify sample count and rate
+  const bool is_core_x96 = ext_audio && ext_audio_id == 2;
+
+  Header header;
+  header.frame_size = fsize + 1;  // Framesize is FSIZE + 1.
+
+  // Use nblks to compute frame duration, a.k.a number of PCM samples per
+  // channel in the current DTS frames in the buffer.
+  int sample_count = (nblks + 1) * 32;  // Num of PCM samples in current frame
+  if (is_core_x96) {
+    sample_count <<= 1;
+  }
+  header.sample_count = sample_count;
+
+  return header;
+}
+
 // Match a 32-bit sync word with the content in the buffer.
 bool MatchSyncWord(base::span<const uint8_t> data, uint32_t sync_word) {
   return data[0] == static_cast<uint8_t>(sync_word >> 24) &&
@@ -75,8 +144,8 @@ int ParseTotalSampleCount(base::span<const uint8_t> buffer_span,
   // other DTS audio types
   switch (dts_codec_type) {
     case AudioCodec::kDTS:
-      sync_word = DTSStreamParser::kDTSCoreSyncWord;
-      header_size = DTSStreamParser::kDTSCoreHeaderSizeInBytes;
+      sync_word = kDTSCoreSyncWord;
+      header_size = kDTSCoreHeaderSizeInBytes;
       break;
     default:
       sync_word = 0;
@@ -87,7 +156,6 @@ int ParseTotalSampleCount(base::span<const uint8_t> buffer_span,
     return 0;
   }
 
-  DTSStreamParser parser;
   int total_sample_count = 0;
 
   while (buffer_span.size() > header_size) {
@@ -98,21 +166,17 @@ int ParseTotalSampleCount(base::span<const uint8_t> buffer_span,
     }
     buffer_span = sync_span;
 
-    size_t frame_size = 0;
-    size_t sample_count = 0;
-    int bytes_processed =
-        parser.ParseFrameHeader(buffer_span, &frame_size, nullptr, nullptr,
-                                &sample_count, nullptr, nullptr);
+    const auto header = ParseHeader(buffer_span);
 
-    if ((bytes_processed > 0) && (frame_size > 0) && (sample_count > 0)) {
-      if (frame_size > buffer_span.size()) {
+    if (header && header->frame_size > 0 && header->sample_count > 0) {
+      if (header->frame_size > buffer_span.size()) {
         DVLOG(2) << __func__ << " Incomplete frame, missing "
-                 << frame_size - buffer_span.size() << " bytes.";
+                 << header->frame_size - buffer_span.size() << " bytes.";
         break;
       }
 
-      total_sample_count += sample_count;
-      buffer_span = buffer_span.subspan(frame_size);
+      total_sample_count += header->sample_count;
+      buffer_span = buffer_span.subspan(header->frame_size);
     } else {
       DVLOG(2)
           << __func__
