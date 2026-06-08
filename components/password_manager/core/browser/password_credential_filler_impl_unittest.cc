@@ -21,6 +21,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
 
 namespace {
 
@@ -44,6 +45,7 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
               (override));
   MOCK_METHOD(void, TriggerFormSubmission, (), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
+  MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (const override));
 };
 
 enum class FormFieldFocusabilityType {
@@ -149,6 +151,8 @@ class PasswordCredentialFillerBaseTest : public testing::Test {
   void SetUp() override {
     ON_CALL(driver_, GetLastCommittedURL())
         .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
+    ON_CALL(driver_, GetLastCommittedOrigin())
+        .WillByDefault(ReturnRefOfCopy(url::Origin::Create(GURL(kExampleCom))));
   }
 
   MockPasswordManagerDriver& driver() { return driver_; }
@@ -224,6 +228,23 @@ TEST_F(PasswordCredentialFillerBaseTest, FillWithNullDriver) {
                                                /*password_field_index=*/0));
   // Should not crash.
   filler.FillUsernameAndPassword(kUsername, kPassword, base::DoNothing());
+}
+
+TEST_F(PasswordCredentialFillerBaseTest, GetFrameOrigin) {
+  PasswordCredentialFillerImpl filler(
+      driver().AsWeakPtr(),
+      CreatePasswordSuggestionRequest({}, /*has_captcha=*/false,
+                                      /*username_field_index=*/0,
+                                      /*password_field_index=*/0));
+  EXPECT_EQ(filler.GetFrameOrigin(), url::Origin::Create(GURL(kExampleCom)));
+}
+
+TEST_F(PasswordCredentialFillerBaseTest, GetFrameOriginWithNullDriver) {
+  PasswordCredentialFillerImpl filler(
+      nullptr, CreatePasswordSuggestionRequest({}, /*has_captcha=*/false,
+                                               /*username_field_index=*/0,
+                                               /*password_field_index=*/0));
+  EXPECT_TRUE(filler.GetFrameOrigin().opaque());
 }
 
 class PasswordCredentialFillerV2ParameterTest

@@ -1998,7 +1998,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   EXPECT_CALL(*account_store, UpdateLogin(password_manager::EqStoredCredential(
                                               shared_not_notified_account),
                                           _));
-  GetClient()->MarkSharedCredentialsAsNotified(kURL);
+  GetClient()->MarkSharedCredentialsAsNotified(origin);
 }
 
 #endif  //  BUILDFLAG(IS_ANDROID)

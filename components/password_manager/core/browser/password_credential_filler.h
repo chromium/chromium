@@ -11,6 +11,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -41,6 +42,9 @@ class PasswordCredentialFiller {
 
   // Returns the frame URL this filler is interacting with.
   virtual GURL GetFrameUrl() const = 0;
+
+  // Returns the frame origin this filler is interacting with.
+  virtual url::Origin GetFrameOrigin() const = 0;
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() = 0;
