@@ -725,6 +725,41 @@ suite('ContextualActionMenu', () => {
     assertEquals(344, flyout.offsetHeight);
   });
 
+  test(
+      'Introduce scroll bar if space below plus menu button is < menu height',
+      async () => {
+    // Arrange: Provide 20 tab suggestions to ensure height exceeds 540px.
+    actionMenu.tabSuggestions = Array(20).fill({
+      tabId: 1,
+      title: 'Tab Item',
+      url: {url: 'about:blank'},
+      lastActiveTime: {internalValue: 0n},
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 0n},
+    });
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+      toolsSectionConfig: {header: ''},
+      modelSectionConfig: {header: ''},
+    });
+
+    // Act.
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    // Assert: Main menu should be open and its height constrained to 540px (or less if viewport is small).
+    const dialog = actionMenu.$.menu.getDialog();
+    assertTrue(actionMenu.$.menu.open);
+
+    const expectedMaxHeight = Math.min(540, window.innerHeight - 16);
+    assertEquals(expectedMaxHeight, dialog.offsetHeight);
+
+    const style = window.getComputedStyle(dialog);
+    assertEquals('auto', style.overflowY);
+    assertTrue(dialog.scrollHeight > dialog.offsetHeight);
+  });
+
   // TODO(crbug.com/512920161): Reenable this test on Linux and Mac
   // <if expr="not is_linux and not is_macosx">
   test('Share tabs flyout keyboard navigation', async () => {
