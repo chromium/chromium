@@ -164,11 +164,8 @@ void GlicSkillsManagerImpl::LaunchSkillsDialogWithTab(
     skills::Skill skill,
     skills::mojom::SkillsDialogType dialog_type,
     base::OnceCallback<void(bool)> callback) {
-  auto target = std::make_unique<glic::Target>();
-  target->surface = target_tab->GetHandle();
-  if (auto conv_id = instance_->conversation_id()) {
-    target->conversation = glic::ConversationId(*conv_id);
-  }
+  auto target = std::make_unique<glic::Target>(
+      instance_->GetInvokeTarget(/*fallback_surface=*/target_tab->GetHandle()));
   skills::SkillsDialogLauncher::CreateForTab(target_tab, std::move(skill),
                                              dialog_type, std::move(target),
                                              std::move(callback));
