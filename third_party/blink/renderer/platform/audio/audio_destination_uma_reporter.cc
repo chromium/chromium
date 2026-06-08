@@ -110,24 +110,24 @@ void AudioDestinationUmaReporter::Report() {
   if (++callback_count_ >= kMetricsReportCycle) {
     base::UmaHistogramCustomCounts(
         fifo_delay_histogram_name_,
-        base::checked_cast<int>(fifo_delay_sum_.InMilliseconds() /
-                                kMetricsReportCycle),
+        base::saturated_cast<int>(fifo_delay_sum_.InMilliseconds() /
+                                  kMetricsReportCycle),
         1, 1000, 50);
     base::UmaHistogramCustomCounts(
         fifo_delay_histogram_name_with_latency_tag_,
-        base::checked_cast<int>(fifo_delay_sum_.InMilliseconds() /
-                                kMetricsReportCycle),
+        base::saturated_cast<int>(fifo_delay_sum_.InMilliseconds() /
+                                  kMetricsReportCycle),
         1, 1000, 50);
 
     base::UmaHistogramCustomCounts(
         total_playout_delay_histogram_name_,
-        base::checked_cast<int>(total_playout_delay_sum_.InMilliseconds() /
-                                kMetricsReportCycle),
+        base::saturated_cast<int>(total_playout_delay_sum_.InMilliseconds() /
+                                  kMetricsReportCycle),
         1, 1000, 50);
     base::UmaHistogramCustomCounts(
         total_playout_delay_histogram_name_with_latency_tag_,
-        base::checked_cast<int>(total_playout_delay_sum_.InMilliseconds() /
-                                kMetricsReportCycle),
+        base::saturated_cast<int>(total_playout_delay_sum_.InMilliseconds() /
+                                  kMetricsReportCycle),
         1, 1000, 50);
 
     fifo_delay_sum_ = base::TimeDelta();
