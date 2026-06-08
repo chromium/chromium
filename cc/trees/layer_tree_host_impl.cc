@@ -686,15 +686,13 @@ bool LayerTreeHostImpl::CanDraw() const {
     return false;
   }
 
-  // TODO(boliu): Make draws without layers work and move this below
-  // |resourceless_software_draw_| check. Tracked in crbug.com/264967.
+  if (resourceless_software_draw_) {
+    return true;
+  }
+
   if (active_tree_->LayerListIsEmpty()) {
     TRACE_EVENT_INSTANT("cc", "LayerTreeHostImpl::CanDraw no root layer");
     return false;
-  }
-
-  if (resourceless_software_draw_) {
-    return true;
   }
 
   // Do not draw while evicted. Await the activation of a tree containing a
@@ -969,8 +967,17 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
                                                     bool expects_to_draw) {
   DCHECK(frame->render_passes.empty());
   DCHECK(CanDraw());
-  DCHECK(!active_tree_->LayerListIsEmpty());
   DCHECK(!expects_to_draw || settings_.trees_in_viz_in_viz_process);
+
+  if (active_tree_->LayerListIsEmpty()) {
+    // If there are no layers, we still need at least one render pass to draw.
+    auto pass = viz::CompositorRenderPass::Create();
+    gfx::Rect viewport_rect = active_tree_->GetDeviceViewport();
+    pass->SetNew(viz::CompositorRenderPassId{1}, viewport_rect, viewport_rect,
+                 gfx::Transform());
+    frame->render_passes.push_back(std::move(pass));
+    return DrawResult::kSuccess;
+  }
 
   // For now, we use damage tracking to compute a global scissor. To do this, we
   // must compute all damage tracking before drawing anything, so that we know

@@ -438,6 +438,31 @@ TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
   ASSERT_EQ(fake_layer_tree_frame_sink->num_sent_frames(), 1u);
 }
 
+TEST_P(CompositorFrameProducingLayerTreeHostImplTest,
+       ResourcelessDrawNoLayers) {
+  CreateHostImpl(DefaultSettings(), FakeLayerTreeFrameSink::CreateSoftware());
+
+  // No layers.
+  EXPECT_TRUE(host_impl_->active_tree()->LayerListIsEmpty());
+  // CanDraw should return false because there are no layers and we are not in
+  // resourceless draw mode yet.
+  EXPECT_FALSE(host_impl_->CanDraw());
+
+  auto* fake_layer_tree_frame_sink =
+      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
+  EXPECT_EQ(fake_layer_tree_frame_sink->num_sent_frames(), 0u);
+
+  gfx::Transform identity;
+  gfx::Rect viewport(100, 100);
+  const bool resourceless_software_draw = true;
+
+  // This should work now and send a frame because we support drawing without
+  // layers specifically for resourceless software draws.
+  host_impl_->OnDraw(identity, viewport, resourceless_software_draw, false);
+
+  EXPECT_EQ(fake_layer_tree_frame_sink->num_sent_frames(), 1u);
+}
+
 TEST_P(LayerTreeHostImplTest, ScrollDeltaNoLayers) {
   host_impl_->active_tree()->SetRootLayerForTesting(nullptr);
 

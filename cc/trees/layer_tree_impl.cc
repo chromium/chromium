@@ -1847,8 +1847,9 @@ bool LayerTreeImpl::UpdateDrawProperties(
   // possible to hit test even without a renderer.
   render_surface_list_.clear();
 
-  if (layer_list_.empty())
-    return false;
+  if (layer_list_.empty()) {
+    return true;
+  }
 
   {
     base::ElapsedTimer timer;
