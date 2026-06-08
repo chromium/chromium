@@ -1,7 +1,7 @@
 Name: Core
 Short Name: core
-URL: https://androidx.dev/snapshots/builds/15553726/artifacts/repository/androidx/core/core/1.19.0-SNAPSHOT/core-1.19.0-20260603.125618-1.aar
-Version: 1.19.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/core/core/1.19.0/core-1.19.0.aar
+Version: 1.19.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Provides backward-compatible implementations of Android platform APIs and features.
 
-See also: https://developer.android.com/jetpack/androidx/releases/core#1.19.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/core#1.19.0
 
 
 Local Modifications:

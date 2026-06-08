@@ -1,7 +1,7 @@
 Name: Core Kotlin Extensions
 Short Name: core-ktx
-URL: https://androidx.dev/snapshots/builds/15553726/artifacts/repository/androidx/core/core-ktx/1.19.0-SNAPSHOT/core-ktx-1.19.0-20260603.125618-1.aar
-Version: 1.19.0-SNAPSHOT
+URL: https://dl.google.com/dl/android/maven2/androidx/core/core-ktx/1.19.0/core-ktx-1.19.0.aar
+Version: 1.19.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Kotlin extensions for 'core' artifact
 
-See also: https://developer.android.com/jetpack/androidx/releases/core#1.19.0-SNAPSHOT
+See also: https://developer.android.com/jetpack/androidx/releases/core#1.19.0
 
 
 Local Modifications:

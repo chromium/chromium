@@ -523,7 +523,7 @@
 
 # File: obj/third_party/androidx/androidx_compose_animation_animation_android_java/proguard.txt
 -assumevalues class androidx.compose.animation.IsLookaheadAnimationVisualDebuggingEnabledKt {
-    boolean isLookaheadAnimationVisualDebuggingEnabled return false;
+    boolean isLookaheadAnimationVisualDebuggingEnabledDefault return false;
 }
 
 -assumenosideeffects class * {
