@@ -2364,6 +2364,119 @@ TEST_P(SQLDatabaseTest, CheckpointDatabase) {
   EXPECT_THAT(base::GetFileSize(wal_path), Optional(0));
 }
 
+TEST_P(SQLDatabaseTest, CheckpointDatabaseInDeferredTransaction) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP();
+  }
+
+  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (id)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (1)"));
+
+  base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+
+  // Run a checkpoint in a deferred transaction.
+  {
+    EXPECT_THAT(GetUncheckpointedFrameCount(*db_), ValueIs(Gt(0)));
+
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_TRUE(db_->CheckpointDatabase());
+    transaction.Rollback();
+
+    EXPECT_THAT(GetUncheckpointedFrameCount(*db_), ValueIs(0));
+  }
+
+  // Truncate the WAL file in a deferred transaction.
+  {
+    EXPECT_THAT(base::GetFileSize(wal_path), Optional(Gt(0)));
+
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_TRUE(db_->CheckpointDatabase(/*truncate=*/true));
+    transaction.Rollback();
+
+    EXPECT_THAT(base::GetFileSize(wal_path), Optional(0));
+  }
+}
+
+TEST_P(SQLDatabaseTest, CheckpointDatabaseInReadTransaction) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP();
+  }
+
+  base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (id)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (1)"));
+
+  ASSERT_OK_AND_ASSIGN(int64_t wal_size, base::GetFileSize(wal_path));
+  ASSERT_OK_AND_ASSIGN(int64_t wal_frames, GetUncheckpointedFrameCount(*db_));
+
+  // Try to checkpoint in a read transaction.
+  {
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT COUNT(*) FROM foo"), "1");
+    EXPECT_FALSE(db_->CheckpointDatabase());
+    transaction.Rollback();
+
+    // Checkpoint failed and left the WAL files untouched.
+    EXPECT_THAT(base::GetFileSize(wal_path), Optional(wal_size));
+    EXPECT_THAT(GetUncheckpointedFrameCount(*db_), ValueIs(wal_frames));
+  }
+
+  // Try to checkpoint and truncate in a read transaction.
+  {
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_EQ(ExecuteWithResult(db_.get(), "SELECT COUNT(*) FROM foo"), "1");
+    EXPECT_FALSE(db_->CheckpointDatabase(/*truncate=*/true));
+    transaction.Rollback();
+
+    // Checkpoint failed and left the WAL files untouched.
+    EXPECT_THAT(base::GetFileSize(wal_path), Optional(wal_size));
+    EXPECT_THAT(GetUncheckpointedFrameCount(*db_), ValueIs(wal_frames));
+  }
+}
+
+TEST_P(SQLDatabaseTest, CheckpointDatabaseInWriteTransaction) {
+  if (!IsWALEnabled()) {
+    GTEST_SKIP();
+  }
+
+  base::FilePath wal_path = Database::WriteAheadLogPath(db_path_);
+  ASSERT_TRUE(db_->Execute("CREATE TABLE foo (id)"));
+  ASSERT_TRUE(db_->Execute("INSERT INTO foo VALUES (1)"));
+
+  ASSERT_OK_AND_ASSIGN(int64_t wal_size, base::GetFileSize(wal_path));
+  ASSERT_OK_AND_ASSIGN(int64_t wal_frames, GetUncheckpointedFrameCount(*db_));
+
+  // Try to checkpoint in a write transaction.
+  {
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_TRUE(db_->Execute("INSERT INTO foo VALUES (3)"));
+    EXPECT_FALSE(db_->CheckpointDatabase());
+    transaction.Rollback();
+
+    // Checkpoint failed and left the WAL files untouched.
+    EXPECT_THAT(base::GetFileSize(wal_path), Optional(wal_size));
+    EXPECT_THAT(GetUncheckpointedFrameCount(*db_), ValueIs(wal_frames));
+  }
+
+  // Try to checkpoint and truncate in a write transaction.
+  {
+    Transaction transaction(db_.get());
+    ASSERT_TRUE(transaction.Begin());
+    EXPECT_TRUE(db_->Execute("INSERT INTO foo VALUES (4)"));
+    EXPECT_FALSE(db_->CheckpointDatabase(/*truncate=*/true));
+    transaction.Rollback();
+
+    // Checkpoint failed and left the WAL files untouched.
+    EXPECT_THAT(base::GetFileSize(wal_path), Optional(wal_size));
+    EXPECT_THAT(GetUncheckpointedFrameCount(*db_), ValueIs(wal_frames));
+  }
+}
+
 TEST_P(SQLDatabaseTest, WALCommitCallback) {
   if (!IsWALEnabled()) {
     GTEST_SKIP() << "WAL mode not enabled";
