@@ -175,6 +175,8 @@ component("cpp") {
     "url_util.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
+    "websocket_utils.cc",
+    "websocket_utils.h",
     "wrapper_shared_url_loader_factory.cc",
     "wrapper_shared_url_loader_factory.h",
     "x_frame_options_parser.cc",
@@ -914,6 +916,7 @@ source_set("tests") {
     "url_request_mojom_traits_unittest.cc",
     "url_util_unittest.cc",
     "web_sandbox_flags_unittest.cc",
+    "websocket_utils_unittest.cc",
     "x_frame_options_parser_unittest.cc",
   ]
 
