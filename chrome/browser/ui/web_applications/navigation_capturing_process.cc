@@ -136,12 +136,6 @@ Browser* CreateWebAppWindowFromNavigationParams(
   return created_browser;
 }
 
-// TODO(crbug.com/371237535): Move to TabInterface once there is support for
-// getting the browser interface for web contents that are in an app window.
-// For all use-cases where a reparenting to an app window happens, launch params
-// need to be enqueued so as to mimic the pre redirection behavior. See
-// https://bit.ly/pwa-navigation-capturing?tab=t.0#bookmark=id.60x2trlfg6iq for
-// more information.
 void ReparentToAppBrowser(content::WebContents* old_web_contents,
                           const webapps::AppId& app_id,
                           blink::mojom::DisplayMode target_display_mode,
@@ -153,9 +147,9 @@ void ReparentToAppBrowser(content::WebContents* old_web_contents,
       app_id,
       WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp()));
 
-  BrowserWindowInterface* main_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          old_web_contents);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(old_web_contents);
+  BrowserWindowInterface* main_browser = tab->GetBrowserWindowInterface();
   BrowserWindowInterface* target_browser = nullptr;
   if (target_display_mode == blink::mojom::DisplayMode::kTabbed) {
     target_browser =
@@ -183,14 +177,13 @@ void ReparentToAppBrowser(content::WebContents* old_web_contents,
   CHECK(old_web_contents);
 }
 
-// TODO(crbug.com/371237535): Move to TabInterface once there is support for
-// getting the browser interface for web contents that are in an app window.
 void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
                                         WindowOpenDisposition disposition,
                                         Browser* navigate_params_browser) {
-  BrowserWindowInterface* source_browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-          old_web_contents);
+  tabs::TabInterface* tab =
+      tabs::TabInterface::GetFromContents(old_web_contents);
+  BrowserWindowInterface* source_browser = tab->GetBrowserWindowInterface();
+  CHECK(source_browser);
 
   // Cannot reparent contents to browser from Isolated Web App.
   // This will never be called, because redirect chain stops when it encounters
