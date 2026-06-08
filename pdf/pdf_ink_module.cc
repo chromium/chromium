@@ -1744,7 +1744,9 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   } else if (source == "undo") {
     // This assumes `HandleAnnotationUndoMessage()` for this undo action has not
     // been called yet.
-    new_id = undo_redo_model_.GetUndoInkTextId().value();
+    const TextId text_id = undo_redo_model_.GetUndoTextId().value();
+    CHECK(std::holds_alternative<InkTextId>(text_id));
+    new_id = std::get<InkTextId>(text_id);
   } else {
     // This assumes `HandleAnnotationRedoMessage()` for this redo action has not
     // been called yet.
