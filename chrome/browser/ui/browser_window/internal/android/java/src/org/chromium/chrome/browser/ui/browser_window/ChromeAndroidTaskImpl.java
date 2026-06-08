@@ -542,7 +542,8 @@ final class ChromeAndroidTaskImpl
         // AppTask can be null when ChromeAndroidTask is for a CCT window. Please see
         // http://crbug.com/468113288 for details.
         var activity = topActivityScopedObjects.mActivity;
-        var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        var appTask =
+                AndroidTaskUtils.getAppTaskFromId(activity, ApplicationStatus.getTaskId(activity));
         if (appTask == null) {
             Log.w(TAG, "Unable to set bounds: null AppTask");
             return WindowResizePrecheckResult.NULL_APP_TASK;
@@ -561,7 +562,7 @@ final class ChromeAndroidTaskImpl
 
     ChromeAndroidTaskImpl(ActivityScopedObjects activityScopedObjects) {
         Activity activity = getActivity(activityScopedObjects.mActivityWindowAndroid);
-        mId = activity.getTaskId();
+        mId = ApplicationStatus.getTaskId(activity);
 
         Profile initialProfile =
                 activityScopedObjects.mTabModelSelector.getCurrentModel().getProfile();
@@ -630,7 +631,7 @@ final class ChromeAndroidTaskImpl
         mWindowStateManager.update(
                 topActivityScopedObjects.mActivity,
                 topActivityScopedObjects.mActivityWindowAndroid.getDisplay());
-        mId = topActivityScopedObjects.mActivity.getTaskId();
+        mId = ApplicationStatus.getTaskId(topActivityScopedObjects.mActivity);
         @Nullable Rect futureBounds = mPendingActionManager.getFutureBoundsInDp();
         @Nullable Rect futureRestoredBounds = mPendingActionManager.getFutureRestoredBoundsInDp();
         mState = State.IDLE;
@@ -1329,7 +1330,7 @@ final class ChromeAndroidTaskImpl
         assert profile != null;
         if (mState == State.IDLE) {
             assert mId != null;
-            assert mId == getActivity(activityWindowAndroid).getTaskId()
+            assert mId == ApplicationStatus.getTaskId(getActivity(activityWindowAndroid))
                     : "The new ActivityWindowAndroid doesn't belong to this Task.";
         } else {
             assert mId == null;
@@ -1680,7 +1681,8 @@ final class ChromeAndroidTaskImpl
         int displayId = topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayId();
 
         var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
-        var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        var appTask =
+                AndroidTaskUtils.getAppTaskFromId(activity, ApplicationStatus.getTaskId(activity));
         assert aconfigFlaggedApiDelegate != null && appTask != null
                 : "use canResizeInternal() to prevent null values";
 
@@ -1710,7 +1712,8 @@ final class ChromeAndroidTaskImpl
             var activity = topActivityScopedObjects.mActivity;
             mPendingActionManager.requestAction(PendingAction.SHOW);
             mState = State.PENDING_UPDATE;
-            ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
+            ApiCompatibilityUtils.moveTaskToFront(
+                    activity, ApplicationStatus.getTaskId(activity), 0);
         }
     }
 
@@ -1718,7 +1721,7 @@ final class ChromeAndroidTaskImpl
         var activity = topActivityScopedObjects.mActivity;
         mPendingActionManager.requestAction(PendingAction.ACTIVATE);
         mState = State.PENDING_UPDATE;
-        ApiCompatibilityUtils.moveTaskToFront(activity, activity.getTaskId(), 0);
+        ApiCompatibilityUtils.moveTaskToFront(activity, ApplicationStatus.getTaskId(activity), 0);
     }
 
     @RequiresApi(api = VERSION_CODES.R)
@@ -1866,7 +1869,8 @@ final class ChromeAndroidTaskImpl
                     if (VERSION.SDK_INT < VERSION_CODES.R) {
                         isTaskVisible =
                                 ApplicationStatus.isTaskVisible(
-                                        activityScopedObjects.mActivity.getTaskId());
+                                        ApplicationStatus.getTaskId(
+                                                activityScopedObjects.mActivity));
                     } else {
                         isTaskVisible =
                                 mWindowStateManager.getWindowState() != WindowState.MINIMIZED;

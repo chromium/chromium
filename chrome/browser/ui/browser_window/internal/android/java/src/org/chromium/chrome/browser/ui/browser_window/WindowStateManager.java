@@ -169,7 +169,7 @@ final class WindowStateManager {
     }
 
     private static boolean isMinimized(Activity activity) {
-        return !ApplicationStatus.isTaskVisible(activity.getTaskId());
+        return !ApplicationStatus.isTaskVisible(ApplicationStatus.getTaskId(activity));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.R)
