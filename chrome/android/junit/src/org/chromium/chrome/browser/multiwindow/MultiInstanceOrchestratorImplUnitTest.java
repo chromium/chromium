@@ -338,14 +338,9 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testMoveTabsToNewWindow_validInput_opensAdjacently() {
+    public void testMoveTabsToNewWindow_validInput() {
         // Setup.
         List<Tab> tabs = List.of(mTab1, mTab2);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
@@ -366,70 +361,10 @@ public class MultiInstanceOrchestratorImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testMoveTabsToNewWindow_validInput_opensFullScreen() {
-        // Setup.
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                false);
-
-        // Act.
-        mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                mTabbedActivity1,
-                tabs,
-                /* finalizeCallback= */ null,
-                NewWindowAppSource.KEYBOARD_SHORTCUT);
-
-        // Verify.
-        verify(mTabReparentingDelegate)
-                .reparentTabsToNewWindow(
-                        mTabbedActivity1,
-                        tabs,
-                        INVALID_WINDOW_ID,
-                        /* openAdjacently= */ false,
-                        /* finalizeCallback= */ null,
-                        NewWindowAppSource.KEYBOARD_SHORTCUT);
-    }
-
-    @Test
     public void testMoveTabsToNewWindow_sourceWindowEmpty_opensFullScreen() {
         // Setup.
         List<Tab> tabs = List.of(mTab1, mTab2);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
         when(mTabModelSelector1.getTotalTabCount()).thenReturn(2);
-
-        // Act.
-        mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                mTabbedActivity1,
-                tabs,
-                /* finalizeCallback= */ null,
-                NewWindowAppSource.KEYBOARD_SHORTCUT);
-
-        // Verify.
-        verify(mTabReparentingDelegate)
-                .reparentTabsToNewWindow(
-                        mTabbedActivity1,
-                        tabs,
-                        INVALID_WINDOW_ID,
-                        /* openAdjacently= */ false,
-                        /* finalizeCallback= */ null,
-                        NewWindowAppSource.KEYBOARD_SHORTCUT);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testMoveTabsToNewWindow_inMultiWindowMode_opensAdjacently() {
-        // Setup.
-        List<Tab> tabs = List.of(mTab1, mTab2);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                false);
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
@@ -698,10 +633,6 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Test
     public void testMoveTabGroupToNewWindow_sourceWindowEmpty_opensFullScreen() {
         // Setup.
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
         when(mTabModelSelector1.getTotalTabCount()).thenReturn(2);
 
         // Act.
@@ -788,10 +719,6 @@ public class MultiInstanceOrchestratorImplUnitTest {
             testMoveTabGroupToWindowByIdChecked_withDestroyedActivity_sourceWindowEmpty_opensFullScreen() {
         // Setup.
         MultiWindowUtils.setActivityByWindowIdForTesting(DEST_WINDOW_ID, /* activity= */ null);
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
         when(mTabModelSelector1.getTotalTabCount()).thenReturn(2);
 
         // Act.

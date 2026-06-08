@@ -67,7 +67,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -140,7 +139,6 @@ import java.util.stream.Collectors;
     ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH,
     ChromeFeatureList.INCOGNITO_AS_WINDOW_FULL_SCREEN
 })
-@DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
     private static final int INSTANCE_ID_2 = 2;
@@ -1600,13 +1598,8 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testOpenWindow_opensAdjacently_WithRobustWindowManagementExperimental() {
+    public void testOpenWindow() {
         setupTwoInstances();
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                true);
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
 
         mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
@@ -1622,32 +1615,6 @@ public class MultiInstanceManagerApi31UnitTest {
         int flags = intent.getFlags();
         assertTrue(
                 "FLAG_ACTIVITY_LAUNCH_ADJACENT should be set.",
-                (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void testOpenWindow_opensFullScreen_WithRobustWindowManagementExperimental() {
-        setupTwoInstances();
-        FeatureOverrides.overrideParam(
-                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
-                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
-                false);
-        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
-
-        mMultiInstanceManager.openWindow(INSTANCE_ID_2, NewWindowAppSource.WINDOW_MANAGER);
-
-        verify(mCurrentActivity).startActivity(intentCaptor.capture());
-        Intent intent = intentCaptor.getValue();
-        assertEquals(
-                "New window source extra is incorrect.",
-                NewWindowAppSource.WINDOW_MANAGER,
-                intent.getIntExtra(
-                        IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.UNKNOWN));
-        assertNotEquals("Intent should not be null.", null, intent);
-        int flags = intent.getFlags();
-        assertFalse(
-                "FLAG_ACTIVITY_LAUNCH_ADJACENT should not be set.",
                 (flags & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
     }
 

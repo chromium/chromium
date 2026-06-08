@@ -649,10 +649,6 @@ public class ToolbarTest {
 
     @Test
     @LargeTest
-    // Disable opening windows side-by-side because home button might not show up on small windows.
-    @EnableFeatures({
-        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL + ":open_adjacently/false"
-    })
     @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
     @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testHomeButton_loadsNtpOnSameTab() {
