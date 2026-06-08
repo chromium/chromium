@@ -13,7 +13,9 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/keywords.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -36,6 +38,8 @@ class SampleCommand final : public CompositeEditCommand {
                       const VisiblePosition& end_of_paragraph_to_move,
                       const VisiblePosition& destination,
                       EditingState* editing_state);
+  void CleanupAfterDeletion(EditingState*);
+  void CleanupAfterDeletion(EditingState*, const Position& destination);
 
   // CompositeEditCommand member implementations
   void DoApply(EditingState*) final {}
@@ -79,6 +83,15 @@ void SampleCommand::MoveParagraphs(
   CompositeEditCommand::MoveParagraphs(start_of_paragraph_to_move,
                                        end_of_paragraph_to_move, destination,
                                        editing_state);
+}
+
+void SampleCommand::CleanupAfterDeletion(EditingState* editing_state) {
+  CompositeEditCommand::CleanupAfterDeletion(editing_state);
+}
+
+void SampleCommand::CleanupAfterDeletion(EditingState* editing_state,
+                                         const Position& destination) {
+  CompositeEditCommand::CleanupAfterDeletion(editing_state, destination);
 }
 
 }  // namespace
@@ -343,6 +356,62 @@ TEST_F(CompositeEditCommandTest, DomLaneSeedsFromRawDomSelection) {
   SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
   EXPECT_EQ(raw, sample.StartingDomSelection().Anchor());
   EXPECT_NE(raw, sample.StartingSelection().Anchor());
+}
+
+TEST_F(CompositeEditCommandTest, CleanupAfterDeletionNullDestinationDomApi) {
+  ScopedEditingUseDomPositionApiForTest scoped_dom_position(true);
+
+  SetBodyContent("<div contenteditable><p><br></p>after</div>");
+  Element* p = QuerySelector("p");
+  HTMLBRElement* br = To<HTMLBRElement>(p->firstChild());
+
+  Selection().SetSelection(
+      SelectionInDomTree::Builder().Collapse(Position::BeforeNode(*br)).Build(),
+      SetSelectionOptions());
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  EditingState editing_state;
+
+  // Should not crash and should remove the BR placeholder along with the now
+  // empty <p>.
+  sample.CleanupAfterDeletion(&editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<div contenteditable=\"\">after</div>",
+            GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(CompositeEditCommandTest, CleanupAfterDeletionNonNullDestinationDomApi) {
+  ScopedEditingUseDomPositionApiForTest scoped_dom_position(true);
+
+  SetBodyContent(
+      "<div contenteditable>"
+      "<p id='src'><br></p>"
+      "<p id='dst'>destination</p>"
+      "</div>");
+  Element* src = GetElementById("src");
+  Element* dst = GetElementById("dst");
+  HTMLBRElement* br = To<HTMLBRElement>(src->firstChild());
+
+  Selection().SetSelection(
+      SelectionInDomTree::Builder().Collapse(Position::BeforeNode(*br)).Build(),
+      SetSelectionOptions());
+
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  EditingState editing_state;
+
+  // Destination is the first text position of the second paragraph.
+  const Position destination(dst->firstChild(), 0);
+
+  // Should not crash. The source paragraph's BR placeholder and the now
+  // empty <p id='src'> should be pruned; the destination paragraph is left
+  // intact.
+  sample.CleanupAfterDeletion(&editing_state, destination);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ(
+      "<div contenteditable=\"\">"
+      "<p id=\"dst\">destination</p>"
+      "</div>",
+      GetDocument().body()->GetInnerHTMLString());
 }
 
 }  // namespace blink

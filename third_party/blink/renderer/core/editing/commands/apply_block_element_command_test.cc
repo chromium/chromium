@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/editing/commands/format_block_command.h"
@@ -15,8 +17,7 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-
-#include <memory>
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -366,6 +367,58 @@ TEST_F(ApplyBlockElementCommandTest, SplitTextNodeWithJustNewline) {
   ASSERT_TRUE(format_block->Apply());
   EXPECT_EQ("<pre contenteditable><b><div>|X</div>\n</b></pre>",
             GetSelectionTextFromBody());
+}
+
+TEST_F(ApplyBlockElementCommandTest, IndentHeadingIntoBlockquoteDomApi) {
+  ScopedEditingUseDomPositionApiForTest scoped_dom_position(true);
+
+  SetBodyContent(
+      "<div contenteditable=\"true\">"
+      "<h6><button><table></table></button></h6>"
+      "<object></object>"
+      "</div>");
+  Element* button = QuerySelector("button");
+  Element* object = QuerySelector("object");
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(button, 0))
+                               .Extend(Position(object, 0))
+                               .Build(),
+                           SetSelectionOptions());
+
+  auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+  command->Apply();
+
+  EXPECT_EQ(
+      "<div contenteditable=\"true\">"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "<h6><button></button></h6>"
+      "<h6><button><table></table></button></h6>"
+      "</blockquote>"
+      "<br>"
+      "<object></object>"
+      "</div>",
+      GetDocument().body()->GetInnerHTMLString());
+}
+
+TEST_F(ApplyBlockElementCommandTest,
+       FormatBlockWithTableCrossingUserModifyBoundaryDomApi) {
+  ScopedEditingUseDomPositionApiForTest scoped_dom_position(true);
+
+  InsertStyleElement("*{-webkit-user-modify:read-write}");
+  Selection().SetSelection(
+      SetSelectionTextToBody("^<table></table>"
+                             "<kbd "
+                             "style=\"-webkit-user-modify:read-only\"><button><"
+                             "/button></kbd>|"),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
+                                                           html_names::kPreTag);
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<pre><table>|</table></pre>"
+      "<kbd style=\"-webkit-user-modify:read-only\"><button></button></kbd>",
+      GetSelectionTextFromBody());
 }
 
 }  // namespace blink

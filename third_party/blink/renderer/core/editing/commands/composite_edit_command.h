@@ -240,6 +240,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
                                      Element* block_element,
                                      EditingState*);
   void CleanupAfterDeletion(EditingState*, VisiblePosition destination);
+  void CleanupAfterDeletion(EditingState*, const Position& destination);
   void CleanupAfterDeletion(EditingState*);
 
   bool BreakOutOfEmptyListItem(EditingState*);

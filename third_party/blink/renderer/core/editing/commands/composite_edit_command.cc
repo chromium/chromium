@@ -1327,7 +1327,11 @@ void CompositeEditCommand::CloneParagraphUnderNewElement(
 // empty or unrendered parents).
 
 void CompositeEditCommand::CleanupAfterDeletion(EditingState* editing_state) {
-  CleanupAfterDeletion(editing_state, VisiblePosition());
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    CleanupAfterDeletion(editing_state, Position());
+  } else {
+    CleanupAfterDeletion(editing_state, VisiblePosition());
+  }
 }
 
 void CompositeEditCommand::CleanupAfterDeletion(EditingState* editing_state,
@@ -1375,6 +1379,63 @@ void CompositeEditCommand::CleanupAfterDeletion(EditingState* editing_state,
       else
         DeleteTextFromNode(text_node, position.ComputeOffsetInContainerNode(),
                            1);
+    }
+  }
+}
+
+void CompositeEditCommand::CleanupAfterDeletion(EditingState* editing_state,
+                                                const Position& destination) {
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+
+  const VisiblePosition caret_after_delete =
+      EndingVisibleSelection().VisibleStart();
+  const Position caret_position = caret_after_delete.DeepEquivalent();
+  Node* destination_node = destination.AnchorNode();
+  if (caret_position != destination && IsStartOfParagraph(caret_after_delete) &&
+      IsEndOfParagraph(caret_after_delete)) {
+    // Note: We want the rightmost candidate.
+    Position position = MostForwardCaretPosition(caret_position);
+    if (position.IsNull()) {
+      return;
+    }
+    Node* node = position.AnchorNode();
+    if (!node) {
+      return;
+    }
+
+    // InsertListCommandTest.CleanupNodeSameAsDestinationNode reaches here.
+    ABORT_EDITING_COMMAND_IF(destination_node == node);
+    // Bail if we'd remove an ancestor of our destination.
+    if (destination_node && destination_node->IsDescendantOf(node)) {
+      return;
+    }
+
+    // Normally deletion will leave a br as a placeholder.
+    if (IsA<HTMLBRElement>(*node)) {
+      RemoveNodeAndPruneAncestors(node, editing_state, destination_node);
+
+      // If the selection to move was empty and in an empty block that
+      // doesn't require a placeholder to prop itself open (like a bordered
+      // div or an li), remove it during the move (the list removal code
+      // expects this behavior).
+    } else if (IsEnclosingBlock(node)) {
+      // If caret position after deletion and destination position coincides,
+      // node should not be removed.
+      if (!RendersInDifferentPosition(position, destination)) {
+        Prune(node, editing_state, destination_node);
+        return;
+      }
+      RemoveNodeAndPruneAncestors(node, editing_state, destination_node);
+    } else if (LineBreakExistsAtPosition(position)) {
+      // There is a preserved '\n' at caretAfterDelete.
+      // We can safely assume this is a text node.
+      auto* text_node = To<Text>(node);
+      if (text_node->length() == 1) {
+        RemoveNodeAndPruneAncestors(node, editing_state, destination_node);
+      } else {
+        DeleteTextFromNode(text_node, position.ComputeOffsetInContainerNode(),
+                           1);
+      }
     }
   }
 }
@@ -1667,7 +1728,11 @@ void CompositeEditCommand::MoveParagraphs(
   }
 
   DCHECK(destination.DeepEquivalent().IsConnected()) << destination;
-  CleanupAfterDeletion(editing_state, destination);
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    CleanupAfterDeletion(editing_state, destination.DeepEquivalent());
+  } else {
+    CleanupAfterDeletion(editing_state, destination);
+  }
   if (editing_state->IsAborted())
     return;
   DCHECK(destination.DeepEquivalent().IsConnected()) << destination;
