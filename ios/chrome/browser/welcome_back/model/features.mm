@@ -14,12 +14,19 @@
 BASE_FEATURE(kWelcomeBack, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kWelcomeBackParam[] = "WelcomeBackParam";
+const char kWelcomeBackUseActiveDaysParam[] = "UseActiveDays";
 
 BASE_FEATURE_PARAM(int,
                    kWelcomeBackParamFeature,
                    &kWelcomeBack,
                    kWelcomeBackParam,
                    1);
+
+BASE_FEATURE_PARAM(bool,
+                   kWelcomeBackUseActiveDays,
+                   &kWelcomeBack,
+                   kWelcomeBackUseActiveDaysParam,
+                   false);
 
 bool IsWelcomeBackEnabled() {
   return base::FeatureList::IsEnabled(kWelcomeBack) &&
@@ -40,4 +47,8 @@ WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType() {
   }
   return static_cast<WelcomeBackScreenVariationType>(
       kWelcomeBackParamFeature.Get());
+}
+
+bool ShouldWelcomeBackUseActiveDays() {
+  return kWelcomeBackUseActiveDays.Get();
 }

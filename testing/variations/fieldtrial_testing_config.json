@@ -26909,6 +26909,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "UseActiveDays": "true",
                         "WelcomeBackParam": "1"
                     },
                     "enable_features": [

@@ -20,7 +20,14 @@ enum class WelcomeBackPromoRegistrationResult {
   // install (first run) where no previous session exists, or if the previous
   // session info was cleared or failed to load on startup.
   kFailureSessionEndTimeNil = 3,
-  kMaxValue = kFailureSessionEndTimeNil,
+  // The first run has not completed.
+  kFailureFirstRun = 4,
+  // The Feature Engagement Tracker failed to retrieve the active days count.
+  kFailureTrackerInitialization = 5,
+  // The user is not a resurrected user (has not had the app installed for 28+
+  // days).
+  kFailureNotResurrectedUser = 6,
+  kMaxValue = kFailureNotResurrectedUser,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
