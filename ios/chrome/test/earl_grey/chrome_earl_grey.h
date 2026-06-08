@@ -846,6 +846,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether Chrome Next is enabled.
 - (BOOL)isChromeNextEnabled;
 
+// Returns whether the Chrome Next Share Icon is visible.
+- (BOOL)isChromeNextShareIconVisible;
+
 // Returns YES if the view with `accessibilityID` or any of its ancestors is
 // animating.
 - (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;

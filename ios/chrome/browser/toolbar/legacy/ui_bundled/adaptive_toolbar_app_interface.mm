@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/infobars/ui_bundled/test_infobar_delegate.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/testing/nserror_util.h"
 
 @implementation AdaptiveToolbarAppInterface
 
@@ -17,20 +16,6 @@
       InfoBarManagerImpl::FromWebState(chrome_test_util::GetCurrentWebState());
   TestInfoBarDelegate* test_infobar_delegate = new TestInfoBarDelegate(title);
   return test_infobar_delegate->Create(manager);
-}
-
-+ (UITraitCollection*)changeTraitCollection:(UITraitCollection*)traitCollection
-                          forViewController:(UIViewController*)viewController {
-  // Change the orientation or the trait collection.
-  for (UIViewController* child in viewController.childViewControllers) {
-    child.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-  }
-
-  return [UITraitCollection
-      traitCollectionWithTraits:^(id<UIMutableTraits> mutableTraits) {
-        mutableTraits.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-      }];
-  ;
 }
 
 @end

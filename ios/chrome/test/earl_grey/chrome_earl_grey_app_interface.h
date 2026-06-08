@@ -623,6 +623,9 @@ enum class TipsNotificationType;
 // Returns whether chrome next is enabled.
 + (BOOL)isChromeNextEnabled;
 
+// Returns whether the chrome next share icon is visible.
++ (BOOL)isChromeNextShareIconVisible;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

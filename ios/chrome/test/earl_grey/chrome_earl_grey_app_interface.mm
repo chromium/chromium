@@ -1455,6 +1455,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsChromeNextIaEnabled();
 }
 
++ (BOOL)isChromeNextShareIconVisible {
+  return IsChromeNextIaShareIconVisible();
+}
+
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {

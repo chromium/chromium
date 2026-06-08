@@ -149,11 +149,12 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
 
   view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
 
-  [self
+  [view
       registerForTraitChanges:
           @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
-                   withAction:@selector(onSystemTraitChange)];
-  [self onSystemTraitChange];
+                   withTarget:self
+                       action:@selector(viewTraitDidChange)];
+  [self viewTraitDidChange];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -411,11 +412,14 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   _sideAppContentTopConstraint.constant = constant;
 }
 
-// Updates the layout state when system traits change.
-- (void)onSystemTraitChange {
+// Called when the view's trait collection changes.
+- (void)viewTraitDidChange {
   self.layoutState.containedLayoutSupported =
-      IsSidePanelLayout(self.traitCollection);
+      IsSidePanelLayout(self.view.traitCollection);
   self.layoutState.windowedMode = IsWindowedMode(self.view.window);
+  if (IsChromeNextIaEnabled()) {
+    [self.layoutState updateAppBarPositionWithView:self.view coordinator:nil];
+  }
 }
 
 // Helper to update app content constraints for panel layout.

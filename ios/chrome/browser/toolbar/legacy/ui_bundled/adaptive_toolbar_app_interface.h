@@ -16,11 +16,6 @@
 // indicating why the operation failed.
 + (BOOL)addInfobarWithTitle:(NSString*)title;
 
-// Change the trait collection to compact width and returns the new trait
-// collection.
-+ (UITraitCollection*)changeTraitCollection:(UITraitCollection*)traitCollection
-                          forViewController:(UIViewController*)viewController;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_APP_INTERFACE_H_
