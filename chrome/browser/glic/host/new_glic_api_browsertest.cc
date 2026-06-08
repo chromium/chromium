@@ -10,7 +10,9 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
@@ -929,6 +931,7 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testDoNothing) {
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testProcessCounterAbuseVerdict) {
+  glic::GlicHistogramTester histogram_tester;
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 
@@ -939,6 +942,14 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testProcessCounterAbuseVerdict) {
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return chrome_browser_interstitials::IsShowingInterstitial(active_contents);
   }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Api.ProcessCounterAbuseVerdict.Result",
+      static_cast<int>(glic::GlicProcessCounterAbuseVerdictResult::kSuccess),
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Api.ProcessCounterAbuseVerdict.ThreatType",
+      static_cast<int>(glic::mojom::SbThreatType::kSocialEngineering), 1);
 }
 
 // TODO(harringtond): Flaky on windows.

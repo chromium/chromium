@@ -699,6 +699,21 @@ found in the LICENSE file.
   </div>
   <div class="section">
     <h1>Counter Abuse Verdict</h1>
+    <label>
+      Show Interstitial:
+      <input id="counterAbuseShowInterstitial" type="checkbox" checked />
+    </label>
+    <br />
+    <label>
+      Threat Type:
+      <select id="counterAbuseThreatType">
+        <option value="UNSPECIFIED">UNSPECIFIED</option>
+        <option value="SOCIAL_ENGINEERING">SOCIAL_ENGINEERING</option>
+        <option value="MALWARE">MALWARE</option>
+        <option value="UNWANTED_SOFTWARE">UNWANTED_SOFTWARE</option>
+      </select>
+    </label>
+    <br />
     <button id="processCounterAbuseVerdictTestEngageBtn">Trigger Verdict</button>
   </div>
   <br />

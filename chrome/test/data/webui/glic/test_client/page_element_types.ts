@@ -193,6 +193,8 @@ export interface PageElementTypes {
   stressTestEngageRetainBtn: HTMLButtonElement;
   invocationLog: HTMLDivElement;
   clearInvocationLog: HTMLButtonElement;
+  counterAbuseShowInterstitial: HTMLInputElement;
+  counterAbuseThreatType: HTMLSelectElement;
   processCounterAbuseVerdictTestEngageBtn: HTMLButtonElement;
 }
 

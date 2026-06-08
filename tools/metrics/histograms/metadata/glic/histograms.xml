@@ -295,6 +295,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Api.ProcessCounterAbuseVerdict.Result"
+    enum="GlicProcessCounterAbuseVerdictResult" expires_after="2027-06-01">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the outcome of processing a counter-abuse verdict in Glic. Recorded
+    for each call to ProcessCounterAbuseVerdict, except when the feature is
+    disabled, the tab/contents are not found, or the Safe Browsing service is
+    unavailable.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Api.ProcessCounterAbuseVerdict.ThreatType"
+    enum="GlicSbThreatType" expires_after="2027-06-01">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the threat type of the counter-abuse verdict when an interstitial is
+    actually shown. Recorded after all filtering (URL matching,
+    show_interstitial check, and allowlist check) has passed.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.RequestCounts.{ApiRequestType}"
     enum="GlicRequestEvent" expires_after="2026-09-27">
   <owner>carlosk@chromium.org</owner>

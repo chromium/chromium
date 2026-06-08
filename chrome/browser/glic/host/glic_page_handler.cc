@@ -1261,9 +1261,15 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       return;
     }
     if (!verdict || !verdict->sb_verdict_result) {
+      base::UmaHistogramEnumeration(
+          "Glic.Api.ProcessCounterAbuseVerdict.Result",
+          GlicProcessCounterAbuseVerdictResult::kInvalidVerdict);
       return;
     }
     if (!verdict->sb_verdict_result->show_interstitial) {
+      base::UmaHistogramEnumeration(
+          "Glic.Api.ProcessCounterAbuseVerdict.Result",
+          GlicProcessCounterAbuseVerdictResult::kNoInterstitialRequested);
       return;
     }
 
@@ -1277,6 +1283,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
     GURL active_url = contents->GetVisibleURL();
     if (GURL(verdict->sb_verdict_result->url) != active_url) {
+      base::UmaHistogramEnumeration(
+          "Glic.Api.ProcessCounterAbuseVerdict.Result",
+          GlicProcessCounterAbuseVerdictResult::kUrlMismatch);
       return;
     }
     if (!g_browser_process->safe_browsing_service()) {
@@ -1304,7 +1313,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
               safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
           break;
         default:
-          // Avoid showing a blocking page with a safe threat type.
+          base::UmaHistogramEnumeration(
+              "Glic.Api.ProcessCounterAbuseVerdict.Result",
+              GlicProcessCounterAbuseVerdictResult::kUnsupportedThreatType);
           return;
       }
 
@@ -1319,7 +1330,22 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                 primary_main_frame->GetFrameToken().value());
       }
 
-      ui_manager->DisplayBlockingPage(resource);
+      if (ui_manager->IsAllowlisted(
+              resource.url, resource.rfh_locator, resource.navigation_id,
+              resource.threat_type, resource.threat_source)) {
+        base::UmaHistogramEnumeration(
+            "Glic.Api.ProcessCounterAbuseVerdict.Result",
+            GlicProcessCounterAbuseVerdictResult::
+                kInterstitialSkippedAllowlist);
+      } else {
+        base::UmaHistogramEnumeration(
+            "Glic.Api.ProcessCounterAbuseVerdict.Result",
+            GlicProcessCounterAbuseVerdictResult::kSuccess);
+        base::UmaHistogramEnumeration(
+            "Glic.Api.ProcessCounterAbuseVerdict.ThreatType",
+            verdict->sb_verdict_result->threat_type);
+        ui_manager->DisplayBlockingPage(resource);
+      }
     }
   }
 

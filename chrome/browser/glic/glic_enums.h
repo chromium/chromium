@@ -83,6 +83,18 @@ enum class GlicZoomAction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicZoomAction)
 
+// LINT.IfChange(GlicProcessCounterAbuseVerdictResult)
+enum class GlicProcessCounterAbuseVerdictResult {
+  kSuccess = 0,
+  kInvalidVerdict = 1,
+  kNoInterstitialRequested = 2,
+  kUrlMismatch = 3,
+  kUnsupportedThreatType = 4,
+  kInterstitialSkippedAllowlist = 5,
+  kMaxValue = kInterstitialSkippedAllowlist,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicProcessCounterAbuseVerdictResult)
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_

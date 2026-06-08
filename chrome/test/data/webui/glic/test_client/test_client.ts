@@ -137,11 +137,20 @@ $.processCounterAbuseVerdictTestEngageBtn.addEventListener('click', () => {
     logMessage('Cannot process verdict: No focused tab');
     return;
   }
+  const showInterstitial = $.counterAbuseShowInterstitial.checked;
+  const selectedThreatType =
+      $.counterAbuseThreatType.value as keyof typeof SbThreatType;
+  const threatType = SbThreatType[selectedThreatType];
+  const url = $.focusedUrlV2.value || 'https://www.google.com';
+
+  logMessage(`Triggering processCounterAbuseVerdict (threatType: ${
+      selectedThreatType}, showInterstitial: ${showInterstitial}, url: ${
+      url})`);
   getBrowser()!.processCounterAbuseVerdict!(tabId, {
     sbVerdictResult: {
-      url: 'https://www.google.com',
-      threatType: SbThreatType.UNSPECIFIED,
-      showInterstitial: true,
+      url: url,
+      threatType: threatType,
+      showInterstitial: showInterstitial,
     },
   });
 });

@@ -658,6 +658,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/extensions/api/glic_private/glic_private_api.cc:GlicPrivateApiStatusCodeHistogramValue) -->
 
+<!-- LINT.IfChange(GlicProcessCounterAbuseVerdictResult) -->
+
+<enum name="GlicProcessCounterAbuseVerdictResult">
+  <int value="0" label="Success: Interstitial displayed"/>
+  <int value="1" label="Failed: Invalid verdict payload"/>
+  <int value="2" label="Ignored: No interstitial requested"/>
+  <int value="3" label="Failed: URL mismatch"/>
+  <int value="4" label="Failed: Unsupported threat type"/>
+  <int value="5" label="Skipped: URL is already allowlisted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:GlicProcessCounterAbuseVerdictResult) -->
+
 <enum name="GlicProfileEnablementReason">
   <int value="0" label="Feature disabled"/>
   <int value="1" label="Not regular profile"/>
@@ -860,6 +873,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
+
+<!-- LINT.IfChange(GlicSbThreatType) -->
+
+<enum name="GlicSbThreatType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Social Engineering"/>
+  <int value="2" label="Malware"/>
+  <int value="3" label="Unwanted Software"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:SbThreatType) -->
 
 <!-- LINT.IfChange(GlicScrollToErrorReason) -->
 
