@@ -168,6 +168,9 @@ found in the LICENSE file.
     <dimen name="fusebox_bottom_sheet_attachment_button_height">64dp</dimen>
     <dimen name="fusebox_button_padding">10dp</dimen>
     <dimen name="fusebox_button_corner_radius">12dp</dimen>
+    <dimen name="fusebox_popover_plus_button_bg_width">48dp</dimen>
+    <dimen name="fusebox_popover_plus_button_bg_height">36dp</dimen>
+    <dimen name="fusebox_popover_plus_button_bg_corner_radius">18dp</dimen>
     <dimen name="fusebox_button_icon_size">18dp</dimen>
     <dimen name="fusebox_attachment_bg_vertical_inset">4dp</dimen>
     <dimen name="fusebox_attachment_image_width">64dp</dimen>

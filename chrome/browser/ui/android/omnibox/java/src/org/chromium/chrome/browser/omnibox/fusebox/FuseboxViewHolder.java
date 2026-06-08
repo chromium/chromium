@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -31,14 +30,6 @@ class FuseboxViewHolder {
         requestType = parent.findViewById(R.id.fusebox_request_type);
         navigateButton = parent.findViewById(R.id.navigate_button);
         activationChip = parent.findViewById(R.id.fusebox_activation_chip);
-
         this.popup = popup;
-
-        var outline =
-                new RoundedCornerOutlineProvider(
-                        parent.getResources()
-                                .getDimensionPixelSize(R.dimen.fusebox_button_corner_radius));
-        outline.setClipPaddedArea(true);
-        plusButton.setOutlineProvider(outline);
     }
 }

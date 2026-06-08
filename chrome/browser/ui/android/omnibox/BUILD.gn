@@ -363,6 +363,8 @@ android_resources("java_resources") {
     "java/res/drawable/activation_chip_focus_ring.xml",
     "java/res/drawable/create_image_24dp.xml",
     "java/res/drawable/fusebox_horizontal_attachment_background.xml",
+    "java/res/drawable/fusebox_popover_plus_button_background.xml",
+    "java/res/drawable/fusebox_popover_plus_button_background_incognito.xml",
     "java/res/drawable/fusebox_popup_bg_tinted.xml",
     "java/res/drawable/fusebox_popup_bg_tinted_on_dark_bg.xml",
     "java/res/drawable/ic_add_round_20dp_with_inset.xml",

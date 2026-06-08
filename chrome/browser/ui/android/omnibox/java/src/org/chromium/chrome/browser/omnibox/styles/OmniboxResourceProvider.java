@@ -791,7 +791,7 @@ public class OmniboxResourceProvider {
         return IncognitoColors.getTextSmallSecondary(isIncognito);
     }
 
-    /** Returns the drawable that is to go behind the + button in the search box. */
+    /** Returns the drawable that normally goes behind the plus button. */
     public static Drawable getSearchBoxIconBackground(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         Resources res = context.getResources();
@@ -799,6 +799,19 @@ public class OmniboxResourceProvider {
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
         @Px int size = res.getDimensionPixelSize(R.dimen.small_icon_background_size);
         return DrawableUtils.getIconBackground(context, isIncognito, size, size);
+    }
+
+    /** Returns the drawable that goes behind the plus button when in popover mode. */
+    public static Drawable getPopoverPlusButtonBackground(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        boolean isIncognito =
+                convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
+        @DrawableRes
+        int resId =
+                isIncognito
+                        ? R.drawable.fusebox_popover_plus_button_background_incognito
+                        : R.drawable.fusebox_popover_plus_button_background;
+        return getDrawable(context, resId);
     }
 
     /** Returns the drawable for the popup menu that shows menu items for context and tools. */

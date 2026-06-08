@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButton
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -101,14 +102,17 @@ class FuseboxViewBinder {
             }
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
-        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE
-                || propertyKey == FuseboxProperties.FUSEBOX_LAYOUT_MODE) {
+        } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE) {
             reanchorViewsForCompactFusebox(model, view);
+        } else if (propertyKey == FuseboxProperties.FUSEBOX_LAYOUT_MODE) {
+            reanchorViewsForCompactFusebox(model, view);
+            updatePlusButtonVisuals(model, view);
         } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_CLICKED) {
             view.plusButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_VISIBLE) {
-            updatePlusButton(model, view);
+            boolean showPlusButton = model.get(FuseboxProperties.PLUS_BUTTON_VISIBLE);
+            view.plusButton.setVisibility(showPlusButton ? View.VISIBLE : View.GONE);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run());
@@ -532,7 +536,7 @@ class FuseboxViewBinder {
 
     private static void updateButtonsVisibilityAndStyling(
             PropertyModel model, FuseboxViewHolder view) {
-        updatePlusButton(model, view);
+        updatePlusButtonVisuals(model, view);
         updateNavigateButton(model, view);
         updateRequestTypeButton(model, view);
         updatePopupTheme(model, view);
@@ -544,18 +548,32 @@ class FuseboxViewBinder {
         view.popup.mPopupWindow.setBackgroundDrawable(background);
     }
 
-    private static void updatePlusButton(PropertyModel model, FuseboxViewHolder view) {
-        boolean showPlusButton = model.get(FuseboxProperties.PLUS_BUTTON_VISIBLE);
+    private static void updatePlusButtonVisuals(PropertyModel model, FuseboxViewHolder view) {
+        Context context = view.parentView.getContext();
         ChromeImageView plusButton = view.plusButton;
-        plusButton.setVisibility(showPlusButton ? View.VISIBLE : View.GONE);
-        if (showPlusButton) {
-            @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
-            Context context = view.parentView.getContext();
+        @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
+        plusButton.setImageTintList(
+                OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme));
+
+        if (model.get(FuseboxProperties.FUSEBOX_LAYOUT_MODE)
+                == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            plusButton.setBackground(
+                    OmniboxResourceProvider.getPopoverPlusButtonBackground(
+                            context, brandedColorScheme));
+            // Null the outline provider in case we were previously in FuseboxLayoutMode.TOOLBAR.
+            // The SUGGESTIONS_POPOVER's drawable implicitly handles corner rounding, while the
+            // TOOLBAR's drawable needs to use the outline provider.
+            plusButton.setOutlineProvider(null);
+        } else {
+            Resources resources = context.getResources();
             plusButton.setBackground(
                     OmniboxResourceProvider.getSearchBoxIconBackground(
                             context, brandedColorScheme));
-            plusButton.setImageTintList(
-                    OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme));
+            RoundedCornerOutlineProvider outline =
+                    new RoundedCornerOutlineProvider(
+                            resources.getDimensionPixelSize(R.dimen.fusebox_button_corner_radius));
+            outline.setClipPaddedArea(true);
+            plusButton.setOutlineProvider(outline);
         }
     }
 
