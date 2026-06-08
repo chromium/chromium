@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/password_manager/mock_password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -137,6 +138,10 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
+  MOCK_METHOD(autofill::PasswordManagerDelegate*,
+              GetPasswordManagerDelegate,
+              (),
+              (override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -218,6 +223,10 @@ class PasswordManualFallbackFlowTest : public Test {
 
   MockPasswordManagerDriver& driver() { return *driver_; }
 
+  autofill::MockPasswordManagerDelegate& password_manager_delegate() {
+    return *password_manager_delegate_;
+  }
+
   MockAutofillClient& autofill_client() { return *autofill_client_; }
 
   MockPasswordManagerClient& password_manager_client() {
@@ -294,11 +303,22 @@ class PasswordManualFallbackFlowTest : public Test {
 #endif
   }
 
- protected:
+  void ResetFlowAndMetricsRecorder() {
+    // Reset `flow_` first since it hold a raw pointer to
+    // `manual_fallback_metrics_recorder_`. In production, `flow_` and
+    // `manual_fallback_metrics_recorder_` always die at the same time.
+    flow_.reset();
+    manual_fallback_metrics_recorder_.reset();
+  }
+
+ private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<NiceMock<MockPasswordManagerDriver>> driver_ =
       std::make_unique<NiceMock<MockPasswordManagerDriver>>();
+  std::unique_ptr<NiceMock<autofill::MockPasswordManagerDelegate>>
+      password_manager_delegate_ =
+          std::make_unique<NiceMock<autofill::MockPasswordManagerDelegate>>();
   std::unique_ptr<NiceMock<MockAutofillClient>> autofill_client_ =
       std::make_unique<NiceMock<MockAutofillClient>>();
   std::unique_ptr<NiceMock<MockPasswordManagerClient>>
@@ -750,6 +770,43 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().DidSelectSuggestion(suggestion);
 }
 
+// Test that webauth suggestion selection is delegated to the password manager
+// delegate.
+TEST_F(PasswordManualFallbackFlowTest, SelectWebauthnSignInSuggestion) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      SuggestionType::kWebauthnSignInWithAnotherDevice, u"Select passkey");
+  ON_CALL(driver(), GetPasswordManagerDelegate)
+      .WillByDefault(Return(&password_manager_delegate()));
+  EXPECT_CALL(password_manager_delegate(), SelectSuggestion(suggestion));
+  flow().DidSelectSuggestion(suggestion);
+}
+
+// Test that webauth suggestion selection doesn't crash if the password manager
+// delegate is `nullptr`. This can happen in several scenarios, one of which is
+// the `RenderFrameHost` being destructed for whatever reason.
+TEST_F(PasswordManualFallbackFlowTest,
+       SelectWebauthnSignInSuggestion_DelegateIsNull) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      SuggestionType::kWebauthnSignInWithAnotherDevice, u"Select passkey");
+  EXPECT_CALL(password_manager_delegate(), SelectSuggestion(suggestion))
+      .Times(0);
+  // The `autofill::PasswordManagerDelegate` is `nullptr`, the flow should not
+  // crash.
+  flow().DidSelectSuggestion(suggestion);
+}
+
 // Test that both username and password are filled if the suggestion is accepted
 // for a popup triggered on a password form if the biometric authentication is
 // not available.
@@ -953,6 +1010,50 @@ TEST_F(PasswordManualFallbackFlowTest,
   ShowAndAcceptSuggestion(suggestion,
                           AutofillSuggestionDelegate::SuggestionMetadata{
                               .row = 0, .sub_popup_level = 0});
+}
+
+// Test that webauth suggestion acceptance is delegated to the password manager
+// delegate.
+TEST_F(PasswordManualFallbackFlowTest, AcceptWebauthnSignInSuggestion) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      SuggestionType::kWebauthnSignInWithAnotherDevice, u"Select passkey");
+  AutofillSuggestionDelegate::SuggestionMetadata metadata =
+      AutofillSuggestionDelegate::SuggestionMetadata{.row = 0,
+                                                     .sub_popup_level = 0};
+  ON_CALL(driver(), GetPasswordManagerDelegate)
+      .WillByDefault(Return(&password_manager_delegate()));
+  EXPECT_CALL(password_manager_delegate(),
+              AcceptSuggestion(suggestion, metadata));
+  flow().DidAcceptSuggestion(suggestion, metadata);
+}
+
+// Test that webauth suggestion acceptance doesn't crash if the password manager
+// delegate is `nullptr`.
+TEST_F(PasswordManualFallbackFlowTest,
+       AcceptWebauthnSignInSuggestion_DelegateIsNull) {
+  InitializeFlow();
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      SuggestionType::kWebauthnSignInWithAnotherDevice, u"Select passkey");
+  AutofillSuggestionDelegate::SuggestionMetadata metadata =
+      AutofillSuggestionDelegate::SuggestionMetadata{.row = 0,
+                                                     .sub_popup_level = 0};
+  EXPECT_CALL(password_manager_delegate(),
+              AcceptSuggestion(suggestion, metadata))
+      .Times(0);
+  // The `autofill::PasswordManagerDelegate` is `nullptr`, the flow should not
+  // crash.
+  flow().DidAcceptSuggestion(suggestion, metadata);
 }
 
 // Test that "Fill password" field-by-field suggestion is not previewed by the
@@ -1341,14 +1442,6 @@ class PasswordManualFallbackFlowFillAfterSuggestionMetricsTest
     } else {
       return metric_name("NotClassifiedAsTargetFilling");
     }
-  }
-
-  void ResetFlowAndMetricsRecorder() {
-    // Reset `flow_` first since it hold a raw pointer to
-    // `manual_fallback_metrics_recorder_`. In production, `flow_` and
-    // `manual_fallback_metrics_recorder_` always die at the same time.
-    flow_.reset();
-    manual_fallback_metrics_recorder_.reset();
   }
 };
 

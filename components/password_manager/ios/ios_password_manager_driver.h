@@ -75,6 +75,7 @@ class IOSPasswordManagerDriver final
   password_manager::PasswordManagerInterface* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
+  autofill::PasswordManagerDelegate* GetPasswordManagerDelegate() override;
   int GetFrameId() const override;
   bool IsInPrimaryMainFrame() const override;
   bool IsDirectChildOfPrimaryMainFrame() const override;

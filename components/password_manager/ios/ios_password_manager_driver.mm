@@ -173,6 +173,11 @@ IOSPasswordManagerDriver::GetPasswordAutofillManager() {
   return nullptr;
 }
 
+autofill::PasswordManagerDelegate*
+IOSPasswordManagerDriver::GetPasswordManagerDelegate() {
+  return nullptr;
+}
+
 bool IOSPasswordManagerDriver::IsDirectChildOfPrimaryMainFrame() const {
   NOTREACHED();
 }

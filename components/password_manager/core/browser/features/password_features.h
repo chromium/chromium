@@ -234,6 +234,10 @@ BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+// Enables the "Use a passkey / Use a different passkey" in the password manual
+// fallback.
+BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInManualFallback);
+
 // All features parameters in alphabetical order.
 
 }  // namespace password_manager::features

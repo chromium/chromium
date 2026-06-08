@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
@@ -134,6 +135,7 @@ bool PasswordManualFallbackFlow::SupportsSuggestionType(
     case autofill::SuggestionType::kFillPassword:
     case autofill::SuggestionType::kViewPasswordDetails:
     case autofill::SuggestionType::kAllSavedPasswordsEntry:
+    case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
       return true;
     default:
       return false;
@@ -235,6 +237,12 @@ void PasswordManualFallbackFlow::DidSelectSuggestion(
       password_manager_driver_->PreviewField(field_id_,
                                              suggestion.main_text.value);
       break;
+    case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
+      if (auto* password_manager_delegate =
+              password_manager_driver_->GetPasswordManagerDelegate()) {
+        password_manager_delegate->SelectSuggestion(suggestion);
+      }
+      break;
     case autofill::SuggestionType::kFillPassword:
     case autofill::SuggestionType::kViewPasswordDetails:
     case autofill::SuggestionType::kAllSavedPasswordsEntry:
@@ -334,6 +342,12 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       metrics_util::LogPasswordSuggestionSelected(
           metrics_util::PasswordDropdownSelectedOption::kShowAll,
           password_client_->IsOffTheRecord());
+      break;
+    case autofill::SuggestionType::kWebauthnSignInWithAnotherDevice:
+      if (auto* password_manager_delegate =
+              password_manager_driver_->GetPasswordManagerDelegate()) {
+        password_manager_delegate->AcceptSuggestion(suggestion, metadata);
+      }
       break;
     default:
       // Other suggestion types are not supported.
