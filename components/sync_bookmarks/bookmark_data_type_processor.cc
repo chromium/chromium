@@ -906,7 +906,8 @@ void BookmarkDataTypeProcessor::ApplyFullUpdateAsIncrementalUpdate(
   for (const SyncedBookmarkTrackerEntity* entity :
        bookmark_tracker_->GetAllEntities()) {
     // Don't create deletions for permanent nodes.
-    if (entity->bookmark_node()->is_permanent_node()) {
+    if (entity->bookmark_node() &&
+        entity->bookmark_node()->is_permanent_node()) {
       continue;
     }
     if (entity->IsUnsyncedLocalCreation()) {
