@@ -42,6 +42,14 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/access_token_fetcher.cc:ErrorToString) -->
 
+<variants name="AccountIndex">
+  <variant name="Account0" summary="Metric recorded for Account 0"/>
+  <variant name="Account1" summary="Metric recorded for Account 1"/>
+  <variant name="Account2" summary="Metric recorded for Account 2"/>
+  <variant name="Account3" summary="Metric recorded for Account 3"/>
+  <variant name="Account4" summary="Metric recorded for Account 4"/>
+</variants>
+
 <variants name="AccountInvestigationReportingType">
   <variant name="_OnChange"
       summary="Driven from a change in signin status or change in content
@@ -3660,6 +3668,71 @@ kept as long as profile signout is possible -->
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>Track how a profile gets signed out.</summary>
+</histogram>
+
+<histogram
+    name="Signin.SmartAccountSelection.OnSyncPreviewFetched.{BooleanDataPoint}.{AccountIndex}{ProfileIndex}"
+    enum="Boolean" expires_after="2027-05-28">
+  <owner>rsult@google.com</owner>
+  <owner>pmeuleman@google.com</owner>
+  <summary>
+    Recorded when the sync preview is fetched for a smart account selection.
+
+    Data Point: {BooleanDataPoint}
+
+    {ProfileIndex}
+
+    {AccountIndex}
+  </summary>
+  <token key="BooleanDataPoint">
+    <variant name="HasOtherDevices"
+        summary="whether the account has other devices"/>
+    <variant name="IsManaged" summary="whether the account is managed"/>
+    <variant name="IsPrimary" summary="whether the account is primary"/>
+    <variant name="IsSupervised" summary="whether the account is supervised"/>
+  </token>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+  <token key="AccountIndex" variants="AccountIndex"/>
+</histogram>
+
+<histogram
+    name="Signin.SmartAccountSelection.OnSyncPreviewFetched{CountDataPoint}.{AccountIndex}{ProfileIndex}"
+    units="count" expires_after="2027-05-28">
+  <owner>rsult@google.com</owner>
+  <owner>pmeuleman@google.com</owner>
+  <summary>
+    Recorded when the sync preview is fetched for a smart account selection. The
+    recorded range and number of buckets vary by data type to match the expected
+    scale of that specific data type.
+
+    Data Point: {CountDataPoint}
+
+    {ProfileIndex}
+
+    {AccountIndex}
+  </summary>
+  <token key="CountDataPoint">
+    <variant name=".APP" summary="apps used in Chrome and ChromeOS"/>
+    <variant name=".AUTOFILL"
+        summary="addresses and more (information entered into online forms
+                 like phone numbers and emails)"/>
+    <variant name=".AUTOFILL_WALLET_CREDENTIAL"
+        summary="autofill wallet credentials"/>
+    <variant name=".BOOKMARK" summary="pages bookmarked in Chrome"/>
+    <variant name=".EXTENSION" summary="extensions from the Chrome Web Store"/>
+    <variant name=".PASSWORD"
+        summary="passwords and passkeys saved in Google Account"/>
+    <variant name=".PREFERENCE" summary="settings in Chrome and ChromeOS"/>
+    <variant name=".READING_LIST"
+        summary="pages added to reading list in Chrome"/>
+    <variant name=".SESSION"
+        summary="tabs currently open in Chrome on one of your devices"/>
+    <variant name=".THEME" summary="themes from settings or Chrome Web Store"/>
+    <variant name=".WALLET_METADATA"
+        summary="payment methods (wallet metadata)"/>
+  </token>
+  <token key="ProfileIndex" variants="ProfileIndex"/>
+  <token key="AccountIndex" variants="AccountIndex"/>
 </histogram>
 
 <histogram name="Signin.SSOAuth.GetIdentities.ErrorCode"
