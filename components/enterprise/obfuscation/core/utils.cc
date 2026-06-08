@@ -249,8 +249,7 @@ base::expected<void, Error> DeobfuscateFileInPlace(
   }
 
   // Initialize cipher.
-  crypto::Aead aead(crypto::Aead::AES_256_GCM);
-  aead.Init(header_data.value().derived_key);
+  crypto::Aead aead(crypto::Aead::AES_256_GCM, header_data.value().derived_key);
   if (aead.NonceLength() != kNonceSize) {
     return RecordAndReturn<void>(base::unexpected(Error::kSchemeError));
   }
