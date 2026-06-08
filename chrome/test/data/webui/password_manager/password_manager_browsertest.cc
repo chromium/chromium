@@ -78,8 +78,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, BackupPasswordDetailsCard) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/494149175): Re-enable after fixing.
-IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, DISABLED_PasswordDetailsSection) {
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordDetailsSection) {
   RunTest("password_manager/password_details_section_test.js", "mocha.run()");
 }
 

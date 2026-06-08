@@ -423,34 +423,36 @@ suite('PasswordDetailsSectionTest', function() {
       });
 
   // <if expr="_google_chrome">
-  test('Register password sharing IPH for password card', async function() {
-    syncProxy.syncInfo = {
-      isSyncingPasswords: true,
-    };
+  // TODO(crbug.com/494149175): Re-enable after fixing.
+  test.skip(
+      'Register password sharing IPH for password card', async function() {
+        syncProxy.syncInfo = {
+          isSyncingPasswords: true,
+        };
 
-    const group = createCredentialGroup({
-      name: 'test.com',
-      credentials: [
-        createPasswordEntry({id: 0, username: 'test1'}),
-      ],
-    });
-    Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
+        const group = createCredentialGroup({
+          name: 'test.com',
+          credentials: [
+            createPasswordEntry({id: 0, username: 'test1'}),
+          ],
+        });
+        Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, group);
 
-    const section = document.createElement('password-details-section');
-    document.body.appendChild(section);
-    await waitAfterNextRender(section);
-    await flushTasks();
+        const section = document.createElement('password-details-section');
+        document.body.appendChild(section);
+        await waitAfterNextRender(section);
+        await flushTasks();
 
-    const card = section.shadowRoot!.querySelector('password-details-card');
-    assertTrue(!!card);
+        const card = section.shadowRoot!.querySelector('password-details-card');
+        assertTrue(!!card);
 
-    assertDeepEquals(
-        card.getSortedAnchorStatusesForTesting(),
-        [
-          [PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, true],
-        ],
-    );
-  });
+        assertDeepEquals(
+            card.getSortedAnchorStatusesForTesting(),
+            [
+              [PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID, true],
+            ],
+        );
+      });
 
   test(
       'Password sharing IPH is not registered with passkey card present',
