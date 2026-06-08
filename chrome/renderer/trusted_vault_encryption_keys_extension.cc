@@ -73,6 +73,26 @@ SyncEncryptionKeysToTrustedVaultKeys(
   return trusted_vault_keys;
 }
 
+// Parses an array of ArrayBuffers passed to `setSyncEncryptionKeys()`.
+// This method may run property callbacks during parsing, which could end up
+// deleting the frame.
+void ParseSyncEncryptionKeysMayDeleteFrame(
+    v8::Local<v8::Value> encryption_keys_value,
+    int32_t last_key_version,
+    base::OnceCallback<
+        void(std::optional<std::vector<chrome::mojom::TrustedVaultKeyPtr>>)>
+        callback) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  v8::LocalVector<v8::ArrayBuffer> encryption_keys(isolate);
+  if (!gin::ConvertFromV8(isolate, encryption_keys_value, &encryption_keys)) {
+    DVLOG(1) << "invalid encryption key";
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(
+      SyncEncryptionKeysToTrustedVaultKeys(encryption_keys, last_key_version));
+}
+
 // Parses an array of key objects passed to `setClientEncryptionKeys()`.
 // The members of each object are `epoch` integer and `key` ArrayBuffer.
 bool ParseTrustedVaultKeyArrayMayDeleteFrame(
@@ -302,6 +322,10 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
 
   v8::HandleScope handle_scope(args->isolate());
 
+  if (render_frame()->GetWebFrame()->MainWorldScriptContext().IsEmpty()) {
+    return;
+  }
+
   v8::Local<v8::Function> callback;
   if (!args->GetNext(&callback)) {
     RecordCallToSetSyncEncryptionKeysToUma(ValidArgs::kInvalidArgs);
@@ -318,17 +342,11 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
     return;
   }
 
-  v8::LocalVector<v8::ArrayBuffer> encryption_keys(args->isolate());
-  if (!args->GetNext(&encryption_keys)) {
+  v8::Local<v8::Value> encryption_keys_value;
+  if (!args->GetNext(&encryption_keys_value) ||
+      !encryption_keys_value->IsArray()) {
     RecordCallToSetSyncEncryptionKeysToUma(ValidArgs::kInvalidArgs);
-    DLOG(ERROR) << "Not array of strings";
-    args->ThrowError();
-    return;
-  }
-
-  if (encryption_keys.empty()) {
-    RecordCallToSetSyncEncryptionKeysToUma(ValidArgs::kInvalidArgs);
-    DLOG(ERROR) << "Array of strings empty";
+    DLOG(ERROR) << "Not array";
     args->ThrowError();
     return;
   }
@@ -337,6 +355,34 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
   if (!args->GetNext(&last_key_version)) {
     RecordCallToSetSyncEncryptionKeysToUma(ValidArgs::kInvalidArgs);
     DLOG(ERROR) << "No version provided";
+    args->ThrowError();
+    return;
+  }
+
+  ParseSyncEncryptionKeysMayDeleteFrame(
+      encryption_keys_value, last_key_version,
+      base::BindOnce(
+          &TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeysContinue,
+          weak_ptr_factory_.GetWeakPtr(), args, std::move(callback),
+          std::move(gaia_id)));
+}
+
+void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeysContinue(
+    gin::Arguments* args,
+    v8::Local<v8::Function> callback,
+    std::string gaia_id,
+    std::optional<std::vector<chrome::mojom::TrustedVaultKeyPtr>>
+        encryption_keys) {
+  if (!encryption_keys) {
+    RecordCallToSetSyncEncryptionKeysToUma(ValidArgs::kInvalidArgs);
+    DLOG(ERROR) << "Can't parse encryption keys";
+    args->ThrowError();
+    return;
+  }
+
+  if (encryption_keys->empty()) {
+    RecordCallToSetSyncEncryptionKeysToUma(ValidArgs::kInvalidArgs);
+    DLOG(ERROR) << "Array of strings empty";
     args->ThrowError();
     return;
   }
@@ -353,9 +399,8 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
   std::vector<
       std::pair<std::string, std::vector<chrome::mojom::TrustedVaultKeyPtr>>>
       trusted_vault_keys;
-  trusted_vault_keys.emplace_back(
-      trusted_vault::kSyncSecurityDomainName,
-      SyncEncryptionKeysToTrustedVaultKeys(encryption_keys, last_key_version));
+  trusted_vault_keys.emplace_back(trusted_vault::kSyncSecurityDomainName,
+                                  *std::move(encryption_keys));
   remote_->SetEncryptionKeys(
       std::move(gaia_id), std::move(trusted_vault_keys),
       base::BindOnce(
