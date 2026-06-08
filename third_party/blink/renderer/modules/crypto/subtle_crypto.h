@@ -119,13 +119,13 @@ class SubtleCrypto final : public ScriptWrappable {
                                            CryptoKey*,
                                            std::optional<unsigned>,
                                            ExceptionState&);
-  ScriptPromise<IDLAny> deriveKey(ScriptState*,
-                                  const V8AlgorithmIdentifier*,
-                                  CryptoKey*,
-                                  const V8AlgorithmIdentifier*,
-                                  bool extractable,
-                                  const Vector<String>&,
-                                  ExceptionState&);
+  ScriptPromise<CryptoKey> deriveKey(ScriptState*,
+                                     const V8AlgorithmIdentifier*,
+                                     CryptoKey*,
+                                     const V8AlgorithmIdentifier*,
+                                     bool extractable,
+                                     const Vector<String>&,
+                                     ExceptionState&);
 
   ScriptPromise<EncapsulatedKey> encapsulateKey(
       ScriptState*,

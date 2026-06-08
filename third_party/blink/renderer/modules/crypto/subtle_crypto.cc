@@ -848,7 +848,7 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::deriveBits(
   return promise;
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::deriveKey(
+ScriptPromise<CryptoKey> SubtleCrypto::deriveKey(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     CryptoKey* base_key,
@@ -900,7 +900,7 @@ ScriptPromise<IDLAny> SubtleCrypto::deriveKey(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<CryptoKey>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 

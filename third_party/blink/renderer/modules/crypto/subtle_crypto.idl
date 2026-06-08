@@ -68,7 +68,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
         sequence<KeyUsage> keyUsages);
 
     [CallWith=ScriptState, MeasureAs=SubtleCryptoDeriveKey, RaisesException]
-    Promise<any> deriveKey(
+    Promise<CryptoKey> deriveKey(
         AlgorithmIdentifier algorithm,
         CryptoKey baseKey,
         AlgorithmIdentifier derivedKeyType,

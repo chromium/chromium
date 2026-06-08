@@ -181,13 +181,8 @@ void CryptoResultImpl::CompleteWithKey(const WebCryptoKey& key) {
     return;
 
   auto* result = MakeGarbageCollected<CryptoKey>(key);
-  if (type_ == ResolverType::kTyped) {
-    resolver_->DowncastTo<CryptoKey>()->Resolve(result);
-  } else {
-    ScriptState* script_state = resolver_->GetScriptState();
-    ScriptState::Scope scope(script_state);
-    resolver_->DowncastTo<IDLAny>()->Resolve(result->ToV8(script_state));
-  }
+  CHECK_EQ(type_, ResolverType::kTyped);
+  resolver_->DowncastTo<CryptoKey>()->Resolve(result);
   ClearResolver();
 }
 
