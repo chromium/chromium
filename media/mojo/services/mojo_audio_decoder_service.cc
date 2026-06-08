@@ -216,6 +216,13 @@ void MojoAudioDecoderService::OnReadDone(
     return;
   }
 
+  if (!buffer->end_of_stream() && buffer->side_data() &&
+      buffer->side_data()->secure_handle) {
+    std::move(bad_message_callback)
+        .Run("Renderer sent non-zero DecoderBufferSideData.secure_handle.");
+    return;
+  }
+
   decoder_->Decode(std::move(buffer),
                    base::BindOnce(&MojoAudioDecoderService::OnDecodeStatus,
                                   weak_this_, std::move(callback)));
