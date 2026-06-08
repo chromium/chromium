@@ -768,21 +768,40 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)showTabsButton {
-  NSString* accessibilityIdentifier = kToolbarStackButtonIdentifier;
-  if (IsChromeNextIaEnabled()) {
-    UITraitCollection* traitCollection = [GetAnyKeyWindow() traitCollection];
-    BOOL isRegularXRegular =
-        traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
-        traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
-
-    if (isRegularXRegular) {
-      accessibilityIdentifier = kToolbarTabGridButtonIdentifier;
-    } else {
-      accessibilityIdentifier = kAppBarTabGridButtonIdentifier;
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    UIView* view = base::apple::ObjCCast<UIView>(element);
+    if (!view) {
+      return NO;
     }
-  }
-  return grey_allOf(grey_accessibilityID(accessibilityIdentifier),
-                    grey_sufficientlyVisible(), nil);
+    UIWindow* window = view.window;
+    if (!window) {
+      return NO;
+    }
+    NSString* accessibilityIdentifier = kToolbarStackButtonIdentifier;
+    if (IsChromeNextIaEnabled()) {
+      UITraitCollection* traitCollection = window.traitCollection;
+      BOOL isRegularXRegular = traitCollection.verticalSizeClass ==
+                                   UIUserInterfaceSizeClassRegular &&
+                               traitCollection.horizontalSizeClass ==
+                                   UIUserInterfaceSizeClassRegular;
+
+      if (isRegularXRegular) {
+        accessibilityIdentifier = kToolbarTabGridButtonIdentifier;
+      } else {
+        accessibilityIdentifier = kAppBarTabGridButtonIdentifier;
+      }
+    }
+    id<GREYMatcher> showTabsMatcher =
+        grey_allOf(grey_accessibilityID(accessibilityIdentifier),
+                   grey_sufficientlyVisible(), nil);
+    return [showTabsMatcher matches:element];
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description appendText:@"showTabsButton"];
+  };
+
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
 }
 
 + (id<GREYMatcher>)blueDotOnShowTabsButton {
@@ -1469,11 +1488,44 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)tabGridDoneButton {
-  if (IsChromeNextIaEnabled() && !IsIPad()) {
-    return [self showTabsButton];
-  }
-  return grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
-                    grey_sufficientlyVisible(), nil);
+  GREYMatchesBlock matches = ^BOOL(id element) {
+    UIView* view = base::apple::ObjCCast<UIView>(element);
+    if (!view) {
+      return NO;
+    }
+    UIWindow* window = view.window;
+    if (!window) {
+      return NO;
+    }
+
+    if (IsChromeNextIaEnabled()) {
+      UITraitCollection* traitCollection = window.traitCollection;
+      BOOL isRegularXRegular = traitCollection.verticalSizeClass ==
+                                   UIUserInterfaceSizeClassRegular &&
+                               traitCollection.horizontalSizeClass ==
+                                   UIUserInterfaceSizeClassRegular;
+
+      if (isRegularXRegular) {
+        id<GREYMatcher> tabGridDoneMatcher =
+            grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
+                       grey_sufficientlyVisible(), nil);
+        return [tabGridDoneMatcher matches:element];
+      }
+      return [[ChromeMatchersAppInterface showTabsButton] matches:element];
+    } else {
+      id<GREYMatcher> doneButtonMatcher =
+          grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
+                     grey_sufficientlyVisible(), nil);
+      return [doneButtonMatcher matches:element];
+    }
+  };
+
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    [description appendText:@"tabGridDoneButton"];
+  };
+
+  return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                              descriptionBlock:describe];
 }
 
 + (id<GREYMatcher>)tabGridOverflowMenuButton {

@@ -521,8 +521,7 @@ CGFloat CompactButtonHorizontalPadding() {
   BOOL hideToolbar;
   hideToolbar = self.mode == TabGridMode::kSearch;
 
-  if (IsChromeNextIaEnabled() &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (IsChromeNextIaEnabled() && useCompactLayout) {
     // If the App Bar is available (iPhone), the bottom toolbar buttons should
     // be hidden in the Tab Grid's non-selection states.
     hideToolbar =

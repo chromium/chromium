@@ -8,6 +8,7 @@
 
 #import "base/ios/crb_protocol_observers.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 
@@ -163,7 +164,7 @@ UIInterfaceOrientation GetTargetInterfaceOrientation(
     return AppBarPosition::kNone;
   }
 
-  if (CanShowTabStrip(view)) {
+  if (IsRegularXRegularSizeClass(view)) {
     return AppBarPosition::kNone;
   }
 
