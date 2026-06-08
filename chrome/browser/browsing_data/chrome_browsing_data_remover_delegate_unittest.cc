@@ -4427,6 +4427,35 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                                 false);
 }
 
+// Verify that clearing cookies will not trigger removing browser bound keys
+// when most origins and domains do not match.
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       DoesNotClearBrowserBoundKey_WhenMatchesMostOriginsAndDomainsIsFalse) {
+  auto* mock_browser_bound_key_deleter =
+      static_cast<payments::MockBrowserBoundKeyDeleterService*>(
+          payments::BrowserBoundKeyDeleterServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  GetProfile(),
+                  base::BindOnce([](content::BrowserContext*)
+                                     -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        payments::MockBrowserBoundKeyDeleterService>();
+                  })));
+
+  // Create a filter builder that results in MatchesMostOriginsAndDomains()
+  // returning false.
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kPreserve);
+  filter_builder->SetPartitionedCookiesOnly(true);
+  ASSERT_FALSE(filter_builder->MatchesMostOriginsAndDomains());
+
+  EXPECT_CALL(*mock_browser_bound_key_deleter, RemoveInvalidBBKs()).Times(0);
+  BlockUntilOriginDataRemoved(base::Time::Min(), base::Time::Max(),
+                              content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                              std::move(filter_builder));
+}
+
 class ChromeBrowsingDataRemoverDelegateOriginTrialsTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:

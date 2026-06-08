@@ -695,11 +695,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    if (payments::
-            BrowserBoundKeyDeleterService* browser_bound_key_deleter_service =
-                payments::BrowserBoundKeyDeleterServiceFactory::GetForProfile(
-                    profile_)) {
-      browser_bound_key_deleter_service->RemoveInvalidBBKs();
+    if (filter_builder->MatchesMostOriginsAndDomains()) {
+      if (payments::
+              BrowserBoundKeyDeleterService* browser_bound_key_deleter_service =
+                  payments::BrowserBoundKeyDeleterServiceFactory::GetForProfile(
+                      profile_)) {
+        browser_bound_key_deleter_service->RemoveInvalidBBKs();
+      }
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
