@@ -7,6 +7,18 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+@property --gradient-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
+@property --mask-angle {
+  syntax: '<angle>';
+  inherits: true;
+  initial-value: 0deg;
+}
+
 :host{
   --cr-hover-background-color:#FFF;
   --cr-button-height: 32px;
@@ -208,8 +220,8 @@
 
 /* Containers used to position the gradient and masks correctly. The gradient
  * and masks themselves are created using pseudo-elements. */
-.gradient,
-.mask {
+.gradient-and-mask-wrapper .gradient,
+.gradient-and-mask-wrapper .mask {
   position: absolute;
   inset: 0;
   transform-origin: center;
@@ -220,67 +232,271 @@
   aspect-ratio: 1/1;
 }
 
-.gradient:before,
-.mask:before {
+.gradient-and-mask-wrapper .gradient:before,
+.gradient-and-mask-wrapper .mask:before {
   content: '';
   position: absolute;
   inset: 0;
   transform-origin: center;
 }
 
-.gradient:before {
+.gradient-and-mask-wrapper .gradient:before {
   background: var(--glif-gradient);
   rotate: var(--glif-angle-start);
 }
 
-.play .gradient:before {
+.play .gradient-and-mask-wrapper .gradient:before {
   animation: rotate-glif-anim var(--anim-duration) var(--acceleration) forwards,
              fade-in-out var(--anim-duration) linear forwards;
 }
 
-.mask:before {
+.gradient-and-mask-wrapper .mask:before {
   background: var(--mask-gradient);
   rotate: var(--mask-angle-start);
 }
 
-:host([ntp-realbox-next-enabled_]) .gradient:before {
+:host([ntp-realbox-next-enabled_]) .gradient-and-mask-wrapper .gradient:before {
   background: var(--glif-gradient);
   rotate: calc(var(--glif-angle-start) + var(--mouse-angle, 0deg));
 }
 
-:host([ntp-realbox-next-enabled_]) .play .gradient:before {
+:host([ntp-realbox-next-enabled_]) .play .gradient-and-mask-wrapper .gradient:before {
   animation: fade-in-out var(--anim-duration) linear forwards;
 }
 
-:host([ntp-realbox-next-enabled_]) .mask:before {
+:host([ntp-realbox-next-enabled_]) .gradient-and-mask-wrapper .mask:before {
   background: var(--mask-gradient);
   rotate: calc(var(--mask-angle-start) + var(--mouse-angle, 0deg));
 }
 
-.play .mask:before {
+.play .gradient-and-mask-wrapper .mask:before {
   animation: rotate-mask-anim var(--anim-duration) var(--acceleration) forwards;
 }
 
-#glowAnimationWrapper:hover .mask:before {
+#glowAnimationWrapper:hover .gradient-and-mask-wrapper .mask:before {
   --anim-duration: 8s;
   animation: rotate-mask-anim-infinite var(--anim-duration) linear infinite,
              fade-in-out-infinite var(--anim-duration) linear forwards;
 }
 
-#glowAnimationWrapper:hover .gradient:before {
+#glowAnimationWrapper:hover .gradient-and-mask-wrapper .gradient:before {
   --anim-duration: 8s;
   animation: rotate-glif-anim-infinite var(--anim-duration) linear infinite,
              fade-in-out-infinite var(--anim-duration) linear forwards;
 }
 
-:host([ntp-realbox-next-enabled_]) #glowAnimationWrapper:hover .mask:before {
+:host([ntp-realbox-next-enabled_]) #glowAnimationWrapper:hover .gradient-and-mask-wrapper .mask:before {
   --anim-duration: 8s;
   animation: fade-in-out-infinite var(--anim-duration) linear forwards;
 }
 
 :host([ntp-realbox-next-enabled_])
 #glowAnimationWrapper:hover
+.gradient-and-mask-wrapper
 .gradient:before {
   --anim-duration: 8s;
   animation: fade-in-out-infinite var(--anim-duration) linear forwards;
 }
+
+:host([energy-effect-animation-enabled]) #glowAnimationWrapper {
+  --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --emphasized-curve: cubic-bezier(0.38, 0.72, 0, 1);
+  --emphasized-decelerate-curve: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --glif-gradient: conic-gradient(
+    rgba(49, 134, 255, 0) 20%,
+    rgba(49, 134, 255, 0.13) 34%,
+    rgba(147, 120, 255, 0.19) 37%,
+    rgba(249, 107, 214, 0.5) 39%,
+    rgba(252, 65, 61, 0.73) 41%,
+    rgba(252, 65, 61, 1) 48%,
+    rgba(255, 107, 43, 1) 50%,
+    rgba(254, 199, 0, 1) 52%,
+    rgba(255, 219, 15, 1) 56%,
+    rgba(136, 222, 66, 1) 58%,
+    rgba(14, 188, 95, 1) 61%,
+    rgba(14, 188, 95, 1) 65%,
+    rgba(46, 170, 178, 1) 70%,
+    rgba(0, 169, 187, 1) 72%,
+    rgba(49, 134, 255, 0.73) 73%,
+    rgba(49, 134, 255, 0) 95%
+  );
+  --gradient-angle-end: 225deg;
+  --gradient-angle-start: 170deg;
+  --gradient-burst-duration: 1000ms;
+  --gradient-opacity: 0.6;
+  --gradient-width: 1px;
+  --hover-fade-duration: 400ms;
+  --hover-inner-glow-duration: 1000ms;
+  --intro-duration: 2000ms;
+  --mask-angle-end: 200deg;
+  --mask-angle-start: -90deg;
+  --standard-accelerate-curve: cubic-bezier(0.3, 0, 1, 1);
+  --standard-curve: cubic-bezier(0.2, 0, 0, 1);
+  --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
+  --sys-motion--curve-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([energy-effect-animation-enabled]) #glowAnimationWrapper {
+    --gradient-opacity: 0.9;
+  }
+}
+
+:host([energy-effect-animation-enabled][is-dark]) #glowAnimationWrapper {
+  --gradient-opacity: 0.9;
+}
+
+:host([energy-effect-animation-enabled]) .input-plate-gradient {
+  position: absolute;
+  inset: 2px 2px;
+  border-radius: 100px;
+  opacity: 0;
+  will-change: opacity, --mask-angle, --gradient-angle;
+  transition: opacity var(--hover-fade-duration) var(--standard-curve);
+  pointer-events: none;
+}
+
+:host([energy-effect-animation-enabled]) #glowAnimationWrapper.hovering .input-plate-gradient {
+  opacity: var(--gradient-opacity);
+}
+
+:host([energy-effect-animation-enabled]) .input-plate-gradient-mask {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+:host([energy-effect-animation-enabled]) .gradient-blur-wrapper {
+  backface-visibility: hidden;
+  border-radius: inherit;
+  filter: blur(1px);
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  transform: translateZ(0);
+  transition: filter var(--hover-fade-duration) var(--standard-curve);
+}
+
+:host([energy-effect-animation-enabled]) .gradient-blur-wrapper:not(.sharp-tip) {
+  filter: blur(3px);
+  inset: -3px;
+}
+
+:host([energy-effect-animation-enabled]) .sharp-tip.gradient-blur-wrapper {
+  filter: blur(1px);
+}
+
+:host([energy-effect-animation-enabled]) .gradient-mask {
+  inset: 0;
+  position: absolute;
+  border-radius: inherit;
+  -webkit-mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 50%,
+    black 68%,
+    black 75%,
+    transparent 89%,
+    transparent 100%
+  );
+  mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 50%,
+    black 68%,
+    black 75%,
+    transparent 89%,
+    transparent 100%
+  );
+  scale: 4 1.5;
+}
+
+:host([energy-effect-animation-enabled]) .sharp-tip .gradient-mask {
+  -webkit-mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 62%,
+    black 82%,
+    transparent 89%,
+    transparent 100%
+  );
+  mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 62%,
+    black 82%,
+    transparent 89%,
+    transparent 100%
+  );
+}
+
+:host([energy-effect-animation-enabled]) .gradient {
+  inset: 0;
+  position: absolute;
+  border-radius: 50%;
+  background: var(--glif-gradient);
+  aspect-ratio: 1 / 1;
+  translate: 0 -50%;
+  inset-block-start: 50%;
+  rotate: var(--gradient-angle, 0deg);
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+:host([energy-effect-animation-enabled]) #glowAnimationWrapper.play .gradient-blur-wrapper:not(.sharp-tip) {
+  animation: animateBlur var(--gradient-burst-duration) linear both;
+}
+
+@keyframes animateBlur {
+  0% {
+    filter: blur(1px);
+  }
+  15% {
+    filter: blur(5px);
+  }
+  25% {
+    filter: blur(3px);
+  }
+  45% {
+    filter: blur(5px);
+  }
+  100% {
+    filter: blur(1px);
+  }
+}
+
+:host([energy-effect-animation-enabled]) #glowAnimationWrapper.play .input-plate-gradient {
+  animation:
+    animateOpacity var(--gradient-burst-duration) both,
+    animateAngles var(--gradient-burst-duration)
+      var(--standard-decelerate-curve, cubic-bezier(0, 0, 0, 1)) both;
+}
+
+@keyframes animateOpacity {
+  0% {
+    animation-timing-function: var(--standard-decelerate-curve, cubic-bezier(0, 0, 0, 1));
+    opacity: 0;
+  }
+  25% {
+    opacity: var(--gradient-opacity);
+  }
+  50% {
+    animation-timing-function: var(--emphasized-accelerate-curve, cubic-bezier(0.3, 0, 0.8, 0.15));
+    opacity: var(--gradient-opacity);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes animateAngles {
+  0% {
+    --gradient-angle: var(--gradient-angle-start);
+    --mask-angle: var(--mask-angle-start);
+  }
+  100% {
+    --gradient-angle: var(--gradient-angle-end);
+    --mask-angle: var(--mask-angle-end);
+  }
+}
+

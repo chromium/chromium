@@ -10,6 +10,21 @@ export function getHtml(this: SearchboxComposeButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="glowAnimationWrapper" class="glow-container play">
+  ${this.energyEffectAnimationEnabled_ ? html`
+  <div class="input-plate-gradient">
+    <div class="input-plate-gradient-mask">
+      <div class="gradient-blur-wrapper">
+        <div class="gradient-mask">
+          <div class="gradient"></div>
+        </div>
+      </div>
+      <div class="gradient-blur-wrapper sharp-tip">
+        <div class="gradient-mask">
+          <div class="gradient"></div>
+        </div>
+      </div>
+    </div>
+  </div>` : html`
   <div class="gradient-and-mask-wrapper outer-glow">
     <div class="gradient"></div>
     <div class="mask"></div>
@@ -17,7 +32,7 @@ export function getHtml(this: SearchboxComposeButtonElement) {
   <div class="gradient-and-mask-wrapper">
     <div class="gradient"></div>
     <div class="mask"></div>
-  </div>
+  </div>`}
   <cr-button @click="${this.onClick_}" id="composeButton"
       class="compose-container"
       title="${this.i18n('searchboxComposeButtonTitle')}">
