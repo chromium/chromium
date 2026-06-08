@@ -832,17 +832,17 @@ public class ReaderModeManagerTest {
     public void testActivateReaderMode_WithActiveTask_Confirm() {
         mUserDataHost.setUserData(ActorUiTabController.class, mActorUiTabController);
         when(mActorUiTabController.isActorActive()).thenReturn(true);
-        when(mActorUiTabController.showTaskAbortConfirmationDialog(any(Runnable.class)))
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(any()))
                 .thenAnswer(
                         invocation -> {
-                            Runnable runnable = invocation.getArgument(0);
-                            runnable.run();
+                            Callback<Boolean> callback = invocation.getArgument(0);
+                            callback.onResult(true);
                             return true;
                         });
 
         mManager.activateReaderMode(EntryPoint.APP_MENU);
 
-        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any());
         verify(mDistillerTabUtilsJniMock)
                 .distillCurrentPageAndViewIfSuccessful(eq(mWebContents), any());
     }
@@ -853,12 +853,11 @@ public class ReaderModeManagerTest {
     public void testActivateReaderMode_WithActiveTask_Cancel() {
         mUserDataHost.setUserData(ActorUiTabController.class, mActorUiTabController);
         when(mActorUiTabController.isActorActive()).thenReturn(true);
-        when(mActorUiTabController.showTaskAbortConfirmationDialog(any(Runnable.class)))
-                .thenReturn(true);
+        when(mActorUiTabController.showTaskAbortConfirmationDialog(any())).thenReturn(true);
 
         mManager.activateReaderMode(EntryPoint.APP_MENU);
 
-        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any(Runnable.class));
+        verify(mActorUiTabController).showTaskAbortConfirmationDialog(any());
         verify(mDistillerTabUtilsJniMock, never())
                 .distillCurrentPageAndViewIfSuccessful(any(), any());
     }

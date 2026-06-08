@@ -267,7 +267,8 @@ public class PreviewTabTest {
                                 mActivityTestRule.getProfile(false),
                                 /* canPromoteToNewTab= */ true,
                                 /* shouldHaveContextMenu= */ true,
-                                /* initiatorOrigin= */ null));
+                                /* initiatorOrigin= */ null,
+                                () -> {}));
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
         Assert.assertTrue("Contextual Search should be suppressed", csManager.isSuppressed());
@@ -295,7 +296,8 @@ public class PreviewTabTest {
                                 mActivityTestRule.getProfile(false),
                                 /* canPromoteToNewTab= */ true,
                                 /* shouldHaveContextMenu= */ true,
-                                /* initiatorOrigin= */ null));
+                                /* initiatorOrigin= */ null,
+                                () -> {}));
         endAnimations();
 
         mEphemeralTabObserver.onToolbarCreatedCallback.waitForCallback(0, 1);

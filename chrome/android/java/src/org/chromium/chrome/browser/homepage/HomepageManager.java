@@ -611,12 +611,13 @@ public class HomepageManager
         if (currentTab != null) {
             ActorUiTabController actorUiTabController = ActorUiTabController.from(currentTab);
             if (actorUiTabController != null && actorUiTabController.isActorActive()) {
-                Runnable navigateRunnable =
-                        () -> {
-                            currentTab.loadUrl(
-                                    new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
-                        };
-                if (actorUiTabController.showTaskAbortConfirmationDialog(navigateRunnable)) {
+                if (actorUiTabController.showTaskAbortConfirmationDialog(
+                        (confirmed) -> {
+                            if (confirmed) {
+                                currentTab.loadUrl(
+                                        new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
+                            }
+                        })) {
                     return;
                 }
             }

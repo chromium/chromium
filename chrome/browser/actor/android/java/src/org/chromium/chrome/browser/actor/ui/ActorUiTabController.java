@@ -229,20 +229,20 @@ public class ActorUiTabController implements UserData {
     }
 
     /**
-     * Shows the confirmation dialog if an Actor task is active. If the user confirms, stops the
-     * Actor task and runs the provided Runnable.
+     * Shows the confirmation dialog if an Actor task is active. Triggers the callback with the
+     * user's choice (true if they confirmed/aborted, false if they canceled).
      *
-     * @param onConfirmedRunnable Runnable to execute when confirmed.
+     * @param callback Callback to receive the user's choice.
      * @return True if the dialog was shown.
      */
-    public boolean showTaskAbortConfirmationDialog(Runnable onConfirmedRunnable) {
+    public boolean showTaskAbortConfirmationDialog(Callback<Boolean> callback) {
         if (!isActorActive()) return false;
         return showConfirmationDialog(
                 (confirmed) -> {
                     if (confirmed) {
                         stopActorTask();
-                        onConfirmedRunnable.run();
                     }
+                    callback.onResult(confirmed);
                 });
     }
 

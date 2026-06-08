@@ -112,7 +112,11 @@ public class PageInfoAboutThisSiteController {
                     profile,
                     /* canPromoteToNewTab= */ true,
                     /* shouldHaveContextMenu= */ false,
-                    /* initiatorOrigin= */ null);
+                    /* initiatorOrigin= */ null,
+                    () -> {
+                        assumeNonNull(mEphemeralTabCoordinator)
+                                .removeObserver(assumeNonNull(mEphemeralTabObserver));
+                    });
 
             mMainController.dismiss();
         } else {

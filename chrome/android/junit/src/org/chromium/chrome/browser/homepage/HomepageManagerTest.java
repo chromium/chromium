@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -752,7 +753,7 @@ public class HomepageManagerTest {
         Mockito.doReturn(true).when(mActorUiTabController).isActorActive();
         Mockito.doReturn(true)
                 .when(mActorUiTabController)
-                .showTaskAbortConfirmationDialog(ArgumentMatchers.any(Runnable.class));
+                .showTaskAbortConfirmationDialog(ArgumentMatchers.any());
 
         TabCreatorManager tabCreatorManager = Mockito.mock(TabCreatorManager.class);
 
@@ -762,12 +763,13 @@ public class HomepageManagerTest {
         Mockito.verify(tab, Mockito.never()).loadUrl(ArgumentMatchers.any());
         Mockito.verifyNoInteractions(tabCreatorManager);
 
-        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         Mockito.verify(mActorUiTabController)
-                .showTaskAbortConfirmationDialog(runnableCaptor.capture());
+                .showTaskAbortConfirmationDialog(callbackCaptor.capture());
 
-        // Now run the navigation runnable, which should load the page on the tab.
-        runnableCaptor.getValue().run();
+        // Now run the navigation callback, which should load the page on the tab.
+        callbackCaptor.getValue().onResult(true);
 
         Mockito.verify(tab)
                 .loadUrl(
@@ -792,7 +794,7 @@ public class HomepageManagerTest {
         Mockito.doReturn(true).when(mActorUiTabController).isActorActive();
         Mockito.doReturn(false)
                 .when(mActorUiTabController)
-                .showTaskAbortConfirmationDialog(ArgumentMatchers.any(Runnable.class));
+                .showTaskAbortConfirmationDialog(ArgumentMatchers.any());
 
         TabCreatorManager tabCreatorManager = Mockito.mock(TabCreatorManager.class);
 
