@@ -14,7 +14,9 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/reading_list_empty.imageset/reading_list_empty_light@2x.png",
     "Assets.xcassets/reading_list_empty.imageset/reading_list_empty_light@3x.png",
     "Assets.xcassets/reading_list_empty_legacy.imageset/Contents.json",
-    "Assets.xcassets/reading_list_empty_legacy.imageset/reading_list_empty.pdf",
-    "Assets.xcassets/reading_list_empty_legacy.imageset/reading_list_empty_dark.pdf",
+    "Assets.xcassets/reading_list_empty_legacy.imageset/reading_list_empty@2x.png",
+    "Assets.xcassets/reading_list_empty_legacy.imageset/reading_list_empty@3x.png",
+    "Assets.xcassets/reading_list_empty_legacy.imageset/reading_list_empty_dark@2x.png",
+    "Assets.xcassets/reading_list_empty_legacy.imageset/reading_list_empty_dark@3x.png",
   ]
 }

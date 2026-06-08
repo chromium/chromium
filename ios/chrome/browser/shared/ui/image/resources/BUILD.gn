@@ -9,8 +9,10 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/enterprise_signin_banner.imageset/Contents.json",
-    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner.pdf",
-    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner_dark.pdf",
+    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner@2x.png",
+    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner@3x.png",
+    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner_dark@2x.png",
+    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner_dark@3x.png",
     "Assets.xcassets/password_manager_trusted_vault_widget_promo.imageset/Contents.json",
     "Assets.xcassets/password_manager_trusted_vault_widget_promo.imageset/password_manager_trusted_vault_widget_promo.pdf",
     "Assets.xcassets/password_manager_trusted_vault_widget_promo.imageset/password_manager_trusted_vault_widget_promo_dark.pdf",

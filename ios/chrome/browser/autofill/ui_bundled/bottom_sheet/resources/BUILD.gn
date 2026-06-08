@@ -9,7 +9,9 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/virtual_card_enrollment_illustration.imageset/Contents.json",
-    "Assets.xcassets/virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration.pdf",
-    "Assets.xcassets/virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration_dark.pdf",
+    "Assets.xcassets/virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration@2x.png",
+    "Assets.xcassets/virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration@3x.png",
+    "Assets.xcassets/virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration_dark@2x.png",
+    "Assets.xcassets/virtual_card_enrollment_illustration.imageset/virtual_card_enrollment_illustration_dark@3x.png",
   ]
 }

@@ -9,7 +9,9 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/history_empty.imageset/Contents.json",
-    "Assets.xcassets/history_empty.imageset/history_empty.pdf",
-    "Assets.xcassets/history_empty.imageset/history_empty_dark.pdf",
+    "Assets.xcassets/history_empty.imageset/history_empty@2x.png",
+    "Assets.xcassets/history_empty.imageset/history_empty@3x.png",
+    "Assets.xcassets/history_empty.imageset/history_empty_dark@2x.png",
+    "Assets.xcassets/history_empty.imageset/history_empty_dark@3x.png",
   ]
 }

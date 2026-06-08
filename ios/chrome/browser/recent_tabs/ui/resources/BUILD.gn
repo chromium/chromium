@@ -9,7 +9,9 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/recent_tabs_other_devices_empty.imageset/Contents.json",
-    "Assets.xcassets/recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty.pdf",
-    "Assets.xcassets/recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty_dark.pdf",
+    "Assets.xcassets/recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty@2x.png",
+    "Assets.xcassets/recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty@3x.png",
+    "Assets.xcassets/recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty_dark@2x.png",
+    "Assets.xcassets/recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty_dark@3x.png",
   ]
 }

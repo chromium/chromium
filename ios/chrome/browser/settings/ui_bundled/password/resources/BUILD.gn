@@ -9,7 +9,9 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/passwords_empty.imageset/Contents.json",
-    "Assets.xcassets/passwords_empty.imageset/passwords_empty.pdf",
-    "Assets.xcassets/passwords_empty.imageset/passwords_empty_dark.pdf",
+    "Assets.xcassets/passwords_empty.imageset/passwords_empty@2x.png",
+    "Assets.xcassets/passwords_empty.imageset/passwords_empty@3x.png",
+    "Assets.xcassets/passwords_empty.imageset/passwords_empty_dark@2x.png",
+    "Assets.xcassets/passwords_empty.imageset/passwords_empty_dark@3x.png",
   ]
 }

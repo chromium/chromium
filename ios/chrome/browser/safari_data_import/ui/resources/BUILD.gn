@@ -9,8 +9,10 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/safari_data_import.imageset/Contents.json",
-    "Assets.xcassets/safari_data_import.imageset/safari_data_import.pdf",
-    "Assets.xcassets/safari_data_import.imageset/safari_data_import_dark.pdf",
+    "Assets.xcassets/safari_data_import.imageset/safari_data_import@2x.png",
+    "Assets.xcassets/safari_data_import.imageset/safari_data_import@3x.png",
+    "Assets.xcassets/safari_data_import.imageset/safari_data_import_dark@2x.png",
+    "Assets.xcassets/safari_data_import.imageset/safari_data_import_dark@3x.png",
   ]
 }
 

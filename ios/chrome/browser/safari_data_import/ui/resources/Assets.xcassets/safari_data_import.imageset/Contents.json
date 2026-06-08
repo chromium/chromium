@@ -1,25 +1,40 @@
 {
-  "images" : [
+  "images": [
     {
-      "filename" : "safari_data_import.pdf",
-      "idiom" : "universal"
+      "idiom": "universal",
+      "scale": "2x",
+      "filename": "safari_data_import@2x.png"
     },
     {
-      "appearances" : [
+      "idiom": "universal",
+      "scale": "3x",
+      "filename": "safari_data_import@3x.png"
+    },
+    {
+      "idiom": "universal",
+      "scale": "2x",
+      "filename": "safari_data_import_dark@2x.png",
+      "appearances": [
         {
-          "appearance" : "luminosity",
-          "value" : "dark"
+          "appearance": "luminosity",
+          "value": "dark"
         }
-      ],
-      "filename" : "safari_data_import_dark.pdf",
-      "idiom" : "universal"
+      ]
+    },
+    {
+      "idiom": "universal",
+      "scale": "3x",
+      "filename": "safari_data_import_dark@3x.png",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
     }
   ],
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
+  "info": {
+    "author": "xcode",
+    "version": 1
   }
 }

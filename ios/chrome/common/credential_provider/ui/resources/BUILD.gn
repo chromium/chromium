@@ -9,10 +9,14 @@ bundle_data_xcassets("resources") {
   sources = [
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/passkey_bootstrapping_banner.imageset/Contents.json",
-    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_dark.pdf",
-    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_light.pdf",
+    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_dark@2x.png",
+    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_dark@3x.png",
+    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_light@2x.png",
+    "Assets.xcassets/passkey_bootstrapping_banner.imageset/passkey_bootstrapping_banner_light@3x.png",
     "Assets.xcassets/passkey_generic_banner.imageset/Contents.json",
-    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_dark.pdf",
-    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_light.pdf",
+    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_dark@2x.png",
+    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_dark@3x.png",
+    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_light@2x.png",
+    "Assets.xcassets/passkey_generic_banner.imageset/passkey_generic_banner_light@3x.png",
   ]
 }
