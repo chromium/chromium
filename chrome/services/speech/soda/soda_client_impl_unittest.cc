@@ -134,8 +134,7 @@ TEST_F(SodaClientImplUnitTest, CreateSodaClient) {
   ASSERT_TRUE(handler->CopyTo(bus.get(), &bytes_written));
 
   std::vector<int16_t> audio_data(bus->frames());
-  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(bus->frames(),
-                                                         audio_data.data());
+  bus->ToInterleaved<media::SignedInt16SampleTypeTraits>(audio_data);
 
   constexpr size_t kMaxChunkSize = 1024;
   constexpr int kReplayAudioCount = 2;
