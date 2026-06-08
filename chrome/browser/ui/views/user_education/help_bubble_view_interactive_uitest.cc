@@ -467,6 +467,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
     GTEST_SKIP_(kLinuxWaylandErrorMessage);
   }
 
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, default_button_clicked);
   constexpr char16_t kButton1Text[] = u"button 1";
 
