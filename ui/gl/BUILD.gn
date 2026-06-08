@@ -86,6 +86,15 @@ if (use_angle_stubs) {
         "$root_out_dir/libGLESv2.so.stripped",
         "$root_out_dir/libGLESv2.so.debug",
       ]
+      if (current_cpu == "x86") {
+        _cpu = "ia32"
+      } else {
+        _cpu = current_cpu
+      }
+      _stubs += [
+        "$root_out_dir/angle_libegl.breakpad.$_cpu",
+        "$root_out_dir/angle_libgles.breakpad.$_cpu",
+      ]
     }
     if (is_win) {
       _stubs += [
