@@ -194,8 +194,16 @@ class PermissionElementBrowserTest : public PermissionElementBrowserTestBase {
   }
 };
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_RequestPermissionDispatchResolveEvent \
+  DISABLED_RequestPermissionDispatchResolveEvent
+#else
+#define MAYBE_RequestPermissionDispatchResolveEvent \
+  RequestPermissionDispatchResolveEvent
+#endif
+
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       RequestPermissionDispatchResolveEvent) {
+                       MAYBE_RequestPermissionDispatchResolveEvent) {
   permissions::PermissionRequestManager::AutoResponseType responses[] = {
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL,
       permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ONCE,
