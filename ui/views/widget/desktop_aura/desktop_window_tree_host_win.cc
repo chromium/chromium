@@ -181,7 +181,8 @@ void DesktopWindowTreeHostWin::FinishTouchDrag(gfx::Point screen_point) {
 }
 
 bool DesktopWindowTreeHostWin::IsInNativeMoveResizeLoop() const {
-  return message_handler_ && message_handler_->IsInNativeMoveResizeLoop();
+  return message_handler_ && (message_handler_->IsInNativeMoveResizeLoop() ||
+                              message_handler_->IsInNativeMenuLoop());
 }
 
 // DesktopWindowTreeHostWin, DesktopWindowTreeHost implementation:

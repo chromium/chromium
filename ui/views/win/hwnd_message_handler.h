@@ -176,6 +176,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Returns true if any HWndMessageHandler is in a native move/resize loop.
   static bool IsInNativeMoveResizeLoop();
 
+  // Returns true if this HWNDMessageHandler is in a native menu loop.
+  bool IsInNativeMenuLoop() const { return menu_depth_ > 0; }
+
   // Tells the HWND its client area has changed.
   virtual void SendFrameChanged();
 

@@ -277,6 +277,13 @@ TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoop) {
   DesktopWindowTreeHostWin* host = static_cast<DesktopWindowTreeHostWin*>(
       widget.GetNativeWindow()->GetHost());
   EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
+
+  HWND hwnd = widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  ::SendMessage(hwnd, WM_ENTERMENULOOP, FALSE, 0);
+  EXPECT_TRUE(host->IsInNativeMoveResizeLoop());
+
+  ::SendMessage(hwnd, WM_EXITMENULOOP, FALSE, 0);
+  EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
 }
 
 }  // namespace test
