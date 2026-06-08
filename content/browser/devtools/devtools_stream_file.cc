@@ -51,23 +51,25 @@ bool DevToolsStreamFile::InitOnFileSequenceIfNeeded() {
     return false;
   if (file_.IsValid())
     return true;
-  base::FilePath temp_path;
-  if (!base::CreateTemporaryFile(&temp_path)) {
-    LOG(ERROR) << "Failed to create temporary file";
+  base::FilePath temp_dir;
+  if (!base::GetTempDir(&temp_dir)) {
+    LOG(ERROR) << "Failed to get temporary directory";
     had_errors_ = true;
     return false;
   }
-  const unsigned flags = base::File::FLAG_OPEN_TRUNCATED |
-                         base::File::FLAG_WRITE | base::File::FLAG_READ |
-                         base::File::FLAG_DELETE_ON_CLOSE;
-  file_.Initialize(temp_path, flags);
+  base::FilePath temp_path;
+  file_ = base::CreateAndOpenTemporaryFileInDir(
+      temp_dir, &temp_path,
+      base::File::FLAG_WIN_TEMPORARY | base::File::FLAG_DELETE_ON_CLOSE);
   if (!file_.IsValid()) {
-    LOG(ERROR) << "Failed to open temporary file: " << temp_path.value() << ", "
+    LOG(ERROR) << "Failed to create temporary file: "
                << base::File::ErrorToString(file_.error_details());
     had_errors_ = true;
-    base::DeleteFile(temp_path);
     return false;
   }
+#if !BUILDFLAG(IS_WIN)
+  base::DeleteFile(temp_path);
+#endif
   return true;
 }
 
