@@ -1437,11 +1437,25 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
-  // 1. Verify non-nullopt case (attached embedder).
-  std::optional<Target> target = instance->GetInvokeTarget();
-  ASSERT_TRUE(target.has_value());
-  EXPECT_TRUE(std::holds_alternative<tabs::TabHandle>(target->surface));
-  EXPECT_EQ(std::get<tabs::TabHandle>(target->surface), tab->GetHandle());
+  // 1. Verify case when there is an active embedder.
+  Target target = instance->GetInvokeTarget(Target::Surface());
+  EXPECT_TRUE(std::holds_alternative<tabs::TabHandle>(target.surface));
+  EXPECT_EQ(std::get<tabs::TabHandle>(target.surface), tab->GetHandle());
+  // No conversation ID is registered yet, so it should fall back to the
+  // instance ID.
+  EXPECT_TRUE(std::holds_alternative<InstanceId>(target.conversation));
+  EXPECT_EQ(std::get<InstanceId>(target.conversation), instance->id());
+
+  // Register a conversation ID.
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = "test-conv-id";
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+
+  // Get invoke target again and verify it now has the conversation ID.
+  target = instance->GetInvokeTarget(Target::Surface());
+  EXPECT_TRUE(std::holds_alternative<ConversationId>(target.conversation));
+  EXPECT_EQ(std::get<ConversationId>(target.conversation).conversation_id,
+            "test-conv-id");
 
   // Prevent deletion on close so the instance stays alive when closed.
   PreventDeletionOnClose(instance);
@@ -1450,9 +1464,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   instance->Close(EmbedderKey(tab), CloseOptions());
   ASSERT_OK(WaitForGlicClose(instance));
 
-  // 2. Verify nullopt case (no active embedder).
+  // 2. Verify fallback case (no active embedder).
   EXPECT_FALSE(instance->HasActiveEmbedder());
-  EXPECT_EQ(instance->GetInvokeTarget(), std::nullopt);
+  Target target_fallback =
+      instance->GetInvokeTarget(Target::Surface(tab->GetHandle()));
+  EXPECT_TRUE(std::holds_alternative<tabs::TabHandle>(target_fallback.surface));
+  EXPECT_EQ(std::get<tabs::TabHandle>(target_fallback.surface),
+            tab->GetHandle());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,

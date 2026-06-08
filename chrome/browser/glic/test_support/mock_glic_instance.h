@@ -39,7 +39,7 @@ class MockGlicInstance : public GlicInstance {
               (override));
   MOCK_METHOD(bool, IsShowing, (), (const, override));
   MOCK_METHOD(gfx::Size, GetPanelSize, (), (override));
-  MOCK_METHOD(std::optional<Target>, GetInvokeTarget, (), (override));
+  MOCK_METHOD(Target, GetInvokeTarget, (Target::Surface), (override));
   MOCK_METHOD(const InstanceId&, id, (), (const, override));
   MOCK_METHOD(std::optional<std::string>,
               conversation_id,

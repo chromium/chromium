@@ -592,12 +592,11 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, ResolveTargetSurfaceFloating) {
                        OpenGlicForActiveTabAndDetach());
   ASSERT_TRUE(instance->IsDetached());
 
-  std::optional<Target> target = instance->GetInvokeTarget();
-  ASSERT_TRUE(target.has_value());
-  EXPECT_TRUE(std::holds_alternative<Floating>(target->surface));
+  Target target = instance->GetInvokeTarget(Target::Surface());
+  EXPECT_TRUE(std::holds_alternative<Floating>(target.surface));
 
   GlicInvokeHandler::ResolvedTarget resolved =
-      GlicInvokeHandler::ResolveTargetSurface(GetProfile(), *target);
+      GlicInvokeHandler::ResolveTargetSurface(GetProfile(), target);
 
   EXPECT_TRUE(std::holds_alternative<Floating>(resolved));
 }

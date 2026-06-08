@@ -55,6 +55,7 @@ source_set("glic") {
     "public/glic_enabling.h",
     "public/glic_instance.cc",
     "public/glic_instance.h",
+    "public/glic_instance_id.h",
     "public/glic_instance_metrics_backwards_compatibility.h",
     "public/glic_invoke_options.h",
     "public/glic_keyed_service.h",

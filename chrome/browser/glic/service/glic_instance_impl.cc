@@ -324,13 +324,18 @@ gfx::Size GlicInstanceImpl::GetPanelSize() {
   return gfx::Size();
 }
 
-std::optional<Target> GlicInstanceImpl::GetInvokeTarget() {
-  if (!active_embedder_key_.has_value()) {
-    return std::nullopt;
+Target GlicInstanceImpl::GetInvokeTarget(Target::Surface fallback_surface) {
+  Target target;
+  if (auto conv_id = conversation_id()) {
+    target.conversation = ConversationId(*conv_id);
+  } else {
+    target.conversation = id();
   }
 
-  Target target;
-  target.conversation = ConversationId(conversation_id().value_or(""));
+  if (!HasActiveEmbedder()) {
+    target.surface = std::move(fallback_surface);
+    return target;
+  }
 
   target.surface = std::visit(
       absl::Overload{
