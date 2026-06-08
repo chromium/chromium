@@ -1422,76 +1422,60 @@ public class AwPrefetchTest extends AwParameterizedTest {
             AwPrefetchManager prefetchManager)
             throws Exception {
         if (!runOnWorkerThread) {
-            return startPrefetchingAndWait(url, prefetchParameters, prefetchManager);
+            TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+
+            Executor callbackExecutor = Runnable::run;
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        int prefetchKey =
+                                prefetchManager.startPrefetchRequest(
+                                        url, prefetchParameters, callback, callbackExecutor);
+                        callback.setPrefetchKey(prefetchKey);
+                    });
+
+            return callback;
         } else {
-            return startPrefetchAsyncAndWait(url, prefetchParameters, prefetchManager);
+            boolean omtEnabled = AwPrefetchManager.isWebViewPrefetchOffTheMainThreadEnabled();
+
+            HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
+            if (omtEnabled) {
+                // This histogram is only recorded when the Prefetch is posted on the main thread,
+                // which means that PrePrefetch is failed and fallback to normal prefetch when the
+                // flag is enabled.
+                builder.expectNoRecords(
+                        "Android.WebView.Profile.Prefetch.QueuedPrefetchExecutionDelay");
+            }
+            HistogramWatcher histogramWatcher = builder.build();
+
+            TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+            CountDownLatch latch = new CountDownLatch(1);
+            AtomicBoolean keyListenerCalledOnWorkerThread = new AtomicBoolean(false);
+
+            prefetchManager.startPrefetchRequestAsync(
+                    SystemClock.uptimeMillis(),
+                    url,
+                    prefetchParameters,
+                    callback,
+                    Runnable::run,
+                    prefetchKey -> {
+                        if (!org.chromium.base.ThreadUtils.runningOnUiThread()) {
+                            keyListenerCalledOnWorkerThread.set(true);
+                        }
+                        callback.setPrefetchKey(prefetchKey);
+                        latch.countDown();
+                    });
+
+            Assert.assertTrue("Prefetch should start", latch.await(5, TimeUnit.SECONDS));
+
+            if (omtEnabled) {
+                Assert.assertTrue(
+                        "Key listener should be called on worker thread for a PrePrefetch",
+                        keyListenerCalledOnWorkerThread.get());
+                histogramWatcher.assertExpected();
+            }
+
+            return callback;
         }
-    }
-
-    private TestAwPrefetchCallback startPrefetchingAndWait(
-            String url,
-            AwPrefetchParameters prefetchParameters,
-            AwPrefetchManager prefetchManager) {
-        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
-
-        Executor callbackExecutor = Runnable::run;
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    int prefetchKey =
-                            prefetchManager.startPrefetchRequest(
-                                    url, prefetchParameters, callback, callbackExecutor);
-                    callback.setPrefetchKey(prefetchKey);
-                });
-
-        return callback;
-    }
-
-    // Calls `startPrefetchRequestAsync` on worker thread. If `WebViewPrefetchOffTheMainThread`
-    // is enabled, it will start PrePrefetch on worker thread.
-    private TestAwPrefetchCallback startPrefetchAsyncAndWait(
-            String url, AwPrefetchParameters parameters, AwPrefetchManager prefetchManager)
-            throws Exception {
-
-        boolean omtEnabled = AwPrefetchManager.isWebViewPrefetchOffTheMainThreadEnabled();
-
-        HistogramWatcher.Builder builder = HistogramWatcher.newBuilder();
-        if (omtEnabled) {
-            // This histogram is only recorded when the Prefetch is posted on the main thread,
-            // which means that PrePrefetch is failed and fallback to normal prefetch when the flag
-            // is enabled.
-            builder.expectNoRecords(
-                    "Android.WebView.Profile.Prefetch.QueuedPrefetchExecutionDelay");
-        }
-        HistogramWatcher histogramWatcher = builder.build();
-
-        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicBoolean keyListenerCalledOnWorkerThread = new AtomicBoolean(false);
-
-        prefetchManager.startPrefetchRequestAsync(
-                SystemClock.uptimeMillis(),
-                url,
-                parameters,
-                callback,
-                Runnable::run,
-                prefetchKey -> {
-                    if (!org.chromium.base.ThreadUtils.runningOnUiThread()) {
-                        keyListenerCalledOnWorkerThread.set(true);
-                    }
-                    callback.setPrefetchKey(prefetchKey);
-                    latch.countDown();
-                });
-
-        Assert.assertTrue("Prefetch should start", latch.await(5, TimeUnit.SECONDS));
-
-        if (omtEnabled) {
-            Assert.assertTrue(
-                    "Key listener should be called on worker thread for a PrePrefetch",
-                    keyListenerCalledOnWorkerThread.get());
-            histogramWatcher.assertExpected();
-        }
-
-        return callback;
     }
 
     /**
