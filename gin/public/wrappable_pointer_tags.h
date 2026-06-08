@@ -86,6 +86,14 @@ static_assert(kLastPointerTag <
               "The defined type tags exceed the range of allowed tags. Adjust "
               "the start value of this enum such that all values fit.");
 
+constexpr v8::CppHeapPointerTagRange kGinWrappableTagRange(
+    static_cast<v8::CppHeapPointerTag>(kFirstPointerTag),
+    static_cast<v8::CppHeapPointerTag>(kLastPointerTag));
+
+static_assert(
+    v8::kObjectWrappableTagRange.Contains(kGinWrappableTagRange),
+    "gin::Wrappable tag range must be within kObjectWrappableTagRange");
+
 }  // namespace gin
 
 #endif  // GIN_PUBLIC_WRAPPABLE_POINTER_TAGS_H_

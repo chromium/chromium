@@ -113,9 +113,9 @@ constexpr v8::CppHeapPointerTagRange kScriptWrappableTagRange(
     static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
     kLastScriptWrappableTag);
 
-constexpr v8::CppHeapPointerTagRange kScriptWrappableOrGinWrappableTagRange(
-    static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
-    static_cast<v8::CppHeapPointerTag>(gin::kLastPointerTag));
+static_assert(
+    v8::kObjectWrappableTagRange.Contains(kScriptWrappableTagRange),
+    "ScriptWrappable tag range must be within kObjectWrappableTagRange");
 
 // This struct provides a way to store a bunch of information that is helpful
 // when unwrapping v8 objects. Each v8 bindings class has exactly one static
@@ -231,7 +231,7 @@ inline ScriptWrappable* ToAnyScriptWrappable(
 inline v8::Object::Wrappable* ToAnyWrappable(v8::Isolate* isolate,
                                              v8::Local<v8::Object> wrapper) {
   return v8::Object::Unwrap<v8::Object::Wrappable>(
-      isolate, wrapper, kScriptWrappableOrGinWrappableTagRange);
+      isolate, wrapper, v8::kObjectWrappableTagRange);
 }
 
 inline ScriptWrappable* ToAnyScriptWrappable(v8::Isolate* isolate,
