@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/android/contextual_tasks_panel_host_android.h"
 
+#include <utility>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/tab_android.h"
@@ -21,7 +23,9 @@ ContextualTasksPanelHostAndroid::ContextualTasksPanelHostAndroid(
     BrowserWindowInterface* browser_window)
     : browser_window_(browser_window) {}
 
-ContextualTasksPanelHostAndroid::~ContextualTasksPanelHostAndroid() = default;
+ContextualTasksPanelHostAndroid::~ContextualTasksPanelHostAndroid() {
+  SetWebContents(nullptr);
+}
 
 void ContextualTasksPanelHostAndroid::AddObserver(
     ContextualTasksPanelHost::Observer* observer) {
@@ -81,7 +85,9 @@ void ContextualTasksPanelHostAndroid::SetWebContents(
     return;
   }
 
-  web_contents_ = web_contents;
+  if (content::WebContents* prev = std::exchange(web_contents_, web_contents)) {
+    prev->SetDelegate(nullptr);
+  }
 
   if (!web_contents_) {
     return;

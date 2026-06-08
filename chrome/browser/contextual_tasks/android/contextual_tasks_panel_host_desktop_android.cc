@@ -40,7 +40,9 @@ ContextualTasksPanelHostDesktopAndroid::ContextualTasksPanelHostDesktopAndroid(
 }
 
 ContextualTasksPanelHostDesktopAndroid::
-    ~ContextualTasksPanelHostDesktopAndroid() = default;
+    ~ContextualTasksPanelHostDesktopAndroid() {
+  SetWebContents(nullptr);
+}
 
 void ContextualTasksPanelHostDesktopAndroid::AddObserver(
     ContextualTasksPanelHost::Observer* observer) {
