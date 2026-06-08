@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, AimSRPMessageDirection) {
 @property(nonatomic, readonly) NSDate* timestamp;
 @property(nonatomic, readonly) AimSRPMessageDirection direction;
 @property(nonatomic, readonly, copy) NSString* messageName;
+@property(nonatomic, readonly, copy) NSString* messagePayload;
 
 - (instancetype)initWithDirection:(AimSRPMessageDirection)direction
                clientToAimMessage:(const lens::ClientToAimMessage&)message;
