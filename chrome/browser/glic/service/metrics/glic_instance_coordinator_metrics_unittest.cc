@@ -8,11 +8,16 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/test_support/mock_glic_instance.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,13 +34,17 @@ class MockDataProvider : public GlicInstanceCoordinatorMetrics::DataProvider {
 class GlicInstanceCoordinatorMetricsTest : public testing::Test {
  public:
   void SetUp() override {
-    metrics_ = std::make_unique<GlicInstanceCoordinatorMetrics>(&provider_);
+    pref_service_.registry()->RegisterBooleanPref(prefs::kGlicPinnedToTabstrip,
+                                                  true);
+    metrics_ = std::make_unique<GlicInstanceCoordinatorMetrics>(&provider_,
+                                                                &pref_service_);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
+  TestingPrefServiceSimple pref_service_;
   testing::NiceMock<MockDataProvider> provider_;
   std::unique_ptr<GlicInstanceCoordinatorMetrics> metrics_;
 };
@@ -313,6 +322,27 @@ TEST_F(GlicInstanceCoordinatorMetricsTest,
   histogram_tester_.ExpectUniqueSample(
       "Glic.Interaction.SwitchConversationTarget",
       GlicSwitchConversationTarget::kSwitchedToLastActive, 1);
+}
+
+TEST_F(GlicInstanceCoordinatorMetricsTest,
+       PinningPreferenceChangesRecordActions) {
+  base::UserActionTester user_action_tester;
+
+  // The preference is registered with default 'true'. Setting it to 'false'
+  // should log a transition to Unpinned.
+  pref_service_.SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Unpinned"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Pinned"), 0);
+
+  // Redundant setting to same value should not log new actions.
+  pref_service_.SetBoolean(prefs::kGlicPinnedToTabstrip, false);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Unpinned"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Pinned"), 0);
+
+  // Setting back to 'true' should log a transition to Pinned.
+  pref_service_.SetBoolean(prefs::kGlicPinnedToTabstrip, true);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Unpinned"), 1);
+  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Pinned"), 1);
 }
 
 }  // namespace

@@ -849,16 +849,6 @@ TEST_F(GlicMetricsFeaturesEnabledTest, EnablingChanged) {
   EXPECT_EQ(user_action_tester().GetActionCount("Glic.Enabled"), 3);
 }
 
-TEST_F(GlicMetricsFeaturesEnabledTest, PinnedChanged) {
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Pinned"), 0);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Unpinned"), 0);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, false);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Pinned"), 0);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Unpinned"), 1);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Pinned"), 1);
-  EXPECT_EQ(user_action_tester().GetActionCount("Glic.Unpinned"), 1);
-}
 
 TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
   task_environment().FastForwardBy(base::Minutes(16));

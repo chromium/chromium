@@ -12,6 +12,9 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_change_registrar.h"
+
+class PrefService;
 
 namespace glic {
 
@@ -40,7 +43,8 @@ class GlicInstanceCoordinatorMetrics {
     virtual std::vector<GlicInstance*> GetInstances() = 0;
   };
 
-  explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider);
+  explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider,
+                                          PrefService* pref_service);
   ~GlicInstanceCoordinatorMetrics();
 
   // Called by the coordinator whenever an instance's visibility changes.
@@ -72,6 +76,7 @@ class GlicInstanceCoordinatorMetrics {
   std::optional<std::string> GetMostRecentlyActiveConversationId(
       raw_ptr<GlicInstance> excluded_instance);
 
+  void OnPinningPrefChanged();
   const raw_ptr<DataProvider> data_provider_;
 
   // Tracks the start time of a "Concurrent Visibility" period, which is a
@@ -83,6 +88,9 @@ class GlicInstanceCoordinatorMetrics {
 
   // Tracks the ID of the currently active conversation.
   std::optional<std::string> active_conversation_id_;
+
+  PrefChangeRegistrar pref_registrar_;
+  bool is_pinned_ = false;
 };
 
 }  // namespace glic
