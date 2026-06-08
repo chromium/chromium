@@ -5878,7 +5878,6 @@ void NavigationRequest::OnStartChecksComplete(
 
   // TODO(clamy): Avoid cloning the navigation params and create the
   // ResourceRequest directly here.
-  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptor;
 
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
   network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
@@ -5968,8 +5967,7 @@ void NavigationRequest::OnStartChecksComplete(
       static_cast<StoragePartitionImpl*>(partition)
           ->CreateURLLoaderNetworkObserverForNavigationRequest(*this),
       NetworkServiceDevToolsObserver::MakeSelfOwned(frame_tree_node_),
-      CreateDeviceBoundSessionObserver(), std::move(cached_response_head),
-      std::move(interceptor));
+      CreateDeviceBoundSessionObserver(), std::move(cached_response_head));
   CHECK(!HasRenderFrameHost());
 
   // If needed, perform an early RenderFrameHost swap after notifying observers

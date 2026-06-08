@@ -43,9 +43,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
     mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
-    network::mojom::URLResponseHeadPtr cached_response_head,
-    std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
-        initial_interceptors) {
+    network::mojom::URLResponseHeadPtr cached_response_head) {
   TRACE_EVENT0("navigation", "NavigationURLLoader::Create");
   // Prioritize CachedNavigationURLLoader over `g_loader_factory` even for tests
   // as prerendered page activation needs to run synchronously and
@@ -87,7 +85,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
       std::move(shared_dictionary_observer),
       std::move(url_loader_network_observer), std::move(devtools_observer),
       std::move(device_bound_session_observer),
-      std::move(initial_interceptors));
+      std::vector<std::unique_ptr<NavigationLoaderInterceptor>>());
 }
 
 // static

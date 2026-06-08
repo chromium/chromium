@@ -86,9 +86,7 @@ class CONTENT_EXPORT NavigationURLLoader {
       mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
           device_bound_session_observer,
-      network::mojom::URLResponseHeadPtr cached_response_head = nullptr,
-      std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
-          initial_interceptors = {});
+      network::mojom::URLResponseHeadPtr cached_response_head = nullptr);
 
   // For testing purposes; sets the factory for use in testing. The factory is
   // not used for prerendered page activation as it needs to run a specific
