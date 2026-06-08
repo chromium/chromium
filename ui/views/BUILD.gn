@@ -36,7 +36,7 @@ aggregate_vector_icons("views_vector_icons") {
     "check_small.icon",
     "checkbox_active_old.icon",
     "checkbox_check_cr2023_old.icon",
-    "checkbox_normal_cr2023_old.icon",
+    "checkbox_custom.icon",
     "checkbox_normal_old.icon",
     "circle.icon",
     "close.icon",
