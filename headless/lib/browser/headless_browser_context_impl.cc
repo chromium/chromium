@@ -89,8 +89,11 @@ HeadlessBrowserContextImpl::~HeadlessBrowserContextImpl() {
   NotifyWillBeDestroyed();
 
   // Destroy all web contents before shutting down in process renderer and
-  // storage partitions.
-  web_contents_map_.clear();
+  // storage partitions. Note that web_contents_ container can't be "just"
+  // cleared as deleting one element may lead to other elements being deleted.
+  while (!web_contents_map_.empty()) {
+    web_contents_map_.erase(web_contents_map_.begin());
+  }
 
   // In single process mode we can only have one browser context, so it's
   // safe to shutdown the in-process renderer here.
