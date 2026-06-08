@@ -1125,6 +1125,11 @@
       status: "stable",
     },
     {
+      // crbug.com/517429018
+      name: "ClampUnfocusedSelectionCache",
+      status: "stable",
+    },
+    {
       // Clamps word boundary detection to the contenteditable scope when
       // adjacent contenteditable spans have no whitespace between them.
       // See https://crbug.com/40848794.

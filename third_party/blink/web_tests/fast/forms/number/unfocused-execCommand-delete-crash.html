@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<input id="number" type="number">
+<feFuncR id="fe"></feFuncR>
+<script>
+test(() => {
+  const numberInput = document.getElementById('number');
+  const feElement = document.getElementById('fe');
+
+  numberInput.focus();
+  numberInput.value = '234';
+  // The caret is on the end of the value.
+
+  // Focus on another element. The selection remains on the <input>.
+  feElement.focus();
+
+  // Delete the last character of the unfocused <input>.
+  document.execCommand('Delete');
+
+  // Trigger a BeforeTextInsertedEvent.
+  // We had a crash in it.
+  document.execCommand('InsertText', false, '\b');
+
+  // Pass if no crashes.
+  assert_true(true);
+}, "No crash when executing execCommand('Delete') and 'InsertText' on an unfocused number input.");
+</script>

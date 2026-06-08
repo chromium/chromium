@@ -205,6 +205,20 @@ void TextControlElement::DefaultEventHandler(Event& event) {
       ComputeSelection(kStart | kEnd | kDirection, computed_selection);
       CacheSelection(computed_selection.start, computed_selection.end,
                      computed_selection.direction);
+    } else if (RuntimeEnabledFeatures::ClampUnfocusedSelectionCacheEnabled()) {
+      // If the element is not focused, the selection cache is not updated
+      // during text mutations because the global Selection doesn't point to
+      // this element. This can cause the cache to exceed the new text length.
+      // We clamp the cache here to prevent out-of-bounds index crashes.
+      // Note: While this doesn't perfectly adjust selection offsets (e.g. if
+      // text is deleted from the beginning), it is sufficient to prevent
+      // crashes in rare non-focused edit cases.
+      unsigned len = InnerEditorValue().length();
+      if (cached_selection_start_ > len || cached_selection_end_ > len) {
+        CacheSelection(std::min(cached_selection_start_, len),
+                       std::min(cached_selection_end_, len),
+                       cached_selection_direction_);
+      }
     }
 
     SubtreeHasChanged();
