@@ -24,6 +24,11 @@
 
 namespace media {
 
+static constexpr std::string_view kNotInitializedMessage =
+    "Decoder can't be used after Initialize() fails.";
+static constexpr std::string_view kDataSourceNotSetMessage =
+    "SetDataSource() must be called before Decode() or Reset().";
+
 MojoAudioDecoderService::MojoAudioDecoderService(
     MojoMediaClient* mojo_media_client,
     MojoCdmServiceContext* mojo_cdm_service_context,
@@ -54,6 +59,11 @@ void MojoAudioDecoderService::Construct(
     mojo::PendingAssociatedRemote<mojom::AudioDecoderClient> client,
     mojo::PendingRemote<mojom::MediaLog> media_log) {
   DVLOG(1) << __func__;
+  if (client_) {
+    mojo::ReportBadMessage("Construct() may only be called once.");
+    return;
+  }
+
   client_.Bind(std::move(client));
 
   auto mojo_media_log =
@@ -69,8 +79,9 @@ void MojoAudioDecoderService::Initialize(
   DVLOG(1) << __func__ << " " << config.AsHumanReadableString();
 
   if (!decoder_) {
-    OnInitialized(std::move(callback),
-                  DecoderStatus::Codes::kFailedToCreateDecoder);
+    std::move(callback).Run(DecoderStatus::Codes::kFailed, false,
+                            AudioDecoderType::kUnknown);
+    mojo::ReportBadMessage(kNotInitializedMessage);
     return;
   }
 
@@ -114,6 +125,10 @@ void MojoAudioDecoderService::Initialize(
 void MojoAudioDecoderService::SetDataSource(
     mojo::ScopedDataPipeConsumerHandle receive_pipe) {
   DVLOG(1) << __func__;
+  if (mojo_decoder_buffer_reader_) {
+    mojo::ReportBadMessage("SetDataSource() may only be called once.");
+    return;
+  }
 
   mojo_decoder_buffer_reader_ =
       std::make_unique<MojoDecoderBufferReader>(std::move(receive_pipe));
@@ -122,6 +137,18 @@ void MojoAudioDecoderService::SetDataSource(
 void MojoAudioDecoderService::Decode(mojom::DecoderBufferPtr buffer,
                                      DecodeCallback callback) {
   DVLOG(3) << __func__;
+  if (!decoder_) {
+    std::move(callback).Run(DecoderStatus::Codes::kFailed);
+    mojo::ReportBadMessage(kNotInitializedMessage);
+    return;
+  }
+
+  if (!mojo_decoder_buffer_reader_) {
+    std::move(callback).Run(DecoderStatus::Codes::kFailed);
+    mojo::ReportBadMessage(kDataSourceNotSetMessage);
+    return;
+  }
+
   mojo_decoder_buffer_reader_->ReadDecoderBuffer(
       std::move(buffer),
       base::BindOnce(&MojoAudioDecoderService::OnReadDone, weak_this_,
@@ -130,6 +157,17 @@ void MojoAudioDecoderService::Decode(mojom::DecoderBufferPtr buffer,
 
 void MojoAudioDecoderService::Reset(ResetCallback callback) {
   DVLOG(1) << __func__;
+  if (!decoder_) {
+    std::move(callback).Run();
+    mojo::ReportBadMessage(kNotInitializedMessage);
+    return;
+  }
+
+  if (!mojo_decoder_buffer_reader_) {
+    std::move(callback).Run();
+    mojo::ReportBadMessage(kDataSourceNotSetMessage);
+    return;
+  }
 
   // Reset the reader so that pending decodes will be dispatches first.
   mojo_decoder_buffer_reader_->Flush(
@@ -144,9 +182,9 @@ void MojoAudioDecoderService::OnInitialized(InitializeCallback callback,
                                 status.code());
   if (!status.is_ok()) {
     // Do not call decoder_->NeedsBitstreamConversion() if init failed.
-    std::move(callback).Run(
-        std::move(status), false,
-        decoder_ ? decoder_->GetDecoderType() : AudioDecoderType::kUnknown);
+    std::move(callback).Run(std::move(status), false,
+                            decoder_->GetDecoderType());
+    decoder_.reset();
     return;
   }
 
@@ -202,8 +240,6 @@ void MojoAudioDecoderService::OnResetDone(ResetCallback callback) {
 void MojoAudioDecoderService::OnAudioBufferReady(
     scoped_refptr<AudioBuffer> audio_buffer) {
   DVLOG(1) << __func__;
-
-  // TODO(timav): Use DataPipe.
   client_->OnBufferDecoded(mojom::AudioBuffer::From(*audio_buffer));
 }
 
