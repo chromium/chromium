@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "SystemConfigurationProto";
+
+// The IME metadata is defined within CrOS repo. Refers to
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/input_method/
+// Next ID: 6
+message KeyboardConfigurationChange {
+  // The IME id. Refers to the id field from manifest file.
+  string ime_id = 2;
+
+  // The IME long name. It is a localized string returned by
+  // InputMethodUtil::GetInputMethodLongNameInternal. Refers to
+  // https://source.chromium.org/chromium/chromium/src/+/main:ui/base/ime/ash/input_method_util.cc;l=466
+  string ime_long_name = 3;
+
+  // The IME short name. Refers to the indicator field from manifest file, or
+  // uses the first two characters in its layout or language code.
+  // https://source.chromium.org/chromium/chromium/src/+/main:ash/public/cpp/ime_info.h;l=29-32
+  string ime_short_name = 4;
+
+  // The IME layout name. Refers to the layouts field from manifest file.
+  string ime_layout_name = 5;
+}

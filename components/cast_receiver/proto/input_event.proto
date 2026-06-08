@@ -1,0 +1,123 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/cast_receiver/proto/system_configuration.proto";
+import "components/cast_receiver/proto/keyboard_input_service.proto";
+import "components/cast_receiver/proto/mouse_input_service.proto";
+import "components/cast_receiver/proto/touch_input_service.proto";
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "InputEventProto";
+
+// Next ID: 6
+message InputEvent {
+  oneof event {
+    KeyboardEvent keyboard_event = 1;
+    MouseEvent mouse_event = 2;
+    TouchEvent touch_event = 3;
+
+    // Note: Keyboard configuration change is not an input event. It would be
+    // nice to move this and any other configuration changes to a separate
+    // location.
+    cast_receiver.KeyboardConfigurationChange
+        keyboard_configuration_change = 5;
+  }
+
+  // The timestamp when the input event is fired. It represents the
+  // DOMHighResTimeStamp truncated to the whole millisecond. This field replaces
+  // the timestamp_ms in KeyboardEvent.
+  int64 timestamp_ms = 4;
+}
+
+// The list of events containing the current input event and the previous input
+// events. Sending input events with redundancies will help with recovering lost
+// input events during the transaction.
+// Next ID: 3
+message InputEventList {
+  // The incremental number indicating the sequence of the current input event
+  // starting from 1.
+  int64 transaction_id = 1;
+
+  // A list of serialized InputEvent messages in the order received, newest
+  // first. The current input event is at the head of the list.
+  repeated bytes serialized_past_events = 2;
+}
+
+// The message is used to track the last processed input event in Ambient
+// Streaming app. In order to recover the lost events, remote endpoint sends the
+// current event with the redundancies through InputEventList. Ambient streaming
+// app should send back the acknowledgement, so that the remote endpoint knows
+// whether or not the processed event is the last input event. If not, it means
+// that there is one or few events got lost, and the remote endpoint should
+// re-send the last InputEventList to recover the lost input events.
+// Remote endpoint will always send InputEventList with transaction id staring
+// from 1, so Ambient Streaming app will acknowledge the reception for the
+// transaction id 1 or higher. But once the input data channel is created by the
+// remote endpoint, the Ambient Streaming app should send the acknowledgement
+// with transaction id 0 to indicate that the data channel is ready to use.
+// Otherwise, the remote endpoint will not send the input events through the
+// input data channel.
+// Next ID: 3
+message InputEventAcknowledgement {
+  int64 processed_transaction_id = 1;
+
+  // The field represents the state of the events. The sender endpoint
+  // expects a state if the events were not processed successfully.
+  // States are not overlapping, meaning that both start_transaction_id and
+  // end_transaction_id won't fall into another acknowledgement message
+  // transaction id range. In each state, both start_transaction_id and
+  // end_transaction_id are representing the processed_transaction_ids that have
+  // been received by the ambient streaming app, and the end_transaction_id is
+  // guaranteed to be greater or equal than the start_transaction_id.
+  repeated EventsState events_state = 2;
+}
+
+// The message that defines the state of the events on the client side. The
+// sender endpoint doesn't expect the state message if the events were
+// successfully processed.
+// Next ID: 4
+message EventsState {
+  // Defines how does the client endpoint processes the request.
+  enum AcknowledgementType {
+    // Reserved state.
+    UNKNOWN = 0;
+
+    // The message has been successfully processed. This state isn't currently
+    // used in the EXO as the sender endpoint doesn't expect a state
+    // acknowledgement if the event was processed successfully at the client
+    // endpoint.
+    PROCESSED = 1;
+
+    // The client endpoint decided to not process the message, even though the
+    // message is valid.
+    IGNORED = 2;
+
+    // The message cannot be processed, e,g. due to old version.
+    UNSUPPORTED = 3;
+
+    // The client endpoint tried to process the message but it's failed,
+    // e.g. caught exceptions.
+    FAILED = 4;
+  }
+
+  // The state of the events from the start transaction id to the end
+  // transaction id.
+  AcknowledgementType events_state = 1;
+
+  // The start of the transaction id that has the same state.
+  int64 start_transaction_id = 2;
+
+  // The end of the transaction id that has the same state. If the value isn't
+  // set, it means that it's a single event where end transaction id is the same
+  // as the start transaction id.
+  int64 end_transaction_id = 3;
+}

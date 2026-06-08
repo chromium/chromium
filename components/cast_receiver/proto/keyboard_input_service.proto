@@ -1,0 +1,55 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.services";
+option java_outer_classname = "KeyboardInputServiceProto";
+
+// Next ID: 11
+message KeyboardEvent {
+  enum ActionType {
+    UNKNOWN = 0;
+    KEY_DOWN = 1;
+    KEY_UP = 2;
+  }
+
+  // The keyboard event type.
+  ActionType action_type = 1;
+
+  // Represents what the physical key be pressed. Corresponds to
+  // KeyboardEvent.code defined in Javascript.
+  string key_code = 2;
+
+  // The represented value when the key is pressed. This value can change for
+  // the same physical key depending on the Caps Lock state and keyboard layout.
+  string key_value = 3;
+
+  // True if the given key is being held down such that it is automatically
+  // repeating. Corresponds to KeyboardEvent.repeat defined in Javascript.
+  bool repeat = 4;
+
+  // Indicates if the alt, ctrl, shift, meta key is being pressed when the
+  // keyboard event is fired.
+  bool alt_key_press = 5;
+  bool ctrl_key_press = 6;
+  bool shift_key_press = 7;
+  bool meta_key_press = 8;
+
+  // Indicates if the caps lock is enabled when the keyboard event is fired.
+  bool caps_lock_enabled = 9;
+
+  // The timestamp when the keyboard event is fired. It represents the
+  // DOMHighResTimeStamp truncated to the whole millisecond.
+  int64 timestamp_ms = 10;
+}
+
+// Next ID: 1

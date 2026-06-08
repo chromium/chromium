@@ -1,0 +1,64 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.services";
+option java_outer_classname = "MouseInputServiceProto";
+
+// Next ID: 11
+message MouseEvent {
+  enum ActionType {
+    UNKNOWN = 0;
+    MOUSE_DOWN = 1;
+    MOUSE_UP = 2;
+    MOUSE_MOVE = 3;
+    MOUSE_WHEEL = 4;
+  }
+
+  enum MouseButton {
+    UNKNOWN_BUTTON = 0;
+    LEFT_BUTTON = 1;
+    RIGHT_BUTTON = 2;
+    MIDDLE_BUTTON = 3;
+    BROWSER_BACK_BUTTON = 4;
+    BROWSER_FORWARD_BUTTON = 5;
+  }
+
+  // The mouse action type.
+  ActionType action_type = 1;
+
+  // The ratio computed by X coordinate relative to display width in pixels. For
+  // example, if the absolute X is 128 and display width is 1280, this x_ratio
+  // value will be computed as (128 / 1280) to send.
+  float x_ratio = 2;
+
+  // The ratio computed by Y coordinate relative to display height in pixels.
+  float y_ratio = 3;
+
+  // The ratio computed by X movement relative to display width in pixels.
+  float move_x_ratio = 4;
+
+  // The ratio computed by Y movement relative to display height in pixels.
+  float move_y_ratio = 5;
+
+  // Indicate if the alt, ctrl, shift, meta key being pressed when mouse event
+  // fired.
+  bool alt_key_press = 6;
+  bool ctrl_key_press = 7;
+  bool shift_key_press = 8;
+  bool meta_key_press = 9;
+
+  // The buttons being pressed when mouse event fired.
+  repeated MouseButton buttons = 10;
+}
+
+// Next ID: 1

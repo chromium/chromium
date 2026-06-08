@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [
+    "input_event.proto",
+    "keyboard_input_service.proto",
+    "mouse_input_service.proto",
+    "system_configuration.proto",
+    "touch_input_service.proto",
+  ]
+}

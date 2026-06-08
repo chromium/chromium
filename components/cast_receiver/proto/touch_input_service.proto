@@ -1,0 +1,59 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.services";
+option java_outer_classname = "TouchInputServiceProto";
+
+// Next ID: 4
+message Touch {
+  // Unique identifier for this Touch object. A given touch point will have the
+  // same identifier for the duration of its movement around the surface. This
+  // lets us ensure that we are tracking the same touch all the time.
+  int32 id = 1;
+
+  // The ratio computed by X coordinate relative to display width in pixels. For
+  // example, if the absolute X is 128 and display width is 1280, this x_ratio
+  // value will be computed as (128 / 1280) to send.
+  float x_ratio = 2;
+
+  // The ratio computed by Y coordinate relative to display height in pixels.
+  float y_ratio = 3;
+}
+
+// Next ID: 7
+message TouchEvent {
+  enum ActionType {
+    UNKNOWN = 0;
+    TOUCH_DOWN = 1;
+    TOUCH_UP = 2;
+    TOUCH_MOVE = 3;
+    TOUCH_CANCEL = 4;
+  }
+
+  // The touch action type.
+  ActionType action_type = 1;
+
+  // A list of Touch objects for touch points that are still in contact with the
+  // touch surface. It can be used to support application specific multi-touch
+  // interactions.
+  repeated Touch touches = 2;
+
+  // Indicate if the alt, ctrl, shift, meta key being pressed when touch event
+  // fired.
+  bool alt_key_press = 3;
+  bool ctrl_key_press = 4;
+  bool shift_key_press = 5;
+  bool meta_key_press = 6;
+}
+
+// Next ID: 1
