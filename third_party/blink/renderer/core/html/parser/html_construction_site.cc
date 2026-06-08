@@ -419,8 +419,6 @@ void HTMLConstructionSite::QueueTask(HTMLConstructionSiteTask& task,
 
   if (sanitizer_ && task.child && task.parent &&
       !task.parent->IsDocumentNode() &&
-      task.operation !=
-          HTMLConstructionSiteTask::Operation::kInsertAlreadyParsedChild &&
       task.operation != HTMLConstructionSiteTask::Operation::kTakeAllChildren) {
     CHECK(RuntimeEnabledFeatures::StreamingSanitizerEnabled());
     if (!sanitizer_->Sanitize(task.child)) {
