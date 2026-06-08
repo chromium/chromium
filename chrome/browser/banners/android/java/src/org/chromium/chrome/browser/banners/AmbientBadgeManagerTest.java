@@ -26,6 +26,7 @@ import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiSelector;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +43,6 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableLeakChecks;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -87,10 +87,6 @@ import java.util.Observer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(http://crbug.com/495529795): Enable side panel and fix this test.
 @DisableFeatures({ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL})
-@DisableLeakChecks({
-    "crbug.com/512491129 (AppBannerManager)",
-    "crbug.com/512491794 (AppBannerManager)"
-})
 public class AmbientBadgeManagerTest {
     @Rule
     public FreshCtaTransitTestRule mTabbedActivityTestRule =
@@ -205,6 +201,15 @@ public class AmbientBadgeManagerTest {
         AppBannerManager.setOverrideSegmentationResultForTesting(true);
         mTestServer = mTabbedActivityTestRule.getTestServer();
         mUiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppBannerManager.setAppDetailsDelegate(null);
+                });
+        mDetailsDelegate = null;
     }
 
     private AppBannerManager getAppBannerManager(WebContents webContents) {
@@ -375,7 +380,8 @@ public class AmbientBadgeManagerTest {
                         .expectIntRecord(
                                 "Webapp.Install.InstallEvent",
                                 WebappInstallSource.AMBIENT_BADGE_BROWSER_TAB)
-                        .expectIntRecord(INSTALL_PATH_HISTOGRAM_NAME, 1 /* kAmbientInfobar */)
+                        .expectIntRecord(
+                                INSTALL_PATH_HISTOGRAM_NAME, /* value= */ 1) // kAmbientInfobar
                         .build();
 
         triggerInstallWebApp(
@@ -399,7 +405,8 @@ public class AmbientBadgeManagerTest {
                         .expectIntRecord(
                                 "Webapp.Install.InstallEvent",
                                 WebappInstallSource.AMBIENT_BADGE_CUSTOM_TAB)
-                        .expectIntRecord(INSTALL_PATH_HISTOGRAM_NAME, 1 /* kAmbientInfobar */)
+                        .expectIntRecord(
+                                INSTALL_PATH_HISTOGRAM_NAME, /* value= */ 1) // kAmbientInfobar
                         .build();
 
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
