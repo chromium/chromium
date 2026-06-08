@@ -721,6 +721,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @Override
+    public @Px int getContainerBottomMargin() {
+        return mBottomSheet != null ? mBottomSheet.getContainerBottomMargin() : 0;
+    }
+
+    @Override
     public boolean hasBottomInset() {
         Integer inset = mEdgeToEdgeBottomInsetSupplier.get();
         return inset != null && inset != 0;

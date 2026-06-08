@@ -250,6 +250,13 @@ public interface BottomSheetController {
      */
     boolean isAnchoredToBottomControls();
 
+    /**
+     * @return The bottom margin of the sheet's container in pixels. This is space at the bottom of
+     *     the sheet covered by UI like the keyboard.
+     */
+    @Px
+    int getContainerBottomMargin();
+
     /** Whether the bottom sheet has a bottom inset. */
     boolean hasBottomInset();
 
