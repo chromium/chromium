@@ -1857,6 +1857,12 @@ inline constexpr char kDevToolsLiveEditDescription[] =
     "Re-enable the deprecated feature in DevTools' Sources panel to apply code "
     "edits to the target page live.";
 
+inline constexpr char kDevToolsPlusButtonName[] =
+    "Enable the Plus Button in DevTools";
+inline constexpr char kDevToolsPlusButtonDescription[] =
+    "Shows a Plus Button in main DevTools panel/drawer tabbed locations, "
+    "replacing the \"More tools\" overflow menu.";
+
 inline constexpr char kDevToolsProtocolMonitorName[] =
     "Enable protocol monitor in DevTools";
 inline constexpr char kDevToolsProtocolMonitorDescription[] =

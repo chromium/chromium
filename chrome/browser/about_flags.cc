@@ -13041,6 +13041,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBnplKlarnaInternationalization)},
 
+    {"devtools-plus-button", flag_descriptions::kDevToolsPlusButtonName,
+     flag_descriptions::kDevToolsPlusButtonDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kDevToolsPlusButton)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

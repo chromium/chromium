@@ -11022,6 +11022,7 @@ from previous Chrome versions.
   <int value="-1093224986" label="ArcUnthrottleOnActiveAudioV2:disabled"/>
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
+  <int value="-1092426506" label="DevToolsPlusButton:enabled"/>
   <int value="-1092340892" label="VCTrayMicIndicator:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
   <int value="-1092165602"
@@ -13611,6 +13612,7 @@ from previous Chrome versions.
   <int value="-245813749"
       label="AutofillHighlightOnlyChangedValuesInPreviewMode:enabled"/>
   <int value="-245342115" label="PermissionChip:enabled"/>
+  <int value="-243786659" label="DevToolsPlusButton:disabled"/>
   <int value="-242836432" label="EnableFakeKeyboardHeuristic:disabled"/>
   <int value="-242603713" label="EnableImprovedGuestProfileMenu:disabled"/>
   <int value="-242441279" label="SafetyCheckUnusedSitePermissions:enabled"/>

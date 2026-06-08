@@ -2221,11 +2221,11 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                         "enabled", base::FeatureList::IsEnabled(
                                        blink::features::kDevToolsAdsPanel)));
 
-  response_dict.Set(
-      "devToolsPlusButton",
-      base::DictValue().Set(
-          "enabled",
-          base::FeatureList::IsEnabled(::features::kDevToolsPlusButton)));
+  response_dict.Set("devToolsPlusButton",
+                    base::DictValue().Set(
+                        "enabled", GetFeatureStateForDevTools(
+                                       ::features::kDevToolsPlusButton,
+                                       enabled_by_flags, disabled_by_flags)));
 
   return response_dict;
 }
