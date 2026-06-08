@@ -191,7 +191,11 @@ public class NtpCustomizationUtils {
      * sheet's content description requires special handling beyond this function.
      */
     public static int getSheetContentDescription(
-            @NtpCustomizationCoordinator.BottomSheetType int type) {
+            @Nullable @NtpCustomizationCoordinator.BottomSheetType Integer type) {
+        if (type == null) {
+            return R.string.ntp_customization_main_bottom_sheet;
+        }
+
         switch (type) {
             case MAIN:
                 return R.string.ntp_customization_main_bottom_sheet;
@@ -219,7 +223,11 @@ public class NtpCustomizationUtils {
      * expanded.
      */
     public static int getSheetFullHeightAccessibilityStringId(
-            @NtpCustomizationCoordinator.BottomSheetType int type) {
+            @Nullable @NtpCustomizationCoordinator.BottomSheetType Integer type) {
+        if (type == null) {
+            return R.string.ntp_customization_main_bottom_sheet_opened_full;
+        }
+
         switch (type) {
             case MAIN:
                 return R.string.ntp_customization_main_bottom_sheet_opened_full;
@@ -249,7 +257,11 @@ public class NtpCustomizationUtils {
      * expanded.
      */
     public static int getSheetHalfHeightAccessibilityStringId(
-            @NtpCustomizationCoordinator.BottomSheetType int type) {
+            @Nullable @NtpCustomizationCoordinator.BottomSheetType Integer type) {
+        if (type == null) {
+            return R.string.ntp_customization_main_bottom_sheet_opened_half;
+        }
+
         switch (type) {
             case MAIN:
                 return R.string.ntp_customization_main_bottom_sheet_opened_half;
