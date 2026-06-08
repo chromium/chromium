@@ -74,16 +74,6 @@ FieldRendererId FindConfirmationPasswordFieldId(
   return FieldRendererId();
 }
 
-void CopyElementValueToOtherInputElements(
-    const WebInputElement& element,
-    std::vector<WebInputElement>& elements) {
-  for (WebInputElement& it : elements) {
-    if (element != it) {
-      it.SetAutofillValue(element.Value());
-    }
-    it.SetAutofillState(WebAutofillState::kAutofilled);
-  }
-}
 
 void PreviewGeneratedValue(WebInputElement& input_element,
                            const blink::WebString& value) {
@@ -356,7 +346,8 @@ bool PasswordGenerationAgent::ShouldIgnoreBlur() const {
 }
 
 bool PasswordGenerationAgent::IsPrerendering() const {
-  return render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
+  return render_frame() &&
+         render_frame()->GetWebFrame()->GetDocument().IsPrerendering();
 }
 
 void PasswordGenerationAgent::PreviewGenerationSuggestion(
@@ -712,6 +703,11 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
       // Mirror edits to any confirmation password fields.
       CopyElementValueToOtherInputElements(
           element, current_generation_item_->password_elements_);
+      // CopyElementValueToOtherInputElements() above may have resulted in JS
+      // closing the frame.
+      if (!render_frame()) {
+        return true;
+      }
       // Even though `form_cache` is available, we previously ran
       // `CopyElementValueToOtherInputElements()` which triggers
       // `WebFormControlElement::SetValue()`, dispatching events that might
@@ -835,6 +831,11 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
         this);
     if (generation_element != element) {
       element.SetAutofillValue(blink::WebString());
+      // SetAutofillValue() above may have resulted in JavaScript closing the
+      // frame.
+      if (!render_frame()) {
+        return;
+      }
     }
   }
 
@@ -846,6 +847,22 @@ void PasswordGenerationAgent::PasswordNoLongerGenerated() {
   if (presaved_form_data)
     GetPasswordGenerationDriver().PasswordNoLongerGenerated(
         *presaved_form_data);
+}
+
+void PasswordGenerationAgent::CopyElementValueToOtherInputElements(
+    const blink::WebInputElement& element,
+    std::vector<blink::WebInputElement>& elements) {
+  for (blink::WebInputElement& it : elements) {
+    if (element != it) {
+      it.SetAutofillValue(element.Value());
+      // SetAutofillValue() above may have resulted in JavaScript closing the
+      // frame.
+      if (!render_frame()) {
+        return;
+      }
+    }
+    it.SetAutofillState(blink::WebAutofillState::kAutofilled);
+  }
 }
 
 void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(

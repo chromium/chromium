@@ -160,6 +160,12 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // Stops treating a password as generated.
   void PasswordNoLongerGenerated();
 
+  // Mirrors the value of `element` to all other `elements` and updates their
+  // autofill state to `Autofilled`.
+  void CopyElementValueToOtherInputElements(
+      const blink::WebInputElement& element,
+      std::vector<blink::WebInputElement>& elements);
+
   // Creates |current_generation_item_| for |element| if |element| is a
   // generation enabled element. If |current_generation_item_| is already
   // created for |element| it is not recreated.
