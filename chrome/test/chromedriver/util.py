@@ -341,6 +341,12 @@ def TryUploadingResultToResultSink(results):
           'testMetadata': {
               'name': test_case.id(),
           },
+          'tags': [
+              {
+                  'key': 'test_name',
+                  'value': test_case.id(),
+              },
+          ],
       })
 
     for (test_case, stack_trace) in result.failures + result.errors:
@@ -355,6 +361,12 @@ def TryUploadingResultToResultSink(results):
           'testMetadata': {
               'name': test_case.id(),
           },
+          'tags': [
+              {
+                  'key': 'test_name',
+                  'value': test_case.id(),
+              },
+          ],
           # A map of artifacts. The keys are artifact ids which uniquely
           # identify an artifact within the test result.
           'artifacts': {
