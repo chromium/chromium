@@ -958,5 +958,50 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   EXPECT_TRUE(host_impl.pending_tree()->property_trees()->changed());
 }
 
+TEST(PropertyTreeTest, AnchorPositionAndStickyDataStaleIndex) {
+  PropertyTrees property_trees;
+  TransformTree& tree = property_trees.transform_tree_mutable();
+
+  // 1. Setup a node with anchor position scroll data.
+  TransformNode node;
+  node.id = tree.Insert(TransformNode(), kRootPropertyNodeId);
+  tree.EnsureAnchorPositionScrollData(node.id);
+  tree.MutableNode(node.id).anchor_position_scroll_data_id = 0;
+
+  EXPECT_EQ(tree.anchor_position_scroll_data().size(), 1u);
+  EXPECT_NE(tree.GetAnchorPositionScrollData(node.id), nullptr);
+
+  // 2. Simulate replacing the anchor_position_scroll_data vector with a smaller
+  // one.
+  tree.anchor_position_scroll_data() = std::vector<AnchorPositionScrollData>();
+  EXPECT_EQ(tree.anchor_position_scroll_data().size(), 0u);
+
+  // 3. Accessing the data for the node should now be safe (returns nullptr).
+  EXPECT_EQ(tree.GetAnchorPositionScrollData(node.id), nullptr);
+
+  // 4. EnsureAnchorPositionScrollData should also be safe and fix the index.
+  tree.EnsureAnchorPositionScrollData(node.id);
+  EXPECT_EQ(tree.anchor_position_scroll_data().size(), 1u);
+  EXPECT_EQ(tree.Node(node.id).anchor_position_scroll_data_id, 0);
+
+  // 5. Similarly for sticky position data.
+  TransformNode node2;
+  node2.id = tree.Insert(TransformNode(), kRootPropertyNodeId);
+  tree.EnsureStickyPositionData(node2.id);
+  tree.MutableNode(node2.id).sticky_position_constraint_id = 0;
+
+  EXPECT_EQ(tree.sticky_position_data().size(), 1u);
+  EXPECT_NE(tree.GetStickyPositionData(node2.id), nullptr);
+
+  tree.sticky_position_data() = std::vector<StickyPositionNodeData>();
+  EXPECT_EQ(tree.sticky_position_data().size(), 0u);
+
+  EXPECT_EQ(tree.GetStickyPositionData(node2.id), nullptr);
+
+  tree.EnsureStickyPositionData(node2.id);
+  EXPECT_EQ(tree.sticky_position_data().size(), 1u);
+  EXPECT_EQ(tree.Node(node2.id).sticky_position_constraint_id, 0);
+}
+
 }  // namespace
 }  // namespace cc

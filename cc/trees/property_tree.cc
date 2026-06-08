@@ -608,7 +608,9 @@ gfx::Vector2dF TransformTree::StickyPositionOffset(const TransformNode& node) {
 AnchorPositionScrollData& TransformTree::EnsureAnchorPositionScrollData(
     int node_id) {
   TransformNode& node = MutableNode(node_id);
-  if (node.anchor_position_scroll_data_id == -1) {
+  if (node.anchor_position_scroll_data_id == -1 ||
+      static_cast<size_t>(node.anchor_position_scroll_data_id) >=
+          anchor_position_scroll_data_.size()) {
     node.anchor_position_scroll_data_id = anchor_position_scroll_data_.size();
     anchor_position_scroll_data_.emplace_back();
   }
@@ -618,7 +620,9 @@ AnchorPositionScrollData& TransformTree::EnsureAnchorPositionScrollData(
 const AnchorPositionScrollData* TransformTree::GetAnchorPositionScrollData(
     int node_id) const {
   const TransformNode& node = Node(node_id);
-  if (node.anchor_position_scroll_data_id == -1) {
+  if (node.anchor_position_scroll_data_id == -1 ||
+      static_cast<size_t>(node.anchor_position_scroll_data_id) >=
+          anchor_position_scroll_data_.size()) {
     return nullptr;
   }
   return &anchor_position_scroll_data_[node.anchor_position_scroll_data_id];
@@ -1077,7 +1081,9 @@ bool TransformTree::operator==(const TransformTree& other) const {
 
 StickyPositionNodeData* TransformTree::MutableStickyPositionData(int node_id) {
   const TransformNode& node = Node(node_id);
-  if (node.sticky_position_constraint_id == -1) {
+  if (node.sticky_position_constraint_id == -1 ||
+      static_cast<size_t>(node.sticky_position_constraint_id) >=
+          sticky_position_data_.size()) {
     return nullptr;
   }
   return &sticky_position_data_[node.sticky_position_constraint_id];
@@ -1085,7 +1091,9 @@ StickyPositionNodeData* TransformTree::MutableStickyPositionData(int node_id) {
 
 StickyPositionNodeData& TransformTree::EnsureStickyPositionData(int node_id) {
   TransformNode& node = MutableNode(node_id);
-  if (node.sticky_position_constraint_id == -1) {
+  if (node.sticky_position_constraint_id == -1 ||
+      static_cast<size_t>(node.sticky_position_constraint_id) >=
+          sticky_position_data_.size()) {
     node.sticky_position_constraint_id = sticky_position_data_.size();
     sticky_position_data_.emplace_back();
   }

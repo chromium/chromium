@@ -90,10 +90,18 @@ void AddTransformNodeUpdate(
   wire->post_translation = new_node.post_translation;
   wire->to_parent = new_node.to_parent;
   if (new_node.sticky_position_constraint_id >= 0) {
+    // TODO(zork): Remove these after 2026-07-01
+    DUMP_WILL_BE_CHECK_LT(
+        static_cast<size_t>(new_node.sticky_position_constraint_id),
+        tree.sticky_position_data().size());
     wire->sticky_position_constraint_id =
         base::checked_cast<uint32_t>(new_node.sticky_position_constraint_id);
   }
   if (new_node.anchor_position_scroll_data_id >= 0) {
+    // TODO(zork): Remove these after 2026-07-01
+    DUMP_WILL_BE_CHECK_LT(
+        static_cast<size_t>(new_node.anchor_position_scroll_data_id),
+        tree.anchor_position_scroll_data().size());
     wire->anchor_position_scroll_data_id =
         base::checked_cast<uint32_t>(new_node.anchor_position_scroll_data_id);
   }
