@@ -91,8 +91,8 @@ constexpr int kUICompositorLargeRamMemoryLimitMB = 2048;
 constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
 // The RAM capacity threshold. When the device has 16GB+ of memory,
 // configure the compositor to use a higher memory limit.
-constexpr base::ByteCount kUICompositorMemoryLimitRamCapacityThreshold =
-    base::GiB(16);
+constexpr base::ByteSize kUICompositorMemoryLimitRamCapacityThreshold =
+    base::GiBU(16);
 
 // An UMA signal for the current effective resolution/dpi is sent at this rate.
 // This keeps track of the effective resolution/dpi most used on
@@ -1011,7 +1011,7 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
         kUICompositorLargeDisplayMemoryLimitMB;
   }
 
-  if (base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() >=
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() >=
       kUICompositorMemoryLimitRamCapacityThreshold) {
     params_with_bounds.compositor_memory_limit_mb =
         kUICompositorLargeRamMemoryLimitMB;

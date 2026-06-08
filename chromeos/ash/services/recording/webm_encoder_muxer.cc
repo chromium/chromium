@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/recording/webm_encoder_muxer.h"
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -102,7 +103,7 @@ class RecordingMuxerDelegate : public media::FileWebmMuxerDelegate {
       return result;
     }
 
-    file_io_helper_.OnBytesWritten(buf.size());
+    file_io_helper_.OnBytesWritten(base::ByteSize(buf.size()));
 
     return result;
   }

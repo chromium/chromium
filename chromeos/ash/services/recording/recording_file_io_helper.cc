@@ -4,7 +4,8 @@
 
 #include "chromeos/ash/services/recording/recording_file_io_helper.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 
@@ -15,11 +16,11 @@ namespace {
 // We use a threshold of 512 MB to end the video recording due to low disk
 // space, which is the same threshold as that used by the low disk space
 // notification (See low_disk_notification.cc).
-constexpr base::ByteCount kLowDiskSpaceThreshold = base::MiB(512);
+constexpr base::ByteSize kLowDiskSpaceThreshold = base::MiBU(512);
 
 // To avoid checking the remaining disk space after every write operation, we do
 // it only once every 10 MB written of encoder data.
-constexpr base::ByteCount kMinDataBetweenDiskSpaceChecks = base::MiB(10);
+constexpr base::ByteSize kMinDataBetweenDiskSpaceChecks = base::MiBU(10);
 
 }  // namespace
 
@@ -29,14 +30,15 @@ RecordingFileIoHelper::RecordingFileIoHelper(
     Delegate* delegate)
     : output_file_path_(output_file_path),
       drive_fs_quota_delegate_remote_(std::move(drive_fs_quota_delegate)),
-      delegate_(delegate) {
+      delegate_(delegate),
+      data_since_last_disk_space_check_(kMinDataBetweenDiskSpaceChecks) {
   DCHECK(delegate_);
 }
 
 RecordingFileIoHelper::~RecordingFileIoHelper() = default;
 
-void RecordingFileIoHelper::OnBytesWritten(int64_t num_bytes) {
-  data_till_next_disk_space_check_ -= base::ByteCount(num_bytes);
+void RecordingFileIoHelper::OnBytesWritten(base::ByteSize num_bytes) {
+  data_since_last_disk_space_check_ += num_bytes;
   MaybeCheckRemainingSpace();
 }
 
@@ -45,7 +47,7 @@ bool RecordingFileIoHelper::IsDriveFsFile() const {
 }
 
 void RecordingFileIoHelper::MaybeCheckRemainingSpace() {
-  if (data_till_next_disk_space_check_ > base::ByteCount(0)) {
+  if (data_since_last_disk_space_check_ < kMinDataBetweenDiskSpaceChecks) {
     return;
   }
 
@@ -72,7 +74,7 @@ void RecordingFileIoHelper::OnGotRemainingFreeSpace(
     mojom::RecordingStatus status,
     int64_t remaining_free_space_bytes) {
   waiting_for_drive_fs_delegate_ = false;
-  data_till_next_disk_space_check_ = kMinDataBetweenDiskSpaceChecks;
+  data_since_last_disk_space_check_ = base::ByteSize();
 
   if (remaining_free_space_bytes < 0) {
     // A negative value (e.g. -1) indicates a failure in computing the free
@@ -80,10 +82,11 @@ void RecordingFileIoHelper::OnGotRemainingFreeSpace(
     return;
   }
 
-  if (remaining_free_space_bytes < kLowDiskSpaceThreshold.InBytes()) {
+  const base::ByteSize remaining_free_space(
+      base::as_unsigned(remaining_free_space_bytes));
+  if (remaining_free_space < kLowDiskSpaceThreshold) {
     LOG(WARNING) << "Ending recording due to " << status
-                 << ", and remaining free space of "
-                 << base::ByteCount(remaining_free_space_bytes);
+                 << ", and remaining free space of " << remaining_free_space;
     delegate_->NotifyFailure(status);
   }
 }

@@ -5,7 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_FILE_IO_HELPER_H_
 #define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_FILE_IO_HELPER_H_
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -44,7 +44,7 @@ class RecordingFileIoHelper {
 
   // Tells this helper that `num_bytes` have been written to the output file so
   // that it can perform any remaining disk space checks if needed.
-  void OnBytesWritten(int64_t num_bytes);
+  void OnBytesWritten(base::ByteSize num_bytes);
 
  private:
   // Returns true if the video file is being written to a path
@@ -52,12 +52,15 @@ class RecordingFileIoHelper {
   bool IsDriveFsFile() const;
 
   // Checks the remaining free space (whether for a local file, or a DriveFS
-  // file) once `num_bytes_till_next_disk_space_check_` goes below zero.
+  // file) once `data_since_last_disk_space_check_` goes above
+  // kMinDataBetweenDiskSpaceChecks.
   void MaybeCheckRemainingSpace();
 
   // Called to test the `remaining_free_space_bytes` against the minimum
   // threshold below which we end the recording with a failure. The failure type
   // that will be propagated to the client is the given `status`.
+  // TODO(crbug.com/448661443): Use ByteSize for the param. This is called from
+  // GetDriveFsFreeSpaceBytes which should be updated to pass a ByteSize.
   void OnGotRemainingFreeSpace(mojom::RecordingStatus status,
                                int64_t remaining_free_space_bytes);
 
@@ -74,10 +77,10 @@ class RecordingFileIoHelper {
   // errors.
   const raw_ptr<Delegate> delegate_;
 
-  // Once this value becomes <= 0, we trigger a remaining disk space poll.
-  // Initialized to 0, so that we poll the disk space on the very first write
-  // operation.
-  base::ByteCount data_till_next_disk_space_check_;
+  // Once this value becomes >= kMinDataBetweenDiskSpaceChecks, we trigger a
+  // remaining disk space poll. Initialized to kMinDataBetweenDiskSpaceChecks,
+  // so that we poll the disk space on the very first write operation.
+  base::ByteSize data_since_last_disk_space_check_;
 
   // True when we're waiting for a reply from the remote DriveFS quota delegate.
   bool waiting_for_drive_fs_delegate_ = false;

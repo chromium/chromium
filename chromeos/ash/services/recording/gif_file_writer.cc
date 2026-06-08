@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 
 namespace recording {
@@ -49,7 +50,7 @@ void GifFileWriter::WriteBytesAndCheck(base::span<const uint8_t> data) {
     return;
   }
 
-  file_io_helper_.OnBytesWritten(data.size_bytes());
+  file_io_helper_.OnBytesWritten(base::ByteSize(data.size_bytes()));
 }
 
 }  // namespace recording
