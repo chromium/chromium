@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -16,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.function.Supplier;
@@ -111,7 +112,10 @@ public class VerticalTabListCoordinator {
     }
 
     public VerticalTabListCoordinator(
-            Activity activity, TabModelSelector tabModelSelector, Profile profile) {
+            Activity activity,
+            TabModelSelector tabModelSelector,
+            Profile profile,
+            VerticalTabsActionDelegate verticalTabsActionDelegate) {
         mModelList = new TabListModel();
         SimpleRecyclerViewAdapter adapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
@@ -197,8 +201,19 @@ public class VerticalTabListCoordinator {
                     }
                 };
 
-        ImageButton newTabButton = mContainerView.findViewById(R.id.new_tab_button);
-        newTabButton.setOnClickListener(v -> handleNewTabButtonClick());
+        PropertyModel model =
+                new PropertyModel.Builder(VerticalTabListProperties.ALL_KEYS)
+                        .with(
+                                VerticalTabListProperties.ON_GRID_CLICK_LISTENER,
+                                v -> verticalTabsActionDelegate.openHubPane(PaneId.TAB_GROUPS))
+                        .with(
+                                VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER,
+                                v -> verticalTabsActionDelegate.openHubPane(PaneId.TAB_SWITCHER))
+                        .with(
+                                VerticalTabListProperties.ON_NEW_TAB_CLICK_LISTENER,
+                                v -> handleNewTabButtonClick())
+                        .build();
+        PropertyModelChangeProcessor.create(model, mContainerView, VerticalTabListViewBinder::bind);
 
         mMediator =
                 new TabListMediator(

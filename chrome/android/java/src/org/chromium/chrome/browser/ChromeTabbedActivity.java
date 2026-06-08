@@ -328,6 +328,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
@@ -3237,7 +3238,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mBookmarkManagerOpenerSupplier,
                 getXrSpaceModeObservableSupplier(),
                 mInactivityTrackerSupplier,
-                getBottomBarHostManager());
+                getBottomBarHostManager(),
+                createVerticalTabsActionDelegate());
     }
 
     @Override
@@ -3609,6 +3611,17 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 return NtpCustomizationPromoManager.canTriggerCustomizationPromo(
                         getWindowAndroid(), getTabletMode().isTablet);
             }
+        };
+    }
+
+    private VerticalTabsActionDelegate createVerticalTabsActionDelegate() {
+        return paneId -> {
+            if (mLayoutManager == null) return;
+
+            // Opens the tab switcher and displays a specific pane.
+            HubShowPaneHelper hubShowPaneHelper = mHubProvider.getHubShowPaneHelper();
+            hubShowPaneHelper.setPaneToShow(paneId);
+            mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, true);
         };
     }
 

@@ -202,6 +202,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupListFaviconResol
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabsSideUiCoordinator;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -375,6 +376,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable GlicUiCoordinator mGlicUiCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
     private @Nullable VerticalTabsSideUiCoordinator mVerticalTabsSideUiCoordinator;
+    private final VerticalTabsActionDelegate mVerticalTabsActionDelegate;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -478,6 +480,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param bookmarkManagerOpenerSupplier Supplies {@link BookmarkManagerOpener}.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
+     * @param verticalTabsActionDelegate Delegate to handle actions from the vertical tabs UI.
      */
     public TabbedRootUiCoordinator(
             AppCompatActivity activity,
@@ -533,7 +536,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             OneshotSupplier<ChromeInactivityTracker> inactivityTrackerSupplier,
-            @Nullable BottomBarHostManager bottomBarHostManager) {
+            @Nullable BottomBarHostManager bottomBarHostManager,
+            VerticalTabsActionDelegate verticalTabsActionDelegate) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -632,6 +636,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mSystemBarColorHelperSupplier = systemBarColorHelperSupplier;
         mManualFillingComponentSupplier = manualFillingComponentSupplier;
         mInactivityTrackerSupplier = inactivityTrackerSupplier;
+        mVerticalTabsActionDelegate = verticalTabsActionDelegate;
 
         DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
                 createDataSharingTabGroupsDelegate();
@@ -2174,7 +2179,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             new VerticalTabListCoordinator(
                                     mActivity,
                                     assumeNonNull(mTabModelSelectorSupplier.get()),
-                                    assumeNonNull(mProfileSupplier.get())));
+                                    assumeNonNull(mProfileSupplier.get()),
+                                    mVerticalTabsActionDelegate));
             mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
         }
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);

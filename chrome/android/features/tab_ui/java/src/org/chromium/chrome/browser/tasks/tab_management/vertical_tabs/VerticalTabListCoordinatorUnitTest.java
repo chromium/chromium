@@ -21,6 +21,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.test.filters.SmallTest;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -95,6 +97,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mSelectorObserverCaptor;
+    @Mock private VerticalTabsActionDelegate mVerticalTabsActionDelegate;
 
     private Activity mActivity;
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
@@ -151,7 +154,9 @@ public class VerticalTabListCoordinatorUnitTest {
     @SmallTest
     public void testConstructor() {
         doNothing().when(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         assertNotNull(mCoordinator.getView());
 
         ViewGroup view = (ViewGroup) mCoordinator.getView();
@@ -171,7 +176,9 @@ public class VerticalTabListCoordinatorUnitTest {
     @SmallTest
     public void testDestroy() {
         doNothing().when(mTabModelSelector).addObserver(mSelectorObserverCaptor.capture());
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
 
         TabModelSelectorObserver observer = mSelectorObserverCaptor.getValue();
         assertNotNull(observer);
@@ -183,7 +190,9 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testDestroy_RemovesSupplierObserver() {
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -203,7 +212,9 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testAdapterInterceptionAndSpanLookup() {
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -260,7 +271,9 @@ public class VerticalTabListCoordinatorUnitTest {
                 .when(mTabModel)
                 .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
 
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -306,7 +319,9 @@ public class VerticalTabListCoordinatorUnitTest {
                 .when(mTabModel)
                 .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
 
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -331,7 +346,9 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab456));
         when(mTabModel.isTabInTabGroup(tab456)).thenReturn(false);
 
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -354,7 +371,9 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.isTabInTabGroup(tab456)).thenReturn(false);
         when(mTabModel.iterator()).thenReturn(List.of(tab456).iterator());
 
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -372,7 +391,9 @@ public class VerticalTabListCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testTabModelSwap_ResetsTabs() {
-        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
@@ -389,6 +410,30 @@ public class VerticalTabListCoordinatorUnitTest {
 
         assertEquals(1, adapter.getModelList().size());
         assertEquals(789, adapter.getModelList().get(0).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    @SmallTest
+    public void testGridButtonClick() {
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
+        ImageButton gridButton = mCoordinator.getView().findViewById(R.id.grid_button);
+        assertNotNull(gridButton);
+        gridButton.performClick();
+        verify(mVerticalTabsActionDelegate).openHubPane(PaneId.TAB_GROUPS);
+    }
+
+    @Test
+    @SmallTest
+    public void testTabSearchButtonClick() {
+        mCoordinator =
+                new VerticalTabListCoordinator(
+                        mActivity, mTabModelSelector, mProfile, mVerticalTabsActionDelegate);
+        ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
+        assertNotNull(tabSearchButton);
+        tabSearchButton.performClick();
+        verify(mVerticalTabsActionDelegate).openHubPane(PaneId.TAB_SWITCHER);
     }
 
     // TODO(crbug.com/518001737): Add tests for footer's new tab button
