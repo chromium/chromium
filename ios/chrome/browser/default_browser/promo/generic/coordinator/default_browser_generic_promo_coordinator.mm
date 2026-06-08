@@ -91,6 +91,18 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
+  if (!_firstInteractionRecorded) {
+    _firstInteractionRecorded = YES;
+    _acceptanceTimestamp = base::Time::Now();
+    RecordDefaultBrowserPromoLastAction(
+        IOSDefaultBrowserPromoAction::kActionButton);
+    base::UmaHistogramEnumeration(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen",
+        IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
+    RecordAction(UserMetricsAction(
+        "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
+  }
+
   if (IsDefaultBrowserPictureInPictureEnabled()) {
     [_handler hidePromo];
     id<PictureInPictureCommands> PIPHandler = HandlerForProtocol(
@@ -103,17 +115,6 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 
   [_mediator didTapPrimaryActionButton:
                  /*useDefaultAppsDestination=*/_promoWasFromOffCycleTrigger];
-  if (!_firstInteractionRecorded) {
-    _firstInteractionRecorded = YES;
-    _acceptanceTimestamp = base::Time::Now();
-    RecordDefaultBrowserPromoLastAction(
-        IOSDefaultBrowserPromoAction::kActionButton);
-    base::UmaHistogramEnumeration(
-        "IOS.DefaultBrowserVideoPromo.Fullscreen",
-        IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
-    RecordAction(UserMetricsAction(
-        "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
-  }
   if (!IsPersistentDefaultBrowserPromoEnabled()) {
     [_handler hidePromo];
   }
