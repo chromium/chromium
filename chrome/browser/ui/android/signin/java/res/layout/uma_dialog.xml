@@ -30,7 +30,8 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:text="@string/signin_fre_uma_dialog_title"
-                android:textAppearance="@style/TextAppearance.Headline.Primary" />
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:accessibilityHeading="true" />
 
             <org.chromium.components.browser_ui.widget.MaterialSwitchWithText
                 android:id="@+id/fre_uma_dialog_switch"
