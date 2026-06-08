@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] separate text/javascript;charset=windows-1252;" \\" x/x
-  assert_equals: expected "â‚¬" but got "€"
-[FAIL] separate x/x;" x/y;\\" text/javascript;charset=windows-1252;" text/javascript
-  assert_equals: expected "€" but got "â‚¬"
-Harness: the test ran to completion.
-

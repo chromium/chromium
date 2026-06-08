@@ -1068,11 +1068,17 @@ void HttpResponseHeaders::GetMimeTypeAndCharset(std::string* mime_type,
   mime_type->clear();
   charset->clear();
 
-  std::optional<std::string_view> value;
+  std::optional<std::string> combined_value =
+      GetNormalizedHeader("content-type");
+  if (!combined_value) {
+    return;
+  }
+
   bool had_charset = false;
-  size_t iter = 0;
-  while ((value = EnumerateHeader(&iter, "content-type"))) {
-    HttpUtil::ParseContentType(*value, mime_type, charset, &had_charset,
+  HttpUtil::ValuesIterator it(*combined_value, ',',
+                              /*ignore_empty_values=*/true);
+  while (it.GetNext()) {
+    HttpUtil::ParseContentType(it.value(), mime_type, charset, &had_charset,
                                /*boundary=*/nullptr);
   }
 }

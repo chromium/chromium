@@ -899,6 +899,43 @@ const ContentTypeTestData kMimeTypeTests[] = {
      "", false,
      "", false,
      "*/*" },
+    // Cross-header quoting with backslash-escaped quote.
+    {R"(HTTP/1.1 200 OK
+Content-Type: text/javascript;charset=windows-1252;"
+Content-Type: \"
+Content-Type: x/x
+)",
+     "text/javascript", true,
+     "windows-1252", true,
+     R"(text/javascript;charset=windows-1252;", \", x/x)" },
+    // Multiple headers with escaped quotes where type change resets charset.
+    {R"(HTTP/1.1 200 OK
+Content-Type: x/x;"
+Content-Type: x/y;\"
+Content-Type: text/javascript;charset=windows-1252;"
+Content-Type: text/javascript
+)",
+     "text/javascript", true,
+     "", false,
+     R"(x/x;", x/y;\", text/javascript;charset=windows-1252;", )"
+     "text/javascript" },
+    // Single header equivalent to cross-header quoting with backslash-escaped
+    // quote.
+    {R"(HTTP/1.1 200 OK
+Content-Type: text/javascript;charset=windows-1252;",\",x/x
+)",
+     "text/javascript", true,
+     "windows-1252", true,
+     R"(text/javascript;charset=windows-1252;",\",x/x)" },
+    // Single header equivalent to multiple headers with escaped quotes where
+    // type change resets charset.
+    {R"(HTTP/1.1 200 OK
+Content-Type: x/x;",x/y;\",text/javascript;)"
+     R"(charset=windows-1252;",text/javascript
+)",
+     "text/javascript", true,
+     "", false,
+     R"(x/x;",x/y;\",text/javascript;charset=windows-1252;",text/javascript)" },
 };
 // clang-format on
 
