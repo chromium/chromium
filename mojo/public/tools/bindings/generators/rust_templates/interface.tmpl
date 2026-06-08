@@ -86,22 +86,22 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
 {%- endfor %}
 
   // Note to users: Do not override this function when implementing the trait
+  #[allow(unused_variables, unused_mut)] // If no messages send a response
   fn handle_incoming_message(
       &mut self,
       message: bindings::message::MojomMessage,
-      #[allow(unused_variables)] // Unused if no messages send a response
+      sender: ResponseSender,
       send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static)
     where Self: Sized
   {
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe, and the compiler can figure it out anyway.
-    #[allow(unused_variables, unused_mut)] // Unused if no messages send a response
     let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match message.header.name {
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
-          mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &())
+          mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &sender)
           .expect("Associated interfaces are not yet supported (crbug.com/493274453)");
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
@@ -163,6 +163,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
   fn handle_incoming_message(
       &mut self,
       _message: bindings::message::MojomMessage,
+      _sender: ResponseSender,
       _send_response: impl FnOnce(bindings::message::MojomMessage) + Send + 'static) {
     unimplemented!("Call the appropriate trait method directly on the Remote object instead")
   }
