@@ -1446,7 +1446,7 @@ public abstract class ChromeFeatureList {
     public static final MutableFlagWithSafeDefault sAndroidActorTaskTimeout =
             newMutableFlagWithSafeDefault(ANDROID_ACTOR_TASK_TIMEOUT, false);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuDisabledMenuItems =
-            newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS, true);
+            newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_DISABLED_MENU_ITEMS, false);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuNewActions =
             newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_NEW_ACTIONS, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
