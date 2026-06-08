@@ -489,6 +489,9 @@ BASE_FEATURE(kIPHGlicPromoAndroidFeature,
 BASE_FEATURE(kIPHIdentityDiscFeature,
              "IPH_IdentityDisc",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHIncognitoIndicatorCloseAllWindows,
+             "IPH_IncognitoIndicatorCloseAllWindows",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHInstanceSwitcherFeature,
              "IPH_InstanceSwitcher",
              base::FEATURE_ENABLED_BY_DEFAULT);

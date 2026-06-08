@@ -424,6 +424,8 @@ public class ToolbarTablet extends ToolbarLayout {
         mIncognitoIndicatorCoordinator =
                 new IncognitoIndicatorCoordinator(
                         /* parentToolbar= */ this,
+                        userEducationHelper,
+                        trackerSupplier,
                         themeColorProvider,
                         incognitoStateProvider,
                         incognitoWindowCountSupplier,

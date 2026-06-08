@@ -473,6 +473,8 @@ should be able to be added at any place in this file.
   <variant name="_HomePageButton" summary="For HomePageButton feature."/>
   <variant name="_HomepageTile" summary="For HomepageTile feature."/>
   <variant name="_IdentityDisc" summary="For IdentityDisc feature."/>
+  <variant name="_IncognitoIndicatorCloseAllWindows"
+      summary="For the Incognito indicator close all windows IPH."/>
   <variant name="_IncognitoWindow" summary="For IncognitoWindow feature."/>
   <variant name="_InstanceSwitcher" summary="For Instance switcher feature."/>
   <variant name="_IntentChip"

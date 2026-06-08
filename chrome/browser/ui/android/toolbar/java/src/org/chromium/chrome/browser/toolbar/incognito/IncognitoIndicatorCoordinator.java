@@ -28,8 +28,13 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChild;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu.Delegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -44,6 +49,8 @@ import java.util.function.Supplier;
 public class IncognitoIndicatorCoordinator extends ToolbarChild
         implements View.OnClickListener, View.OnLongClickListener, View.OnContextClickListener {
     private final ToolbarLayout mParentToolbar;
+    private final UserEducationHelper mUserEducationHelper;
+    private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private @Nullable Boolean mIsIncognitoBranded;
     private boolean mVisible;
     private @Nullable View mIncognitoIndicator;
@@ -57,6 +64,8 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
      * toolbar.
      *
      * @param parentToolbar The parent view that contains the incognito indicator.
+     * @param userEducationHelper Helper for triggering in-product help (IPH).
+     * @param trackerSupplier A supplier for the tracker to record feature usage event.
      * @param topUiThemeColorProvider Provides theme and tint color that should be applied to the
      *     view.
      * @param incognitoStateProvider Provides incognito state to update view.
@@ -65,12 +74,16 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
      */
     public IncognitoIndicatorCoordinator(
             ToolbarLayout parentToolbar,
+            UserEducationHelper userEducationHelper,
+            Supplier<@Nullable Tracker> trackerSupplier,
             ThemeColorProvider topUiThemeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             Supplier<Integer> incognitoWindowCountSupplier,
             boolean visible) {
         super(topUiThemeColorProvider, incognitoStateProvider);
         mParentToolbar = parentToolbar;
+        mUserEducationHelper = userEducationHelper;
+        mTrackerSupplier = trackerSupplier;
         mVisible = visible;
         mIncognitoWindowCountSupplier = incognitoWindowCountSupplier;
         setVisibility(mVisible);
@@ -106,6 +119,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
      */
     public void setVisibility(boolean visible) {
         mVisible = visible;
+        boolean wasVisible = isVisible();
 
         // If the parent toolbar is null, this was called before initialization was completed. Skip
         // for now and wait until a subsequent call after initialization has finished.
@@ -123,6 +137,9 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
 
         if (mIncognitoIndicator != null) {
             mIncognitoIndicator.setVisibility(mIsIncognitoBranded && visible ? VISIBLE : GONE);
+            if (isVisible() && !wasVisible) {
+                triggerIPH();
+            }
         }
     }
 
@@ -280,6 +297,13 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
         if (mIncognitoIndicator == null || mIncognitoIndicator.getVisibility() != View.VISIBLE) {
             return;
         }
+
+        if (mTrackerSupplier.get() != null) {
+            mTrackerSupplier
+                    .get()
+                    .notifyEvent(EventConstants.INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_USED);
+        }
+
         if (mMenuWindow != null && mMenuWindow.isShowing()) {
             mMenuWindow.dismiss();
             return;
@@ -300,5 +324,18 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
     public boolean onContextClick(View view) {
         onClick(view);
         return true;
+    }
+
+    private void triggerIPH() {
+        if (mIncognitoIndicator == null) return;
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
+                                mIncognitoIndicator.getResources(),
+                                FeatureConstants.IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS,
+                                R.string.iph_incognito_indicator_close_all_windows_text,
+                                R.string
+                                        .iph_incognito_indicator_close_all_windows_accessibility_text)
+                        .setAnchorView(mIncognitoIndicator)
+                        .build());
     }
 }

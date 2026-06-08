@@ -302,6 +302,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_HomeCustomizationMenu"
       summary="Home customization menu entrypoint on the NTP"/>
   <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
+  <variant name="IPH_IncognitoIndicatorCloseAllWindows"
+      summary="educate users that they can close all Incognito windows by
+               tapping the Incognito indicator"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
   <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
   <variant name="IPH_IntentChip" summary="opening a webpage in an app"/>

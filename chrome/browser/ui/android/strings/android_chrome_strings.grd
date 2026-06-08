@@ -6015,6 +6015,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_TAB_SWITCHER_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page. The 'open tabs' button name should match TC 3108541343994525384">
         To open tabs and visit different pages at the same time, tap the open tabs button
       </message>
+      <message name="IDS_IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_TEXT" desc="The in-product-help message to inform users that they can close all incognito windows by tapping the incognito indicator.">
+        Tap here to close all Incognito windows
+      </message>
+      <message name="IDS_IPH_INCOGNITO_INDICATOR_CLOSE_ALL_WINDOWS_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to inform users that they can close all incognito windows by tapping the incognito indicator.">
+        To close all Incognito windows, tap the Incognito indicator
+      </message>
 
       <!-- Bottom bar IPH strings. -->
       <message name="IDS_IPH_ANDROID_BOTTOM_BAR_GLIC" desc="The in-product-help message for the GLIC button in the bottom bar.">
