@@ -68,6 +68,12 @@ class AuthControllerTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
+    default_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            features::kGlicCookieSyncOnTokenChange,
+            features::kGlicCookieSyncOnOpenEvenIfNoSyncNeeded,
+            features::kGlicCookieSyncOnError});
     profile_ = std::make_unique<TestingProfile>();
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
 
@@ -89,6 +95,7 @@ class AuthControllerTest : public testing::Test {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   std::unique_ptr<AuthController> auth_controller_;
   raw_ptr<FakeGlicCookieSynchronizer> synchronizer_;
+  base::test::ScopedFeatureList default_feature_list_;
   base::test::ScopedFeatureList feature_list_;
 };
 

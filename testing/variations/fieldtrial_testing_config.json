@@ -11840,6 +11840,44 @@
             ]
         }
     ],
+    "GlicCookieSyncOnError": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicCookieSyncOnError"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicCookieSyncOnOpenEvenIfNoSyncNeeded": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicCookieSyncOnOpenEvenIfNoSyncNeeded"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicCookieSyncOnTokenChange": [
         {
             "platforms": [

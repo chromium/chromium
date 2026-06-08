@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -1027,9 +1028,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testShowClientErrorDialog) {
   histogram_tester.ExpectUniqueSample("Glic.Api.Client.ErrorDialogShown",
                                       /*kDisabledByOrganization*/ 1, 1);
 
-  // Verify that the pref was reset.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return service()->GetAuthController().NeedsSyncForTesting(); }));
+  if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) &&
+      base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
+    // Sync will happen automatically if kGlicCookieSyncOnError is enabled.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !service()->GetAuthController().NeedsSyncForTesting();
+    }));
+  } else {
+    // Verify that the pref was set to true.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return service()->GetAuthController().NeedsSyncForTesting();
+    }));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testReportClientTransientError) {
@@ -1045,9 +1055,18 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testReportClientTransientError) {
   histogram_tester.ExpectUniqueSample("Glic.Api.Client.TransientError",
                                       /*kUnauthenticated*/ 16, 1);
 
-  // Verify that the pref was set to true.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return service()->GetAuthController().NeedsSyncForTesting(); }));
+  if (base::FeatureList::IsEnabled(features::kGlicCookieSyncOnError) &&
+      base::FeatureList::IsEnabled(features::kGlicCookieSyncOnTokenChange)) {
+    // Sync will happen automatically if kGlicCookieSyncOnError is enabled.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !service()->GetAuthController().NeedsSyncForTesting();
+    }));
+  } else {
+    // Verify that the pref was set to true.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return service()->GetAuthController().NeedsSyncForTesting();
+    }));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(NewGlicApiTest, testLoadWhileWindowClosed) {
