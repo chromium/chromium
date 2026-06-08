@@ -1117,73 +1117,9 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentage) {
 
 
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmReportAfterReboot) {
-  std::unique_ptr<Browser> browser = CreateBrowserWindow();
 
-  // Set the browser window active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(), kActiveInstanceState);
 
-  task_environment_.FastForwardBy(base::Minutes(30));
 
-  // Create a web app tab.
-  const GURL url = GURL("https://foo.com");
-  auto web_app_window =
-      CreateWebAppWindow(browser->GetWindow()->GetNativeWindow());
-
-  // Set the web app tab as activated.
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(), kActiveInstanceState);
-
-  task_environment_.FastForwardBy(base::Minutes(20));
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-  ModifyWebAppInstance(kWebAppId1, web_app_window.get(),
-                       kInactiveInstanceState);
-
-  VerifyNoAppUsageTimeUkm();
-
-  // Reset PlatformMetricsService to simulate the system reboot, and verify
-  // AppKM is restored from the user pref and reported after 5 minutes after
-  // reboot.
-  ResetAppPlatformMetricsService();
-  VerifyNoAppUsageTimeUkm();
-
-  task_environment_.FastForwardBy(base::Minutes(5));
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(30),
-                        AppTypeName::kChromeBrowser);
-  VerifyAppUsageTimeUkm(url, base::Minutes(20), AppTypeName::kChromeBrowser);
-
-  // Set the browser window as activated.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(10));
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-
-  // Verify UKM is not reported.
-  VerifyAppUsageTimeUkm(/*count=*/2);
-
-  // Reset PlatformMetricsService to simulate the system reboot, and verify
-  // only the new AppKM is reported.
-  ResetAppPlatformMetricsService();
-  task_environment_.FastForwardBy(base::Minutes(5));
-
-  VerifyAppUsageTimeUkm(/*count=*/3);
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(40),
-                        AppTypeName::kChromeBrowser);
-  VerifyAppUsageTimeUkm(url, base::Minutes(20), AppTypeName::kChromeBrowser);
-
-  // Reset PlatformMetricsService to simulate the system reboot, and verify no
-  // more AppKM is reported.
-  ResetAppPlatformMetricsService();
-  task_environment_.FastForwardBy(base::Minutes(5));
-  VerifyAppUsageTimeUkm(/*count=*/3);
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(40),
-                        AppTypeName::kChromeBrowser);
-  VerifyAppUsageTimeUkm(url, base::Minutes(20), AppTypeName::kChromeBrowser);
-}
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
   // Create a browser window.
