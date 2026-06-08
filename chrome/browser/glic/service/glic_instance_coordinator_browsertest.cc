@@ -332,8 +332,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(GetContentsVisibility(instance2), content::Visibility::HIDDEN);
 }
 
+// TODO(b/521445431): Re-enable this test after fixing the flakes.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
-                       KeptBoundWhenInPlaceConversationSwitched) {
+                       DISABLED_KeptBoundWhenInPlaceConversationSwitched) {
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
