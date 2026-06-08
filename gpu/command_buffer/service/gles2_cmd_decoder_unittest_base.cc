@@ -803,6 +803,9 @@ void GLES2DecoderTestBase::SetupClearTexture3DExpectations(
     base::span<GLsizei> depth,
     GLuint bound_pixel_unpack_buffer) {
   InSequence seq;
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
   EXPECT_CALL(*gl_, PixelStorei(GL_UNPACK_ALIGNMENT, 1))
       .Times(1)
       .RetiresOnSaturation();
@@ -852,6 +855,9 @@ void GLES2DecoderTestBase::SetupClearTexture3DExpectations(
         .RetiresOnSaturation();
   }
   EXPECT_CALL(*gl_, BindTexture(target, _)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
 }
 
 void GLES2DecoderTestBase::SetupExpectationsForFramebufferClearing(
