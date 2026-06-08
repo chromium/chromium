@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -511,6 +512,7 @@ void GeminiBrowserAgent::OnSceneActivationLevelChanged(
                                   /*animated=*/false);
     }
   }
+  UpdateGeminiLiveIconVisibility();
 }
 
 void GeminiBrowserAgent::OnWillEnterIncognito() {
@@ -621,6 +623,24 @@ bool GeminiBrowserAgent::HasCompletedFirstRun() {
   return pref_service->GetBoolean(prefs::kIOSBwgConsent);
 }
 
+void GeminiBrowserAgent::UpdateGeminiLiveIconVisibility() {
+  if (IsChromeNextIaEnabled()) {
+    return;
+  }
+  CGFloat progress = 1.0;
+  if (fullscreen_controller_) {
+    progress = fullscreen_controller_->GetProgress();
+  }
+  BOOL visible = IsInGeminiLiveMode() && (progress < 0.1);
+
+  CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
+  if ([dispatcher dispatchingForProtocol:@protocol(OmniboxCommands)]) {
+    id<OmniboxCommands> omnibox_handler =
+        HandlerForProtocol(dispatcher, OmniboxCommands);
+    [omnibox_handler setCustomLeadingViewVisible:visible animated:YES];
+  }
+}
+
 CGFloat GeminiBrowserAgent::GetFloatyOffset() {
   CHECK(IsFullscreenInitialized());
   CGFloat max_bottom_inset =
@@ -712,6 +732,7 @@ void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   for (auto& observer : observers_) {
     observer.OnFloatyInvokedChanged(is_floaty_invoked_);
   }
+  UpdateGeminiLiveIconVisibility();
 }
 
 void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
@@ -822,6 +843,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 
 void GeminiBrowserAgent::OnProcessingStatusChanged(
     ios::provider::GeminiClientMode processing_status) {
+  UpdateGeminiLiveIconVisibility();
   if (!IsInGeminiLiveMode()) {
     return;
   }
@@ -980,6 +1002,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   } else {
     ios::provider::ResetGemini();
   }
+  UpdateGeminiLiveIconVisibility();
 }
 
 void GeminiBrowserAgent::ForceDismissFloaty() {
@@ -1230,6 +1253,8 @@ void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(
 void GeminiBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
+  UpdateGeminiLiveIconVisibility();
+
   if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
     return;
   }

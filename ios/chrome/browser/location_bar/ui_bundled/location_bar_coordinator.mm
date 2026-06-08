@@ -652,6 +652,10 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   [self.viewController focusSteadyViewForVoiceOver];
 }
 
+- (void)setCustomLeadingViewVisible:(BOOL)visible animated:(BOOL)animated {
+  [self.viewController setCustomLeadingViewVisible:visible animated:animated];
+}
+
 - (void)cancelOmniboxEdit {
   CHECK(!IsComposeboxIOSEnabled());
   [self cancelOmniboxEditWithCompletion:nil];
