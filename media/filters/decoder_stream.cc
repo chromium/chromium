@@ -29,6 +29,18 @@
 
 namespace media {
 
+namespace {
+perfetto::NamedTrack GetTracingTrack(
+    const DecoderStream<DemuxerStream::VIDEO>* stream) {
+  return perfetto::NamedTrack::FromPointer("VideoDecoderStream", stream);
+}
+
+perfetto::NamedTrack GetTracingTrack(
+    const DecoderStream<DemuxerStream::AUDIO>* stream) {
+  return perfetto::NamedTrack::FromPointer("AudioDecoderStream", stream);
+}
+}  // namespace
+
 #define FUNCTION_DVLOG(level) \
   DVLOG(level) << __func__ << "<" << GetStreamTypeString() << ">"
 
@@ -190,7 +202,7 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
 
   TRACE_EVENT_BEGIN("media",
                     perfetto::StaticString(GetReadTraceString<StreamType>()),
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
   if (state_ == State::kStateError) {
     read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
     // OnDecodeDone, OnBufferReady, and CompleteDecoderReinitialization all set
@@ -481,7 +493,7 @@ void DecoderStream<StreamType>::OnDecoderSelected(
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::SatisfyRead(ReadResult result) {
   DCHECK(read_cb_);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   GetStatusString(result.code()));
   std::move(read_cb_).Run(std::move(result));
 }
@@ -760,7 +772,7 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
 
   TRACE_EVENT_BEGIN(
       "media", perfetto::StaticString(GetDemuxerReadTraceString<StreamType>()),
-      perfetto::Track::FromPointer(this));
+      GetTracingTrack(this));
   pending_demuxer_read_ = true;
   uint32_t buffer_read_count = 1;
   // Do not batch with software video decoder.
@@ -788,7 +800,7 @@ void DecoderStream<StreamType>::OnBuffersReady(
     return;
   }
 
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   DemuxerStream::GetStatusName(status));
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -1092,7 +1104,7 @@ void DecoderStream<StreamType>::MaybePrepareAnotherOutput() {
   const scoped_refptr<Output> output = unprepared_outputs_.front();
   TRACE_EVENT_BEGIN("media",
                     perfetto::StaticString(GetPrepareTraceString<StreamType>()),
-                    perfetto::Track::FromPointer(this), "timestamp_us",
+                    GetTracingTrack(this), "timestamp_us",
                     output->timestamp().InMicroseconds());
   preparing_output_ = true;
   prepare_cb_.Run(
@@ -1138,7 +1150,7 @@ template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::CompletePrepare(const Output* output) {
   DCHECK(preparing_output_);
   TRACE_EVENT_END(
-      "media", perfetto::Track::FromPointer(this), "timestamp_us",
+      "media", GetTracingTrack(this), "timestamp_us",
       (output ? output->timestamp() : kNoTimestamp).InMicroseconds());
   preparing_output_ = false;
 }

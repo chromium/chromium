@@ -32,6 +32,10 @@ namespace media::cast {
 
 namespace {
 
+perfetto::NamedTrack GetTracingTrack(const media::VideoFrame* frame) {
+  return perfetto::NamedTrack::FromPointer("media::cast::VideoSender", frame);
+}
+
 // The following two constants are used to adjust the target
 // playout delay (when allowed). They were calculated using
 // a combination of cast_benchmark runs and manual testing.
@@ -272,8 +276,8 @@ void VideoSender::InsertRawVideoFrame(
           base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
                          video_frame, reference_time))) {
     TRACE_EVENT_BEGIN("cast.stream", "Video Encode",
-                      perfetto::Track::FromPointer(video_frame.get()),
-                      "rtp_timestamp", rtp_timestamp.lower_32_bits());
+                      GetTracingTrack(video_frame.get()), "rtp_timestamp",
+                      rtp_timestamp.lower_32_bits());
     frames_in_encoder_++;
     duration_in_encoder_ += duration_added_by_next_frame;
     last_enqueued_frame_rtp_timestamp_ = rtp_timestamp;
@@ -341,8 +345,7 @@ void VideoSender::OnEncodedVideoFrame(
   // encoder as really slow.
   duration_in_encoder_ = last_enqueued_frame_reference_time_ - reference_time;
 
-  TRACE_EVENT_END("cast.stream",
-                  perfetto::Track::FromPointer(video_frame.get()),
+  TRACE_EVENT_END("cast.stream", GetTracingTrack(video_frame.get()),
                   "encoder_utilization", last_reported_encoder_utilization_,
                   "lossiness", last_reported_lossiness_);
   // The encoder drops a frame.

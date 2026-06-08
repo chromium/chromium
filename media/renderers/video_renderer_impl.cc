@@ -32,6 +32,11 @@ namespace media {
 
 namespace {
 
+perfetto::NamedTrack GetTracingTrack(const VideoRendererImpl* renderer) {
+  return perfetto::NamedTrack::FromPointer("media::VideoRendererImpl",
+                                           renderer);
+}
+
 // Maximum number of frames we will buffer, regardless of their "effectiveness".
 // See HaveReachedBufferingCap(). The value was historically described in terms
 // of |min_buffered_frames_| as follows:
@@ -94,6 +99,7 @@ VideoRendererImpl::~VideoRendererImpl() {
 void VideoRendererImpl::Flush(base::OnceClosure callback) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT_BEGIN("media", "VideoRendererImpl::Flush", GetTracingTrack(this));
 
   if (sink_started_)
     StopSink();
@@ -164,7 +170,7 @@ void VideoRendererImpl::Initialize(
     PipelineStatusCallback init_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT_BEGIN("media", "VideoRendererImpl::Initialize",
-                    perfetto::Track::FromPointer(this));
+                    GetTracingTrack(this));
 
   base::AutoLock auto_lock(lock_);
   DCHECK(stream);
@@ -325,15 +331,15 @@ void VideoRendererImpl::OnVideoDecoderStreamInitialized(bool success) {
 
 void VideoRendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void VideoRendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
-  TRACE_EVENT_END("media", /*"VideoRendererImpl::Flush"*/
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media",
+                  /*"VideoRendererImpl::Flush"*/ GetTracingTrack(this));
   std::move(flush_cb_).Run();
 }
 

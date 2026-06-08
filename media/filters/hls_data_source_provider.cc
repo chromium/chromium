@@ -10,6 +10,13 @@
 
 namespace media {
 
+namespace {
+perfetto::NamedTrack GetTracingTrack(const HlsDataSourceStream* stream) {
+  return perfetto::NamedTrack::FromPointer("media::HlsDataSourceStream",
+                                           stream);
+}
+}  // namespace
+
 HlsDataSourceProvider::~HlsDataSourceProvider() = default;
 
 void HlsDataSourceProvider::ReadFromUrlForTesting(UrlDataSegment segment,
@@ -100,7 +107,7 @@ void HlsDataSourceStream::Clear() {
 base::span<uint8_t> HlsDataSourceStream::LockStreamForWriting(
     size_t ensure_minimum_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_BEGIN("media", "HLS::Read", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_BEGIN("media", "HLS::Read", GetTracingTrack(this),
                     "minimum space", ensure_minimum_space);
   CHECK(!stream_locked_);
   stream_locked_ = true;
@@ -115,8 +122,8 @@ base::span<uint8_t> HlsDataSourceStream::LockStreamForWriting(
 void HlsDataSourceStream::UnlockStreamPostWrite(size_t read_size,
                                                 bool end_of_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "bytes",
-                  read_size, "eos", end_of_stream);
+  TRACE_EVENT_END("media", GetTracingTrack(this), "bytes", read_size, "eos",
+                  end_of_stream);
   CHECK(stream_locked_);
   write_index_ += read_size;
   read_position_ += read_size;

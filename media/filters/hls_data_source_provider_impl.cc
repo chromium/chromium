@@ -18,6 +18,12 @@ namespace media {
 
 namespace {
 
+perfetto::NamedTrack GetTracingTrack(
+    const HlsDataSourceProviderImpl* provider) {
+  return perfetto::NamedTrack::FromPointer("media::HlsDataSourceProviderImpl",
+                                           provider);
+}
+
 // A small-ish size that it should probably be able to get most manifests in
 // a single chunk. Chosen somewhat arbitrarily otherwise.
 constexpr size_t kDefaultReadSize = 1024 * 16;
@@ -27,9 +33,9 @@ void OnMultiBufferReadComplete(
     HlsDataSourceProviderImpl::ReadCb callback,
     base::OnceCallback<void(HlsDataSourceStream&)> update_metadata,
     size_t requested_read_size,
-    uint64_t trace_key,
+    perfetto::NamedTrack trace_track,
     int read_size) {
-  TRACE_EVENT_END("media", perfetto::Track(trace_key), "size", read_size);
+  TRACE_EVENT_END("media", trace_track, "size", read_size);
   switch (read_size) {
     case DataSource::kReadError: {
       stream->UnlockStreamPostWrite(0, true);
@@ -111,8 +117,8 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   if (stream->RequiresNextDataSource()) {
     auto [new_uri, cache_mode, range_mode, encoding_mode] =
         stream->GetNextSegmentURIAndCacheStatus();
-    TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource",
-                      perfetto::Track::FromPointer(this), "uri", new_uri);
+    TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource", GetTracingTrack(this),
+                      "uri", new_uri);
     data_source_factory_->Create(
         std::move(new_uri), cache_mode, encoding_mode,
         base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
@@ -121,12 +127,11 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
     return;
   }
 
-  TRACE_EVENT_BEGIN("media", "HLS::ReadExistingStream",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "HLS::ReadExistingStream", GetTracingTrack(this));
   // A finished stream may have removed any attached data source, so it might
   // not be present in the map.
   if (!stream->CanReadMore()) {
-    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", GetTracingTrack(this));
     std::move(callback).Run(std::move(stream));
     return;
   }
@@ -134,7 +139,7 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // Any stream which can read more _must_ have an active data source attached.
   auto it = data_source_map_.find(stream->stream_id());
   if (it == data_source_map_.end()) {
-    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", GetTracingTrack(this));
     std::move(callback).Run(ReadStatus::Codes::kError);
     return;
   }
@@ -151,7 +156,6 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
 
   base::span<uint8_t> buffer_data = stream->LockStreamForWriting(read_size);
   auto stream_id = stream->stream_id();
-  uint64_t async_event_key = reinterpret_cast<std::uintptr_t>(this);
 
   it->second->Read(
       base::checked_cast<int64_t>(pos), buffer_data,
@@ -159,7 +163,7 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
           &OnMultiBufferReadComplete, std::move(stream), std::move(callback),
           base::BindOnce(&HlsDataSourceProviderImpl::UpdateStreamMetadata,
                          weak_factory_.GetWeakPtr(), stream_id),
-          read_size, async_event_key));
+          read_size, GetTracingTrack(this)));
 }
 
 void HlsDataSourceProviderImpl::OnDataSourceCreated(
@@ -214,7 +218,7 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
     CHECK(it != data_source_map_.end());
     data_source_map_.erase(it);
     std::move(callback).Run(ReadStatus::Codes::kStopped);
-    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", GetTracingTrack(this));
     return;
   }
 
@@ -230,11 +234,11 @@ void HlsDataSourceProviderImpl::DataSourceInitialized(
     std::move(callback).Run(
         {ReadStatus::Codes::kError,
          "Range requests are not allowed for cross-origin content"});
-    TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("media", GetTracingTrack(this));
     return;
   }
 
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", GetTracingTrack(this));
   ReadFromExistingStream(std::move(stream), std::move(callback));
 }
 

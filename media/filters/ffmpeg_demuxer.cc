@@ -61,6 +61,10 @@ namespace media {
 
 namespace {
 
+perfetto::NamedTrack GetTracingTrack(const FFmpegDemuxer* demuxer) {
+  return perfetto::NamedTrack::FromPointer("media::FFmpegDemuxer", demuxer);
+}
+
 void SetAVStreamDiscard(AVStream* stream, AVDiscard discard) {
   DCHECK(stream);
   stream->discard = discard;
@@ -911,6 +915,8 @@ DemuxerType FFmpegDemuxer::GetDemuxerType() const {
 void FFmpegDemuxer::Initialize(DemuxerHost* host,
                                PipelineStatusCallback init_cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  TRACE_EVENT_BEGIN("media", "FFmpegDemuxer::Initialize",
+                    GetTracingTrack(this));
   host_ = host;
   weak_this_ = cancel_pending_seek_factory_.GetWeakPtr();
   init_cb_ = std::move(init_cb);
@@ -1022,8 +1028,7 @@ void FFmpegDemuxer::CancelPendingSeek(base::TimeDelta seek_time) {
 void FFmpegDemuxer::Seek(base::TimeDelta time, PipelineStatusCallback cb) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!pending_seek_cb_);
-  TRACE_EVENT_BEGIN("media", "FFmpegDemuxer::Seek",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "FFmpegDemuxer::Seek", GetTracingTrack(this));
   pending_seek_cb_ = std::move(cb);
   SeekInternal(time, base::BindOnce(&FFmpegDemuxer::OnSeekFrameDone,
                                     weak_factory_.GetWeakPtr()));
@@ -1903,7 +1908,7 @@ void FFmpegDemuxer::SetLiveness(StreamLiveness liveness) {
 void FFmpegDemuxer::RunInitCB(PipelineStatus status) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(init_cb_);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
@@ -1911,7 +1916,7 @@ void FFmpegDemuxer::RunInitCB(PipelineStatus status) {
 void FFmpegDemuxer::RunPendingSeekCB(PipelineStatus status) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(pending_seek_cb_);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   PipelineStatusToString(status));
   std::move(pending_seek_cb_).Run(status);
 }

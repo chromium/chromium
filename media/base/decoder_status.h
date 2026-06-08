@@ -11,6 +11,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -87,9 +88,12 @@ class MEDIA_EXPORT ScopedDecodeTrace {
   // Completes the Decode() trace with the given status.
   void EndTrace(const DecoderStatus& status);
 
+  const perfetto::Track& track() const { return trace_track_; }
+
  private:
   const char* trace_name_;
   bool closed_ = false;
+  const perfetto::Track trace_track_;
 };
 
 }  // namespace media

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -48,10 +49,10 @@ class MEDIA_EXPORT TypedScopedAsyncTrace {
 
  private:
   explicit TypedScopedAsyncTrace(const char* name);
-  TypedScopedAsyncTrace(const char* name, const void* id);
+  TypedScopedAsyncTrace(const char* name, const perfetto::Track& trace_track);
 
   const char* name_;
-  raw_ptr<const void> id_;
+  const perfetto::Track trace_track_;
   std::unique_ptr<TypedScopedAsyncTrace<category>> step_;
 };
 

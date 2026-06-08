@@ -31,6 +31,16 @@ namespace media {
 
 namespace {
 
+perfetto::NamedTrack GetTracingTrack(
+    const DecoderSelector<DemuxerStream::VIDEO>* selector) {
+  return perfetto::NamedTrack::FromPointer("VideoDecoderSelector", selector);
+}
+
+perfetto::NamedTrack GetTracingTrack(
+    const DecoderSelector<DemuxerStream::AUDIO>* selector) {
+  return perfetto::NamedTrack::FromPointer("AudioDecoderSelector", selector);
+}
+
 constexpr char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
 enum class DecoderPriority {
@@ -119,8 +129,7 @@ void DecoderSelector<StreamType>::SelectDecoderInternal(
   output_cb_ = std::move(output_cb);
   config_ = traits_->GetDecoderConfig(stream_);
 
-  TRACE_EVENT_BEGIN("media", kSelectDecoderTrace,
-                    perfetto::Track::FromPointer(this), "type",
+  TRACE_EVENT_BEGIN("media", kSelectDecoderTrace, GetTracingTrack(this), "type",
                     DemuxerStream::GetTypeName(StreamType), "config",
                     config_.AsHumanReadableString());
 
@@ -226,7 +235,7 @@ void DecoderSelector<StreamType>::GetAndInitializeNextDecoder() {
   TRACE_EVENT_BEGIN(
       "media",
       perfetto::StaticString(GetDecoderName(decoder_->GetDecoderType())),
-      perfetto::Track::FromPointer(this));
+      GetTracingTrack(this));
 
   DVLOG(2) << __func__ << ": initializing " << decoder_->GetDecoderType();
   const bool is_live = stream_->liveness() == StreamLiveness::kLive;
@@ -283,8 +292,7 @@ void DecoderSelector<StreamType>::InitializeDecryptingDemuxerStream() {
   DCHECK(decoders_.empty());
   DCHECK(config_.is_encrypted());
   DCHECK(cdm_context_);
-  TRACE_EVENT_BEGIN("media", "DecryptingDemuxerStream",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "DecryptingDemuxerStream", GetTracingTrack(this));
 
   decrypting_demuxer_stream_ = std::make_unique<DecryptingDemuxerStream>(
       task_runner_, media_log_.get(), waiting_cb_);
@@ -328,7 +336,7 @@ void DecoderSelector<StreamType>::RunSelectDecoderCB(
     DecoderOrError decoder_or_error) {
   DCHECK(select_decoder_cb_);
   TRACE_EVENT_END(
-      "media", perfetto::Track::FromPointer(this), "type",
+      "media", GetTracingTrack(this), "type",
       DemuxerStream::GetTypeName(StreamType), "decoder",
       base::StringPrintf(
           "%s (%s)",
@@ -337,7 +345,7 @@ void DecoderSelector<StreamType>::RunSelectDecoderCB(
               : "null",
           decrypting_demuxer_stream_ ? "encrypted" : "unencrypted"));
   TRACE_EVENT_END("media",
-                  /* kSelectDecoderTrace */ perfetto::Track::FromPointer(this));
+                  /* kSelectDecoderTrace */ GetTracingTrack(this));
 
   task_runner_->PostTask(
       FROM_HERE,

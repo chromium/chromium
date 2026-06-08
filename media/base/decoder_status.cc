@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "media/base/status.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -58,30 +59,32 @@ std::ostream& operator<<(std::ostream& os, const DecoderStatus& status) {
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      bool is_key_frame,
                                      base::TimeDelta timestamp)
-    : trace_name_(trace_name) {
+    : trace_name_(trace_name),
+      trace_track_(base::trace_event::GetNextGlobalTraceId()) {
   DCHECK(trace_name_);
-  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_),
-                    perfetto::Track::FromPointer(this), "is_key_frame",
-                    is_key_frame, "timestamp_us", timestamp.InMicroseconds());
+  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_), trace_track_,
+                    "is_key_frame", is_key_frame, "timestamp_us",
+                    timestamp.InMicroseconds());
 }
 
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      const DecoderBuffer& buffer)
-    : trace_name_(trace_name) {
+    : trace_name_(trace_name),
+      trace_track_(base::trace_event::GetNextGlobalTraceId()) {
   DCHECK(trace_name_);
   std::string decoder_buffer_str =
       buffer.AsHumanReadableString(/*verbose=*/true);
-  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_),
-                    perfetto::Track::FromPointer(this), "decoder_buffer",
+  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_), trace_track_,
+                    "decoder_buffer",
                     perfetto::DynamicString(decoder_buffer_str));
 }
 
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name)
-    : trace_name_(trace_name) {
+    : trace_name_(trace_name),
+      trace_track_(base::trace_event::GetNextGlobalTraceId()) {
   DCHECK(trace_name_);
-  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_),
-                    perfetto::Track::FromPointer(this), "decoder_buffer",
-                    "EOS");
+  TRACE_EVENT_BEGIN("media", perfetto::StaticString(trace_name_), trace_track_,
+                    "decoder_buffer", "EOS");
 }
 
 ScopedDecodeTrace::~ScopedDecodeTrace() {
@@ -92,7 +95,7 @@ ScopedDecodeTrace::~ScopedDecodeTrace() {
 void ScopedDecodeTrace::EndTrace(const DecoderStatus& status) {
   DCHECK(!closed_);
   closed_ = true;
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", trace_track_, "status",
                   GetDecodeStatusString(status));
 }
 

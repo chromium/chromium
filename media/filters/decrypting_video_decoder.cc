@@ -20,6 +20,13 @@
 
 namespace media {
 
+namespace {
+perfetto::NamedTrack GetTracingTrack(const DecryptingVideoDecoder* decoder) {
+  return perfetto::NamedTrack::FromPointer("media::DecryptingVideoDecoder",
+                                           decoder);
+}
+}  // namespace
+
 const char DecryptingVideoDecoder::kDecoderName[] = "DecryptingVideoDecoder";
 
 DecryptingVideoDecoder::DecryptingVideoDecoder(
@@ -240,8 +247,8 @@ void DecryptingVideoDecoder::DecodePendingBuffer() {
   const auto timestamp_us =
       is_end_of_stream ? 0 : buffer->timestamp().InMicroseconds();
   TRACE_EVENT_BEGIN("media", "DecryptingVideoDecoder::DecodePendingBuffer",
-                    perfetto::Track::FromPointer(this), "is_encrypted",
-                    is_encrypted, "timestamp_us", timestamp_us);
+                    GetTracingTrack(this), "is_encrypted", is_encrypted,
+                    "timestamp_us", timestamp_us);
 
   if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
     MEDIA_LOG(ERROR, media_log_)
@@ -311,7 +318,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
 
     TRACE_EVENT_BEGIN("media",
                       "DecryptingVideoDecoder::WaitingForDecryptionKey",
-                      perfetto::Track::FromPointer(this));
+                      GetTracingTrack(this));
     state_ = kWaitingForKey;
     waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
     return;
@@ -390,13 +397,13 @@ void DecryptingVideoDecoder::DoReset() {
 
 void DecryptingVideoDecoder::CompletePendingDecode(Decryptor::Status status) {
   DCHECK_EQ(state_, kPendingDecode);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+  TRACE_EVENT_END("media", GetTracingTrack(this), "status",
                   Decryptor::GetStatusName(status));
 }
 
 void DecryptingVideoDecoder::CompleteWaitingForDecryptionKey() {
   DCHECK_EQ(state_, kWaitingForKey);
-  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", GetTracingTrack(this));
 }
 
 }  // namespace media
