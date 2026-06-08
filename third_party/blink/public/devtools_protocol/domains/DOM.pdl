@@ -816,6 +816,11 @@ domain DOM
       # If true, opens the popover and keeps it open. If false, closes the
       # popover if it was previously force-opened.
       boolean enable
+      # Optional ID of the element invoking this popover, used to establish the implicit anchor.
+      # If not provided, it will fall back to the first invoker in the document, preferring
+      # elements with a popovertarget attribute over those with a commandfor attribute. Note that
+      # if there are multiple invokers, this is just an estimate.
+      optional BackendNodeId invokerNodeId
     returns
       # List of popovers that were closed in order to respect popover stacking order.
       array of NodeId nodeIds

@@ -278,6 +278,7 @@ class CORE_EXPORT InspectorDOMAgent final
   protocol::Response forceShowPopover(
       int node_id,
       bool enable,
+      std::optional<int> invoker_node_id,
       std::unique_ptr<protocol::Array<int>>* out_nodeIds) override;
   void WillHidePopover(HTMLElement* element, bool* force_open);
 

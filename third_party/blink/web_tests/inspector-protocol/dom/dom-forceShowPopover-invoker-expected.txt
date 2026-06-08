@@ -1,0 +1,22 @@
+Tests that DOM.forceShowPopover determines the invoker correctly for implicit anchoring
+\nTest 1: commandfor button acts as default invoker
+Popover p1 top position: {
+    description : 100
+    type : number
+    value : 100
+}
+\nTest 2: first popovertarget button acts as default invoker
+Popover p2 top position: {
+    description : 200
+    type : number
+    value : 200
+}
+\nTest 3: explicit invokerNodeId overrides default popovertarget button
+Popover p2 top position: {
+    description : 300
+    type : number
+    value : 300
+}
+\nTest 4: explicit invalid invokerNodeId returns an error
+Error: invoker id not found
+

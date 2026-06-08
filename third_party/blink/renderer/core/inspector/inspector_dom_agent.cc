@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -74,7 +75,9 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -2075,6 +2078,40 @@ protocol::Response InspectorDOMAgent::getAnchorElement(
   return protocol::Response::Success();
 }
 
+static Element* FindEstimatedPopoverInvoker(
+    InspectorDOMAgent* agent,
+    HTMLElement* element,
+    std::optional<int> invoker_node_id) {
+  if (invoker_node_id.has_value()) {
+    Node* invoker_node = nullptr;
+    agent->AssertNode(std::nullopt, invoker_node_id.value(), std::nullopt,
+                      invoker_node);
+    return DynamicTo<Element>(invoker_node);
+  }
+
+  HTMLCollection* invokers =
+      element->GetTreeScope().RootNode().PopoverInvokers();
+  for (unsigned i = 0; i < invokers->length(); ++i) {
+    auto* potential_invoker =
+        DynamicTo<HTMLFormControlElement>(invokers->item(i));
+    if (potential_invoker &&
+        potential_invoker->popoverTargetElement().popover == element) {
+      return potential_invoker;
+    }
+  }
+
+  HTMLCollection* command_invokers =
+      element->GetTreeScope().RootNode().CommandInvokers();
+  for (unsigned i = 0; i < command_invokers->length(); ++i) {
+    auto* potential_invoker = To<HTMLElement>(command_invokers->item(i));
+    if (potential_invoker->commandForElement() == element) {
+      return potential_invoker;
+    }
+  }
+
+  return nullptr;
+}
+
 static void HidePopover(Node* node) {
   if (auto* element = DynamicTo<HTMLElement>(node);
       element && element->popoverOpen()) {
@@ -2096,6 +2133,7 @@ void InspectorDOMAgent::ReleaseForcedPopovers() {
 protocol::Response InspectorDOMAgent::forceShowPopover(
     int node_id,
     bool enable,
+    std::optional<int> invoker_node_id,
     std::unique_ptr<protocol::Array<int>>* out_node_ids) {
   if (!base::FeatureList::IsEnabled(features::kDevToolsAllowPopoverForcing)) {
     return protocol::Response::ServerError("Feature is not enabled");
@@ -2123,8 +2161,12 @@ protocol::Response InspectorDOMAgent::forceShowPopover(
 
     bool should_open = forced_popovers_.insert(node).is_new_entry;
     if (should_open && !element->popoverOpen()) {
-      element->ShowPopoverInternal(/*invoker=*/nullptr,
-                                   /*exception_state=*/nullptr);
+      Element* invoker =
+          FindEstimatedPopoverInvoker(this, element, invoker_node_id);
+      if (invoker_node_id.has_value() && !invoker) {
+        return protocol::Response::InvalidParams("invoker id not found");
+      }
+      element->ShowPopoverInternal(invoker, /*exception_state=*/nullptr);
     }
   }
   return protocol::Response::Success();
