@@ -8,8 +8,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/device_reauth/mac/authenticator_mac.h"
@@ -23,8 +23,6 @@
 
 namespace {
 
-using MockAuthResultCallback =
-    base::MockCallback<DeviceAuthenticatorMac::AuthenticateCallback>;
 using device_reauth::ReauthResult;
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
@@ -104,8 +102,6 @@ class DeviceAuthenticatorMacTest
     return &touch_id_test_environment_;
   }
 
-  MockAuthResultCallback& result_callback() { return result_callback_; }
-
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
@@ -119,22 +115,20 @@ class DeviceAuthenticatorMacTest
       .metadata_secret = "TestMetadataSecret"};
   device::fido::mac::ScopedTouchIdTestEnvironment touch_id_test_environment_{
       config_};
-  MockAuthResultCallback result_callback_;
   base::HistogramTester histogram_tester_;
 
   // This is owned by the authenticator.
   raw_ptr<MockSystemAuthenticator> system_authenticator_ = nullptr;
 };
 
-// If time that passed since the last successful authentication is smaller than
-// kAuthValidityPeriod, no reauthentication is needed.
 TEST_P(DeviceAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
   SimulateReauthSuccess();
-  EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::test::TestFuture<bool> future_1;
 
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      future_1.GetCallback());
+  EXPECT_TRUE(future_1.Get());
 
   // Since the delay is smaller than kAuthValidityPeriod there shouldn't be
   // another prompt, so the auth should be reported as successful. If there is a
@@ -142,21 +136,21 @@ TEST_P(DeviceAuthenticatorMacTest, NoReauthenticationIfLessThan60Seconds) {
   // since there is no prompt expected.
   task_environment().FastForwardBy(kAuthValidityPeriod / 2);
 
-  EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::test::TestFuture<bool> future_2;
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      future_2.GetCallback());
+  EXPECT_TRUE(future_2.Get());
 }
 
-// If the time since the last reauthentication is greater than
-// kAuthValidityPeriod or the authentication failed, reauthentication is needed.
 TEST_P(DeviceAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
   SimulateReauthSuccess();
-  EXPECT_CALL(result_callback(), Run(/*success=*/true));
+  base::test::TestFuture<bool> future_1;
 
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      future_1.GetCallback());
+  EXPECT_TRUE(future_1.Get());
 
   // Make the reauth prompt auth fail.
   SimulateReauthFailure();
@@ -165,36 +159,36 @@ TEST_P(DeviceAuthenticatorMacTest, ReauthenticationIfMoreThan60Seconds) {
   // authentication.
   task_environment().FastForwardBy(kAuthValidityPeriod * 2);
 
-  EXPECT_CALL(result_callback(), Run(/*success=*/false));
+  base::test::TestFuture<bool> future_2;
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      future_2.GetCallback());
+  EXPECT_FALSE(future_2.Get());
 }
 
-// If previous authentication failed kAuthValidityPeriod isn't started and
-// reauthentication will be needed.
 TEST_P(DeviceAuthenticatorMacTest, ReauthenticationIfPreviousFailed) {
   SimulateReauthFailure();
 
   // First authentication fails, no last_good_auth_timestamp_ should be
   // recorded, which fill force reauthentication.
-  EXPECT_CALL(result_callback(), Run(/*success=*/false));
+  base::test::TestFuture<bool> future_1;
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      future_1.GetCallback());
+  EXPECT_FALSE(future_1.Get());
 
   // Although it passed less than kAuthValidityPeriod no valid authentication
   // should be recorded as reauth will fail.
   SimulateReauthFailure();
   task_environment().FastForwardBy(kAuthValidityPeriod / 2);
 
-  EXPECT_CALL(result_callback(), Run(/*success=*/false));
+  base::test::TestFuture<bool> future_2;
   authenticator()->AuthenticateWithMessage(
       /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      future_2.GetCallback());
+  EXPECT_FALSE(future_2.Get());
 }
 
-// If pending authentication can be canceled.
 TEST_P(DeviceAuthenticatorMacTest, CancelPendingAuthentication) {
   // Non-biometric reauth is modal, and hence cannot be requested twice.
   if (!is_biometric_available()) {
@@ -203,14 +197,14 @@ TEST_P(DeviceAuthenticatorMacTest, CancelPendingAuthentication) {
   touch_id_environment()->SimulateTouchIdPromptSuccess();
   touch_id_environment()->DoNotResolveNextPrompt();
 
+  base::test::TestFuture<bool> future;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"Chrome is trying to show passwords.",
-      result_callback().Get());
+      /*message=*/u"Chrome is trying to show passwords.", future.GetCallback());
 
   // Authentication should fail as it will take 10 seconds to authenticate, and
   // there will be a cancellation in the meantime.
-  EXPECT_CALL(result_callback(), Run(/*success=*/false));
   authenticator()->Cancel();
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_P(DeviceAuthenticatorMacTest, BiometricAuthenticationAvailability) {
@@ -240,8 +234,10 @@ TEST_P(DeviceAuthenticatorMacTest,
 TEST_P(DeviceAuthenticatorMacTest, RecordSuccessAuthHistogram) {
   SimulateReauthSuccess();
 
+  base::test::TestFuture<bool> future;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+      /*message=*/u"Chrome is trying to show passwords.", future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kSuccess,
                                         1);
@@ -250,10 +246,17 @@ TEST_P(DeviceAuthenticatorMacTest, RecordSuccessAuthHistogram) {
 TEST_P(DeviceAuthenticatorMacTest, RecordSkippedAuthHistogram) {
   SimulateReauthSuccess();
 
+  base::test::TestFuture<bool> future_1;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+      /*message=*/u"Chrome is trying to show passwords.",
+      future_1.GetCallback());
+  EXPECT_TRUE(future_1.Get());
+
+  base::test::TestFuture<bool> future_2;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+      /*message=*/u"Chrome is trying to show passwords.",
+      future_2.GetCallback());
+  EXPECT_TRUE(future_2.Get());
 
   histogram_tester().ExpectBucketCount(kHistogramName, ReauthResult::kSuccess,
                                        1);
@@ -264,8 +267,10 @@ TEST_P(DeviceAuthenticatorMacTest, RecordSkippedAuthHistogram) {
 TEST_P(DeviceAuthenticatorMacTest, RecordFailAuthHistogram) {
   SimulateReauthFailure();
 
+  base::test::TestFuture<bool> future;
   authenticator()->AuthenticateWithMessage(
-      /*message=*/u"Chrome is trying to show passwords.", base::DoNothing());
+      /*message=*/u"Chrome is trying to show passwords.", future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   histogram_tester().ExpectUniqueSample(kHistogramName, ReauthResult::kFailure,
                                         1);

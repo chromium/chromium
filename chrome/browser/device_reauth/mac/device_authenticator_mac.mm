@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/mac/authenticator_mac.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
@@ -85,16 +86,15 @@ void DeviceAuthenticatorMac::AuthenticateWithMessage(
   // API, and if it fails use password_manager_util_mac::AuthenticateUser()
   // instead, until crbug.com/1358442 is fixed.
   if (!CanAuthenticateWithBiometrics()) {
-    // AuthenticateUserWithNonBiometrics runs a dialog with a nested run loop,
-    // so protect against this page disappearing within that nested run loop.
-    // https://crbug.com/508289938
-    auto weak_this = weak_ptr_factory_.GetWeakPtr();
-    bool success = authenticator_->AuthenticateUserWithNonBiometrics(
-        l10n_util::GetStringFUTF16(IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX,
-                                   message));
-    if (weak_this) {
-      weak_this->OnAuthenticationCompleted(success);
-    }
+    // AuthenticateUserWithNonBiometrics runs a dialog with a nested run loop.
+    // Post a task to run it asynchronously, so that it doesn't block the
+    // current call stack. This prevents UaF in the callers if the page is
+    // closed during the nested run loop. https://crbug.com/508289938
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &DeviceAuthenticatorMac::AuthenticateWithNonBiometricsAsync,
+            weak_ptr_factory_.GetWeakPtr(), message));
     return;
   }
 
@@ -103,6 +103,17 @@ void DeviceAuthenticatorMac::AuthenticateWithMessage(
       message,
       base::BindOnce(&DeviceAuthenticatorMac::OnAuthenticationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceAuthenticatorMac::AuthenticateWithNonBiometricsAsync(
+    const std::u16string& message) {
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  bool success = authenticator_->AuthenticateUserWithNonBiometrics(
+      l10n_util::GetStringFUTF16(IDS_PASSWORDS_AUTHENTICATION_PROMPT_PREFIX,
+                                 message));
+  if (weak_this) {
+    weak_this->OnAuthenticationCompleted(success);
+  }
 }
 
 void DeviceAuthenticatorMac::OnAuthenticationCompleted(bool success) {
