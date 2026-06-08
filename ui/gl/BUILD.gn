@@ -66,45 +66,63 @@ use_angle_stubs =
 # has definitively stuck (at which point the use_static_angle flag itself will
 # also be removed) and the bots no longer expect these files.
 if (use_angle_stubs) {
-  action("generate_angle_stubs") {
-    script = "write_angle_stubs.py"
-    outputs = [ "$target_gen_dir/angle_stubs.stamp" ]
+  if (is_win) {
+    # Define dummy libraries to satisfy symbol uploader.
+    # 0-byte stubs cause symbol uploader to fail on Windows.
+    shared_library("dummy_libEGL") {
+      output_name = "libEGL"
+      sources = [ "dummy_stub.cc" ]
+    }
+    shared_library("dummy_libGLESv2") {
+      output_name = "libGLESv2"
+      sources = [ "dummy_stub.cc" ]
+    }
+  } else {
+    action("generate_angle_stubs_action") {
+      script = "write_angle_stubs.py"
+      outputs = [ "$target_gen_dir/angle_stubs.stamp" ]
 
-    # We list these stubs as formal outputs so that Siso/Ninja can track them
-    # cleanly and record their command hashes, preventing "command line not
-    # found in log" errors during no-op builds.
-    _stubs = [
-      "$root_out_dir/libEGL$shlib_extension",
-      "$root_out_dir/libGLESv2$shlib_extension",
-    ]
-    if (is_linux || is_chromeos) {
-      _stubs += [
-        "$root_out_dir/libEGL.so.TOC",
-        "$root_out_dir/libGLESv2.so.TOC",
-        "$root_out_dir/libEGL.so.stripped",
-        "$root_out_dir/libEGL.so.debug",
-        "$root_out_dir/libGLESv2.so.stripped",
-        "$root_out_dir/libGLESv2.so.debug",
+      # We list these stubs as formal outputs so that Siso/Ninja can track them
+      # cleanly and record their command hashes, preventing "command line not
+      # found in log" errors during no-op builds.
+      _stubs = [
+        "$root_out_dir/libEGL$shlib_extension",
+        "$root_out_dir/libGLESv2$shlib_extension",
       ]
-      if (current_cpu == "x86") {
-        _cpu = "ia32"
-      } else {
-        _cpu = current_cpu
+      if (is_linux || is_chromeos) {
+        _stubs += [
+          "$root_out_dir/libEGL.so.TOC",
+          "$root_out_dir/libGLESv2.so.TOC",
+          "$root_out_dir/libEGL.so.stripped",
+          "$root_out_dir/libEGL.so.debug",
+          "$root_out_dir/libGLESv2.so.stripped",
+          "$root_out_dir/libGLESv2.so.debug",
+        ]
+        if (current_cpu == "x86") {
+          _cpu = "ia32"
+        } else {
+          _cpu = current_cpu
+        }
+        _stubs += [
+          "$root_out_dir/angle_libegl.breakpad.$_cpu",
+          "$root_out_dir/angle_libgles.breakpad.$_cpu",
+        ]
       }
-      _stubs += [
-        "$root_out_dir/angle_libegl.breakpad.$_cpu",
-        "$root_out_dir/angle_libgles.breakpad.$_cpu",
-      ]
-    }
-    if (is_win) {
-      _stubs += [
-        "$root_out_dir/libEGL.dll.pdb",
-        "$root_out_dir/libGLESv2.dll.pdb",
-      ]
-    }
 
-    outputs += _stubs
-    args = rebase_path(outputs, root_build_dir)
+      outputs += _stubs
+      args = rebase_path(outputs, root_build_dir)
+    }
+  }
+
+  group("generate_angle_stubs") {
+    if (is_win) {
+      public_deps = [
+        ":dummy_libEGL",
+        ":dummy_libGLESv2",
+      ]
+    } else {
+      public_deps = [ ":generate_angle_stubs_action" ]
+    }
   }
 }
 
