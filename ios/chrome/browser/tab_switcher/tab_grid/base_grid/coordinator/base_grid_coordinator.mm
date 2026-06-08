@@ -327,9 +327,12 @@ using collaboration::CollaborationControllerDelegate;
 }
 
 - (void)showTabGroupCreationWithoutTabs {
-  CHECK(!_tabGroupCreator)
-      << "There is an attempt to create a tab group when a "
-         "creation process is still running.";
+  if (_tabGroupCreator) {
+    // Gracefully exit the creation flow if a creation process already exists.
+    // This method is called by persistent entry points that can create
+    // reentrancy issues, leading to duplicate creation processes being started.
+    return;
+  }
 
   _tabGroupCreator = [[CreateTabGroupCoordinator alloc]
       initEmptyTabGroupCreationWithBaseViewController:self.baseViewController
