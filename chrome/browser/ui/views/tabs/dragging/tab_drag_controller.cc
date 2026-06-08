@@ -1023,6 +1023,8 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
   TRACE_EVENT1("views", "TabDragController::DragBrowserToNewTabStrip",
                "point_in_screen", point_in_screen.ToString());
 
+  base::WeakPtr<TabDragController> weak_this = weak_factory_.GetWeakPtr();
+
   dragging_tabs_session_ = nullptr;
 
   if (!target_context) {
@@ -1036,6 +1038,8 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
   GetAttachedBrowserWidget()->GetGestureRecognizer()->TransferEventsTo(
       attached_native_view, target_context->GetWidget()->GetNativeView(),
       ui::TransferTouchesBehavior::kDontCancel);
+
+  CHECK(weak_this);
 #endif
 
   if (current_state_ == DragState::kDraggingWindow) {
@@ -1066,6 +1070,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
     // control returns to RunMoveLoop().
     VLOG(1) << "EndMoveLoop in DragBrowserToNewTabStrip";
     browser_widget->EndMoveLoop();
+    CHECK(weak_this);
 
     // Ideally we would always swap the tabs now, but on non-ash Windows, it
     // seems that running the move loop implicitly activates the window when
@@ -1081,6 +1086,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
       // capture.
       DetachAndAttachToNewContext(ReleaseCapture::kDontReleaseCapture,
                                   target_context);
+      CHECK(weak_this);
 
       // Enter kWaitingToExitRunLoop until we actually have exited the nested
       // run loop. Otherwise, we might attempt to start another nested run loop,
@@ -1110,6 +1116,7 @@ TabDragController::Liveness TabDragController::DragBrowserToNewTabStrip(
   // behaviour.
   DetachAndAttachToNewContext(ReleaseCapture::kDontReleaseCapture,
                               target_context);
+  CHECK(weak_this);
 
   StartDraggingTabsSession(false, point_in_screen);
   attached_context_->GetWidget()->Activate();
