@@ -793,34 +793,6 @@ const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
      switches::reader_mode_heuristics::kAllArticles},
 };
 
-const FeatureEntry::FeatureParam
-    kReaderModeImprovementsTriggerOnMobileFriendly[] = {
-        {"trigger_on_mobile_friendly_pages", "true"}};
-const FeatureEntry::FeatureParam kReaderModeImprovementsAlwaysOnEntryPoint[] = {
-    {"always_on_entry_point", "true"}};
-const FeatureEntry::FeatureParam kReaderModeImprovementsCustomCPATimeout[] = {
-    {"custom_cpa_timeout_enabled", "true"},
-    {"custom_cpa_timeout", "300"}};
-const FeatureEntry::FeatureParam
-    kReaderModeImprovementsShowReadingModeInRegularTab[] = {
-        {"show_in_regular_tab", "true"}};
-const FeatureEntry::FeatureParam kReaderModeImprovementsAllOn[] = {
-    {"trigger_on_mobile_friendly_pages", "true"},
-    {"always_on_entry_point", "true"},
-    {"custom_cpa_timeout_enabled", "true"},
-    {"custom_cpa_timeout", "300"},
-    {"show_in_regular_tab", "true"}};
-
-const FeatureEntry::FeatureVariation kReaderModeImprovementsChoices[] = {
-    {"trigger on mobile-friendly pages",
-     kReaderModeImprovementsTriggerOnMobileFriendly, nullptr},
-    {"always-on entry point", kReaderModeImprovementsAlwaysOnEntryPoint,
-     nullptr},
-    {"increased cpa timeout", kReaderModeImprovementsCustomCPATimeout, nullptr},
-    {"reading mode in regular tab",
-     kReaderModeImprovementsShowReadingModeInRegularTab, nullptr},
-
-    {"all", kReaderModeImprovementsAllOn, nullptr}};
 
 const FeatureEntry::FeatureParam kReaderModeUseReadabilityDistiller[] = {
     {"use_distiller", "true"}};
@@ -5291,11 +5263,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
-    {"reader-mode-improvements", flag_descriptions::kReaderModeImprovementsName,
-     flag_descriptions::kReaderModeImprovementsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(dom_distiller::kReaderModeImprovements,
-                                    kReaderModeImprovementsChoices,
-                                    "Reader Mode Improvements")},
     {"reader-mode-support-new-fonts",
      flag_descriptions::kReaderModeSupportNewFontsName,
      flag_descriptions::kReaderModeSupportNewFontsDescription, kOsAndroid,

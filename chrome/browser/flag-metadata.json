@@ -8134,11 +8134,6 @@
     "expiry_milestone": 157
   },
   {
-    "name": "reader-mode-improvements",
-    "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "reader-mode-omnibox-entrypoint-in-us",
     "owners": [ "fernandex@google.com", "qpubert@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 150

@@ -15,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
@@ -108,16 +107,10 @@ public class DomDistillerTabUtils {
      * Check if the distiller should report mobile-friendly pages as non-distillable.
      *
      * @return True if heuristic is ADABOOST_MODEL, and "Simplified view for accessibility" is
-     *     disabled. Or false under certain experimental conditions.
+     *     disabled.
      */
     public static boolean shouldExcludeMobileFriendly(Tab tab) {
         if (sExcludeMobileFriendlyForTesting != null) return sExcludeMobileFriendlyForTesting;
-        // Including mobile-friendly by default only applies to the CPA, otherwise we fallback to
-        // the accessibility setting.
-        if (DomDistillerFeatures.triggerOnMobileFriendlyPages()
-                && !ReaderModeManager.shouldUseReaderModeMessages(tab)) {
-            return false;
-        }
 
         return !isReaderModeAccessibilitySettingEnabled(tab.getProfile())
                 && getDistillerHeuristics() == DistillerHeuristicsType.ADABOOST_MODEL;

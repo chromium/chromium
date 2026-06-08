@@ -194,7 +194,6 @@ import java.util.function.BiConsumer;
     ChromeFeatureList.LENS_OVERLAY_ANDROID,
     ChromeFeatureList.TASK_MANAGER_CLANK,
     ContentFeatureList.ANDROID_DEV_TOOLS_FRONTEND,
-    DomDistillerFeatures.READER_MODE_IMPROVEMENTS,
     DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
     // TODO(crbug.com/504757384): Add test for three dot menu flag.
     ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON,
@@ -2453,7 +2452,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/false")
     public void readerModeEntryPointDisabled() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -2465,7 +2463,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @DisableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/false")
     @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void readerModeEntryPointEnabledWhenDistillingInApp() {
         setUpMocksForPageMenu();
@@ -2481,7 +2478,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/true")
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void readerModeEntryPointEnabled_ShowReadingMode() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -2499,7 +2496,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    @EnableFeatures(DomDistillerFeatures.READER_MODE_IMPROVEMENTS + ":always_on_entry_point/true")
+    @EnableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void readerModeEntryPointEnabled_HideReadingMode() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.CHROME_DISTILLER_EXAMPLE_URL);

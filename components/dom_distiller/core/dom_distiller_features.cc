@@ -100,16 +100,14 @@ BASE_FEATURE(kReaderModeDelayBottomSheetPeek,
 
 BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReaderModeImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kReaderModeToggleLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace android {
 static int64_t JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
       &kReaderModeDelayBottomSheetPeek, &kReaderModeDistillInApp,
-      &kReaderModeImprovements,         &kReaderModeSupportNewFonts,
-      &kReaderModeToggleLinks,          &kReaderModeUseReadability};
+      &kReaderModeSupportNewFonts, &kReaderModeToggleLinks,
+      &kReaderModeUseReadability};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<int64_t>(kFeatureMap.get());

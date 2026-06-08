@@ -5989,10 +5989,6 @@ inline constexpr char kReaderModeHeuristicsAdaboost[] =
 inline constexpr char kReaderModeHeuristicsAllArticles[] = "All articles";
 inline constexpr char kReaderModeHeuristicsAlwaysOff[] = "Never";
 inline constexpr char kReaderModeHeuristicsAlwaysOn[] = "Always";
-inline constexpr char kReaderModeImprovementsName[] =
-    "Reader Mode improvements";
-inline constexpr char kReaderModeImprovementsDescription[] =
-    "Collection of improvements to reader mode for android.";
 inline constexpr char kReaderModeSupportNewFontsName[] =
     "Reader Mode support new fonts";
 inline constexpr char kReaderModeSupportNewFontsDescription[] =

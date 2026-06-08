@@ -210,21 +210,6 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    @EnableFeatures(
-            DomDistillerFeatures.READER_MODE_IMPROVEMENTS
-                    + ":trigger_on_mobile_friendly_pages/true")
-    public void testMobileFriendlyNotDistillable_exceptWhenFeatureFlagAndParamEnabled() {
-        Pair<Boolean, Integer> result =
-                ReaderModeManager.computeDistillationStatus(mTab, true, true, true);
-        assertTrue("Distillability should be fully determined.", result.first);
-        assertEquals(
-                "Page should be be distillable.",
-                ReaderModeManager.DistillationStatus.POSSIBLE,
-                (int) result.second);
-    }
-
-    @Test
-    @Feature("ReaderMode")
     public void testUi_notTriggered() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, false, true, false);
         assertEquals(

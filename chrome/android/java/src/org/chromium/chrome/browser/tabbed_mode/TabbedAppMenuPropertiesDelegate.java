@@ -1932,8 +1932,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             return false;
         }
 
-        return (DomDistillerFeatures.showAlwaysOnEntryPoint()
-                || DomDistillerFeatures.sReaderModeDistillInApp.isEnabled());
+        return DomDistillerFeatures.sReaderModeDistillInApp.isEnabled();
     }
 
     @Contract("null -> false")
