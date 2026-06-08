@@ -130,6 +130,7 @@ void UserSecuritySignalsService::OnPolicyUpdated(
 void UserSecuritySignalsService::OnStatePolicyValueChanged() {
   if (!IsSecuritySignalsReportingEnabled()) {
     timer_.Stop();
+    StopPolicyObservation();
     return;
   }
 

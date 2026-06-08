@@ -62,6 +62,9 @@ std::string ReportSchedulerAndroid::GetProfileClientId() {
 
 void ReportSchedulerAndroid::OnReportEventTriggered(
     SecurityReportTrigger trigger) {
+  if (!AreSecurityReportsEnabled()) {
+    return;
+  }
   if (!trigger_report_callback_.is_null()) {
     trigger_report_callback_.Run(ReportTrigger::kTriggerSecurity);
   }

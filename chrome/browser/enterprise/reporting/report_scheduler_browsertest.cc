@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/enterprise/browser/reporting/report_scheduler.h"
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -21,7 +24,6 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -112,6 +114,22 @@ IN_PROC_BROWSER_TEST_F(ReportSchedulerTest, LaunchTest) {
   EXPECT_TRUE(report_scheduler()->IsNextReportScheduledForTesting() ||
               report_scheduler()->GetActiveTriggerForTesting() ==
                   ReportTrigger::kTriggerTimer);
+}
+
+// Verify that a security report trigger is aborted and not active if security
+// signals reporting is disabled.
+IN_PROC_BROWSER_TEST_F(ReportSchedulerTest,
+                       SecurityTriggerGatedWhenSignalsReportingDisabled) {
+  WaitForCloudReportingLaunching();
+
+  // Trigger security report via public delegate callback.
+  static_cast<ReportSchedulerDesktop*>(
+      report_scheduler()->GetDelegateForTesting())
+      ->OnReportEventTriggered(SecurityReportTrigger::kTimer);
+
+  // Assert that the trigger did not become active.
+  EXPECT_NE(report_scheduler()->GetActiveTriggerForTesting(),
+            ReportTrigger::kTriggerSecurity);
 }
 
 }  // namespace enterprise_reporting

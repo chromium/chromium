@@ -8,7 +8,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/syslog_logging.h"
@@ -308,6 +310,12 @@ void ReportScheduler::Start(base::Time last_upload_time) {
 }
 
 void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
+  if (trigger == ReportTrigger::kTriggerSecurity) {
+    CHECK(delegate_->AreSecurityReportsEnabled(), base::NotFatalUntil::M153);
+  } else {
+    CHECK(IsReportingEnabled(), base::NotFatalUntil::M153);
+  }
+
   if (delegate_->AreSecurityReportsEnabled()) {
     // Does nothing if client is already registered.
     SetupBrowserPolicyClientRegistration();

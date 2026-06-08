@@ -1274,6 +1274,35 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   ::testing::Mock::VerifyAndClearExpectations(uploader_);
 }
 
+// Verify that a security report trigger is aborted and not active if security
+// signals reporting is disabled.
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       SecurityTriggerGatedWhenSignalsReportingDisabled) {
+  // Expect no generation or upload calls.
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_)).Times(0);
+  EXPECT_CALL(*uploader_, SetRequestAndUpload(_, _, _)).Times(0);
+
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/false);
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
+
+  CreateSchedulerForProfileReporting(profile);
+
+  // Trigger security report via delegate callback.
+  auto* delegate = scheduler_->GetDelegateForTesting();
+#if BUILDFLAG(IS_ANDROID)
+  static_cast<ReportSchedulerAndroid*>(delegate)->OnReportEventTriggered(
+      SecurityReportTrigger::kTimer);
+#else
+  static_cast<ReportSchedulerDesktop*>(delegate)->OnReportEventTriggered(
+      SecurityReportTrigger::kTimer);
+#endif
+
+  EXPECT_NE(scheduler_->GetActiveTriggerForTesting(),
+            ReportTrigger::kTriggerSecurity);
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_reporting

@@ -282,6 +282,26 @@ TEST_F(UserSecuritySignalsServiceTest,
   run_loop.Run();
 }
 
+TEST_F(UserSecuritySignalsServiceTest,
+       TogglingSignalsCollectionPolicy_DisablingPolicyStopsObservation) {
+  SetEnabledPolicy(true);
+
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
+                             /*expect_using_cookie=*/false,
+                             /*expect_remove_observer=*/false);
+
+  testing::Mock::VerifyAndClearExpectations(&policy_service_);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Disabling the policy should remove the observer immediately.
+  EXPECT_CALL(delegate_, OnReportEventTriggered(_)).Times(0);
+  EXPECT_CALL(policy_service_, RemoveObserver).Times(1);
+  SetEnabledPolicy(false);
+
+  testing::Mock::VerifyAndClearExpectations(&policy_service_);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+}
+
 TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithCookies_FastForwards) {
   SetEnabledPolicy(true);
   SetUseAuthPolicy(true);
