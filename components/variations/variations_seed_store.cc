@@ -93,19 +93,20 @@ VerifySignatureResult VerifySeedSignature(
   }
 
   std::string signature;
-  if (!base::Base64Decode(base64_seed_signature, &signature))
+  if (!base::Base64Decode(base64_seed_signature, &signature)) {
     return VerifySignatureResult::kDecodeFailed;
+  }
 
   std::optional<crypto::keypair::PublicKey> public_key =
       crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(kPublicKey);
-  if (!public_key) {
-    return VerifySignatureResult::kInvalidSignature;
-  }
+  // Since kPublicKey is hardcoded, if it fails to load, that's either
+  // programmer error or a corrupt binary.
+  CHECK(public_key);
 
   if (!crypto::sign::Verify(crypto::sign::SignatureKind::ECDSA_SHA256,
                             *public_key, base::as_byte_span(seed_bytes),
                             base::as_byte_span(signature))) {
-    return VerifySignatureResult::kInvalidSeed;
+    return VerifySignatureResult::kInvalidSeedSignature;
   }
 
   return VerifySignatureResult::kValidSignature;

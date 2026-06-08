@@ -93,8 +93,8 @@ enum class UpdateSeedDateResult {
 enum class VerifySignatureResult {
   kMissingSignature = 0,
   kDecodeFailed = 1,
-  kInvalidSignature = 2,
-  kInvalidSeed = 3,
+  // kInvalidPublicKey = 2, // no longer used
+  kInvalidSeedSignature = 3,
   kValidSignature = 4,
   kMaxValue = kValidSignature,
 };

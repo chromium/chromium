@@ -2443,7 +2443,7 @@ INSTANTIATE_TEST_SUITE_P(
                 .signature = TestSeedData().base64_signature,
                 .store_seed_result = StoreSeedResult::kFailedSignature,
                 .verify_signature_result =
-                    VerifySignatureResult::kInvalidSeed}),
+                    VerifySignatureResult::kInvalidSeedSignature}),
         ::testing::Values(kSeedFilesGroup,
                           kControlGroup,
                           kDefaultGroup,
@@ -3119,8 +3119,9 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSignatureDoesNotMatch) {
 
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
-  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::kInvalidSeed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Variations.LoadSeedSignature",
+      VerifySignatureResult::kInvalidSeedSignature, 1);
 }
 
 TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSeedDoesNotMatch) {
@@ -3139,8 +3140,9 @@ TEST_P(LoadSeedDataAllGroupsTest, VerifySeedSignatureSeedDoesNotMatch) {
 
   base::HistogramTester histogram_tester;
   ASSERT_FALSE(MakeSeedStoreLoadStoredSeed(seed_store));
-  histogram_tester.ExpectUniqueSample("Variations.LoadSeedSignature",
-                                      VerifySignatureResult::kInvalidSeed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Variations.LoadSeedSignature",
+      VerifySignatureResult::kInvalidSeedSignature, 1);
 }
 
 class VariationsSeedStoreTestAllGroups
