@@ -466,6 +466,10 @@ int SSLConnectJob::DoSSLConnect() {
                x509_util::TrustAnchorIDsToString(
                    service_endpoint_result_->metadata.trust_anchor_ids));
     }
+    if (ssl_config.server_padding_to_request) {
+      dict.Set("requested_server_padding",
+               ssl_config.server_padding_to_request.value());
+    }
     return dict;
   });
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(

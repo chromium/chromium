@@ -2212,6 +2212,8 @@ TEST_P(SSLConnectJobTest, LegacyCryptoThenECHRecovery) {
 TEST_P(SSLConnectJobTest, ServerPaddingNotRequested) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kAddTLSServerHandshakePadding);
+  RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                           NetLogCaptureMode::kDefault);
 
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
@@ -2227,6 +2229,12 @@ TEST_P(SSLConnectJobTest, ServerPaddingNotRequested) {
                                         /*expect_sync_result=*/false);
   histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding",
                                     0);
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_FALSE(
+      GetOptionalIntegerValueFromParams(events[0], "requested_server_padding")
+          .has_value());
 }
 
 TEST_P(SSLConnectJobTest, ServerPaddingRequest) {
@@ -2234,6 +2242,8 @@ TEST_P(SSLConnectJobTest, ServerPaddingRequest) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAddTLSServerHandshakePadding,
       {{"AddTLSServerHandshakePaddingBytes", "128"}});
+  RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                           NetLogCaptureMode::kDefault);
 
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
@@ -2251,6 +2261,11 @@ TEST_P(SSLConnectJobTest, ServerPaddingRequest) {
                                         /*expect_sync_result=*/false);
   histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding",
                                     1);
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(128, GetOptionalIntegerValueFromParams(events[0],
+                                                   "requested_server_padding"));
 }
 
 TEST_P(SSLConnectJobTest, ServerPaddingRequestZeroPadding) {
@@ -2258,6 +2273,8 @@ TEST_P(SSLConnectJobTest, ServerPaddingRequestZeroPadding) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAddTLSServerHandshakePadding,
       {{"AddTLSServerHandshakePaddingBytes", "0"}});
+  RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                           NetLogCaptureMode::kDefault);
 
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
@@ -2275,6 +2292,11 @@ TEST_P(SSLConnectJobTest, ServerPaddingRequestZeroPadding) {
                                         /*expect_sync_result=*/false);
   histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding",
                                     1);
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(0, GetOptionalIntegerValueFromParams(events[0],
+                                                 "requested_server_padding"));
 }
 
 TEST_P(SSLConnectJobTest, ServerPaddingRequestButNotReceived) {
@@ -2282,6 +2304,8 @@ TEST_P(SSLConnectJobTest, ServerPaddingRequestButNotReceived) {
   feature_list.InitAndEnableFeatureWithParameters(
       features::kAddTLSServerHandshakePadding,
       {{"AddTLSServerHandshakePaddingBytes", "0"}});
+  RecordingNetLogObserver net_log_observer(common_connect_job_params_.net_log,
+                                           NetLogCaptureMode::kDefault);
 
   StaticSocketDataProvider data;
   socket_factory_.AddSocketDataProvider(&data);
@@ -2299,6 +2323,11 @@ TEST_P(SSLConnectJobTest, ServerPaddingRequestButNotReceived) {
                                         /*expect_sync_result=*/false);
   histogram_tester.ExpectTotalCount("Net.SSL_Connection_Latency_ServerPadding",
                                     0);
+  auto events = net_log_observer.GetEntriesWithType(
+      NetLogEventType::SSL_CONNECT_JOB_SSL_CONNECT);
+  ASSERT_EQ(1u, events.size());
+  EXPECT_EQ(0, GetOptionalIntegerValueFromParams(events[0],
+                                                 "requested_server_padding"));
 }
 
 }  // namespace
