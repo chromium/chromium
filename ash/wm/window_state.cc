@@ -1018,7 +1018,8 @@ void WindowState::UpdateWindowPropertiesFromStateType() {
                          should_round_window);
   }
 
-  if (window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
+  if (!window_->is_destroying() &&
+      window_->GetProperty(ash::kWindowManagerManagesOpacityKey)) {
     const gfx::Size& size = window_->bounds().size();
     if (ShouldSetExplicitOpaqueRegionsForOcclusion(this)) {
       window_->SetTransparent(true);
