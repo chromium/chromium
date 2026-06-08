@@ -3370,6 +3370,9 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR" desc="Snackbar message shown to ask if the user wants to continue their Gemini Live session.">
         Are you still using Live? Tap the Live button to keep talking to Gemini
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_GENERAL_DORMANT_SNACKBAR" desc="Snackbar message shown when a Gemini Live session is dormant, listing potential reasons/solutions.">
+        Something went wrong. Check your internet connection, increase your volume, or try again.
+      </message>
       <message name="IDS_IOS_GEMINI_LIVE_INTRO_TTS" desc="The intro text spoken by TTS when the user enters a Gemini Live session.">
         Hi, I'm Gemini. We're about to go live, where you can ask questions about the page you're on just by talking. But before we get started, take a quick look at this important information.
       </message>

@@ -468,6 +468,15 @@ bool IsGeminiLiveEnabled() {
   return base::FeatureList::IsEnabled(kGeminiLive);
 }
 
+BASE_FEATURE(kGeminiLiveDormantReasons, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiLiveDormantReasonsEnabled() {
+  if (!IsGeminiLiveEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeminiLiveDormantReasons);
+}
+
 BASE_FEATURE(kGeminiCopresence, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiCopresenceEnabled() {

@@ -101,7 +101,7 @@ const CGFloat kFloatyIntrinsicPaddingCorrection = 8.0;
 // TODO(crbug.com/512576285): Confirm offset value with UI.
 // TODO(crbug.com/513881624): Get the actual floaty height separately, if
 // possible, so this constant can just represent the offset.
-const CGFloat kDormantSnackbarOffsetFromFloaty = 100.0;
+const CGFloat kDormantSnackbarOffsetFromFloaty = 110.0;
 
 // Used for forcing fullscreen progress value.
 const CGFloat kFullscreenEnabled = 0.0;
@@ -551,9 +551,11 @@ void GeminiBrowserAgent::ShowLiveSessionDormantSnackbar() {
 
   id<SnackbarCommands> snackbar_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+
   SnackbarMessage* message = [[SnackbarMessage alloc]
       initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_GEMINI_LIVE_CONTINUE_SESSION_SNACKBAR)];
+                        IDS_IOS_GEMINI_LIVE_GENERAL_DORMANT_SNACKBAR)];
+
   base::WeakPtr<GeminiBrowserAgent> weak_self = weak_factory_.GetWeakPtr();
   message.completionHandler = ^(BOOL completed) {
     if (weak_self) {
