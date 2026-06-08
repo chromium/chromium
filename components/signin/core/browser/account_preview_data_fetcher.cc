@@ -68,7 +68,8 @@ std::optional<AccountPreviewData> ParseStatsResponse(
   const auto& dict = value->GetDict();
   const auto* list = dict.FindList("dataTypeStatistics");
   if (!list) {
-    return std::nullopt;
+    // An empty valid result is still considered a success.
+    return data;
   }
   for (const auto& item : *list) {
     if (!item.is_dict()) {
@@ -116,7 +117,8 @@ std::optional<AccountPreviewData> ParsePreviewsResponse(
   const auto& dict = value->GetDict();
   const auto* list = dict.FindList("entitiesPreviews");
   if (!list) {
-    return std::nullopt;
+    // An empty valid result is still considered a success.
+    return data;
   }
   data->password_domains.clear();
   for (const auto& item : *list) {
