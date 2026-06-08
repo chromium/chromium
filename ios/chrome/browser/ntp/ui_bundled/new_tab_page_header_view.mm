@@ -449,7 +449,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self addSeparatorToSearchField:self.fakeOmniboxContainer];
   [self addCustomizationMenu];
   if (IsChromeNextIaEnabled()) {
-    [self addToolsMenuIfNeeded];
+    if (!CanShowTabStrip(self) && !IsRegularXRegularSizeClass(self)) {
+      [self addToolsMenu];
+    }
   }
 }
 
@@ -1233,8 +1235,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (void)setToolsMenuButton:(UIButton*)toolsMenuButton {
   CHECK(IsChromeNextIaEnabled());
-  if (_toolsMenuButton) {
+  if (!toolsMenuButton) {
     [_toolsMenuButton removeFromSuperview];
+    _toolsMenuButton = nil;
+    return;
   }
 
   if (IsNTPBackgroundCustomizationEnabled()) {
@@ -1538,11 +1542,12 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 // Creates the Tools menu and adds it to the header view.
-- (void)addToolsMenuIfNeeded {
+- (void)addToolsMenu {
   CHECK(IsChromeNextIaEnabled());
-  // If the Tools menu button is always visible in the toolbar (iPad), the Tools
-  // menu should not be added to the header view.
-  if (CanShowTabStrip(self)) {
+  CHECK(!IsRegularXRegularSizeClass(self));
+  CHECK(!CanShowTabStrip(self));
+  if (self.toolsMenuButton.superview) {
+    // Tools menu button is already in the view hierarchy.
     return;
   }
 
@@ -1940,6 +1945,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   BOOL preferredContentSizeCategoryChanged =
       previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory;
+
   if (horizontalSizeClassChanged || preferredContentSizeCategoryChanged) {
     [self updateFakeboxDisplay];
   }
@@ -1949,7 +1955,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
         previousTraitCollection.verticalSizeClass !=
             self.traitCollection.verticalSizeClass) {
       [self resetSplitToolbarResizing];
-      [self addToolsMenuIfNeeded];
+      if (!CanShowTabStrip(self) && !IsRegularXRegularSizeClass(self)) {
+        [self addToolsMenu];
+      } else {
+        // If the Tools menu button is always visible in the toolbar (iPad), the
+        // Tools menu should not be in the header.
+        self.toolsMenuButton = nil;
+      }
     }
   }
 
