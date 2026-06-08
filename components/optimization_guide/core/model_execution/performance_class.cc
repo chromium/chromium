@@ -16,7 +16,6 @@
 #include "base/strings/to_string.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/version_info.h"
-#include "build/branding_buildflags.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -233,12 +232,6 @@ PerformanceClassifier::PerformanceClassifier(
   TRACE_EVENT("optimization_guide",
               "PerformanceClassifier::PerformanceClassifier");
   OnDeviceModelPerformanceClass override_class = GetPerformanceClassSwitch();
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  // In CfT, the performance class is assumed to be the most generic value.
-  if (override_class == OnDeviceModelPerformanceClass::kUnknown) {
-    override_class = OnDeviceModelPerformanceClass::kGpuBlocked;
-  }
-#endif
   if (override_class != OnDeviceModelPerformanceClass::kUnknown) {
     UpdatePerformanceClassPref(local_state_, override_class);
     performance_class_state_ = PerformanceClassState::kComplete;

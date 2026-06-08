@@ -31,7 +31,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -276,15 +275,7 @@ class OnDeviceModelComponentStateManagerDelegate final
   void GetFreeDiskSpace(const base::FilePath& path,
                         base::OnceCallback<void(std::optional<base::ByteCount>)>
                             callback) override {
-#if BUILDFLAG(CHROME_FOR_TESTING)
-    // No need for free disk space check in CfT, so invoke the callback
-    // asynchronously so that large size on device components are updated after
-    // all other components.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), base::ByteCount::Max()));
-#else
     GetComponentFreeDiskSpace(path, std::move(callback));
-#endif
   }
 
   void RegisterInstaller(

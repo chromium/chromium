@@ -116,7 +116,6 @@ source_set("optimization_guide_on_device_model_installer") {
 
   deps = [
     "//base",
-    "//build:branding_buildflags",
     "//chrome/browser:browser_process",
     "//components/component_updater",
     "//components/crx_file",
