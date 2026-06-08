@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_dialog_delegate.h"
@@ -38,9 +39,13 @@ void DefaultBrowserModalDialogManager::ShowForBrowser(
     parent_window = widget->GetNativeWindow();
   }
 
-  dialog_widgets_[browser] =
+  std::unique_ptr<views::Widget> dialog_widget =
       ::default_browser::Show(browser->GetProfile(), parent_window,
                               use_settings_illustration_, can_pin_to_taskbar());
+  dialog_widget->MakeCloseSynchronous(base::BindOnce(
+      &DefaultBrowserModalDialogManager::OnDialogWidgetCloseRequested,
+      base::Unretained(this), browser));
+  dialog_widgets_[browser] = std::move(dialog_widget);
 }
 
 void DefaultBrowserModalDialogManager::CloseForBrowser(
@@ -48,19 +53,38 @@ void DefaultBrowserModalDialogManager::CloseForBrowser(
   if (auto entry = dialog_widgets_.extract(browser)) {
     // The entry mapped value is a std::unique_ptr<views::Widget>.
     if (entry.mapped()) {
-      entry.mapped()->CloseWithReason(
-          views::Widget::ClosedReason::kUnspecified);
+      entry.mapped()->MakeCloseSynchronous(base::NullCallback());
     }
   }
 }
 
 void DefaultBrowserModalDialogManager::CloseAllPromptInstances() {
-  for (const auto& [browser, widget] : dialog_widgets_) {
+  auto widgets = std::move(dialog_widgets_);
+  for (auto& [browser, widget] : widgets) {
     if (widget) {
+      widget->MakeCloseSynchronous(base::NullCallback());
       widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     }
   }
-  dialog_widgets_.clear();
+}
+
+void DefaultBrowserModalDialogManager::OnDialogWidgetCloseRequested(
+    BrowserWindowInterface* browser,
+    views::Widget::ClosedReason reason) {
+  // Note: On Mac, the ESC dismissal is resolved as kUnspecified.
+  const bool is_dismiss_action =
+      reason == views::Widget::ClosedReason::kEscKeyPressed ||
+      reason == views::Widget::ClosedReason::kCloseButtonClicked ||
+      reason == views::Widget::ClosedReason::kCancelButtonClicked ||
+      reason == views::Widget::ClosedReason::kUnspecified;
+  if (is_dismiss_action) {
+    HandleDismiss();
+    DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
+        DefaultBrowserPromptManager::CloseReason::kDismiss);
+    return;
+  }
+
+  dialog_widgets_.erase(browser);
 }
 
 default_browser::DefaultBrowserEntrypointType
