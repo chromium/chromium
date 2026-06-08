@@ -12,6 +12,7 @@ source_set("coordinator") {
     "//base",
     "//ios/chrome/browser/assistant/ui",
     "//ios/chrome/browser/assistant/ui:detent",
+    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
