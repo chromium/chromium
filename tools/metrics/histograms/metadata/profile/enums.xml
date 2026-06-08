@@ -252,6 +252,24 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="Origami Pink Butterfly"/>
   <int value="38" label="Origami Rabbit"/>
   <int value="39" label="Origami Unicorn"/>
+  <int value="40" label="Illustration Basketball"/>
+  <int value="41" label="Illustration Bike"/>
+  <int value="42" label="Illustration Bird"/>
+  <int value="43" label="Illustration Cheese"/>
+  <int value="44" label="Illustration Football"/>
+  <int value="45" label="Illustration Ramen"/>
+  <int value="46" label="Illustration Sunglasses"/>
+  <int value="47" label="Illustration Sushi"/>
+  <int value="48" label="Illustration Tamagotchi"/>
+  <int value="49" label="Illustration Vinyl"/>
+  <int value="50" label="Abstract Avocado"/>
+  <int value="51" label="Abstract Cappuccino"/>
+  <int value="52" label="Abstract Ice Cream"/>
+  <int value="53" label="Abstract Ice Water"/>
+  <int value="54" label="Abstract Melon"/>
+  <int value="55" label="Abstract Onigiri"/>
+  <int value="56" label="Abstract Pizza"/>
+  <int value="57" label="Abstract Sandwich"/>
 </enum>
 
 <enum name="ProfileDeleteAction">
