@@ -35,8 +35,4 @@ include_rules = [
   # casted to ProfileIOS*. This mean that no code should use
   # web::TestBrowserState in ios/chrome.
   "-ios/web/public/test/fakes/test_browser_state.h",
-
-  # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
-  # See crbug.com/891834.
-  "-ios/web/public/test/http_server",
 ]

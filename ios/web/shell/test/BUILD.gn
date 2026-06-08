@@ -44,7 +44,6 @@ source_set("eg_app_support+eg2") {
     "//ios/web",
     "//ios/web:eg_app_support+eg2",
     "//ios/web/public/test",
-    "//ios/web/public/test/http_server",
     "//ios/web/shell",
     "//ios/web/shell:shell_interfaces",
     "//url",
@@ -100,7 +99,6 @@ source_set("eg2_tests") {
     "//base",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server",
     "//net:test_support",
   ]
 

@@ -7,10 +7,6 @@ include_rules = [
   "+ios/testing",
   "+components/test/ios",
   "+third_party/ocmock",
-
-  # To avoid includes from web::HttpServer since it is deprecated. Reference
-  # to crbug.com/708307.
-  "-ios/web/public/test/http_server/http_server.h",
 ]
 
 specific_include_rules = {
