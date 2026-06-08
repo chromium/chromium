@@ -43,6 +43,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -60,6 +61,7 @@ public class TabBottomSheetWebUiTest {
     @Mock private ThinWebView mThinWebView;
     @Mock private View mView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
+    @Mock private SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     @Mock private ContentView mMockContentView;
     @Mock private Window mMockWindow;
     @Mock private View mMockDecorView;
@@ -97,6 +99,7 @@ public class TabBottomSheetWebUiTest {
                         containerView,
                         mWindowAndroid,
                         mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
                         Color.WHITE,
                         mMockContentView);
         TabBottomSheetWebUi.setInTestModeForTesting();
@@ -283,6 +286,7 @@ public class TabBottomSheetWebUiTest {
                 View containerView,
                 WindowAndroid windowAndroid,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
                 int backgroundColor,
                 ContentView mockContentView) {
             super(
@@ -290,6 +294,7 @@ public class TabBottomSheetWebUiTest {
                     containerView,
                     windowAndroid,
                     contextMenuPopulatorFactory,
+                    selectionDropdownMenuDelegate,
                     backgroundColor);
             mMockContentView = mockContentView;
         }

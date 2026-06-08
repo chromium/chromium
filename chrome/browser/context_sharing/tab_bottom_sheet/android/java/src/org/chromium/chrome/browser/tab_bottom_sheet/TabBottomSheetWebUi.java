@@ -31,6 +31,7 @@ import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDe
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -42,6 +43,7 @@ public class TabBottomSheetWebUi {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
+    private final SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     private final WebViewResizingHelper mWebViewResizingHelper;
     private final @ColorInt int mBackgroundColor;
 
@@ -54,10 +56,12 @@ public class TabBottomSheetWebUi {
             View containerView,
             WindowAndroid windowAndroid,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+            SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             @ColorInt int backgroundColor) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
+        mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         mBackgroundColor = backgroundColor;
         mWebViewResizingHelper =
                 new WebViewResizingHelper(containerView, windowAndroid, backgroundColor);
@@ -146,6 +150,7 @@ public class TabBottomSheetWebUi {
                     contentView,
                     new ThinWebViewAttachParams.Builder()
                             .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
+                            .setSelectionDropdownMenuDelegate(mSelectionDropdownMenuDelegate)
                             .setSupportTheming(true)
                             .build());
             mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
