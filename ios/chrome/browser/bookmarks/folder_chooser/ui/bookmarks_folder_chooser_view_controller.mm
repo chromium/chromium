@@ -66,10 +66,10 @@ using bookmarks::BookmarkNode;
   BOOL _allowsNewFolders;
   // A linear list of folders. This will be populated in `reloadView` when the
   // UI is updated.
-  std::vector<const BookmarkNode*> _accountFolderNodes;
+  std::vector<raw_ptr<const BookmarkNode>> _accountFolderNodes;
   // A linear list of folders. This will be populated in `reloadView` when the
   // UI is updated.
-  std::vector<const BookmarkNode*> _localOrSyncableFolderNodes;
+  std::vector<raw_ptr<const BookmarkNode>> _localOrSyncableFolderNodes;
   // This ViewController's searchController;
   UISearchController* _searchController;
   // What the user is currently searching.
@@ -233,7 +233,7 @@ using bookmarks::BookmarkNode;
     folderIndex--;
   }
 
-  const BookmarkNode* folder;
+  raw_ptr<const BookmarkNode> folder;
   if (sectionID == SectionIdentifierAccountBookmarks) {
     CHECK(folderIndex < _accountFolderNodes.size(), base::NotFatalUntil::M152);
     folder = _accountFolderNodes[folderIndex];
@@ -403,7 +403,7 @@ using bookmarks::BookmarkNode;
   }
 
   // Add Folders entries.
-  const std::vector<const BookmarkNode*>& folders =
+  const std::vector<raw_ptr<const bookmarks::BookmarkNode>>& folders =
       (sectionID == SectionIdentifierAccountBookmarks)
           ? _accountFolderNodes
           : _localOrSyncableFolderNodes;

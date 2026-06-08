@@ -851,7 +851,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   DCHECK(!_folderChooserCoordinator);
   DCHECK(nodeIDs.size() > 0);
 
-  bookmark_utils_ios::NodeSet nodes;
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> nodes;
   for (int64_t nodeID : nodeIDs) {
     const BookmarkNode* node = [self findNodeByID:nodeID];
     if (node) {
@@ -1279,7 +1279,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
   // Copy the list of edited nodes from BookmarksFolderChooserCoordinator before
   // `stopFolderChooserCoordinator` sets `_folderChooserCoordinator` to nil.
-  std::set<const BookmarkNode*> editedNodesSet =
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> editedNodesSet =
       _folderChooserCoordinator.editedNodes;
   CHECK_GE(editedNodesSet.size(), 1u, base::NotFatalUntil::M152);
 

@@ -152,7 +152,7 @@ void SortFolders(NodeVector* vector);
 // which are excluded, as well as their descendants. The returned list is
 // sorted depth-first, then alphabetically.
 // `search_terms` can be used to filter results.
-NodeVector VisibleNonDescendantNodes(
+std::vector<raw_ptr<const bookmarks::BookmarkNode>> VisibleNonDescendantNodes(
     const NodeSet& obstructions,
     const bookmarks::BookmarkModel* model,
     BookmarkStorageType type,

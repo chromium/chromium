@@ -473,9 +473,10 @@ namespace {
 // Adds all children of `folder` that are not obstructed to `results`. They are
 // placed immediately after `folder`, using a depth-first, then alphabetically
 // ordering. `results` must contain `folder`.
-void UpdateFoldersFromNode(const BookmarkNode* folder,
-                           NodeVector* results,
-                           const NodeSet& obstructions);
+void UpdateFoldersFromNode(
+    const BookmarkNode* folder,
+    std::vector<raw_ptr<const bookmarks::BookmarkNode>>* results,
+    const NodeSet& obstructions);
 
 // Returns whether `folder` has an ancestor in any of the nodes in
 // `bookmarkNodes`.
@@ -530,9 +531,10 @@ bool IsObstructed(const BookmarkNode* node, const NodeSet& obstructions) {
   return false;
 }
 
-void UpdateFoldersFromNode(const BookmarkNode* folder,
-                           NodeVector* results,
-                           const NodeSet& obstructions) {
+void UpdateFoldersFromNode(
+    const BookmarkNode* folder,
+    std::vector<raw_ptr<const bookmarks::BookmarkNode>>* results,
+    const NodeSet& obstructions) {
   std::vector<const BookmarkNode*> directDescendants;
   for (const auto& subfolder : folder->children()) {
     if (!IsObstructed(subfolder.get(), obstructions)) {
@@ -565,13 +567,13 @@ void SortFolders(NodeVector* vector) {
             FolderNodeComparator(collator.get()));
 }
 
-NodeVector VisibleNonDescendantNodes(
+std::vector<raw_ptr<const bookmarks::BookmarkNode>> VisibleNonDescendantNodes(
     const NodeSet& obstructions,
     const bookmarks::BookmarkModel* model,
     BookmarkStorageType type,
     const std::vector<std::u16string>& search_terms) {
   NodeVector primary_nodes = PrimaryPermanentNodes(model, type);
-  NodeVector filtered_primary_nodes;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode>> filtered_primary_nodes;
   for (auto* node : primary_nodes) {
     if (IsObstructed(node, obstructions)) {
       continue;
@@ -581,17 +583,18 @@ NodeVector VisibleNonDescendantNodes(
   }
 
   // Copy the results over.
-  NodeVector inner_results = filtered_primary_nodes;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode>> inner_results =
+      filtered_primary_nodes;
 
   // Iterate over a static copy of the filtered, root folders.
-  for (auto* node : filtered_primary_nodes) {
-    UpdateFoldersFromNode(node, &inner_results, obstructions);
+  for (raw_ptr<const bookmarks::BookmarkNode> node : filtered_primary_nodes) {
+    UpdateFoldersFromNode(node.get(), &inner_results, obstructions);
   }
 
   if (search_terms.empty()) {
     return inner_results;
   }
-  NodeVector results;
+  std::vector<raw_ptr<const bookmarks::BookmarkNode>> results;
   std::copy_if(inner_results.begin(), inner_results.end(),
                std::back_inserter(results), [search_terms](auto node) {
                  return bookmarks::DoesBookmarkContainWords(

@@ -248,7 +248,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   obstructions.insert(gaga);
   obstructions.insert(lindsey);
 
-  NodeVector result = VisibleNonDescendantNodes(
+  auto result = VisibleNonDescendantNodes(
       obstructions, bookmark_model_, BookmarkStorageType::kLocalOrSyncable);
   ASSERT_EQ(13u, result.size());
 
@@ -283,7 +283,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodesSearch) {
   AddFolder(metal, u"F12");
   AddFolder(metal, u"f31");
 
-  NodeVector result = VisibleNonDescendantNodes(
+  auto result = VisibleNonDescendantNodes(
       {}, bookmark_model_, BookmarkStorageType::kLocalOrSyncable, {u"op"});
   ASSERT_EQ(2u, result.size());
 

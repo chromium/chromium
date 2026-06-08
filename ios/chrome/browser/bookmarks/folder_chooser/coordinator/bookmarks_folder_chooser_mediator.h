@@ -41,14 +41,17 @@ class SyncService;
 // nodes that are being edited (moved to a folder).
 - (instancetype)
     initWithBookmarkModel:(bookmarks::BookmarkModel*)model
-              editedNodes:(std::set<const bookmarks::BookmarkNode*>)editedNodes
+              editedNodes:
+                  (std::set<raw_ptr<const bookmarks::BookmarkNode>>)editedNodes
     authenticationService:(AuthenticationService*)authenticationService
               syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (void)disconnect;
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes;
+
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes;
 
 @end
 

@@ -49,7 +49,7 @@
   BookmarksFolderEditorCoordinator* _folderEditorCoordinator;
   // List of nodes to hide when displaying folders. This is to avoid to move a
   // folder inside a child folder.
-  std::set<const bookmarks::BookmarkNode*> _hiddenNodes;
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> _hiddenNodes;
   // The folder that has a blue check mark beside it in the UI.
   // This is only used for clients of this coordinator to update the UI. This
   // does not reflect the folder users chose by clicking. For that information
@@ -64,7 +64,8 @@
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
                          hiddenNodes:
-                             (const std::set<const bookmarks::BookmarkNode*>&)
+                             (const std::set<
+                                 raw_ptr<const bookmarks::BookmarkNode>>&)
                                  hiddenNodes {
   self = [self initWithBaseViewController:navigationController
                                   browser:browser
@@ -78,8 +79,9 @@
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
-                   hiddenNodes:(const std::set<const bookmarks::BookmarkNode*>&)
-                                   hiddenNodes {
+                   hiddenNodes:
+                       (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)
+                           hiddenNodes {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _hiddenNodes = hiddenNodes;
@@ -95,7 +97,7 @@
   return YES;
 }
 
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes {
   return [_mediator editedNodes];
 }
 

@@ -35,12 +35,12 @@
 // Fake implementation of BookmarksFolderChooserCoordinator for testing.
 @interface FakeBookmarksFolderChooserCoordinator
     : BookmarksFolderChooserCoordinator
-@property(nonatomic, assign) std::set<const bookmarks::BookmarkNode*>
+@property(nonatomic, assign) std::set<raw_ptr<const bookmarks::BookmarkNode>>
     editedNodesSet;
 @end
 
 @implementation FakeBookmarksFolderChooserCoordinator
-- (const std::set<const bookmarks::BookmarkNode*>&)editedNodes {
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes {
   return _editedNodesSet;
 }
 - (void)stop {
@@ -285,7 +285,7 @@ TEST_F(BookmarksHomeViewControllerTest,
 
   // Select the bookmark to move.
   controller.mediator.selectedNodesForEditMode.insert(bookmark);
-  std::set<const bookmarks::BookmarkNode*> selectedNodes;
+  std::set<raw_ptr<const bookmarks::BookmarkNode>> selectedNodes;
   selectedNodes.insert(bookmark);
 
   // Use a fake folder chooser coordinator.

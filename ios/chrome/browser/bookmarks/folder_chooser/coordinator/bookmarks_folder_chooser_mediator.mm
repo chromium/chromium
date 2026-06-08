@@ -37,19 +37,22 @@ using bookmarks::BookmarkNode;
   // Set of nodes to hide when displaying folders. This is to avoid to move a
   // folder inside a child folder. These are also the list of nodes that are
   // being edited (moved to a folder).
-  std::set<const BookmarkNode*> _editedNodes;
+  std::set<raw_ptr<const BookmarkNode>> _editedNodes;
   // Observer for signin status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge> _authServiceBridge;
   // Sync service.
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
+  // The currently selected folder.
+  raw_ptr<const bookmarks::BookmarkNode> _selectedFolderNode;
 }
 
 @synthesize UIDisabled = _UIDisabled;
 
 - (instancetype)initWithBookmarkModel:(bookmarks::BookmarkModel*)model
-                          editedNodes:(std::set<const BookmarkNode*>)editedNodes
+                          editedNodes:
+                              (std::set<raw_ptr<const BookmarkNode>>)editedNodes
                 authenticationService:(AuthenticationService*)authService
                           syncService:(syncer::SyncService*)syncService {
   CHECK(model, base::NotFatalUntil::M145);
@@ -96,8 +99,12 @@ using bookmarks::BookmarkNode;
   CHECK(!_authServiceBridge, base::NotFatalUntil::M149);
 }
 
-- (const std::set<const BookmarkNode*>&)editedNodes {
+- (const std::set<raw_ptr<const bookmarks::BookmarkNode>>&)editedNodes {
   return _editedNodes;
+}
+
+- (const bookmarks::BookmarkNode*)selectedFolderNode {
+  return _selectedFolderNode;
 }
 
 #pragma mark - BookmarksFolderChooserDataSource
@@ -121,7 +128,7 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - BookmarksFolderChooserMutator
 
-- (void)setSelectedFolderNode:(const BookmarkNode*)folderNode {
+- (void)setSelectedFolderNode:(const bookmarks::BookmarkNode*)folderNode {
   _selectedFolderNode = folderNode;
   [_consumer notifyModelUpdated];
 }
@@ -147,7 +154,7 @@ using bookmarks::BookmarkNode;
     return;
   }
 
-  if (bookmarkNode == _selectedFolderNode) {
+  if (bookmarkNode == _selectedFolderNode.get()) {
     // The selected folder has been deleted. Unset `_selectedFolderNode`.
     _selectedFolderNode = nil;
   }
