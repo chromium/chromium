@@ -70,7 +70,7 @@ class AttributeCollectionGeneric {
     return UNSAFE_BUFFERS(begin() + size());
   }
 
-  unsigned size() const { return attributes_.size(); }
+  unsigned size() const { return static_cast<unsigned>(attributes_.size()); }
   bool IsEmpty() const { return !size(); }
 
   // Find() returns nullptr if the specified name is not found.

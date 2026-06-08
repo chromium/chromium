@@ -85,8 +85,8 @@ void WaveShaperNode::SetCurveImpl(base::span<const float> curve,
     if (curve.size() < 2) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidAccessError,
-          ExceptionMessages::IndexExceedsMinimumBound<unsigned>(
-              "curve length", curve.size(), 2));
+          ExceptionMessages::IndexExceedsMinimumBound<unsigned>("curve length",
+                                                                length, 2));
       return;
     }
   }

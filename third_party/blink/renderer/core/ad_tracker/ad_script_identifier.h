@@ -49,7 +49,7 @@ struct HashTraits<AdScriptIdentifier> : GenericHashTraits<AdScriptIdentifier> {
     std::pair<int64_t, int64_t> p = script_id.context_id.pair();
     int64_t arr[] = {p.first, p.second,
                      static_cast<int64_t>(script_id.id.value())};
-    return base::FastHash(base::as_byte_span(arr));
+    return static_cast<unsigned>(base::FastHash(base::as_byte_span(arr)));
   }
 
   static void ConstructDeletedValue(AdScriptIdentifier& script_id) {

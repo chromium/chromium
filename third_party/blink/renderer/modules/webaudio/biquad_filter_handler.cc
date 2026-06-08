@@ -350,12 +350,13 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
               const double normalized_frequency = NormalizeFrequency(
                   cutoff_frequency_sample_accurate_values_[k], nyquist_,
                   detune_sample_accurate_values_[k]);
-              SetBiquadParams(biquad.get(), type_, k, normalized_frequency,
+              SetBiquadParams(biquad.get(), type_, base::checked_cast<int>(k),
+                              normalized_frequency,
                               q_sample_accurate_values_[k],
                               gain_sample_accurate_values_[k]);
             }
           }
-          const int coef_index = needed_frames - 1;
+          const int coef_index = base::checked_cast<int>(needed_frames - 1);
           DCHECK(!biquads_.empty());
           const double tail =
               biquads_[0]->TailFrame(coef_index, kMaxTailTime * sample_rate_) /
@@ -509,11 +510,12 @@ void BiquadFilterHandler::GetFrequencyResponse(
   DCHECK(!mag_response.empty());
   DCHECK(!phase_response.empty());
 
-  Vector<float> frequency(frequency_hz.size());
+  const wtf_size_t size = base::checked_cast<wtf_size_t>(frequency_hz.size());
+  Vector<float> frequency(size);
 
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
-  for (size_t k = 0; k < frequency_hz.size(); ++k) {
+  for (wtf_size_t k = 0; k < size; ++k) {
     frequency[k] = frequency_hz[k] / nyquist_;
   }
 

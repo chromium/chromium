@@ -416,6 +416,7 @@ void WaveShaperHandler::WaveShaperCurveValues(
   base::span<float> virtual_index_span = virtual_index_.as_span();
 
   const size_t curve_length = curve_data.size();
+  CHECK_GE(curve_length, 1u);
 
   // virtual_index[k] =
   //   ClampTo(0.5 * (source[k] + 1) * (curve_length - 1),
@@ -446,7 +447,7 @@ void WaveShaperHandler::WaveShaperCurveValues(
   // Interpolation factor: virtual_index - index.
   DCHECK_LE(frames_to_process, f_.size());
 
-  int max_index = curve_length - 1;
+  int max_index = static_cast<int>(curve_length - 1);
   unsigned k = 0;
 #if defined(ARCH_CPU_X86_FAMILY)
   {

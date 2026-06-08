@@ -728,9 +728,10 @@ AudioContext::~AudioContext() {
     total_audible_duration_ +=
         base::TimeTicks::Now() - audible_start_timestamp_;
   }
-  UMA_HISTOGRAM_EXACT_LINEAR("WebAudio.AudioContext.AudibleTime",
-                             total_audible_duration_.InSeconds(),
-                             /*exclusive_max=*/8);
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      "WebAudio.AudioContext.AudibleTime",
+      base::saturated_cast<int>(total_audible_duration_.InSeconds()),
+      /*exclusive_max=*/8);
   UMA_HISTOGRAM_BOOLEAN("WebAudio.AudioContext.DestroyedWithoutClose",
                         !is_closed_);
 
