@@ -27,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -1238,7 +1239,13 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
     return E_UNEXPECTED;
   }
 
-  if (!process_.IsValid()) {
+  bool is_valid = false;
+  {
+    base::AutoLock lock(lock_);
+    is_valid = process_.IsValid();
+  }
+
+  if (!is_valid) {
     *status = COMMAND_STATUS_INIT;
   } else {
     *status = app_command_runner_.value()->TimedWait() ? COMMAND_STATUS_COMPLETE
@@ -1253,9 +1260,13 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
     return E_INVALIDARG;
   }
 
+  base::Process process_dup = process();
+  if (!process_dup.IsValid()) {
+    return S_FALSE;
+  }
+
   int code = -1;
-  if (!process_.IsValid() ||
-      !process_.WaitForExitWithTimeout(base::TimeDelta(), &code)) {
+  if (!process_dup.WaitForExitWithTimeout(base::TimeDelta(), &code)) {
     return S_FALSE;
   }
 
@@ -1283,8 +1294,13 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                                               VARIANT substitution7,
                                               VARIANT substitution8,
                                               VARIANT substitution9) {
-  if (!app_command_runner_.has_value() || process_.IsValid()) {
-    return E_UNEXPECTED;
+  {
+    base::AutoLock lock(lock_);
+    if (!app_command_runner_.has_value() || is_executing_ ||
+        process_.IsValid()) {
+      return E_UNEXPECTED;
+    }
+    is_executing_ = true;
   }
 
   std::vector<std::wstring> substitutions;
@@ -1303,7 +1319,16 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
     substitutions.push_back(substitution_string.value());
   }
 
-  const HRESULT hr = app_command_runner_.value()->Run(substitutions, process_);
+  base::Process process;
+  const HRESULT hr = app_command_runner_.value()->Run(substitutions, process);
+  {
+    base::AutoLock lock(lock_);
+    if (SUCCEEDED(hr)) {
+      process_ = std::move(process);
+    }
+    is_executing_ = false;
+  }
+
   using LegacyAppCommandWebImplPtr =
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>;
   AppServerWin::PostOnTaskRunner(
@@ -1356,7 +1381,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
                         << " completed or was skipped: " << error;
               },
               LegacyAppCommandWebImplPtr(this)),
-          process_.Duplicate(), hr));
+          this->process(), hr));
   return hr;
 }
 

@@ -21,6 +21,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/types/expected.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -306,7 +308,10 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
                          VARIANT substitution8,
                          VARIANT substitution9) override;
 
-  const base::Process& process() const { return process_; }
+  base::Process process() const {
+    base::AutoLock lock(lock_);
+    return process_.Duplicate();
+  }
 
  private:
   friend class LegacyAppCommandWebImplTest;
@@ -319,7 +324,9 @@ class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
 
   ~LegacyAppCommandWebImpl() override;
 
-  base::Process process_;
+  mutable base::Lock lock_;
+  base::Process process_ GUARDED_BY(lock_);
+  bool is_executing_ GUARDED_BY(lock_) = false;
   HResultOr<scoped_refptr<AppCommandRunner>> app_command_runner_;
   UpdaterScope scope_ = UpdaterScope::kSystem;
   std::string app_id_;
