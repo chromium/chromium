@@ -246,6 +246,11 @@ public class TabUiThemeUtil {
         return R.drawable.circular_button_keyfocus;
     }
 
+    /** {@return The {@link DrawableRes} for the Glic button keyboard focus ring} */
+    public static @DrawableRes int getGlicButtonKeyboardFocusDrawableRes(boolean isSplit) {
+        return isSplit ? R.drawable.glic_split_button_keyfocus : R.drawable.glic_button_keyfocus;
+    }
+
     /** {@return The keyboard focus ring's offset in px} */
     public static int getFocusRingOffset(Context context) {
         return context.getResources().getDimensionPixelSize(R.dimen.tabstrip_keyfocus_offset);

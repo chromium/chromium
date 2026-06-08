@@ -705,10 +705,11 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyFloat(),
                         eq(true),
-                        eq(R.drawable.circular_button_keyfocus),
+                        eq(R.drawable.glic_button_keyfocus),
                         eq(
                                 MaterialColors.getColor(
                                         mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
+                        anyFloat(),
                         anyInt(),
                         anyFloat(),
                         anyFloat(),
@@ -752,10 +753,11 @@ public class TabStripSceneLayerTest {
                         anyInt(),
                         anyFloat(),
                         eq(true),
-                        eq(R.drawable.circular_button_keyfocus),
+                        eq(R.drawable.glic_split_button_keyfocus),
                         eq(
                                 MaterialColors.getColor(
                                         mContext, R.attr.colorPrimary, /* defaultValue= */ 0)),
+                        anyFloat(),
                         anyInt(),
                         anyFloat(),
                         anyFloat(),
