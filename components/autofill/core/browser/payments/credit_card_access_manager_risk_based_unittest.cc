@@ -42,8 +42,7 @@ class CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest
  public:
   CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillEnableCardInfoRuntimeRetrieval,
-                              features::
+        /*enabled_features=*/{features::
                                   kAutofillEnableFpanRiskBasedAuthentication},
         /*disabled_features=*/{});
   }

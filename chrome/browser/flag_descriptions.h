@@ -1033,12 +1033,6 @@ inline constexpr char kRealboxContextMenuAnimationCappingDescription[] =
     "When enabled, the impressions of the realbox context menu animation "
     "will be capped.";
 
-inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalName[] =
-    "Enable retrieval of card info(with CVC) from issuer for enrolled cards";
-inline constexpr char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
-    "When enabled, runtime retrieval of CVC along with card number and expiry "
-    "from issuer for enrolled cards will be enabled during form fill.";
-
 inline constexpr char kAutofillEnableDownstreamCardAwarenessIphName[] =
     "Enable showing in-product help UI for downstream card awareness";
 inline constexpr char kAutofillEnableDownstreamCardAwarenessIphDescription[] =

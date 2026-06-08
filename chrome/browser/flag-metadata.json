@@ -960,11 +960,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-card-info-runtime-retrieval",
-    "owners": [ "hvs@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
     "owners": [
       "jialihuang@google.com","yiwenqian@google.com",

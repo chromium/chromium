@@ -160,11 +160,6 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// When enabled, runtime retrieval of CVC along with card number and expiry
-// from issuer for enrolled cards will be enabled during form fill.
-BASE_FEATURE(kAutofillEnableCardInfoRuntimeRetrieval,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, this will enhance the CVV storage project. The enhancement will
 // enable CVV storage suggestions for standalone CVC fields.
 BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,

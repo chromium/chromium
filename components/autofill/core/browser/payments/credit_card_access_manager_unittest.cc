@@ -2018,16 +2018,13 @@ TEST_F(CreditCardAccessManagerTest, CardInfoRetrievalEnrolledCardUnmasking) {
             AutofillProgressUiType::kCardInfoRetrievalEnrolledUnmaskProgressUi);
 }
 
-// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressUi` is not set, even
-// if `kAutofillEnableCardInfoRuntimeRetrieval` is enabled, but
+// Ensures the `kCardInfoRetrievalEnrolledUnmaskProgressUi` is not set if
 // `card_info_retrieval_enrollment_state` is not enrolled.
 TEST_F(CreditCardAccessManagerTest,
        CardInfoRetrievalEnrolledCardUnmaskingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableCardInfoRuntimeRetrieval},
-      /*disabled_features=*/{
-          features::kAutofillEnableFpanRiskBasedAuthentication});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableFpanRiskBasedAuthentication);
 
   base::HistogramTester histogram_tester;
   CreditCard server_card = test::GetMaskedServerCard();

@@ -990,14 +990,9 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_card_art_url(GURL(s.ColumnStringView(index++)));
     card->set_product_description(s.ColumnString16(index++));
     card->set_product_terms_url(GURL(s.ColumnStringView(index++)));
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableCardInfoRuntimeRetrieval)) {
-      card->set_card_info_retrieval_enrollment_state(
-          CheckedToEnum<CreditCard::CardInfoRetrievalEnrollmentState>(
-              s.ColumnInt(index++)));
-    } else {
-      index++;
-    }
+    card->set_card_info_retrieval_enrollment_state(
+        CheckedToEnum<CreditCard::CardInfoRetrievalEnrollmentState>(
+            s.ColumnInt(index++)));
     card->set_benefit_source(CreditCard::GetBenefitSourceStringFromEnum(
         CheckedToEnum<CreditCard::BenefitSource>(s.ColumnInt(index++))));
     card->set_card_creation_source(

@@ -439,8 +439,6 @@ bool CreditCardAccessManager::IsMaskedServerCardRiskBasedAuthAvailable() const {
   }
 
   bool is_card_info_retrieval_enrolled =
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableCardInfoRuntimeRetrieval) &&
       (card_->card_info_retrieval_enrollment_state() ==
        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   return !card_->IsExpired(AutofillClock::Now()) &&

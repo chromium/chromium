@@ -754,10 +754,6 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardWithChangedEncryptionKey) {
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
-    base::test::ScopedFeatureList feature;
-    feature.InitWithFeatureStates(
-        {{features::kAutofillEnableCardInfoRuntimeRetrieval, true}});
-
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
     inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Paul F. Tompkins");
@@ -872,9 +868,6 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentState) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillEnableCardInfoRuntimeRetrieval);
   std::vector<CreditCard> inputs;
   inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   inputs[0].set_instrument_id(321);
@@ -897,34 +890,6 @@ TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentState) {
                 kRetrievalUnenrolledAndNotEligible,
             outputs[0]->card_info_retrieval_enrollment_state());
   EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
-            outputs[1]->card_info_retrieval_enrollment_state());
-}
-
-TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentStateWithFlagOff) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      features::kAutofillEnableCardInfoRuntimeRetrieval);
-  std::vector<CreditCard> inputs;
-  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
-  inputs[0].set_instrument_id(321);
-  inputs[0].set_card_info_retrieval_enrollment_state(
-      CreditCard::CardInfoRetrievalEnrollmentState::
-          kRetrievalUnenrolledAndNotEligible);
-
-  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
-  inputs[1].set_instrument_id(123);
-  inputs[1].set_card_info_retrieval_enrollment_state(
-      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-
-  test::SetServerCreditCards(&*table_, inputs);
-
-  std::vector<std::unique_ptr<CreditCard>> outputs;
-  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
-  ASSERT_EQ(inputs.size(), outputs.size());
-
-  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified,
-            outputs[0]->card_info_retrieval_enrollment_state());
-  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified,
             outputs[1]->card_info_retrieval_enrollment_state());
 }
 
@@ -1118,10 +1083,6 @@ TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
 
 TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   // Set a card data.
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillEnableCardInfoRuntimeRetrieval);
-
   std::vector<CreditCard> inputs;
   inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "card1");
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
