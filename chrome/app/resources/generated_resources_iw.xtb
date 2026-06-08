@@ -7739,6 +7739,7 @@
 <translation id="6646696210740573446">‏שליחת קטע קוד מעורפל מכתובת ה-URL ל-Google דרך שרת פרטיות שמסתיר את כתובת ה-IP. אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים קטעי תוכן מדפים.</translation>
 <translation id="6647228709620733774">‏כתובת אתר לביטול של רשות אישורי Netscape</translation>
 <translation id="6647690760956378579">תצוגה מקדימה של הקול הטבעי</translation>
+<translation id="6648602807077169189">החזרת המשימה</translation>
 <translation id="6648911618876616409">יש עדכון קריטי המוכן להתקנה. צריך להיכנס לחשבון כדי להתחיל.</translation>
 <translation id="6650072551060208490">כדי להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="6650206238642452078">‏הרשמה לאירועי מערכת של ChromeOS</translation>
@@ -9110,6 +9111,7 @@
 <translation id="7650920359639954963">לא מופעלת: <ph name="REASON" /></translation>
 <translation id="7651182181030187705">כדי לקבל את הסימניה הזו בכל המכשירים, צריך לאמת את הזהות שלך</translation>
 <translation id="7651400349472467012">‏הנקודה לשיתוף אינטרנט (Hotspot) מיידי זמינה</translation>
+<translation id="7651754152638505879">המשימה הושהתה</translation>
 <translation id="7651784568388208829">‏המשך משימה ב-Phone Hub</translation>
 <translation id="7652954539215530680">יצירת קוד אימות</translation>
 <translation id="7654941827281939388">החשבון כבר נמצא בשימוש במחשב הזה.</translation>
@@ -10994,6 +10996,7 @@
 <translation id="8991694323904646277">אין מצלמה</translation>
 <translation id="8991766915726096402">שחזור הנתונים המקומיים</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> – השימוש בזיכרון – <ph name="MEMORY_VALUE" /></translation>
+<translation id="8993030412405061612">המשימה הושלמה</translation>
 <translation id="8993059306046735527">‏אם שכחת את הסיסמה של <ph name="DEVICE_TYPE" />, עדיין אפשר לשחזר את הנתונים המקומיים. עליך להיכנס לחשבון Google או להשתמש בתכונת שחזור החשבון.</translation>
 <translation id="8993198843374358393">העתקת הגיבוב של האישור '<ph name="CERT_NAME" />'</translation>
 <translation id="8993737615451556423">מספקת פקדים כדי להאיץ, להאט ולהשהות את קול ההקראה</translation>

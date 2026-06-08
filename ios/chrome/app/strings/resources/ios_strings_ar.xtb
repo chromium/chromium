@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">عرض كل علامات التبويب في مجموعة علامات التبويب</translation>
 <translation id="136942498637440594">يمكنك البحث عن الصور وما تراه فيها.</translation>
 <translation id="1373120905936431262">‏يمكنك تحميل صورة لبدء استخدام Nano Banana</translation>
-<translation id="1377321085342047638">رقم البطاقة</translation>
 <translation id="1377508275003315939">كلمات المرور</translation>
 <translation id="1381022135873211423">{count,plural, =1{العنوان {position} من إجمالي عنوان واحد ({count})}zero{العنوان {position} من إجمالي {count} عنوان}two{العنوان {position} من إجمالي عنوانَين ({count})}few{العنوان {position} من إجمالي {count} عناوين}many{العنوان {position} من إجمالي {count} عنوانًا}other{العنوان {position} من إجمالي {count} عنوان}}</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475">تدير مؤسستك حساب <ph name="EMAIL" />.</translation>
 <translation id="3580448612293054698">تعديل بيانات <ph name="ENTITY_TYPE" />؟</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
-<translation id="3583726884554296148">‏يمكنك حفظ بطاقتك في حسابك على Google لملء بياناتها تلقائيًا عند إجراء عملية الشراء هذه وعمليات شراء مستقبلية في Chrome</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
 <translation id="3588820906588687999">فتح الصورة في علامة تبويب جديدة</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">الميزات الجديدة</translation>
 <translation id="429074084062258019">{count,plural, =1{إضافة علامة التبويب إلى المجموعة}zero{إضافة علامات التبويب إلى المجموعة}two{إضافة علامتَي التبويب إلى المجموعة}few{إضافة علامات التبويب إلى المجموعة}many{إضافة علامات التبويب إلى المجموعة}other{إضافة علامات التبويب إلى المجموعة}}</translation>
 <translation id="4294506173142861371">تسجيل الدخول بحساب "<ph name="FIRST_NAME" />"؟</translation>
-<translation id="4300830875340617674">مسح البطاقة ضوئيًا وملء البيانات تلقائيًا</translation>
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4306349443295056740">‏توقيع OCSP</translation>
@@ -1707,7 +1704,6 @@
 <translation id="6807287147325542056">كلمات المرور في التطبيقات الأخرى</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="681631578600400068">حفظ بيانات رخصة القيادة</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏تمّ حفظ إشارة مرجعية واحدة في حسابك على Google‏ ({email})}zero{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}two{‏تمّ حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email})}few{‏تمّ حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email})}many{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}other{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}}</translation>
 <translation id="6826004672264649705">يتم حاليًا تتبُّع سعر هذا المنتج. ويمكنك فتح الصفحة للاطّلاع على سجلّ الأسعار</translation>
 <translation id="6830728435402077660">غير آمن</translation>
@@ -2272,6 +2268,7 @@
 <translation id="8694281486652655615">يؤدي هذا الإجراء إلى عرض هذا العنصر</translation>
 <translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8697136149718343437">نقل شريط العناوين إلى أسفل الشاشة</translation>
+<translation id="869891660844655955">تاريخ انتهاء الصلاحية</translation>
 <translation id="8706253136355675497">درجة الحرارة</translation>
 <translation id="8706806585855470492">سيكون بإمكانك مشاركة مجموعات علامات التبويب والانضمام إليها والتعاون فيها</translation>
 <translation id="8709409604518538305">تم إغلاق علامات التبويب</translation>

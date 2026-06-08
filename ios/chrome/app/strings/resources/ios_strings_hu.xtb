@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">A lapcsoportban lévő összes lap megjelenítése</translation>
 <translation id="136942498637440594">Rákereshet képekre és arra, amit lát.</translation>
 <translation id="1373120905936431262">Töltsön fel egy képet, amelyet átalakíthat a Nano Banana segítségével</translation>
-<translation id="1377321085342047638">Kártyaszám</translation>
 <translation id="1377508275003315939">Jelszavak</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. cím, összesen ennyiből: {count}}other{{position}. cím, összesen ennyiből: {count}}}</translation>
 <translation id="1383876407941801731">Keresés</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, az Ön szervezete kezeli.</translation>
 <translation id="3580448612293054698">Frissíti ezt: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
-<translation id="3583726884554296148">Mentse el kártyát a Google-fiókjába, hogy automatikusan kitölthesse a jelenlegi és a Chrome-ban végzett jövőbeli vásárlások során.</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3587885837929752825">Szervezete korlátozza, hogy Ön mit menthet Google-fiókjába.</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Újdonságok</translation>
 <translation id="429074084062258019">{count,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
 <translation id="4294506173142861371">Bejelentkezés mint <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Kártya beolvasása és automatikus kitöltés</translation>
 <translation id="4302061870579014542">Pozíció beállítása</translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4306349443295056740">OCSP-aláírás</translation>
@@ -1709,7 +1706,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6807287147325542056">Más alkalmazásoknál használt jelszavak</translation>
 <translation id="681368974849482173">Elem létrehozva</translation>
 <translation id="681631578600400068">Vezetői engedély mentése</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{{count} könyvjelző mentve a Google-fiókjába ({email})}}</translation>
 <translation id="6826004672264649705">Jelenleg nyomon követi ezt a terméket. Az árelőzmények megtekintéséhez nyissa meg</translation>
 <translation id="6830728435402077660">Nem biztonságos</translation>
@@ -2273,6 +2269,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="8694281486652655615">Megjeleníti ezt az elemet</translation>
 <translation id="8696297579102085705">Küldés az eszközére</translation>
 <translation id="8697136149718343437">Címsáv áthelyezése alulra</translation>
+<translation id="869891660844655955">Lejárati dátum</translation>
 <translation id="8706253136355675497">Hőmérséklet</translation>
 <translation id="8706806585855470492">Megoszthat lapcsoportokat, csatlakozhat hozzájuk, és együtt dolgozhat másokkal bennük</translation>
 <translation id="8709409604518538305">A lapok bezáródtak</translation>

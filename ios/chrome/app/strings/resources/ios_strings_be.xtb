@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Паказаць усе ўкладкі ў групе ўкладак</translation>
 <translation id="136942498637440594">Выконвайце пошук па відарысах і шукайце тое, што бачыце.</translation>
 <translation id="1373120905936431262">Каб стварыць рэмікс з дапамогай Nano Banana, запампуйце відарыс</translation>
-<translation id="1377321085342047638">Нумар карткі</translation>
 <translation id="1377508275003315939">Паролі</translation>
 <translation id="1381022135873211423">{count,plural, =1{Адрас на пазіцыі {position} з {count}}one{Адрас на пазіцыі {position} з {count}}few{Адрас на пазіцыі {position} з {count}}many{Адрас на пазіцыі {position} з {count}}other{Адрас на пазіцыі {position} з {count}}}</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, пад кіраваннем вашай арганізацыі.</translation>
 <translation id="3580448612293054698">Абнавіць элемент "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="3581564640715911333">Прапаноўваць перакладаць старонкі на іншых мовах</translation>
-<translation id="3583726884554296148">Захавайце картку ва Уліковым запісе Google, каб яе рэквізіты запаўняліся аўтаматычна пры гэтай і наступных куплях у Chrome</translation>
 <translation id="3587482841069643663">Усе</translation>
 <translation id="3587885837929752825">Што іменна вы можаце захоўваць ва Уліковы запіс Google, вызначае ваша арганізацыя.</translation>
 <translation id="3588820906588687999">Адкрыць відарыс у новай укладцы</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Што новага</translation>
 <translation id="429074084062258019">{count,plural, =1{Дадаць укладку ў групу}one{Дадаць укладкі ў групу}few{Дадаць укладкі ў групу}many{Дадаць укладкі ў групу}other{Дадаць укладкі ў групу}}</translation>
 <translation id="4294506173142861371">Увайсці як <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Сканіраваць картку і запоўніць даныя аўтаматычна</translation>
 <translation id="4302061870579014542">Наладзіць размяшчэнне</translation>
 <translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="4306349443295056740">Падпісанне OCSP</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">Паролі ў іншых праграмах</translation>
 <translation id="681368974849482173">Элемент створаны</translation>
 <translation id="681631578600400068">Захавайце вадзіцельскае пасведчанне</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка захавана ў вашым Уліковым запісе Google ({email})}one{{count} закладка захавана ў вашым Уліковым запісе Google ({email})}few{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}many{{count} закладак захавана ў вашым Уліковым запісе Google ({email})}other{{count} закладкі захаваны ў вашым Уліковым запісе Google ({email})}}</translation>
 <translation id="6826004672264649705">Вы адсочваеце гэты прадукт. Адкрыйце, каб паглядзець гісторыю цэн.</translation>
 <translation id="6830728435402077660">Не абаронена</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">Паказвае гэты элемент</translation>
 <translation id="8696297579102085705">Адправіць на прыладу</translation>
 <translation id="8697136149718343437">Перамясціць адрасны радок у ніжнюю частку экрана</translation>
+<translation id="869891660844655955">Тэрмін дзеяння</translation>
 <translation id="8706253136355675497">Тэмпература</translation>
 <translation id="8706806585855470492">Вы зможаце абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі</translation>
 <translation id="8709409604518538305">Укладкі былі закрыты</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">सर्व टॅब हे टॅब गटामध्ये दाखवा</translation>
 <translation id="136942498637440594">तुम्ही इमेज आणि तुम्ही काय पाहता ते शोधू शकता.</translation>
 <translation id="1373120905936431262">Nano Banana सह रीमिक्स करण्यासाठी इमेज अपलोड करा</translation>
-<translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1377508275003315939">पासवर्ड</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} पैकी {position} क्रमांकाचा पत्ता}other{{count} पैकी {position} क्रमांकाचा पत्ता}}</translation>
 <translation id="1383876407941801731">शोधा</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, तुमच्या संस्थेने व्यवस्थापित केला आहे.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> अपडेट करायची आहे का?</translation>
 <translation id="3581564640715911333">पेजचे अन्य भाषांमध्ये भाषांतर उपलब्ध करा</translation>
-<translation id="3583726884554296148">या खरेदीसाठी आणि Chrome वर केलेल्या भविष्यातील खरेदीसाठी तुमचे कार्ड ऑटोफिल करण्याकरिता ते तुमच्या Google खाते मध्ये सेव्ह करा</translation>
 <translation id="3587482841069643663">सर्व</translation>
 <translation id="3587885837929752825">तुम्ही तुमच्या Google खाते मध्ये काय सेव्ह करू शकता यावर तुमच्या संस्थेने मर्यादा घातल्या आहेत.</translation>
 <translation id="3588820906588687999">नवीन टॅबमध्ये इमेज उघडा</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">नवीन काय आहे</translation>
 <translation id="429074084062258019">{count,plural, =1{गट मध्ये टॅब जोडा}other{गट मध्ये टॅब जोडा}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> म्हणून साइन इन करायचे आहे का?</translation>
-<translation id="4300830875340617674">कार्ड स्कॅन करा आणि ऑटोफिल करा</translation>
 <translation id="4302061870579014542">स्थान सेट करा</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="4306349443295056740">OCSP स्वाक्षरी</translation>
@@ -1710,7 +1707,6 @@
 <translation id="6807287147325542056">इतर अ‍ॅप्समधील पासवर्ड</translation>
 <translation id="681368974849482173">तयार केलेला आयटम</translation>
 <translation id="681631578600400068">ड्रायव्हरच्या परवान्यासंबंधित माहिती सेव्ह करा</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केले आहेत}}</translation>
 <translation id="6826004672264649705">सध्या हे उत्पादन ट्रॅक करत आहे. किमतीचा इतिहास पाहण्यासाठी उघडा</translation>
 <translation id="6830728435402077660">सुरक्षित नाही</translation>
@@ -2274,6 +2270,7 @@
 <translation id="8694281486652655615">हा आयटम दिसतो</translation>
 <translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8697136149718343437">ॲड्रेस बार तळाशी हलवा</translation>
+<translation id="869891660844655955">कालावधी समाप्ती तारीख</translation>
 <translation id="8706253136355675497">तापमान</translation>
 <translation id="8706806585855470492">तुम्हाला टॅब गटांमध्ये शेअर करता येईल, सामील होता येईल आणि सहयोग करता येईल</translation>
 <translation id="8709409604518538305">टॅब बंद केले गेले होते</translation>

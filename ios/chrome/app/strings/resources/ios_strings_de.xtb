@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Alle Tabs in Tabgruppe anzeigen</translation>
 <translation id="136942498637440594">Du kannst nach Bildern und dem, was du siehst, suchen.</translation>
 <translation id="1373120905936431262">Bild hochladen, um es mit Nano Banana zu remixen</translation>
-<translation id="1377321085342047638">Kartennummer</translation>
 <translation id="1377508275003315939">Passwörter</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} von {count} Adresse}other{{position} von {count} Adressen}}</translation>
 <translation id="1383876407941801731">Suchen</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, von deiner Organisation verwaltet.</translation>
 <translation id="3580448612293054698">„<ph name="ENTITY_TYPE" />“ aktualisieren?</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
-<translation id="3583726884554296148">Du kannst deine Karte in deinem Google-Konto speichern, um sie bei diesem und zukünftigen Käufen in Chrome automatisch ausfüllen zu lassen</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Deine Organisation legt fest, was du in deinem Google-Konto speichern kannst.</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Neuheiten</translation>
 <translation id="429074084062258019">{count,plural, =1{Tab zu Gruppe hinzufügen}other{Tabs zu Gruppe hinzufügen}}</translation>
 <translation id="4294506173142861371">Als <ph name="FIRST_NAME" /> anmelden?</translation>
-<translation id="4300830875340617674">Karte scannen und automatisch ausfüllen</translation>
 <translation id="4302061870579014542">Positionieren</translation>
 <translation id="4304713468139749426">Passwort­manager</translation>
 <translation id="4306349443295056740">OCSP-Signierung</translation>
@@ -1709,7 +1706,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6807287147325542056">Passwörter in anderen Apps</translation>
 <translation id="681368974849482173">Element erstellt</translation>
 <translation id="681631578600400068">Führerschein speichern</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Lesezeichen in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen in deinem Google-Konto {email} gespeichert}}</translation>
 <translation id="6826004672264649705">Dieses Produkt wird derzeit beobachtet. Öffnen, um die Preisentwicklung zu sehen.</translation>
 <translation id="6830728435402077660">Nicht sicher</translation>
@@ -2273,6 +2269,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="8694281486652655615">Dieses Element wird angezeigt</translation>
 <translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8697136149718343437">Adressleiste nach unten verschieben</translation>
+<translation id="869891660844655955">Ablaufdatum</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kannst dann Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten</translation>
 <translation id="8709409604518538305">Tabs wurden geschlossen</translation>

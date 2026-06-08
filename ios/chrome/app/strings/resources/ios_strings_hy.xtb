@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Ցույց տալ ներդիրների խմբի բոլոր ներդիրները</translation>
 <translation id="136942498637440594">Դուք կարող եք որոնել պատկերներ և այն, ինչ տեսնում եք։</translation>
 <translation id="1373120905936431262">Վերբեռնեք պատկեր՝ Nano Banana-ի միջոցով ռեմիքս ստեղծելու համար</translation>
-<translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1377508275003315939">Գաղտնաբառեր</translation>
 <translation id="1381022135873211423">{count,plural, =1{Հասցե {position}՝ {count}-ից}one{Հասցե {position}՝ {count}-ից}other{Հասցե {position}՝ {count}-ից}}</translation>
 <translation id="1383876407941801731">Որոնում</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="3580448612293054698">Թարմացնե՞լ <ph name="ENTITY_TYPE" /></translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
-<translation id="3583726884554296148">Պահեք ձեր քարտը Google հաշվում, որպեսզի այն ավտոմատ լրացվի այս և հետագա գնումների ժամանակ, որոնք կկատարեք Chrome-ում</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3587885837929752825">Ձեր կազմակերպությունը սահմանափակել է տվյալները, որոնք կարող եք պահել ձեր Google հաշվում։</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Ինչ նոր բան կա</translation>
 <translation id="429074084062258019">{count,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիր խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
 <translation id="4294506173142861371">Մուտք գործե՞լ որպես <ph name="FIRST_NAME" /></translation>
-<translation id="4300830875340617674">Սկանավորել քարտը և ավտոմատ լրացնել</translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="4306349443295056740">OCSP ստորագրում</translation>
@@ -1709,7 +1706,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6807287147325542056">Գաղտնաբառեր այլ հավելվածներում</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
 <translation id="681631578600400068">Պահել վարորդական վկայականը</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Էջանիշը պահվել է ձեր Google հաշվում ({email})}one{{count} էջանիշ պահվել է ձեր Google հաշվում ({email})}other{{count} էջանիշ պահվել է ձեր Google հաշվում ({email})}}</translation>
 <translation id="6826004672264649705">Ներկայումս հետագծում եք այս ապրանքը։ Բացեք՝ գների փոփոխությունների պատմությունը տեսնելու համար</translation>
 <translation id="6830728435402077660">Անվտանգ չէ</translation>
@@ -2273,6 +2269,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8694281486652655615">Ցույց է տալիս այս տարրը</translation>
 <translation id="8696297579102085705">Ուղարկել իմ սարքին</translation>
 <translation id="8697136149718343437">Հասցեագոտին տեղափոխել ներքև</translation>
+<translation id="869891660844655955">Սպառման ժամկետ</translation>
 <translation id="8706253136355675497">Ջերմաստիճան</translation>
 <translation id="8706806585855470492">Դուք կկարողանաք կիսվել ներդիրների խմբերով, միանալ դրանց և համատեղ աշխատել դրանցում</translation>
 <translation id="8709409604518538305">Ներդիրները փակվեցին</translation>

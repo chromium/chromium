@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Показать все вкладки в группе</translation>
 <translation id="136942498637440594">Выполняйте поиск по изображениям и ищите то, что видите.</translation>
 <translation id="1373120905936431262">Загрузите изображение, чтобы создать ремикс с помощью Nano Banana</translation>
-<translation id="1377321085342047638">Номер карты</translation>
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{Адрес {position} из {count}}one{Адрес {position} из {count}}few{Адрес {position} из {count}}many{Адрес {position} из {count}}other{Адрес {position} из {count}}}</translation>
 <translation id="1383876407941801731">Поиск</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, управляется вашей организацией.</translation>
 <translation id="3580448612293054698">Обновить данные типа "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках</translation>
-<translation id="3583726884554296148">Сохраните карту в аккаунте Google, и ее реквизиты автоматически заполнятся при этой и будущих покупках в Chrome.</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587885837929752825">Ваша организация ограничила данные, которые можно сохранять в аккаунте Google.</translation>
 <translation id="3588820906588687999">Открыть в новой вкладке</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Что нового</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
 <translation id="4294506173142861371">Войти как <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Сканировать карту и заполнить данные автоматически</translation>
 <translation id="4302061870579014542">Выбрать</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4306349443295056740">Подпись OCSP</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">Пароли в других приложениях</translation>
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="681631578600400068">Сохранить данные водительского удостоверения?</translation>
-<translation id="6820686453637990663">CVC-код</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладка сохранена в аккаунте Google ({email}).}one{{count} закладка сохранена в аккаунте Google ({email}).}few{{count} закладки сохранено в аккаунте Google ({email}).}many{{count} закладок сохранено в аккаунте Google ({email}).}other{{count} закладки сохранено в аккаунте Google ({email}).}}</translation>
 <translation id="6826004672264649705">Вы отслеживаете этот товар. Откройте, чтобы посмотреть историю изменения цен.</translation>
 <translation id="6830728435402077660">Не защищено</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">Элемент будет показываться</translation>
 <translation id="8696297579102085705">Отправить на свое устройство</translation>
 <translation id="8697136149718343437">Разместить адресную строку внизу</translation>
+<translation id="869891660844655955">Срок действия</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Вы сможете делиться группами вкладок, присоединяться к ним и работать вместе с другими пользователями.</translation>
 <translation id="8709409604518538305">Вкладки были закрыты.</translation>

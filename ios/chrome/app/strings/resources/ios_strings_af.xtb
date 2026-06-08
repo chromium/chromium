@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Wys alle oortjies in oortjiegroep</translation>
 <translation id="136942498637440594">Jy kan na prente en wat jy sien, soek.</translation>
 <translation id="1373120905936431262">Laai ’n prent op om met Nano Banana te hermeng</translation>
-<translation id="1377321085342047638">Kaartnommer</translation>
 <translation id="1377508275003315939">Wagwoorde</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} van {count} adres}other{{position} van {count} adresse}}</translation>
 <translation id="1383876407941801731">Soek</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, bestuur deur jou organisasie.</translation>
 <translation id="3580448612293054698">Dateer <ph name="ENTITY_TYPE" /> op?</translation>
 <translation id="3581564640715911333">Aanbieding om bladsye in ander tale te vertaal</translation>
-<translation id="3583726884554296148">Stoor jou kaart in jou Google-rekening om dit te outovul vir hierdie aankoop en toekomstige aankope wat op Chrome gedoen word</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587885837929752825">Jou organisasie beperk wat jy in jou Google-rekening kan stoor.</translation>
 <translation id="3588820906588687999">Maak prent in nuwe oortjie oop</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Wat’s nuut</translation>
 <translation id="429074084062258019">{count,plural, =1{Voeg oortjie by groep}other{Voeg oortjies by groep}}</translation>
 <translation id="4294506173142861371">Meld aan as <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skandeer kaart en outovul</translation>
 <translation id="4302061870579014542">Stel posisie</translation>
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="4306349443295056740">OCSP-ondertekening</translation>
@@ -1709,7 +1706,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6807287147325542056">Wagwoorde in ander apps</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="681631578600400068">Stoor rybewys</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Boekmerk is gestoor in jou Google-rekening, {email}}other{{count} boekmerke is gestoor in jou Google-rekening, {email}}}</translation>
 <translation id="6826004672264649705">Spoor tans hierdie produk na. Maak oop om prysgeskiedenis te sien</translation>
 <translation id="6830728435402077660">Nie veilig nie</translation>
@@ -2273,6 +2269,7 @@ Skakel oor na <ph name="OTHER_EMAIL" /> om van jou rekenaar af voort te gaan. Jy
 <translation id="8694281486652655615">Wys hierdie item</translation>
 <translation id="8696297579102085705">Stuur na jou toestel toe</translation>
 <translation id="8697136149718343437">Skuif adresbalk na onder</translation>
+<translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8706253136355675497">Temperatuur</translation>
 <translation id="8706806585855470492">Jy sal in oortjiegroepe kan deel, aansluit en saamwerk</translation>
 <translation id="8709409604518538305">Oortjies is toegemaak</translation>

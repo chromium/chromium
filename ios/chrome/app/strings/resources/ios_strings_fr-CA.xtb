@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Afficher tous les onglets du groupe d'onglets</translation>
 <translation id="136942498637440594">Vous pouvez rechercher des images et ce que vous voyez.</translation>
 <translation id="1373120905936431262">Téléversez une image à remixer avec Nano Banana</translation>
-<translation id="1377321085342047638">Num. carte</translation>
 <translation id="1377508275003315939">Mots de passe</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} sur {count} adresse}one{{position} sur {count} adresse}other{{position} sur {count} adresses}}</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="3580448612293054698">Mettre à jour l'information <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proposer des traductions de pages dans d'autres langues</translation>
-<translation id="3583726884554296148">Enregistrez votre carte dans votre compte Google pour remplir automatiquement les informations associées pour cet achat et vos futurs achats effectués sur Chrome</translation>
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587885837929752825">Votre organisation impose une limite quant à ce que vous pouvez enregistrer dans votre compte Google.</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Nouveautés</translation>
 <translation id="429074084062258019">{count,plural, =1{Ajouter un onglet au groupe}one{Ajouter un onglet au groupe}other{Ajouter des onglets au groupe}}</translation>
 <translation id="4294506173142861371">Se connecter en tant que <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Balayer la carte et remplir automatiquement</translation>
 <translation id="4302061870579014542">Définir la position</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="4306349443295056740">Signature OCSP</translation>
@@ -1709,7 +1706,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6807287147325542056">Mots de passe dans d'autres applis</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="681631578600400068">Enregistrez le permis de conduire</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favori enregistré dans votre compte Google, {email}}one{{count} favori enregistré dans votre compte Google, {email}}other{{count} favoris enregistrés dans votre compte Google, {email}}}</translation>
 <translation id="6826004672264649705">Vous suivez actuellement ce produit. Ouvrir pour voir l'historique des prix</translation>
 <translation id="6830728435402077660">Pas sécuritaire</translation>
@@ -2273,6 +2269,7 @@ Pour continuer à partir de votre ordinateur, passez à <ph name="OTHER_EMAIL" /
 <translation id="8694281486652655615">Affiche cet élément</translation>
 <translation id="8696297579102085705">Envoyer l'onglet à votre appareil</translation>
 <translation id="8697136149718343437">Déplacer la barre d'adresse vers le bas</translation>
+<translation id="869891660844655955">Date d'expiration</translation>
 <translation id="8706253136355675497">Température</translation>
 <translation id="8706806585855470492">Vous pourrez partager et rejoindre des groupes d'onglets ainsi que collaborer dans ces derniers</translation>
 <translation id="8709409604518538305">Les onglets ont été fermés</translation>

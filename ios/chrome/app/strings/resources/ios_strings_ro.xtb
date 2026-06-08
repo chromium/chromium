@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Afișează toate filele din grupul de file</translation>
 <translation id="136942498637440594">Poți să cauți imagini și ceea ce vezi.</translation>
 <translation id="1373120905936431262">Încarcă o imagine de remixat cu Nano Banana</translation>
-<translation id="1377321085342047638">Număr card</translation>
 <translation id="1377508275003315939">Parole</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} din {count} adresă}few{{position} din {count} adrese}other{{position} din {count} de adrese}}</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestionat de organizația ta.</translation>
 <translation id="3580448612293054698">Actualizezi <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Afișează traducerea paginilor în alte limbi</translation>
-<translation id="3583726884554296148">Salvează cardul în Contul Google pentru a completa automat datele asociate pentru această achiziție și achizițiile viitoare făcute în Chrome</translation>
 <translation id="3587482841069643663">Toate</translation>
 <translation id="3587885837929752825">Organizația ta limitează tipurile de conținut pe care îl poți salva în Contul Google.</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Noutăți</translation>
 <translation id="429074084062258019">{count,plural, =1{Adaugă fila într-un grup}few{Adaugă filele într-un grup}other{Adaugă filele într-un grup}}</translation>
 <translation id="4294506173142861371">Te conectezi ca <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Scanează cardul și completează automat</translation>
 <translation id="4302061870579014542">Setează poziția</translation>
 <translation id="4304713468139749426">Manager de parole</translation>
 <translation id="4306349443295056740">Semnare OCSP</translation>
@@ -1709,7 +1706,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6807287147325542056">Parole din alte aplicații</translation>
 <translation id="681368974849482173">Element creat</translation>
 <translation id="681631578600400068">Salvează permisul de conducere</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcajul s-a salvat în Contul Google {email}}few{{count} marcaje s-au salvat în Contul Google {email}.}other{{count} de marcaje s-au salvat în Contul Google {email}.}}</translation>
 <translation id="6826004672264649705">Urmărești acest produs. Deschide ca să vezi istoricul prețurilor.</translation>
 <translation id="6830728435402077660">Nesecurizată</translation>
@@ -2273,6 +2269,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="8694281486652655615">Afișează acest element</translation>
 <translation id="8696297579102085705">Trimite pe dispozitivul tău</translation>
 <translation id="8697136149718343437">Mută bara de adrese în partea de jos</translation>
+<translation id="869891660844655955">Dată de expirare</translation>
 <translation id="8706253136355675497">Temperatură</translation>
 <translation id="8706806585855470492">Vei putea să trimiți, să te alături și să colaborezi în grupuri de file</translation>
 <translation id="8709409604518538305">Filele au fost închise</translation>

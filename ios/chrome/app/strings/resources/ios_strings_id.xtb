@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Tampilkan semua tab dalam grup tab</translation>
 <translation id="136942498637440594">Anda dapat menelusuri gambar dan objek yang Anda lihat.</translation>
 <translation id="1373120905936431262">Upload gambar untuk membuat remix dengan Nano Banana</translation>
-<translation id="1377321085342047638">Nomor Kartu</translation>
 <translation id="1377508275003315939">Sandi</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} dari {count} alamat}other{{position} dari {count} alamat}}</translation>
 <translation id="1383876407941801731">Telusuri</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
 <translation id="3580448612293054698">Update <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tawarkan penerjemahan halaman ke dalam bahasa lain</translation>
-<translation id="3583726884554296148">Simpan kartu di Akun Google Anda guna mengisi otomatis kartu tersebut untuk pembelian ini dan pembelian mendatang yang dilakukan di Chrome</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587885837929752825">Organisasi membatasi apa saja yang dapat Anda simpan di Akun Google Anda.</translation>
 <translation id="3588820906588687999">Buka Gambar di Tab Baru</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Yang Baru</translation>
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab ke Grup}other{Tambahkan Tab ke Grup}}</translation>
 <translation id="4294506173142861371">Login sebagai <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Pindai kartu dan isi otomatis</translation>
 <translation id="4302061870579014542">Tetapkan posisi</translation>
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4306349443295056740">Penandatanganan OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6807287147325542056">Sandi di aplikasi lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="681631578600400068">Simpan surat izin mengemudi</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{{count} bookmark disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="6826004672264649705">Saat ini memantau produk ini. Buka untuk melihat histori harga</translation>
 <translation id="6830728435402077660">Tidak aman</translation>
@@ -2273,6 +2269,7 @@ Untuk melanjutkan dari komputer, beralihlah ke <ph name="OTHER_EMAIL" />. Anda a
 <translation id="8694281486652655615">Menampilkan item ini</translation>
 <translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="8697136149718343437">Pindahkan kolom URL ke bawah</translation>
+<translation id="869891660844655955">Masa berlaku</translation>
 <translation id="8706253136355675497">Suhu</translation>
 <translation id="8706806585855470492">Anda akan dapat berbagi, bergabung, dan berkolaborasi dalam grup tab</translation>
 <translation id="8709409604518538305">Tab ditutup</translation>

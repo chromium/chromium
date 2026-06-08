@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">টেবৰ গোটত আটাইবোৰ টেব দেখুৱাওক</translation>
 <translation id="136942498637440594">আপুনি প্ৰতিচ্ছবি আৰু আপুনি কি দেখা পায় সেয়া সন্ধান কৰিব পাৰে।.</translation>
 <translation id="1373120905936431262">Nano Bananaৰ জৰিয়তে ৰিমিক্স কৰিবলৈ এখন প্ৰতিচ্ছবি আপল’ড কৰক</translation>
-<translation id="1377321085342047638">কার্ডৰ নম্বৰ</translation>
 <translation id="1377508275003315939">পাছৱৰ্ড</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}one{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}other{{count} টা ঠিকনাৰ {position} নম্বৰ ঠিকনাটো}}</translation>
 <translation id="1383876407941801731">সন্ধান কৰক</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, আপোনাৰ প্ৰতিষ্ঠানে পৰিচালনা কৰে।</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> আপডে’ট কৰিব নেকি?</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
-<translation id="3583726884554296148">এই ক্ৰয়টোৰ বাবে আৰু Chromeত কৰা ভৱিষ্যতৰ ক্ৰয়সমূহৰ বাবে আপোনাৰ কাৰ্ডখন স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ সেইখন আপোনাৰ Google একাউণ্টত ছেভ কৰক</translation>
 <translation id="3587482841069643663">সকলো</translation>
 <translation id="3587885837929752825">আপুনি নিজৰ Google একাউণ্টত কি ছেভ কৰিব পাৰে, সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰে।</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">নতুন কি আছে</translation>
 <translation id="429074084062258019">{count,plural, =1{গোটত টেব যোগ দিয়ক}one{গোটত টেবসমূহ যোগ দিয়ক}other{গোটত টেবসমূহ যোগ দিয়ক}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> হিচাপে ছাইন ইন কৰিবনে?</translation>
-<translation id="4300830875340617674">কাৰ্ড স্কেন কৰক আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
 <translation id="4302061870579014542">স্থান ছেট কৰক</translation>
 <translation id="4304713468139749426">পাছৱৰ্ড পৰিচালক</translation>
 <translation id="4306349443295056740">OCSP স্বাক্ষৰ</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">অন্য এপ্‌সমূহৰ পাছৱৰ্ড</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
 <translation id="681631578600400068">চালকৰ অনুজ্ঞাপত্ৰ ছেভ কৰক</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{আপোনাৰ Google একাউণ্ট, {email}ত ছেভ কৰি থোৱা বুকমাৰ্ক}one{আপোনাৰ Google একাউণ্ট, {email}ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}other{আপোনাৰ Google একাউণ্ট, {email}ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}}</translation>
 <translation id="6826004672264649705">বৰ্তমান এই প্ৰ’ডাক্টটো ট্ৰেক কৰি থকা হৈছে। মূল্যৰ ইতিহাস চাবলৈ খোলক</translation>
 <translation id="6830728435402077660">সুৰক্ষিত নহয়</translation>
@@ -2279,6 +2275,7 @@
 <translation id="8694281486652655615">এই বস্তুটো দেখুৱায়</translation>
 <translation id="8696297579102085705">আপোনাৰ ডিভাইচলৈ পঠিয়াওক</translation>
 <translation id="8697136149718343437">ঠিকনাৰ বাৰ একেবাৰে তললৈ লৈ যাওক</translation>
+<translation id="869891660844655955">ম্যাদ উকলাৰ তাৰিখ</translation>
 <translation id="8706253136355675497">তাপমান</translation>
 <translation id="8706806585855470492">আপুনি টেবৰ গোটত শ্বেয়াৰ কৰিব, যোগদান কৰিব আৰু সহযোগিতা কৰিব পাৰিব</translation>
 <translation id="8709409604518538305">টেবসমূহ বন্ধ কৰা হৈছে</translation>

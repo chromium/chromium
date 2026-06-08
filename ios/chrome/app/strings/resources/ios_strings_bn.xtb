@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ট্যাব গ্রুপে সব ট্যাব দেখুন</translation>
 <translation id="136942498637440594">আপনি ছবি ও কী দেখতে পারেন তা সার্চ করতে পারবেন।</translation>
 <translation id="1373120905936431262">Nano Banana-র সাহায্যে রিমিক্স করার জন্য কোনও ছবি আপলোড করুন</translation>
-<translation id="1377321085342047638">কার্ড নম্বর</translation>
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}টি ঠিকানার মধ্যে {position} নম্বর}one{{count}টি ঠিকানার মধ্যে {position} নম্বর}other{{count}টি ঠিকানার মধ্যে {position} নম্বর}}</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> আপনার সংস্থা ম্যানেজ করে।</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> আপডেট করবেন?</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
-<translation id="3583726884554296148">এই কেনাকাটা ও Chrome-এ ভবিষ্যতে কোনও কেনাকাটা করলে তার জন্য আপনার Google অ্যাকাউন্টে কার্ড সেভ করুন যাতে সেটি অটোফিল করা যায়</translation>
 <translation id="3587482841069643663">সকল</translation>
 <translation id="3587885837929752825">আপনার প্রতিষ্ঠান এটি ম্যানেজ করে যে আপনার কাছে Google অ্যাকাউন্টে কোন ধরনের ডেটা সেভ করার অনুমতি আছে।</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">নতুন কী আছে</translation>
 <translation id="429074084062258019">{count,plural, =1{গ্রুপে ট্যাব যোগ করুন}one{গ্রুপে ট্যাব যোগ করুন}other{গ্রুপে ট্যাব যোগ করুন}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> হিসেবে সাইন-ইন করেছেন?</translation>
-<translation id="4300830875340617674">কার্ড স্ক্যান করে অটোফিল করুন</translation>
 <translation id="4302061870579014542">পজিশন সেট করুন</translation>
 <translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="4306349443295056740">OCSP-তে স্বাক্ষর করা</translation>
@@ -1710,7 +1707,6 @@
 <translation id="6807287147325542056">অন্যান্য অ্যাপে থাকা পাসওয়ার্ড</translation>
 <translation id="681368974849482173">আইটেম তৈরি করা হয়েছে</translation>
 <translation id="681631578600400068">ড্রাইভিং লাইসেন্স সম্পর্কিত তথ্য সেভ করা</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{আপনার {email} Google অ্যাকাউন্টে বুকমার্ক সেভ করা হয়েছে}one{আপনার {email} Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করা হয়েছে}other{আপনার {email} Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="6826004672264649705">বর্তমানে এই প্রোডাক্ট ট্র্যাক করা হচ্ছে। দামের ইতিহাস দেখতে খুলুন</translation>
 <translation id="6830728435402077660">সুরক্ষিত নয়</translation>
@@ -2274,6 +2270,7 @@
 <translation id="8694281486652655615">এর ফলে এই আইটেম দেখানো হবে</translation>
 <translation id="8696297579102085705">আপনার ডিভাইসে পাঠান</translation>
 <translation id="8697136149718343437">অ্যাড্রেস বার একেবারে নিচে সরান</translation>
+<translation id="869891660844655955">মেয়াদকাল সমাপ্তির তারিখ</translation>
 <translation id="8706253136355675497">তাপমাত্রা</translation>
 <translation id="8706806585855470492">ট্যাব গ্রুপে আপনি শেয়ার করতে, যোগ দিতে ও কোলাবরেট করতে পারবেন</translation>
 <translation id="8709409604518538305">ট্যাব বন্ধ করে দেওয়া হয়েছে</translation>

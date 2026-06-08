@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Показати всі вкладки в групі</translation>
 <translation id="136942498637440594">Ви можете шукати зображення й об’єкти навколо.</translation>
 <translation id="1373120905936431262">Завантажте зображення, щоб перетворити його за допомогою Nano Banana</translation>
-<translation id="1377321085342047638">Номер картки</translation>
 <translation id="1377508275003315939">Паролі</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} з {count} адреси}one{{position} з {count} адреси}few{{position} з {count} адрес}many{{position} з {count} адрес}other{{position} з {count} адреси}}</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475">Обліковим записом <ph name="EMAIL" /> керує ваша організація.</translation>
 <translation id="3580448612293054698">Оновити такі дані: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Пропозиція перекладати сторінки іншими мовами</translation>
-<translation id="3583726884554296148">Збережіть картку в обліковому записі Google, щоб автоматично заповнювати її дані під час цієї й майбутніх покупок у Chrome</translation>
 <translation id="3587482841069643663">Все</translation>
 <translation id="3587885837929752825">Ваша організація обмежила дані, які можна зберігати в обліковому записі Google.</translation>
 <translation id="3588820906588687999">Відкрити зображення в новій вкладці</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Що нового</translation>
 <translation id="429074084062258019">{count,plural, =1{Додати вкладку в групу}one{Додати вкладки в групу}few{Додати вкладки в групу}many{Додати вкладки в групу}other{Додати вкладки в групу}}</translation>
 <translation id="4294506173142861371">Увійти як <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Відсканувати картку й заповнювати автоматично</translation>
 <translation id="4302061870579014542">Вибрати</translation>
 <translation id="4304713468139749426">Менеджер паролів</translation>
 <translation id="4306349443295056740">Підписання OCSP</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">Паролі в інших додатках</translation>
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="681631578600400068">Збережіть дані посвідчення водія</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Закладку збережено у вашому обліковому записі Google ({email})}one{{count} закладку збережено у вашому обліковому записі Google ({email}).}few{{count} закладки збережено у вашому обліковому записі Google ({email}).}many{{count} закладок збережено у вашому обліковому записі Google ({email}).}other{{count} закладки збережено у вашому обліковому записі Google ({email}).}}</translation>
 <translation id="6826004672264649705">Ви вже відстежуєте ціну на цей товар. Відкрийте, щоб переглянути історію цін.</translation>
 <translation id="6830728435402077660">Не захищено</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">Показує цей елемент</translation>
 <translation id="8696297579102085705">Надіслати на ваш пристрій</translation>
 <translation id="8697136149718343437">Перемістити адресний рядок униз</translation>
+<translation id="869891660844655955">Діє до</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Ви зможете ділитися групами вкладок, приєднуватися до них і працювати в них разом з іншими користувачами</translation>
 <translation id="8709409604518538305">Вкладки закрито</translation>

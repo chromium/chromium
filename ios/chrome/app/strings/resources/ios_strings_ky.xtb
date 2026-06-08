@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Өтмөктөр тобундагы бардык өтмөктөрдү көрсөтүү</translation>
 <translation id="136942498637440594">Сүрөттөрдү жана көрүп турган нерселерди издей аласыз</translation>
 <translation id="1373120905936431262">Nano Banana менен ремикс үчүн сүрөт жүктөп бериңиз</translation>
-<translation id="1377321085342047638">Карт номер</translation>
 <translation id="1377508275003315939">Сырсөздөр</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} ичинен {position} дарек}other{{count} ичинен {position} дарек}}</translation>
 <translation id="1383876407941801731">Издөө</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> аккаунтун уюмуңуз тескейт.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> жаңыртылсынбы?</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
-<translation id="3583726884554296148">Бул жана Chrome'догу келечектеги сатып алууларда картаңызды автотолтуруу үчүн аны Google аккаунтуңузга сактап коюңуз</translation>
 <translation id="3587482841069643663">Баары</translation>
 <translation id="3587885837929752825">Уюмуңуз Google аккаунтуңузга сактоого боло турган нерселерди чектеп койгон.</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Эмне жаңылык</translation>
 <translation id="429074084062258019">{count,plural, =1{Өтмөктү топто кошуу}other{Өтмөктөрдү топто кошуу}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> аккаунту менен кириңиз</translation>
-<translation id="4300830875340617674">Картаны скандоо жана автотолтуруу</translation>
 <translation id="4302061870579014542">Тандоо</translation>
 <translation id="4304713468139749426">Сырсөздөрдү башкаргыч</translation>
 <translation id="4306349443295056740">OCSP'ге кол коюу</translation>
@@ -1709,7 +1706,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6807287147325542056">Башка колдонмолордогу сырсөздөр</translation>
 <translation id="681368974849482173">Нерсе түзүлдү</translation>
 <translation id="681631578600400068">Айдоочунун күбөлүгүн сактаңыз</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды}other{{count} кыстарма Google аккаунтуңузга ({email}) сакталды}}</translation>
 <translation id="6826004672264649705">Учурда бул товарга көз салынууда. Баалардын таржымалын көрүү үчүн ачыңыз</translation>
 <translation id="6830728435402077660">Коопсуз эмес</translation>
@@ -2273,6 +2269,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8694281486652655615">Бул нерсени көрсөтөт</translation>
 <translation id="8696297579102085705">Түзмөгүңүзгө жөнөтүү</translation>
 <translation id="8697136149718343437">Дарек тилкесин ылдый жылдыруу</translation>
+<translation id="869891660844655955">Мөөнөтү аяктай турган күн</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Өтмөктөр тобунда бөлүшүп, кошулуп жана кызматташа аласыз</translation>
 <translation id="8709409604518538305">Өтмөктөр жабылды</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Kuva kõik vahelehegrupi vahelehed</translation>
 <translation id="136942498637440594">Saate otsida pilte ja seda, mida näete.</translation>
 <translation id="1373120905936431262">Laadige üles pilt, mida Nano Banana abil remiksida.</translation>
-<translation id="1377321085342047638">Kaardinr</translation>
 <translation id="1377508275003315939">Paroolid</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. aadress {count}-st}other{{count}. aadress {position}-st}}</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, haldab teie organisatsioon.</translation>
 <translation id="3580448612293054698">Kas värskendada <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
-<translation id="3583726884554296148">Salvestage kaart oma Google'i kontole, et kaardi teave selle ostu ja tulevaste Chrome'is tehtud ostude puhul automaatselt täita</translation>
 <translation id="3587482841069643663">Kõik</translation>
 <translation id="3587885837929752825">Teie organisatsioon piirab, mida saate oma Google'i kontole salvestada.</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Mis on uut?</translation>
 <translation id="429074084062258019">{count,plural, =1{Vahelehe lisamine gruppi}other{Vahelehtede lisamine gruppi}}</translation>
 <translation id="4294506173142861371">Kas logite sisse kasutajana <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skanni kaart ja täida automaatselt</translation>
 <translation id="4302061870579014542">Määra asukoht</translation>
 <translation id="4304713468139749426">Paroolihaldur</translation>
 <translation id="4306349443295056740">OCSP allkirjastamine</translation>
@@ -1709,7 +1706,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6807287147325542056">Paroolid muudes rakendustes</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
 <translation id="681631578600400068">Salvesta juhiluba</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{{count} järjehoidjat salvestati teie Google'i kontole {email}.}}</translation>
 <translation id="6826004672264649705">Jälgite praegu seda toodet. Avage hinnaajaloo vaatamiseks.</translation>
 <translation id="6830728435402077660">Pole turvaline</translation>
@@ -2273,6 +2269,7 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="8694281486652655615">Kuvab selle üksuse</translation>
 <translation id="8696297579102085705">Saada seadmesse</translation>
 <translation id="8697136149718343437">Nihuta aadressiriba allserva</translation>
+<translation id="869891660844655955">Aegumiskuupäev</translation>
 <translation id="8706253136355675497">Temperatuur</translation>
 <translation id="8706806585855470492">Vahelehegruppe saate jagada, nendega liituda ja neis koostööd teha</translation>
 <translation id="8709409604518538305">Vahelehed suleti</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ሁሉንም ትሮች በትር ቡድን ውስጥ አሳይ</translation>
 <translation id="136942498637440594">ምስሎች እና የሚመለከቱትን መፈለግ ይችላሉ።</translation>
 <translation id="1373120905936431262">ከNano Banana ጋር እንደገና ለመቀላቀል ምስል ይስቀሉ</translation>
-<translation id="1377321085342047638">የካርድ ቁጥር</translation>
 <translation id="1377508275003315939">የይለፍ ቃሎች</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} የ{count} አድራሻ}one{{position} የ{count} አድራሻ}other{{position} የ{count} አድራሻዎች}}</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />፣ በድርጅትዎ የሚተዳደር።</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ይዘምን?</translation>
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
-<translation id="3583726884554296148">ለዚህ ግዢ እና Chrome ላይ ለሚደረጉ የወደፊት ግዢዎች በራስ-ሰር ለመሙላት ካርድዎን በGoogle መለያዎ ውስጥ ያስቀምጡ</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3587885837929752825">ድርጅትዎ በGoogle መለያዎ ውስጥ ማስቀመጥ የሚችሉትን ነገር ይገድባል።</translation>
 <translation id="3588820906588687999">ምስሉን በአዲስ ትር ውስጥ ክፈት</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">ምን አዲስ ነገር አለ</translation>
 <translation id="429074084062258019">{count,plural, =1{ትርን ወደ ቡድን ያክሉ}one{ትርን ወደ ቡድን ያክሉ}other{ትሮችን ወደ ቡድን ያክሉ}}</translation>
 <translation id="4294506173142861371">እንደ <ph name="FIRST_NAME" /> ሆነው ይግቡ?</translation>
-<translation id="4300830875340617674">ካርድን ቃኝ እና በራስ-ሙላ</translation>
 <translation id="4302061870579014542">አቀማመጥ አቀናብር</translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4306349443295056740">OCSP መፈረም</translation>
@@ -1709,7 +1706,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6807287147325542056">በሌሎች መተግበሪያዎች ውስጥ ያሉ የይለፍ ቃላት</translation>
 <translation id="681368974849482173">ንጥል ተፈጥሯል</translation>
 <translation id="681631578600400068">የመንጃ ፈቃድን ያስቀምጡ</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{ዕልባት Google መለያዎ፣ {email} ውስጥ ተቀምጧል}one{{count} ዕልባት Google መለያዎ፣ {email} ውስጥ ተቀምጧል}other{{count} ዕልባቶች Google መለያዎ፣ {email} ውስጥ ተቀምጧል}}</translation>
 <translation id="6826004672264649705">በአሁኑ ጊዜ ይህን ምርት በመከታተል ላይ። የዋጋ ታሪክን ለማየት ይክፈቱ</translation>
 <translation id="6830728435402077660">ደህንነቱ አልተጠበቀም</translation>
@@ -2273,6 +2269,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8694281486652655615">ይህን ንጥል ያሳያል</translation>
 <translation id="8696297579102085705">ወደ የእርስዎ መሣሪያ ይላኩ</translation>
 <translation id="8697136149718343437">የአድራሻ አሞሌን ወደታች ይውሰዱ</translation>
+<translation id="869891660844655955">የሚያበቀበት ጊዜ</translation>
 <translation id="8706253136355675497">የሙቀት መጠን</translation>
 <translation id="8706806585855470492">የትር ቡድኖች ውስጥ ማጋራት፣ መቀላቀል እና መተባበር ይችላሉ</translation>
 <translation id="8709409604518538305">ትሮች ተዘግተዋል</translation>

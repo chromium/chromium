@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Prikaz vseh zavihkov v skupini zavihkov</translation>
 <translation id="136942498637440594">Iščete lahko slike in prikazano vsebino.</translation>
 <translation id="1373120905936431262">Naložite sliko, ki jo želite predelati z orodjem Nano Banana</translation>
-<translation id="1377321085342047638">Card Number</translation>
 <translation id="1377508275003315939">Gesla</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} od {count} naslova}one{{position} od {count} naslova}two{{position} od {count} naslovov}few{{position} od {count} naslovov}other{{position} od {count} naslovov}}</translation>
 <translation id="1383876407941801731">Išči</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ki ga upravlja vaša organizacija.</translation>
 <translation id="3580448612293054698">Želite posodobiti to: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
-<translation id="3583726884554296148">Shranite kartico v račun Google, da jo boste lahko samodejno izpolnili za ta nakup in prihodnje nakupe v Chromu</translation>
 <translation id="3587482841069643663">Vse</translation>
 <translation id="3587885837929752825">Vaša organizacija omejuje, kaj je mogoče shraniti v računu Google.</translation>
 <translation id="3588820906588687999">Odpri sliko na novem zavihku</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Novosti</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj zavihek skupini}one{Dodaj zavihke skupini}two{Dodaj zavihke skupini}few{Dodaj zavihke skupini}other{Dodaj zavihke skupini}}</translation>
 <translation id="4294506173142861371">Se želite prijaviti kot <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Optično preberi kartico in samodejno izpolni</translation>
 <translation id="4302061870579014542">Nastavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj gesel</translation>
 <translation id="4306349443295056740">Podpis OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6807287147325542056">Gesla v drugih aplikacijah</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="681631578600400068">Shranite vozniško dovoljenje</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Zaznamek je shranjen v računu Google, {email}}one{{count} zaznamek je shranjen v računu Google, {email}}two{{count} zaznamka sta shranjena v računu Google, {email}}few{{count} zaznamki so shranjeni v računu Google, {email}}other{{count} zaznamkov je shranjenih v računu Google, {email}}}</translation>
 <translation id="6826004672264649705">Trenutno spremljate ta izdelek. Odprite za ogled zgodovine cen</translation>
 <translation id="6830728435402077660">Ni varno</translation>
@@ -2273,6 +2269,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8694281486652655615">Pokaže ta element</translation>
 <translation id="8696297579102085705">Pošlji v napravo</translation>
 <translation id="8697136149718343437">Premakni naslovno vrstico na dno</translation>
+<translation id="869891660844655955">Datum izteka</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">V skupinah zavihkov boste lahko delili, se pridružili in sodelovali</translation>
 <translation id="8709409604518538305">Zavihki so bili zaprti</translation>

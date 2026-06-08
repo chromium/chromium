@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Hiển thị tất cả các thẻ trong nhóm thẻ</translation>
 <translation id="136942498637440594">Bạn có thể tìm kiếm dựa trên hình ảnh và những gì bạn thấy.</translation>
 <translation id="1373120905936431262">Tải một hình ảnh lên để biến tấu bằng Nano Banana</translation>
-<translation id="1377321085342047638">Số thẻ</translation>
 <translation id="1377508275003315939">Mật khẩu</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}/{count} địa chỉ}other{{position}/{count} địa chỉ}}</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, do tổ chức của bạn quản lý.</translation>
 <translation id="3580448612293054698">Cập nhật <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Đề xuất dịch trang viết bằng các ngôn ngữ khác</translation>
-<translation id="3583726884554296148">Lưu thẻ vào Tài khoản Google để tự động điền thông tin thẻ cho giao dịch mua này và các giao dịch mua trong tương lai trên Chrome</translation>
 <translation id="3587482841069643663">Tất cả</translation>
 <translation id="3587885837929752825">Tổ chức của bạn giới hạn những nội dung bạn có thể lưu trong Tài khoản Google.</translation>
 <translation id="3588820906588687999">Mở ảnh trong thẻ mới</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Thông tin mới</translation>
 <translation id="429074084062258019">{count,plural, =1{Thêm thẻ vào nhóm}other{Thêm các thẻ vào nhóm}}</translation>
 <translation id="4294506173142861371">Đăng nhập bằng <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Quét thẻ và tự động điền</translation>
 <translation id="4302061870579014542">Thiết lập vị trí</translation>
 <translation id="4304713468139749426">Trình quản lý mật khẩu</translation>
 <translation id="4306349443295056740">Ký OCSP</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">Mật khẩu trong các ứng dụng khác</translation>
 <translation id="681368974849482173">Đã tạo mục</translation>
 <translation id="681631578600400068">Lưu thông tin giấy phép lái xe</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Đã lưu dấu trang vào Tài khoản Google {email} của bạn}other{Đã lưu {count} dấu trang vào Tài khoản Google {email} của bạn}}</translation>
 <translation id="6826004672264649705">Đang theo dõi sản phẩm này. Mở để xem nhật ký giá</translation>
 <translation id="6830728435402077660">Không bảo mật</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">Hiện mục này</translation>
 <translation id="8696297579102085705">Gửi tới thiết bị của bạn</translation>
 <translation id="8697136149718343437">Di chuyển thanh địa chỉ xuống dưới cùng</translation>
+<translation id="869891660844655955">Ngày hết hạn</translation>
 <translation id="8706253136355675497">Nhiệt độ</translation>
 <translation id="8706806585855470492">Bạn có thể chia sẻ, tham gia và cộng tác trong nhóm thẻ</translation>
 <translation id="8709409604518538305">Hệ thống đã đóng các thẻ</translation>

@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">ව.ව.ව.ව.</translation>
 <translation id="1013952917065545813">ඔබ මෑතකදී වසා දැමූ ටැබ නැවත විවෘත කිරීමට ඔබට නැවත මෙහි පැමිණිය හැකිය</translation>
 <translation id="1016495303386450659">අයිතමය යාවත්කාලීන කරන ලදි</translation>
+<translation id="1018804590490383958">ස්කෑන් කර ස්වයං පුරවන්න</translation>
 <translation id="1019990162050689579">Gemini යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="102916930470544692">මුරයතුර</translation>
 <translation id="1030376737535466765">මුරපද කළමනාකරු විවෘත කරන්න</translation>
@@ -111,7 +112,6 @@
 <translation id="1369286077209859800">පටිති සමූහයේ සියලු පටිති පෙන්වන්න</translation>
 <translation id="136942498637440594">ඔබට රූප සහ ඔබ දකින දේ සෙවිය හැක.</translation>
 <translation id="1373120905936431262">Nano Banana සමග යළිමුසු කිරීමට රූපයක් උඩුගත කරන්න</translation>
-<translation id="1377321085342047638">කාඩ්පත් අංකය</translation>
 <translation id="1377508275003315939">මුරපද</translation>
 <translation id="1381022135873211423">{count,plural, =1{ලිපින {count}කින් {position}ක්}one{ලිපින {count}කින් {position}ක්}other{ලිපින {count}කින් {position}ක්}}</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
@@ -743,7 +743,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ඔබේ සංවිධානය විසින් කළමනාකරණය කරනු ලැබේ.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> යාවත්කාලීන කරන්න ද?</translation>
 <translation id="3581564640715911333">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
-<translation id="3583726884554296148">මෙම මිල දී ගැනීම සහ Chrome හි සිදු කරන අනාගත මිල දී ගැනීම් සඳහා එය ස්වයංව පිරවීමට ඔබේ Google ගිණුමේ ඔබේ කාඩ්පත සුරකින්න</translation>
 <translation id="3587482841069643663">සියළු</translation>
 <translation id="3587885837929752825">ඔබේ සංවිධානය ඔබට ඔබේ Google ගිණුමේ සුරැකිය හැකි දේ සීමා කරයි.</translation>
 <translation id="3588820906588687999">රූපය නව පටිත්තක විවෘත කරන්න</translation>
@@ -940,7 +939,6 @@
 <translation id="428768789042547925">අලුත් මොනවාද</translation>
 <translation id="429074084062258019">{count,plural, =1{සමූහයට පටිත්ත එක් කරන්න}one{සමූහයට පටිති එක් කරන්න}other{සමූහයට පටිති එක් කරන්න}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> ලෙස පුරනය වන්න ද?</translation>
-<translation id="4300830875340617674">කාඩ්පත ස්කෑන් කර ස්වයංව පුරවන්න</translation>
 <translation id="4302061870579014542">පිහිටීම සකසන්න</translation>
 <translation id="4304713468139749426">මුරපද කළමනාකරු</translation>
 <translation id="4306349443295056740">OCSP අත්සන් කිරීම</translation>
@@ -1542,6 +1540,7 @@
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">ඔබේ ලිපින තීරු ස්ථානය තෝරා ගන්න</translation>
 <translation id="6307241780749477694">මෙම උපාංගයෙහි ඔබේ සියලු මුරපද ලබා ගැනීමට ඒ ඔබ බව සත්‍යාපනය කරන්න</translation>
+<translation id="6307792728709337290">මෙම මිල දී ගැනීම සහ Chrome හි සිදු කරන අනාගත මිල දී ගැනීම් සඳහා එය ස්වයං පිරවීමට ඔබේ කාඩ්පත ඔබේ Google ගිණුම තුළ සුරකින්න.</translation>
 <translation id="6316141353357700666">දිස්වන ලැයිස්තුවෙන් ඔබට භාවිතා කිරීමට අවශ්‍ය මුරපදය තෝරා ගන්න.</translation>
 <translation id="6321526113093607004">පිටුසන් වෙත එක් කරන්න</translation>
 <translation id="6327249202318869726">ඔබේ ගිණුම සඳහා Gemini ක්‍රියා විරහිත කර ඇත. වැඩිදුර තොරතුරු සඳහා ඔබේ පරිපාලක අමතන්න.</translation>
@@ -1709,7 +1708,6 @@
 <translation id="6807287147325542056">වෙනත් යෙදුම්වල මුරපද</translation>
 <translation id="681368974849482173">අයිතමය සාදන ලදි</translation>
 <translation id="681631578600400068">රියදුරු බලපත්‍රය සුරකින්න</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{ඔබේ Google ගිණුමේ, {email} පිටුසන සුරැකී ඇත}one{ඔබේ Google ගිණුමේ, {email} පිටුසන් {count}ක් සුරැකී ඇත}other{ඔබේ Google ගිණුමේ, {email} පිටුසන් {count}ක් සුරැකී ඇත}}</translation>
 <translation id="6826004672264649705">දැනට මෙම නිෂ්පාදනය නිරීක්ෂණය කරයි. මිල ඉතිහාසය බැලීමට විවෘත කරන්න</translation>
 <translation id="6830728435402077660">සුරක්ෂිත නැත</translation>
@@ -2273,6 +2271,7 @@
 <translation id="8694281486652655615">මෙම අයිතමය පෙන්වයි</translation>
 <translation id="8696297579102085705">ඔබේ උපාංගය වෙත යවන්න</translation>
 <translation id="8697136149718343437">ලිපින තීරුව පහළට ගෙන යන්න</translation>
+<translation id="869891660844655955">කල් ඉකුත් වීමේ දිනය:</translation>
 <translation id="8706253136355675497">උෂ්ණත්වය</translation>
 <translation id="8706806585855470492">ඔබට පටිති සමූහ තුළ බෙදා ගැනීමට, එක් වීමට සහ සහයෝගයෙන් කටයුතු කිරීමට ලැබෙනු ඇත</translation>
 <translation id="8709409604518538305">පටිති වසා ඇත</translation>

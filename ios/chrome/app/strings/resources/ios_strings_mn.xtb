@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Табын бүлэг дэх бүх табыг харуулах</translation>
 <translation id="136942498637440594">Та зургууд болон харж буй зүйлээ хайх боломжтой.</translation>
 <translation id="1373120905936431262">Nano Banana-р ремикс хийхийн тулд зураг байршуулаарай</translation>
-<translation id="1377321085342047638">Картын дугаар</translation>
 <translation id="1377508275003315939">Нууц үг</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count}-н {position}-р хаяг}other{{count}-н {position}-р хаяг}}</translation>
 <translation id="1383876407941801731">Хайлт</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475">Танай байгууллагаас тохиргоо хийсэн <ph name="EMAIL" />.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" />-г шинэчлэх үү?</translation>
 <translation id="3581564640715911333">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
-<translation id="3583726884554296148">Энэ худалдан авалт болон Chrome дээр хийх ирээдүйн худалдан авалтуудад зориулж картаа автоматаар бөглөхийн тулд Google Бүртгэлдээ хадгална уу</translation>
 <translation id="3587482841069643663">Бүгд</translation>
 <translation id="3587885837929752825">Танай байгууллага Google Бүртгэлдээ юу хадгалж болохыг тань хязгаарлана.</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Шинэ юм юу байна</translation>
 <translation id="429074084062258019">{count,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" />-р нэвтрэх үү?</translation>
-<translation id="4300830875340617674">Карт скан хийж, автоматаар бөглөх</translation>
 <translation id="4302061870579014542">Байрлал тохируулах</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
 <translation id="4306349443295056740">OCSP-н хариултад гарын үсэг зурах</translation>
@@ -1709,7 +1706,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6807287147325542056">Бусад апп дахь нууц үг</translation>
 <translation id="681368974849482173">Үүссэн зүйл</translation>
 <translation id="681631578600400068">Жолооны үнэмлэхийг хадгалах</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Хавчуургыг таны {email} Google Бүртгэлд хадгалсан}other{{count} хавчуургыг таны {email} Google Бүртгэлд хадгалсан}}</translation>
 <translation id="6826004672264649705">Одоогоор энэ бүтээгдэхүүнийг хянаж байна. Үнийн түүхийг харахын тулд нээнэ үү</translation>
 <translation id="6830728435402077660">Аюултай</translation>
@@ -2273,6 +2269,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8694281486652655615">Энэ зүйлийг харуулна</translation>
 <translation id="8696297579102085705">Төхөөрөмж рүүгээ илгээх</translation>
 <translation id="8697136149718343437">Хаяг оруулах хэсгийг доош зөөх</translation>
+<translation id="869891660844655955">Дуусах хугацаа</translation>
 <translation id="8706253136355675497">Температур</translation>
 <translation id="8706806585855470492">Та табын бүлэг хуваалцах, нэгдэх, хамтран ажиллах боломжтой болно</translation>
 <translation id="8709409604518538305">Табуудыг хаасан</translation>

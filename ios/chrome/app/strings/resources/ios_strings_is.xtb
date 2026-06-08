@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Sýna alla flipa í flipahópi</translation>
 <translation id="136942498637440594">Þú getur leitað að myndum og því sem þú sérð.</translation>
 <translation id="1373120905936431262">Hladdu upp mynd til að endurblanda með Nano Banana</translation>
-<translation id="1377321085342047638">Kortanúmer</translation>
 <translation id="1377508275003315939">Aðgangsorð</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} af {count} heimilisfangi}one{{position} af {count} heimilisfangi}other{{position} af {count} heimilisföngum}}</translation>
 <translation id="1383876407941801731">Leita</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> (stjórnað af fyrirtækinu þínu).</translation>
 <translation id="3580448612293054698">Uppfæra <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
-<translation id="3583726884554296148">Vistaðu kortið þitt á Google-reikningnum þínum til að fylla það sjálfkrafa út fyrir þessi og önnur kaup í Chrome</translation>
 <translation id="3587482841069643663">Allar</translation>
 <translation id="3587885837929752825">Fyrirtækið þitt takmarkar hvað þú getur vistað á Google-reikningnum þínum.</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Nýjungar</translation>
 <translation id="429074084062258019">{count,plural, =1{Bæta flipa við hóp}one{Bæta flipum við hóp}other{Bæta flipum við hóp}}</translation>
 <translation id="4294506173142861371">Viltu skrá inn sem <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skanna kort og fylla sjálfkrafa út</translation>
 <translation id="4302061870579014542">Stilla stöðu</translation>
 <translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="4306349443295056740">OCSP-undirskrift</translation>
@@ -1709,7 +1706,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6807287147325542056">Aðgangsorð í öðrum tækjum</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
 <translation id="681631578600400068">Vista ökuskírteini</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bókamerki var vistað á Google-reikningnum þínum: {email}}one{{count} bókamerki var vistað á Google-reikningnum þínum: {email}}other{{count} bókamerki voru vistuð á Google-reikningnum þínum: {email}}}</translation>
 <translation id="6826004672264649705">Vaktar þessa vöru. Opnaðu til að sjá verðferil</translation>
 <translation id="6830728435402077660">Ekki öruggt</translation>
@@ -2273,6 +2269,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8694281486652655615">Sýnir þetta atriði</translation>
 <translation id="8696297579102085705">Senda í tækið þitt</translation>
 <translation id="8697136149718343437">Færa veffangastiku neðst</translation>
+<translation id="869891660844655955">Lokadagsetning</translation>
 <translation id="8706253136355675497">Hitastig</translation>
 <translation id="8706806585855470492">Þú munt geta deilt, tekið þátt í og unnið með öðrum í flipahópum</translation>
 <translation id="8709409604518538305">Flipum var lokað</translation>

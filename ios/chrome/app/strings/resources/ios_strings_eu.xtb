@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Erakutsi fitxa taldeko fitxa guztiak</translation>
 <translation id="136942498637440594">Irudiak eta ikusten duzuna bila ditzakezu.</translation>
 <translation id="1373120905936431262">Kargatu irudi bat Nano Banana-rekin nahasteko</translation>
-<translation id="1377321085342047638">Txartelaren zenbakia</translation>
 <translation id="1377508275003315939">Pasahitzak</translation>
 <translation id="1381022135873211423">{count,plural, =1{Helbide {count}etik {position}garrena}other{{count} helbidetatik {position}garrena}}</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, erakundeak kudeatzen du.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> eguneratu nahi duzu?</translation>
 <translation id="3581564640715911333">Eskaini beste hizkuntzetan dauden orriak itzultzea</translation>
-<translation id="3583726884554296148">Gorde txartela Google-ko kontuan, erosketa honetan eta Chrome-n etorkizunean egingo dituzun erosketetan automatikoki betetzeko</translation>
 <translation id="3587482841069643663">Guztiak</translation>
 <translation id="3587885837929752825">Erakundeak Google-ko kontuan gorde dezakezuna mugatzen du.</translation>
 <translation id="3588820906588687999">Ireki irudia beste fitxa batean</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Berritasunak</translation>
 <translation id="429074084062258019">{count,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> gisa hasi nahi duzu saioa?</translation>
-<translation id="4300830875340617674">Eskaneatu txartela eta bete automatikoki</translation>
 <translation id="4302061870579014542">Ezarri posizioa</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
 <translation id="4306349443295056740">OCSP sinadura</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">Beste aplikazio batzuetako pasahitzak</translation>
 <translation id="681368974849482173">Elementua sortu da</translation>
 <translation id="681631578600400068">Gorde gidabaimena</translation>
-<translation id="6820686453637990663">CVCa</translation>
 <translation id="6825078212112407882">{count,plural, =1{Laster-marka gorde da Google-ko kontuan ({email})}other{{count} laster-marka gorde dira Google-ko kontuan ({email})}}</translation>
 <translation id="6826004672264649705">Produktu honen jarraipena egiten ari zara. Prezioen historia ikusteko, ireki hau.</translation>
 <translation id="6830728435402077660">Ez da segurua</translation>
@@ -2273,6 +2269,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="8694281486652655615">Elementu hau erakusten du</translation>
 <translation id="8696297579102085705">Bidali zure gailura</translation>
 <translation id="8697136149718343437">Eraman helbide-barra beheraino</translation>
+<translation id="869891660844655955">Iraungitze-data</translation>
 <translation id="8706253136355675497">Tenperatura</translation>
 <translation id="8706806585855470492">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko aukera izango duzu</translation>
 <translation id="8709409604518538305">Fitxak itxi dira</translation>

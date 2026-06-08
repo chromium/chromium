@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ສະແດງແຖບທັງໝົດໃນກຸ່ມແຖບ</translation>
 <translation id="136942498637440594">ທ່ານສາມາດຊອກຫາຮູບ ແລະ ສິ່ງທີ່ທ່ານເຫັນໄດ້.</translation>
 <translation id="1373120905936431262">ອັບໂຫຼດຮູບເພື່ອຣີມິກດ້ວຍ Nano Banana</translation>
-<translation id="1377321085342047638">ເລກບັດ</translation>
 <translation id="1377508275003315939">ລະຫັດຜ່ານ</translation>
 <translation id="1381022135873211423">{count,plural, =1{ທີ່ຢູ່ທີ {position} ຈາກ {count} ລາຍການ}other{ທີ່ຢູ່ທີ {position} ຈາກ {count} ລາຍການ}}</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ເຊິ່ງຈັດການໂດຍອົງກອນຂອງທ່ານ.</translation>
 <translation id="3580448612293054698">ອັບເດດ <ph name="ENTITY_TYPE" /> ບໍ?</translation>
 <translation id="3581564640715911333">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
-<translation id="3583726884554296148">ບັນທຶກບັດຂອງທ່ານໄວ້ໃນບັນຊີ Google ຂອງທ່ານເພື່ອຕື່ມຂໍ້ມູນອັດຕະໂນມັດສຳລັບການຊື້ໃນ Chrome ເທື່ອນີ້ ແລະ ໃນອະນາຄົດ</translation>
 <translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3587885837929752825">ອົງກອນຂອງທ່ານຈຳກັດສິ່ງທີ່ທ່ານສາມາດບັນທຶກໃນບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3588820906588687999">ຮູບເປີດຢູ່ໃນແຖບໃໝ່</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">ມີຫຍັງໃໝ່</translation>
 <translation id="429074084062258019">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
 <translation id="4294506173142861371">ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="FIRST_NAME" /> ບໍ?</translation>
-<translation id="4300830875340617674">ສະແກນບັດ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="4302061870579014542">ກຳນົດຕຳແໜ່ງ</translation>
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="4306349443295056740">ການເຊັນຊື່ OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6807287147325542056">ລະຫັດຜ່ານໃນແອັບອື່ນໆ</translation>
 <translation id="681368974849482173">ສ້າງ​ລາຍ​ການ​ຂຶ້ນ​ແລ້ວ</translation>
 <translation id="681631578600400068">ບັນທຶກໃບອະນຸຍາດຂັບຂີ່</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{ບັນທຶກບຸກມາກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ}}</translation>
 <translation id="6826004672264649705">ກຳລັງຕິດຕາມຜະລິດຕະພັນນີ້ຢູ່. ເປີດເພື່ອເບິ່ງປະຫວັດລາຄາ</translation>
 <translation id="6830728435402077660">ບໍ່ປອດໄພ</translation>
@@ -2273,6 +2269,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8694281486652655615">ສະແດງລາຍການນີ້</translation>
 <translation id="8696297579102085705">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="8697136149718343437">ຍ້າຍແຖບທີ່ຢູ່ໄປໄວ້ລຸ່ມສຸດ</translation>
+<translation id="869891660844655955">ວັນ​ຫມົດ​ອາ​ຍຸ</translation>
 <translation id="8706253136355675497">ອຸນຫະພູມ</translation>
 <translation id="8706806585855470492">ທ່ານຈະໄດ້ແບ່ງປັນ, ເຂົ້າຮ່ວມ ແລະ ຮ່ວມມືໃນກຸ່ມແຖບ</translation>
 <translation id="8709409604518538305">ປິດແຖບແລ້ວ</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Mostrar todas as pestanas dun grupo de pestanas</translation>
 <translation id="136942498637440594">Podes buscar imaxes e o que vexas.</translation>
 <translation id="1373120905936431262">Carga unha imaxe para facer un remix con Nano Banana</translation>
-<translation id="1377321085342047638">Nº tarxeta</translation>
 <translation id="1377508275003315939">Contrasinais</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} enderezo}other{{position} de {count} enderezos}}</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, perfil xestionado pola túa organización.</translation>
 <translation id="3580448612293054698">Queres actualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
-<translation id="3583726884554296148">Garda a túa tarxeta na túa Conta de Google para que se autocomplete a información cando fagas esta compra e outras futuras en Chrome</translation>
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587885837929752825">A túa organización limita o que podes gardar na túa Conta de Google.</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
 <translation id="4294506173142861371">Queres iniciar sesión como <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Escanear tarxeta e autocompletar</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4306349443295056740">Sinatura de OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6807287147325542056">Contrasinais doutras aplicacións</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="681631578600400068">Garda o permiso de conducir</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{{count} marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="6826004672264649705">Estás facendo un seguimento deste produto. Accede para ver o historial de prezos</translation>
 <translation id="6830728435402077660">Non seguro</translation>
@@ -2273,6 +2269,7 @@ Para continuar desde o ordenador, cambia a <ph name="OTHER_EMAIL" />. Obterás o
 <translation id="8694281486652655615">Mostra este elemento</translation>
 <translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de enderezos á parte inferior</translation>
+<translation id="869891660844655955">Data de vencemento</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Poderás compartir grupos de pestanas, unirte a eles e colaborar</translation>
 <translation id="8709409604518538305">Pecháronse as pestanas</translation>

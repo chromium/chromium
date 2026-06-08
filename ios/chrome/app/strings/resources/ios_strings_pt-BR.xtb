@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">AAAA</translation>
 <translation id="1013952917065545813">Você pode voltar aqui para abrir guias que acabou de fechar</translation>
 <translation id="1016495303386450659">Item atualizado</translation>
+<translation id="1018804590490383958">Digitalizar e preencher automaticamente</translation>
 <translation id="1019990162050689579">Atividade nos apps do Gemini</translation>
 <translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1030376737535466765">Abra o Gerenciador de senhas</translation>
@@ -111,7 +112,6 @@
 <translation id="1369286077209859800">Mostrar todas as guias no grupo</translation>
 <translation id="136942498637440594">Você pode pesquisar imagens e o que está ao seu redor.</translation>
 <translation id="1373120905936431262">Faça upload de uma imagem para fazer uma montagem com o Nano Banana</translation>
-<translation id="1377321085342047638">Número do cartão</translation>
 <translation id="1377508275003315939">Senhas</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} endereço}one{{position} de {count} endereço}other{{position} de {count} endereços}}</translation>
 <translation id="1383876407941801731">Pesquise</translation>
@@ -743,7 +743,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerenciado pela sua organização.</translation>
 <translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
-<translation id="3583726884554296148">Salve seu cartão na sua Conta do Google para que ele seja preenchido automaticamente nesta e em compras futuras feitas no Chrome</translation>
 <translation id="3587482841069643663">Todas</translation>
 <translation id="3587885837929752825">Sua organização limita o que você pode salvar na sua Conta do Google.</translation>
 <translation id="3588820906588687999">Abrir em uma nova guia</translation>
@@ -940,7 +939,6 @@
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
 <translation id="4294506173142861371">Fazer login como <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Digitalizar cartão e preencher automaticamente</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gerenciador de Senhas</translation>
 <translation id="4306349443295056740">Assinatura OCSP</translation>
@@ -1542,6 +1540,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Escolha a posição da barra de endereço</translation>
 <translation id="6307241780749477694">Confirme sua identidade para acessar todas as suas senhas neste dispositivo</translation>
+<translation id="6307792728709337290">Salve o cartão na sua Conta do Google para que ele seja preenchido automaticamente nesta compra e em compras futuras feitas no Chrome.</translation>
 <translation id="6316141353357700666">Escolha a senha que você quer usar na lista que aparecer.</translation>
 <translation id="6321526113093607004">Adicionar aos favoritos</translation>
 <translation id="6327249202318869726">O Gemini está desativado na sua conta. Entre em contato com seu admin para mais informações.</translation>
@@ -1709,7 +1708,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6807287147325542056">Senhas em outros apps</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="681631578600400068">Salvar carteira de habilitação</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favorito salvo na sua Conta do Google {email}}one{{count} favorito salvo na sua Conta do Google {email}}other{{count} favoritos salvos na sua Conta do Google {email}}}</translation>
 <translation id="6826004672264649705">Este produto está em monitoramento. Abra para mostrar o histórico de preços</translation>
 <translation id="6830728435402077660">Não seguro</translation>
@@ -2273,6 +2271,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="8694281486652655615">Mostra este item</translation>
 <translation id="8696297579102085705">Enviar para seu dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de endereço para baixo</translation>
+<translation id="869891660844655955">Validade</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Você poderá compartilhar, participar e colaborar em grupos de guias</translation>
 <translation id="8709409604518538305">As guias foram fechadas</translation>

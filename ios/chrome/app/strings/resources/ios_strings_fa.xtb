@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">نمایش همه زبانه‌ها در گروه زبانه</translation>
 <translation id="136942498637440594">می‌توانید تصاویر و آنچه را که می‌بینید جستجو کنید.</translation>
 <translation id="1373120905936431262">‏تصویری را برای بازآمیزی با Nano Banana بارگذاری کنید</translation>
-<translation id="1377321085342047638">شماره کارت</translation>
 <translation id="1377508275003315939">گذرواژه‌ها</translation>
 <translation id="1381022135873211423">{count,plural, =1{‫{position} از {count} نشانی}one{‫{position} از {count} نشانی}other{‫{position} از {count} نشانی}}</translation>
 <translation id="1383876407941801731">جستجو</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475">‫<ph name="EMAIL" />، توسط سازمانتان مدیریت می‌شود.</translation>
 <translation id="3580448612293054698">‫<ph name="ENTITY_TYPE" /> به‌روز شود؟</translation>
 <translation id="3581564640715911333">پیشنهاد ترجمه صفحات نوشته‌شده به زبان‌های دیگر</translation>
-<translation id="3583726884554296148">‏کارتتان را در «حساب Google» ذخیره کنید تا برای این خرید و خریدهای بعدی که در Chrome انجام می‌دهید به‌طور خودکار تکمیل شود</translation>
 <translation id="3587482841069643663">همه</translation>
 <translation id="3587885837929752825">‏سازمان شما آنچه را می‌توانید در «حساب Google» خود ذخیره کنید محدود می‌کند.</translation>
 <translation id="3588820906588687999">باز کردن تصویر در برگه جدید</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">ویژگی‌های جدید</translation>
 <translation id="429074084062258019">{count,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
 <translation id="4294506173142861371">به‌عنوان <ph name="FIRST_NAME" /> به سیستم وارد می‌شوید؟</translation>
-<translation id="4300830875340617674">اسکن کردن کارت و تکمیل خودکار</translation>
 <translation id="4302061870579014542">تنظیم کردن موقعیت</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="4306349443295056740">‏امضای OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6807287147325542056">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
 <translation id="681631578600400068">ذخیره گواهینامه رانندگی</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="6826004672264649705">درحال‌حاضر این محصول را پیگیری می‌کنید. برای دیدن سابقه قیمت باز کنید</translation>
 <translation id="6830728435402077660">امن نیست</translation>
@@ -2273,6 +2269,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8694281486652655615">این مورد را نشان می‌دهد</translation>
 <translation id="8696297579102085705">ارسال کردن به دستگاه شما</translation>
 <translation id="8697136149718343437">انتقال نوار نشانی به پایین صفحه</translation>
+<translation id="869891660844655955">تاریخ انقضا</translation>
 <translation id="8706253136355675497">دما</translation>
 <translation id="8706806585855470492">امکان هم‌رسانی، پیوستن، و مشارکت در گروه‌های زبانه را خواهید داشت</translation>
 <translation id="8709409604518538305">زبانه‌ها بسته شد</translation>

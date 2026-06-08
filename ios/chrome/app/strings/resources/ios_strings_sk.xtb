@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Zobraziť všetky karty v skupine</translation>
 <translation id="136942498637440594">Môžete vyhľadávať obrázky a všetko, čo vidíte.</translation>
 <translation id="1373120905936431262">Nahrajte obrázok, ktorý chcete remixovať pomocou nástroja Nano Banana</translation>
-<translation id="1377321085342047638">Číslo karty</translation>
 <translation id="1377508275003315939">Heslá</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}. z {count} adresy}few{{position}. z {count} adries}many{{position} of {count} addresses}other{{position}. z {count} adries}}</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475">Účet <ph name="EMAIL" /> spravovaný vašou organizáciou.</translation>
 <translation id="3580448612293054698">Chcete položku <ph name="ENTITY_TYPE" /> aktualizovať?</translation>
 <translation id="3581564640715911333">Ponúkať preklad stránok v ďalších jazykoch</translation>
-<translation id="3583726884554296148">Uložte si kartu v účte Google, aby sa automaticky dopĺňala pri nákupoch v Chrome, teraz aj v budúcnosti</translation>
 <translation id="3587482841069643663">Všetko</translation>
 <translation id="3587885837929752825">Vaša organizácia obmedzuje, čo môžete uložiť vo svojom účte Google.</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Novinky</translation>
 <translation id="429074084062258019">{count,plural, =1{Pridať kartu do skupiny}few{Pridať karty do skupiny}many{Pridať karty do skupiny}other{Pridať karty do skupiny}}</translation>
 <translation id="4294506173142861371">Chcete sa prihlásiť ako <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Naskenovať kartu a automaticky doplniť</translation>
 <translation id="4302061870579014542">Nastaviť umiestnenie</translation>
 <translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="4306349443295056740">Podpisovanie protokolom OCSP</translation>
@@ -1709,7 +1706,6 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6807287147325542056">Heslá v ďalších aplikáciách</translation>
 <translation id="681368974849482173">Položka bola vytvorená</translation>
 <translation id="681631578600400068">Uložte vodičský preukaz</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Záložka bola uložená do vášho účtu Google {email}}few{{count} záložky boli uložené vo vašom účte Google {email}}many{{count} bookmarks saved in your Google Account, {email}}other{{count} záložiek bolo uložených vo vašom účte Google {email}}}</translation>
 <translation id="6826004672264649705">Tento výrobok momentálne sledujete. Otvorte a pozrite si históriu cien.</translation>
 <translation id="6830728435402077660">Nezabezpečené</translation>
@@ -2273,6 +2269,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="8694281486652655615">Zobrazí túto položku</translation>
 <translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="8697136149718343437">Presunúť panel s adresou naspodok</translation>
+<translation id="869891660844655955">Koniec platnosti</translation>
 <translation id="8706253136355675497">Teplota</translation>
 <translation id="8706806585855470492">Budete môcť zdieľať skupiny kariet, pripájať sa k nim a spolupracovať na nich</translation>
 <translation id="8709409604518538305">Karty boli zatvorené</translation>

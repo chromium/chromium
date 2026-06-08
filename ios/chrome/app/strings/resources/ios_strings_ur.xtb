@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ٹیب گروپ میں سبھی ٹیبز دکھائیں</translation>
 <translation id="136942498637440594">آپ تصاویر اور جو کچھ آپ دیکھتے ہیں تلاش کر سکتے ہیں۔</translation>
 <translation id="1373120905936431262">‏‫Nano Banana کے ساتھ ریمکس کرنے کے لیے کوئی تصویر اپ لوڈ کریں</translation>
-<translation id="1377321085342047638">کارڈ نمبر</translation>
 <translation id="1377508275003315939">پاس ورڈز</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} پتہ میں سے {position}}other{{count} پتے میں سے {position}}}</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> اپ ڈیٹ کریں؟</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
-<translation id="3583726884554296148">‏اپنے کارڈ کو اپنے Google اکاؤنٹ میں محفوظ کریں تاکہ اسے اس خریداری اور Chrome پر کی جانے والی مستقبل کی خریداریوں کے لیے آٹو فل کیا جا سکے</translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">نیا کیا ہے</translation>
 <translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
 <translation id="4294506173142861371">‫<ph name="FIRST_NAME" /> کے بطور سائن ان کریں؟</translation>
-<translation id="4300830875340617674">کارڈ اسکین کریں اور آٹو فل کریں</translation>
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="4306349443295056740">‏‫OCSP پر دستخط کرنا</translation>
@@ -1709,7 +1706,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6807287147325542056">دیگر ایپس میں پاس ورڈز</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
 <translation id="681631578600400068">ڈرائیونگ لائسنس کی معلومات محفوظ کریں</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏بُک مارک آپ کے Google اکاؤنٹ، {email} میں محفوظ کیا گیا}other{‏‫{count} بُک مارکس آپ کے Google اکاؤنٹ، {email} میں محفوظ کیے گئے}}</translation>
 <translation id="6826004672264649705">فی الحال اس پروڈکٹ کو ٹریک کیا جا رہا ہے۔ قیمت کی سرگزشت دیکھنے کے لیے کھولیں</translation>
 <translation id="6830728435402077660">محفوظ نہیں</translation>
@@ -2273,6 +2269,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8694281486652655615">یہ آئٹم دکھائی دیتا ہے</translation>
 <translation id="8696297579102085705">اپنے آلے پر بھیجیں</translation>
 <translation id="8697136149718343437">ایڈریس بار کو نیچے منتقل کریں</translation>
+<translation id="869891660844655955">میعاد ختم ہونے کی تاریخ</translation>
 <translation id="8706253136355675497">درجہ حرارت</translation>
 <translation id="8706806585855470492">آپ کو ٹیب گروپس میں اشتراک، شمولیت اور تعاون کرنے کا موقع ملے گا</translation>
 <translation id="8709409604518538305">ٹیبز بند کیے گئے</translation>

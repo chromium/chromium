@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ట్యాబ్ గ్రూప్‌లోని అన్ని ట్యాబ్‌లను చూడండి</translation>
 <translation id="136942498637440594">మీరు ఇమేజ్‌లను, మీరు చూసే వాటిని సెర్చ్ చేయవచ్చు.</translation>
 <translation id="1373120905936431262">Nano Bananaతో రీమిక్స్ చేయడానికి ఇమేజ్‌ను అప్‌లోడ్ చేయండి</translation>
-<translation id="1377321085342047638">కార్డ్ నంబర్</translation>
 <translation id="1377508275003315939">పాస్‌వర్డ్‌లు</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} అడ్రస్‌లో {position}వది}other{{count} అడ్రస్‌లలో {position}వది}}</translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, మీ సంస్థ ద్వారా మేనేజ్ చేయబడుతోంది.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" />‌ను అప్‌డేట్ చేయాలా?</translation>
 <translation id="3581564640715911333">ఇతర భాషలలో ఉన్న పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
-<translation id="3583726884554296148">ఈ కొనుగోలు కోసమే కాకుండా Chromeలో భవిష్యత్తులో చేసే కొనుగోళ్ల కోసం కూడా మీ కార్డ్‌ను ఆటోఫిల్ చేయడానికి మీ Google ఖాతాలో దాన్ని సేవ్ చేయండి</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
 <translation id="3587885837929752825">మీ Google ఖాతాలో మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది.</translation>
 <translation id="3588820906588687999">ఇమేజ్‌ను కొత్త ట్యాబ్‌లో తెరవండి</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">కొత్తగా ఏం ఉన్నాయి</translation>
 <translation id="429074084062258019">{count,plural, =1{ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" />‌గా సైన్ ఇన్ చేస్తున్నారా?</translation>
-<translation id="4300830875340617674">కార్డ్‌ను స్కాన్ చేసి, ఆటోఫిల్ చేయండి</translation>
 <translation id="4302061870579014542">పొజిషన్‌ను సెట్ చేయండి</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="4306349443295056740">OCSP సైనింగ్</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">ఇతర యాప్స్‌లోని పాస్‌వర్డ్‌లు</translation>
 <translation id="681368974849482173">అంశం క్రియేట్ చేయబడింది</translation>
 <translation id="681631578600400068">డ్రైవింగ్ లైసెన్స్‌ను సేవ్ చేయండి</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{బుక్‌మార్క్ మీ Google ఖాతా, {email}‌లో సేవ్ అయింది}other{{count} బుక్‌మార్క్‌లు మీ Google ఖాతా, {email}‌లో సేవ్ అయ్యాయి}}</translation>
 <translation id="6826004672264649705">ప్రస్తుతం ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు. ధర హిస్టరీని చూడటానికి తెరవండి</translation>
 <translation id="6830728435402077660">సురక్షితం కాదు</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">ఇది ఈ ఐటెమ్‌ను చూపిస్తుంది</translation>
 <translation id="8696297579102085705">మీ పరికరానికి పంపండి</translation>
 <translation id="8697136149718343437">అడ్రస్ బార్‌ను కిందికి తరలించండి</translation>
+<translation id="869891660844655955">గడువు తేదీ</translation>
 <translation id="8706253136355675497">ఉష్ణోగ్రత</translation>
 <translation id="8706806585855470492">ట్యాబ్ గ్రూప్‌లలో మీరు షేర్ చేయవచ్చు, చేరవచ్చు, సహకరించవచ్చు</translation>
 <translation id="8709409604518538305">ట్యాబ్‌లు మూసివేయబడ్డాయి</translation>

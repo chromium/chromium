@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Показване на всички раздели в групата раздели</translation>
 <translation id="136942498637440594">Можете да търсите изображения и това, което виждате.</translation>
 <translation id="1373120905936431262">Качете изображение, което да ремиксирате с Nano Banana</translation>
-<translation id="1377321085342047638">№ на картата</translation>
 <translation id="1377508275003315939">Пароли</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} от {count} адрес}other{{position} от {count} адреса}}</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />. Управлява се от организацията ви.</translation>
 <translation id="3580448612293054698">Да се актуализира ли „<ph name="ENTITY_TYPE" />“?</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
-<translation id="3583726884554296148">Запазете картата си в профила си в Google, за да се попълват автоматично данните ѝ за тази и бъдещи покупки в Chrome</translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3587885837929752825">Организацията ви ограничава това, което можете да запазвате в профила си в Google.</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Новите неща</translation>
 <translation id="429074084062258019">{count,plural, =1{Добавяне на раздела към група}other{Добавяне на разделите към група}}</translation>
 <translation id="4294506173142861371">Искате ли да влезете като <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Сканиране на картата и автоматично попълване</translation>
 <translation id="4302061870579014542">Задаване на позиция</translation>
 <translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="4306349443295056740">Подписване на OCSP</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">Пароли в други приложения</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="681631578600400068">Запазване на шофьорската книжка</translation>
-<translation id="6820686453637990663">Код за сигурност</translation>
 <translation id="6825078212112407882">{count,plural, =1{Отметката е запазена в профила ви в Google {email}}other{{count} отметки са запазени в профила ви в Google {email}}}</translation>
 <translation id="6826004672264649705">Понастоящем проследявате този продукт. Отворете, за да видите историята на цената</translation>
 <translation id="6830728435402077660">Няма защита</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">Показва този елемент</translation>
 <translation id="8696297579102085705">Изпращане до устройството ви</translation>
 <translation id="8697136149718343437">Преместване на адресната лента в долната част</translation>
+<translation id="869891660844655955">Дата на валидност</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Ще можете да споделяте, да се присъединявате и да си сътрудничите в групи раздели</translation>
 <translation id="8709409604518538305">Разделите бяха затворени</translation>

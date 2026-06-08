@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Visa alla flikar i flikgruppen</translation>
 <translation id="136942498637440594">Du kan söka efter bilder och saker du ser.</translation>
 <translation id="1373120905936431262">Ladda upp en bild att remixa med Nano Banana</translation>
-<translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Lösenord</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} av {count} adress}other{{position} av {count} adresser}}</translation>
 <translation id="1383876407941801731">Sök</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, hanteras av organisationen.</translation>
 <translation id="3580448612293054698">Vill du uppdatera <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
-<translation id="3583726884554296148">Spara kortet i Google-kontot för att autofylla det för det här köpet och framtida köp i Chrome</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3587885837929752825">Din organisation begränsar vad du kan spara på Google-kontot.</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Nyheter</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
 <translation id="4294506173142861371">Vill du logga in som <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skanna kortet och autofyll</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4306349443295056740">OCSP-signering</translation>
@@ -1709,7 +1706,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6807287147325542056">Lösenord i andra appar</translation>
 <translation id="681368974849482173">Bokmärket har skapats</translation>
 <translation id="681631578600400068">Spara körkortet</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{{count} bokmärken har sparats i ditt Google-konto, {email}}}</translation>
 <translation id="6826004672264649705">Bevakar för närvarande den här produkten. Öppna för att se prishistorik</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
@@ -2273,6 +2269,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="8694281486652655615">Visar det här objektet</translation>
 <translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="8697136149718343437">Flytta adressfältet längst ned</translation>
+<translation id="869891660844655955">Utgångsdatum</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kan dela, gå med i och samarbeta i flikgrupper</translation>
 <translation id="8709409604518538305">Flikar har stängts</translation>

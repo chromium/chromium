@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">显示标签页分组中的所有标签页</translation>
 <translation id="136942498637440594">您可以搜索图片和您看到的内容。</translation>
 <translation id="1373120905936431262">上传图片，使用 Nano Banana 改换风格</translation>
-<translation id="1377321085342047638">卡号</translation>
 <translation id="1377508275003315939">密码</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 个地址，共 {count} 个}other{第 {position} 个地址，共 {count} 个}}</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />，由组织管理。</translation>
 <translation id="3580448612293054698">更新<ph name="ENTITY_TYPE" />？</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
-<translation id="3583726884554296148">将您的卡片保存在 Google 账号中，以便在 Chrome 上进行这笔购买交易和日后的购买交易时自动填充您的卡片信息</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">您的组织限制了您可在 Google 账号中保存的内容。</translation>
 <translation id="3588820906588687999">在新标签页中打开图片</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">新变化</translation>
 <translation id="429074084062258019">{count,plural, =1{向分组中添加标签页}other{向分组中添加标签页}}</translation>
 <translation id="4294506173142861371">要以 <ph name="FIRST_NAME" /> 的身份登录吗？</translation>
-<translation id="4300830875340617674">扫描卡片并自动填充</translation>
 <translation id="4302061870579014542">设置位置</translation>
 <translation id="4304713468139749426">密码管理工具</translation>
 <translation id="4306349443295056740">OCSP 签名</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">其他应用中的密码</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="681631578600400068">保存驾照信息</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
 <translation id="6826004672264649705">正在跟踪此商品。打开即可查看价格历史记录</translation>
 <translation id="6830728435402077660">不安全</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">显示此内容</translation>
 <translation id="8696297579102085705">发送到您的设备</translation>
 <translation id="8697136149718343437">将地址栏移到底部</translation>
+<translation id="869891660844655955">失效日期</translation>
 <translation id="8706253136355675497">温度</translation>
 <translation id="8706806585855470492">您将能够分享、加入标签页分组并在其中协作</translation>
 <translation id="8709409604518538305">标签页已关闭</translation>

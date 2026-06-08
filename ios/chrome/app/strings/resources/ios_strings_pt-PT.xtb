@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Mostrar todos os separadores no grupo de separadores</translation>
 <translation id="136942498637440594">Pode pesquisar imagens e o que vê.</translation>
 <translation id="1373120905936431262">Carregue uma imagem para reinventar com o Nano Banana</translation>
-<translation id="1377321085342047638">N.º cartão</translation>
 <translation id="1377508275003315939">Palavras-passe</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} morada}other{{position} de {count} moradas}}</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerida pela sua organização.</translation>
 <translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
-<translation id="3583726884554296148">Guarde o seu cartão na sua Conta Google para o preencher automaticamente nesta compra e em compras futuras feitas no Chrome</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587885837929752825">A sua organização limita o que pode guardar na sua Conta Google.</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
 <translation id="4294506173142861371">Iniciar sessão como <ph name="FIRST_NAME" /></translation>
-<translation id="4300830875340617674">Ler cartão e preencher automaticamente</translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4306349443295056740">Assinatura OCSP</translation>
@@ -1709,7 +1706,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6807287147325542056">Palavras-passe noutras apps</translation>
 <translation id="681368974849482173">Item criado</translation>
 <translation id="681631578600400068">Guarde a carta de condução</translation>
-<translation id="6820686453637990663">Código de segurança</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado na sua Conta Google, {email}}other{{count} marcadores guardados na sua Conta Google, {email}}}</translation>
 <translation id="6826004672264649705">Está a acompanhar este produto. Abra o separador para ver o histórico de preços</translation>
 <translation id="6830728435402077660">Inseguro</translation>
@@ -2273,6 +2269,7 @@ Para continuar a partir do computador, mude para <ph name="OTHER_EMAIL" />. Tem 
 <translation id="8694281486652655615">Mostra este artigo</translation>
 <translation id="8696297579102085705">Enviar para o dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de endereço para a parte inferior</translation>
+<translation id="869891660844655955">Data de expiração</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Vai poder partilhar, aderir e colaborar em grupos de separadores</translation>
 <translation id="8709409604518538305">Os separadores foram fechados</translation>

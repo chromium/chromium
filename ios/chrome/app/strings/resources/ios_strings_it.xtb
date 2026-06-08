@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Mostra tutte le schede nel gruppo di schede</translation>
 <translation id="136942498637440594">Puoi cercare immagini e ciò che vedi.</translation>
 <translation id="1373120905936431262">Carica un'immagine da remixare con Nano Banana</translation>
-<translation id="1377321085342047638">Numero carta</translation>
 <translation id="1377508275003315939">Password</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} di {count} indirizzo}other{{position} di {count} indirizzi}}</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestito dalla tua organizzazione.</translation>
 <translation id="3580448612293054698">Aggiornare <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponi di tradurre le pagine in altre lingue</translation>
-<translation id="3583726884554296148">Salva la carta nel tuo Account Google per la compilazione automatica per questo acquisto e per acquisti futuri effettuati su Chrome</translation>
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3587885837929752825">La tua organizzazione limita ciò che puoi salvare nel tuo Account Google.</translation>
 <translation id="3588820906588687999">Apri immagine in un'altra scheda</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Novità</translation>
 <translation id="429074084062258019">{count,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
 <translation id="4294506173142861371">Accedere come <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Scansiona la carta per la compilazione automatica</translation>
 <translation id="4302061870579014542">Imposta posizione</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
 <translation id="4306349443295056740">Firma OCSP</translation>
@@ -1709,7 +1706,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6807287147325542056">Password in altre app</translation>
 <translation id="681368974849482173">Elemento creato</translation>
 <translation id="681631578600400068">Salva la patente di guida</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Preferito salvato nel tuo Account Google, {email}}other{{count} preferiti salvati nel tuo Account Google, {email}}}</translation>
 <translation id="6826004672264649705">Stai monitorando questo prodotto. Apri per visualizzare la cronologia dei prezzi</translation>
 <translation id="6830728435402077660">Non sicuro</translation>
@@ -2273,6 +2269,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="8694281486652655615">Mostra questo elemento</translation>
 <translation id="8696297579102085705">Invia al tuo dispositivo</translation>
 <translation id="8697136149718343437">Sposta la barra degli indirizzi in fondo</translation>
+<translation id="869891660844655955">Data di scadenza</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Potrai partecipare e collaborare a gruppi di schede, nonché condividerli</translation>
 <translation id="8709409604518538305">Le schede sono state chiuse</translation>

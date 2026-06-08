@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Bonisa wonke amathebhu eqenjini lethebhu</translation>
 <translation id="136942498637440594">Ungasesha izithombe nalokho okubonayo.</translation>
 <translation id="1373120905936431262">Layisha isithombe ukuze uxube ngeNano Banana</translation>
-<translation id="1377321085342047638">Inombolo yekhadi</translation>
 <translation id="1377508275003315939">Amaphasiwedi</translation>
 <translation id="1381022135873211423">{count,plural, =1{I-{position} yekheli elingu-{count}}one{I-{position} yamakheli angu-{count}}other{I-{position} yamakheli angu-{count}}}</translation>
 <translation id="1383876407941801731">Sesha</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ilawulwa yinhlangano yakho.</translation>
 <translation id="3580448612293054698">Vuselela i-<ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Nikeza ngokuhumusha amakhasi ngezinye izilimi</translation>
-<translation id="3583726884554296148">Londoloza ikhadi lakho kuGoogle Account yakho ukuze uligcwalise ngokuzenzekelayo kulokhu kuthenga kanye nokuthenga kwesikhathi esizayo okwenziwe kuChrome</translation>
 <translation id="3587482841069643663">Konke</translation>
 <translation id="3587885837929752825">Inhlangano yakho ikhawulela lokho ongakulondoloza ku-Google Account yakho.</translation>
 <translation id="3588820906588687999">Vula isithombe kuthebhu entsha</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Yini okusha</translation>
 <translation id="429074084062258019">{count,plural, =1{Engeza Ithebhu Eqenjini}one{Engeza Amathebhu Eqenjini}other{Engeza Amathebhu Eqenjini}}</translation>
 <translation id="4294506173142861371">Ngena ngemvume njengo-<ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skena Ikhadi bese ugcwalise ngokuzenzekelayo</translation>
 <translation id="4302061870579014542">Setha isikhundla</translation>
 <translation id="4304713468139749426">Isiphathi sephasiwedi</translation>
 <translation id="4306349443295056740">Ukusayinwa kwe-OCSP</translation>
@@ -1709,7 +1706,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6807287147325542056">Amaphasiwedi kwamanye ama-app</translation>
 <translation id="681368974849482173">Into idaliwe</translation>
 <translation id="681631578600400068">Londoloza ilayisense yokushayela</translation>
-<translation id="6820686453637990663">I-CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Ibhukhimakhi ilondolozwe kuGoogle Account yakho, ye-{email}}one{Amabhukhimakhi angu-{count} alondolozwe kuGoogle Account yakho, ye-{email}}other{Amabhukhimakhi angu-{count} alondolozwe kuGoogle Account yakho, ye-{email}}}</translation>
 <translation id="6826004672264649705">Okwamanje ulandelela lo mkhiqizo. Vula ukuze ubone umlando wentengo</translation>
 <translation id="6830728435402077660">Akuphephile</translation>
@@ -2273,6 +2269,7 @@ Ukuze uqhubeke kukhompyutha yakho, shintshela ku-<ph name="OTHER_EMAIL" />. Uzot
 <translation id="8694281486652655615">Ibonisa le nto</translation>
 <translation id="8696297579102085705">Thumela kudivayisi yakho</translation>
 <translation id="8697136149718343437">Hambisa ibha lekheli liye ezansi</translation>
+<translation id="869891660844655955">Idethi yokuphelelwa yisikhathi</translation>
 <translation id="8706253136355675497">Izinga lokushisa</translation>
 <translation id="8706806585855470492">Uzokwazi ukwabelana, ukujoyina, uphinde uhlanganyele emaqenjini ethebhu</translation>
 <translation id="8709409604518538305">Amathebhu aye avalwa</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Show all tabs in tab group</translation>
 <translation id="136942498637440594">You can search images and what you see.</translation>
 <translation id="1373120905936431262">Upload an image to remix with Nano Banana</translation>
-<translation id="1377321085342047638">Card number</translation>
 <translation id="1377508275003315939">Passwords</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} of {count} address}other{{position} of {count} addresses}}</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, managed by your organisation.</translation>
 <translation id="3580448612293054698">Update <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
-<translation id="3583726884554296148">Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3587885837929752825">Your organisation limits what you can save in your Google Account.</translation>
 <translation id="3588820906588687999">Open image in new tab</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">What's new</translation>
 <translation id="429074084062258019">{count,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
 <translation id="4294506173142861371">Sign in as <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Scan card and autofill</translation>
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4306349443295056740">OCSP signing</translation>
@@ -1709,7 +1706,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6807287147325542056">Passwords in other apps</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="681631578600400068">Save driving licence</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="6826004672264649705">Currently tracking this product. Open to see price history</translation>
 <translation id="6830728435402077660">Not secure</translation>
@@ -2273,6 +2269,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="8694281486652655615">Shows this item</translation>
 <translation id="8696297579102085705">Send to your device</translation>
 <translation id="8697136149718343437">Move address bar to bottom</translation>
+<translation id="869891660844655955">Expiry date</translation>
 <translation id="8706253136355675497">Temperature</translation>
 <translation id="8706806585855470492">You'll get to share, join and collaborate in tab groups</translation>
 <translation id="8709409604518538305">Tabs were closed</translation>

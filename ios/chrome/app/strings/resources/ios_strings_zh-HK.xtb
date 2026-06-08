@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">顯示分頁群組入面嘅所有分頁</translation>
 <translation id="136942498637440594">你可搜尋圖片和看到的內容。</translation>
 <translation id="1373120905936431262">上載圖片以使用 Nano Banana 改圖</translation>
-<translation id="1377321085342047638">卡號碼</translation>
 <translation id="1377508275003315939">密碼</translation>
 <translation id="1381022135873211423">{count,plural, =1{第 {position} 個地址，總共有 {count} 個}other{第 {position} 個地址，總共有 {count} 個}}</translation>
 <translation id="1383876407941801731">搜尋</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />，該帳戶由你的機構管理。</translation>
 <translation id="3580448612293054698">要更新<ph name="ENTITY_TYPE" />嗎？</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
-<translation id="3583726884554296148">將付款卡儲存至 Google 帳戶後，只要在 Chrome 中購物都能自動填入資料</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">你的機構已限制你可儲存在 Google 帳戶中的內容。</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">最新資訊</translation>
 <translation id="429074084062258019">{count,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="4294506173142861371">要以<ph name="FIRST_NAME" />的身分登入嗎？</translation>
-<translation id="4300830875340617674">掃瞄付款卡並自動填入</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4306349443295056740">OCSP 簽署</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">已建立項目</translation>
 <translation id="681631578600400068">儲存駕駛執照</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="6826004672264649705">目前正在追蹤此產品。開啟即可查看價格記錄</translation>
 <translation id="6830728435402077660">不安全</translation>
@@ -2271,6 +2267,7 @@
 <translation id="8694281486652655615">顯示呢個項目</translation>
 <translation id="8696297579102085705">傳送至你的裝置</translation>
 <translation id="8697136149718343437">將網址列移至底部</translation>
+<translation id="869891660844655955">到期日</translation>
 <translation id="8706253136355675497">溫度</translation>
 <translation id="8706806585855470492">你將可以分享、加入分頁群組和協作</translation>
 <translation id="8709409604518538305">分頁已關閉</translation>

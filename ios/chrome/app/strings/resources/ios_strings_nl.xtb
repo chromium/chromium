@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Alle tabbladen in tabbladgroep tonen</translation>
 <translation id="136942498637440594">Je kunt zoeken naar afbeeldingen en wat je ziet.</translation>
 <translation id="1373120905936431262">Upload een afbeelding om te remixen met Nano Banana</translation>
-<translation id="1377321085342047638">Kaartnummer</translation>
 <translation id="1377508275003315939">Wachtwoorden</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} van {count} adres}other{{position} van {count} adressen}}</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> updaten?</translation>
 <translation id="3581564640715911333">Aanbieden pagina's in andere talen te vertalen</translation>
-<translation id="3583726884554296148">Sla je kaart op in je Google-account om deze automatisch in te vullen voor deze aankoop en toekomstige aankopen die je in Chrome doet</translation>
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587885837929752825">Je organisatie beperkt wat je kunt opslaan in je Google-account.</translation>
 <translation id="3588820906588687999">Afbeelding openen op nieuw tabblad</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Nieuws</translation>
 <translation id="429074084062258019">{count,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
 <translation id="4294506173142861371">Inloggen als <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Kaart scannen en automatisch invullen</translation>
 <translation id="4302061870579014542">Positie instellen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
 <translation id="4306349443295056740">OCSP-ondertekening</translation>
@@ -1709,7 +1706,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6807287147325542056">Wachtwoorden in andere apps</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="681631578600400068">Rijbewijs opslaan</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{{count} bookmarks opgeslagen in je Google-account {email}}}</translation>
 <translation id="6826004672264649705">Dit product wordt op dit moment gevolgd. Openen om de prijsgeschiedenis te bekijken</translation>
 <translation id="6830728435402077660">Niet beveiligd</translation>
@@ -2273,6 +2269,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="8694281486652655615">Hiermee wordt dit item getoond</translation>
 <translation id="8696297579102085705">Naar je apparaat sturen</translation>
 <translation id="8697136149718343437">Adresbalk naar beneden verplaatsen</translation>
+<translation id="869891660844655955">Vervaldatum</translation>
 <translation id="8706253136355675497">Temperatuur</translation>
 <translation id="8706806585855470492">Je kunt tabbladgroepen delen, eraan deelnemen en eraan samenwerken</translation>
 <translation id="8709409604518538305">Tabbladen zijn gesloten</translation>

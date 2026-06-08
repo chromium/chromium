@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ടാബ് ഗ്രൂപ്പിലെ എല്ലാ ടാബുകളും കാണിക്കുക</translation>
 <translation id="136942498637440594">ചിത്രങ്ങളും നിങ്ങൾ കാണുന്നവയും നിങ്ങൾക്ക് തിരയാം.</translation>
 <translation id="1373120905936431262">Nano Banana ഉപയോഗിച്ച് റീമിക്‌സ് ചെയ്യാൻ ഒരു ചിത്രം അപ്‌ലോഡ് ചെയ്യുക</translation>
-<translation id="1377321085342047638">കാർഡ് നമ്പർ</translation>
 <translation id="1377508275003315939">പാസ്‌വേഡുകൾ</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} വിലാസത്തിൽ {position}-ാമത്തേത്}other{{count} വിലാസങ്ങളിൽ {position}-ാമത്തേത്}}</translation>
 <translation id="1383876407941801731">തിരയുക</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
-<translation id="3583726884554296148">ഈ വാങ്ങലിനും Chrome-ൽ നടത്തുന്ന ഭാവിയിലെ വാങ്ങലുകൾക്കുമായി നിങ്ങളുടെ കാർഡ് സ്വയമേവ പൂരിപ്പിക്കാൻ Google Account-ൽ അത് സംരക്ഷിക്കുക</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
 <translation id="3587885837929752825">നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിക്കാനാകുന്ന കാര്യങ്ങൾ നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തിയിരിക്കുന്നു.</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">പുതുതായി എന്താണുള്ളത്</translation>
 <translation id="429074084062258019">{count,plural, =1{ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്യണോ?</translation>
-<translation id="4300830875340617674">കാർഡ് സ്കാൻ ചെയ്ത് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="4302061870579014542">സ്ഥാനം സജ്ജീകരിക്കുക</translation>
 <translation id="4304713468139749426">പാസ്‌വേഡ് മാനേജർ</translation>
 <translation id="4306349443295056740">OCSP ഒപ്പിടൽ</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">മറ്റ് ആപ്പുകളിലെ പാസ്‌വേഡുകൾ</translation>
 <translation id="681368974849482173">ഇനം സൃഷ്‌ടിച്ചു</translation>
 <translation id="681631578600400068">ഡ്രൈവിംഗ് ലൈസൻസ് സംരക്ഷിക്കുക</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ Google Account-ൽ {count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="6826004672264649705">നിലവിൽ ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു. നിരക്ക് ചരിത്രം കാണാൻ തുറക്കുക</translation>
 <translation id="6830728435402077660">സുരക്ഷിതമല്ല</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">ഈ ഇനം കാണിക്കുന്നു</translation>
 <translation id="8696297579102085705">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="8697136149718343437">വിലാസ ബാർ താഴേക്ക് നീക്കുക</translation>
+<translation id="869891660844655955">കാലഹരണപ്പെടല്‍‌ തീയതി</translation>
 <translation id="8706253136355675497">താപനില</translation>
 <translation id="8706806585855470492">നിങ്ങൾക്ക് ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനും അവയിൽ ചേരാനും സഹകരിക്കാനും കഴിയും</translation>
 <translation id="8709409604518538305">ടാബുകൾ അടച്ചു</translation>

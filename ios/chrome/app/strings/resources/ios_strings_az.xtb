@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Tab qrupunda bütün tabları göstərin</translation>
 <translation id="136942498637440594">Şəkil və gördüklərinizi axtara bilərsiniz.</translation>
 <translation id="1373120905936431262">Nano Banana ilə remiks etmək üçün şəkil yükləyin</translation>
-<translation id="1377321085342047638">Kart Nömrəsi</translation>
 <translation id="1377508275003315939">Parollar</translation>
 <translation id="1381022135873211423">{count,plural, =1{Ünvan: {position}/{count}}other{Ünvan: {position}/{count}}}</translation>
 <translation id="1383876407941801731">Axtar</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, təşkilatınız tərəfindən idarə olunur.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> güncəllənsin?</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
-<translation id="3583726884554296148">Kartı Google Hesabında yadda saxlayaraq bu və Chrome-da edilən gələcək alışlar üçün avtomatik doldurun</translation>
 <translation id="3587482841069643663">Hamısı</translation>
 <translation id="3587885837929752825">Təşkilat Google Hesabında yadda saxlanan datanı məhdudlaşdırır.</translation>
 <translation id="3588820906588687999">Şəkli Yeni Paneldə Açın</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Yeniliklər</translation>
 <translation id="429074084062258019">{count,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> olaraq daxil olursunuz?</translation>
-<translation id="4300830875340617674">Kartı skanlayın və avtomatik doldurun</translation>
 <translation id="4302061870579014542">Mövqe ayarlayın</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="4306349443295056740">OCSP-nin imzalanması</translation>
@@ -1709,7 +1706,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6807287147325542056">Digər tətbiqlərdəki parollar</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
 <translation id="681631578600400068">Sürücülük vəsiqəsini yadda saxlayın</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{{count} əlfəcin Google Hesabında ({email}) yadda saxlandı.}}</translation>
 <translation id="6826004672264649705">Hazırda bu məhsul izlənilir. Qiymət tarixçəsinə baxmaq üçün açın</translation>
 <translation id="6830728435402077660">Təhlükəsiz deyil</translation>
@@ -2273,6 +2269,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8694281486652655615">Bu elementi göstərir</translation>
 <translation id="8696297579102085705">Cihazınıza göndərin</translation>
 <translation id="8697136149718343437">Ünvan panelini aşağı köçürün</translation>
+<translation id="869891660844655955">Bitmə tarixi</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Tab qruplarında paylaşmaq, qoşulmaq və əməkdaşlıq etmək imkanı əldə edəcəksiniz</translation>
 <translation id="8709409604518538305">Tablar bağlandı</translation>

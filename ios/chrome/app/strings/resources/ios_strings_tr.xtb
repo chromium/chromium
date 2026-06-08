@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Sekme grubundaki tüm sekmeleri göster</translation>
 <translation id="136942498637440594">Resimleri ve gördüklerinizi arayabilirsiniz.</translation>
 <translation id="1373120905936431262">Nano Banana ile yeniden düzenlenecek bir görüntü yükleyin</translation>
-<translation id="1377321085342047638">Kart Numarası</translation>
 <translation id="1377508275003315939">Şifreler</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}/{count} adres}other{{position}/{count} adres}}</translation>
 <translation id="1383876407941801731">Ara</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, kuruluşunuz tarafından yönetiliyor.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> güncellensin mi?</translation>
 <translation id="3581564640715911333">Diğer dillerdeki sayfaları çevirmeyi öner</translation>
-<translation id="3583726884554296148">Bu satın alma işleminde ve Chrome'da yapılacak satın alma işlemlerinde kart bilgilerinizin otomatik olarak doldurulması için kartınızı Google Hesabınıza kaydedin.</translation>
 <translation id="3587482841069643663">Tümü</translation>
 <translation id="3587885837929752825">Google Hesabınıza kaydedebileceğiniz öğeler kuruluşunuz tarafından kısıtlanmıştır.</translation>
 <translation id="3588820906588687999">Resmi Yeni Sekmede Aç</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Yenilikler</translation>
 <translation id="429074084062258019">{count,plural, =1{Sekmeyi Gruba Ekle}other{Sekmeleri Gruba Ekle}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> olarak oturum açılsın mı?</translation>
-<translation id="4300830875340617674">Kartı tara ve otomatik doldur</translation>
 <translation id="4302061870579014542">Konumu ayarla</translation>
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4306349443295056740">OCSP İmzalama</translation>
@@ -1709,7 +1706,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6807287147325542056">Diğer uygulamalardaki şifreler</translation>
 <translation id="681368974849482173">Öğe oluşturuldu</translation>
 <translation id="681631578600400068">Sürücü belgesini kaydedin</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Yer işareti Google Hesabınıza ({email}) kaydedildi}other{{count} yer işareti Google Hesabınıza ({email}) kaydedildi}}</translation>
 <translation id="6826004672264649705">Bu ürün şu anda takip ediliyor. Fiyat geçmişini görmek için açın.</translation>
 <translation id="6830728435402077660">Güvenli değil</translation>
@@ -2273,6 +2269,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8694281486652655615">Bu öğeyi gösterir</translation>
 <translation id="8696297579102085705">Cihazıma gönder</translation>
 <translation id="8697136149718343437">Adres çubuğunu en alta taşı</translation>
+<translation id="869891660844655955">Son kullanma tarihi</translation>
 <translation id="8706253136355675497">Sıcaklık</translation>
 <translation id="8706806585855470492">Sekme gruplarını paylaşabilir, bunlara katılabilir ve gruplarda ortak çalışma yapabilirsiniz</translation>
 <translation id="8709409604518538305">Sekmeler kapatıldı</translation>

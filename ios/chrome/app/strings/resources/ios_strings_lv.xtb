@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Rādīt visas ciļņu grupas cilnes</translation>
 <translation id="136942498637440594">Varat meklēt attēlus un redzamo saturu.</translation>
 <translation id="1373120905936431262">Augšupielādējiet attēlu, ko remiksēt, izmantojot Nano Banana</translation>
-<translation id="1377321085342047638">Kartes numurs</translation>
 <translation id="1377508275003315939">Paroles</translation>
 <translation id="1381022135873211423">{count,plural, =1{Numur {position}. Kopējais adrešu skaits ir {count}}zero{Numur {position}. Kopējais adrešu skaits ir {count}}one{Numur {position}. Kopējais adrešu skaits ir {count}}other{Numur {position}. Kopējais adrešu skaits ir {count}}}</translation>
 <translation id="1383876407941801731">Meklēt</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> (pārvalda jūsu organizācija).</translation>
 <translation id="3580448612293054698">Vai atjaunināt “<ph name="ENTITY_TYPE" />”?</translation>
 <translation id="3581564640715911333">Piedāvāt tulkot lapas citās valodās</translation>
-<translation id="3583726884554296148">Saglabājiet karti savā Google kontā, lai tās datus varētu automātiski aizpildīt šim un turpmākiem pirkumiem, kas veikti pārlūkā Chrome.</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587885837929752825">Jūsu organizācija ierobežo to, kādu informāciju varat saglabāt savā Google kontā.</translation>
 <translation id="3588820906588687999">Atvērt attēlu jaunā cilnē</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Jaunumi</translation>
 <translation id="429074084062258019">{count,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
 <translation id="4294506173142861371">Vai pierakstīties ar kontu <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skenēt karti un automātiski aizpildīt</translation>
 <translation id="4302061870579014542">Iestatīt pozīciju</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4306349443295056740">OCSP parakstīšana</translation>
@@ -1709,7 +1706,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6807287147325542056">Paroles citās lietotnēs</translation>
 <translation id="681368974849482173">Vienums izveidots</translation>
 <translation id="681631578600400068">Autovadītāja apliecības informācijas saglabāšana</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Grāmatzīme tika saglabāta jūsu Google kontā ({email}).}zero{{count} grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}one{{count} grāmatzīme tika saglabāta jūsu Google kontā ({email}).}other{{count} grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}}</translation>
 <translation id="6826004672264649705">Jūs pašlaik izsekojat šo produktu. Atveriet, lai skatītu cenu vēsturi.</translation>
 <translation id="6830728435402077660">Nav droši</translation>
@@ -2273,6 +2269,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="8694281486652655615">Tiks rādīts šis vienums</translation>
 <translation id="8696297579102085705">Nosūtīt uz jūsu ierīci</translation>
 <translation id="8697136149718343437">Pārvietot adreses joslu uz apakšdaļu</translation>
+<translation id="869891660844655955">Derīguma termiņš</translation>
 <translation id="8706253136355675497">Temperatūra</translation>
 <translation id="8706806585855470492">Jūs varēsiet kopīgot ciļņu grupas, kā arī pievienoties tām un sadarboties tajās.</translation>
 <translation id="8709409604518538305">Cilnes tika aizvērtas</translation>

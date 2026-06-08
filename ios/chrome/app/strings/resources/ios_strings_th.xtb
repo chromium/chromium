@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">แสดงแท็บทั้งหมดในกลุ่มแท็บ</translation>
 <translation id="136942498637440594">คุณค้นหารูปภาพและสิ่งที่คุณเห็นได้</translation>
 <translation id="1373120905936431262">อัปโหลดรูปภาพเพื่อรีมิกซ์ด้วย Nano Banana</translation>
-<translation id="1377321085342047638">หมายเลขบัตร</translation>
 <translation id="1377508275003315939">รหัสผ่าน</translation>
 <translation id="1381022135873211423">{count,plural, =1{ที่อยู่ที่ {position} จาก {count} รายการ}other{ที่อยู่ที่ {position} จาก {count} รายการ}}</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> จัดการโดยองค์กร</translation>
 <translation id="3580448612293054698">อัปเดต <ph name="ENTITY_TYPE" /> ไหม</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
-<translation id="3583726884554296148">บันทึกบัตรไว้ในบัญชี Google เพื่อป้อนข้อความอัตโนมัติสำหรับการซื้อใน Chrome ครั้งนี้และในอนาคต</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3587885837929752825">องค์กรของคุณจํากัดสิ่งที่คุณสามารถบันทึกในบัญชี Google</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">มีอะไรใหม่</translation>
 <translation id="429074084062258019">{count,plural, =1{เพิ่มแท็บไปยังกลุ่ม}other{เพิ่มแท็บไปยังกลุ่ม}}</translation>
 <translation id="4294506173142861371">ลงชื่อเข้าใช้ในชื่อ <ph name="FIRST_NAME" /> ไหม</translation>
-<translation id="4300830875340617674">สแกนบัตรและป้อนข้อความอัตโนมัติ</translation>
 <translation id="4302061870579014542">กำหนดตำแหน่ง</translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4306349443295056740">การเซ็นชื่อ OCSP</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">รหัสผ่านในแอปอื่นๆ</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
 <translation id="681631578600400068">บันทึกใบขับขี่</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{บันทึกบุ๊กมาร์กไว้ในบัญชี Google {email} ของคุณแล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไว้ในบัญชี Google {email} ของคุณแล้ว}}</translation>
 <translation id="6826004672264649705">กำลังติดตามผลิตภัณฑ์นี้ เปิดเพื่อดูประวัติราคา</translation>
 <translation id="6830728435402077660">ไม่ปลอดภัย</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">แสดงรายการนี้</translation>
 <translation id="8696297579102085705">ส่งไปที่อุปกรณ์</translation>
 <translation id="8697136149718343437">ย้ายแถบที่อยู่ไปยังด้านล่าง</translation>
+<translation id="869891660844655955">วันหมดอายุ</translation>
 <translation id="8706253136355675497">อุณหภูมิ</translation>
 <translation id="8706806585855470492">คุณจะแชร์ เข้าร่วม และทำงานร่วมกันในกลุ่มแท็บได้</translation>
 <translation id="8709409604518538305">ปิดแท็บแล้ว</translation>

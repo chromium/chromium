@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Прикажи ги сите картички во група картички</translation>
 <translation id="136942498637440594">Може да пребарувате слики, како и работите што ги гледате.</translation>
 <translation id="1373120905936431262">Прикачете слика за да направите ремикс со Nano Banana</translation>
-<translation id="1377321085342047638">Број на картичка</translation>
 <translation id="1377508275003315939">Лозинки</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} од {count} адреса}one{{position} од {count} адреса}other{{position} од {count} адреси}}</translation>
 <translation id="1383876407941801731">Барај</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, управувана од вашата организација.</translation>
 <translation id="3580448612293054698">Да се ажурира <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Понудувај превод на страниците на други јазици</translation>
-<translation id="3583726884554296148">Зачувајте ја картичката во вашата сметка на Google за да ја пополнувате автоматски за купувањево и за идните купувања извршени во Chrome</translation>
 <translation id="3587482841069643663">Сите</translation>
 <translation id="3587885837929752825">Вашата организација ограничува што може да зачувувате на вашата сметка на Google.</translation>
 <translation id="3588820906588687999">Отворете ја сликата во нова картичка</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Што има ново</translation>
 <translation id="429074084062258019">{count,plural, =1{Додајте картичка во групата}one{Додајте картички во групата}other{Додајте картички во групата}}</translation>
 <translation id="4294506173142861371">Ќе се најавите како <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Скенирај ја картичката и пополни автоматски</translation>
 <translation id="4302061870579014542">Поставете положба</translation>
 <translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="4306349443295056740">Потпишување OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6807287147325542056">Лозинки во други апликации</translation>
 <translation id="681368974849482173">Ставката е создадена</translation>
 <translation id="681631578600400068">Зачувајте ја возачката дозвола</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Обележувачот е зачуван во вашата сметка на Google {email}}one{{count} обележувач се зачувани во вашата сметка на Google {email}}other{{count} обележувачи се зачувани во вашата сметка на Google {email}}}</translation>
 <translation id="6826004672264649705">Го следите производов во моментов. Отворете за да ја видите историјата на цените</translation>
 <translation id="6830728435402077660">Небезбедно</translation>
@@ -2273,6 +2269,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8694281486652655615">Ќе се прикаже ставкава</translation>
 <translation id="8696297579102085705">Испратете до вашиот уред</translation>
 <translation id="8697136149718343437">Преместете ја лентата за адреси најдолу</translation>
+<translation id="869891660844655955">Рок на важност</translation>
 <translation id="8706253136355675497">Температура</translation>
 <translation id="8706806585855470492">Ќе може да споделувате, да се придружувате и да соработувате во групи картички</translation>
 <translation id="8709409604518538305">Картичките се затворија</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Shfaq të gjitha skedat në grupin e skedave</translation>
 <translation id="136942498637440594">Mund të kërkosh imazhe dhe gjërat që shikon.</translation>
 <translation id="1373120905936431262">Ngarko një imazh për ta remiksuar me Nano Banana</translation>
-<translation id="1377321085342047638">Numri i kartës</translation>
 <translation id="1377508275003315939">Fjalëkalimet</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} nga {count} adresë}other{{position} nga {count} adresa}}</translation>
 <translation id="1383876407941801731">Kërko</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, menaxhohet nga organizata jote.</translation>
 <translation id="3580448612293054698">Të përditësohet: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ofro që t'i përkthesh faqet në gjuhë të tjera</translation>
-<translation id="3583726884554296148">Ruaje kartën tënde në "Llogarinë tënde të Google" për ta plotësuar automatikisht për këtë blerje dhe për blerjet e ardhshme të bëra në Chrome</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
 <translation id="3587885837929752825">Organizata jote kufizon se çfarë mund të ruash në "Llogarinë tënde të Google".</translation>
 <translation id="3588820906588687999">Hape imazhin në skedë të re</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Ç'të reja ka</translation>
 <translation id="429074084062258019">{count,plural, =1{Shto një skedë te grupi}other{Shto skeda te grupi}}</translation>
 <translation id="4294506173142861371">Do të identifikohesh si <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skano kartën dhe plotëso automatikisht</translation>
 <translation id="4302061870579014542">Cakto pozicionin</translation>
 <translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="4306349443295056740">Nënshkrim OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6807287147325542056">Fjalëkalimet në aplikacionet e tjera</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="681631578600400068">Ruaj lejen e drejtimit</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Faqeshënuesi u ruajt në "Llogarinë tënde të Google", {email}}other{{count} faqeshënues u ruajtën në "Llogarinë tënde të Google", {email}}}</translation>
 <translation id="6826004672264649705">Po e monitoron aktualisht këtë produkt. Hape për të parë historikun e çmimeve</translation>
 <translation id="6830728435402077660">Jo e sigurt</translation>
@@ -2273,6 +2269,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="8694281486652655615">Shfaq këtë artikull</translation>
 <translation id="8696297579102085705">Dërgo te pajisja jote</translation>
 <translation id="8697136149718343437">Zhvendose shiritin e adresave në fund</translation>
+<translation id="869891660844655955">Data e skadimit</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Do të mund të ndash, të bashkohesh dhe të bashkëpunosh në grupet e skedave</translation>
 <translation id="8709409604518538305">Skedat janë mbyllur</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">பக்கக் குழுவில் எல்லாப் பக்கங்களையும் பார்க்கலாம்</translation>
 <translation id="136942498637440594">படங்களையும் நீங்கள் பார்ப்பவற்றையும் தேடலாம்.</translation>
 <translation id="1373120905936431262">Nano Banana மூலம் ரீமிக்ஸ் செய்ய படத்தைப் பதிவேற்றலாம்</translation>
-<translation id="1377321085342047638">கார்டு எண்</translation>
 <translation id="1377508275003315939">கடவுச்சொற்கள்</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} முகவரியில் {position}வது}other{{count} முகவரிகளில் {position}வது}}</translation>
 <translation id="1383876407941801731">தேடுக</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ஐ மாற்றவா?</translation>
 <translation id="3581564640715911333">பக்கங்களைப் பிற மொழிகளில் மொழிபெயர்க்க அனுமதி</translation>
-<translation id="3583726884554296148">இந்தப் பர்ச்சேஸுக்கும் Chromeமில் எதிர்காலத்தில் மேற்கொள்ளும் பர்ச்சேஸ்களுக்கும் உங்கள் கார்டைத் தானாக நிரப்ப அதை உங்கள் Google கணக்கில் சேமிக்கலாம்</translation>
 <translation id="3587482841069643663">அனைத்தும்</translation>
 <translation id="3587885837929752825">நீங்கள் எவற்றையெல்லாம் Google கணக்கில் சேமிக்கலாம் என்பதை உங்கள் நிறுவனம் கட்டுப்படுத்துகிறது.</translation>
 <translation id="3588820906588687999">படத்தைப் புதிய தாவலில் திற</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">புதியவை</translation>
 <translation id="429074084062258019">{count,plural, =1{குழுவில் பக்கத்தைச் சேர்}other{குழுவில் பக்கங்களைச் சேர்}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> ஆக உள்நுழையலாமா?</translation>
-<translation id="4300830875340617674">கார்டை ஸ்கேன் செய்து தானாக நிரப்பு</translation>
 <translation id="4302061870579014542">தோன்றும் இடத்தை அமை</translation>
 <translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="4306349443295056740">OCSP கையொப்பமிடல்</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">பிற ஆப்ஸில் உள்ள கடவுச்சொற்கள்</translation>
 <translation id="681368974849482173">புத்தகக்குறி உருவாக்கப்பட்டது</translation>
 <translation id="681631578600400068">ஓட்டுநர் உரிமத் தகவலைச் சேமிக்கவா?</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{உங்கள் Google கணக்கில் ({email}) புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({email}) {count} புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="6826004672264649705">இந்தத் தயாரிப்பு தற்போது கண்காணிக்கப்படுகிறது. இதுவரையிலான கட்டணங்களைப் பார்க்க திறக்கவும்.</translation>
 <translation id="6830728435402077660">பாதுகாப்பற்றது</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">இதைக் காட்டும்</translation>
 <translation id="8696297579102085705">வேறு சாதனத்திற்கு அனுப்பு</translation>
 <translation id="8697136149718343437">முகவரிப் பட்டியைக் கீழ்ப்பகுதிக்கு நகர்த்து</translation>
+<translation id="869891660844655955">காலாவதியாகும் தேதி</translation>
 <translation id="8706253136355675497">வெப்பநிலை</translation>
 <translation id="8706806585855470492">நீங்கள் பக்கக் குழுக்களைப் பகிரலாம், அவற்றில் சேரலாம் மற்றும் கூட்டுப்பணி செய்யலாம்</translation>
 <translation id="8709409604518538305">பக்கங்கள் மூடப்பட்டன</translation>

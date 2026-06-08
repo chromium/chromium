@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Rodyti visus skirtukus skirtukų grupėje</translation>
 <translation id="136942498637440594">Galite ieškoti vaizdų ir to, ką matote.</translation>
 <translation id="1373120905936431262">Įkelkite vaizdą, kurį norite perkurti naudodami „Nano Banana“</translation>
-<translation id="1377321085342047638">Kort. Nr.</translation>
 <translation id="1377508275003315939">Slaptažodžiai</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} adresas iš {count}}one{{position} adresas iš {count}}few{{position} adresas iš {count}}many{{position} adresas iš {count}}other{{position} adresas iš {count}}}</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, valdo jūsų organizacija.</translation>
 <translation id="3580448612293054698">Atnaujinti <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
-<translation id="3583726884554296148">Išsaugokite kortelę „Google“ paskyroje, kad galėtumėte automatiškai ją užpildyti šiam ir būsimiems pirkiniams, atliekamiems naršyklėje „Chrome“</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587885837929752825">Jūsų organizacija riboja, ką galite išsaugoti savo „Google“ paskyroje.</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Kas naujo</translation>
 <translation id="429074084062258019">{count,plural, =1{Pridėti skirtuką prie grupės}one{Pridėti skirtukų prie grupės}few{Pridėti skirtukų prie grupės}many{Pridėti skirtukų prie grupės}other{Pridėti skirtukų prie grupės}}</translation>
 <translation id="4294506173142861371">Prisijungti kaip <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Nuskaityti kortelę ir automatiškai užpildyti</translation>
 <translation id="4302061870579014542">Nustatyti poziciją</translation>
 <translation id="4304713468139749426">Slaptažodžių tvarkytuvė</translation>
 <translation id="4306349443295056740">OCSP pasirašymas</translation>
@@ -1709,7 +1706,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6807287147325542056">Kitų programų slaptažodžiai</translation>
 <translation id="681368974849482173">Elementas sukurtas</translation>
 <translation id="681631578600400068">Išsaugokite vairuotojo pažymėjimą</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Žymė išsaugota „Google“ paskyroje {email}}one{{count} žymė išsaugota „Google“ paskyroje {email}}few{{count} žymės išsaugotos „Google“ paskyroje {email}}many{{count} žymės išsaugota „Google“ paskyroje {email}}other{{count} žymių išsaugota „Google“ paskyroje {email}}}</translation>
 <translation id="6826004672264649705">Šiuo metu stebimas šis produktas. Atidarykite, kad peržiūrėtumėte kainų istoriją</translation>
 <translation id="6830728435402077660">Nesaugu</translation>
@@ -2273,6 +2269,7 @@ Jei norite tęsti kompiuteryje, perjunkite į <ph name="OTHER_EMAIL" />. Gausite
 <translation id="8694281486652655615">Rodomas šis elementas</translation>
 <translation id="8696297579102085705">Siųsti į įrenginį</translation>
 <translation id="8697136149718343437">Perkelti adreso juostą į apačią</translation>
+<translation id="869891660844655955">Galiojimo data</translation>
 <translation id="8706253136355675497">Temperatūra</translation>
 <translation id="8706806585855470492">Galėsite bendrinti, prisijungti ir bendradarbiauti skirtukų grupėse</translation>
 <translation id="8709409604518538305">Skirtukai buvo uždaryti</translation>

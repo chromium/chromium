@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Näytä kaikki välilehdet välilehtiryhmässä</translation>
 <translation id="136942498637440594">Voit hakea kuvia ja näkemääsi sisältöä.</translation>
 <translation id="1373120905936431262">Lataa kuva, jonka haluat remiksata Nano Bananalla</translation>
-<translation id="1377321085342047638">Kortin numero</translation>
 <translation id="1377508275003315939">Salasanat</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}/{count} osoite}other{{position}/{count} osoitetta}}</translation>
 <translation id="1383876407941801731">Haku</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, organisaatiosi hallinnoima.</translation>
 <translation id="3580448612293054698">Päivitetäänkö <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tarjoudu kääntämään vierailla kielillä kirjoitettuja sivuja</translation>
-<translation id="3583726884554296148">Tallenna kortti Google-tilillesi, niin se täytetään automaattisesti tätä ja tulevia Chromessa tehtäviä ostoksia varten</translation>
 <translation id="3587482841069643663">Kaikki</translation>
 <translation id="3587885837929752825">Organisaatiosi rajoittaa, mitä voit tallentaa Google-tilillesi.</translation>
 <translation id="3588820906588687999">Avaa kuva uudessa välilehdessä</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Uutta</translation>
 <translation id="429074084062258019">{count,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
 <translation id="4294506173142861371">Kirjaudutaanko nimellä <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Skannaa kortti ja täytä tiedot automaattisesti</translation>
 <translation id="4302061870579014542">Aseta sijainti</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4306349443295056740">OCSP-allekirjoitus</translation>
@@ -1709,7 +1706,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6807287147325542056">Salasanat muissa sovelluksissa</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
 <translation id="681631578600400068">Tallenna ajokortti</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{{count} kirjanmerkkiä tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="6826004672264649705">Tätä tuotetta seurataan tällä hetkellä. Avaa nähdäksesi hintahistorian</translation>
 <translation id="6830728435402077660">Ei turvallinen</translation>
@@ -2273,6 +2269,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="8694281486652655615">Näyttää tämän kohteen</translation>
 <translation id="8696297579102085705">Lähetä laitteellesi</translation>
 <translation id="8697136149718343437">Siirrä osoitepalkki alareunaan</translation>
+<translation id="869891660844655955">Vanhenemispäivämäärä</translation>
 <translation id="8706253136355675497">Lämpötila</translation>
 <translation id="8706806585855470492">Voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="8709409604518538305">Välilehdet suljettiin</translation>

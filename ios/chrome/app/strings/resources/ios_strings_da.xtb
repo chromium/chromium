@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Vis alle faner i fanegruppen</translation>
 <translation id="136942498637440594">Du kan søge ved hjælp af billeder og det, du ser.</translation>
 <translation id="1373120905936431262">Upload et billede, der skal remixes med Nano Banana</translation>
-<translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Adgangskoder</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} af {count} adresse}one{{position} af {count} adresse}other{{position} af {count} adresser}}</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, som administreres af din organisation.</translation>
 <translation id="3580448612293054698">Vil du opdatere <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tilbyd at oversætte sider på andre sprog</translation>
-<translation id="3583726884554296148">Gem dit kort på din Google-konto for at udfylde kortoplysninger automatisk ved dette og fremtidige køb i Chrome</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Din organisation begrænser, hvad du kan gemme på din Google-konto.</translation>
 <translation id="3588820906588687999">Åbn billede på ny fane</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Nyheder</translation>
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
 <translation id="4294506173142861371">Vil du logge ind som <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Scan kort, og udfyld automatisk</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangskode­administrator</translation>
 <translation id="4306349443295056740">OCSP-signering</translation>
@@ -1709,7 +1706,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6807287147325542056">Adgangskoder i andre apps</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
 <translation id="681631578600400068">Gem kørekort</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
 <translation id="6826004672264649705">Der holdes øje med dette produkt. Åbn for at se prishistorikken</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -2273,6 +2269,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="8694281486652655615">Viser dette element</translation>
 <translation id="8696297579102085705">Send til din enhed</translation>
 <translation id="8697136149718343437">Flyt adresselinjen til bunden</translation>
+<translation id="869891660844655955">Udløbsdato</translation>
 <translation id="8706253136355675497">Temperatur</translation>
 <translation id="8706806585855470492">Du kan dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="8709409604518538305">Fanerne er blevet lukket</translation>

@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Εμφάνιση όλων των καρτελών στην ομάδα καρτελών</translation>
 <translation id="136942498637440594">Μπορείτε να αναζητήσετε εικόνες και αυτά που βλέπετε.</translation>
 <translation id="1373120905936431262">Ανεβάστε μια εικόνα για να τη διασκευάσετε με το Nano Banana</translation>
-<translation id="1377321085342047638">Αρ.κάρτας</translation>
 <translation id="1377508275003315939">Κωδικοί πρόσβασης</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} από {count} διεύθυνση}other{{position} από {count} διευθύνσεις}}</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, υπό τη διαχείριση του οργανισμού σας.</translation>
 <translation id="3580448612293054698">Ενημέρωση <ph name="ENTITY_TYPE" />;</translation>
 <translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
-<translation id="3583726884554296148">Αποθηκεύστε την κάρτα σας στον Λογαριασμό σας Google, για αυτόματη συμπλήρωσή της τόσο για αυτή την αγορά όσο και για μελλοντικές αγορές που πραγματοποιούνται στο Chrome</translation>
 <translation id="3587482841069643663">Όλες</translation>
 <translation id="3587885837929752825">Ο οργανισμός σας περιορίζει το περιεχόμενο που μπορείτε να αποθηκεύσετε στον Λογαριασμό σας Google.</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Τι νέο υπάρχει</translation>
 <translation id="429074084062258019">{count,plural, =1{Προσθήκη καρτέλας στην ομάδα}other{Προσθήκη καρτελών στην ομάδα}}</translation>
 <translation id="4294506173142861371">Σύνδεση ως <ph name="FIRST_NAME" />;</translation>
-<translation id="4300830875340617674">Σάρωση κάρτας και αυτόματη συμπλήρωση</translation>
 <translation id="4302061870579014542">Ορισμός θέσης</translation>
 <translation id="4304713468139749426">Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="4306349443295056740">Υπογραφή OCSP</translation>
@@ -1710,7 +1707,6 @@
 <translation id="6807287147325542056">Κωδικοί πρόσβασης σε άλλες εφαρμογές</translation>
 <translation id="681368974849482173">Δημιουργήθηκε ένα στοιχείο</translation>
 <translation id="681631578600400068">Αποθήκευση πληροφοριών διπλώματος οδήγησης</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον Λογαριασμό σας Google {email}}other{{count} σελιδοδείκτες αποθηκεύτηκαν στον Λογαριασμό σας Google {email}}}</translation>
 <translation id="6826004672264649705">Αυτή τη στιγμή παρακολουθείτε αυτό το προϊόν. Ανοίξτε για να δείτε το ιστορικό τιμών</translation>
 <translation id="6830728435402077660">Μη ασφαλές</translation>
@@ -2274,6 +2270,7 @@
 <translation id="8694281486652655615">Εμφανίζει αυτό το στοιχείο</translation>
 <translation id="8696297579102085705">Αποστολή στη συσκευή σας</translation>
 <translation id="8697136149718343437">Μετακίνηση γραμμής διευθύνσεων στο κάτω μέρος</translation>
+<translation id="869891660844655955">Ημερομηνία λήξης</translation>
 <translation id="8706253136355675497">Θερμοκρασία</translation>
 <translation id="8706806585855470492">Θα μπορείτε να μοιραστείτε, να συμμετάσχετε και να συνεργαστείτε σε ομάδες καρτελών</translation>
 <translation id="8709409604518538305">Οι καρτέλες έκλεισαν</translation>

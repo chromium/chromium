@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">ಟ್ಯಾಬ್‌ ಗುಂಪಿನಲ್ಲಿ ಎಲ್ಲಾ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="136942498637440594">ನೀವು ಚಿತ್ರಗಳನ್ನು ಮತ್ತು ನೀವು ನೋಡುವುದನ್ನು ಹುಡುಕಬಹುದು.</translation>
 <translation id="1373120905936431262">Nano Banana ಮೂಲಕ ರೀಮಿಕ್ಸ್ ಮಾಡಲು ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ</translation>
-<translation id="1377321085342047638">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="1377508275003315939">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1381022135873211423">{count,plural, =1{{count} ರಲ್ಲಿ {position} ವಿಳಾಸ}one{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}other{{count} ರಲ್ಲಿ {position} ವಿಳಾಸಗಳು}}</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="3581564640715911333">ಪುಟಗಳನ್ನು ಇತರ ಭಾಷೆಗಳಲ್ಲಿ ಅನುವಾದಿಸಲು ಅವಕಾಶ ನೀಡಿ</translation>
-<translation id="3583726884554296148">ಈ ಖರೀದಿ ಮತ್ತು Chrome ನಲ್ಲಿ ಮಾಡಿದ ಭವಿಷ್ಯದ ಖರೀದಿಗಳಿಗಾಗಿ ಅದನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಲು ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
 <translation id="3587885837929752825">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಏನನ್ನು ಸಂಗ್ರಹಿಸಬಹುದು ಎಂಬುದನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ಬಂಧಿಸುತ್ತದೆ.</translation>
 <translation id="3588820906588687999">ಚಿತ್ರವನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">ಹೊಸತೇನಿದೆ</translation>
 <translation id="429074084062258019">{count,plural, =1{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್ ಸೇರಿಸಿ}one{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}other{ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸೇರಿಸಿ}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕೆ?</translation>
-<translation id="4300830875340617674">ಕಾರ್ಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಮತ್ತು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="4302061870579014542">ಸ್ಥಾನವನ್ನು ಸೆಟ್‌ ಮಾಡಿ</translation>
 <translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="4306349443295056740">OCSP ಸಹಿ</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="681368974849482173">ಐಟಂ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="681631578600400068">ಡ್ರೈವಿಂಗ್ ಲೈಸೆನ್ಸ್ ಅನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆ {email} ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="6826004672264649705">ಪ್ರಸ್ತುತ ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಬೆಲೆ ಇತಿಹಾಸವನ್ನು ನೋಡಲು ತೆರೆಯಿರಿ</translation>
 <translation id="6830728435402077660">ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">ಈ ಐಟಂ ಅನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="8696297579102085705">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8697136149718343437">ವಿಳಾಸ ಪಟ್ಟಿ‌ಯನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
+<translation id="869891660844655955">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ</translation>
 <translation id="8706253136355675497">ತಾಪಮಾನ</translation>
 <translation id="8706806585855470492">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುವ, ಸೇರಿಕೊಳ್ಳುವ ಮತ್ತು ಅವುಗಳಲ್ಲಿ ಕೊಲಾಬೊರೇಟ್ ಮಾಡುವ ಅವಕಾಶ ನಿಮಗೆ ದೊರೆಯುತ್ತದೆ</translation>
 <translation id="8709409604518538305">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>

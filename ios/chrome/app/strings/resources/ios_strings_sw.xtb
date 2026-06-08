@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Onyesha vichupo vyote kwenye kikundi cha vichupo</translation>
 <translation id="136942498637440594">Unaweza kutafuta picha na unachoona.</translation>
 <translation id="1373120905936431262">Pakia picha ili uboreshe ukitumia Nano Banana</translation>
-<translation id="1377321085342047638">Nambari ya Kadi</translation>
 <translation id="1377508275003315939">Manenosiri</translation>
 <translation id="1381022135873211423">{count,plural, =1{Anwani ya {position} kati ya {count}}other{Anwani ya {position} kati ya {count}}}</translation>
 <translation id="1383876407941801731">Tafuta</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, inadhibitiwa na shirika lako.</translation>
 <translation id="3580448612293054698">Ungependa kusasisha <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Jitolee kutafsiri kurasa katika lugha nyingine</translation>
-<translation id="3583726884554296148">Hifadhi kadi yako kwenye Akaunti yako ya Google ili uijaze kiotomatiki kwa ununuzi huu na ununuzi wa baadaye unaofanya kwenye Chrome</translation>
 <translation id="3587482841069643663">Zote</translation>
 <translation id="3587885837929752825">Shirika lako linadhibiti unachoweza kuhifadhi kwenye Akaunti yako ya Google.</translation>
 <translation id="3588820906588687999">Fungua Picha Katika Kichupo Kipya</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Mambo mapya</translation>
 <translation id="429074084062258019">{count,plural, =1{Weka Kichupo kwenye Kikundi}other{Weka Vichupo kwenye Kikundi}}</translation>
 <translation id="4294506173142861371">Ungependa kuingia katika akaunti kama <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Changanua kadi kisha ujaze kiotomatiki</translation>
 <translation id="4302061870579014542">Weka nafasi</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="4306349443295056740">Kuweka Saini ya OCSP</translation>
@@ -1709,7 +1706,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6807287147325542056">Manenosiri katika programu nyingine</translation>
 <translation id="681368974849482173">Umeunda kipengee</translation>
 <translation id="681631578600400068">Hifadhi maelezo ya leseni ya udereva</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Alamisho imehifadhiwa kwenye Akaunti yako ya Google, {email}}other{Alamisho {count}zimehifadhiwa kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="6826004672264649705">Unafuatilia bidhaa hii kwa sasa. Fungua ili uone historia ya bei</translation>
 <translation id="6830728435402077660">Si salama</translation>
@@ -2273,6 +2269,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="8694281486652655615">Huonyesha kipengee hiki</translation>
 <translation id="8696297579102085705">Tuma kwenye kifaa chako</translation>
 <translation id="8697136149718343437">Sogeza sehemu ya anwani kwenda chini</translation>
+<translation id="869891660844655955">Muda wake unakwisha tarehe</translation>
 <translation id="8706253136355675497">Halijoto</translation>
 <translation id="8706806585855470492">Utaweza kuruhusu ufikiaji, kujiunga na kushirikiana katika vikundi vya vichupo</translation>
 <translation id="8709409604518538305">Vichupo vilifungwa</translation>

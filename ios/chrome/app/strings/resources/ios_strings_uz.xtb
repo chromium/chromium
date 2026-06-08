@@ -6,6 +6,7 @@
 <translation id="1005230401424685968">YYYY</translation>
 <translation id="1013952917065545813">Keyingi qaytganingizda oxirgi yopilgan varaqlarni ochishingiz mumkin</translation>
 <translation id="1016495303386450659">Yangilandi</translation>
+<translation id="1018804590490383958">Skanerlash va avtomatik kiritish</translation>
 <translation id="1019990162050689579">Gemini ilovasidagi faoliyat</translation>
 <translation id="102916930470544692">Kalit</translation>
 <translation id="1030376737535466765">Parollar menejerini ochish</translation>
@@ -111,7 +112,6 @@
 <translation id="1369286077209859800">Barcha varaqlarni guruhda chiqarish</translation>
 <translation id="136942498637440594">Rasmlar va koʻrganlaringizni qidirishingiz mumkin.</translation>
 <translation id="1373120905936431262">Nano Banana yordamida remiks yaratish uchun rasm yuklang</translation>
-<translation id="1377321085342047638">Karta raqami</translation>
 <translation id="1377508275003315939">Parollar</translation>
 <translation id="1381022135873211423">{count,plural, =1{Manzil: {position}/{count}}other{Manzil: {position}/{count}}}</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
@@ -743,7 +743,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" /> hisobi tashkilot boshqaruvida.</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> yangilansinmi?</translation>
 <translation id="3581564640715911333">Boshqa tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
-<translation id="3583726884554296148">Bu xarid va Chrome orqali kelgusi xaridlarda avtomatik kiritish uchun kartangizni Google hisobingizga saqlang</translation>
 <translation id="3587482841069643663">Barchasi</translation>
 <translation id="3587885837929752825">Tashkilot Google hisobida nimalar saqlanishi mumkinligini cheklagan.</translation>
 <translation id="3588820906588687999">Tasvirni yangi tabda ochish</translation>
@@ -940,7 +939,6 @@
 <translation id="428768789042547925">Yangi xususiyatlar</translation>
 <translation id="429074084062258019">{count,plural, =1{Varaqni guruhga kiritish}other{Varaqlarni guruhga kiritish}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> hisobidan kirilsinmi?</translation>
-<translation id="4300830875340617674">Kartani skanerlash va avtomatik kiritish</translation>
 <translation id="4302061870579014542">Joylashuvni tanlash</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4306349443295056740">OCSP imzolash</translation>
@@ -1542,6 +1540,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6301767200000930965">Aa</translation>
 <translation id="630308129961693966">Manzillar qatori joyini tanlang</translation>
 <translation id="6307241780749477694">Bu qurilmadagi barcha parollaringizni olish uchun shaxsingizni tasdiqlang</translation>
+<translation id="6307792728709337290">Bu xarid va Chrome orqali kelgusi xaridlarda avtomatik kiritish uchun kartangizni Google hisobingizga saqlang.</translation>
 <translation id="6316141353357700666">Roʻyxatdagi ishlatiladigan parolni tanlang.</translation>
 <translation id="6321526113093607004">Bukmarklash</translation>
 <translation id="6327249202318869726">Hisobingiz uchun Gemini faolsizlantirilgan. Batafsil axborot uchun administratorga murojaat qiling.</translation>
@@ -1709,7 +1708,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6807287147325542056">Boshqa ilovalardagi parollar</translation>
 <translation id="681368974849482173">Saqlandi</translation>
 <translation id="681631578600400068">Haydovchilik guvohnomasini saqlash</translation>
-<translation id="6820686453637990663">CVC kod</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bukmark Google hisobingizga ({email}) saqlandi}other{{count} ta bukmark Google hisobingizga ({email}) saqlandi}}</translation>
 <translation id="6826004672264649705">Hozirda bu mahsulot kuzatilmoqda. Narxlar tarixini koʻrish uchun oching</translation>
 <translation id="6830728435402077660">Xavfsiz emas</translation>
@@ -2273,6 +2271,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="8694281486652655615">Bu elementni koʻrsatadi</translation>
 <translation id="8696297579102085705">Qurilmangizga yuborish</translation>
 <translation id="8697136149718343437">Manzillar qatorini pastga olish</translation>
+<translation id="869891660844655955">Tugash muddati</translation>
 <translation id="8706253136355675497">Harorat</translation>
 <translation id="8706806585855470492">Varaqlar guruhini ulashish, ularga qoʻshilish hamda boshqalar bilan birga ishlash imkoniyatlarini olasiz</translation>
 <translation id="8709409604518538305">Varaqlar yopiladi</translation>

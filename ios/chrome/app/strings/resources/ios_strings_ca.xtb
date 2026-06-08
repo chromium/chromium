@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">Mostra totes les pestanyes del grup de pestanyes</translation>
 <translation id="136942498637440594">Pots cercar imatges i el que veus.</translation>
 <translation id="1373120905936431262">Penja una imatge per fer-ne un remix amb Nano Banana</translation>
-<translation id="1377321085342047638">Número de targeta</translation>
 <translation id="1377508275003315939">Contrasenyes</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} d’{count} adreça}other{{position} de {count} adreces}}</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="3580448612293054698">Vols actualitzar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
-<translation id="3583726884554296148">Desa la targeta al teu Compte de Google perquè s'empleni automàticament en aquesta compra i en les que facis en el futur a Chrome</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3587885837929752825">La teva organització limita el que pots desar al teu Compte de Google.</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">Novetats</translation>
 <translation id="429074084062258019">{count,plural, =1{Afegeix una pestanya al grup}other{Afegeix pestanyes al grup}}</translation>
 <translation id="4294506173142861371">Vols iniciar la sessió com a <ph name="FIRST_NAME" />?</translation>
-<translation id="4300830875340617674">Escaneja la targeta i emplena automàticament</translation>
 <translation id="4302061870579014542">Defineix la posició</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
 <translation id="4306349443295056740">Signatura OCSP</translation>
@@ -1709,7 +1706,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6807287147325542056">Contrasenyes en altres aplicacions</translation>
 <translation id="681368974849482173">S'ha creat un element.</translation>
 <translation id="681631578600400068">Desa el permís de conduir</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google, {email}}other{S'han desat {count} adreces d'interès al teu Compte de Google, {email}}}</translation>
 <translation id="6826004672264649705">Actualment s'està fent un seguiment d'aquest producte. Obre-ho per veure l'historial de preus.</translation>
 <translation id="6830728435402077660">No segura</translation>
@@ -2273,6 +2269,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="8694281486652655615">Mostra aquest element</translation>
 <translation id="8696297579102085705">Envia al teu dispositiu</translation>
 <translation id="8697136149718343437">Mou la barra d'adreces a la part inferior</translation>
+<translation id="869891660844655955">Data de caducitat</translation>
 <translation id="8706253136355675497">Temperatura</translation>
 <translation id="8706806585855470492">Podràs compartir grups de pestanyes, unir-t'hi i col·laborar-hi</translation>
 <translation id="8709409604518538305">Les pestanyes s'han tancat</translation>

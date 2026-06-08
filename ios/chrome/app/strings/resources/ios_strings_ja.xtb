@@ -111,7 +111,6 @@
 <translation id="1369286077209859800">タブグループにすべてのタブを表示</translation>
 <translation id="136942498637440594">画像や見たものを検索できます。</translation>
 <translation id="1373120905936431262">画像をアップロードして Nano Banana でリミックスできます</translation>
-<translation id="1377321085342047638">カード番号</translation>
 <translation id="1377508275003315939">パスワード</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position}/{count} 件の住所}other{{position}/{count} 件の住所}}</translation>
 <translation id="1383876407941801731">検索</translation>
@@ -743,7 +742,6 @@
 <translation id="3578866308944526475"><ph name="EMAIL" />、組織によって管理されています。</translation>
 <translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> を更新しますか？</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねます</translation>
-<translation id="3583726884554296148">カードを Google アカウントに保存すると、今回および今後の Chrome での購入時に自動入力できます</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3587885837929752825">Google アカウントに保存できる内容は組織によって制限されています。</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
@@ -940,7 +938,6 @@
 <translation id="428768789042547925">最新情報</translation>
 <translation id="429074084062258019">{count,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
 <translation id="4294506173142861371"><ph name="FIRST_NAME" /> としてログインしますか？</translation>
-<translation id="4300830875340617674">カードをスキャンして自動入力</translation>
 <translation id="4302061870579014542">位置を設定</translation>
 <translation id="4304713468139749426">パスワード マネージャー</translation>
 <translation id="4306349443295056740">OCSP 署名</translation>
@@ -1709,7 +1706,6 @@
 <translation id="6807287147325542056">他のアプリのパスワード</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
 <translation id="681631578600400068">運転免許証を保存</translation>
-<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）に　{count}　件のブックマークを保存しました}}</translation>
 <translation id="6826004672264649705">現在この商品を追跡しています。開くと価格の推移を確認できます。</translation>
 <translation id="6830728435402077660">保護されていません</translation>
@@ -2273,6 +2269,7 @@
 <translation id="8694281486652655615">このアイテムを表示</translation>
 <translation id="8696297579102085705">お使いのデバイスに送信</translation>
 <translation id="8697136149718343437">アドレスバーを一番下に移動</translation>
+<translation id="869891660844655955">有効期限</translation>
 <translation id="8706253136355675497">温度</translation>
 <translation id="8706806585855470492">タブグループの共有、参加、共同作業を行うことができます</translation>
 <translation id="8709409604518538305">タブを閉じました</translation>
