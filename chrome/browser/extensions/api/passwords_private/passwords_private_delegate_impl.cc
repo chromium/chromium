@@ -355,7 +355,10 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
               profile,
               ServiceAccessType::EXPLICIT_ACCESS),
           MaybeGetPasskeyModel(profile)),
-      password_manager_porter_(std::make_unique<PasswordManagerPorter>(
+      password_manager_porter_(
+          std::make_unique<PasswordManagerPorter>(profile,
+                                                  &saved_passwords_presenter_)),
+      password_export_controller_(std::make_unique<PasswordExportController>(
           profile,
           &saved_passwords_presenter_,
           base::BindRepeating(
@@ -856,7 +859,7 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
 
 api::passwords_private::ExportProgressStatus
 PasswordsPrivateDelegateImpl::GetExportProgressStatus() {
-  return ConvertStatus(password_manager_porter_->GetExportProgressStatus());
+  return ConvertStatus(password_export_controller_->GetExportProgressStatus());
 }
 
 bool PasswordsPrivateDelegateImpl::IsAccountStorageActive() {
@@ -1267,7 +1270,7 @@ void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
     return;
   }
 
-  bool accepted = password_manager_porter_->Export(web_contents);
+  bool accepted = password_export_controller_->Export(web_contents);
   std::move(accepted_callback)
       .Run(accepted ? std::string() : kExportInProgress);
 }

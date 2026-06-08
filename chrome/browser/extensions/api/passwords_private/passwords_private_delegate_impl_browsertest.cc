@@ -143,15 +143,6 @@ using MockRequestCredentialsDetailsCallback =
 
 class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
  public:
-  MOCK_METHOD(bool,
-              Export,
-              (base::WeakPtr<content::WebContents> web_contents),
-              (override));
-  MOCK_METHOD(void, CancelExport, (), (override));
-  MOCK_METHOD(password_manager::ExportProgressStatus,
-              GetExportProgressStatus,
-              (),
-              (override));
   MOCK_METHOD(void,
               Import,
               (content::WebContents * web_contents,
@@ -187,16 +178,6 @@ class TestEnclaveManager : public MockEnclaveManager {
 
 class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
  public:
-  bool Export(base::WeakPtr<content::WebContents> web_contents) override {
-    return true;
-  }
-
-  void CancelExport() override {}
-
-  password_manager::ExportProgressStatus GetExportProgressStatus() override {
-    return password_manager::ExportProgressStatus::kSucceeded;
-  }
-
   void Import(content::WebContents* web_contents,
               PasswordForm::Store to_store,
               ImportResultsCallback results_callback) override {

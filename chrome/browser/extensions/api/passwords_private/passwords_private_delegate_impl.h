@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/api/passwords_private/password_check_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
+#include "chrome/browser/ui/passwords/settings/password_export_controller.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_porter.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/common/extensions/api/passwords_private.h"
@@ -300,6 +301,8 @@ class PasswordsPrivateDelegateImpl
 
   // Used to control the export and import flows.
   std::unique_ptr<PasswordManagerPorterInterface> password_manager_porter_;
+  std::unique_ptr<PasswordExportControllerInterface>
+      password_export_controller_;
 
   base::FilePath last_exported_path_;
 

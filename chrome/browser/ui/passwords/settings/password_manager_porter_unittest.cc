@@ -27,8 +27,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/export/export_progress_status.h"
-#include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -153,39 +151,16 @@ class FakeCancellingSelectFileDialogFactory
  public:
   FakeCancellingSelectFileDialogFactory() = default;
 
-  TestSelectFileDialogFactory& operator=(const TestSelectFileDialogFactory&) =
-      delete;
+  FakeCancellingSelectFileDialogFactory(
+      const FakeCancellingSelectFileDialogFactory&) = delete;
+  FakeCancellingSelectFileDialogFactory& operator=(
+      const FakeCancellingSelectFileDialogFactory&) = delete;
 
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override {
     return new FakeCancellingSelectFileDialog(listener, nullptr);
   }
-};
-
-class MockPasswordManagerExporter
-    : public password_manager::PasswordManagerExporter {
- public:
-  MockPasswordManagerExporter()
-      : password_manager::PasswordManagerExporter(
-            nullptr,
-            base::BindRepeating(
-                [](const password_manager::PasswordExportInfo&) -> void {}),
-            base::MockOnceClosure().Get()) {}
-
-  MockPasswordManagerExporter(const MockPasswordManagerExporter&) = delete;
-  MockPasswordManagerExporter& operator=(const MockPasswordManagerExporter&) =
-      delete;
-
-  ~MockPasswordManagerExporter() override = default;
-
-  MOCK_METHOD(void, PreparePasswordsForExport, (), (override));
-  MOCK_METHOD(void, Cancel, (), (override));
-  MOCK_METHOD(void, SetDestination, (const base::FilePath&), (override));
-  MOCK_METHOD(password_manager::ExportProgressStatus,
-              GetProgressStatus,
-              (),
-              (override));
 };
 
 // A RAII helper that waits for the SavedPasswordsPresenter to notify that
@@ -254,9 +229,8 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<TestSelectFileDialogFactory>(temp_file_path()));
 
     profile_ = CreateTestingProfile();
-    porter_ = std::make_unique<PasswordManagerPorter>(
-        profile_.get(), &presenter(),
-        /*on_export_progress_callback=*/base::DoNothing());
+    porter_ =
+        std::make_unique<PasswordManagerPorter>(profile_.get(), &presenter());
 
     auto importer =
         std::make_unique<password_manager::PasswordImporter>(&presenter_);
@@ -335,70 +309,6 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
   base::ScopedTempDir directory_;
   MockImportFileDeletion import_file_deletion_callback_;
 };
-
-TEST_F(PasswordManagerPorterTest, PasswordExport) {
-  std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
-
-  EXPECT_CALL(*mock_password_manager_exporter_, GetProgressStatus())
-      .WillRepeatedly(
-          Return(password_manager::ExportProgressStatus::kNotStarted));
-  EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
-  EXPECT_CALL(*mock_password_manager_exporter_,
-              SetDestination(temp_file_path()));
-
-  porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  EXPECT_TRUE(porter().Export(web_contents()->GetWeakPtr()));
-}
-
-TEST_F(PasswordManagerPorterTest, ExportInProgressPreventsSubsequentExport) {
-  auto mock_exporter_ptr =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
-  auto* mock_exporter = mock_exporter_ptr.get();
-
-  // Set up the mock to claim it's already working.
-  EXPECT_CALL(*mock_exporter, GetProgressStatus())
-      .WillRepeatedly(
-          Return(password_manager::ExportProgressStatus::kInProgress));
-
-  porter().SetExporterForTesting(std::move(mock_exporter_ptr));
-
-  // Try to start another export. It should return false immediately.
-  EXPECT_FALSE(porter().Export(web_contents()->GetWeakPtr()));
-}
-
-TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<FakeCancellingSelectFileDialogFactory>());
-
-  std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
-
-  EXPECT_CALL(*mock_password_manager_exporter_, GetProgressStatus())
-      .WillRepeatedly(
-          Return(password_manager::ExportProgressStatus::kNotStarted));
-  EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
-  EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
-
-  porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter().Export(web_contents()->GetWeakPtr());
-}
-
-TEST_F(PasswordManagerPorterTest, CancelExport) {
-  std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
-      std::make_unique<StrictMock<MockPasswordManagerExporter>>();
-
-  EXPECT_CALL(*mock_password_manager_exporter_, GetProgressStatus())
-      .WillRepeatedly(
-          Return(password_manager::ExportProgressStatus::kNotStarted));
-  EXPECT_CALL(*mock_password_manager_exporter_, PreparePasswordsForExport());
-  EXPECT_CALL(*mock_password_manager_exporter_, SetDestination(_));
-  EXPECT_CALL(*mock_password_manager_exporter_, Cancel());
-
-  porter().SetExporterForTesting(std::move(mock_password_manager_exporter_));
-  porter().Export(web_contents()->GetWeakPtr());
-  porter().CancelExport();
-}
 
 TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
   ui::SelectFileDialog::SetFactory(

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_INTERFACE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_INTERFACE_H_
 
-#include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
 
@@ -21,13 +20,6 @@ class PasswordManagerPorterInterface {
 
   PasswordManagerPorterInterface() = default;
   virtual ~PasswordManagerPorterInterface() = default;
-
-  // Triggers passwords export flow for the given |web_contents|.
-  virtual bool Export(base::WeakPtr<content::WebContents> web_contents) = 0;
-
-  virtual void CancelExport() = 0;
-
-  virtual password_manager::ExportProgressStatus GetExportProgressStatus() = 0;
 
   // Triggers passwords import flow for the given |web_contents|.
   // Passwords will be imported into the |to_store|.

@@ -6,6 +6,8 @@ assert(!is_android, "Password import/export file selection are desktop-only.")
 
 source_set("settings") {
   sources = [
+    "password_export_controller.h",
+    "password_export_controller_interface.h",
     "password_manager_porter.h",
     "password_manager_porter_interface.h",
   ]
@@ -21,7 +23,10 @@ source_set("settings") {
 }
 
 source_set("impl") {
-  sources = [ "password_manager_porter.cc" ]
+  sources = [
+    "password_export_controller.cc",
+    "password_manager_porter.cc",
+  ]
   deps = [
     ":settings",
     "//chrome/browser/profiles:profile",
@@ -38,7 +43,10 @@ source_set("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "password_manager_porter_unittest.cc" ]
+  sources = [
+    "password_export_controller_unittest.cc",
+    "password_manager_porter_unittest.cc",
+  ]
   deps = [
     ":settings",
     "//base",
