@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.util.CommonResources;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.InputStream;
@@ -165,6 +166,7 @@ public class AwContentsClientFaviconTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @CommandLineFlags.Add({"enable-features=WebViewSetDownloadFaviconsEnabled"})
     public void testShouldDownloadFaviconFalse() throws Throwable {
         final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
 

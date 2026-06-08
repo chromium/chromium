@@ -70,6 +70,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReducedSeedRequestPeriod,
     &features::kWebViewRemoveInstantAppSupport,
     &features::kWebViewRendererKeepAlive,
+    &features::kWebViewSetDownloadFaviconsEnabled,
     &features::kWebViewSkipInterceptsForPrefetch,
     &features::kWebViewStaticMethodsNotTriggerStartup,
     &features::kWebViewTestFeature,

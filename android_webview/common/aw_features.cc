@@ -306,4 +306,8 @@ BASE_FEATURE(kWebViewRemoveInstantAppSupport,
 
 // Kill switch for the WebView Navigate method.
 BASE_FEATURE(kWebViewNavigate, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill switch for WebSettings setShouldDownloadFavicons method.
+BASE_FEATURE(kWebViewSetDownloadFaviconsEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace android_webview::features

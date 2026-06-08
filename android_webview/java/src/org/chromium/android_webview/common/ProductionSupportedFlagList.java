@@ -1377,6 +1377,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "QuicIgnoreRedundantOnNetworkMadeDefault",
                 "When enabled, Quic will ignore redundant OnNetworkMadeDefault calls."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SET_DOWNLOAD_FAVICONS_ENABLED,
+                "Enables the WebSettings setDownloadFaviconsEnabled method"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

@@ -79,6 +79,7 @@ BASE_DECLARE_FEATURE(kPostChromiumStartupInWebViewConstructor);
 BASE_DECLARE_FEATURE(kWebViewPersistHttpServerProperties);
 BASE_DECLARE_FEATURE(kWebViewRemoveInstantAppSupport);
 BASE_DECLARE_FEATURE(kWebViewNavigate);
+BASE_DECLARE_FEATURE(kWebViewSetDownloadFaviconsEnabled);
 }  // namespace android_webview::features
 
 #endif  // ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_

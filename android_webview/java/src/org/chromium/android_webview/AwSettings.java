@@ -671,6 +671,10 @@ public class AwSettings {
     public void setDownloadFaviconsEnabled(boolean enabled) {
         if (TRACE) Log.i(TAG, "setDownloadFaviconsEnabled=" + enabled);
         synchronized (mAwSettingsLock) {
+            if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_SET_DOWNLOAD_FAVICONS_ENABLED)) {
+                // no-op kill switch for setDownloadFaviconsEnabled
+                return;
+            }
             mDownloadFaviconsEnabled = enabled;
             mEventHandler.updateDownloadFaviconsEnabledLocked();
         }
