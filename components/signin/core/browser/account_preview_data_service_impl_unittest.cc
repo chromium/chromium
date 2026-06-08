@@ -151,6 +151,48 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   EXPECT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 }
 
+TEST_F(AccountPreviewDataServiceTest, NoFetchOnStartupIfTimerNotExpired) {
+  // Destroy the service created in SetUp.
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  // Make an account available.
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
+
+  // Simulate tokens not loaded yet.
+  identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Set the timer last update pref to now, so the timer does NOT fire.
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
+
+  // Re-create the service.
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &prefs_,
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN);
+
+  // Verify that it did NOT fetch yet.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
+
+  // Mock successful fetch in case a fetch is incorrectly started.
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  // Simulate tokens loaded.
+  identity_test_env_.ReloadAccountsFromDisk();
+  EXPECT_TRUE(identity_test_env_.identity_manager()->AreRefreshTokensLoaded());
+  EXPECT_TRUE(identity_test_env_.identity_manager()->HasAccountWithRefreshToken(
+      account_info.account_id));
+
+  // Verify that it still did NOT fetch because the timer didn't fire and we
+  // shouldn't fetch on startup token loading.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
+}
+
 TEST_F(AccountPreviewDataServiceTest, ClearsInvalidDataOnCookieUpdate) {
   // 1. Setup: Make two accounts available.
   AccountInfo account1 =

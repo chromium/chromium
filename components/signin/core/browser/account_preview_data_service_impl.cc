@@ -57,7 +57,12 @@ AccountPreviewDataServiceImpl::GetAccountPreviewData(const GaiaId& gaia_id) {
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  FetchAccountPreviewData(account_info.gaia);
+  // This prevents startup refresh token updates from triggering unexpected
+  // fetching requests. Startup should only rely on the repeating timer and
+  // refresh all accounts preview data.
+  if (identity_manager_->AreRefreshTokensLoaded()) {
+    FetchAccountPreviewData(account_info.gaia);
+  }
 }
 
 void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
@@ -175,6 +180,7 @@ void AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData() {
 void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
     const GaiaId& gaia_id) {
   CHECK(identity_manager_);
+  CHECK(identity_manager_->AreRefreshTokensLoaded());
 
   // TODO(crbug.com/510760810): Consider adding the retry logic while an active
   // fetch is already in flight and the connection is lost.
