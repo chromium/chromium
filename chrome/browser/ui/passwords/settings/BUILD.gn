@@ -29,6 +29,7 @@ source_set("impl") {
   ]
   deps = [
     ":settings",
+    "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/common:constants",

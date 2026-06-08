@@ -105,8 +105,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       content::WebContents* web_contents,
       AuthenticationCallback callback) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
-  void ShowExportedFileInShell(content::WebContents* web_contents,
-                               std::string file_path) override;
+  void ShowLastExportedFileInShell(content::WebContents* web_contents) override;
   void ChangePasswordManagerPin(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;

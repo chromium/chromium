@@ -144,8 +144,7 @@ class PasswordsPrivateDelegateImpl
       content::WebContents* web_contents,
       AuthenticationCallback callback) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
-  void ShowExportedFileInShell(content::WebContents* web_contents,
-                               std::string file_path) override;
+  void ShowLastExportedFileInShell(content::WebContents* web_contents) override;
   void ChangePasswordManagerPin(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
@@ -299,13 +298,11 @@ class PasswordsPrivateDelegateImpl
   // Used to add/edit passwords and to create |password_check_delegate_|.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
-  // Used to control the export and import flows.
+  // Used to control the import and export flows.
   std::unique_ptr<PasswordImportControllerInterface>
       password_import_controller_;
   std::unique_ptr<PasswordExportControllerInterface>
       password_export_controller_;
-
-  base::FilePath last_exported_path_;
 
   PasswordAccessAuthTimeoutHandler auth_timeout_handler_;
 

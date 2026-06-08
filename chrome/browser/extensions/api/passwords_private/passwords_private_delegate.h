@@ -281,8 +281,8 @@ class PasswordsPrivateDelegate
   virtual void ShowAddShortcutDialog(content::WebContents* web_contents) = 0;
 
   // Shows the file with the exported passwords in OS shell.
-  virtual void ShowExportedFileInShell(content::WebContents* web_contents,
-                                       std::string file_path) = 0;
+  virtual void ShowLastExportedFileInShell(
+      content::WebContents* web_contents) = 0;
 
   // Starts the flow for changing the password manager PIN.
   virtual void ChangePasswordManagerPin(

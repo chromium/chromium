@@ -464,9 +464,8 @@ void TestPasswordsPrivateDelegate::ShowAddShortcutDialog(
   add_shortcut_dialog_shown_ = true;
 }
 
-void TestPasswordsPrivateDelegate::ShowExportedFileInShell(
-    content::WebContents* web_contents,
-    std::string file_path) {
+void TestPasswordsPrivateDelegate::ShowLastExportedFileInShell(
+    content::WebContents* web_contents) {
   exported_file_shown_in_shell_ = true;
 }
 
