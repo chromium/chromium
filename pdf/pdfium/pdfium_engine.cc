@@ -5349,37 +5349,17 @@ void PDFiumEngine::DrawText(int page_index,
   }
 }
 
-void PDFiumEngine::UpdateTextActiveAndInvalidate(InkTextId id, bool active) {
-  auto it = ink_text_data_.find(id);
-  CHECK(it != ink_text_data_.end());
-
-  int page_index = it->second.page_index;
-  PDFiumPage* pdfium_page = GetPage(page_index);
-  CHECK(pdfium_page);
-  FPDF_PAGE page = pdfium_page->GetPage();
-  CHECK(page);
-
-  gfx::Rect invalidate_rect;
-  for (FPDF_PAGEOBJECT page_object : it->second.page_objects) {
-    bool result = FPDFPageObj_SetIsActive(page_object, active);
-    CHECK(result);
-
-    std::optional<PdfRect> rect = GetPageObjectBounds(page_object);
-    CHECK(rect.has_value());
-    invalidate_rect.Union(pdfium_page->PageToScreen(GetVisibleRect().origin(),
-                                                    current_zoom_, rect.value(),
-                                                    GetCurrentOrientation()));
+void PDFiumEngine::UpdateTextActiveAndInvalidate(TextId id, bool active) {
+  if (std::holds_alternative<InkTextId>(id)) {
+    auto it = ink_text_data_.find(std::get<InkTextId>(id));
+    CHECK(it != ink_text_data_.end());
+    UpdateTextActiveAndInvalidateHelper(it->second, active);
+    return;
   }
 
-  if (!invalidate_rect.IsEmpty()) {
-    // Expand the invalidation rect to account for any rounding errors that may
-    // have occurred.
-    invalidate_rect.Outset(1);
-    client_->Invalidate(invalidate_rect);
-  }
-
-  ink_edited_pages_needing_regeneration_.insert(page_index);
-  GetPage(page_index)->ReloadTextPage();
+  auto it = loaded_ink_text_data_.find(std::get<InkLoadedTextId>(id));
+  CHECK(it != loaded_ink_text_data_.end());
+  UpdateTextActiveAndInvalidateHelper(it->second, active);
 }
 
 gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
@@ -5513,8 +5493,7 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
   return page_shape_map;
 }
 
-DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf(
-    GenerateTextIdCallback generate_text_id_callback) {
+DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf() {
   DocumentInkTextBoxesMap document_textboxes;
   for (size_t i = 0; i < pages_.size(); ++i) {
     PDFiumPage* page = pages_[i].get();
@@ -5528,10 +5507,10 @@ DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf(
     page_textboxes.reserve(page_results.size());
 
     for (auto& result : page_results) {
-      InkTextId ink_text_id = generate_text_id_callback.Run();
-      result.textbox.ink_text_id = ink_text_id;
-      ink_text_data_.insert(
-          {ink_text_id, InkTextData(i, std::move(result.text_objects))});
+      InkLoadedTextId loaded_text_id(next_ink_loaded_text_id_++);
+      result.textbox.ink_loaded_text_id = loaded_text_id;
+      loaded_ink_text_data_.insert(
+          {loaded_text_id, InkTextData(i, std::move(result.text_objects))});
       page_textboxes.push_back(std::move(result.textbox));
 
       // Note that the textbox IDs in the PDF are ONLY used for grouping
@@ -5664,9 +5643,45 @@ bool PDFiumEngine::PageStillHasEdits(int page_index) const {
                              [page_index](const auto& it) {
                                return it.second.page_index == page_index;
                              }) ||
-         std::ranges::any_of(ink_text_data_, [page_index](const auto& it) {
-           return it.second.page_index == page_index;
-         });
+         std::ranges::any_of(ink_text_data_,
+                             [page_index](const auto& it) {
+                               return it.second.page_index == page_index;
+                             }) ||
+         std::ranges::any_of(loaded_ink_text_data_,
+                             [page_index](const auto& it) {
+                               return it.second.page_index == page_index;
+                             });
+}
+
+void PDFiumEngine::UpdateTextActiveAndInvalidateHelper(InkTextData& data,
+                                                       bool active) {
+  int page_index = data.page_index;
+  PDFiumPage* pdfium_page = GetPage(page_index);
+  CHECK(pdfium_page);
+  FPDF_PAGE page = pdfium_page->GetPage();
+  CHECK(page);
+
+  gfx::Rect invalidate_rect;
+  for (FPDF_PAGEOBJECT page_object : data.page_objects) {
+    bool result = FPDFPageObj_SetIsActive(page_object, active);
+    CHECK(result);
+
+    std::optional<PdfRect> rect = GetPageObjectBounds(page_object);
+    CHECK(rect.has_value());
+    invalidate_rect.Union(pdfium_page->PageToScreen(GetVisibleRect().origin(),
+                                                    current_zoom_, rect.value(),
+                                                    GetCurrentOrientation()));
+  }
+
+  if (!invalidate_rect.IsEmpty()) {
+    // Expand the invalidation rect to account for any rounding errors that may
+    // have occurred.
+    invalidate_rect.Outset(1);
+    client_->Invalidate(invalidate_rect);
+  }
+
+  ink_edited_pages_needing_regeneration_.insert(page_index);
+  GetPage(page_index)->ReloadTextPage();
 }
 
 PDFiumEngine::InkStrokeData::InkStrokeData(

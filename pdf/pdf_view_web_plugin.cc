@@ -391,10 +391,8 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->engine_->IsSelectableTextOrLinkArea(point);
   }
 
-  DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf(
-      GenerateTextIdCallback generate_text_id_callback) override {
-    return plugin_->engine_->LoadTextAnnotationsFromPdf(
-        std::move(generate_text_id_callback));
+  DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf() override {
+    return plugin_->engine_->LoadTextAnnotationsFromPdf();
   }
 
   DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() override {
@@ -480,7 +478,7 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->engine_->UpdateStrokeActive(page_index, id, active);
   }
 
-  void UpdateTextActiveAndInvalidate(InkTextId id, bool active) override {
+  void UpdateTextActiveAndInvalidate(TextId id, bool active) override {
     plugin_->engine_->UpdateTextActiveAndInvalidate(id, active);
   }
 

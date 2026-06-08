@@ -144,10 +144,6 @@ void CheckSavedPdfRenderingIsBlank200x200(PDFiumEngine* engine) {
                     kBlankPngFilePath);
 }
 
-GenerateTextIdCallback CreateInkTextIdGenerator(size_t& next_id) {
-  return base::BindLambdaForTesting(
-      [&next_id]() { return InkTextId(next_id++); });
-}
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 class MockTestClient : public TestClient {
@@ -3730,11 +3726,8 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSaveAndLoad) {
   ASSERT_TRUE(saved_engine);
 
   // Load text annotations from the reloaded PDF.
-  constexpr size_t kStartId = 100;
-  size_t next_id = kStartId;
   DocumentInkTextBoxesMap document_textboxes =
-      saved_engine->LoadTextAnnotationsFromPdf(
-          CreateInkTextIdGenerator(next_id));
+      saved_engine->LoadTextAnnotationsFromPdf();
   ASSERT_EQ(1u, document_textboxes.size());
 
   auto itr = document_textboxes.find(kPageIndex);
@@ -3742,7 +3735,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSaveAndLoad) {
 
   const auto& page_boxes = itr->second;
   ASSERT_EQ(1u, page_boxes.size());
-  EXPECT_EQ(kStartId, page_boxes[0].ink_text_id.value());
+  EXPECT_EQ(0u, page_boxes[0].ink_loaded_text_id.value());
 
   // Verify the loaded attributes have the exact same bounds and properties
   // as the original drawn annotation.
@@ -3761,9 +3754,8 @@ TEST_P(PDFiumEngineInkDrawTextTest, LoadTextAnnotationsFromPdfMultiPages) {
   ASSERT_TRUE(engine);
   ASSERT_EQ(3, engine->GetNumberOfPages());
 
-  size_t next_id = 0;
   DocumentInkTextBoxesMap document_textboxes =
-      engine->LoadTextAnnotationsFromPdf(CreateInkTextIdGenerator(next_id));
+      engine->LoadTextAnnotationsFromPdf();
   ASSERT_EQ(2u, document_textboxes.size());
 
   // Page 0 and Page 2 have text annotations; Page 1 is empty and should be
@@ -3802,8 +3794,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAvoidsTextboxIdCollisions) {
 
   // Load existing annotations to populate `existing_textbox_ids_`.
   // ink_text_multi_textboxes.pdf has textbox IDs 0 and 42.
-  size_t next_id = 0;
-  engine->LoadTextAnnotationsFromPdf(CreateInkTextIdGenerator(next_id));
+  engine->LoadTextAnnotationsFromPdf();
 
   constexpr int kPageIndex = 0;
   PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);

@@ -1442,21 +1442,15 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
 
   base::ListValue annotations;
 
-  // It is safe to use base::Unretained(&id_generator_) because the callback is
-  // executed synchronously.
   DocumentInkTextBoxesMap document_text_boxes =
-      client_->LoadTextAnnotationsFromPdf(
-          base::BindRepeating(&PdfInkModule::IdGenerator::GetTextIdAndAdvance,
-                              base::Unretained(&id_generator_)));
+      client_->LoadTextAnnotationsFromPdf();
 
   // The backend sets the frontend ID for loaded text annotations.
   int frontend_id = 0;
 
-  std::set<InkTextId> loaded_pdf_ink_text_ids;
   for (auto& [page_index, text_boxes] : document_text_boxes) {
     for (const auto& item : text_boxes) {
-      text_id_map_[frontend_id] = item.ink_text_id;
-      loaded_pdf_ink_text_ids.insert(item.ink_text_id);
+      text_id_map_[frontend_id] = item.ink_loaded_text_id;
 
       auto text_attributes =
           base::DictValue()
@@ -1491,8 +1485,6 @@ void PdfInkModule::HandleGetAllTextAnnotationsMessage(
       ++frontend_id;
     }
   }
-
-  undo_redo_model_.SetLoadedPdfInkTextIds(std::move(loaded_pdf_ink_text_ids));
 
   client_->PostMessage(
       PrepareReplyMessage(message).Set("annotations", std::move(annotations)));
@@ -1687,7 +1679,7 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   // - Deletion: Delete existing annotation only.
   // First do the deletion if needed.
   if (auto it = text_id_map_.find(frontend_id); it != text_id_map_.end()) {
-    InkTextId existing_id = it->second;
+    TextId existing_id = it->second;
     // Make sure `existing_id` gets hidden before being discarded.
     client_->UpdateTextActiveAndInvalidate(existing_id, /*active=*/false);
     // "HandleFinishTextAnnotationMessageDiscard" note: This method will discard
@@ -1695,11 +1687,13 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
     // this just called `ApplyUndoRedoDiscards()`. This complies with the
     // assumptions `ApplyUndoRedoDiscards()` made regarding text annotation
     // discards.
-    client_->DiscardText(existing_id);
+    if (std::holds_alternative<InkTextId>(existing_id)) {
+      client_->DiscardText(std::get<InkTextId>(existing_id));
+    }
     text_id_map_.erase(it);
 
     if (modify_undo_redo_model) {
-      CHECK(undo_redo_model_.Remove(existing_id));
+      CHECK(undo_redo_model_.Remove(TextIdToIdType(existing_id)));
     }
 
     // Empty text means the annotation is being deleted. Return early since

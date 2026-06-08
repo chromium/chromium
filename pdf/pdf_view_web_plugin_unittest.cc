@@ -3632,7 +3632,7 @@ TEST_P(PdfViewWebPluginInkTest, UpdateTextActiveAndInvalidate) {
   static constexpr InkTextId kTextId(1);
 
   EXPECT_CALL(*engine_ptr_,
-              UpdateTextActiveAndInvalidate(kTextId, /*active=*/false));
+              UpdateTextActiveAndInvalidate(TextId(kTextId), /*active=*/false));
 
   plugin_->ink_module_client_for_testing()->UpdateTextActiveAndInvalidate(
       kTextId, /*active=*/false);

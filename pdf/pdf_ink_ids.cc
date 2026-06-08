@@ -20,4 +20,8 @@ size_t GetIdTypeValue(const IdType& id) {
   return std::visit([](const auto& v) { return v.value(); }, id);
 }
 
+IdType TextIdToIdType(const TextId& id) {
+  return std::visit([](const auto& v) -> IdType { return v; }, id);
+}
+
 }  // namespace chrome_pdf

@@ -358,7 +358,7 @@ class FakeClient : public PdfInkModuleClient {
 
   MOCK_METHOD(DocumentInkTextBoxesMap,
               LoadTextAnnotationsFromPdf,
-              (GenerateTextIdCallback generate_text_id_callback),
+              (),
               (override));
 
   MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
@@ -409,7 +409,7 @@ class FakeClient : public PdfInkModuleClient {
 
   MOCK_METHOD(void,
               UpdateTextActiveAndInvalidate,
-              (InkTextId id, bool active),
+              (TextId id, bool active),
               (override));
 
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
@@ -564,7 +564,7 @@ TEST_P(PdfInkModuleTest, HandleGetAllTextAnnotationsMessage) {
   DocumentInkTextBoxesMap map;
   map[0] = std::move(test_boxes);
 
-  EXPECT_CALL(client(), LoadTextAnnotationsFromPdf(_))
+  EXPECT_CALL(client(), LoadTextAnnotationsFromPdf())
       .WillOnce(Return(std::move(map)));
 
   EXPECT_CALL(client(), PostMessage).WillOnce([](const base::DictValue& dict) {
@@ -1159,8 +1159,8 @@ TEST_F(PdfInkModuleTextTest, HandleEditTextAnnotationMessage) {
   }
 
   {
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kBackendId, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kBackendId),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
 
@@ -1234,8 +1234,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNoEdit) {
                                                           kPageIndex, kPdfZoom);
     data.Set("isEdited", false);
 
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/true));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/true));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DiscardText(_)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
@@ -1283,8 +1283,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
                                                           kPageIndex, kPdfZoom);
     data.Set("text", "ah");
 
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(
         client(),
@@ -1345,8 +1345,8 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
     data.Set("text", "");
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
@@ -1399,8 +1399,8 @@ TEST_F(PdfInkModuleTextTest,
     data.Set("text", "");
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
@@ -1438,8 +1438,8 @@ TEST_F(PdfInkModuleTextTest,
                                                           kPageIndex, kPdfZoom);
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId1,
@@ -1459,8 +1459,8 @@ TEST_F(PdfInkModuleTextTest,
         kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId1, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId1),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId1));
     EXPECT_CALL(client(),
                 DrawText(kPageIndex, kTextId0,
@@ -1482,8 +1482,8 @@ TEST_F(PdfInkModuleTextTest,
     data.Set("text", "");
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
@@ -1556,8 +1556,8 @@ TEST_F(PdfInkModuleTextTest,
     data.Set("text", "");
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
@@ -1593,8 +1593,8 @@ TEST_F(PdfInkModuleTextTest,
     data.Set("text", "");
 
     InSequence seq;
-    EXPECT_CALL(client(),
-                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(TextId(kTextId0),
+                                                        /*active=*/false));
     EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);

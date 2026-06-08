@@ -422,7 +422,7 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // See method of the same name in PdfInkModuleClient. Virtual to support
   // testing.
-  virtual void UpdateTextActiveAndInvalidate(InkTextId id, bool active);
+  virtual void UpdateTextActiveAndInvalidate(TextId id, bool active);
 
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
@@ -472,12 +472,9 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Loads the saved text annotations across the PDF document. Returns a map of
   // 0-based page indexes to the vector of reconstructed textboxes.
-  // `generate_text_id_callback` is called to generate a unique ID for each text
-  // annotation loaded.
   //
   // Virtual to support testing.
-  virtual DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf(
-      GenerateTextIdCallback generate_text_id_callback);
+  virtual DocumentInkTextBoxesMap LoadTextAnnotationsFromPdf();
 
   // Modifies an existing shape identified by `id` on the page at `page_index`
   // to become either active or inactive. The caller must pass the same
@@ -1149,6 +1146,20 @@ class PDFiumEngine : public DocumentLoader::Client,
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+  struct InkTextData {
+    InkTextData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
+    InkTextData(InkTextData&&) noexcept;
+    InkTextData& operator=(InkTextData&&) noexcept;
+    ~InkTextData();
+
+    int page_index;
+
+    // The handles for text page objects within the PDF document.
+    // `edited_pages_unload_preventers_` protects these handles from going
+    // stale.
+    std::vector<FPDF_PAGEOBJECT> page_objects;
+  };
+
   std::vector<FPDF_PAGEOBJECT> GetActiveInkPageObjectsForPage(
       int page_index) const;
 
@@ -1158,6 +1169,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   int GetNextTextboxId();
 
   bool PageStillHasEdits(int page_index) const;
+
+  void UpdateTextActiveAndInvalidateHelper(InkTextData& data, bool active);
 #endif
 
   const raw_ptr<PDFiumEngineClient> client_;
@@ -1445,10 +1458,10 @@ class PDFiumEngine : public DocumentLoader::Client,
   // make searches faster.
   std::set<int> pages_with_loaded_v2_ink_shapes_;
 
-  // Used to hand out unique IDs of type InkModeledShapeId for the V2 Ink paths
-  // read out of the PDF. It is stored here as the raw type to simplify
-  // management.
+  // Used to hand out unique IDs for the V2 Ink paths and text annotations read
+  // out of the PDF. They are stored here as raw types to simplify management.
   size_t next_ink_modeled_shape_id_ = 0;
+  size_t next_ink_loaded_text_id_ = 0;
 
   // Key: ID to identify a shape.
   // Value: The PDFium page object associated with the shape.
@@ -1470,22 +1483,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   // collisions on all pages.
   std::set<int> existing_textbox_ids_;
 
-  struct InkTextData {
-    InkTextData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
-    InkTextData(InkTextData&&) noexcept;
-    InkTextData& operator=(InkTextData&&) noexcept;
-    ~InkTextData();
-
-    int page_index;
-
-    // The handles for text page objects within the PDF document.
-    // `edited_pages_unload_preventers_` protects these handles from going
-    // stale.
-    std::vector<FPDF_PAGEOBJECT> page_objects;
-  };
-
   // Data associated with text annotations, keyed by text IDs.
   std::map<InkTextId, InkTextData> ink_text_data_;
+
+  // Data associated with loaded text annotations, keyed by loaded text IDs.
+  std::map<InkLoadedTextId, InkTextData> loaded_ink_text_data_;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   bool in_dtor_ = false;

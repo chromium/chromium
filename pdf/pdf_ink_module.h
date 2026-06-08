@@ -553,7 +553,7 @@ class PdfInkModule {
 
   // Key: Frontend text annotation ID.
   // Value: Backend text annotation ID.
-  std::map<int, InkTextId> text_id_map_;
+  std::map<int, TextId> text_id_map_;
 
   base::WeakPtrFactory<PdfInkModule> weak_factory_{this};
 };

@@ -87,7 +87,7 @@ struct InkTextBox {
   int id;
 
   // The globally unique ID generated during load.
-  InkTextId ink_text_id;
+  InkLoadedTextId ink_loaded_text_id;
 
   InkTextBoxAttributes attributes;
 };
