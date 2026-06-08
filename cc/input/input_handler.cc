@@ -2351,7 +2351,9 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
   ScrollNode* scroll_node = nullptr;
   ScrollNode* first_scrollable_node = nullptr;
   for (ScrollNode* cur_node = starting_node; cur_node;
-       cur_node = scroll_tree.MutableParent(cur_node)) {
+       cur_node = scroll_tree.HasParent(*cur_node)
+                      ? &scroll_tree.MutableParent(*cur_node)
+                      : nullptr) {
     if (GetViewport().ShouldScroll(*cur_node)) {
       // Don't chain scrolls past a viewport node. Once we reach that, we
       // should scroll using the appropriate viewport node which may not be
@@ -2654,7 +2656,9 @@ bool InputHandler::IsScrolledBy(LayerImpl* child, ScrollNode* ancestor) {
   ScrollTree& scroll_tree = GetScrollTree();
   for (ScrollNode* scroll_node =
            &scroll_tree.MutableNode(child->scroll_tree_index());
-       scroll_node; scroll_node = scroll_tree.MutableParent(scroll_node)) {
+       scroll_node; scroll_node = scroll_tree.HasParent(*scroll_node)
+                                      ? &scroll_tree.MutableParent(*scroll_node)
+                                      : nullptr) {
     if (scroll_node->id == ancestor->id)
       return true;
   }

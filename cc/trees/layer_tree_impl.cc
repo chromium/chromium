@@ -555,11 +555,17 @@ void LayerTreeImpl::UpdateViewportContainerSizes() {
 
     // Expand all clips between the outer viewport and the inner viewport.
     auto* outer_ancestor =
-        property_trees->clip_tree_mutable().MutableParent(outer_clip_node);
+        property_trees->clip_tree_mutable().HasParent(*outer_clip_node)
+            ? &property_trees->clip_tree_mutable().MutableParent(
+                  *outer_clip_node)
+            : nullptr;
     while (outer_ancestor && outer_ancestor->id != kRootPropertyNodeId) {
       outer_ancestor->clip.Union(outer_clip_node->clip);
       outer_ancestor =
-          property_trees->clip_tree_mutable().MutableParent(outer_ancestor);
+          property_trees->clip_tree_mutable().HasParent(*outer_ancestor)
+              ? &property_trees->clip_tree_mutable().MutableParent(
+                    *outer_ancestor)
+              : nullptr;
     }
   }
 

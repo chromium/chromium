@@ -173,10 +173,9 @@ void SetWillChangeTransform(LayerType* layer, bool will_change_transform) {
   transform_node->SetTransformChanged(DamageReason::kUntracked);
   TransformTree& transform_tree =
       GetPropertyTrees(layer)->transform_tree_mutable();
-  auto* parent_node = transform_tree.parent(transform_node);
-  CHECK(parent_node);
+  auto& parent_node = transform_tree.parent(*transform_node);
   transform_tree.UpdateNodeOrAncestorsWillChangeTransform(transform_node,
-                                                          *parent_node);
+                                                          parent_node);
   transform_tree.set_needs_update(true);
 }
 

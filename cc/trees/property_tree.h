@@ -96,19 +96,13 @@ class CC_EXPORT PropertyTree {
     return nodes_[i];
   }
 
-  const T* parent(const T* t) const {
-    if (t->parent_id == kInvalidPropertyNodeId) {
-      return nullptr;
-    }
-    return &Node(t->parent_id);
+  bool HasParent(const T& t) const {
+    return t.parent_id != kInvalidPropertyNodeId;
   }
 
-  T* MutableParent(const T* t) {
-    if (t->parent_id == kInvalidPropertyNodeId) {
-      return nullptr;
-    }
-    return &MutableNode(t->parent_id);
-  }
+  const T& parent(const T& t) const { return Node(t.parent_id); }
+
+  T& MutableParent(const T& t) { return MutableNode(t.parent_id); }
 
   T* MutableBack() { return size() ? &nodes_.back() : nullptr; }
   const T* back() const { return size() ? &nodes_.back() : nullptr; }

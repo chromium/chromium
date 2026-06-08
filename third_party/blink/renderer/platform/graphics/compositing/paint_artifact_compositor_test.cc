@@ -2407,8 +2407,8 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
   // of the kDstIn blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(&masking_group)
-                  ->HasRenderSurface());
+                  .parent(masking_group)
+                  .HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, NonCompositedMaskClearsOpaqueness) {
@@ -2474,8 +2474,8 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskTwoChildren) {
   // of the kDstIn blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(&masking_group)
-                  ->HasRenderSurface());
+                  .parent(masking_group)
+                  .HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleExoticBlendMode) {
@@ -2535,8 +2535,8 @@ TEST_P(PaintArtifactCompositorTest, ForcedCompositedExoticBlendMode) {
   // the blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(&masking_group)
-                  ->HasRenderSurface());
+                  .parent(masking_group)
+                  .HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -2575,8 +2575,8 @@ TEST_P(PaintArtifactCompositorTest,
   // the blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(&masking_group)
-                  ->HasRenderSurface());
+                  .parent(masking_group)
+                  .HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest,
@@ -2615,8 +2615,8 @@ TEST_P(PaintArtifactCompositorTest,
   // the blend mode.
   EXPECT_TRUE(GetPropertyTrees()
                   .effect_tree()
-                  .parent(&masking_group)
-                  ->HasRenderSurface());
+                  .parent(masking_group)
+                  .HasRenderSurface());
 }
 
 TEST_P(PaintArtifactCompositorTest, DecompositeExoticBlendModeWithoutBackdrop) {
