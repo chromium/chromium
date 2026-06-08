@@ -56,10 +56,9 @@ android {
         targetSdkVersion {{ target_sdk_version }}
     }
 
-    {# Keep consistent with javac_cmd in //build/android/gyp/turbine.py. #}
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_{{ java_version }}
+        targetCompatibility JavaVersion.VERSION_{{ java_version }}
     }
 
 {% if native is defined %}

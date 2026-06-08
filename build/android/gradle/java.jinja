@@ -25,9 +25,8 @@ sourceSets {
     }
 }
 
-{# Keep consistent with javac_cmd in //build/android/gyp/turbine.py. #}
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+sourceCompatibility = JavaVersion.VERSION_{{ java_version }}
+targetCompatibility = JavaVersion.VERSION_{{ java_version }}
 
 {% if template_type == 'java_binary' %}
 applicationName = "{{ target_name }}"
