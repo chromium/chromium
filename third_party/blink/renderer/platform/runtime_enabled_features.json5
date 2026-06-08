@@ -7080,6 +7080,7 @@
     // https://crbug.com/40704952
     {
       name: "WheelEventMomentum",
+      status: "experimental",
     },
     // If enabled, window.default[Ss]tatus will be supported. This is disabled
     // by default, and is here to allow this behavior to be re-enabled via Finch
