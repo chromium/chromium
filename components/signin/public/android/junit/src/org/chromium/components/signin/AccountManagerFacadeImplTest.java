@@ -891,7 +891,7 @@ public class AccountManagerFacadeImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = inOrder(mObserverMock, mMockCallback);
-        inOrder.verify(mObserverMock).onCoreAccountInfosChanged();
+        inOrder.verify(mObserverMock).onAccountsChanged();
         inOrder.verify(mMockCallback).onResult(any());
     }
 
@@ -906,7 +906,7 @@ public class AccountManagerFacadeImplTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         InOrder inOrder = inOrder(mObserverMock, mMockCallback);
-        inOrder.verify(mObserverMock).onCoreAccountInfosChanged();
+        inOrder.verify(mObserverMock).onAccountsChanged();
         inOrder.verify(mMockCallback).onResult(any());
     }
 

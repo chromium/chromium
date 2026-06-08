@@ -4,7 +4,6 @@
 
 package org.chromium.components.signin;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.signin.AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME;
 
@@ -530,9 +529,12 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         accounts -> {
                             var accountInfo =
                                     AccountUtils.findAccountByAccountId(accounts, accountId);
+                            if (accountInfo == null) {
+                                callback.onResult(null);
+                                return;
+                            }
                             mDelegate.confirmCredentials(
-                                    CoreAccountInfo.getAndroidAccountFrom(
-                                            assertNonNull(accountInfo)),
+                                    AccountInfo.getAndroidAccountFrom(accountInfo),
                                     activity,
                                     callback);
                         });
@@ -714,7 +716,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         }
 
         for (AccountsChangeObserver observer : mObservers) {
-            observer.onCoreAccountInfosChanged();
+            observer.onAccountsChanged();
         }
 
         if (callback != null) {
@@ -842,7 +844,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 mAccountsPromise.fulfill(accounts);
             }
             for (AccountsChangeObserver observer : mObservers) {
-                observer.onCoreAccountInfosChanged();
+                observer.onAccountsChanged();
             }
             if (mCallback != null) {
                 mCallback.run();
