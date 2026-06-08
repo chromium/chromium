@@ -588,7 +588,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
   UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
 
   [staticActions
-      addObjectsFromArray:@[ openNewIncognitoTab, openNewTab, closeTab ]];
+      addObjectsFromArray:@[ closeTab, openNewTab, openNewIncognitoTab ]];
   return [UIMenu menuWithTitle:@"" children:staticActions];
 }
 
