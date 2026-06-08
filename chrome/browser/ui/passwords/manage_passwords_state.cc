@@ -380,8 +380,8 @@ void ManagePasswordsState::SetState(password_manager::ui::State state) {
   autofill::LogManager* log_manager = client_->GetCurrentLogManager();
   if (log_manager && log_manager->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(log_manager);
-    logger.LogNumber(autofill::SavePasswordProgressLogger::STRING_NEW_UI_STATE,
-                     state);
+    logger.LogString(autofill::SavePasswordProgressLogger::STRING_NEW_UI_STATE,
+                     password_manager::ui::StateToString(state));
   }
   state_ = state;
 }

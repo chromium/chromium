@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_UI_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_UI_H_
 
+#include <string>
+
 namespace password_manager::ui {
 
 // The current state of the password manager's UI.
@@ -94,6 +96,8 @@ enum State {
   // from the password change success toast.
   PASSWORD_CHANGE_STATE,
 };
+
+std::string StateToString(State state);
 
 }  // namespace password_manager::ui
 
