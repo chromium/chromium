@@ -389,7 +389,8 @@ void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
 }
 
 void GlicInstanceCoordinatorImpl::EnsurePreload() {
-  web_contents_warming_pool_->EnsurePreload();
+  web_contents_warming_pool_->EnsurePreload(
+      GlicWebContentsWarmingPool::ContainerCreationReason::kInitialColdWarming);
 }
 
 void GlicInstanceCoordinatorImpl::Shutdown() {

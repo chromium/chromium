@@ -139,6 +139,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:ClientErrorDialogType) -->
 
+<!-- LINT.IfChange(GlicContainerCreationReason) -->
+
+<enum name="GlicContainerCreationReason">
+  <int value="0" label="InitialColdWarming"/>
+  <int value="1" label="UserTriggeredColdStart"/>
+  <int value="2" label="Refill"/>
+  <int value="3" label="ReloadAfterExpiry"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/host/glic_web_contents_warming_pool.h:GlicContainerCreationReason) -->
+
 <!-- LINT.IfChange(GlicCookieSyncResult) -->
 
 <enum name="GlicCookieSyncResult">

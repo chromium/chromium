@@ -3021,6 +3021,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.WarmingPool.ContainerCreationReason"
+    enum="GlicContainerCreationReason" expires_after="2027-03-01">
+  <owner>acondor@chromium.org</owner>
+  <owner>bryantchandler@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logged when a Glic WebContents warming container is created in the warming
+    pool. Differentiates the reason or source of the EnsurePreload call.
+  </summary>
+</histogram>
+
 <histogram name="Glic.WarmingPool.HitStatus" enum="GlicWarmingPoolStatus"
     expires_after="2027-03-01">
   <owner>harringtond@chromium.org</owner>

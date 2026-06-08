@@ -35,6 +35,18 @@ class GlicWebContentsWarmingPool {
     kMemoryPressure,
   };
 
+  // LINT.IfChange(GlicContainerCreationReason)
+  enum class ContainerCreationReason {
+    kInitialColdWarming = 0,      // Preloaded after cold start.
+    kUserTriggeredColdStart = 1,  // Created immediately during TakeContainer()
+                                  // because the pool was empty
+    kRefill = 2,  // Created to refill the pool after TakeContainer()
+    kReloadAfterExpiry =
+        3,  // Created to reload the pool after the previous container expired
+    kMaxValue = kReloadAfterExpiry,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicContainerCreationReason)
+
   explicit GlicWebContentsWarmingPool(Profile* profile);
   virtual ~GlicWebContentsWarmingPool();
 
@@ -44,7 +56,8 @@ class GlicWebContentsWarmingPool {
   std::unique_ptr<WebUIContentsContainer> TakeContainer();
   // Ensures that a WebUIContentsContainer is preloaded. If the existing one is
   // crashed, it will be replaced.
-  void EnsurePreload();
+  void EnsurePreload(ContainerCreationReason reason =
+                         ContainerCreationReason::kUserTriggeredColdStart);
   // Clears the warming pool and destroys any warmed WebContents.
   void Clear(std::optional<ClearReason> reason);
 
@@ -77,10 +90,11 @@ class GlicWebContentsWarmingPool {
 
   // Virtual for testing.
   virtual std::unique_ptr<WebUIContentsContainer> CreateContainer();
+  void OnWarmedContentCreated(ContainerCreationReason reason);
 
   void OnContainerExpired();
   // Starts a timer to preload a WebContents after a delay.
-  void EnsurePreloadDelayed();
+  void EnsurePreloadDelayed(ContainerCreationReason reason);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebUIContentsContainer> warmed_container_;

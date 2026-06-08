@@ -50,7 +50,10 @@ class GlicWebContentsWarmingPool::Metrics {
     base::UmaHistogramEnumeration("Glic.WarmingPool.ReloadAfterExpiry", status);
   }
 
-  void OnWarmedContentCreated() {
+  void OnWarmedContentCreated(
+      GlicWebContentsWarmingPool::ContainerCreationReason reason) {
+    base::UmaHistogramEnumeration("Glic.WarmingPool.ContainerCreationReason",
+                                  reason);
     warmed_container_creation_time_ = base::TimeTicks::Now();
     was_expired_ = false;
   }
@@ -142,16 +145,16 @@ GlicWebContentsWarmingPool::TakeContainer() {
   metrics_->RecordTakeContainerStatus(warmed_container_);
   reload_count_ = 0;
 
-  EnsurePreload();
+  EnsurePreload(ContainerCreationReason::kUserTriggeredColdStart);
   std::unique_ptr<WebUIContentsContainer> result = std::move(warmed_container_);
   warmed_container_ = nullptr;
   expiry_timer_.Stop();
 
-  EnsurePreloadDelayed();
+  EnsurePreloadDelayed(ContainerCreationReason::kRefill);
   return result;
 }
 
-void GlicWebContentsWarmingPool::EnsurePreload() {
+void GlicWebContentsWarmingPool::EnsurePreload(ContainerCreationReason reason) {
   if (warmed_container_ && warmed_container_->web_contents()->IsCrashed()) {
     metrics_->RecordWarmedContainerFate(Metrics::WarmedContainerFate::kCrashed);
     warmed_container_ = nullptr;
@@ -163,7 +166,7 @@ void GlicWebContentsWarmingPool::EnsurePreload() {
         FROM_HERE, expiry_delay_,
         base::BindOnce(&GlicWebContentsWarmingPool::OnContainerExpired,
                        base::Unretained(this)));
-    metrics_->OnWarmedContentCreated();
+    metrics_->OnWarmedContentCreated(reason);
   }
 }
 
@@ -190,7 +193,7 @@ void GlicWebContentsWarmingPool::OnContainerExpired() {
         reload_count_++;
         metrics_->OnReloadAfterExpiry(
             GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::kReloaded);
-        EnsurePreload();
+        EnsurePreload(ContainerCreationReason::kReloadAfterExpiry);
       } else {
         metrics_->OnReloadAfterExpiry(
             GlicWebContentsWarmingPool::ReloadAfterExpiryStatus::
@@ -211,7 +214,8 @@ void GlicWebContentsWarmingPool::Clear(std::optional<ClearReason> reason) {
   expiry_timer_.Stop();
 }
 
-void GlicWebContentsWarmingPool::EnsurePreloadDelayed() {
+void GlicWebContentsWarmingPool::EnsurePreloadDelayed(
+    ContainerCreationReason reason) {
   CHECK(!warmed_container_);
   if (delay_timer_.IsRunning()) {
     return;
@@ -222,7 +226,7 @@ void GlicWebContentsWarmingPool::EnsurePreloadDelayed() {
   }
   delay_timer_.Start(FROM_HERE, delay,
                      base::BindOnce(&GlicWebContentsWarmingPool::EnsurePreload,
-                                    base::Unretained(this)));
+                                    base::Unretained(this), reason));
 }
 
 bool GlicWebContentsWarmingPool::HasWarmedContainerForTesting() const {
