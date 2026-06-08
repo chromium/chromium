@@ -5,7 +5,6 @@
 #include "chrome/browser/page_load_metrics/observers/serp_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/safe_browsing/buildflags.h"
