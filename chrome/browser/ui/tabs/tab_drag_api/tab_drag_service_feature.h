@@ -12,13 +12,15 @@
 
 namespace tabs_api {
 class TabDragServiceImpl;
+class TabDragWindowAdapter;
 }  // namespace tabs_api
 
 // Public interface for retrieving the tab drag service, either through mojo
 // or the native interface.
 class TabDragServiceFeature {
  public:
-  TabDragServiceFeature();
+  explicit TabDragServiceFeature(
+      std::unique_ptr<tabs_api::TabDragWindowAdapter> window_adapter);
   ~TabDragServiceFeature();
 
   TabDragServiceFeature(const TabDragServiceFeature&) = delete;

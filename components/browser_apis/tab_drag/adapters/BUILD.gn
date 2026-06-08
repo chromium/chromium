@@ -6,6 +6,7 @@ source_set("adapters") {
   sources = [
     "tab_drag_platform_provider.h",
     "tab_drag_session_input_adapter.h",
+    "tab_drag_window_adapter.h",
   ]
 
   public_deps = [

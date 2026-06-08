@@ -45,6 +45,7 @@ source_set("unit_tests") {
   sources = [ "sessions/tab_drag_session_unittest.cc" ]
 
   deps = [
+    ":tab_drag",
     "//base",
     "//base/test:test_support",
     "//components/browser_apis/tab_drag/adapters",

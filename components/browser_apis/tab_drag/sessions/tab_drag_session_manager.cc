@@ -6,13 +6,33 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/browser_apis/tab_drag/adapters/tab_drag_platform_provider.h"
 #include "components/browser_apis/tab_drag/adapters/tab_drag_session_input_adapter.h"
+#include "components/browser_apis/tab_drag/adapters/tab_drag_window_adapter.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session.h"
+#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/mojom/base/error.mojom.h"
 
 namespace tabs_api {
+
+class DropTargetRegistrationImpl : public mojom::DropTargetRegistration {
+ public:
+  DropTargetRegistrationImpl(base::WeakPtr<TabDragSessionManager> manager,
+                             base::WeakPtr<TabDragWindowAdapter> window_adapter)
+      : manager_(manager), window_adapter_(window_adapter) {}
+
+  ~DropTargetRegistrationImpl() override {
+    if (manager_ && window_adapter_) {
+      manager_->UnregisterDropTarget(window_adapter_.get());
+    }
+  }
+
+ private:
+  base::WeakPtr<TabDragSessionManager> manager_;
+  base::WeakPtr<TabDragWindowAdapter> window_adapter_;
+};
 
 TabDragSessionManager::TabDragSessionManager(
     std::unique_ptr<TabDragPlatformProvider> platform_provider)
@@ -71,6 +91,25 @@ void TabDragSessionManager::OnSessionEnded() {
 
 void TabDragSessionManager::DestroyActiveSession() {
   active_session_.reset();
+}
+
+void TabDragSessionManager::RegisterDropTarget(
+    TabDragWindowAdapter* window_adapter,
+    mojo::PendingAssociatedRemote<mojom::DropTarget> target,
+    mojo::PendingAssociatedReceiver<mojom::DropTargetRegistration>
+        registration) {
+  drop_targets_[window_adapter] =
+      mojo::AssociatedRemote<mojom::DropTarget>(std::move(target));
+
+  mojo::MakeSelfOwnedAssociatedReceiver(
+      std::make_unique<DropTargetRegistrationImpl>(weak_factory_.GetWeakPtr(),
+                                                   window_adapter->AsWeakPtr()),
+      std::move(registration));
+}
+
+void TabDragSessionManager::UnregisterDropTarget(
+    TabDragWindowAdapter* window_adapter) {
+  drop_targets_.erase(window_adapter);
 }
 
 }  // namespace tabs_api

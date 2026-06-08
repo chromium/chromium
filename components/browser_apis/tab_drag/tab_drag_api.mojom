@@ -15,7 +15,20 @@ interface TabDragService {
   // Initiates a global drag session for specified node ids.
   StartDrag(array<NodeId> node_ids, gfx.mojom.Point start_point)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Registers the drop target for this service's window. The registration is
+  // active as long as `registration` pipe is kept open by the caller.
+  // This should be called by the client UI that wants to receive coordinated
+  // drag updates.
+  RegisterDropTarget(
+      pending_associated_remote<DropTarget> target,
+      pending_associated_receiver<DropTargetRegistration> registration)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
+
+// Interface representing a registered drop target. Dropping this connection
+// will unregister the target.
+interface DropTargetRegistration {};
 
 // Interface implemented by the client UI to receive coordinated drag updates
 // globally.

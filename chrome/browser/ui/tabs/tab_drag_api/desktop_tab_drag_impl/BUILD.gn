@@ -8,6 +8,8 @@ source_set("desktop_tab_drag_impl") {
     "tab_drag_session_desktop_injector.h",
     "tab_drag_session_input_adapter_impl.cc",
     "tab_drag_session_input_adapter_impl.h",
+    "tab_drag_window_adapter_impl.cc",
+    "tab_drag_window_adapter_impl.h",
   ]
 
   deps = [
