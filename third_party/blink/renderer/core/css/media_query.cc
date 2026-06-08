@@ -62,7 +62,7 @@ String MediaQuery::Serialize() const {
 
   if (MediaType() != media_type_names::kAll ||
       Restrictor() != RestrictorType::kNone) {
-    result.Append(MediaType());
+    SerializeIdentifier(MediaType(), result);
     result.Append(" and ");
   }
 
