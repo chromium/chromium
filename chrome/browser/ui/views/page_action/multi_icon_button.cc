@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -24,19 +25,23 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace page_actions {
 
 namespace {
 
-constexpr int kAnchoredMessageIconSize = 20;
+constexpr int kAnchoredMessageIconSize = 16;
 constexpr size_t kAnchoredMessageMaxExpandButtonIcons = 3;
 
 // An ImageView that clips its content to a rounded rectangle and also clips out
@@ -103,44 +108,81 @@ class ClippingImageView : public views::ImageView {
 BEGIN_METADATA(ClippingImageView)
 END_METADATA
 
+class IconContainerView : public views::View {
+  METADATA_HEADER(IconContainerView, views::View)
+ public:
+  IconContainerView() = default;
+  ~IconContainerView() override = default;
+
+  views::View::Views GetChildrenInZOrder() override {
+    auto children = views::View::GetChildrenInZOrder();
+    std::reverse(children.begin(), children.end());
+    return children;
+  }
+};
+
+BEGIN_METADATA(IconContainerView)
+END_METADATA
+
 }  // namespace
 
 MultiIconButton::MultiIconButton(PressedCallback callback)
     : views::Button(std::move(callback)) {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-                       views::BoxLayout::Orientation::kHorizontal,
-                       gfx::Insets::VH(6, 8), -6))
+  SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets::VH(6, 6), 0))
       ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetBorder(nullptr);
   SetInstallFocusRingOnFocus(true);
   SetAccessibleName(u"Show details");
+  SetFocusBehavior(FocusBehavior::ALWAYS);
+  ConfigureInkDrop(this,
+                   std::make_unique<views::RoundRectHighlightPathGenerator>(
+                       gfx::Insets(), 8));
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 }
 
 MultiIconButton::~MultiIconButton() = default;
 
-views::View::Views MultiIconButton::GetChildrenInZOrder() {
-  auto children = views::Button::GetChildrenInZOrder();
-  std::reverse(children.begin(), children.end());
-  return children;
-}
-
 void MultiIconButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
+  UpdateBackground();
+}
+
+void MultiIconButton::StateChanged(ButtonState old_state) {
+  views::Button::StateChanged(old_state);
+  UpdateBackground();
+}
+
+void MultiIconButton::UpdateBackground() {
   const auto* color_provider = GetColorProvider();
   if (color_provider) {
-    SetBackground(views::CreateRoundedRectBackground(
-        color_provider->GetColor(ui::kColorSysPrimaryContainer), 12));
-    if (plus_more_label_) {
-      plus_more_label_->SetEnabledColor(
-          color_provider->GetColor(ui::kColorSysOnPrimaryContainer));
+    SkColor background_color =
+        color_provider->GetColor(ui::kColorSysNeutralContainer);
+    if (GetState() == ButtonState::STATE_HOVERED ||
+        GetState() == ButtonState::STATE_PRESSED) {
+      background_color = color_utils::GetResultingPaintColor(
+          color_provider->GetColor(ui::kColorSysStateHoverOnSubtle),
+          background_color);
     }
+    SetBackground(views::CreateRoundedRectBackground(background_color, 8));
   }
 }
 
 void MultiIconButton::Update(
     const std::vector<std::reference_wrapper<const ui::ImageModel>>& icons) {
-  plus_more_label_ = nullptr;
-  RemoveAllChildViews();
+  if (content_container_) {
+    views::View* container = content_container_;
+    content_container_ = nullptr;
+    RemoveChildViewT(container);
+  }
+
+  auto container = std::make_unique<IconContainerView>();
+  container
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), -6))
+      ->set_cross_axis_alignment(views::BoxLayout::CrossAxisAlignment::kCenter);
+
   // When adding each icon, clip it using the previous icon.
   ClippingImageView* previous_icon = nullptr;
   const size_t num_icons =
@@ -148,7 +190,8 @@ void MultiIconButton::Update(
   for (size_t i = 0; i < num_icons; ++i) {
     const ui::ImageModel& icon = icons[i];
     if (!icon.IsEmpty()) {
-      auto* icon_view = AddChildView(std::make_unique<ClippingImageView>());
+      auto* icon_view =
+          container->AddChildView(std::make_unique<ClippingImageView>());
       icon_view->SetImage(icon);
       icon_view->SetImageSize(
           gfx::Size(kAnchoredMessageIconSize, kAnchoredMessageIconSize));
@@ -160,13 +203,18 @@ void MultiIconButton::Update(
   }
 
   if (icons.size() > kAnchoredMessageMaxExpandButtonIcons) {
-    plus_more_label_ = AddChildView(std::make_unique<views::Label>(base::StrCat(
-        {u"+", base::FormatNumber(icons.size() -
-                                  kAnchoredMessageMaxExpandButtonIcons)})));
-    plus_more_label_->SetTextStyle(views::style::STYLE_BODY_5);
-    plus_more_label_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets::TLBR(0, 8, 0, 0));
+    auto* plus_more_label =
+        container->AddChildView(std::make_unique<views::Label>(base::StrCat(
+            {u"+", base::FormatNumber(icons.size() -
+                                      kAnchoredMessageMaxExpandButtonIcons)})));
+    plus_more_label->SetTextStyle(views::style::STYLE_BODY_5);
+    plus_more_label->SetProperty(views::kMarginsKey,
+                                 gfx::Insets::TLBR(0, 8, 0, 0));
+    plus_more_label->SetEnabledColor(ui::kColorSysOnSurface);
   }
+
+  content_container_ = AddChildView(std::move(container));
+  content_container_->SetCanProcessEventsWithinSubtree(false);
 }
 
 BEGIN_METADATA(MultiIconButton)

@@ -25,19 +25,15 @@ class MultiIconButton : public views::Button {
   MultiIconButton& operator=(const MultiIconButton&) = delete;
   ~MultiIconButton() override;
 
-  // views::Button:
-  // GetChildrenInZOrder() is overridden to help show overlapping icons.
-  views::View::Views GetChildrenInZOrder() override;
   void OnThemeChanged() override;
+  void StateChanged(ButtonState old_state) override;
 
   void Update(
       const std::vector<std::reference_wrapper<const ui::ImageModel>>& icons);
 
  private:
-  // Label for trailing text indicating how many more un-shown items there are.
-  // For example, if 10 items are supplied and the number of displayed icons is
-  // 3, the label will show "+7".
-  raw_ptr<views::Label> plus_more_label_ = nullptr;
+  void UpdateBackground();
+  raw_ptr<views::View> content_container_ = nullptr;
 };
 
 }  // namespace page_actions
