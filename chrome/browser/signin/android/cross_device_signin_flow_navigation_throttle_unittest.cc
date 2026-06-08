@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
@@ -79,19 +80,21 @@ class CrossDeviceSigninFlowNavigationThrottleUnitTest
   }
 
   MockSigninBridge* signin_bridge() { return &mock_signin_bridge_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSigninBridge> mock_signin_bridge_;
   std::unique_ptr<CrossDeviceSigninFlowNavigationThrottle> throttle_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
        WillStartRequest_CancelAndIgnoreOnValidDeepLink) {
   testing::NiceMock<content::MockNavigationHandle> handle(
       GURL("https://www.google.com/chrome/"
-           "go-mobile?entry_point_id=0&email=test@gmail.com"),
+           "go-mobile?entry_point_id=1000&email=test@gmail.com"),
       main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
@@ -102,7 +105,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   ASSERT_TRUE(throttle);
   signin::SigninDeepLinkPayload expected_payload{
       .entry_point_id = signin::ExternalEntryPoint::kUnknown,
-      .entry_point_id_raw_value_for_metrics = 0,
+      .entry_point_id_raw_value_for_metrics = 1000,
       .email = "test@gmail.com"};
   EXPECT_CALL(*signin_bridge(),
               StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),
@@ -110,6 +113,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
       .Times(1);
   EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillStartRequest().action());
+  histogram_tester().ExpectUniqueSample("Signin.CrossDevice.UrlDetected", 1000,
+                                        1);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -130,6 +135,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
       .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
+  histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -148,13 +154,14 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
       .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
+  histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
        WillRedirectRequest_CancelAndIgnoreOnValidDeepLink) {
   testing::NiceMock<content::MockNavigationHandle> handle(
       GURL("https://www.google.com/chrome/"
-           "go-mobile?entry_point_id=0&email=test@gmail.com"),
+           "go-mobile?entry_point_id=1&email=test@gmail.com"),
       main_rfh());
   content::MockNavigationThrottleRegistry registry(
       &handle,
@@ -164,8 +171,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
 
   ASSERT_TRUE(throttle);
   signin::SigninDeepLinkPayload expected_payload{
-      .entry_point_id = signin::ExternalEntryPoint::kUnknown,
-      .entry_point_id_raw_value_for_metrics = 0,
+      .entry_point_id = signin::ExternalEntryPoint::kDesktopDefault,
+      .entry_point_id_raw_value_for_metrics = 1,
       .email = "test@gmail.com"};
   EXPECT_CALL(*signin_bridge(),
               StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),
@@ -173,6 +180,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
       .Times(1);
   EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillRedirectRequest().action());
+  histogram_tester().ExpectUniqueSample("Signin.CrossDevice.UrlDetected", 1, 1);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -193,6 +201,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
       .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
+  histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -211,6 +220,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
       .Times(0);
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
+  histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
 }
 
 class CrossDeviceSigninFlowNavigationThrottleFactoryUnitTest
