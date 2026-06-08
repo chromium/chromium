@@ -674,8 +674,20 @@ public class PaymentRequestService
         }
 
         PaymentApp invokedPaymentApp = showingPaymentRequest.mInvokedPaymentApp;
-        assert invokedPaymentApp != null;
-        assert invokedPaymentApp.getPaymentAppType() == PaymentAppType.SERVICE_WORKER_APP;
+        if (invokedPaymentApp == null
+                || invokedPaymentApp.getPaymentAppType() != PaymentAppType.SERVICE_WORKER_APP) {
+            return null;
+        }
+
+        // Ensure that this request is for the same origin as the invoked payment app,
+        // to prevent a compromised renderer for one payment app from hijacking the UI of
+        // a different payment app.
+        Origin appOrigin = Origin.create(new GURL(invokedPaymentApp.getIdentifier()));
+        Origin windowOrigin = Origin.create(url);
+        if (!appOrigin.equals(windowOrigin)) {
+            return null;
+        }
+
         assumeNonNull(showingPaymentRequest.mBrowserPaymentRequest);
         return showingPaymentRequest.mBrowserPaymentRequest.openPaymentHandlerWindow(
                 url, invokedPaymentApp.getUkmSourceId());
