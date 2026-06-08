@@ -189,10 +189,6 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   __weak UIButton* _previewedButton;
 }
 
-- (void)dealloc {
-  [_layoutState removeObserver:self];
-}
-
 - (void)setLayoutState:(LayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;

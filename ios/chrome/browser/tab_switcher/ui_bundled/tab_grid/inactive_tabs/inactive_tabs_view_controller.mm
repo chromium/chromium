@@ -37,10 +37,6 @@
   TabGridToolbarBackgroundView* _gradientBackgroundView;
 }
 
-- (void)dealloc {
-  [_layoutState removeObserver:self];
-}
-
 - (void)setLayoutState:(LayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;

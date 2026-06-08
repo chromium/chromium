@@ -86,10 +86,6 @@ CGFloat CompactButtonHorizontalPadding() {
   return self;
 }
 
-- (void)dealloc {
-  [_layoutState removeObserver:self];
-}
-
 #pragma mark - UIView
 
 - (void)didMoveToSuperview {

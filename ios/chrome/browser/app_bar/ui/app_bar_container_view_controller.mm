@@ -25,10 +25,6 @@
   CGFloat _fullscreenProgress;
 }
 
-- (void)dealloc {
-  [_layoutState removeObserver:self];
-}
-
 - (void)setLayoutState:(LayoutState*)layoutState {
   if (_layoutState == layoutState) {
     return;
