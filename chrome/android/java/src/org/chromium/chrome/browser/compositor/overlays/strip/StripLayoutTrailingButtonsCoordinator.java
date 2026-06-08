@@ -349,11 +349,9 @@ public class StripLayoutTrailingButtonsCoordinator {
 
             mGlicButton.setTint(SemanticColorUtils.getDefaultIconColor(mContext));
 
-            mGlicButton.setAccessibilityDescription(
-                    mContext.getString(R.string.glic_tab_strip_button_tooltip));
-
             mGlicButton.setText(
                     mContext.getString(R.string.glic_button_entrypoint_ask_gemini_label));
+            updateButtonAccessibilityDescription(/* isActor= */ false);
 
             mGlicActorButton =
                     new TintedCompositorTextButton(
@@ -477,13 +475,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mIsGlicUiVisible == isOpened) return;
 
         mIsGlicUiVisible = isOpened;
-        if (mGlicButton != null) {
-            mGlicButton.setAccessibilityDescription(
-                    mContext.getString(
-                            isOpened
-                                    ? R.string.glic_tab_strip_button_tooltip_close
-                                    : R.string.glic_tab_strip_button_tooltip));
-        }
+        updateButtonAccessibilityDescription(/* isActor= */ false);
     }
 
     private void onGlicPrefChanged() {
@@ -976,13 +968,30 @@ public class StripLayoutTrailingButtonsCoordinator {
             button.setTextResourceId(Resources.ID_NULL);
         }
 
-        // TODO(crbug.com/518925727): Check if we need to change a11y string for Glic with nudge.
-        if (button == mGlicActorButton) {
-            if (TextUtils.isEmpty(text)) {
-                button.setAccessibilityDescription(
-                        mContext.getString(R.string.actor_task_indicator_tooltip));
+        updateButtonAccessibilityDescription(isActor);
+    }
+
+    private void updateButtonAccessibilityDescription(boolean isActor) {
+        if (isActor) {
+            if (mGlicActorButton == null) return;
+            String text = mGlicActorButton.getText();
+            String desc =
+                    TextUtils.isEmpty(text)
+                            ? mContext.getString(R.string.actor_task_indicator_tooltip)
+                            : text;
+            mGlicActorButton.setAccessibilityDescription(desc);
+        } else {
+            if (mGlicButton == null) return;
+            if (mIsGlicUiVisible) {
+                mGlicButton.setAccessibilityDescription(
+                        mContext.getString(R.string.glic_tab_strip_button_tooltip_close));
             } else {
-                button.setAccessibilityDescription(text);
+                String text = mGlicButton.getText();
+                String desc =
+                        TextUtils.isEmpty(text)
+                                ? mContext.getString(R.string.glic_tab_strip_button_tooltip)
+                                : text;
+                mGlicButton.setAccessibilityDescription(desc);
             }
         }
     }
