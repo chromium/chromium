@@ -36,87 +36,98 @@ namespace {
 // image. In addition, this class will compute the SHA256 hash of the file.
 class MachOFeatureExtractor {
  public:
-  MachOFeatureExtractor();
+  explicit MachOFeatureExtractor(std::unique_ptr<ReadStream> stream);
 
   MachOFeatureExtractor(const MachOFeatureExtractor&) = delete;
   MachOFeatureExtractor& operator=(const MachOFeatureExtractor&) = delete;
 
   ~MachOFeatureExtractor();
 
-  // Tests if the stream references a Mach-O image by examinig its magic
-  // number.
-  bool IsMachO(ReadStream* stream);
+  // Returns whether the stream references a Mach-O image by examining its magic
+  // number. If not, the stream is reset and it is an error to attempt further
+  // operations.
+  bool IsMachO();
 
-  // Computes the hash of the data in |stream| and extracts the Mach-O
-  // features from the data. Returns true if successful, or false on error or
-  // if the file was not Mach-O.
-  bool ExtractFeatures(ReadStream* stream,
-                       ClientDownloadRequest_ArchivedBinary* result);
+  // Computes the hash of the data in the underlying stream and extracts the
+  // Mach-O features from the data, populating `result` with the features.
+  // Returns true on success, or false on error.
+  bool ExtractFeatures(ClientDownloadRequest_ArchivedBinary* result);
 
  private:
-  // Reads the entire stream and updates the hash.
-  bool HashAndCopyStream(ReadStream* stream,
-                         base::span<uint8_t, crypto::hash::kSha256Size> digest);
+  // Reads the entire stream into `buffer` and updates `digest` with the hash.
+  bool HashAndCopyStream(base::span<uint8_t, crypto::hash::kSha256Size> digest,
+                         std::vector<uint8_t>& buffer);
 
   scoped_refptr<BinaryFeatureExtractor> bfe_;
-  std::vector<uint8_t> buffer_;  // Buffer that contains read stream data.
+  std::unique_ptr<ReadStream> stream_;
 };
 
-MachOFeatureExtractor::MachOFeatureExtractor()
-    : bfe_(new BinaryFeatureExtractor()),
-      buffer_() {
-  buffer_.reserve(1024 * 1024);
-}
+MachOFeatureExtractor::MachOFeatureExtractor(std::unique_ptr<ReadStream> stream)
+    : bfe_(base::MakeRefCounted<BinaryFeatureExtractor>()),
+      stream_(std::move(stream)) {}
 
 MachOFeatureExtractor::~MachOFeatureExtractor() = default;
 
-bool MachOFeatureExtractor::IsMachO(ReadStream* stream) {
+bool MachOFeatureExtractor::IsMachO() {
+  if (!stream_) {
+    return false;
+  }
   uint32_t magic = 0;
-  return stream->ReadType<uint32_t>(magic) &&
-         MachOImageReader::IsMachOMagicValue(magic);
+  bool is_mach_o = stream_->ReadType<uint32_t>(magic) &&
+                   MachOImageReader::IsMachOMagicValue(magic);
+  if (!is_mach_o) {
+    stream_.reset();
+  }
+  return is_mach_o;
 }
 
 bool MachOFeatureExtractor::ExtractFeatures(
-    ReadStream* stream,
     ClientDownloadRequest_ArchivedBinary* result) {
+  if (!stream_) {
+    return false;
+  }
   std::array<uint8_t, crypto::hash::kSha256Size> hash;
-  if (!HashAndCopyStream(stream, hash)) {
+  std::vector<uint8_t> buffer;
+  if (!HashAndCopyStream(hash, buffer)) {
     return false;
   }
 
   if (!bfe_->ExtractImageFeaturesFromData(
-          buffer_, 0, result->mutable_image_headers(),
+          buffer, 0, result->mutable_image_headers(),
           result->mutable_signature()->mutable_signed_data())) {
     return false;
   }
 
-  result->set_length(buffer_.size());
+  result->set_length(buffer.size());
   result->mutable_digests()->set_sha256(base::as_string_view(hash));
 
   return true;
 }
 
 bool MachOFeatureExtractor::HashAndCopyStream(
-    ReadStream* stream,
-    base::span<uint8_t, crypto::hash::kSha256Size> hash) {
-  if (stream->Seek(0, SEEK_SET) != 0)
+    base::span<uint8_t, crypto::hash::kSha256Size> hash,
+    std::vector<uint8_t>& buffer) {
+  if (stream_->Seek(0, SEEK_SET) != 0) {
     return false;
+  }
 
-  buffer_.clear();
+  buffer.clear();
+  buffer.reserve(1024 * 1024);
   crypto::hash::Hasher hasher(crypto::hash::HashKind::kSha256);
 
   size_t bytes_read;
-  const size_t kBufferSize = 2048;
+  const size_t kBufferSizeIncrement = 2048;
   do {
-    size_t buffer_offset = buffer_.size();
+    size_t buffer_offset = buffer.size();
 
-    buffer_.resize(buffer_.size() + kBufferSize);
-    base::span<uint8_t> read_buf = base::span(buffer_).last(kBufferSize);
-    if (!stream->Read(read_buf, &bytes_read)) {
+    buffer.resize(buffer.size() + kBufferSizeIncrement);
+    base::span<uint8_t> read_buf =
+        base::span(buffer).last(kBufferSizeIncrement);
+    if (!stream_->Read(read_buf, &bytes_read)) {
       return false;
     }
 
-    buffer_.resize(buffer_offset + bytes_read);
+    buffer.resize(buffer_offset + bytes_read);
     read_buf = read_buf.first(bytes_read);
     if (bytes_read) {
       hasher.Update(read_buf);
@@ -148,7 +159,6 @@ void DMGAnalyzer::Init() {
 }
 
 bool DMGAnalyzer::ResumeExtraction() {
-  MachOFeatureExtractor feature_extractor;
   while (iterator_->Next()) {
     std::unique_ptr<ReadStream> stream = iterator_->GetReadStream();
     if (!stream) {
@@ -184,12 +194,15 @@ bool DMGAnalyzer::ResumeExtraction() {
       detached_signature->set_file_name(path);
       detached_signature->set_contents(signature_contents.data(),
                                        signature_contents.size());
-    } else if (feature_extractor.IsMachO(stream.get())) {
+      continue;
+    }
+
+    MachOFeatureExtractor feature_extractor(std::move(stream));
+    if (feature_extractor.IsMachO()) {
       ClientDownloadRequest_ArchivedBinary* binary =
           results()->archived_binary.Add();
       binary->set_file_path(path);
-
-      if (feature_extractor.ExtractFeatures(stream.get(), binary)) {
+      if (feature_extractor.ExtractFeatures(binary)) {
         binary->set_download_type(
             ClientDownloadRequest_DownloadType_MAC_EXECUTABLE);
         binary->set_is_executable(true);
@@ -198,7 +211,7 @@ bool DMGAnalyzer::ResumeExtraction() {
         results()->archived_binary.RemoveLast();
       }
     } else {
-      // Get a new `stream` because it was read from in previous branches.
+      // Get a new `stream` because it was moved from in previous branches.
       stream = iterator_->GetReadStream();
       DownloadFileType_InspectionType file_type =
           GetFileType(base::FilePath(path));
