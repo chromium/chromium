@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -159,6 +160,16 @@ bool AiModePageActionController::ShouldShowPageAction(
   const bool has_focus = focus_manager && location_bar_view.Contains(
                                               focus_manager->GetFocusedView());
 
+  const auto page_classification = edit_model->GetPageClassification();
+
+  // Suppress the AI Mode page action button when OnFocus on web pages.
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxDynamicAiModeButton)) {
+    if (has_focus && !edit_model->user_input_in_progress() &&
+        !omnibox::IsNTPPage(page_classification)) {
+      return false;
+    }
+  }
+
   // TODO(crbug.com/448234135): Remove this logic from the migrated path when
   // Page Action framework supports suggestion chip queueing.
   //
@@ -166,7 +177,6 @@ bool AiModePageActionController::ShouldShowPageAction(
   // popup. In this case, we suppress the AIM page action in order to ensure
   // that it doesn't get visually "sandwiched" in between the other page actions
   // that show up in this state.
-  const auto page_classification = edit_model->GetPageClassification();
   if (has_focus && !edit_model->user_input_in_progress() &&
       !location_bar_view.GetOmniboxController()->IsPopupOpen() &&
       !omnibox::IsNTPPage(page_classification)) {
