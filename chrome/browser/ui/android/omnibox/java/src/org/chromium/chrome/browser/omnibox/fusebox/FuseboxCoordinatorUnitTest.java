@@ -345,9 +345,9 @@ public class FuseboxCoordinatorUnitTest {
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mCoordinator.setMediatorForTesting(mMediator);
         var viewHolder = assumeNonNull(mCoordinator.getViewHolderForTesting());
-        viewHolder.addButton.setVisibility(View.VISIBLE);
+        viewHolder.plusButton.setVisibility(View.VISIBLE);
         mCoordinator.onContextPopupDismissed();
-        assertTrue(viewHolder.addButton.isFocused());
+        assertTrue(viewHolder.plusButton.isFocused());
     }
 
     @Test

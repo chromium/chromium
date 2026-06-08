@@ -597,8 +597,8 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onAddButtonClicked_togglePopup() {
-        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+    public void onPlusButtonClicked_togglePopup() {
+        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -611,10 +611,10 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onAddButtonClicked_bottomSheet_hidesKeyboard() {
+    public void onPlusButtonClicked_bottomSheet_hidesKeyboard() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -623,9 +623,9 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void onAddButtonClicked_updatesPopupStateSupplier() {
+    public void onPlusButtonClicked_updatesPopupStateSupplier() {
         assertEquals(PopupState.HIDDEN, mPopupStateSupplier.get().intValue());
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertEquals(PopupState.FLOATING, mPopupStateSupplier.get().intValue());
     }
 
@@ -633,24 +633,24 @@ public class FuseboxMediatorUnitTest {
     public void onHidePopup_bottomSheet_showsKeyboardIfFocused() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         ConstraintLayout spyParent = spy(mViewHolder.parentView);
-        doReturn(mViewHolder.addButton).when(spyParent).findFocus();
+        doReturn(mViewHolder.plusButton).when(spyParent).findFocus();
         mViewHolder = new FuseboxViewHolder(spyParent, mPopup);
         recreateMediator();
 
         // Show popup first
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 
         // Hide popup
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 
         verify(mKeyboardVisibilityDelegate).showKeyboard(any());
     }
 
     @Test
-    public void onAddButtonClicked_floatingPopup_doesNotHideKeyboard() {
+    public void onPlusButtonClicked_floatingPopup_doesNotHideKeyboard() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
         recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -663,7 +663,7 @@ public class FuseboxMediatorUnitTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -712,7 +712,7 @@ public class FuseboxMediatorUnitTest {
     public void testPopupShowHide_floatingMode_doesNotTriggerScrim() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
         recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -725,7 +725,7 @@ public class FuseboxMediatorUnitTest {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
-        Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
+        Runnable runnable = mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED);
         assertNotNull(runnable);
 
         // Show popup.
@@ -735,7 +735,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testEndInput_DismissesPopup() {
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertEquals(PopupState.FLOATING, (int) mModel.get(FuseboxProperties.POPUP_STATE));
 
         mMediator.endInput();
@@ -767,7 +767,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
 
         // Show popup toggles supplier to true.
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
 
         // Handle back press hides popup and returns SUCCESS.
@@ -805,19 +805,19 @@ public class FuseboxMediatorUnitTest {
         doReturn(89L).when(mTab2).getTimestampMillis();
         doReturn(false).when(mPopup).isShowing();
 
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertNonNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
         OmniboxFeatures.sAllowCurrentTab.setForTesting(false);
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
 
         OmniboxFeatures.sAllowCurrentTab.setForTesting(true);
         doReturn(null).when(mTabFaviconFactory).apply(any());
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertNull(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON));
 
@@ -828,7 +828,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(mBitmap, ((BitmapDrawable) mAttachments.get(0).thumbnail).getBitmap());
 
         doReturn(mTab2).when(mTabModelSelector).getCurrentTab();
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
     }
 
@@ -973,7 +973,7 @@ public class FuseboxMediatorUnitTest {
         recreateMediator();
         RobolectricUtil.runAllBackgroundAndUi();
 
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
@@ -981,7 +981,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
 
         clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
@@ -1522,17 +1522,17 @@ public class FuseboxMediatorUnitTest {
         doReturn(false).when(mWebContents).isLoading();
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run();
         assertEquals(1, mAttachments.size());
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertFalse(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(0, mAttachments.size());
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertTrue(isToolEnabled(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE));
 
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_FILE);
@@ -2316,7 +2316,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void updateModelForRecentTabs_nonDesktop_remainsHidden() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE));
     }
 
@@ -2335,7 +2335,7 @@ public class FuseboxMediatorUnitTest {
         Tab tab3 = mockTab(3, JUnitTestGURLs.URL_1);
         Tab tab4 = mockTab(4, JUnitTestGURLs.URL_2);
 
-        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_HEADER_VISIBLE));
         assertTrue(mModel.get(FuseboxProperties.POPUP_RECENT_TABS_DIVIDER_VISIBLE));

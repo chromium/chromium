@@ -118,7 +118,7 @@ public class FuseboxViewBinderUnitTest {
         mViewHolder = new FuseboxViewHolder(parent, mPopup);
 
         // Initialize workable defaults.
-        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, true);
+        mModel.set(FuseboxProperties.PLUS_BUTTON_VISIBLE, true);
         mModel.set(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.SEARCH);
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_TEXT, "test label");
@@ -157,13 +157,13 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void addButtonVisible_setsVisibility() {
+    public void plusButtonVisible_setsVisibility() {
         mModel.set(FuseboxProperties.REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
-        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, true);
-        assertEquals(View.VISIBLE, mViewHolder.addButton.getVisibility());
+        mModel.set(FuseboxProperties.PLUS_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mViewHolder.plusButton.getVisibility());
 
-        mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, false);
-        assertEquals(View.GONE, mViewHolder.addButton.getVisibility());
+        mModel.set(FuseboxProperties.PLUS_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mViewHolder.plusButton.getVisibility());
     }
 
     @Test
@@ -183,11 +183,11 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void addButtonClickListener_isCalled() {
+    public void plusButtonClickListener_isCalled() {
         Runnable runnable = mock(Runnable.class);
-        mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, runnable);
+        mModel.set(FuseboxProperties.PLUS_BUTTON_CLICKED, runnable);
 
-        mViewHolder.addButton.performClick();
+        mViewHolder.plusButton.performClick();
         verify(runnable).run();
     }
 
@@ -255,7 +255,7 @@ public class FuseboxViewBinderUnitTest {
     public void reanchorViewsForCompactFusebox_compactModeSearch() {
         configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
 
-        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.plusButton.getLayoutParams();
         assertEquals(R.id.url_bar, lp.topToTop);
         assertEquals(ConstraintSet.UNSET, lp.topToBottom);
         assertEquals(ConstraintSet.UNSET, lp.bottomToBottom);
@@ -265,7 +265,7 @@ public class FuseboxViewBinderUnitTest {
     public void reanchorViewsForCompactFusebox_notCompactMode() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
 
-        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.plusButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
         assertEquals(R.id.url_bar, lp.topToBottom);
         assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);
@@ -276,7 +276,7 @@ public class FuseboxViewBinderUnitTest {
         configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
-        var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
+        var lp = (ConstraintLayout.LayoutParams) mViewHolder.plusButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
         assertEquals(R.id.omnibox_suggestions_dropdown, lp.topToBottom);
         assertEquals(ConstraintSet.PARENT_ID, lp.bottomToBottom);

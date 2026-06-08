@@ -205,7 +205,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         ViewRectProvider floatingViewRectProvider;
         if (getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
             // Popover never uses StatusView to show plus button, so this is safe here.
-            View plusButton = mParent.findViewById(R.id.location_bar_attachments_add);
+            View plusButton = mParent.findViewById(R.id.fusebox_plus_button);
             floatingViewRectProvider = new ViewRectProvider(plusButton);
         } else {
             // Instead of anchoring on the plus button or status view, anchor on the parent and then
@@ -437,9 +437,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     @VisibleForTesting
     void onContextPopupDismissed() {
-        if (mViewHolder == null || mViewHolder.addButton == null) return;
-        mViewHolder.addButton.requestFocus();
-        mViewHolder.addButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        if (mViewHolder == null || mViewHolder.plusButton == null) return;
+        mViewHolder.plusButton.requestFocus();
+        mViewHolder.plusButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
         if (mOnInteractionCompletedCallback != null) {
             mOnInteractionCompletedCallback.onResult(
                     mMediator != null && mMediator.wasActionTaken());

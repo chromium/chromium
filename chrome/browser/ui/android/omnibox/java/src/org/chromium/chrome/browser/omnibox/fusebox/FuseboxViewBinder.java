@@ -67,8 +67,6 @@ class FuseboxViewBinder {
                     model, FuseboxProperties.ACTIVATION_CHIP_VISIBLE, view.activationChip);
         } else if (propertyKey == FuseboxProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
-        } else if (propertyKey == FuseboxProperties.ADD_BUTTON_VISIBLE) {
-            updateAddButton(model, view);
         } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -92,14 +90,16 @@ class FuseboxViewBinder {
                     layoutManager.removeAllViews();
                 }
             }
-        } else if (propertyKey == FuseboxProperties.BUTTON_ADD_CLICKED) {
-            view.addButton.setOnClickListener(
-                    v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE
                 || propertyKey == FuseboxProperties.FUSEBOX_LAYOUT_MODE) {
             reanchorViewsForCompactFusebox(model, view);
+        } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_CLICKED) {
+            view.plusButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.PLUS_BUTTON_VISIBLE) {
+            updatePlusButton(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run());
@@ -523,7 +523,7 @@ class FuseboxViewBinder {
 
     private static void updateButtonsVisibilityAndStyling(
             PropertyModel model, FuseboxViewHolder view) {
-        updateAddButton(model, view);
+        updatePlusButton(model, view);
         updateNavigateButton(model, view);
         updateRequestTypeButton(model, view);
         updatePopupTheme(model, view);
@@ -535,17 +535,17 @@ class FuseboxViewBinder {
         view.popup.mPopupWindow.setBackgroundDrawable(background);
     }
 
-    private static void updateAddButton(PropertyModel model, FuseboxViewHolder view) {
-        boolean showAddButton = model.get(FuseboxProperties.ADD_BUTTON_VISIBLE);
-        ChromeImageView addButton = view.addButton;
-        addButton.setVisibility(showAddButton ? View.VISIBLE : View.GONE);
-        if (showAddButton) {
+    private static void updatePlusButton(PropertyModel model, FuseboxViewHolder view) {
+        boolean showPlusButton = model.get(FuseboxProperties.PLUS_BUTTON_VISIBLE);
+        ChromeImageView plusButton = view.plusButton;
+        plusButton.setVisibility(showPlusButton ? View.VISIBLE : View.GONE);
+        if (showPlusButton) {
             @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
             Context context = view.parentView.getContext();
-            addButton.setBackground(
+            plusButton.setBackground(
                     OmniboxResourceProvider.getSearchBoxIconBackground(
                             context, brandedColorScheme));
-            addButton.setImageTintList(
+            plusButton.setImageTintList(
                     OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme));
         }
     }
@@ -700,7 +700,7 @@ class FuseboxViewBinder {
         var cs = new ConstraintSet();
         cs.clone(view.parentView);
 
-        int id = view.addButton.getId();
+        int id = view.plusButton.getId();
         cs.clear(id, ConstraintSet.TOP);
         cs.clear(id, ConstraintSet.BOTTOM);
         cs.clear(id, ConstraintSet.BASELINE);

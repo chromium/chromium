@@ -26,7 +26,7 @@ found in the LICENSE file.
         app:layout_constraintTop_toTopOf="parent"/>
 
     <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/location_bar_attachments_add"
+        android:id="@+id/fusebox_plus_button"
         android:layout_width="@dimen/fusebox_button_size"
         android:layout_height="@dimen/fusebox_button_size"
         android:visibility="gone"
@@ -55,7 +55,7 @@ found in the LICENSE file.
         android:singleLine="true"
         android:text="@string/ai_mode_entrypoint_label"
         android:textAlignment="viewStart"
-        app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
+        app:layout_constraintStart_toEndOf="@id/fusebox_plus_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/url_bar"
         app:buttonColor="@color/interactable_chip_bg_color"

@@ -1002,8 +1002,8 @@ public class LocationBarCoordinator
 
     /* package */ void onFuseboxStateChange(@FuseboxState int newState) {
         if (mUrlCoordinator == null || !mUrlCoordinator.hasFocus()) return;
-        View addButton = mLocationBarLayout.findViewById(R.id.location_bar_attachments_add);
-        if (addButton == null) return;
+        View plusButton = mLocationBarLayout.findViewById(R.id.fusebox_plus_button);
+        if (plusButton == null) return;
 
         // The Fade and and ChangeBounds anims below are only intended for animating between compact
         // <--> expanded; they don't look good otherwise.
@@ -1020,7 +1020,7 @@ public class LocationBarCoordinator
                 .setDuration(COMPACT_MODE_ANIMATION_DURATION_MS)
                 .setInterpolator(Interpolators.STANDARD_INTERPOLATOR)
                 .addTarget(mLocationBarLayout)
-                .addTarget(addButton);
+                .addTarget(plusButton);
         Transition transition;
         if (newState == FuseboxState.COMPACT) {
             // Only fade when entering expanded mode.

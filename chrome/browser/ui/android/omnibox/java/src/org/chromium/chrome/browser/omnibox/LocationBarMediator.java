@@ -1373,7 +1373,7 @@ class LocationBarMediator
         set.connect(
                 mDropdown.getId(),
                 ConstraintSet.BOTTOM,
-                R.id.location_bar_attachments_add,
+                R.id.fusebox_plus_button,
                 ConstraintSet.TOP);
         set.connect(
                 mDropdown.getId(),
@@ -1387,7 +1387,7 @@ class LocationBarMediator
         set.connect(R.id.delete_button, ConstraintSet.BOTTOM, R.id.url_bar, ConstraintSet.BOTTOM);
 
         set.connect(
-                R.id.location_bar_attachments_add,
+                R.id.fusebox_plus_button,
                 ConstraintSet.TOP,
                 mDropdown.getId(),
                 ConstraintSet.BOTTOM);

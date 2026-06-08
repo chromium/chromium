@@ -42,7 +42,7 @@ public class LocationBarCoordinatorUnitTest {
     @Mock private View mUrlBar;
     @Mock private LocationBarLayout mLocationBarLayout;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
-    @Mock private View mAddButton;
+    @Mock private View mPlusButton;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private LocationBarMediator mLocationBarMediator;
@@ -67,8 +67,7 @@ public class LocationBarCoordinatorUnitTest {
         when(mLocationBarMediator.getLocationBarDataProvider())
                 .thenReturn(mLocationBarDataProvider);
         when(mLocationBarDataProvider.getNewTabPageDelegate()).thenReturn(mNewTabPageDelegate);
-        when(mLocationBarLayout.findViewById(R.id.location_bar_attachments_add))
-                .thenReturn(mAddButton);
+        when(mLocationBarLayout.findViewById(R.id.fusebox_plus_button)).thenReturn(mPlusButton);
         when(mLocationBarLayout.getContext()).thenReturn(RuntimeEnvironment.getApplication());
     }
 

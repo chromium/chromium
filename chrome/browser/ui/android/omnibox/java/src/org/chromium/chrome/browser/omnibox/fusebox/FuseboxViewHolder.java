@@ -18,7 +18,7 @@ import org.chromium.ui.widget.ChromeImageView;
 class FuseboxViewHolder {
     public final ConstraintLayout parentView;
     public final RecyclerView attachmentsView;
-    public final ChromeImageView addButton;
+    public final ChromeImageView plusButton;
     public final FuseboxPopup popup;
     public final ButtonCompat requestType;
     public final ChromeImageView navigateButton;
@@ -27,7 +27,7 @@ class FuseboxViewHolder {
     FuseboxViewHolder(ConstraintLayout parent, FuseboxPopup popup) {
         parentView = parent;
         attachmentsView = parent.findViewById(R.id.location_bar_attachments);
-        addButton = parent.findViewById(R.id.location_bar_attachments_add);
+        plusButton = parent.findViewById(R.id.fusebox_plus_button);
         requestType = parent.findViewById(R.id.fusebox_request_type);
         navigateButton = parent.findViewById(R.id.navigate_button);
         activationChip = parent.findViewById(R.id.fusebox_activation_chip);
@@ -39,6 +39,6 @@ class FuseboxViewHolder {
                         parent.getResources()
                                 .getDimensionPixelSize(R.dimen.fusebox_button_corner_radius));
         outline.setClipPaddedArea(true);
-        addButton.setOutlineProvider(outline);
+        plusButton.setOutlineProvider(outline);
     }
 }
