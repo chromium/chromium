@@ -211,6 +211,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (_layoutState) {
     [_layoutState addObserver:self];
   }
+  _bottomToolbar.layoutState = layoutState;
+}
+
+- (void)setBottomToolbar:(TabGridBottomToolbar*)bottomToolbar {
+  _bottomToolbar = bottomToolbar;
+  _bottomToolbar.layoutState = self.layoutState;
 }
 
 - (void)didSetupChildViewsForTesting {

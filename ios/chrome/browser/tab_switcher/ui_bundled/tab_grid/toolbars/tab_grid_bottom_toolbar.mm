@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -54,6 +55,9 @@ CGFloat CompactButtonHorizontalPadding() {
 
 }  // namespace
 
+@interface TabGridBottomToolbar () <LayoutStateObserver>
+@end
+
 @implementation TabGridBottomToolbar {
   UIToolbar* _containerToolbar;
   TabGridNewTabButton* _smallNewTabButton;
@@ -80,6 +84,10 @@ CGFloat CompactButtonHorizontalPadding() {
     [self updateLayout];
   }
   return self;
+}
+
+- (void)dealloc {
+  [_layoutState removeObserver:self];
 }
 
 #pragma mark - UIView
@@ -244,6 +252,13 @@ CGFloat CompactButtonHorizontalPadding() {
 
 - (void)setEditButtonEnabled:(BOOL)enabled {
   _editButton.enabled = enabled;
+}
+
+#pragma mark - LayoutStateObserver
+
+- (void)layoutState:(LayoutState*)layoutState
+    didChangeAppBarPosition:(AppBarPosition)appBarPosition {
+  [self updateLayout];
 }
 
 #pragma mark - Private
@@ -521,12 +536,16 @@ CGFloat CompactButtonHorizontalPadding() {
   BOOL hideToolbar;
   hideToolbar = self.mode == TabGridMode::kSearch;
 
-  if (IsChromeNextIaEnabled() && useCompactLayout) {
+  BOOL appBarAvailable =
+      self.layoutState.appBarPosition != AppBarPosition::kNone;
+  if (IsChromeNextIaEnabled() && appBarAvailable) {
     // If the App Bar is available (iPhone), the bottom toolbar buttons should
     // be hidden in the Tab Grid's non-selection states.
     hideToolbar =
         self.mode == TabGridMode::kSearch || self.mode == TabGridMode::kNormal;
   }
+
+  _viewTopConstraint.active = NO;
 
   if (hideToolbar) {
     self.hidden = YES;
@@ -536,7 +555,6 @@ CGFloat CompactButtonHorizontalPadding() {
   }
 
   self.hidden = NO;
-  _viewTopConstraint.active = NO;
 
   if (self.mode == TabGridMode::kSelection) {
     _closeTabsButton.hidden = NO;
@@ -744,6 +762,20 @@ CGFloat CompactButtonHorizontalPadding() {
   }
   _hideScrolledToEdgeBackground = hideScrolledToEdgeBackground;
   [self updateBackgroundVisibility];
+}
+
+- (void)setLayoutState:(LayoutState*)layoutState {
+  if (_layoutState == layoutState) {
+    return;
+  }
+  if (_layoutState) {
+    [_layoutState removeObserver:self];
+  }
+  _layoutState = layoutState;
+  if (_layoutState) {
+    [_layoutState addObserver:self];
+  }
+  [self updateLayout];
 }
 
 @end

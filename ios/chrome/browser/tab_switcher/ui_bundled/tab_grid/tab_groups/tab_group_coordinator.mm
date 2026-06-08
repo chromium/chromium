@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -462,6 +463,7 @@ constexpr CGFloat kFacePileAvatarSize = 26;
       [[TabGroupViewController alloc] initWithHandler:handler
                                             incognito:self.isOffTheRecord
                                              tabGroup:_tabGroup];
+  _viewController.layoutState = self.sceneState.layoutState;
   _viewController.gridViewController.delegate = self;
   _viewController.presentationHandler = self;
 }
