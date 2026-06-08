@@ -555,7 +555,5 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         ReaderModeHeuristicResult::kMalformedResponse,
         ReaderModeHeuristicResult::kReaderModeEligible,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength,
         ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength),
     ReaderModeTest::TestParametersReaderModeHeuristicResultToString);

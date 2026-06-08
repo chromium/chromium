@@ -47,7 +47,8 @@ class ReaderModeTest : public PlatformTest {
   void SetReaderModeState(web::FakeWebState* web_state,
                           const GURL& url,
                           ReaderModeHeuristicResult eligibility,
-                          std::string distilled_content);
+                          std::string distilled_content,
+                          bool mock_opt_guide = true);
 
   // Waits after a page load for the page content to be distillable.
   void WaitForPageLoadDelayAndRunUntilIdle();

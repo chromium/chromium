@@ -777,7 +777,8 @@ class ReaderModeTabHelperOptimizationGuideTest
 TEST_F(ReaderModeTabHelperOptimizationGuideTest, EligibilityForEligiblePage) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     ReaderModeHeuristicResult::kReaderModeEligible, "",
+                     /*mock_opt_guide=*/false);
 
   // Prepare optimization guide metadata.
   OptimizationGuideService* optimization_guide_service =
@@ -834,7 +835,8 @@ TEST_F(ReaderModeTabHelperOptimizationGuideTest,
        NotEligibleWithOptimizationGuide) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
-                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+                     ReaderModeHeuristicResult::kReaderModeEligible, "",
+                     /*mock_opt_guide=*/false);
 
   // No optimization guide metadata provided.
   LoadWebpage(web_state(), test_url);
@@ -892,12 +894,6 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
 TEST_P(ReaderModeTabHelperWithEligibilityTest,
        TriggerReadabilityHeuristicOnPageLoad) {
   ReaderModeHeuristicResult eligibility = GetEligibility();
-  if (eligibility ==
-          ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly ||
-      eligibility ==
-          ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength) {
-    GTEST_SKIP() << "Does not provide content and length heuristics.";
-  }
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableReadabilityHeuristic);
@@ -1047,7 +1043,5 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         ReaderModeHeuristicResult::kMalformedResponse,
         ReaderModeHeuristicResult::kReaderModeEligible,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentOnly,
-        ReaderModeHeuristicResult::kReaderModeNotEligibleContentLength,
         ReaderModeHeuristicResult::kReaderModeNotEligibleContentAndLength),
     ReaderModeTest::TestParametersReaderModeHeuristicResultToString);
