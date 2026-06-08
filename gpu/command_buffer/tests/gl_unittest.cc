@@ -4,6 +4,7 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include <GLES2/gl2extchromium.h>
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
@@ -131,11 +132,7 @@ TEST_F(GLTest, GetString) {
       reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 }
 
-// TODO(crbug.com/513543143): Goldfish GLES emulator driver on 32-bit x86
-// Android bots has a known driver bug where it incorrectly rejects
-// glCopyTexImage2D on cubemaps with GL_INVALID_ENUM.
-#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) && \
-    !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86))
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 class GL3Test : public GLTest {
  protected:
   void SetUp() override {
@@ -155,7 +152,12 @@ class GL3Test : public GLTest {
 // instead of the specific face target (e.g., GL_TEXTURE_CUBE_MAP_POSITIVE_X)
 // which would cause driver-side GL_INVALID_ENUM errors and result in a state
 // desynchronization between the decoder and the GPU driver.
-TEST_F(GL3Test, CopyTexImage2DWorkaroundStateDesync) {
+//
+// TODO(crbug.com/513543143): Goldfish GLES emulator driver on 32-bit x86
+// Android bots has a known driver bug where it incorrectly rejects
+// glCopyTexImage2D on cubemaps with GL_INVALID_ENUM.
+#if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86))
+TEST_F(GL3Test, CopyTexImage2DCubeMapStateDesync) {
   GLuint tex = 0;
   glGenTextures(1, &tex);
   glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
@@ -202,6 +204,208 @@ TEST_F(GL3Test, CopyTexImage2DWorkaroundStateDesync) {
   glDeleteFramebuffers(1, &fbo);
   glDeleteTextures(1, &tex);
 }
-#endif
+#endif  // !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86))
+
+class GL3MultisampleCopyTexImageTest : public GL3Test {
+ protected:
+  void SetUp() override { GL3Test::SetUp(); }
+
+  void TearDown() override {
+    if (sample_fbo_) {
+      glDeleteFramebuffers(1, &sample_fbo_);
+    }
+    if (sample_tex_) {
+      glDeleteTextures(1, &sample_tex_);
+    }
+    if (sample_rb_) {
+      glDeleteRenderbuffers(1, &sample_rb_);
+    }
+    if (dest_tex_) {
+      glDeleteTextures(1, &dest_tex_);
+    }
+    GL3Test::TearDown();
+  }
+
+  void SetUpImplicitResolveTextureFBO() {
+    glGenTextures(1, &sample_tex_);
+    glBindTexture(GL_TEXTURE_2D, sample_tex_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 16, 16, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
+    glGenFramebuffers(1, &sample_fbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, sample_fbo_);
+    glFramebufferTexture2DMultisampleEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                         GL_TEXTURE_2D, sample_tex_, 0, 4);
+    EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+              glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    GLTestHelper::CheckGLError("SetUpImplicitResolveTextureFBO", __LINE__);
+  }
+
+  void SetUpMultisampleRenderbufferFBO() {
+    glGenRenderbuffers(1, &sample_rb_);
+    glBindRenderbuffer(GL_RENDERBUFFER, sample_rb_);
+    glRenderbufferStorageMultisampleCHROMIUM(GL_RENDERBUFFER, 4, GL_RGBA8, 16,
+                                             16);
+    glGenFramebuffers(1, &sample_fbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, sample_fbo_);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              GL_RENDERBUFFER, sample_rb_);
+    EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+              glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    GLTestHelper::CheckGLError("SetUpMultisampleRenderbufferFBO", __LINE__);
+  }
+
+  void SetUpImplicitResolveRenderbufferFBO() {
+    glGenRenderbuffers(1, &sample_rb_);
+    glBindRenderbuffer(GL_RENDERBUFFER, sample_rb_);
+    glRenderbufferStorageMultisampleEXT(GL_RENDERBUFFER, 4, GL_RGBA8, 16, 16);
+    glGenFramebuffers(1, &sample_fbo_);
+    glBindFramebuffer(GL_FRAMEBUFFER, sample_fbo_);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              GL_RENDERBUFFER, sample_rb_);
+    EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+              glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    GLTestHelper::CheckGLError("SetUpImplicitResolveRenderbufferFBO", __LINE__);
+  }
+
+  void SetUpDestTexture2D() {
+    glGenTextures(1, &dest_tex_);
+    glBindTexture(GL_TEXTURE_2D, dest_tex_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 16, 16, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
+    GLTestHelper::CheckGLError("SetUpDestTexture2D", __LINE__);
+  }
+
+  void SetUpDestTexture3D() {
+    glGenTextures(1, &dest_tex_);
+    glBindTexture(GL_TEXTURE_3D, dest_tex_);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 16, 16, 16, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
+    GLTestHelper::CheckGLError("SetUpDestTexture3D", __LINE__);
+  }
+
+  void VerifyCopySucceeded(GLenum dest_target,
+                           int expected_width,
+                           int expected_height) {
+    EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+    VerifyTextureSize(dest_target, expected_width, expected_height);
+  }
+
+  void VerifyCopyBlocked(GLenum dest_target) {
+    EXPECT_EQ(static_cast<GLenum>(GL_INVALID_OPERATION), glGetError());
+    VerifyTextureSize(dest_target, 16, 16);
+  }
+
+  void VerifyTextureSize(GLenum target,
+                         int expected_width,
+                         int expected_height) {
+    int tracked_width = 0;
+    int tracked_height = 0;
+    bool defined = InspectTextureLevelSize(&gl_, dest_tex_, target, 0,
+                                           &tracked_width, &tracked_height);
+    EXPECT_TRUE(defined);
+    EXPECT_EQ(expected_width, tracked_width);
+    EXPECT_EQ(expected_height, tracked_height);
+  }
+
+  GLuint sample_fbo_ = 0;
+  GLuint sample_tex_ = 0;
+  GLuint sample_rb_ = 0;
+  GLuint dest_tex_ = 0;
+};
+
+// Implicit Resolve Texture
+TEST_F(GL3MultisampleCopyTexImageTest, CopyTexImage2DImplicitResolveTexture) {
+  if (!GLTestHelper::HasExtension("GL_EXT_multisample_render_to_texture")) {
+    GTEST_SKIP() << "GL_EXT_multisample_render_to_texture not supported";
+  }
+  SetUpImplicitResolveTextureFBO();
+  SetUpDestTexture2D();
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, 2, 2, 0);
+  VerifyCopySucceeded(GL_TEXTURE_2D, 2, 2);
+}
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexSubImage2DImplicitResolveTexture) {
+  if (!GLTestHelper::HasExtension("GL_EXT_multisample_render_to_texture")) {
+    GTEST_SKIP() << "GL_EXT_multisample_render_to_texture not supported";
+  }
+  SetUpImplicitResolveTextureFBO();
+  SetUpDestTexture2D();
+  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, 2, 2);
+  VerifyCopySucceeded(GL_TEXTURE_2D, 16, 16);
+}
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexSubImage3DImplicitResolveTexture) {
+  if (!GLTestHelper::HasExtension("GL_EXT_multisample_render_to_texture")) {
+    GTEST_SKIP() << "GL_EXT_multisample_render_to_texture not supported";
+  }
+  SetUpImplicitResolveTextureFBO();
+  SetUpDestTexture3D();
+  glCopyTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, 0, 0, 2, 2);
+  VerifyCopySucceeded(GL_TEXTURE_3D, 16, 16);
+}
+
+// Multisample Renderbuffer
+TEST_F(GL3MultisampleCopyTexImageTest, CopyTexImage2DMultisampleRenderbuffer) {
+  if (!GLTestHelper::HasExtension("GL_CHROMIUM_framebuffer_multisample")) {
+    GTEST_SKIP() << "GL_CHROMIUM_framebuffer_multisample not supported";
+  }
+  SetUpMultisampleRenderbufferFBO();
+  SetUpDestTexture2D();
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, 2, 2, 0);
+  VerifyCopyBlocked(GL_TEXTURE_2D);
+}
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexSubImage2DMultisampleRenderbuffer) {
+  if (!GLTestHelper::HasExtension("GL_CHROMIUM_framebuffer_multisample")) {
+    GTEST_SKIP() << "GL_CHROMIUM_framebuffer_multisample not supported";
+  }
+  SetUpMultisampleRenderbufferFBO();
+  SetUpDestTexture2D();
+  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, 2, 2);
+  VerifyCopyBlocked(GL_TEXTURE_2D);
+}
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexSubImage3DMultisampleRenderbuffer) {
+  if (!GLTestHelper::HasExtension("GL_CHROMIUM_framebuffer_multisample")) {
+    GTEST_SKIP() << "GL_CHROMIUM_framebuffer_multisample not supported";
+  }
+  SetUpMultisampleRenderbufferFBO();
+  SetUpDestTexture3D();
+  glCopyTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, 0, 0, 2, 2);
+  VerifyCopyBlocked(GL_TEXTURE_3D);
+}
+
+// Implicit Resolve Renderbuffer
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexImage2DImplicitResolveRenderbuffer) {
+  if (!GLTestHelper::HasExtension("GL_EXT_multisample_render_to_texture")) {
+    GTEST_SKIP() << "GL_EXT_multisample_render_to_texture not supported";
+  }
+  SetUpImplicitResolveRenderbufferFBO();
+  SetUpDestTexture2D();
+  glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, 2, 2, 0);
+  VerifyCopyBlocked(GL_TEXTURE_2D);
+}
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexSubImage2DImplicitResolveRenderbuffer) {
+  if (!GLTestHelper::HasExtension("GL_EXT_multisample_render_to_texture")) {
+    GTEST_SKIP() << "GL_EXT_multisample_render_to_texture not supported";
+  }
+  SetUpImplicitResolveRenderbufferFBO();
+  SetUpDestTexture2D();
+  glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, 2, 2);
+  VerifyCopyBlocked(GL_TEXTURE_2D);
+}
+TEST_F(GL3MultisampleCopyTexImageTest,
+       CopyTexSubImage3DImplicitResolveRenderbuffer) {
+  if (!GLTestHelper::HasExtension("GL_EXT_multisample_render_to_texture")) {
+    GTEST_SKIP() << "GL_EXT_multisample_render_to_texture not supported";
+  }
+  SetUpImplicitResolveRenderbufferFBO();
+  SetUpDestTexture3D();
+  glCopyTexSubImage3D(GL_TEXTURE_3D, 0, 0, 0, 0, 0, 0, 2, 2);
+  VerifyCopyBlocked(GL_TEXTURE_3D);
+}
+#endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
 }  // namespace gpu
