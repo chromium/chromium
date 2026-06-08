@@ -4,6 +4,9 @@
 
 #include "chrome/updater/app/app_net_worker.h"
 
+#include <grp.h>
+#include <unistd.h>
+
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -15,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -233,6 +237,29 @@ class AppNetWorker : public App {
   ~AppNetWorker() override = default;
 
   void FirstTaskRun() override {
+    static constexpr uid_t kNobodyUid = -2;
+    static constexpr gid_t kNobodyGid = -2;
+
+    // If running as root, drop down to "nobody".
+    if (getuid() == 0) {
+      // Clear supplementary groups inherited from root.
+      if (initgroups("nobody", kNobodyGid) != 0) {
+        VPLOG(1) << "Failed to initgroups";
+        Shutdown(kErrorFailedToDropPrivileges);
+        return;
+      }
+      if (setgid(kNobodyGid) != 0) {
+        VPLOG(1) << "Failed to set gid " << kNobodyGid;
+        Shutdown(kErrorFailedToDropPrivileges);
+        return;
+      }
+      if (setuid(kNobodyUid) != 0) {
+        VPLOG(1) << "Failed to set uid " << kNobodyUid;
+        Shutdown(kErrorFailedToDropPrivileges);
+        return;
+      }
+    }
+
     // This process must be started with the command line switch
     /// `--mojo-platform-channel-handle=N`. In other words, the command line
     // must be prepared by
