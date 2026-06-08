@@ -137,11 +137,6 @@ class ClientSideDetectionService
   // SafeBrowsingMsg_StartPhishingDetection IPC.
   virtual bool IsPrivateIPAddress(const net::IPAddress& address) const;
 
-  // Returns true if the given IP address does not refer to remote content. For
-  // example, local files and chrome:// pages will create navigations that
-  // return true.
-  virtual bool IsLocalResource(const net::IPAddress& address) const;
-
   // Returns true and sets is_phishing if url is in the cache and valid.
   virtual bool GetValidCachedResult(const GURL& url, bool* is_phishing);
 

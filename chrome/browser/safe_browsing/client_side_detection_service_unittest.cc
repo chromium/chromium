@@ -655,23 +655,6 @@ TEST_P(ClientSideDetectionServiceTest, IsPrivateIPAddress) {
   EXPECT_FALSE(csd_service_->IsPrivateIPAddress(address));
 }
 
-TEST_P(ClientSideDetectionServiceTest, IsLocalResource) {
-  csd_service_ = std::make_unique<ClientSideDetectionService>(
-      std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile_),
-      model_observer_tracker_.get());
-
-  net::IPAddress address;
-  EXPECT_TRUE(csd_service_->IsLocalResource(address));
-
-  // Create an IP address of invalid length
-  uint8_t addr[5] = {0xFE, 0xDC, 0xBA, 0x98};
-  address = net::IPAddress(addr);
-  EXPECT_TRUE(csd_service_->IsLocalResource(address));
-
-  EXPECT_TRUE(address.AssignFromIPLiteral("1.2.3.4"));
-  EXPECT_FALSE(csd_service_->IsLocalResource(address));
-}
-
 TEST_P(ClientSideDetectionServiceTest, TestModelFollowsPrefs) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingScoutReportingEnabled,

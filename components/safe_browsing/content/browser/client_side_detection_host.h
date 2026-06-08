@@ -386,21 +386,28 @@ class ClientSideDetectionHost
 
   // Called when pre-classification checks are done for the phishing
   // classifiers. |request_type| is passed in to specify the process that
-  // requests the classification.
+  // requests the classification. |is_invalid_ip| is a temporary field to pass
+  // along the result of the local resource check.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void OnPhishingPreClassificationDone(
       ClientSideDetectionType request_type,
       bool should_classify,
       bool is_sample_ping,
-      std::optional<bool> did_match_high_confidence_allowlist);
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip);
 
   // `verdict` is a wrapped ClientPhishingRequest protocol message, `result`
   // is the outcome of the renderer classification. `request_type` is passed in
   // to specify the process that requests the classification, which is passed
   // along from OnPhishingPreClassificationDone().
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void PhishingDetectionDone(
       ClientSideDetectionType request_type,
       bool is_sample_ping,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       base::TimeTicks start_time,
       mojom::PhishingDetectorResult result,
       std::optional<mojo_base::ProtoWrapper> verdict);
@@ -421,37 +428,52 @@ class ClientSideDetectionHost
       ClientPhishingRequest* verdict);
 
   // `verdict` is the ClientPhishingRequest passed into PhishingDetectionDone().
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void MaybeSendClientPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       mojom::PhishingDetectorResult result);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into
   // this function after the renderer classification is finished.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void PhishingImageEmbeddingDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       mojom::PhishingImageEmbeddingResult result,
       std::optional<mojo_base::ProtoWrapper> image_feature_embedding,
       std::optional<mojo_base::ProtoWrapper> visual_features);
 
   // Add miscellaneous metadata to ClientPhishingRequest prior to sending the
   // ping.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void AddMiscellaneousMetadataToClientPhishingRequest(
-      ClientPhishingRequest* verdict);
+      ClientPhishingRequest* verdict,
+      bool is_invalid_ip);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, which will
   // contain the intelligent scan result if the execution is successful.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void MaybeStartIntelligentScanForScamDetection(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      std::optional<bool> did_match_high_confidence_allowlist);
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip);
 
   // |verdict| is an encoded ClientPhishingRequest protocol message. This is the
   // last step before sending the ping to the server.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void MaybeGetAccessToken(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       bool is_intelligent_scan_invoked);
 
   // Callback that is called when the server ping back is
@@ -534,13 +556,19 @@ class ClientSideDetectionHost
   bool CanGetAccessToken();
 
   // Send the client report to CSD server.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
                    const std::string& access_token,
-                   std::optional<bool> did_match_high_confidence_allowlist);
+                   std::optional<bool> did_match_high_confidence_allowlist,
+                   bool is_invalid_ip);
 
   // Called when token_fetcher_ has fetched the token.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
                         std::optional<bool> did_match_high_confidence_allowlist,
+                        bool is_invalid_ip,
                         const std::string& access_token);
 
   // Returns true if phishing detection should not proceed beyond
@@ -556,16 +584,22 @@ class ClientSideDetectionHost
   // Callback function when GetInnerText is completed in the delegate. This
   // inner text is fetched as part of intelligent scan through the
   // CSD service class.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void OnInnerTextComplete(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       std::string inner_text);
 
   // Callback function when StartIntelligentScan from the intelligent scan
   // delegate is completed.
+  // TODO: Remove the parameter is_invalid_ip once the feature flag,
+  // kClientSideDetectionLocalResourceCheckFix, is removed.
   void OnIntelligentScanDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
       IntelligentScanDelegate::IntelligentScanResult response);
 
   // Returns bool if for a |client_side_detection_Type|, the last URL is the

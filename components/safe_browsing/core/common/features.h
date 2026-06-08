@@ -133,6 +133,9 @@ extern const base::FeatureParam<bool>
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
+// Tweak the way local resource check is done in CSD preclassification check.
+BASE_DECLARE_FEATURE(kClientSideDetectionLocalResourceCheckFix);
+
 // The observers that trigger the image classification have been tweaked with a
 // more defined page loading state check.
 BASE_DECLARE_FEATURE(kClientSideDetectionNewObservers);

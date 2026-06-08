@@ -408,7 +408,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
       GetWebContents()->GetPrimaryMainFrame()->GetGlobalId();
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
-      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
+      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   // A prerendered navigation committing should not cancel classification.
   // We simulate the commit of a prerendered navigation to avoid races
@@ -471,7 +472,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
-      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
+      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   run_loop.Run();
 
@@ -555,7 +557,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
-      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
+      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   run_loop.Run();
 
@@ -604,7 +607,8 @@ class ClientSideDetectionHostPrerenderBrowserTest_Screenshot
     csd_host->OnPhishingPreClassificationDone(
         ClientSideDetectionType::USER_REPORT, /*should_classify=*/true,
         /*is_sample_ping=*/false,
-        /*did_match_high_confidence_allowlist=*/false);
+        /*did_match_high_confidence_allowlist=*/false,
+        /*is_invalid_ip=*/false);
 
     run_loop.Run();
 
@@ -764,7 +768,8 @@ IN_PROC_BROWSER_TEST_F(
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
-      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
+      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   run_loop.Run();
 
@@ -845,7 +850,8 @@ IN_PROC_BROWSER_TEST_F(
   // Bypass the pre-classification checks.
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
-      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
+      /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   run_loop.Run();
 
@@ -975,7 +981,8 @@ IN_PROC_BROWSER_TEST_F(
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
       /*should_classify=*/true, /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false);
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   run_loop.Run();
 
@@ -1169,7 +1176,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::VIBRATION_API,
       /*should_classify=*/true, /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false);
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
   run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
@@ -1413,7 +1421,8 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::CLIPBOARD_COPY_API,
       /*should_classify=*/true, /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false);
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
   csd_request_run_loop.Run();
 
   histogram_tester.ExpectTotalCount(
@@ -1929,7 +1938,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostCreditCardFormTest,
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::CREDIT_CARD_FORM,
       /*should_classify=*/true, /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false);
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   preclass_run_loop.Run();
 
@@ -2094,7 +2104,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostGeminiAntiscamProtectionTest,
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::FORCE_REQUEST, /*should_classify=*/true,
       /*is_sample_ping=*/false,
-      /*did_match_high_confidence_allowlist=*/false);
+      /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false);
 
   run_loop.Run();
 

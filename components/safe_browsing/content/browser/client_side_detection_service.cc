@@ -207,10 +207,6 @@ bool ClientSideDetectionService::IsPrivateIPAddress(
   return !address.IsPubliclyRoutable();
 }
 
-bool ClientSideDetectionService::IsLocalResource(
-    const net::IPAddress& address) const {
-  return !address.IsValid();
-}
 
 void ClientSideDetectionService::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
