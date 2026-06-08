@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("icon_standardizer") {
-  sources = [
-    "icon_standardizer.cc",
-    "icon_standardizer.h",
-  ]
+  public = [ "icon_standardizer.h" ]
+  sources = [ "icon_standardizer.cc" ]
 
   deps = [
     "//base",
@@ -16,18 +16,87 @@ source_set("icon_standardizer") {
 }
 
 source_set("user_type_filter") {
-  sources = [
-    "user_type_filter.cc",
-    "user_type_filter.h",
-  ]
+  public = [ "user_type_filter.h" ]
+  sources = [ "user_type_filter.cc" ]
+
+  public_deps = [ "//base" ]
 
   deps = [
-    "//base",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
   ]
 
   if (is_chromeos) {
     deps += [ "//chromeos/components/mgs" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "icon_standardizer_unittest.cc",
+    "user_type_filter_unittest.cc",
+  ]
+  deps = [
+    ":icon_standardizer",
+    ":user_type_filter",
+    "//base",
+    "//chrome/browser/policy",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//ui/gfx",
+  ]
+}
+
+if (is_chromeos && enable_extensions) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "guest_view/app_view_browsertest.cc",
+      "guest_view/web_view_browsertest.cc",
+    ]
+    deps = [
+      "//chrome/browser/apps/platform_apps:browser_test_support",
+      "//chrome/browser/bluetooth:test_support",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/guest_view",
+      "//chrome/browser/hid",
+      "//chrome/browser/pdf:pdf_extension_test_utils",
+      "//chrome/browser/preloading/prefetch/no_state_prefetch",
+      "//chrome/browser/serial",
+      "//chrome/browser/site_protection",
+      "//chrome/browser/ui/hid",
+      "//chrome/browser/ui/login",
+      "//chrome/browser/ui/views:file_system_access_test_support",
+      "//chrome/browser/usb",
+      "//chrome/browser/usb:browser_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/guest_view/browser:test_support",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//extensions/browser:test_support",
+      "//pdf:features",
+      "//ui/events:gesture_detection",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "guest_view/web_view_interactive_browsertest.cc" ]
+    deps = [
+      "//chrome/browser/apps/platform_apps:browser_test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/guest_view/browser:test_support",
+      "//content/test:browsertest_support",
+      "//content/test:test_support",
+      "//extensions/browser:test_support",
+      "//ui/base:ozone_buildflags",
+    ]
   }
 }

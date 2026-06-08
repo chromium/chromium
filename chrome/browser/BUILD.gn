@@ -488,11 +488,6 @@ if (!is_android) {
     deps = [ "//chrome/browser/ui:tab_modal_confirm_dialog_delegate" ]
   }
 
-  source_set("intent_chip_display_prefs") {
-    public = [ "apps/intent_helper/intent_chip_display_prefs.h" ]
-    deps = [ "//url" ]
-  }
-
   source_set("chrome_process_singleton") {
     public = [
       "chrome_process_singleton.h",
@@ -581,11 +576,6 @@ source_set("process_singleton") {
 }
 
 if (is_chromeos) {
-  source_set("chromeos_disabled_apps_throttle") {
-    public = [ "apps/intent_helper/chromeos_disabled_apps_throttle.h" ]
-    deps = [ "//content/public/browser" ]
-  }
-
   source_set("cloud_identifier_util_ash") {
     public =
         [ "file_system_access/cloud_identifier/cloud_identifier_util_ash.h" ]
@@ -1554,8 +1544,8 @@ source_set("core") {
 
   if (is_chromeos) {
     deps += [
-      ":chromeos_disabled_apps_throttle",
       ":cloud_identifier_util_ash",
+      "//chrome/browser/apps/intent_helper:chromeos_disabled_apps_throttle",
     ]
   }
 
@@ -2814,7 +2804,6 @@ static_library("browser") {
     ]
 
     sources += [
-      "apps/intent_helper/intent_chip_display_prefs.cc",
       "chrome_browser_interface_binders_webui_parts_desktop.cc",
       "chrome_process_singleton.cc",
       "intranet_redirect_detector.cc",
@@ -2831,7 +2820,6 @@ static_library("browser") {
     #!is_android
     deps += [
       ":chrome_process_singleton",
-      ":intent_chip_display_prefs",
       ":intranet_redirect_detector",
       ":repost_form_warning_controller",
       "//chrome/app:command_ids",
@@ -2848,6 +2836,7 @@ static_library("browser") {
       "//chrome/browser/actor/ui/task_list_bubble:ui",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/publishers",
+      "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/apps/link_capturing",
       "//chrome/browser/badging",
       "//chrome/browser/badging:impl",
@@ -3332,7 +3321,6 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
-      "apps/intent_helper/chromeos_disabled_apps_throttle.cc",
       "browser_process_platform_part_ash.cc",
       "chrome_browser_interface_binders_webui_parts_chromeos.cc",
       "exo_parts.cc",
@@ -3344,7 +3332,6 @@ static_library("browser") {
     ]
 
     deps += [
-      ":chromeos_disabled_apps_throttle",
       ":cloud_identifier_util_ash",
       "//ash",
       "//ash/constants",
@@ -3425,6 +3412,7 @@ static_library("browser") {
       "//chrome/browser/apps/browser_instance",
       "//chrome/browser/apps/digital_goods",
       "//chrome/browser/apps/digital_goods:impl",
+      "//chrome/browser/apps/intent_helper:chromeos_disabled_apps_throttle",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/account_manager",

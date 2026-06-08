@@ -129,6 +129,10 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [ "//chrome/browser/apps/app_service" ]
     }
+
+    if (enable_extensions) {
+      deps += [ "//chrome/browser/apps/platform_apps:browser_test_support" ]
+    }
   }
 }
 

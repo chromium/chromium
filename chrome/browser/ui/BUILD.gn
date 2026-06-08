@@ -1000,9 +1000,9 @@ static_library("ui") {
     deps += [
       ":chrome_web_modal_dialog_manager_delegate",
       "//chrome/browser:certificate_viewer",
-      "//chrome/browser:intent_chip_display_prefs",
       "//chrome/browser:repost_form_warning_controller",
       "//chrome/browser/accessibility/phrase_segmentation",
+      "//chrome/browser/apps/intent_helper:intent_chip_display_prefs",
       "//chrome/browser/preloading/prefetch:zero_suggest_prefetch",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/ui/sessions",

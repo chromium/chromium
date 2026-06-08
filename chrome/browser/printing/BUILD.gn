@@ -263,3 +263,23 @@ if (enable_printing) {
     }
   }
 }
+
+if (enable_print_preview) {
+  source_set("test_support") {
+    testonly = true
+
+    sources = [
+      "test_print_preview_observer.cc",
+      "test_print_preview_observer.h",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser/ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//printing/buildflags",
+    ]
+  }
+}

@@ -148,6 +148,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/platform_apps:browser_test_support",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/app_list/test:test_support",

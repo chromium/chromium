@@ -1,0 +1,52 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android) {
+  source_set("intent_chip_display_prefs") {
+    public = [ "intent_chip_display_prefs.h" ]
+    sources = [ "intent_chip_display_prefs.cc" ]
+
+    public_deps = [ "//url" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/profiles:profile",
+      "//components/content_settings/core/browser",
+      "//components/content_settings/core/common",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "intent_chip_display_prefs_unittest.cc" ]
+    deps = [
+      ":intent_chip_display_prefs",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
+
+if (is_chromeos) {
+  source_set("chromeos_disabled_apps_throttle") {
+    public = [ "chromeos_disabled_apps_throttle.h" ]
+    sources = [ "chromeos_disabled_apps_throttle.cc" ]
+
+    public_deps = [ "//content/public/browser" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser:resources",
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/policy:system_features_disable_list",
+      "//chrome/browser/profiles:profile",
+      "//components/strings:components_strings",
+      "//ui/base",
+    ]
+  }
+}

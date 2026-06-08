@@ -81,3 +81,52 @@ source_set("app_shim") {
     "//ui/views",
   ]
 }
+
+if (is_mac) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "app_shim_host_mac_unittest.cc",
+      "app_shim_manager_mac_unittest.cc",
+      "mach_bootstrap_acceptor_unittest.mm",
+      "web_app_shim_manager_delegate_mac_unittest.cc",
+    ]
+    deps = [
+      ":app_shim",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/app_shim",
+      "//chrome/browser/profiles:misc",
+      "//chrome/browser/ui/web_applications",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_app_test",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/common:constants",
+      "//chrome/common:mojo_bindings",
+      "//chrome/test:test_support",
+      "//components/remote_cocoa/browser",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "app_shim_listener_browsertest.mm",
+      "test/app_shim_listener_test_api_mac.cc",
+      "test/app_shim_listener_test_api_mac.h",
+    ]
+    deps = [
+      ":app_shim",
+      "//chrome/app_shim",
+      "//chrome/browser:browser_process_platform_part",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

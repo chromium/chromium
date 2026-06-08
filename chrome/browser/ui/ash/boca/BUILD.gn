@@ -55,6 +55,7 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/apps/platform_apps:browser_test_support",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/util:test_support",

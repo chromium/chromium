@@ -20,6 +20,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -4633,27 +4634,29 @@ class ClientCertStoreStub : public net::ClientCertStore {
       scoped_refptr<const net::SSLCertRequestInfo> cert_request_info,
       ClientCertListCallback callback) override {
     std::move(callback).Run(std::move(list_));
-    if (quit_closure_) {
+    if (GetQuitClosure()) {
       // Call the quit closure asynchronously, so it's ordered after the cert
       // selector.
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(quit_closure_));
+          FROM_HERE, std::move(GetQuitClosure()));
     }
   }
 
   static void SetQuitClosure(base::OnceClosure quit_closure) {
-    quit_closure_ = std::move(quit_closure);
+    GetQuitClosure() = std::move(quit_closure);
   }
 
  private:
-  net::ClientCertIdentityList list_;
+  static base::OnceClosure& GetQuitClosure();
 
-  // Called the next time GetClientCerts is called.
-  static base::OnceClosure quit_closure_;
+  net::ClientCertIdentityList list_;
 };
 
 // static
-base::OnceClosure ClientCertStoreStub::quit_closure_;
+base::OnceClosure& ClientCertStoreStub::GetQuitClosure() {
+  static base::NoDestructor<base::OnceClosure> quit_closure;
+  return *quit_closure;
+}
 
 }  // namespace
 

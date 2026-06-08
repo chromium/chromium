@@ -85,6 +85,7 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/apps/platform_apps",
+    "//chrome/browser/apps/platform_apps:browser_test_support",
     "//chrome/browser/ash/input_method:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

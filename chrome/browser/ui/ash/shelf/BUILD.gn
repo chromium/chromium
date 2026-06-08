@@ -303,6 +303,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/apps/browser_instance",
     "//chrome/browser/apps/platform_apps",
+    "//chrome/browser/apps/platform_apps:browser_test_support",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/ash/app_list",

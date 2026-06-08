@@ -79,6 +79,7 @@ source_set("browser_tests") {
   deps = [
     "//base",
     "//chrome/browser",
+    "//chrome/browser/apps/app_service:browser_tests",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/affiliation:test_support",
     "//chrome/browser/ash/policy/core:test_support",

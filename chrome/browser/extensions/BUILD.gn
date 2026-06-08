@@ -2714,13 +2714,6 @@ source_set("browser_tests") {
 
     if (is_chromeos) {
       sources += [
-        # TODO(crbug.com/469417243): Move to BUILD.gn files closer to sources.
-        "//chrome/browser/apps/guest_view/app_view_browsertest.cc",
-        "//chrome/browser/apps/guest_view/web_view_browsertest.cc",
-        "//chrome/browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
-        "//chrome/browser/apps/platform_apps/api/browser/browser_apitest.cc",
-        "//chrome/browser/apps/platform_apps/api/enterprise_remote_apps/enterprise_remote_apps_apitest.cc",
-        "//chrome/browser/apps/platform_apps/platform_app_navigation_redirector_browsertest.cc",
         "//chrome/browser/chromeos/extensions/info_private/info_private_apitest.cc",
         "//chrome/browser/chromeos/extensions/login_screen/login_screen_i18n_apitest.cc",
         "//chrome/browser/chromeos/extensions/login_screen/storage_apitest.cc",
@@ -2857,6 +2850,7 @@ source_set("browser_tests") {
       "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/affiliations",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/platform_apps:browser_test_support",
       "//chrome/browser/autofill",
       "//chrome/browser/background",
       "//chrome/browser/background:test_support",

@@ -274,6 +274,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/app_mode/test:test_support",
+    "//chrome/browser/apps/platform_apps:browser_test_support",
     "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login/app_mode/test:test_support",
