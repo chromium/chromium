@@ -271,5 +271,17 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, UiaRootDoesNotLeak) {
   EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
+TEST_F(DesktopWindowTreeHostWinTest, IsInNativeMoveResizeLoop) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget.Init(std::move(params));
+  widget.Show();
+
+  DesktopWindowTreeHostWin* host = static_cast<DesktopWindowTreeHostWin*>(
+      widget.GetNativeWindow()->GetHost());
+  EXPECT_FALSE(host->IsInNativeMoveResizeLoop());
+}
+
 }  // namespace test
 }  // namespace views
