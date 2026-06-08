@@ -195,6 +195,45 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
 
 Canvas2DResourceProviderBitmap::~Canvas2DResourceProviderBitmap() = default;
 
+SkSurface* Canvas2DResourceProviderBitmap::GetSkSurface() const {
+  if (!surface_) {
+    surface_ = CreateSkSurface();
+  }
+  return surface_.get();
+}
+
+void Canvas2DResourceProviderBitmap::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  if (!surface_) {
+    return;
+  }
+
+  std::string dump_name =
+      base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(surface_.get()));
+  auto* dump = pmd->CreateAllocatorDump(dump_name);
+
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  GetSize());
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
+
+  if (const char* system_allocator_name =
+          base::trace_event::MemoryDumpManager::GetInstance()
+              ->system_allocator_pool_name()) {
+    pmd->AddSuballocation(dump->guid(), system_allocator_name);
+  }
+}
+
+size_t Canvas2DResourceProviderBitmap::GetSize() const {
+  if (!surface_) {
+    return 0;
+  }
+  SkImageInfo info = surface_->imageInfo();
+  return info.computeByteSize(info.minRowBytes());
+}
+
 void Canvas2DResourceProviderBitmap::InitializeForRecording(
     cc::PaintCanvas* canvas) const {
   if (delegate_) {
@@ -1381,10 +1420,24 @@ void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
 void Canvas2DResourceProviderSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   if (IsSoftware()) {
-    // This class creates software SharedImages only on demand and might not
-    // have one here - invoke the base class implementation of this method
-    // instead.
-    CanvasResourceProvider::OnMemoryDump(pmd);
+    if (surface_) {
+      std::string dump_name =
+          base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
+                             reinterpret_cast<uintptr_t>(surface_.get()));
+      auto* dump = pmd->CreateAllocatorDump(dump_name);
+
+      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                      GetSize());
+      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                      base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
+
+      if (const char* system_allocator_name =
+              base::trace_event::MemoryDumpManager::GetInstance()
+                  ->system_allocator_pool_name()) {
+        pmd->AddSuballocation(dump->guid(), system_allocator_name);
+      }
+    }
     return;
   }
 
@@ -1395,6 +1448,21 @@ void Canvas2DResourceProviderSharedImage::OnMemoryDump(
 
   std::string cached_path = path + "/cached";
   image_pool_->OnMemoryDump(pmd, cached_path);
+}
+
+SkSurface* Canvas2DResourceProviderSharedImage::GetSkSurface() const {
+  if (!surface_) {
+    surface_ = CreateSkSurface();
+  }
+  return surface_.get();
+}
+
+size_t Canvas2DResourceProviderSharedImage::GetSize() const {
+  if (!surface_) {
+    return 0;
+  }
+  SkImageInfo info = surface_->imageInfo();
+  return info.computeByteSize(info.minRowBytes());
 }
 
 std::unique_ptr<Canvas2DResourceProviderBitmap>
@@ -1881,11 +1949,6 @@ CanvasResourceProvider::~CanvasResourceProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
 }
 
-SkSurface* CanvasResourceProvider::GetSkSurface() const {
-  if (!surface_)
-    surface_ = CreateSkSurface();
-  return surface_.get();
-}
 
 void CanvasResourceProvider::NotifyWillTransfer(
     cc::PaintImage::ContentId content_id) {
@@ -2663,42 +2726,6 @@ void CanvasResourceProvider::RestoreBackBuffer(const cc::PaintImage& image) {
               /*y=*/0);
 }
 
-size_t CanvasResourceProvider::ComputeSurfaceSize() const {
-  if (!surface_)
-    return 0;
-
-  SkImageInfo info = surface_->imageInfo();
-  return info.computeByteSize(info.minRowBytes());
-}
-
-void CanvasResourceProvider::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd) {
-  if (!surface_)
-    return;
-
-  std::string dump_name =
-      base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(surface_.get()));
-  auto* dump = pmd->CreateAllocatorDump(dump_name);
-
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  ComputeSurfaceSize());
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
-
-  // SkiaMemoryDumpProvider reports only sk_glyph_cache and sk_resource_cache.
-  // So the SkSurface is suballocation of malloc, not SkiaDumpProvider.
-  if (const char* system_allocator_name =
-          base::trace_event::MemoryDumpManager::GetInstance()
-              ->system_allocator_pool_name()) {
-    pmd->AddSuballocation(dump->guid(), system_allocator_name);
-  }
-}
-
-size_t CanvasResourceProvider::GetSize() const {
-  return ComputeSurfaceSize();
-}
 
 std::unique_ptr<CanvasResourceProvider>
 Canvas2DResourceProviderBitmap::CreateForTesting(
