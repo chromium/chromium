@@ -20,7 +20,7 @@ option features.utf8_validation = NONE;
 // This defines the Protocol Buffer representation of a Finch study as sent to
 // clients of the Finch server.
 //
-// Next tag: 19
+// Next tag: 20
 message Study {
   // The name of the study. Should not contain spaces or special characters.
   // Ex: "my_study"
@@ -491,7 +491,7 @@ message Study {
     // |exclude_hardware_manufacturer| is specified. Mutually exclusive with
     // |exclude_hardware_manufacturer|.
     // Ex: ["google", "lenovo"]
-    // TODO(b/204802666): This is not yet implemented from the client side. WIP
+    // Supported only on Android starting in M150.
     repeated string hardware_manufacturer = 24;
 
     // List of hardware manufacturers that will be excluded from this study.
@@ -502,7 +502,7 @@ message Study {
     // |hardware_manufacturer| is specified. Mutually exclusive with
     // |hardware_manufacturer|.
     // Ex: ["google", "lenovo"]
-    // TODO(b/204802666): This is not yet implemented from the client side. WIP
+    // Supported only on Android starting in M150.
     repeated string exclude_hardware_manufacturer = 25;
 
     // Specifies that the config should apply only to clients where the browser
@@ -554,4 +554,10 @@ message Study {
 
   // Activation type for this study. Defaults to ACTIVATE_ON_QUERY if omitted.
   ActivationType activation_type = 12;
+
+  // WIP: Do not use yet.
+  // Indicates that this study config is runtime mutable and will apply to users
+  // as they receive a new Finch config (without needing a Chrome restart).
+  // TODO: b/482451024 - Document this feature.
+  bool runtime_mutable = 19;
 }

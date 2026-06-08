@@ -202,7 +202,7 @@ message CastLogsProto {
   repeated CastConnectionInfo cast_connection_info = 2;
 
   // Stores Cast-enabled device specific events with a various context data.
-  // Next tag: 29
+  // Next tag: 31
   message CastEventProto {
     // The name of the action, hashed by same logic used to hash user action
     // event and histogram.
@@ -213,6 +213,19 @@ message CastLogsProto {
 
     // The Cast receiver app ID related with this event.
     fixed32 app_id = 3;
+
+    enum AppType {
+      APP_TYPE_UNKNOWN = 0;
+      // App is launched on Cast Web Runtime.
+      APP_TYPE_CAST_WEB = 1;
+      // App is an ATV native application.
+      APP_TYPE_ANDROID_TV = 2;
+      // App is a 'other' native application (Cast Connect 2 app).
+      APP_TYPE_NATIVE = 3;
+    }
+
+    // The type of app launched.
+    AppType app_type = 30;
 
     // The app ID of a remote Cast receiver associated with this event.
     fixed32 remote_app_id = 19;
@@ -316,6 +329,10 @@ message CastLogsProto {
 
     // The Cast Core runtime type associated with this event.
     RuntimeType runtime_type = 27;
+
+    // Serialized CastBridgeEvent message.
+    // //depot/google3/third_party/castlite/bridge_app/bootstrap/cast_bridge_event.proto
+    bytes cast_bridge_event_metadata = 29;
   }
 
   repeated CastEventProto cast_event = 3;
