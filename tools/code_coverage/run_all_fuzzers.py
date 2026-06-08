@@ -619,18 +619,31 @@ def _run_fuzzer_target(args):
                len(verified_fuzzer_targets) + len(failed_targets), num_targets,
                len(verified_fuzzer_targets))
 
-  res = _run_full_corpus(target_details) or _run_corpus_in_chunks(
-      target_details)
-  corpus_files = _get_target_corpus_files(target_details)
-  if not res and corpus_files:
-    res = _run_testcases(target, cmd_runner, env,
-                         corpus_files[:INDIVIDUAL_TESTCASES_MAX_TO_TRY],
-                         target_profdata, target_details['testcase_timeout'])
+  # Override TMPDIR to force the fuzzer and Chrome to write all temp files,
+  # scoped profiles, and SQLite databases to this target-isolated directory.
+  # Note: TMPDIR is POSIX-only (not read on Windows/macOS).
+  # We also set SQL_RECOVERY_FUZZER_TEMP_DIR for sql_recovery_lpm_fuzzer,
+  # which bypasses TMPDIR and uses base::GetShmemTempDir().
+  target_temp_dir = os.path.join('/dev/shm', f'fuzzer_temp_{target}')
+  os.makedirs(target_temp_dir, exist_ok=True)
+  env['TMPDIR'] = target_temp_dir
+  env['SQL_RECOVERY_FUZZER_TEMP_DIR'] = target_temp_dir
 
-  if res:
-    verified_fuzzer_targets.append(target)
-  else:
-    failed_targets.append(target)
+  try:
+    res = _run_full_corpus(target_details) or _run_corpus_in_chunks(
+        target_details)
+    corpus_files = _get_target_corpus_files(target_details)
+    if not res and corpus_files:
+      res = _run_testcases(target, cmd_runner, env,
+                           corpus_files[:INDIVIDUAL_TESTCASES_MAX_TO_TRY],
+                           target_profdata, target_details['testcase_timeout'])
+
+    if res:
+      verified_fuzzer_targets.append(target)
+    else:
+      failed_targets.append(target)
+  finally:
+    shutil.rmtree(target_temp_dir, ignore_errors=True)
 
   logging.info('Finishing target %s (completed %d/%d, of which %d succeeded)',
                target,

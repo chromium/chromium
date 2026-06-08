@@ -142,7 +142,11 @@ class Environment {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::CommandLine::Init(0, nullptr);
     base::FilePath shmem_temp_dir;
-    CHECK(base::GetShmemTempDir(false, &shmem_temp_dir));
+    if (char* env_shmdir = std::getenv("SQL_RECOVERY_FUZZER_TEMP_DIR")) {
+      shmem_temp_dir = base::FilePath(env_shmdir);
+    } else {
+      CHECK(base::GetShmemTempDir(false, &shmem_temp_dir));
+    }
     base::ScopedTempDir temp_dir;
     CHECK(temp_dir.CreateUniqueTempDirUnderPath(shmem_temp_dir));
     return temp_dir;
