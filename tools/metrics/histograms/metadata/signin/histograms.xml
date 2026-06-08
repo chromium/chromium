@@ -606,6 +606,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Signin.AccountPreviewData.FetchState"
+    enum="AccountPreviewDataFetchState" expires_after="2027-06-01">
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the progress and outcome of fetching sync preview data (statistics
+    and entities previews) for a signed-in account. Recorded at various steps:
+    when the fetch is requested, when statistics or entities previews complete,
+    and when the overall fetch finishes.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AccountProfileStartupState2"
     enum="AccountProfileStartupState" expires_after="2026-10-04">
   <owner>jood@google.com</owner>

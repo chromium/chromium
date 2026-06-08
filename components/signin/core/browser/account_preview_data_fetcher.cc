@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -33,6 +34,8 @@ constexpr char kStablePreviewUrl[] =
     "https://chromesyncpreview.pa.googleapis.com/v1";
 constexpr char kStagingPreviewUrl[] =
     "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1";
+
+constexpr char kFetchStateHistogram[] = "Signin.AccountPreviewData.FetchState";
 
 // Parses the specifics field number (data type ID) from the stats name string.
 // Returns std::nullopt if the format doesn't match or cannot be parsed.
@@ -281,11 +284,17 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
       url_loader_factory_.get(),
       base::BindOnce(&AccountPreviewDataFetcher::OnPreviewsFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  base::UmaHistogramEnumeration(kFetchStateHistogram, FetchState::kRequested);
 }
 
 void AccountPreviewDataFetcher::OnStatsFetchCompleted(
     std::optional<std::string> response_body) {
   stats_url_loader_.reset();
+  base::UmaHistogramEnumeration(kFetchStateHistogram,
+                                response_body.has_value()
+                                    ? FetchState::kStatisticsHasResult
+                                    : FetchState::kStatisticsEmptyResult);
   fetched_data_ = ParseStatsResponse(response_body, std::move(fetched_data_));
   barrier_closure_.Run();
 }
@@ -293,12 +302,20 @@ void AccountPreviewDataFetcher::OnStatsFetchCompleted(
 void AccountPreviewDataFetcher::OnPreviewsFetchCompleted(
     std::optional<std::string> response_body) {
   previews_url_loader_.reset();
+  base::UmaHistogramEnumeration(kFetchStateHistogram,
+                                response_body.has_value()
+                                    ? FetchState::kEntityPreviewHasResult
+                                    : FetchState::kEntityPreviewEmptyResult);
   fetched_data_ =
       ParsePreviewsResponse(response_body, std::move(fetched_data_));
   barrier_closure_.Run();
 }
 
 void AccountPreviewDataFetcher::OnFetchCompleted() {
+  base::UmaHistogramEnumeration(kFetchStateHistogram,
+                                fetched_data_.has_value()
+                                    ? FetchState::kCompletedWithResults
+                                    : FetchState::kCompletedWithoutResults);
   // PostTask is required here because `barrier_closure_` is owned by `this`
   // and is triggering this callback (`OnFetchCompleted()`). If `callback_`
   // causes `this` to be deleted, the destruction of `barrier_closure_` could
