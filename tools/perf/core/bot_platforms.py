@@ -914,7 +914,7 @@ PLATFORM_INFO = {
     },
     'android-pixel4-perf': {
         'description': 'Android R',
-        'num_shards': 44,
+        'num_shards': 38,
         'platform_os': 'android',
         'is_fyi': False
     },
@@ -927,13 +927,13 @@ PLATFORM_INFO = {
     },
     'android-pixel4_webview-perf': {
         'description': 'Android R',
-        'num_shards': 23,
+        'num_shards': 19,
         'platform_os': 'android',
         'is_fyi': False
     },
     'android-pixel4_webview-perf-pgo': {
         'description': 'Android R',
-        'num_shards': 20,
+        'num_shards': 12,
         'platform_os': 'android',
         'is_fyi': False
     },
