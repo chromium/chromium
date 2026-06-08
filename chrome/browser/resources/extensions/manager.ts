@@ -22,6 +22,7 @@ import './site_permissions/site_permissions.js';
 import './site_permissions/site_permissions_by_site.js';
 import './toolbar.js';
 
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -210,6 +211,13 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    const enableWebuiRefresh2026 =
+        loadTimeData.getString('webuiRefresh2026') !== '';
+    if (enableWebuiRefresh2026) {
+      this.addThemedColors_();
+      ColorChangeUpdater.forDocument().start();
+    }
 
     document.documentElement.classList.remove('loading');
     document.fonts.load('bold 12px Roboto');
@@ -752,6 +760,15 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
         chrome.developerPrivate.ExtensionState.DISABLED &&
         extensionInfo.location === chrome.developerPrivate.Location.UNPACKED &&
         extensionInfo.disableReasons.unsupportedDeveloperExtension;
+  }
+
+  // TODO(crub.com/509908129): Add static stylesheet in extensions.html
+  private addThemedColors_() {
+    assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+    document.body.appendChild(link);
   }
 }
 

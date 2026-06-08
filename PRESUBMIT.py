@@ -2483,7 +2483,7 @@ _BANNED_GN_PATTERNS: Sequence[BanRule] = (BanRule(
     ),
     treat_as_error=False,
     surface_as_gerrit_lint=True,
-    excluded_paths=(r'^ui/webui/resources/', ),
+    excluded_paths=(r'^ui/webui/resources/', r'^chrome/test/data/webui/'),
 ), )
 
 _IPC_ENUM_TRAITS_DEPRECATED = (

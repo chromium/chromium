@@ -57,6 +57,7 @@
   margin-inline-end: 10px;
 }
 
-#discover-more-text a {
+#discover-more-text a,
+#promo-message-text a {
   color: var(--cr-link-color);
 }

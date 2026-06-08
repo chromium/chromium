@@ -38,7 +38,7 @@ if (use_blink) {
       "//ui/webui/resources/js/metrics_reporter:mojo_bindings",
     ]
 
-    if (enable_webui_ntp) {
+    if ((!is_android && !is_ios) || is_desktop_android) {
       public_deps +=
           [ "//ui/webui/resources/cr_components/color_change_listener:mojom" ]
       sources += [
