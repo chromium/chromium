@@ -165,6 +165,58 @@ TEST_F(CorsURLLoaderTest, ForbiddenMethods) {
   }
 }
 
+TEST_F(CorsURLLoaderTest, ForbiddenMethodOverride) {
+  const struct {
+    std::string header_name;
+    std::string header_value;
+  } kTestCases[] = {
+      {"X-HTTP-Method-Override", "TRACE"},
+      {"X-HTTP-Method-Override", "TRACK"},
+      {"X-HTTP-Method-Override", "CONNECT"},
+      {"X-HTTP-Method", "TRACE"},
+      {"X-Method-Override", "TRACE"},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.header_name);
+    SCOPED_TRACE(test_case.header_value);
+    for (const mojom::RequestMode mode :
+         {mojom::RequestMode::kSameOrigin, mojom::RequestMode::kNoCors,
+          mojom::RequestMode::kCors,
+          mojom::RequestMode::kCorsWithForcedPreflight,
+          mojom::RequestMode::kNavigate}) {
+      SCOPED_TRACE(mode);
+
+      ResetFactory(
+          url::Origin::Create(GURL("https://example.com")) /* initiator */,
+          OriginatingProcessId::browser());
+
+      ResourceRequest request;
+      request.mode = mode;
+      request.credentials_mode = mojom::CredentialsMode::kInclude;
+      request.url = GURL("https://example.com/");
+      request.request_initiator = url::Origin::Create(request.url);
+      request.method = "POST";
+      request.headers.SetHeader(test_case.header_name, test_case.header_value);
+
+      BadMessageTestHelper bad_message_helper;
+      CreateLoaderAndStart(request);
+      if (IsNetworkLoaderStarted()) {
+        RunUntilCreateLoaderAndStartCalled();
+        NotifyLoaderClientOnReceiveResponse();
+        NotifyLoaderClientOnComplete(net::OK);
+      }
+      RunUntilComplete();
+
+      EXPECT_FALSE(IsNetworkLoaderStarted());
+      EXPECT_FALSE(client().has_received_redirect());
+      EXPECT_FALSE(client().has_received_response());
+      EXPECT_TRUE(client().has_received_completion());
+      EXPECT_THAT(client().completion_status().error_code,
+                  net::test::IsError(net::ERR_INVALID_ARGUMENT));
+    }
+  }
+}
+
 TEST_F(CorsURLLoaderTest, SameOriginWithoutInitiator) {
   ResourceRequest request;
   request.mode = mojom::RequestMode::kSameOrigin;
