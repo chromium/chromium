@@ -31,6 +31,34 @@ enum class CanMakePaymentPreferenceSetter {
   kMaxValue = kAdminPolicy
 };
 
+// Outcomes of a payment request.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PaymentRequestOutcome)
+enum class PaymentRequestOutcome {
+  kSuccess = 0,
+  kAbortedByUser = 1,
+  kAbortedByMerchant = 2,
+  kAbortedInvalidDataFromRenderer = 3,
+  kAbortedMojoConnectionError = 4,
+  kAbortedMojoRendererClosing = 5,
+  kAbortedInstrumentDetailsError = 6,
+  kAbortedNoMatchingPaymentMethod = 7,
+  kAbortedNoSupportedPaymentMethod = 8,
+  kAbortedOther = 9,
+  kAbortedUserNavigation = 10,
+  kAbortedMerchantNavigation = 11,
+  kAbortedUserOptedOut = 12,
+  kAbortedInternalError = 13,
+  kNotShownAlreadyShowing = 14,
+  kNotShownUserActivationRequired = 15,
+  kNotShownBackgroundTab = 16,
+  kNotShownNoSupportedPaymentMethod = 17,
+  kMaxValue = kNotShownNoSupportedPaymentMethod
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:PaymentRequestOutcome)
+
 // Records metrics for the 'payments.can_make_payment_enabled' user pref.
 void RecordCanMakePaymentPrefMetrics(const PrefService& pref_service,
                                      const std::string& suffix);

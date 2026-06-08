@@ -4600,6 +4600,7 @@ if (!is_android) {
         "../browser/ui/views/payments/payment_request_completion_status_metrics_browsertest.cc",
         "../browser/ui/views/payments/payment_request_data_url_browsertest.cc",
         "../browser/ui/views/payments/payment_request_journey_logger_browsertest.cc",
+        "../browser/ui/views/payments/payment_request_metrics_browsertest.cc",
         "../browser/ui/views/payments/payment_request_no_update_with_browsertest.cc",
         "../browser/ui/views/payments/payment_request_payment_app_browsertest.cc",
         "../browser/ui/views/payments/payment_request_payment_response_browsertest.cc",

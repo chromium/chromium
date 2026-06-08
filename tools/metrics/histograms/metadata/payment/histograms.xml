@@ -195,6 +195,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.Outcome" enum="PaymentRequestOutcome"
+    expires_after="2027-06-01">
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Tracks the final outcome of every Payment Request call. This includes all
+    successful calls, all cases where the Payment Request could not be shown,
+    and all cases where the Payment Request was aborted with detailed abort
+    reasons. Recorded exactly once per Payment Request lifetime when a terminal
+    state is reached.
+  </summary>
+</histogram>
+
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
     enum="Boolean" expires_after="2027-02-12">

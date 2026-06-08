@@ -66,6 +66,31 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Completed"/>
 </enum>
 
+<!-- LINT.IfChange(PaymentRequestOutcome) -->
+
+<enum name="PaymentRequestOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Aborted by user"/>
+  <int value="2" label="Aborted by merchant"/>
+  <int value="3" label="Aborted due to invalid data from renderer"/>
+  <int value="4" label="Aborted due to Mojo connection error"/>
+  <int value="5" label="Aborted due to Mojo renderer closing"/>
+  <int value="6" label="Aborted due to instrument details error"/>
+  <int value="7" label="Aborted: No matching payment method (Deprecated)"/>
+  <int value="8" label="Aborted: No supported payment method (Deprecated)"/>
+  <int value="9" label="Aborted due to other reasons"/>
+  <int value="10" label="Aborted due to user navigation"/>
+  <int value="11" label="Aborted due to merchant navigation"/>
+  <int value="12" label="Aborted: User opted out"/>
+  <int value="13" label="Aborted due to internal error"/>
+  <int value="14" label="Could not show: Another UI already showing"/>
+  <int value="15" label="Could not show: User activation required"/>
+  <int value="16" label="Could not show: Background tab"/>
+  <int value="17" label="Could not show: No supported payment method"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/core/payment_request_metrics.h:PaymentRequestOutcome) -->
+
 <!-- LINT.IfChange(PaymentRequestTryShowOutcome) -->
 
 <enum name="PaymentRequestTryShowOutcome">
