@@ -289,6 +289,21 @@ bool VideoCaptureImpl::ProcessBuffer(
             (media::VideoFrame::NumPlanes(
                  video_frame_init_data.ready_buffer->info->pixel_format) == 3))
             << "Currently, only YUV formats support custom strides.";
+        const auto pixel_format =
+            video_frame_init_data.ready_buffer->info->pixel_format;
+        const auto coded_width =
+            video_frame_init_data.ready_buffer->info->coded_size.width();
+        const auto& strides =
+            video_frame_init_data.ready_buffer->info->strides->stride_by_plane;
+        CHECK_GE(static_cast<size_t>(strides[0]),
+                 media::VideoFrame::RowBytes(media::VideoFrame::Plane::kY,
+                                             pixel_format, coded_width));
+        CHECK_GE(static_cast<size_t>(strides[1]),
+                 media::VideoFrame::RowBytes(media::VideoFrame::Plane::kU,
+                                             pixel_format, coded_width));
+        CHECK_GE(static_cast<size_t>(strides[2]),
+                 media::VideoFrame::RowBytes(media::VideoFrame::Plane::kV,
+                                             pixel_format, coded_width));
         const size_t y_size =
             (media::VideoFrame::Rows(
                  media::VideoFrame::Plane::kY,
