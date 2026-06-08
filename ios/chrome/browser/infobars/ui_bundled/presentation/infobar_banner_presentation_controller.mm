@@ -48,6 +48,9 @@ const CGFloat kMinimumSizeChange = 0.5;
 - (CGRect)bannerFrame {
   CHECK(self.bannerPositioner);
   UIWindow* window = self.containerView.window;
+  if (!window) {
+    return CGRectZero;
+  }
   CGRect bannerFrame = CGRectZero;
 
   // Calculate the Banner container width.
