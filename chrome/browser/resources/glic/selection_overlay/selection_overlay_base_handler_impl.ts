@@ -5,6 +5,7 @@ import type {BitmapMappedFromTrustedProcess} from '//resources/mojo/skia/public/
 import type {PointF, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import type {SelectedRegion} from '/lens/selection_overlay_base_handler.js';
 import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay_base_handler.js';
+import {calculateCenterRotatedBox} from '/lens/selection_utils.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {SelectedRegionMojoType} from './selection_overlay.mojom-webui.js';
@@ -105,9 +106,13 @@ export class SelectionOverlayBaseHandlerImpl extends
         .callbackRouter.setPostRegionSelections.addListener(
             (regions: SelectedRegionMojoType[]) => {
               callback(regions.map(r => {
+                let rect = r.shape.rect;
+                if (!rect && r.shape.polyline) {
+                  rect = calculateCenterRotatedBox(r.shape.polyline).box;
+                }
                 const tsRegion: SelectedRegion = {
                   id: r.id,
-                  region: r.shape.rect || {x: 0, y: 0, width: 0, height: 0},
+                  region: rect || {x: 0, y: 0, width: 0, height: 0},
                 };
                 if (r.shape.polyline) {
                   tsRegion.polyline = r.shape.polyline;

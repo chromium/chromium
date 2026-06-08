@@ -20,7 +20,7 @@ import {renderScreenshot} from './screenshot_utils.js';
 import {RegionSource, SelectionOverlayBaseHandler} from './selection_overlay_base_handler.js';
 import type {SelectedRegion} from './selection_overlay_base_handler.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
-import type {GestureEvent} from './selection_utils.js';
+import type {GestureEvent, Point} from './selection_utils.js';
 import {toPercent, toPixels} from './values_converter.js';
 
 // Bounding box send to PostSelectionRendererElement to render a bounding box.
@@ -30,6 +30,7 @@ export interface PostSelectionBoundingBox {
   left: number;
   width: number;
   height: number;
+  polyline?: Point[];
 }
 
 export interface StaticRegion {
@@ -39,6 +40,7 @@ export interface StaticRegion {
   width: string;
   height: string;
   clipPath: string;
+  hasPolyline?: boolean;
 }
 
 // The target currently being dragged on by the user.
@@ -180,6 +182,15 @@ export class PostSelectionRendererElement extends
         value: '',
         reflectToAttribute: true,
       },
+      activeRegionHasPolyline: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+      activePolylinePoints: {
+        type: Array,
+        value: () => [],
+      },
       selectedRegions: {
         type: Array,
         value: () => [],
@@ -196,13 +207,36 @@ export class PostSelectionRendererElement extends
   }
 
   private syncActiveRegion() {
+    if (!this.multiRegionSelectionEnabled) {
+      return;
+    }
+
+    if (!this.activeRegionId) {
+      this.set('activePolylinePoints', []);
+      this.height = 0;
+      this.width = 0;
+      this.updateHasPolyline();
+      return;
+    }
+
     const activeRegion =
         this.selectedRegions.find(r => r.id === this.activeRegionId);
+
     if (activeRegion) {
+      this.set('activePolylinePoints', activeRegion.polyline || []);
       const {x, y, width, height} = activeRegion.region;
       this.setDimensions(y - height / 2, x - width / 2, height, width);
       this.rerender();
+    } else {
+      this.set('activePolylinePoints', []);
+      this.height = 0;
+      this.width = 0;
     }
+    this.updateHasPolyline();
+  }
+
+  private updateHasPolyline() {
+    this.activeRegionHasPolyline = this.activePolylinePoints.length > 0;
   }
 
   private eventTracker_: EventTracker = new EventTracker();
@@ -229,6 +263,8 @@ export class PostSelectionRendererElement extends
   declare private multiRegionSelectionEnabled: boolean;
   declare private staticRegions: StaticRegion[];
   declare private activeRegionId: string;
+  declare private activeRegionHasPolyline: boolean;
+  declare protected activePolylinePoints: Point[];
   declare private selectedRegions: SelectedRegion[];
 
   private currentScreenshot: ImageBitmap|null = null;
@@ -425,14 +461,26 @@ export class PostSelectionRendererElement extends
 
     const cornerRadius = 'var(--static-region-corner-radius, 24px)';
 
+    let clipPath;
+    const hasPolyline = region.polyline !== undefined &&
+        region.polyline !== null && region.polyline.length > 0;
+    if (region.polyline && region.polyline.length > 0) {
+      const points =
+          region.polyline.map(p => `${p.x * 100}% ${p.y * 100}%`).join(', ');
+      clipPath = `polygon(${points})`;
+    } else {
+      clipPath = `inset(${topPercent}% ${rightOffset}% ${bottomOffset}% ${
+          leftPercent}% round ${cornerRadius})`;
+    }
+
     return {
       id: region.id,
       left: `${leftPercent}%`,
       top: `${topPercent}%`,
       width: `${widthPercent}%`,
       height: `${heightPercent}%`,
-      clipPath: `inset(${topPercent}% ${rightOffset}% ${bottomOffset}% ${
-          leftPercent}% round ${cornerRadius})`,
+      clipPath: clipPath,
+      hasPolyline: hasPolyline,
     };
   }
 
@@ -486,6 +534,8 @@ export class PostSelectionRendererElement extends
     unfocusShimmer(this, ShimmerControlRequester.POST_SELECTION);
     this.height = 0;
     this.width = 0;
+    this.set('activePolylinePoints', []);
+    this.updateHasPolyline();
     this.shouldDarkenScrim = false;
     this.dispatchEvent(new CustomEvent(
         'hide-selected-region-context-menu', {bubbles: true, composed: true}));
@@ -715,7 +765,10 @@ export class PostSelectionRendererElement extends
     }, this.sliderChangedTimeout);
   }
 
-  private getPostSelectionStyles(): string {
+  private getPostSelectionStyles(
+      top: number, left: number, width: number, height: number,
+      _overlayRect: DOMRect, _activeRegionId: string,
+      _selectedRegionsChange: object, activePolylinePoints: Point[]): string {
     const style: string[] = [
       `--gradient-blue: ${GLIF_HEX_COLORS.blue}`,
       `--gradient-red: ${GLIF_HEX_COLORS.red}`,
@@ -728,13 +781,28 @@ export class PostSelectionRendererElement extends
     }
 
     const imageBounds = this.selectionOverlayRect;
-    const selectionWidth = this.width * imageBounds.width;
-    const selectionHeight = this.height * imageBounds.height;
+    const selectionWidth = width * imageBounds.width;
+    const selectionHeight = height * imageBounds.height;
     if (selectionWidth > 0 && selectionHeight > 0) {
       const minSide = Math.min(selectionWidth, selectionHeight);
       const blurAmount =
           Math.max(MIN_BLUR, Math.min(Math.round(minSide / 4), MAX_BLUR));
       style.push(`--region-selected-glow-blur-radius: ${blurAmount}px`);
+    }
+
+    if (activePolylinePoints && activePolylinePoints.length > 0) {
+      const points =
+          activePolylinePoints.map((p: Point) => `${p.x * 100}% ${p.y * 100}%`)
+              .join(', ');
+      style.push(`--active-selection-clip-path: polygon(${points})`);
+    } else {
+      const topOffset = toPercent(top);
+      const leftOffset = toPercent(left);
+      const rightOffset = toPercent(1 - (left + width));
+      const bottomOffset = toPercent(1 - (top + height));
+      style.push(`--active-selection-clip-path: inset(${topOffset} ${
+          rightOffset} ${bottomOffset} ${
+          leftOffset} round var(--post-selection-cutout-corner-radius))`);
     }
 
     return style.join('; ');
@@ -796,10 +864,13 @@ export class PostSelectionRendererElement extends
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
 
     this.rerender();
+    this.updateHasPolyline();
     this.triggerNewBoxAnimation();
   }
 
   private onRenderPostSelection(e: CustomEvent<PostSelectionBoundingBox>) {
+    this.set('activePolylinePoints', e.detail.polyline || []);
+    this.updateHasPolyline();
     this.setDimensions(
         e.detail.top, e.detail.left, e.detail.height, e.detail.width);
     this.rerender();
@@ -1055,8 +1126,10 @@ export class PostSelectionRendererElement extends
   }
 
   // Used in HTML template to know if there is currently a selection to render.
-  hasSelection(): boolean {
-    return this.width > 0 && this.height > 0;
+  hasSelection(
+      height: number = this.height, width: number = this.width,
+      activePolylinePoints: Point[] = this.activePolylinePoints): boolean {
+    return (width > 0 && height > 0) || activePolylinePoints.length > 0;
   }
 
   setSelectionOverlayRectForTesting(rect: DOMRect) {

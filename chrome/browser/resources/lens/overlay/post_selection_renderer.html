@@ -20,6 +20,12 @@
     display: none;
   }
 
+  #activeSelectionWrapper {
+    inset: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
   /** Render the selected part of the image again so it appears glowing over
       the scrim */
   #backgroundImageCanvas {
@@ -33,6 +39,10 @@
     object-fit: contain;
     position: absolute;
     width: 100%;
+  }
+
+  :host([active-region-has-polyline]) #backgroundImageCanvas {
+    clip-path: var(--active-selection-clip-path);
   }
 
   :host([region-selected-glow-enabled]) #backgroundImageCanvas {
@@ -55,6 +65,15 @@
     top: var(--selection-top);
     transition: opacity 100ms cubic-bezier(0.3, 0, 1, 1);
     width: var(--selection-width);
+  }
+
+  :host([active-region-has-polyline]) #postSelection {
+    border-radius: 0;
+    clip-path: var(--active-selection-clip-path);
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
 
   :host([region-selected-glow-enabled]) #postSelection {
@@ -109,6 +128,11 @@
     top: calc(var(--selection-top) - var(--post-selection-corner-width));
     width: calc(var(--selection-width) + (2 * var(--post-selection-corner-width)));
     z-index: 5; /* Position above words. */
+    pointer-events: auto;
+  }
+
+  :host([active-region-has-polyline]) #selectionCorners {
+    display: none;
   }
 
   :host([multi-region-selection-enabled]) #selectionCorners {
@@ -184,6 +208,12 @@
     box-sizing: border-box;
   }
 
+  .static-region[has-polyline] {
+    border: none;
+    background: none;
+    -webkit-mask: none;
+  }
+
   .static-region-cutout {
     position: absolute;
     /* It covers the entire overlay area. */
@@ -227,6 +257,28 @@
     width: var(--selection-width);
     z-index: 2;
   }
+
+  :host([multi-region-selection-enabled][active-region-has-polyline]) #activeRegionShadow {
+    border-radius: 0;
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    filter: drop-shadow(0 0 var(--region-selected-glow-blur-radius, 12px) #9DD2FF);
+  }
+
+  #activeRegionShadowShape {
+    display: none;
+  }
+
+  :host([multi-region-selection-enabled][active-region-has-polyline]) #activeRegionShadowShape {
+    display: block;
+    clip-path: var(--active-selection-clip-path);
+    height: 100%;
+    width: 100%;
+    background-color: white;
+  }
 </style>
 <div id="postSelectionScrim" style$="[[getScrimStyleProperties(height, width)]]"></div>
 <template is="dom-if" if="[[multiRegionSelectionEnabled]]">
@@ -240,25 +292,28 @@
               width: [[canvasWidth]]px;">
     </canvas>
     <div class="static-region"
+        has-polyline$="[[item.hasPolyline]]"
         data-id$="[[item.id]]"
         style$="left: [[item.left]]; top: [[item.top]];
                 width: [[item.width]]; height: [[item.height]];">
     </div>
   </template>
 </template>
-<div hidden$="[[!hasSelection(height, width)]]">
-  <div id="activeRegionShadow"
-    style$="[[getPostSelectionStyles(height, width, selectionOverlayRect)]]">
+<div hidden$="[[!hasSelection(height, width, activePolylinePoints)]]" id="activeSelectionWrapper">
+  <div id="activeRegionShadow">
+    <div id="activeRegionShadowShape"
+      style$="[[getPostSelectionStyles(top, left, width, height, selectionOverlayRect, activeRegionId, selectedRegions.*, activePolylinePoints)]]">
+    </div>
   </div>
   <canvas
     id="backgroundImageCanvas"
     height="[[canvasPhysicalHeight]]"
     width="[[canvasPhysicalWidth]]"
-    style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px;"
+    style$="height: [[canvasHeight]]px; width: [[canvasWidth]]px; [[getPostSelectionStyles(top, left, width, height, selectionOverlayRect, activeRegionId, selectedRegions.*, activePolylinePoints)]]"
   >
   </canvas>
   <div
-    style$="[[getPostSelectionStyles(height, width, selectionOverlayRect)]]"
+    style$="[[getPostSelectionStyles(top, left, width, height, selectionOverlayRect, activeRegionId, selectedRegions.*, activePolylinePoints)]]"
     id="postSelection"
     data-id$="[[activeRegionId]]"
   ></div>
