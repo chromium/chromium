@@ -756,7 +756,7 @@ void VideoEncodeAcceleratorAdapter::FlushOnAcceleratorThread(
   if (state_ == State::kFlushing && flush_support_.value()) {
     accelerator_->Flush(
         base::BindOnce(&VideoEncodeAcceleratorAdapter::FlushCompleted,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -1033,7 +1033,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
     if (flush_support_.value()) {
       accelerator_->Flush(
           base::BindOnce(&VideoEncodeAcceleratorAdapter::FlushCompleted,
-                         base::Unretained(this)));
+                         weak_factory_.GetWeakPtr()));
     }
   }
 }

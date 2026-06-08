@@ -11,12 +11,14 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_context_provider.h"
@@ -43,6 +45,30 @@ using ::testing::Values;
 using ::testing::WithArgs;
 
 namespace media {
+
+class FlushHoldingVideoEncodeAccelerator : public FakeVideoEncodeAccelerator {
+ public:
+  explicit FlushHoldingVideoEncodeAccelerator(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      FlushCallback* out_held_callback)
+      : FakeVideoEncodeAccelerator(std::move(task_runner)),
+        out_held_callback_(out_held_callback) {}
+
+  void Flush(FlushCallback flush_callback) override {
+    flush_callback_ = std::move(flush_callback);
+  }
+
+  bool IsFlushSupported() override { return true; }
+
+  void Destroy() override {
+    *out_held_callback_ = std::move(flush_callback_);
+    FakeVideoEncodeAccelerator::Destroy();
+  }
+
+ private:
+  FlushCallback flush_callback_;
+  raw_ptr<FlushCallback> out_held_callback_;
+};
 
 class VideoEncodeAcceleratorAdapterTest
     : public ::testing::TestWithParam<VideoPixelFormat> {
@@ -391,6 +417,98 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
     EXPECT_EQ(outputs_count, 1);
   }));
   RunUntilIdle();
+}
+
+TEST_F(VideoEncodeAcceleratorAdapterTest, HeldFlushCallbackAfterDestroy) {
+  // Delete the default vea_ allocated in SetUp since we are replacing it.
+  delete vea_.ExtractAsDangling();
+
+  VideoEncodeAccelerator::FlushCallback held_flush_callback;
+  auto* flush_holding_vea =
+      new FlushHoldingVideoEncodeAccelerator(vea_runner_, &held_flush_callback);
+  vea_ = flush_holding_vea;
+  EXPECT_CALL(*gpu_factories_.get(), DoCreateVideoEncodeAccelerator())
+      .WillRepeatedly(Return(flush_holding_vea));
+
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+
+  // Wait 1: Initialize
+  base::RunLoop init_run_loop;
+  adapter()->Initialize(
+      profile_, options, /*info_cb=*/base::DoNothing(),
+      /*output_cb=*/base::DoNothing(),
+      base::BindLambdaForTesting([&](EncoderStatus status) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        EXPECT_TRUE(status.is_ok());
+        init_run_loop.Quit();
+      }));
+  init_run_loop.Run();
+
+  auto frame = CreateGreenFrame(options.frame_size, PIXEL_FORMAT_I420,
+                                base::Milliseconds(1));
+
+  // Block vea_runner_ to ensure Encode and Flush are both posted before either
+  // runs.
+  base::WaitableEvent event;
+  vea_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WaitableEvent* e) {
+                       base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+                       e->Wait();
+                     },
+                     base::Unretained(&event)));
+
+  // Start Encode but don't wait yet
+  base::RunLoop encode_run_loop;
+  adapter()->Encode(
+      frame, VideoEncoder::EncodeOptions(true),
+      base::BindLambdaForTesting([&](EncoderStatus status) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        EXPECT_TRUE(status.is_ok());
+        encode_run_loop.Quit();
+      }));
+
+  bool flush_called = false;
+  adapter()->Flush(base::BindLambdaForTesting([&](EncoderStatus status) {
+    flush_called = true;
+    EXPECT_TRUE(status.is_ok());
+  }));
+
+  // Unblock vea_runner_ now that both are posted.
+  event.Signal();
+
+  // Wait for vea_runner_ to process Encode and Flush, which will post
+  // the Encode completion callback to the main thread.
+  {
+    base::RunLoop run_loop;
+    vea_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Now run the main thread loop until the Encode callback executes.
+  encode_run_loop.Run();
+  EXPECT_FALSE(flush_called);
+
+  // Wait 4: Deletion
+  vea_runner_->DeleteSoon(FROM_HERE, std::move(vae_adapter_));
+  {
+    base::RunLoop run_loop;
+    vea_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Wait 5: Running the held callback
+  vea_runner_->PostTask(FROM_HERE,
+                        base::BindOnce(std::move(held_flush_callback), true));
+  {
+    base::RunLoop run_loop;
+    vea_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
 }
 
 TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
