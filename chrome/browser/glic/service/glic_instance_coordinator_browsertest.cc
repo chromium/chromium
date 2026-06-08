@@ -332,9 +332,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
   EXPECT_EQ(GetContentsVisibility(instance2), content::Visibility::HIDDEN);
 }
 
-// TODO(b/521445431): Re-enable this test after fixing the flakes.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUnbindOnCloseTest,
-                       DISABLED_KeptBoundWhenInPlaceConversationSwitched) {
+                       KeptBoundWhenInPlaceConversationSwitched) {
+  // Disable the keep side panel open on new tabs setting to prevent a new
+  // GlicInstance from being created automatically when we create tab2 below.
+  GetProfile()->GetPrefs()->SetBoolean(
+      glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, false);
+
   tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
