@@ -306,10 +306,6 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeShowPanel_ = (e.target as HTMLInputElement).checked;
   }
   protected onTriggerInvokeClick_() {
-    this.invokeLogs_ =
-        [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
-    console.info(this.invokeLogs_[0]);
-
     const surface = this.invokeSurfaceType_ === 'newTab' ?
         {newTab: {openInForeground: this.invokeOpenInForeground_}} :
         {defaultSurface: {}};
@@ -349,6 +345,70 @@ export class GlicInternalsAppElement extends CrLitElement {
       showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,
       payload: payload,
     };
+
+    const invocationSourceMap =
+        InvocationSource as unknown as Record<number, string>;
+    const featureModeMap = FeatureMode as unknown as Record<number, string>;
+    const freOverrideMap = FreOverride as unknown as Record<number, string>;
+    const actuationTargetMap =
+        ActuationTarget as unknown as Record<number, string>;
+
+    const optionsString = JSON.stringify(options, (key, value) => {
+      if (value === null || value === undefined) {
+        return undefined;
+      }
+      if (Array.isArray(value) && value.length === 0) {
+        return undefined;
+      }
+      if (key === 'conversation') {
+        if (value.defaultConversation &&
+            Object.keys(value.defaultConversation).length === 0) {
+          return undefined;
+        }
+      }
+      if (key === 'surface') {
+        if (value.defaultSurface &&
+            Object.keys(value.defaultSurface).length === 0) {
+          return undefined;
+        }
+      }
+      if (key === 'freOverride' && value === FreOverride.kUnspecified) {
+        return undefined;
+      }
+      if (key === 'featureMode' && value === FeatureMode.kUnspecified) {
+        return undefined;
+      }
+      if (key === 'actuationTarget' &&
+          value === ActuationTarget.kAgentDecides) {
+        return undefined;
+      }
+      if (key === 'disableZss' && value === false) {
+        return undefined;
+      }
+      if (key === 'waitForPanelOpen' && value === false) {
+        return undefined;
+      }
+
+      if (key === 'invocationSource') {
+        return `${value} (${invocationSourceMap[value as number]})`;
+      }
+      if (key === 'featureMode') {
+        return `${value} (${featureModeMap[value as number]})`;
+      }
+      if (key === 'freOverride') {
+        return `${value} (${freOverrideMap[value as number]})`;
+      }
+      if (key === 'actuationTarget') {
+        return `${value} (${actuationTargetMap[value as number]})`;
+      }
+      return value;
+    }, 2);
+
+    this.invokeLogs_ = [
+      `[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE with options:\n${
+          optionsString}`,
+    ];
+    console.info(this.invokeLogs_[0]);
 
     this.pageHandler_.triggerInvokeFromInternalsAction(options).then(
         ({success, errorMessage}: {success: boolean, errorMessage: string}) => {

@@ -8,7 +8,9 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -36,6 +38,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #endif
+
+#include <sstream>
+
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
 
@@ -108,6 +114,281 @@ mojom::ProfileEnablementPtr BuildProfileEnablement(
   }
 
   return result;
+}
+
+std::string InvocationSourceToString(glic::mojom::InvocationSource source) {
+  // LINT.IfChange(InvocationSource)
+  switch (source) {
+    case glic::mojom::InvocationSource::kOsButton:
+      return "kOsButton";
+    case glic::mojom::InvocationSource::kOsButtonMenu:
+      return "kOsButtonMenu";
+    case glic::mojom::InvocationSource::kOsHotkey:
+      return "kOsHotkey";
+    case glic::mojom::InvocationSource::kTopChromeButton:
+      return "kTopChromeButton";
+    case glic::mojom::InvocationSource::kFre:
+      return "kFre";
+    case glic::mojom::InvocationSource::kProfilePicker:
+      return "kProfilePicker";
+    case glic::mojom::InvocationSource::kNudge:
+      return "kNudge";
+    case glic::mojom::InvocationSource::kThreeDotsMenu:
+      return "kThreeDotsMenu";
+    case glic::mojom::InvocationSource::kUnsupported:
+      return "kUnsupported";
+    case glic::mojom::InvocationSource::kWhatsNew:
+      return "kWhatsNew";
+    case glic::mojom::InvocationSource::kAfterSignIn:
+      return "kAfterSignIn";
+    case glic::mojom::InvocationSource::kSharedTab:
+      return "kSharedTab";
+    case glic::mojom::InvocationSource::kActorTaskIcon:
+      return "kActorTaskIcon";
+    case glic::mojom::InvocationSource::kSharedImage:
+      return "kSharedImage";
+    case glic::mojom::InvocationSource::kHandoffButton:
+      return "kHandoffButton";
+    case glic::mojom::InvocationSource::kSkills:
+      return "kSkills";
+    case glic::mojom::InvocationSource::kAutoOpenedByContextualCue:
+      return "kAutoOpenedByContextualCue";
+    case glic::mojom::InvocationSource::kPdfSummarizeButton:
+      return "kPdfSummarizeButton";
+    case glic::mojom::InvocationSource::kNavigationCapture:
+      return "kNavigationCapture";
+    case glic::mojom::InvocationSource::kAutoOpenedForPdf:
+      return "kAutoOpenedForPdf";
+    case glic::mojom::InvocationSource::kCaptureRegionHotkey:
+      return "kCaptureRegionHotkey";
+    case glic::mojom::InvocationSource::kIph:
+      return "kIph";
+    case glic::mojom::InvocationSource::kAnchoredContextualCue:
+      return "kAnchoredContextualCue";
+    case glic::mojom::InvocationSource::kWebContentsContextMenu:
+      return "kWebContentsContextMenu";
+    case glic::mojom::InvocationSource::kTextSelectionNudge:
+      return "kTextSelectionNudge";
+    case glic::mojom::InvocationSource::kTextSelectionWidget:
+      return "kTextSelectionWidget";
+    case glic::mojom::InvocationSource::kZeroStateAutoSummarize:
+      return "kZeroStateAutoSummarize";
+    case glic::mojom::InvocationSource::kUniversalCart:
+      return "kUniversalCart";
+    case glic::mojom::InvocationSource::kExperimentalTriggering:
+      return "kExperimentalTriggering";
+    case glic::mojom::InvocationSource::kPasswordChange:
+      return "kPasswordChange";
+    case glic::mojom::InvocationSource::kAutofill:
+      return "kAutofill";
+    case glic::mojom::InvocationSource::kToolbarButton:
+      return "kToolbarButton";
+    case glic::mojom::InvocationSource::kIndigoPageAction:
+      return "kIndigoPageAction";
+    case glic::mojom::InvocationSource::kWebDragDrop:
+      return "kWebDragDrop";
+    case glic::mojom::InvocationSource::kPromotionPage:
+      return "kPromotionPage";
+  }
+  LOG(ERROR) << "Unexpected value for InvocationSource: "
+             << static_cast<int>(source);
+  return "Unknown";
+  // LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource)
+}
+
+std::string FeatureModeToString(glic::mojom::FeatureMode mode) {
+  switch (mode) {
+    case glic::mojom::FeatureMode::kUnspecified:
+      return "kUnspecified";
+    case glic::mojom::FeatureMode::kImageGeneration:
+      return "kImageGeneration";
+    case glic::mojom::FeatureMode::kActuation:
+      return "kActuation";
+    case glic::mojom::FeatureMode::kExperimentalTriggering:
+      return "kExperimentalTriggering";
+    case glic::mojom::FeatureMode::kUniversalCart:
+      return "kUniversalCart";
+    case glic::mojom::FeatureMode::kPromotionPage:
+      return "kPromotionPage";
+  }
+  LOG(ERROR) << "Unexpected value for FeatureMode: " << static_cast<int>(mode);
+  return "Unknown";
+}
+
+std::string FreOverrideToString(glic::mojom::FreOverride fre_override) {
+  switch (fre_override) {
+    case glic::mojom::FreOverride::kUnspecified:
+      return "kUnspecified";
+    case glic::mojom::FreOverride::kTrustFirstText:
+      return "kTrustFirstText";
+    case glic::mojom::FreOverride::kTrustFirstClick:
+      return "kTrustFirstClick";
+    case glic::mojom::FreOverride::kTrustFirstInline:
+      return "kTrustFirstInline";
+  }
+  LOG(ERROR) << "Unexpected value for FreOverride: "
+             << static_cast<int>(fre_override);
+  return "Unknown";
+}
+
+std::string ActuationTargetToString(glic::mojom::ActuationTarget target) {
+  switch (target) {
+    case glic::mojom::ActuationTarget::kUnknown:
+      return "kUnknown";
+    case glic::mojom::ActuationTarget::kAgentDecides:
+      return "kAgentDecides";
+    case glic::mojom::ActuationTarget::kCurrentTab:
+      return "kCurrentTab";
+    case glic::mojom::ActuationTarget::kNewTab:
+      return "kNewTab";
+  }
+  LOG(ERROR) << "Unexpected value for ActuationTarget: "
+             << static_cast<int>(target);
+  return "Unknown";
+}
+
+void LogGlicInvokeOptions(const GlicInvokeOptions& options,
+                          bool auto_submit,
+                          std::optional<bool> show_panel) {
+  std::stringstream ss;
+
+  std::visit(
+      absl::Overload{
+          [&ss](glic::mojom::InvocationSource source) {
+            ss << "  source: " << InvocationSourceToString(source) << "\n";
+          },
+          [&ss](const glic::mojom::InvocationPayloadPtr& payload) {
+            ss << "  payload: ";
+            if (payload->is_universal_cart()) {
+              ss << "UniversalCartPayload { serialized_metadata size: "
+                 << payload->get_universal_cart()->serialized_metadata.size()
+                 << " }";
+            } else {
+              ss << "Unknown Payload";
+            }
+            ss << "\n";
+          }},
+      options.source_or_payload);
+
+  ss << "  auto_submit: " << (auto_submit ? "true" : "false") << "\n";
+
+  if (show_panel.has_value()) {
+    ss << "  show_panel: " << (show_panel.value() ? "true" : "false") << "\n";
+  }
+
+  if (!options.prompts.empty()) {
+    std::vector<std::string> quoted_prompts;
+    for (const auto& prompt : options.prompts) {
+      quoted_prompts.push_back(base::StrCat({"\"", prompt, "\""}));
+    }
+    ss << "  prompts: [" << base::JoinString(quoted_prompts, ", ") << "]\n";
+  }
+
+  if (options.disable_zss) {
+    ss << "  disable_zss: true\n";
+  }
+
+  if (options.feature_mode &&
+      *options.feature_mode != glic::mojom::FeatureMode::kUnspecified) {
+    ss << "  feature_mode: " << FeatureModeToString(*options.feature_mode)
+       << "\n";
+  }
+
+  if (options.skill_id) {
+    ss << "  skill_id: " << *options.skill_id << "\n";
+  }
+
+  if (options.error_message) {
+    ss << "  error_message: " << *options.error_message << "\n";
+  }
+
+  if (options.timeout) {
+    ss << "  timeout: " << options.timeout->InMilliseconds() << "ms\n";
+  }
+
+  if (options.wait_for_panel_open) {
+    ss << "  wait_for_panel_open: true\n";
+  }
+
+  if (options.fre_override != glic::mojom::FreOverride::kUnspecified) {
+    ss << "  fre_override: " << FreOverrideToString(options.fre_override)
+       << "\n";
+  }
+
+  std::vector<std::string> target_pieces;
+
+  std::visit(absl::Overload{
+                 [&target_pieces](const DefaultSurface& surface) {
+                   if (surface.browser != nullptr) {
+                     target_pieces.push_back(base::StringPrintf(
+                         "    surface: DefaultSurface { browser: %p }",
+                         surface.browser.get()));
+                   }
+                 },
+                 [&target_pieces](const NewTab& new_tab) {
+                   target_pieces.push_back(base::StrCat(
+                       {"    surface: NewTab { window: ",
+                        base::StringPrintf("%p", new_tab.window.get()),
+                        ", open_in_foreground: ",
+                        new_tab.open_in_foreground ? "true" : "false", " }"}));
+                 },
+                 [&target_pieces](const tabs::TabHandle& tab) {
+                   target_pieces.push_back("    surface: TabHandle {}");
+                 },
+                 [&target_pieces](const Floating& floating) {
+                   target_pieces.push_back("    surface: Floating {}");
+                 }},
+             options.target.surface);
+
+  std::visit(
+      absl::Overload{
+          [](const DefaultConversation&) {},
+          [&target_pieces](const NewConversation&) {
+            target_pieces.push_back("    conversation: NewConversation {}");
+          },
+          [&target_pieces](const ConversationId& conversation_id) {
+            std::string id_str =
+                base::StrCat({"    conversation: ConversationId { id: ",
+                              conversation_id.conversation_id});
+            if (conversation_id.turn_id) {
+              base::StrAppend(&id_str, {", turn: ", *conversation_id.turn_id});
+            }
+            id_str += " }";
+            target_pieces.push_back(id_str);
+          },
+          [&target_pieces](const InstanceId& instance_id) {
+            target_pieces.push_back(base::StrCat(
+                {"    conversation: InstanceId { id: ", instance_id.value(),
+                 " }"}));
+          }},
+      options.target.conversation);
+
+  if (options.target.actuation_target !=
+      glic::mojom::ActuationTarget::kAgentDecides) {
+    target_pieces.push_back(base::StrCat(
+        {"    actuation_target: ",
+         ActuationTargetToString(options.target.actuation_target)}));
+  }
+
+  if (!target_pieces.empty()) {
+    ss << "  target: Target {\n"
+       << base::JoinString(target_pieces, "\n") << "\n  }\n";
+  }
+
+  if (options.zss_config) {
+    ss << "  zss_config: ZssConfig { ";
+    if (options.zss_config->additional_content) {
+      ss << "additional_content: \"" << *options.zss_config->additional_content
+         << "\"";
+    }
+    ss << " }\n";
+  }
+
+  if (options.additional_context) {
+    ss << "  additional_context: Yes (details omitted)\n";
+  }
+
+  LOG(WARNING) << "GlicInvokeOptions {\n" << ss.str() << "}";
 }
 
 }  // namespace
@@ -301,6 +582,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
         mojo_options->surface->get_new_tab()->open_in_foreground;
     options.target.surface = new_tab;
   }
+
+  LogGlicInvokeOptions(options, mojo_options->auto_submit,
+                       mojo_options->show_panel);
 
   if (mojo_options->auto_submit) {
     GlicInvokeWithAutoSubmitOptions auto_submit_options;
