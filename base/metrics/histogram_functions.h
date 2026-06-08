@@ -16,7 +16,6 @@
 #include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
-#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions_internal_overloads.h"  // IWYU pragma: export
 #include "base/time/time.h"
 

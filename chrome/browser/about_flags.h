@@ -14,7 +14,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
-#include "base/metrics/histogram_base.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/webui/flags/feature_entry.h"

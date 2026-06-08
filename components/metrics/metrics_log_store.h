@@ -10,7 +10,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/metrics/histogram_base.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"

@@ -18,7 +18,6 @@
 #include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
-#include "base/metrics/histogram_base.h"
 #include "base/time/time.h"
 
 // Do not include this header directly.

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
