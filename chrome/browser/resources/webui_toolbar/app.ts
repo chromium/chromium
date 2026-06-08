@@ -27,6 +27,7 @@ import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STAT
 import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
 import {IconTable} from './icon_table.js';
 import {MetricsRecorder} from './metrics_recorder.js';
+import {setHasHelpBubble} from './toolbar_button.js';
 import {AppMenuIconType, AppMenuSeverity} from './toolbar_ui_api_data_model.mojom-webui.js';
 // clang-format off
 // Helper so tests can find what they needed when optimization is on.
@@ -329,6 +330,8 @@ export class ToolbarAppElement extends AppElementBase {
           onHighlightChanged: (highlighted: boolean) => {
             el.classList.toggle('anchor-highlight', highlighted);
           },
+          onHelpBubbleShown: () => setHasHelpBubble(el, true),
+          onHelpBubbleHidden: () => setHasHelpBubble(el, false),
         });
       }
     }

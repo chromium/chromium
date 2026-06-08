@@ -13,7 +13,7 @@ export function getHtml(this: AvatarButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-button id="button"
-    title="${this.state.tooltip || ''}"
+    title="${this.getTooltip_()}"
     aria-label="${this.state.accessibilityName || ''}"
     aria-description="${this.state.accessibilityDescription || ''}"
     @click="${this.onClick_}">

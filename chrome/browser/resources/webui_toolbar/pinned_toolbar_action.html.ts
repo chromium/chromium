@@ -13,7 +13,7 @@ export function getHtml(this: PinnedToolbarActionElement) {
       ?disabled="${!this.state.enabled}"
       ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
       ?is-activated="${this.state.activated}"
-      title="${this.state.tooltip}"
+      title="${this.getTooltip_()}"
       aria-label="${this.state.accessibilityText || this.state.tooltip}"
       @click="${this.onActionClick_}"
       @contextmenu="${this.onContextmenu_}">

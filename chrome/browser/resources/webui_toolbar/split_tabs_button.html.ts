@@ -11,7 +11,7 @@ export function getHtml(this: SplitTabsButtonElement) {
 <cr-icon-button id="button" iron-icon="${this.getIcon()}"
     @click="${this.onClick}" @contextmenu="${this.onContextmenu}"
     @pointerdown="${this.onPointerdown}"
-    title="${this.getLabel()}" aria-label="${this.getLabel()}"
+    title="${this.getTooltip_()}" aria-label="${this.getLabel()}"
     aria-haspopup="${this.state.isCurrentTabSplit}"
     ?is-menu-open="${this.state.isContextMenuVisible}"
     ?is-activated="${this.state.isCurrentTabSplit}">

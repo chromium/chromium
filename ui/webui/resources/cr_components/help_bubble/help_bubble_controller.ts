@@ -19,6 +19,8 @@ export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 
 export interface HelpBubbleOptions extends TrackedElementOptions {
   containerElement?: HTMLElement;
+  onHelpBubbleShown?: () => void;
+  onHelpBubbleHidden?: () => void;
 }
 
 function clampPadding(n: number = 0) {
@@ -187,6 +189,11 @@ export class HelpBubbleController {
     this.isExternal_ = true;
     this.isBubbleShowing_ = isShowing;
     this.setAnchorHighlight_(isShowing);
+    if (isShowing) {
+      this.options_.onHelpBubbleShown?.();
+    } else {
+      this.options_.onHelpBubbleHidden?.();
+    }
   }
 
   track(trackable: Trackable, options: HelpBubbleOptions): boolean {
@@ -239,6 +246,7 @@ export class HelpBubbleController {
     this.bubble_.show(this.anchor_);
     this.isBubbleShowing_ = true;
     this.setAnchorHighlight_(true);
+    this.options_.onHelpBubbleShown?.();
   }
 
   hide() {
@@ -250,6 +258,7 @@ export class HelpBubbleController {
     this.bubble_ = null;
     this.isBubbleShowing_ = false;
     this.setAnchorHighlight_(false);
+    this.options_.onHelpBubbleHidden?.();
   }
 
   createBubble(params: HelpBubbleParams): HelpBubbleElement {

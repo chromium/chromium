@@ -13,9 +13,11 @@ import {getCss} from './back_forward_button.css.js';
 import {getHtml} from './back_forward_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BackForwardButtonState, BrowserProxy} from './browser_proxy.js';
-import {getContextMenuPosition, getEventDispositionFlags, PressHandler} from './toolbar_button.js';
+import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler} from './toolbar_button.js';
 
-export class BackForwardButtonElement extends CrLitElement {
+const BackForwardButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export class BackForwardButtonElement extends BackForwardButtonElementBase {
   static get is() {
     return 'back-forward-button';
   }
@@ -30,6 +32,7 @@ export class BackForwardButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ...super.properties,
       direction: {type: String},
       state: {type: Object},
       leadingMargin: {type: Number},
@@ -74,9 +77,10 @@ export class BackForwardButtonElement extends CrLitElement {
   }
 
   protected getTooltip_(): string {
-    return this.direction === 'back' ?
-        loadTimeData.getString('backButtonTooltip') :
-        loadTimeData.getString('forwardButtonTooltip');
+    return this.adjustTooltipForHelpBubble(
+        this.direction === 'back' ?
+            loadTimeData.getString('backButtonTooltip') :
+            loadTimeData.getString('forwardButtonTooltip'));
   }
 
   protected onPointerenter_() {

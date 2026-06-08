@@ -6,10 +6,10 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './pinned_toolbar_action_icons.html.js';
 // <if expr="_google_chrome">
 import './internal/icons.html.js';
+
 // </if>
 
 import {assertNotReachedCase} from '//resources/js/assert.js';
-import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -19,11 +19,13 @@ import {ContextMenuType} from './browser_proxy.js';
 import {IconTable} from './icon_table.js';
 import {getCss} from './pinned_toolbar_action.css.js';
 import {getHtml} from './pinned_toolbar_action.html.js';
-import {getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
+import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import {PinnedToolbarAction} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
-export class PinnedToolbarActionElement extends CrLitElement {
+const PinnedToolbarActionElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   static get is() {
     return 'pinned-toolbar-action';
   }
@@ -38,6 +40,7 @@ export class PinnedToolbarActionElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ...super.properties,
       state: {type: Object},
       trackedHighlighted: {type: Boolean},
     };
@@ -55,15 +58,12 @@ export class PinnedToolbarActionElement extends CrLitElement {
   };
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private trackedElementManager_: TrackedElementManager =
-      TrackedElementManager.getInstance();
   private iconTable_: IconTable = IconTable.getInstance();
 
   protected accessor trackedHighlighted: boolean = false;
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.trackedElementManager_.stopTracking(this);
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -76,13 +76,15 @@ export class PinnedToolbarActionElement extends CrLitElement {
 
       if (oldId !== newId) {
         if (oldId) {
-          this.trackedElementManager_.stopTracking(this);
+          this.unregisterHelpBubble(oldId);
         }
         if (newId) {
-          this.trackedElementManager_.startTracking(this, newId, {
+          this.registerHelpBubble(newId, this, {
             onHighlightChanged: (highlighted: boolean) => {
               this.trackedHighlighted = highlighted;
             },
+            onHelpBubbleShown: () => setHasHelpBubble(this, true),
+            onHelpBubbleHidden: () => setHasHelpBubble(this, false),
           });
         }
       }
@@ -176,6 +178,10 @@ export class PinnedToolbarActionElement extends CrLitElement {
       default:
         assertNotReachedCase(this.state.action);
     }
+  }
+
+  protected getTooltip_(): string {
+    return this.adjustTooltipForHelpBubble(this.state.tooltip);
   }
 
   protected onContextmenu_(e: Event) {

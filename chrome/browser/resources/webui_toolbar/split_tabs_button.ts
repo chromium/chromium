@@ -14,11 +14,13 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './split_tabs_button.css.js';
 import {getHtml} from './split_tabs_button.html.js';
-import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
+import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin} from './toolbar_button.js';
 import {ContextMenuType, SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {SplitTabsControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
-export class SplitTabsButtonElement extends CrLitElement {
+const SplitTabsButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export class SplitTabsButtonElement extends SplitTabsButtonElementBase {
   static get is() {
     return 'split-tabs-button';
   }
@@ -33,6 +35,7 @@ export class SplitTabsButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ...super.properties,
       state: {type: Object},
     };
   }
@@ -73,6 +76,10 @@ export class SplitTabsButtonElement extends CrLitElement {
         'splitTabsButtonAccNameEnabled' :
         'splitTabsButtonAccNamePinned';
     return loadTimeData.getString(labelId);
+  }
+
+  protected getTooltip_(): string {
+    return this.adjustTooltipForHelpBubble(this.getLabel());
   }
 
   /**

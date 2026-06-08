@@ -12,8 +12,10 @@
   display: inline-flex;
   justify-content: center;
   position: relative;
-  height: var(--toolbar-button-height);
-  width: var(--toolbar-button-height);
+  --button-height: var(--toolbar-button-height);
+  --button-width: var(--toolbar-button-height);
+  height: var(--button-height);
+  width: var(--button-width);
 }
 
 cr-icon-button {
@@ -28,6 +30,26 @@ cr-icon-button[is-menu-open],
 :host(.anchor-highlight) cr-icon-button {
   background-color: var(--cr-active-background-color);
 }
+
+:host(.help-anchor-highlight) cr-icon-button {
+  animation: pulse 800ms infinite alternate ease-in-out;
+  --cr-icon-button-active-background-color: var(
+      --color-button-feature-attention-highlight);
+  background-color: var(--cr-icon-button-active-background-color);
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    /* Scale so that the difference in size is 3px on any edge. Use the
+     * max dimension to ensure the inset is at most 3px. */
+    transform: scale(calc(
+      1 - 6 / (max(var(--button-height), var(--button-width)) / 1px)));
+  }
+}
+
 
 /* The "Blue Bar" status indicator that appears when a split is active */
 .status-indicator {

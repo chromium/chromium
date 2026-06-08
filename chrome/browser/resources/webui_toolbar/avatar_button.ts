@@ -11,9 +11,12 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './avatar_button.css.js';
 import {getHtml} from './avatar_button.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {HelpBubbleAnchorMixin} from './toolbar_button.js';
 import type {AvatarControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
-export class AvatarButtonElement extends CrLitElement {
+const AvatarButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export class AvatarButtonElement extends AvatarButtonElementBase {
   static get is() {
     return 'avatar-button';
   }
@@ -28,6 +31,7 @@ export class AvatarButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ...super.properties,
       state: {type: Object},
     };
   }
@@ -40,8 +44,12 @@ export class AvatarButtonElement extends CrLitElement {
     accessibilityDescription: '',
   };
 
-  protected onClick_(_: Event) {
-    // TODO(behamilton): Log an error if this fails.
+  protected getTooltip_(): string {
+    return this.adjustTooltipForHelpBubble(
+        this.state?.accessibilityDescription || '');
+  }
+
+  protected onClick_(_e: Event) {
     BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu();
   }
 }

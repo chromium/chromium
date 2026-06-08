@@ -19,7 +19,7 @@ import {MetricsRecorder} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
 import {TimerHelper} from './timer_helper.js';
-import {BUTTON_LEFT, BUTTON_RIGHT, getContextMenuPosition, getEventDispositionFlags, PressHandler} from './toolbar_button.js';
+import {BUTTON_LEFT, BUTTON_RIGHT, getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler} from './toolbar_button.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';
@@ -29,7 +29,9 @@ const RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU =
 const RELOAD_BUTTON_TOOLTIP_STOP = 'reloadButtonTooltipStop';
 // go/keep-sorted end
 
-export class ReloadButtonElement extends CrLitElement {
+const ReloadButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export class ReloadButtonElement extends ReloadButtonElementBase {
   static get is() {
     return 'reload-button';
   }
@@ -44,6 +46,7 @@ export class ReloadButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ...super.properties,
       accName_: {type: String},
       state: {type: Object},
       tooltip: {type: String, reflect: true},
@@ -246,14 +249,22 @@ export class ReloadButtonElement extends CrLitElement {
             MetricsRecorder.getVisibleMode(previousState.isNavigationLoading),
             MetricsRecorder.getVisibleMode(this.state.isNavigationLoading));
       }
-      this.tooltip = loadTimeData.getString(
-          this.state.isNavigationLoading ?
-              RELOAD_BUTTON_TOOLTIP_STOP :
-              (this.state.canShowMenu ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
-                                        RELOAD_BUTTON_TOOLTIP_RELOAD));
+      this.updateTooltip_();
       this.updateState_(/*force=*/ !previousState ||
                         this.state.stateToken !== previousState.stateToken);
     }
+
+    if (changedPrivateProperties.has('hasHelpBubble')) {
+      this.updateTooltip_();
+    }
+  }
+
+  private updateTooltip_() {
+    this.tooltip = this.adjustTooltipForHelpBubble(loadTimeData.getString(
+        this.state.isNavigationLoading ?
+            RELOAD_BUTTON_TOOLTIP_STOP :
+            (this.state.canShowMenu ? RELOAD_BUTTON_TOOLTIP_RELOAD_WITH_MENU :
+                                      RELOAD_BUTTON_TOOLTIP_RELOAD)));
   }
 
   /**

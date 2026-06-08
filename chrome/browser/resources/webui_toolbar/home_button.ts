@@ -13,10 +13,12 @@ import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './home_button.css.js';
 import {getHtml} from './home_button.html.js';
-import {getContextMenuPosition, getEventDispositionFlags, PressHandler} from './toolbar_button.js';
+import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler} from './toolbar_button.js';
 import type {HomeControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
-export class HomeButtonElement extends CrLitElement {
+const HomeButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
+
+export class HomeButtonElement extends HomeButtonElementBase {
   static get is() {
     return 'home-button';
   }
@@ -31,6 +33,7 @@ export class HomeButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
+      ...super.properties,
       state: {type: Object},
     };
   }
@@ -47,7 +50,8 @@ export class HomeButtonElement extends CrLitElement {
     return loadTimeData.getString('homeButtonAccName');
   }
   protected getTooltip_(): string {
-    return loadTimeData.getString('homeButtonTooltip');
+    return this.adjustTooltipForHelpBubble(
+        loadTimeData.getString('homeButtonTooltip'));
   }
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
