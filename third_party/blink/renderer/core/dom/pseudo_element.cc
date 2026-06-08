@@ -36,12 +36,14 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/interest_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -54,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
+#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/skeleton/skeleton_pseudo_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -795,6 +798,16 @@ bool PseudoElement::SupportsHitTesting(PseudoId pseudo_id) {
 }
 
 bool PseudoElement::SupportsHitTesting() const {
+  if (pseudo_id_ == kPseudoIdBackdrop) {
+    if (RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled()) {
+      return true;
+    }
+    if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
+        UltimateOriginatingElement().GetOverscrollContainer()) {
+      return true;
+    }
+    return false;
+  }
   return SupportsHitTesting(pseudo_id_);
 }
 
@@ -892,6 +905,22 @@ void PseudoElement::RetargetAnimations() {
   originating_element.GetDocument()
       .GetDocumentAnimations()
       .RetargetAnimationsForPseudoElement(this);
+}
+
+void PseudoElement::DefaultEventHandler(Event& event) {
+  if (event.type() == event_type_names::kClick && !event.DefaultHandled() &&
+      RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+    if (GetPseudoId() == kPseudoIdBackdrop) {
+      if (Element* container =
+              UltimateOriginatingElement().GetOverscrollContainer()) {
+        if (auto* tracker = container->GetOverscrollAreaTracker()) {
+          tracker->CloseAllAreas();
+          event.SetDefaultHandled();
+        }
+      }
+    }
+  }
+  Element::DefaultEventHandler(event);
 }
 
 }  // namespace blink

@@ -27,6 +27,11 @@ class CORE_EXPORT OverscrollAreaTracker
   void RemoveOverscroll(Element*);
   void RemoveAllOverscroll();
 
+  void ToggleArea(Element* overscroll_area);
+  void OpenArea(Element* overscroll_area);
+  void CloseArea(Element* overscroll_area);
+  void CloseAllAreas();
+
   const VectorOf<Element>& DOMSortedElements();
 
   void Trace(Visitor*) const override;

@@ -7,10 +7,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
@@ -555,6 +559,61 @@ TEST_F(OverscrollAreaTrackerTest, MultipleIdsReferToFirstElement) {
   EXPECT_TRUE(second->ComputedStyleRef().IsInternalOverscrollPositionAuto());
   EXPECT_FALSE(SelectorChecker::MatchesOverscrollTarget(*third));
   EXPECT_FALSE(third->ComputedStyleRef().IsInternalOverscrollPositionAuto());
+}
+
+TEST_F(OverscrollAreaTrackerTest, BackdropClickDismiss) {
+  SetInnerHTML(R"HTML(
+    <style>
+      #container {
+        width: 200px;
+        height: 200px;
+      }
+      #menu {
+        width: 200%;
+        height: 200%;
+        left: -50%;
+        top: -50%;
+      }
+      #menu::backdrop {
+        background-color: rgba(0,0,0,0.5);
+      }
+    </style>
+    <div id="container" overscrollcontainer>
+      <div id="menu" overscrollarea></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* area_tracker = OverscrollAreaTrackerById("container");
+  ASSERT_TRUE(area_tracker);
+  Element* menu = GetDocument().getElementById(AtomicString("menu"));
+  ASSERT_TRUE(menu);
+
+  area_tracker->OpenArea(menu);
+  UpdateAllLifecyclePhasesForTest();
+
+  PseudoElement* overscroll_area_parent =
+      menu->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(overscroll_area_parent);
+  auto* scrollable_area =
+      DynamicTo<LayoutBox>(overscroll_area_parent->GetLayoutObject())
+          ->GetScrollableArea();
+  ASSERT_TRUE(scrollable_area);
+
+  EXPECT_NE(scrollable_area->GetScrollOffset(), ScrollOffset());
+
+  PseudoElement* backdrop = menu->GetPseudoElement(kPseudoIdBackdrop);
+  ASSERT_TRUE(backdrop);
+
+  PointerEventInit* init = PointerEventInit::Create();
+  init->setBubbles(true);
+  init->setPointerId(1);
+  PointerEvent* click_event =
+      PointerEvent::Create(event_type_names::kClick, init);
+  backdrop->DispatchEvent(*click_event);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(scrollable_area->GetScrollOffset(), ScrollOffset());
 }
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollPseudoElementLayoutStructure) {

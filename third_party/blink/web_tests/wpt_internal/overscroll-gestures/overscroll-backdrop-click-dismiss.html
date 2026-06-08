@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll area backdrop click dismiss test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  html, body { margin: 0; }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: clip;
+    position: relative;
+    background: red;
+  }
+  #menu {
+    position: absolute;
+    bottom: 100%;
+    width: 200px;
+    height: 100px;
+    background: blue;
+  }
+  #menu::backdrop {
+    display: block;
+    background: green;
+  }
+  #content {
+    height: 200px;
+  }
+</style>
+
+<div id="container" overscrollcontainer>
+  <div id="menu" overscrollarea></div>
+  <div id="content"></div>
+</div>
+
+<script>
+promise_test(async () => {
+  const container = document.getElementById('container');
+  const menu = document.getElementById('menu');
+
+  // Initially the menu is offscreen to the top.
+  assert_equals(menu.getBoundingClientRect().top, -100, "Menu should be offscreen initially");
+
+  // Open the menu by scrolling it into view.
+  menu.scrollIntoView();
+
+  // Wait for layout/scroll to settle.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // Verify it is open (Menu should be at the top of the viewport).
+  assert_equals(menu.getBoundingClientRect().top, 0, "Menu should be at the top of the viewport when open");
+
+  // Click on the backdrop (bottom half of the container).
+  // Container is 200x200, so its center is at (100, 100).
+  // To click at (100, 150) relative to top-left, we use offset (0, 50) from center.
+  let actions = new test_driver.Actions()
+      .pointerMove(0, 50, {origin: container})
+      .pointerDown()
+      .pointerUp();
+  await actions.send();
+
+  // Wait for click to be processed and dismiss scroll to settle.
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // Verify it is closed (Menu should be offscreen again).
+  assert_equals(menu.getBoundingClientRect().top, -100, "Menu should be hidden again after backdrop click");
+}, "Clicking on overscroll backdrop dismisses all overscroll areas");
+</script>

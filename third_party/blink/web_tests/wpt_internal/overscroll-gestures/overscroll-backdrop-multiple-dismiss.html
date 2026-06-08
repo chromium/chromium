@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Overscroll areas backdrop click dismiss test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<style>
+  html, body { margin: 0; }
+  #container {
+    width: 200px;
+    height: 200px;
+    overflow: clip;
+    position: relative;
+    background: red;
+  }
+  .area {
+    position: absolute;
+  }
+  #area-left {
+    right: 100%;
+    top: 0;
+    width: 100px;
+    height: 200px;
+    background: blue;
+  }
+  #area-right {
+    left: 100%;
+    top: 0;
+    width: 100px;
+    height: 200px;
+    background: yellow;
+  }
+  #area-top {
+    bottom: 100%;
+    left: 0;
+    width: 200px;
+    height: 100px;
+    background: cyan;
+  }
+  #area-bottom {
+    top: 100%;
+    left: 0;
+    width: 200px;
+    height: 100px;
+    background: magenta;
+  }
+
+  .area::backdrop {
+    display: none;
+  }
+  .area:overscroll-open::backdrop {
+    display: block;
+    background: rgba(0, 255, 0, 0.5);
+  }
+  #area-right::backdrop, #area-bottom::backdrop {
+    display: none;
+  }
+  #content {
+    width: 200px;
+    height: 200px;
+  }
+</style>
+
+<div id="container" overscrollcontainer="overlay">
+  <div id="area-left" class="area" overscrollarea></div>
+  <div id="area-right" class="area" overscrollarea></div>
+  <div id="area-top" class="area" overscrollarea></div>
+  <div id="area-bottom" class="area" overscrollarea></div>
+  <div id="content"></div>
+</div>
+<button id="btn-left" command="toggle-overscroll" commandfor="area-left" style="display:none">left</button>
+<button id="btn-right" command="toggle-overscroll" commandfor="area-right" style="display:none">right</button>
+<button id="btn-top" command="toggle-overscroll" commandfor="area-top" style="display:none">top</button>
+<button id="btn-bottom" command="toggle-overscroll" commandfor="area-bottom" style="display:none">bottom</button>
+
+<script>
+promise_test(async () => {
+  const container = document.getElementById('container');
+  const containerRect = container.getBoundingClientRect();
+
+  const areaLeft = document.getElementById('area-left');
+  const areaRight = document.getElementById('area-right');
+  const areaTop = document.getElementById('area-top');
+  const areaBottom = document.getElementById('area-bottom');
+
+  const isClosed = (area) => {
+    const rect = area.getBoundingClientRect();
+    if (area.id === 'area-top') {
+      return Math.abs(rect.top - (containerRect.top - 100)) < 1;
+    } else if (area.id === 'area-bottom') {
+      return Math.abs(rect.bottom - (containerRect.bottom + 100)) < 1;
+    } else if (area.id === 'area-left') {
+      return Math.abs(rect.left - (containerRect.left - 100)) < 1;
+    } else if (area.id === 'area-right') {
+      return Math.abs(rect.right - (containerRect.right + 100)) < 1;
+    }
+    return false;
+  };
+
+  const isOpen = (area) => {
+    const rect = area.getBoundingClientRect();
+    if (area.id === 'area-top') {
+      return Math.abs(rect.top - containerRect.top) < 1;
+    } else if (area.id === 'area-bottom') {
+      return Math.abs(rect.bottom - containerRect.bottom) < 1;
+    } else if (area.id === 'area-left') {
+      return Math.abs(rect.left - containerRect.left) < 1;
+    } else if (area.id === 'area-right') {
+      return Math.abs(rect.right - containerRect.right) < 1;
+    }
+    return false;
+  };
+
+  // Verify initially closed
+  assert_true(isClosed(areaLeft), "Left area should be offscreen initially");
+  assert_true(isClosed(areaRight), "Right area should be offscreen initially");
+  assert_true(isClosed(areaTop), "Top area should be offscreen initially");
+  assert_true(isClosed(areaBottom), "Bottom area should be offscreen initially");
+
+  // Open all 4 areas by clicking their toggle buttons with yielding
+  document.getElementById('btn-left').click();
+  document.getElementById('btn-right').click();
+  document.getElementById('btn-top').click();
+  document.getElementById('btn-bottom').click();
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // Verify all are open
+  assert_true(isOpen(areaLeft), "Left area should be open");
+  assert_true(isOpen(areaRight), "Right area should be open");
+  assert_true(isOpen(areaTop), "Top area should be open");
+  assert_true(isOpen(areaBottom), "Bottom area should be open");
+
+  // Click in the center of the container.
+  // Since area-left and area-top have backdrops (display: block),
+  // the click should hit one of them and dismiss ALL areas.
+  let actions = new test_driver.Actions()
+      .pointerMove(0, 0, {origin: container})
+      .pointerDown()
+      .pointerUp();
+  await actions.send();
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+  // Verify all are closed
+  assert_true(isClosed(areaLeft), "Left area should be closed after backdrop click");
+  assert_true(isClosed(areaRight), "Right area should be closed after backdrop click");
+  assert_true(isClosed(areaTop), "Top area should be closed after backdrop click");
+  assert_true(isClosed(areaBottom), "Bottom area should be closed after backdrop click");
+}, "Clicking on any active backdrop dismisses all open overscroll areas");
+</script>
