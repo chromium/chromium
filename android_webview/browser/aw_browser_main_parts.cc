@@ -464,30 +464,6 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       metrics, "WebViewFasterFinchSeed", group,
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
-  // The experiment config overrides all the flags for each arm, so we can check
-  // just one flag to see if the device is in the experiment.
-  bool in_startup_tasks_experiment =
-      android_webview::CachedFlags::IsCachedFeatureOverridden(
-          features::kWebViewUseStartupTasksLogic);
-  std::string_view startup_tasks_experiment_group;
-  if (!in_startup_tasks_experiment) {
-    startup_tasks_experiment_group = "Default";
-  } else if (android_webview::CachedFlags::IsEnabled(
-                 features::kWebViewUseStartupTasksLogic)) {
-    startup_tasks_experiment_group = "Enabled_Phase1";
-  } else if (android_webview::CachedFlags::IsEnabled(
-                 features::kWebViewUseStartupTasksLogicP2)) {
-    startup_tasks_experiment_group = "Enabled_Phase2";
-  } else if (android_webview::CachedFlags::IsEnabled(
-                 features::kWebViewStartupTasksYieldToNative)) {
-    startup_tasks_experiment_group = "Enabled_Phase3";
-  } else {
-    startup_tasks_experiment_group = "Control";
-  }
-
-  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      metrics, "WebViewStartupTasksMetrics2", startup_tasks_experiment_group,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {
@@ -522,18 +498,8 @@ void AwBrowserMainParts::PostCreateThreads() {
       base::trace_event::kStartupTracingTriggerName);
 }
 
-bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() {
-  return Java_AwBrowserMainParts_isWebViewStartupTasksLogicEnabled(
-      base::android::AttachCurrentThread());
-}
-
-bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabledP2() {
-  return Java_AwBrowserMainParts_isWebViewStartupTasksExperimentEnabledP2(
-      base::android::AttachCurrentThread());
-}
-
-bool AwBrowserMainParts::isStartupTaskYieldToNativeExperimentEnabled() {
-  return Java_AwBrowserMainParts_isWebViewStartupTasksYieldToNativeExperimentEnabled(
+bool AwBrowserMainParts::runStartupTasksAsync() {
+  return Java_AwBrowserMainParts_runStartupTasksAsync(
       base::android::AttachCurrentThread());
 }
 

@@ -151,15 +151,6 @@ BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 // enabled.
 BASE_FEATURE(kWebViewRenderDocument, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, webview chromium initialization uses the startup tasks logic
-// where it runs the startup tasks asynchronously if startup is triggered from a
-// background thread. Otherwise runs startup synchronously.
-// Also caches any chromium startup exception and rethrows it if startup is
-// retried without a restart.
-// Note: WebViewUseStartupTasksLogicP2 and kWebViewStartupTasksYieldToNative
-// also enable the same behaviour as this flag.
-BASE_FEATURE(kWebViewUseStartupTasksLogic, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, records histograms relating to app's cache size.
 BASE_FEATURE(kWebViewRecordAppCacheHistograms,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -191,21 +182,6 @@ const base::FeatureParam<int> kWebViewCacheSizeLimitMaximum{
 const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
     &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     "WebViewCodeCacheSizeLimitMultiplier", 0.5};
-
-
-// Enables phase 2 of using startup tasks logic for webview chromium
-// initialization which also starts browser process asynchronously, when
-// starting webview asynchronously.
-// Note: This also enables the same behaviour as WebViewUseStartupTasksLogic and
-// WebViewStartupTasksYieldToNative with minor differences.
-BASE_FEATURE(kWebViewUseStartupTasksLogicP2, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables running native startup tasks asynchronously if WebView startup is
-// asynchronous.
-// Note:This also enables the same behaviour as WebViewUseStartupTasksLogic and
-// WebViewUseStartupTasksLogicP2, with minor additions.
-BASE_FEATURE(kWebViewStartupTasksYieldToNative,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reduce when the app's copy of the finch seed expires. This makes WebView more
 // aggressive in requesting a new copy of its finch seed.

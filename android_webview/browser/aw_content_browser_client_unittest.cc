@@ -35,27 +35,6 @@ using StrictMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
 using base::android::YieldToLooperChecker;
 
-enum class StartupTaskExperiment {
-  kNone,
-  kUseStartupTasksLogic,
-  kUseStartupTasksLogicP2,
-  kStartupTasksYieldToNative,
-};
-
-std::string StartupTaskExperimentToString(
-    const ::testing::TestParamInfo<StartupTaskExperiment>& info) {
-  switch (info.param) {
-    case StartupTaskExperiment::kNone:
-      return "NoExperiment";
-    case StartupTaskExperiment::kUseStartupTasksLogic:
-      return "UseStartupTasksLogic";
-    case StartupTaskExperiment::kUseStartupTasksLogicP2:
-      return "UseStartupTasksLogicP2";
-    case StartupTaskExperiment::kStartupTasksYieldToNative:
-      return "StartupTasksYieldToNative";
-  }
-}
-
 class TestAwContentBrowserClient : public AwContentBrowserClient {
  public:
   explicit TestAwContentBrowserClient(AwFeatureListCreator* creator)
@@ -67,32 +46,13 @@ class TestAwContentBrowserClient : public AwContentBrowserClient {
               (override));
 };
 
-class AwContentBrowserClientTest
-    : public testing::TestWithParam<StartupTaskExperiment> {
+class AwContentBrowserClientTest : public testing::TestWithParam<bool> {
  public:
   AwContentBrowserClientTest() {
-    switch (GetParam()) {
-      case StartupTaskExperiment::kNone:
-        break;
-      case StartupTaskExperiment::kUseStartupTasksLogic:
-        client_.set_startup_tasks_logic_enabled_for_testing(true);
-        break;
-      case StartupTaskExperiment::kUseStartupTasksLogicP2:
-        client_.set_startup_tasks_logic_p2_enabled_for_testing(true);
-        break;
-      case StartupTaskExperiment::kStartupTasksYieldToNative:
-        client_
-            .set_startup_tasks_yield_to_native_experiment_enabled_for_testing(
-                true);
-        break;
-      default:
-        CHECK(false) << "Unhandled experiment";
-    }
+    client_.set_run_startup_tasks_async_for_testing(GetParam());
   }
 
-  bool IsAnyExperimentEnabled() {
-    return GetParam() != StartupTaskExperiment::kNone;
-  }
+  bool IsAsync() { return GetParam(); }
 
  protected:
   content::BrowserTaskEnvironment task_environment_{
@@ -107,7 +67,7 @@ class AwContentBrowserClientTest
 TEST_P(AwContentBrowserClientTest, ClientTaskNotRunBeforeStartupComplete) {
   StrictMockTask client_task;
 
-  if (IsAnyExperimentEnabled()) {
+  if (IsAsync()) {
     StrictMockTask loop_quitting_task;
 
     client_.PostAfterStartupTask(FROM_HERE, task_runner_, client_task.Get());
@@ -137,7 +97,7 @@ TEST_P(AwContentBrowserClientTest, TaskRunAfterStartupComplete) {
   StrictMockTask task;
 
   // Task should run without startup complete call if no experiment
-  if (IsAnyExperimentEnabled()) {
+  if (IsAsync()) {
     client_.OnStartupComplete();
   }
 
@@ -169,7 +129,7 @@ TEST_P(AwContentBrowserClientTest, MultipleTasksBeforeStartup) {
     client_.PostAfterStartupTask(FROM_HERE, task_runner_, task3.Get());
   };
 
-  if (IsAnyExperimentEnabled()) {
+  if (IsAsync()) {
     // AfterStartupTasks only running after startup is marked as complete.
     post_after_startup_tasks();
     setup_call_expectations();
@@ -187,7 +147,7 @@ TEST_P(AwContentBrowserClientTest,
        OnUiTaskRunnerReadyCallbackRunAfterStartupComplete) {
   StrictMockTask task;
 
-  if (IsAnyExperimentEnabled()) {
+  if (IsAsync()) {
     client_.OnUiTaskRunnerReady(task.Get());
 
     base::RunLoop run_loop;
@@ -204,12 +164,8 @@ TEST_P(AwContentBrowserClientTest,
 }
 
 TEST_P(AwContentBrowserClientTest, StartupStatesSetCorrectly) {
-  const bool yield_to_native_experiment =
-      GetParam() == StartupTaskExperiment::kStartupTasksYieldToNative;
-
   client_.OnUiTaskRunnerReady(base::DoNothing());
-  EXPECT_EQ(yield_to_native_experiment,
-            YieldToLooperChecker::GetInstance().ShouldYield());
+  EXPECT_EQ(IsAsync(), YieldToLooperChecker::GetInstance().ShouldYield());
 
   client_.OnStartupComplete();
   EXPECT_FALSE(YieldToLooperChecker::GetInstance().ShouldYield());
@@ -237,14 +193,13 @@ TEST_P(AwContentBrowserClientTest, IsFullCookieAccessAllowed) {
       net::CookieSettingOverrides()));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    AwContentBrowserClientTest,
-    ::testing::Values(StartupTaskExperiment::kNone,
-                      StartupTaskExperiment::kUseStartupTasksLogic,
-                      StartupTaskExperiment::kUseStartupTasksLogicP2,
-                      StartupTaskExperiment::kStartupTasksYieldToNative),
-    StartupTaskExperimentToString);
+INSTANTIATE_TEST_SUITE_P(,
+                         AwContentBrowserClientTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AsyncStartupTasks"
+                                             : "SyncStartupTasks";
+                         });
 
 }  // namespace
 

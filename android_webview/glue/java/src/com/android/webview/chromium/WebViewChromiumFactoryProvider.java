@@ -362,32 +362,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         mWebViewDelegate.addWebViewAssetPath(ctx);
     }
 
-    private boolean shouldEnableStartupTasksExperiment() {
-        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC)) {
-            return true;
-        }
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC);
-    }
-
-    private boolean shouldEnableStartupTasksExperimentP2() {
-        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2)) {
-            return true;
-        }
-
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2);
-    }
-
-    private boolean shouldEnableStartupTasksYieldToNativeExperiment() {
-        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE)) {
-            return true;
-        }
-
-        return WebViewCachedFlags.get()
-                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE);
-    }
-
     @SuppressWarnings({"NoContextGetApplicationContext"})
     private void initialize(WebViewDelegate webViewDelegate) {
         // Capture startup init time before anything else.
@@ -784,47 +758,20 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT:
                 {
                     if (ManifestMetadataUtil.shouldForceSyncBrowserStartup()) {
-                        setStartupTaskExperimentValues(
-                                /* enablePhase1= */ false,
-                                /* enablePhase2= */ false,
-                                /* enableYieldToNative= */ false);
+                        runStartupTasksAsync(false);
                     } else {
-                        setStartupTaskExperimentValues(
-                                shouldEnableStartupTasksExperiment(),
-                                shouldEnableStartupTasksExperimentP2(),
-                                shouldEnableStartupTasksYieldToNativeExperiment());
+                        runStartupTasksAsync(true);
                     }
                     return;
                 }
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_SYNC:
-                setStartupTaskExperimentValues(
-                        /* enablePhase1= */ false,
-                        /* enablePhase2= */ false,
-                        /* enableYieldToNative= */ false);
+                runStartupTasksAsync(false);
                 return;
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_LONG_TASKS:
-                setStartupTaskExperimentValues(
-                        /* enablePhase1= */ true,
-                        /* enablePhase2= */ false,
-                        /* enableYieldToNative= */ false);
-                return;
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_SHORT_TASKS:
-                setStartupTaskExperimentValues(
-                        /* enablePhase1= */ false,
-                        /* enablePhase2= */ true,
-                        /* enableYieldToNative= */ false);
-                return;
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_VERY_SHORT_TASKS:
-                setStartupTaskExperimentValues(
-                        /* enablePhase1= */ false,
-                        /* enablePhase2= */ false,
-                        /* enableYieldToNative= */ true);
-                return;
             case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_PLUS_MULTI_PROCESS:
-                setStartupTaskExperimentValues(
-                        /* enablePhase1= */ false,
-                        /* enablePhase2= */ false,
-                        /* enableYieldToNative= */ true);
+                runStartupTasksAsync(true);
                 return;
             default:
                 throw new RuntimeException(
@@ -833,16 +780,9 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         }
     }
 
-    private void setStartupTaskExperimentValues(
-            boolean enablePhase1, boolean enablePhase2, boolean enableYieldToNative) {
-        mAwInit.setStartupTaskExperimentEnabled(enablePhase1);
-        AwBrowserMainParts.setWebViewStartupTasksLogicIsEnabled(enablePhase1);
-
-        mAwInit.setStartupTaskExperimentP2Enabled(enablePhase2);
-        AwBrowserMainParts.setWebViewStartupTasksExperimentEnabledP2(enablePhase2);
-
-        mAwInit.setStartupTasksYieldToNativeExperimentEnabled(enableYieldToNative);
-        AwBrowserMainParts.setWebViewStartupTasksYieldToNativeIsEnabled(enableYieldToNative);
+    private void runStartupTasksAsync(boolean enabled) {
+        mAwInit.runStartupTasksAsync(enabled);
+        AwBrowserMainParts.setRunStartupTasksAsync(enabled);
     }
 
     /* package */ static void checkStorageIsNotDeviceProtected(Context context) {

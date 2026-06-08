@@ -148,15 +148,6 @@ public class WebViewCachedFlags {
                                             AwFeatures.WEBVIEW_EARLY_STARTUP_TRACING,
                                             DefaultState.DISABLED),
                                     Map.entry(
-                                            AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC,
-                                            DefaultState.DISABLED),
-                                    Map.entry(
-                                            AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC_P2,
-                                            DefaultState.DISABLED),
-                                    Map.entry(
-                                            AwFeatures.WEBVIEW_STARTUP_TASKS_YIELD_TO_NATIVE,
-                                            DefaultState.ENABLED),
-                                    Map.entry(
                                             AwFeatures.WEBVIEW_REDUCED_SEED_EXPIRATION,
                                             DefaultState.DISABLED),
                                     Map.entry(
@@ -375,11 +366,9 @@ public class WebViewCachedFlags {
             didMigration = true;
         }
         if (prefs.contains("webViewUseStartupTasksLogic")) {
-            // If this pref is present, we should enable the WEBVIEW_USE_STARTUP_TASKS_LOGIC flag
-            // for this run of WebView.
+            // This flag has been cleaned up now so we don't need to add it to enabled set. Just
+            // remove the pref.
             editor.remove("webViewUseStartupTasksLogic");
-            mOverrideDisabled.remove(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC);
-            mOverrideEnabled.add(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC);
             didMigration = true;
         }
         RecordHistogram.recordBooleanHistogram(MIGRATION_HISTOGRAM_NAME, didMigration);

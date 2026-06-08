@@ -11,7 +11,6 @@ import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -134,11 +133,8 @@ public class WebViewCachedFlagsTest {
                 .putBoolean("defaultWebViewPartitionedCookiesState", true)
                 .putBoolean("webViewUseStartupTasksLogic", true)
                 .apply();
-        WebViewCachedFlags cachedFlags = new WebViewCachedFlags(sharedPrefs, Map.of());
+        new WebViewCachedFlags(sharedPrefs, Map.of());
 
-        // The flags should be enabled if the prefs were present.
-        Assert.assertTrue(
-                cachedFlags.isCachedFeatureEnabled(AwFeatures.WEBVIEW_USE_STARTUP_TASKS_LOGIC));
         // Check that we removed the old prefs.
         Assert.assertFalse(sharedPrefs.contains("useWebViewResourceContext"));
         Assert.assertFalse(sharedPrefs.contains("defaultWebViewPartitionedCookiesState"));

@@ -71,13 +71,10 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewRemoveInstantAppSupport,
     &features::kWebViewRendererKeepAlive,
     &features::kWebViewSkipInterceptsForPrefetch,
-    &features::kWebViewStartupTasksYieldToNative,
     &features::kWebViewStaticMethodsNotTriggerStartup,
     &features::kWebViewTestFeature,
     &features::kWebViewUseMetricsUploadServiceOnlySdkRuntime,
     &features::kWebViewUseNonembeddedLowEntropySource,
-    &features::kWebViewUseStartupTasksLogic,
-    &features::kWebViewUseStartupTasksLogicP2,
     // keep-sorted end
 };
 

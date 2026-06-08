@@ -15,9 +15,7 @@ public class AwBrowserMainParts {
     // experiment. The value is read by aw_browser_main_parts.cc.
     private static boolean sUseWebViewContext;
     private static boolean sPartitionedCookiesDefaultState;
-    private static boolean sWebViewUseStartupTasksLogic;
-    private static boolean sWebViewStartupTasksExperimentEnabledP2;
-    private static boolean sWebViewStartupTasksYieldToNativeExperimentEnabled;
+    private static boolean sRunStartupTasksAsync;
 
     public static void setUseWebViewContext(boolean enabled) {
         sUseWebViewContext = enabled;
@@ -27,16 +25,8 @@ public class AwBrowserMainParts {
         sPartitionedCookiesDefaultState = enabled;
     }
 
-    public static void setWebViewStartupTasksLogicIsEnabled(boolean enabled) {
-        sWebViewUseStartupTasksLogic = enabled;
-    }
-
-    public static void setWebViewStartupTasksExperimentEnabledP2(boolean enabled) {
-        sWebViewStartupTasksExperimentEnabledP2 = enabled;
-    }
-
-    public static void setWebViewStartupTasksYieldToNativeIsEnabled(boolean enabled) {
-        sWebViewStartupTasksYieldToNativeExperimentEnabled = enabled;
+    public static void setRunStartupTasksAsync(boolean enabled) {
+        sRunStartupTasksAsync = enabled;
     }
 
     @CalledByNative
@@ -50,18 +40,8 @@ public class AwBrowserMainParts {
     }
 
     @CalledByNative
-    private static boolean isWebViewStartupTasksLogicEnabled() {
-        return sWebViewUseStartupTasksLogic;
-    }
-
-    @CalledByNative
-    private static boolean isWebViewStartupTasksExperimentEnabledP2() {
-        return sWebViewStartupTasksExperimentEnabledP2;
-    }
-
-    @CalledByNative
-    private static boolean isWebViewStartupTasksYieldToNativeExperimentEnabled() {
-        return sWebViewStartupTasksYieldToNativeExperimentEnabled;
+    private static boolean runStartupTasksAsync() {
+        return sRunStartupTasksAsync;
     }
 
     private AwBrowserMainParts() {}
