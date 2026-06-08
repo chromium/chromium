@@ -56,7 +56,6 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
         mEphemeralTabCoordinator.addObserver(this);
         Profile profile = Profile.fromWebContents(merchantWebContents);
         assert profile != null;
-        // TODO (crbug.com/519576741): Handle EphemeralTab rejecting show.
         mEphemeralTabCoordinator.requestOpenSheet(
                 url,
                 /* fullPageUrl= */ null,
