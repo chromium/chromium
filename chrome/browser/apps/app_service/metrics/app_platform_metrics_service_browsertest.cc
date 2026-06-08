@@ -1194,4 +1194,35 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       UsageTimeUkmWithMultipleWindows) {
+  Browser* browser1 = CreateBrowserWithAuraWindow();
+
+  // Set the browser window active.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser1->window()->GetNativeWindow(), kActiveInstanceState);
+  FastForwardBy(base::Minutes(5));
+
+  // Set the browser window inactive.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser1->window()->GetNativeWindow(), kInactiveInstanceState);
+  FastForwardBy(base::Minutes(1));
+
+  Browser* browser2 = CreateBrowserWithAuraWindow();
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser2->window()->GetNativeWindow(), kActiveInstanceState);
+  FastForwardBy(base::Minutes(7));
+
+  // Close windows.
+  CloseBrowserSynchronously(browser1);
+  CloseBrowserSynchronously(browser2);
+
+  VerifyNoAppUsageTimeUkm();
+
+  // Verify UKM is reported after 2 hours.
+  FastForwardBy(base::Minutes(107));
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(12),
+                        AppTypeName::kChromeBrowser);
+}
+
 }  // namespace apps

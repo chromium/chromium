@@ -1121,49 +1121,8 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentage) {
 
 
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmWithMultipleWindows) {
-  // Create a browser window.
-  InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
-                Readiness::kReady, InstallSource::kSystem);
-  std::unique_ptr<Browser> browser1 = CreateBrowserWithAuraWindow1();
-  EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
 
-  // Set the browser window1 active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser1->GetWindow()->GetNativeWindow(),
-                 kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(5));
 
-  // Set the browser window1 inactive.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser1->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(1));
-
-  std::unique_ptr<Browser> browser2 = CreateBrowserWithAuraWindow2();
-  EXPECT_EQ(2U, GlobalBrowserCollection::GetInstance()->GetSize());
-
-  // Set the browser window2 active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser2->GetWindow()->GetNativeWindow(),
-                 kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(7));
-
-  // Close windows.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser1->GetWindow()->GetNativeWindow(),
-                 apps::InstanceState::kDestroyed);
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser2->GetWindow()->GetNativeWindow(),
-                 apps::InstanceState::kDestroyed);
-
-  VerifyNoAppUsageTimeUkm();
-
-  // Verify UKM is reported after 2hours.
-  task_environment_.FastForwardBy(base::Minutes(107));
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(12),
-                        AppTypeName::kChromeBrowser);
-}
 
 TEST_F(AppPlatformMetricsServiceTest,
        UsageTimeUkmForWebAppOpenInTabWithInactivatedBrowser) {
