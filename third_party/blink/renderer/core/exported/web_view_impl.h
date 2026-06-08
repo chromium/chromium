@@ -318,6 +318,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
   void HookBackForwardCacheEviction(bool hook);
+  void FlushRestoreCallbacks();
 
   float DefaultMinimumPageScaleFactor() const;
   float DefaultMaximumPageScaleFactor() const;

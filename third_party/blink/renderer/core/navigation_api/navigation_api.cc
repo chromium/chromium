@@ -394,8 +394,6 @@ void NavigationApi::SetEntriesForRestore(
       disposed_entries->push_back(entry);
   }
 
-  FlushRestoreCallbacks();
-
   window_->GetTaskRunner(TaskType::kInternalDefault)
       ->PostTask(FROM_HERE, BindOnce(&FireDisposeEventsAsync,
                                      WrapPersistent(disposed_entries)));
