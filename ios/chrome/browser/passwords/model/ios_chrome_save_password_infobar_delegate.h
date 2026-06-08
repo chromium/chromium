@@ -10,6 +10,7 @@
 #import <string>
 
 #import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "base/time/time.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -38,6 +39,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
           account_storage_user_state,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save,
       ukm::SourceId ukm_source_id,
+      bool is_replacement,
       CommandDispatcher* dispatcher,
       password_manager::PasswordStoreInterface* profile_store,
       password_manager::PasswordStoreInterface* account_store);
@@ -109,6 +111,9 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // the InfobarModal is created.
   bool IsCurrentPasswordSaved() const;
 
+  // True if the delegate is currently handling a password store error.
+  bool IsHandlingPasswordError() const;
+
  private:
   // ConfirmInfoBarDelegate implementation.
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
@@ -125,6 +130,15 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // nothing.
   bool MaybeHandlePasswordError(password_manager::ActionableError error);
 
+  // Saves the password from `form_to_save_`.
+  void SavePassword();
+
+  // Handles completion of the password error fix flow. If the errors are now
+  // fixed, proceeds to save the password and dismisses the infobar. Otherwise,
+  // replaces the infobar with a new one, so the user can retry fixing the
+  // error.
+  void OnPasswordErrorFlowCompleted();
+
   // The UKM source ID for the page.
   const ukm::SourceId ukm_source_id_;
 
@@ -133,8 +147,7 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // The password_manager::PasswordFormManager managing the form we're asking
   // the user about, and should save as per their decision.
-  const std::unique_ptr<password_manager::PasswordFormManagerForUI>
-      form_to_save_;
+  std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save_;
 
   // The PasswordInfobarType for this delegate.
   const PasswordInfobarType infobar_type_;
@@ -159,12 +172,23 @@ class IOSChromeSavePasswordInfoBarDelegate : public ConfirmInfoBarDelegate {
   // the InfobarModal is created.
   bool current_password_saved_ = false;
 
+  // True if the delegate is currently handling a password store error.
+  bool handling_password_error_ = false;
+
+  // True if this delegate is a replacement for a previous one. This only
+  // happens when there is an error preventing passwords from being saved and
+  // resolving the error fails / is cancelled.
+  bool is_replacement_ = false;
+
   // Timestamp when the Infobar started presenting.
   std::optional<base::TimeTicks> start_timestamp_;
 
   // The password stores.
   const raw_ptr<password_manager::PasswordStoreInterface> profile_store_;
   const raw_ptr<password_manager::PasswordStoreInterface> account_store_;
+
+  base::WeakPtrFactory<IOSChromeSavePasswordInfoBarDelegate> weak_ptr_factory_{
+      this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_SAVE_PASSWORD_INFOBAR_DELEGATE_H_

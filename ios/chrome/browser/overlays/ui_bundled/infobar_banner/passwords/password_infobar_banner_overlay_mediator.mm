@@ -70,8 +70,21 @@
     return;
   }
 
-  self.passwordDelegate->Accept();
-  [self dismissOverlay];
+  if (self.passwordDelegate->Accept()) {
+    // Dismiss overlay only if there is no password error fix flow ongoing.
+    [self dismissOverlay];
+  }
+}
+
+- (void)dismissInfobarBannerForUserInteraction:(BOOL)userInitiated {
+  if (!userInitiated && self.passwordDelegate &&
+      self.passwordDelegate->IsHandlingPasswordError()) {
+    // Prevent automatic dismissal while error fix flow is ongoing, as the
+    // delegate needs to handle the completion of it. After that, the infobar
+    // will be dismissed.
+    return;
+  }
+  [super dismissInfobarBannerForUserInteraction:userInitiated];
 }
 
 #pragma mark - InfobarBannerOverlayMediator

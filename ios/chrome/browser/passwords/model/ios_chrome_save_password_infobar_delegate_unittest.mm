@@ -13,7 +13,9 @@
 #import "base/test/task_environment.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/confirm_infobar_delegate.h"
+#import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
+#import "components/infobars/core/infobar_manager.h"
 #import "components/metrics/profile_metrics_service.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
@@ -47,6 +49,21 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::SizeIs;
+
+class MockInfoBarManager : public infobars::InfoBarManager {
+ public:
+  MockInfoBarManager() = default;
+  ~MockInfoBarManager() override = default;
+
+  MOCK_METHOD(void, RemoveInfoBar, (infobars::InfoBar * infobar), (override));
+  MOCK_METHOD(int, GetActiveEntryID, (), (override));
+  MOCK_METHOD(void,
+              OpenURL,
+              (const GURL& url,
+               WindowOpenDisposition disposition,
+               const std::string& text_fragment),
+              (override));
+};
 
 NSString* const kUsernameValue = @"user1";
 NSString* const kPasswordValue = @"pass1";
@@ -119,8 +136,8 @@ class IOSChromeSavePasswordInfoBarDelegateTest : public PlatformTest {
 
     delegate_ = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
         kAccountToStorePassword, password_update, kSignedInAccountStoreUser,
-        std::move(form_manager), ukm_source_id_, dispatcher_,
-        profile_store_.get(), account_store_.get());
+        std::move(form_manager), ukm_source_id_, /*is_replacement=*/false,
+        dispatcher_, profile_store_.get(), account_store_.get());
     const int different_nav_entry_id = kNavEntryId - 1;
     delegate_->set_nav_entry_id(different_nav_entry_id);
   }
@@ -857,7 +874,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
   EXPECT_CALL(*form_manager_ptr_, Save).Times(0);
 
   OCMExpect([mock_sync_presenter_
-      showPrimaryAccountReauthWithDismissalCompletion:nil]);
+      showPrimaryAccountReauthWithDismissalCompletion:[OCMArg any]]);
 
   // Tap on "Accept".
   EXPECT_FALSE(delegate_->Accept());
@@ -892,7 +909,7 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
       showTrustedVaultReauthForFetchKeysWithTrigger:
           trusted_vault::TrustedVaultUserActionTriggerForUMA::
               kPasswordManagerSettings
-                                         completion:nil]);
+                                         completion:[OCMArg any]]);
 
   // Tap on "Accept".
   EXPECT_FALSE(delegate_->Accept());
@@ -913,6 +930,109 @@ TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
 
   // Tap on "Accept".
   EXPECT_TRUE(delegate_->Accept());
+}
+
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       Accept_ActionableError_SignInNeeded_ResolveErrorOnCompletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kInFlowTrustedVaultKeyRetrievalIos);
+
+  InitializeDelegate(
+      /*password_update=*/false,
+      password_manager::ActionableError::kSignInNeeded);
+
+  IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
+  testing::NiceMock<MockInfoBarManager> mock_infobar_manager;
+  infobars::InfoBar* infobar = mock_infobar_manager.AddInfoBar(
+      std::make_unique<infobars::InfoBar>(std::move(delegate_)));
+
+  __block SyncPresenterCompletionCallback captured_completion;
+  OCMExpect(
+      [mock_sync_presenter_ showPrimaryAccountReauthWithDismissalCompletion:
+                                [OCMArg checkWithBlock:^BOOL(id obj) {
+                                  captured_completion = obj;
+                                  return YES;
+                                }]]);
+
+  // Tap on "Accept" -> starts reauth and returns false.
+  EXPECT_FALSE(delegate_ptr->Accept());
+  ASSERT_TRUE(captured_completion);
+
+  // Simulate error resolved on reauth completion.
+  ON_CALL(*profile_store_, GetError)
+      .WillByDefault(Return(password_manager::ActionableError::kNoError));
+
+  // The password manager should save and the infobar should be removed.
+  EXPECT_CALL(*form_manager_ptr_, Save).Times(1);
+  EXPECT_CALL(mock_infobar_manager, RemoveInfoBar(infobar)).Times(1);
+  captured_completion();
+}
+
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest,
+       Accept_ActionableError_SignInNeeded_ErrorUnresolvedOnCompletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kInFlowTrustedVaultKeyRetrievalIos);
+
+  InitializeDelegate(
+      /*password_update=*/false,
+      password_manager::ActionableError::kSignInNeeded);
+
+  IOSChromeSavePasswordInfoBarDelegate* delegate_ptr = delegate_.get();
+  testing::NiceMock<MockInfoBarManager> mock_infobar_manager;
+  infobars::InfoBar* infobar = mock_infobar_manager.AddInfoBar(
+      std::make_unique<infobars::InfoBar>(std::move(delegate_)));
+
+  __block SyncPresenterCompletionCallback captured_completion;
+  OCMExpect(
+      [mock_sync_presenter_ showPrimaryAccountReauthWithDismissalCompletion:
+                                [OCMArg checkWithBlock:^BOOL(id obj) {
+                                  captured_completion = obj;
+                                  return YES;
+                                }]]);
+
+  // Tap on "Accept" -> starts reauth and returns false.
+  EXPECT_FALSE(delegate_ptr->Accept());
+  ASSERT_TRUE(captured_completion);
+
+  // Simulate error still present on reauth completion.
+  ON_CALL(*profile_store_, GetError)
+      .WillByDefault(Return(password_manager::ActionableError::kSignInNeeded));
+
+  // Verify that the password manager does NOT save, and the infobar is NOT
+  // removed.
+  EXPECT_CALL(*form_manager_ptr_, Save).Times(0);
+  EXPECT_CALL(mock_infobar_manager, RemoveInfoBar(infobar)).Times(0);
+  captured_completion();
+}
+
+TEST_F(IOSChromeSavePasswordInfoBarDelegateTest, IsHandlingPasswordError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kInFlowTrustedVaultKeyRetrievalIos);
+
+  InitializeDelegate(
+      /*password_update=*/false,
+      password_manager::ActionableError::kSignInNeeded);
+  EXPECT_FALSE(delegate_->IsHandlingPasswordError());
+
+  __block SyncPresenterCompletionCallback captured_completion;
+  OCMExpect(
+      [mock_sync_presenter_ showPrimaryAccountReauthWithDismissalCompletion:
+                                [OCMArg checkWithBlock:^BOOL(id obj) {
+                                  captured_completion = obj;
+                                  return YES;
+                                }]]);
+
+  // After clicking accept, `IsHandlingPasswordError` should return true.
+  EXPECT_FALSE(delegate_->Accept());
+  ASSERT_TRUE(captured_completion);
+  EXPECT_TRUE(delegate_->IsHandlingPasswordError());
+
+  // After completing error flow, the state should be reset.
+  captured_completion();
+  EXPECT_FALSE(delegate_->IsHandlingPasswordError());
 }
 
 // Test fixture for the password recovery flow during a password update.
