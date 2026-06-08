@@ -26,23 +26,26 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
     public OmniboxEnteredTextFacility(OmniboxFacility omniboxFacility, String text) {
         mOmniboxFacility = omniboxFacility;
         mText = text;
-        boolean hasDesktopExperience =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                OmniboxCapabilities.hasDesktopExperience(
-                                        ContextUtils.getApplicationContext()));
 
         declareEnterCondition(omniboxFacility.urlBarElement.matches(withText(mText)));
         if (mText.isEmpty()) {
             declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
-
-            if (omniboxFacility.getHostStation().isIncognito() || hasDesktopExperience) {
+            if (omniboxFacility.getHostStation().isIncognito()) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());
-            } else {
+            } else if (!OmniboxCapabilities.isDesktopPlatform()) {
+                // Non-desktop platform devices should show mic button.
+                // Mic behaviour on desktop platform devices is still WIP.
+                // TODO(crbug.com/521341182): Revisit the mic visibility check when desktop platform
+                // behaviour is more stable.
                 declareEnterCondition(omniboxFacility.micButtonElement.present());
             }
         } else {
-            // Desktop does not show a delete button.
+            boolean hasDesktopExperience =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    OmniboxCapabilities.hasDesktopExperience(
+                                            ContextUtils.getApplicationContext()));
+            // Desktop experience hides the delete button in conventional, non-AI mode.
             if (hasDesktopExperience) {
                 declareEnterCondition(omniboxFacility.deleteButtonElement.absent());
             } else {
