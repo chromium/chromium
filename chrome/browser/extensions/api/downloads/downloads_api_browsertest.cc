@@ -1687,9 +1687,18 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // DownloadsResumeFunction, and DownloadsCancelFunction.
 // TODO(crbug.com/405219117): Support incognito on desktop Android. This is
 // blocked on Android support for CreateBrowserWindow().
+
+// TODO(crbug.com/520432613): Re-enable once test failure is fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito \
+  DISABLED_DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito
+#else
+#define MAYBE_DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito \
+  DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito
+#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito) {
+    MAYBE_DownloadExtensionTest_SearchPauseResumeCancelGetFileIconIncognito) {
   std::optional<base::Value> result_value;
   std::string error;
   std::string result_string;
