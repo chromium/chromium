@@ -9,16 +9,20 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -183,6 +187,19 @@ void UnexportableKeyServiceImpl::GenerateSigningKeySlowlyAsync(
     BackgroundTaskPriority priority,
     base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>
         callback) {
+  // TODO(crbug.com/501056920): Log
+  // Crypto.UnexportableKeys.SparePool.Signing.RequestLatency covering both pool
+  // hits and fallback misses.
+  if (base::FeatureList::IsEnabled(kEnableUnexportableKeysSpareKeyPool)) {
+    scoped_refptr<RefCountedUnexportableSigningKey> spare_key =
+        PopSpareSigningKey(acceptable_algorithms);
+    if (spare_key) {
+      // TODO(crbug.com/501056920): Return the key. For now stub returns null.
+      NOTIMPLEMENTED();
+      return;
+    }
+  }
+
   task_manager_->GenerateSigningKeySlowlyAsync(
       task_origin_, config_, acceptable_algorithms, priority,
       WrapCallbackWithErrorIfCancelled(
@@ -485,6 +502,27 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKeyAndTag(
   // A newly created key ID must be unique.
   CHECK(signing_key_by_key_id_.try_emplace(key_id, std::move(key)).second);
   maybe_pending_callbacks.SetKeyIdAndRunCallbacks(key_id);
+}
+
+scoped_refptr<RefCountedUnexportableSigningKey>
+UnexportableKeyServiceImpl::PopSpareSigningKey(
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms) {
+  NOTIMPLEMENTED();
+  // TODO(crbug.com/501056920): Implement this to pop a key from
+  // `spare_signing_keys_pool_`.
+  // TODO(crbug.com/501056920): Implement the following:
+  // - Log Crypto.UnexportableKeys.SparePool.Signing.RetrievalResult
+  // - Log Crypto.UnexportableKeys.SparePool.Signing.PoolSize
+  return nullptr;
+}
+
+void UnexportableKeyServiceImpl::ReplenishSpareSigningKeyPoolAsync(
+    base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms) {
+  NOTIMPLEMENTED();
+  // TODO(crbug.com/501056920): Implement this to start background key
+  // generation using a lambda for the callback instead of a separate method.
 }
 
 }  // namespace unexportable_keys

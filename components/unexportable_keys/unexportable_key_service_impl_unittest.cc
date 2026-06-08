@@ -16,10 +16,12 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/ref_counted_unexportable_key.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -1196,6 +1198,22 @@ TEST_F(UnexportableKeyServiceImplTest, GetCreationTimeWithStatefulKey) {
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(UnexportableSigningKeyId key_id, generate_future.Get());
   EXPECT_EQ(service().GetCreationTime(key_id), base::Time::Now());
+}
+
+TEST_F(UnexportableKeyServiceImplTest, SpareKeyPoolEmptyOnInitialization) {
+  base::test::ScopedFeatureList feature_list(
+      kEnableUnexportableKeysSpareKeyPool);
+
+  crypto::ScopedMockUnexportableKeyProvider& scoped_provider =
+      SwitchToMockKeyProvider();
+
+  EXPECT_CALL(scoped_provider.mock(), GenerateSigningKeySlowly)
+      .Times(1);
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>> future;
+  service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
+                                          future.GetCallback());
+  RunBackgroundTasks();
 }
 
 }  // namespace unexportable_keys

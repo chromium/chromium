@@ -206,7 +206,18 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
         },
         weak_ptr_factory_.GetWeakPtr(), std::move(callback), std::move(proj));
   }
+  // Hardware-backed key generation via Windows TPM incurs significant latency
+  // (~1s). The in-memory spare key pool mitigates this bottleneck. Other
+  // platforms do not require this optimization.
+  // Returns a spare signing key from the pool if available.
+  scoped_refptr<RefCountedUnexportableSigningKey> PopSpareSigningKey(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms);
 
+  // Posts a task to replenish the spare signing key pool.
+  void ReplenishSpareSigningKeyPoolAsync(
+      base::span<const crypto::SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms);
   const raw_ref<UnexportableKeyTaskManager, DanglingUntriaged> task_manager_;
   const BackgroundTaskOrigin task_origin_;
 
@@ -232,6 +243,13 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
   // disjoint from `key_by_key_id_` and will be overwritten on each call to
   // `GetAllKeysForGarbageCollection`.
   AllKeysForGarbageCollectionMap all_gc_keys_by_key_id_;
+
+  // Maps a signature algorithm to a queue of pre-generated, ready-to-use
+  // signing keys.
+  absl::flat_hash_map<
+      crypto::SignatureVerifier::SignatureAlgorithm,
+      std::vector<scoped_refptr<RefCountedUnexportableSigningKey>>>
+      spare_signing_keys_pool_;
 
   base::WeakPtrFactory<UnexportableKeyServiceImpl> weak_ptr_factory_{this};
 };
