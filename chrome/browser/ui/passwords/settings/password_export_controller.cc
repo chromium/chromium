@@ -7,15 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/platform_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
@@ -73,9 +70,7 @@ bool PasswordExportController::Export(content::WebContents* web_contents) {
   if (!exporter_) {
     // Set a new exporter for this request.
     exporter_ = std::make_unique<password_manager::PasswordManagerExporter>(
-        presenter_,
-        base::BindRepeating(&PasswordExportController::OnExportProgress,
-                            weak_ptr_factory_.GetWeakPtr()),
+        presenter_, on_export_progress_callback_,
         base::BindOnce(&PasswordExportController::ExportDone,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -97,16 +92,6 @@ password_manager::ExportProgressStatus
 PasswordExportController::GetExportProgressStatus() {
   return exporter_ ? exporter_->GetProgressStatus()
                    : password_manager::ExportProgressStatus::kNotStarted;
-}
-
-void PasswordExportController::ShowLastExportedFileInShell(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  if (!last_exported_path_.empty()) {
-    platform_util::ShowItemInFolder(
-        Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-        last_exported_path_);
-  }
 }
 
 void PasswordExportController::SetExporterForTesting(  // IN-TEST
@@ -150,16 +135,4 @@ void PasswordExportController::ExportPasswordsToPath(
 
 void PasswordExportController::ExportDone() {
   exporter_.reset();
-}
-
-void PasswordExportController::OnExportProgress(
-    const password_manager::PasswordExportInfo& progress) {
-  if (progress.status == password_manager::ExportProgressStatus::kSucceeded) {
-#if !BUILDFLAG(IS_WIN)
-    last_exported_path_ = base::FilePath(progress.file_path);
-#else
-    last_exported_path_ = base::FilePath(base::UTF8ToWide(progress.file_path));
-#endif
-  }
-  on_export_progress_callback_.Run(progress);
 }

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/settings/password_export_controller_interface.h"
@@ -45,7 +44,6 @@ class PasswordExportController : public PasswordExportControllerInterface,
   bool Export(content::WebContents* web_contents) override;
   void CancelExport() override;
   password_manager::ExportProgressStatus GetExportProgressStatus() override;
-  void ShowLastExportedFileInShell(content::WebContents* web_contents) override;
 
   // The next export will use |exporter|, instead of creating a new instance.
   void SetExporterForTesting(  // IN-TEST
@@ -64,8 +62,6 @@ class PasswordExportController : public PasswordExportControllerInterface,
 
   void ExportDone();
 
-  void OnExportProgress(const password_manager::PasswordExportInfo& progress);
-
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
@@ -74,8 +70,6 @@ class PasswordExportController : public PasswordExportControllerInterface,
   // PasswordManagerExporter instance for each export.
   const raw_ptr<password_manager::SavedPasswordsPresenter> presenter_;
   ExportProgressCallback on_export_progress_callback_;
-
-  base::FilePath last_exported_path_;
 
   base::WeakPtrFactory<PasswordExportController> weak_ptr_factory_{this};
 };

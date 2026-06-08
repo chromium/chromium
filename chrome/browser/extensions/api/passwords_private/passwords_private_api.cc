@@ -579,7 +579,7 @@ ResponseAction PasswordsPrivateShowExportedFileInShellFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   GetDelegate(browser_context())
-      ->ShowLastExportedFileInShell(GetSenderWebContents());
+      ->ShowExportedFileInShell(GetSenderWebContents(), parameters->file_path);
   return RespondNow(NoArguments());
 }
 

@@ -24,10 +24,6 @@ class PasswordExportControllerInterface {
   virtual void CancelExport() = 0;
 
   virtual password_manager::ExportProgressStatus GetExportProgressStatus() = 0;
-
-  // Shows the exported file in the shell.
-  virtual void ShowLastExportedFileInShell(
-      content::WebContents* web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_EXPORT_CONTROLLER_INTERFACE_H_

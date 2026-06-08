@@ -144,7 +144,8 @@ class PasswordsPrivateDelegateImpl
       content::WebContents* web_contents,
       AuthenticationCallback callback) override;
   void ShowAddShortcutDialog(content::WebContents* web_contents) override;
-  void ShowLastExportedFileInShell(content::WebContents* web_contents) override;
+  void ShowExportedFileInShell(content::WebContents* web_contents,
+                               std::string file_path) override;
   void ChangePasswordManagerPin(
       content::WebContents* web_contents,
       base::OnceCallback<void(bool)> success_callback) override;
@@ -303,6 +304,8 @@ class PasswordsPrivateDelegateImpl
       password_import_controller_;
   std::unique_ptr<PasswordExportControllerInterface>
       password_export_controller_;
+
+  base::FilePath last_exported_path_;
 
   PasswordAccessAuthTimeoutHandler auth_timeout_handler_;
 
