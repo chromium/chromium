@@ -1,6 +1,7 @@
 include_rules = [
   "+components/browser_ui/bottomsheet",
   "+components/browser_ui/modaldialog",
+  "+components/zoom",
 ]
 
 specific_include_rules = {

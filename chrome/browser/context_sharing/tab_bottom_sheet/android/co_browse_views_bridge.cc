@@ -10,6 +10,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 
@@ -85,6 +86,9 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
                                          bool request_focus) {
   if (web_contents) {
     web_contents->SetIgnoreZoomGestures(true);
+    if (!zoom::ZoomController::FromWebContents(web_contents)) {
+      zoom::ZoomController::CreateForWebContents(web_contents);
+    }
   }
 
   TabAndroid* tab_android = GetTabAndroid();

@@ -18,6 +18,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//chrome/browser/android:tabs_public",
+    "//components/zoom",
     "//content/public/browser",
     "//ui/android",
   ]
