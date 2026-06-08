@@ -30,7 +30,6 @@ namespace autofill {
 class AddressNormalizer;
 class AutofillProfile;
 class PersonalDataManager;
-class RegionDataLoader;
 }  // namespace autofill
 
 namespace content {
@@ -266,7 +265,6 @@ class PaymentRequestState : public PaymentAppFactory::Delegate,
 
   const std::string& GetApplicationLocale();
   autofill::PersonalDataManager* GetPersonalDataManager();
-  autofill::RegionDataLoader* GetRegionDataLoader();
 
   PaymentsProfileComparator* profile_comparator() {
     return &profile_comparator_;

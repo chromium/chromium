@@ -58,7 +58,6 @@ class TestContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;
-  autofill::RegionDataLoader* GetRegionDataLoader() override;
   PrefService* GetPrefService() override;
   void EmbedPaymentHandlerWindow(
       const GURL& url,

@@ -510,11 +510,6 @@ autofill::PersonalDataManager* PaymentRequestState::GetPersonalDataManager() {
   return personal_data_manager_;
 }
 
-autofill::RegionDataLoader* PaymentRequestState::GetRegionDataLoader() {
-  return payment_request_delegate_
-             ? payment_request_delegate_->GetRegionDataLoader()
-             : nullptr;
-}
 
 bool PaymentRequestState::IsPaymentAppInvoked() const {
   return !!response_helper_;

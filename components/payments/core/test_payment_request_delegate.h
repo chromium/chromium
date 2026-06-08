@@ -45,7 +45,6 @@ class TestPaymentRequestDelegate : public PaymentRequestDelegate {
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;
-  autofill::RegionDataLoader* GetRegionDataLoader() override;
   PrefService* GetPrefService() override;
   bool IsBrowserWindowActive() const override;
 

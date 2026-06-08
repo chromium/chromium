@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/browser/ui/views/payments/validating_combobox.h"
@@ -47,6 +48,23 @@ namespace {
 // as is done for std::string::npos.
 // http://www.cplusplus.com/reference/string/string/npos
 const size_t kInvalidCountryIndex = static_cast<size_t>(-1);
+
+autofill::RegionDataLoader* GetRegionDataLoader(
+    base::WeakPtr<ContentPaymentRequestDelegate> delegate) {
+  if (!delegate) {
+    return nullptr;
+  }
+
+  // Safe downcast since ShippingAddressEditorViewController is only
+  // instantiated on Desktop, where the delegate is always a
+  // ChromePaymentRequestDelegate. This downcast is required until
+  // ShippingAddressEditorViewController has a better mechanism for
+  // injecting dependencies in tests.
+  auto* chrome_delegate =
+      static_cast<ChromePaymentRequestDelegate*>(delegate.get());
+  CHECK(chrome_delegate);
+  return chrome_delegate->GetRegionDataLoader();
+}
 
 }  // namespace
 
@@ -157,9 +175,11 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
     case autofill::ADDRESS_HOME_STATE: {
       auto model = std::make_unique<autofill::RegionComboboxModel>();
       region_model_ = model.get();
-      if (chosen_country_index_ < countries_.size()) {
+      autofill::RegionDataLoader* region_data_loader =
+          GetRegionDataLoader(state()->GetPaymentRequestDelegate());
+      if (chosen_country_index_ < countries_.size() && region_data_loader) {
         model->LoadRegionData(countries_[chosen_country_index_].first,
-                              state()->GetRegionDataLoader());
+                              region_data_loader);
         if (!model->IsPendingRegionDataLoad()) {
           // If the data was already pre-loaded, the observer won't get notified
           // so we have to check for failure here.

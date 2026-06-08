@@ -88,7 +88,6 @@ class MockContentPaymentRequestDelegate : public ContentPaymentRequestDelegate {
               GetAddressNormalizer,
               (),
               (override));
-  MOCK_METHOD(autofill::RegionDataLoader*, GetRegionDataLoader, (), (override));
   MOCK_METHOD(PrefService*, GetPrefService, (), (override));
 };
 

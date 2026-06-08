@@ -51,9 +51,6 @@ TestPaymentRequestDelegate::GetAddressNormalizer() {
   return &address_normalizer_;
 }
 
-autofill::RegionDataLoader* TestPaymentRequestDelegate::GetRegionDataLoader() {
-  return nullptr;
-}
 
 autofill::TestAddressNormalizer*
 TestPaymentRequestDelegate::test_address_normalizer() {

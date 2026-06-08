@@ -13,7 +13,6 @@ class GURL;
 namespace autofill {
 class AddressNormalizer;
 class PersonalDataManager;
-class RegionDataLoader;
 }  // namespace autofill
 
 class PrefService;
@@ -41,9 +40,6 @@ class PaymentRequestBaseDelegate {
   // Returns a pointer to the address normalizer to use for the duration of this
   // Payment Request.
   virtual autofill::AddressNormalizer* GetAddressNormalizer() = 0;
-
-  // Creates a new region data loader that will self delete, or a test mock.
-  virtual autofill::RegionDataLoader* GetRegionDataLoader() = 0;
 
   // Gets the pref service for the browser context associated with this
   // PaymentRequest.

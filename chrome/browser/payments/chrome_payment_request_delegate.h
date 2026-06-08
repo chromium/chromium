@@ -17,6 +17,10 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace autofill {
+class RegionDataLoader;
+}  // namespace autofill
+
 namespace payments {
 
 class PaymentRequestDialog;
@@ -45,7 +49,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;
-  autofill::RegionDataLoader* GetRegionDataLoader() override;
   PrefService* GetPrefService() override;
   bool IsBrowserWindowActive() const override;
 
@@ -66,6 +69,9 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
 
   const base::WeakPtr<PaymentUIObserver> GetPaymentUIObserver() const override;
   std::string GetSecurePaymentConfirmationKeychainAccessGroup() const override;
+
+  // Creates a new region data loader that will self delete, or a test mock.
+  virtual autofill::RegionDataLoader* GetRegionDataLoader();
 
  protected:
   // Reference to the dialog so that we can satisfy calls to CloseDialog(). This

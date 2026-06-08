@@ -285,6 +285,7 @@ static_library("ui") {
     "//chrome/browser/page_load_metrics:impl",
     "//chrome/browser/password_manager",
     "//chrome/browser/password_manager:impl",
+    "//chrome/browser/payments",
     "//chrome/browser/performance_manager",
     "//chrome/browser/performance_manager:impl",
     "//chrome/browser/permissions",

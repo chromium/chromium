@@ -101,10 +101,6 @@ TestContentPaymentRequestDelegate::GetAddressNormalizer() {
   return core_delegate_.GetAddressNormalizer();
 }
 
-autofill::RegionDataLoader*
-TestContentPaymentRequestDelegate::GetRegionDataLoader() {
-  return core_delegate_.GetRegionDataLoader();
-}
 
 PrefService* TestContentPaymentRequestDelegate::GetPrefService() {
   return core_delegate_.GetPrefService();
