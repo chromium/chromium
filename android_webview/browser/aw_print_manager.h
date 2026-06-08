@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/file_descriptor_posix.h"
 #include "base/memory/weak_ptr.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
@@ -59,7 +58,7 @@ class AwPrintManager : public printing::PrintManager,
   std::unique_ptr<printing::PrintSettings> settings_;
 
   // The file descriptor into which the PDF of the document will be written.
-  int fd_ = base::kInvalidFd;
+  int fd_ = -1;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
