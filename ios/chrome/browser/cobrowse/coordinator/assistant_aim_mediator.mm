@@ -20,6 +20,7 @@
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/cobrowse/debugger/aim_srp_message_logger.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
 #import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -66,6 +68,8 @@
   base::RepeatingTimer _handshakeTimer;
   // The capabilities of the AIM page, if the handshake has completed.
   std::optional<std::vector<lens::FeatureCapability>> _capabilities;
+  // Logger for AIM SRP messages.
+  AimSRPMessageLogger* _logger;
 }
 
 @synthesize consumer = _consumer;
@@ -107,8 +111,16 @@
             base::BindRepeating(^(const lens::AimToClientMessage& message) {
               [weakSelf handleWebMessage:message];
             }));
+
+    if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+      _logger = [[AimSRPMessageLogger alloc] init];
+    }
   }
   return self;
+}
+
+- (NSArray<AimSRPDebuggerEvent*>*)debugEvents {
+  return _logger.events;
 }
 
 - (void)setConsumer:(id<AssistantAIMConsumer>)consumer {
@@ -134,6 +146,7 @@
   _webState.reset();
   _urlLoader = nullptr;
   _capabilities = std::nullopt;
+  _logger = nil;
 }
 
 #pragma mark - CRWWebStatePolicyDecider
@@ -284,6 +297,10 @@
     return;
   }
 
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    [_logger logClientToAimMessage:message];
+  }
+
   // Execute the script in the page via the JavaScriptFeature.
   AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(_webState.get(),
                                                                message);
@@ -356,11 +373,20 @@
   lens::ClientToAimMessage handshake_ping;
   handshake_ping.mutable_handshake_ping()->add_capabilities(
       lens::FeatureCapability::DEFAULT);
+
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    [_logger logClientToAimMessage:handshake_ping];
+  }
+
   AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(_webState.get(),
                                                                handshake_ping);
 }
 
 - (void)handleWebMessage:(const lens::AimToClientMessage&)message {
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    [_logger logAimToClientMessage:message];
+  }
+
   if (message.has_handshake_response()) {
     _handshakeTimer.Stop();
     // Store the server capabilities.

@@ -38,6 +38,10 @@
 - (void)assistantAIMViewControllerDidChangeTraits:
     (AssistantAIMViewController*)viewController;
 
+// Called when the user requests to see the AIM SRP logs.
+- (void)assistantAIMViewControllerDidRequestSRPLogs:
+    (AssistantAIMViewController*)viewController;
+
 @end
 
 @interface AssistantAIMViewController

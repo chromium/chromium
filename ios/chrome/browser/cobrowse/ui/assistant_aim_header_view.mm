@@ -252,6 +252,18 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
     [actions addObject:historyAction];
   }
 
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    __weak __typeof(self) weakSelf = self;
+    UIAction* showLogsAction = [UIAction
+        actionWithTitle:@"AIM SRP Logs"
+                  image:DefaultSymbolWithPointSize(@"binoculars.circle", 16)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf didTapShowLogsButton];
+                }];
+    [actions addObject:showLogsAction];
+  }
+
   button.menu = [UIMenu menuWithTitle:@"" children:actions];
 
   button.showsMenuAsPrimaryAction = YES;
@@ -334,6 +346,10 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 
 - (void)didTapHistoryButton {
   [self.actionHandler didTapHistory];
+}
+
+- (void)didTapShowLogsButton {
+  [self.delegate assistantAIMHeaderViewDidRequestSRPLogs:self];
 }
 
 - (void)didTapBackButton {

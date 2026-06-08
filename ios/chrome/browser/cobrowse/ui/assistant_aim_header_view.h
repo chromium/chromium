@@ -25,6 +25,10 @@ enum class AssistantAIMHeaderViewMode {
 // Called when the back button in the header view is tapped.
 - (void)assistantAIMHeaderViewDidTapBack:(AssistantAIMHeaderView*)headerView;
 
+// Called when the user requests to see the AIM SRP logs.
+- (void)assistantAIMHeaderViewDidRequestSRPLogs:
+    (AssistantAIMHeaderView*)headerView;
+
 @end
 
 // Represents the header of cobrowse, containing the title and action buttons.

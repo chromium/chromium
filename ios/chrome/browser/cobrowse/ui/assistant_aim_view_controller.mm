@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -471,6 +472,11 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
 - (void)assistantAIMHeaderViewDidTapBack:(AssistantAIMHeaderView*)headerView {
   [self hideHistory];
+}
+
+- (void)assistantAIMHeaderViewDidRequestSRPLogs:
+    (AssistantAIMHeaderView*)headerView {
+  [self.delegate assistantAIMViewControllerDidRequestSRPLogs:self];
 }
 
 #pragma mark - Private

@@ -19,6 +19,7 @@
 @protocol AssistantContainerCommands;
 @protocol SceneCommands;
 @class CobrowseContext;
+@class AimSRPDebuggerEvent;
 
 namespace contextual_tasks {
 class ContextualTasksService;
@@ -65,6 +66,8 @@ class WebState;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// The logged events for AIM SRP communication.
+@property(nonatomic, readonly) NSArray<AimSRPDebuggerEvent*>* debugEvents;
 // Returns YES if the AIM page supports the given capability. Returns NO if
 // the handshake has not completed yet or the capability is not supported.
 - (BOOL)supportsCapability:(lens::FeatureCapability)capability;

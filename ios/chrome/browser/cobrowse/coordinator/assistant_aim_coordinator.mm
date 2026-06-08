@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
+#import "ios/chrome/browser/cobrowse/debugger/aim_srp_debugger_breadcrumbs_view_controller.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
@@ -340,6 +341,20 @@ class AssistantAIMUIStateProvider
   return [_viewController shouldPauseScrollView:scrollView
                                      forGesture:otherGesture
                               isInLargestDetent:isInLargestDetent];
+}
+
+#pragma mark - AssistantAIMViewControllerDelegate
+
+- (void)assistantAIMViewControllerDidRequestSRPLogs:
+    (AssistantAIMViewController*)viewController {
+  NSArray<AimSRPDebuggerEvent*>* events = _mediator.debugEvents;
+  AimSRPDebuggerBreadcrumbsViewController* logsVC =
+      [[AimSRPDebuggerBreadcrumbsViewController alloc] initWithEvents:events];
+  UINavigationController* navController =
+      [[UINavigationController alloc] initWithRootViewController:logsVC];
+  [_viewController presentViewController:navController
+                                animated:YES
+                              completion:nil];
 }
 
 @end
