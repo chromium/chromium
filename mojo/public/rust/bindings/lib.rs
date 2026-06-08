@@ -9,6 +9,9 @@
 //! performance-critical code may need to use the lower-level types in the
 //! `mojo_rust_system_bindings` crate instead.
 
+#[allow(unused)] // FOR_RELEASE: Remove when associated interfaces are fully implemented
+mod multiplex_router;
+
 mod marker_types;
 mod pending_endpoint;
 

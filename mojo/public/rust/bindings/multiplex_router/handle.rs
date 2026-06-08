@@ -105,9 +105,9 @@ impl MultiplexRouterHandle {
         &self,
         interface_id: Option<InterfaceId>,
         endpoint_info: Option<EndpointInfo>,
-    ) -> Self {
-        let interface_id = self.router.add_interface(interface_id, endpoint_info);
-        Self { interface_id, router: self.router.clone() }
+    ) -> Option<Self> {
+        let interface_id = self.router.add_associated_interface(interface_id, endpoint_info)?;
+        Some(Self { interface_id, router: self.router.clone() })
     }
 
     /// Inform the `MultiplexRouter` that this endpoint has been bound to a
