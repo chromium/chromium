@@ -245,6 +245,14 @@ pub trait Flags: Sized + 'static {
         iter::IterDefinedNames::new()
     }
 
+    /// Get an iterator over all defined names for this flags value.
+    ///
+    /// This iterator will yield all defined names for the flags value, including
+    /// any convenience flags.
+    fn iter_equal_names(&self) -> iter::IterEqualNames<Self> {
+        iter::IterEqualNames::new(self)
+    }
+
     /// Whether all bits in this flags value are unset.
     fn is_empty(&self) -> bool {
         self.bits() == Self::Bits::EMPTY

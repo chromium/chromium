@@ -63,6 +63,7 @@ chrome/browser/speech/extension_api
 chrome/browser/support_tool/ash
 chrome/browser/ui
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox
+chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf
 chrome/browser/ui/views/search_engines
 chrome/browser/ui/webui/settings
 chrome/browser/win
@@ -872,6 +873,7 @@ tools/binary_size
 tools/binary_size/libsupersize
 tools/binary_size/libsupersize/testdata
 tools/checkperms
+tools/clang/spanify
 tools/crates/gnrt
 tools/crates/gnrt/lib
 tools/emacs

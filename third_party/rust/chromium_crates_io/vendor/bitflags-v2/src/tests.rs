@@ -30,6 +30,7 @@ mod truncate;
 mod union;
 mod unknown;
 mod unknown_bits;
+mod iter_equal_names;
 
 mod custom {
     pub const NAME: &'static str = "custom";

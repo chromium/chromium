@@ -1,3 +1,10 @@
+# 2.13.0
+
+## What's Changed
+* add `MyFlags::Abc::iter_equal_names()` method by @ssrlive in https://github.com/bitflags/bitflags/pull/489
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.12.1...2.13.0
+
 # 2.12.1
 
 ## What's Changed
