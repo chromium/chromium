@@ -70,6 +70,15 @@ cc_defaults {
             ldflags: ["-Wl,-Bsymbolic"],
         },
     },
+    // Disable native coverage to prevent linker errors in coverage builds.
+    // The FIPS module (${GN2BP_MODULE_PREFIX}bcm_object) is built without coverage.
+    // This is because of the usage of cc_objects which implicitly disables coverage (b/270027426).
+    // If the rest of libcrypto is built with coverage, LLD prefers the coverage
+    // versions of C++ templates and discards the duplicate templates inside
+    // bcm_object.o. Because bcm_object.o is partially linked (ld -r), discarding
+    // its templates accidentally discards its entire .text section.
+    // See b/520364006 for more information.
+    native_coverage: false,
     local_include_dirs: ["src/crypto"],
 }
 
