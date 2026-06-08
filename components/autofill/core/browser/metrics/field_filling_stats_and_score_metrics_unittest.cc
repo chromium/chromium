@@ -202,9 +202,6 @@ TEST_F(AutocompleteUnrecognizedFieldFillingStatsTest, FieldFillingStats) {
       *test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_EQ(form_structure.fields().size(), 10u);
   for (size_t i = 0; i < 7; ++i) {
-    if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-      test_api(form).field(i).set_is_autofilled_according_to_renderer(true);
-    }
     form_structure.field(i)->AddFieldModifier(FieldModifier::kAutofill);
   }
 

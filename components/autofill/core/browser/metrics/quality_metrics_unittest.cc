@@ -383,9 +383,6 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForRationalizationBad) {
   FormStructure* form_structure =
       test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
-  }
   form_structure->field(2)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);
@@ -439,9 +436,6 @@ TEST_F(QualityMetricsTest, LoggedCorrectlyForOnlyFillWhenFocusedField) {
   FormStructure* form_structure =
       test_api(autofill_manager()).FindCachedFormById(form.global_id());
   ASSERT_TRUE(form_structure);
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    test_api(form).field(2).set_is_autofilled_according_to_renderer(true);
-  }
   form_structure->field(2)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->RationalizeAndAssignSections(GeoIpCountryCode(""),
                                                LanguageCode(""), nullptr);

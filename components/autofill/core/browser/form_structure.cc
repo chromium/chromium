@@ -449,18 +449,9 @@ void FormStructure::UpdateFormData(const FormData& form_data) {
           // from it and add it to the list.
           return std::make_unique<AutofillField>(field_data);
         }
-        const bool old_is_autofilled_according_to_renderer =
-            autofill_field->is_autofilled_deprecated(/*pass_key=*/{});
-
         // The field existed in the cache previously, update the cached members
         // of `FormFieldData` in `autofill_field` provided by `field_data`.
         autofill_field->UpdateFieldData(field_data, /*pass_key=*/{});
-
-        if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-          autofill_field->set_is_autofilled_deprecated(
-              old_is_autofilled_according_to_renderer,
-              base::PassKey<FormStructure>());
-        }
         return autofill_field;
       });
 

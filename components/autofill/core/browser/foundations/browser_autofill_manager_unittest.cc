@@ -4287,9 +4287,6 @@ TEST_F(BrowserAutofillManagerTest,
       .FindCachedFormById(form.global_id())
       ->field(0)
       ->AddFieldModifier(FieldModifier::kAutofill);
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
-  }
   test_api(form).field(0).set_value(u"LOYALTYCARDNUMBER");
 
   FormSubmitted(form);

@@ -895,60 +895,21 @@ bool AutofillField::WasAutofilledWithFallback() const {
 }
 
 DenseSet<FieldModifier> AutofillField::all_modifiers() const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    DenseSet<FieldModifier> field_modifiers;
-    if (is_user_edited_deprecated()) {
-      field_modifiers.insert(FieldModifier::kUser);
-    }
-    if (is_autofilled_according_to_renderer() ||
-        previously_autofilled_deprecated()) {
-      field_modifiers.insert(FieldModifier::kAutofill);
-    }
-    return field_modifiers;
-  }
   return DenseSet<FieldModifier>(field_modifiers_);
 }
 
 std::optional<FieldModifier> AutofillField::last_modifier() const {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    return is_autofilled_according_to_renderer()
-               ? std::optional(FieldModifier::kAutofill)
-               : std::nullopt;
-  }
   return field_modifiers_.empty() ? std::nullopt
                                   : std::optional(field_modifiers_.back());
 }
 
 void AutofillField::AddFieldModifier(FieldModifier modifier) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    if (modifier == FieldModifier::kUser) {
-      set_is_user_edited_deprecated(true);
-      if (is_autofilled_according_to_renderer()) {
-        set_is_autofilled_according_to_renderer(false);
-        set_previously_autofilled_deprecated(true);
-      }
-    }
-    if (modifier == FieldModifier::kAutofill) {
-      set_is_autofilled_according_to_renderer(true);
-    }
-    return;
-  }
   std::erase(field_modifiers_, modifier);
   field_modifiers_.push_back(modifier);
 }
 
 void AutofillField::RemoveFieldModifier(FieldModifier modifier,
                                         base::PassKey<FormFiller> pass_key) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-    if (modifier == FieldModifier::kUser) {
-      set_is_user_edited_deprecated(false);
-    }
-    if (modifier == FieldModifier::kAutofill) {
-      set_is_autofilled_according_to_renderer(false);
-      set_previously_autofilled_deprecated(false);
-    }
-    return;
-  }
   std::erase(field_modifiers_, modifier);
 }
 

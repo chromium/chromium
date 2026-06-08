@@ -368,8 +368,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
     base::Extend(suggestions,
                  GetLoyaltyCardsFooterSuggestions(
                      // TODO(crbug.com/393114125): Change to use
-                     // `AutofillField::field_modifiers_`
-                     // after launching `kAutofillFixIsAutofilled`.
+                     // `AutofillField::field_modifiers_`.
                      trigger_field.is_autofilled_according_to_renderer()));
     callback({SuggestionDataSource::kLoyaltyCard, std::move(suggestions)});
     return;
@@ -400,8 +399,7 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
   base::Extend(suggestions,
                GetLoyaltyCardsFooterSuggestions(
                    // TODO(crbug.com/393114125): Change to use
-                   // `AutofillField::field_modifiers_`
-                   // after launching `kAutofillFixIsAutofilled`.
+                   // `AutofillField::field_modifiers_`.
                    trigger_field.is_autofilled_according_to_renderer()));
   callback({SuggestionDataSource::kLoyaltyCard, std::move(suggestions)});
 }

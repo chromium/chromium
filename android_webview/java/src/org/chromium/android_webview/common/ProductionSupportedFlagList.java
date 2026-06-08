@@ -273,9 +273,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_FORM_TRACKING,
                 "Improves form submission tracking and duplicate submission handling"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_FIX_IS_AUTOFILLED,
-                "Introduces AutofillField::field_modifiers_ to replace multiple other members."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_STATE_COUNTRY_MISCLASSIFICATION,
                 "When enabled, the rationalization engine will fix misclassifications where"
                         + " a field is detected as a COUNTRY when it should be a STATE or vice"

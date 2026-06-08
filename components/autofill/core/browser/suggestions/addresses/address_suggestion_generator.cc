@@ -496,8 +496,7 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // Similarly, prefix matching is disabled for <select> fields. Select fields
   // are only used as trigger fields during actor flows, in which the initial
   // value is likely irrelevant.
-  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
-  // after launching `kAutofillFixIsAutofilled`.
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`.
   if (!trigger_field.is_autofilled_according_to_renderer() &&
       trigger_field.form_control_type() != FormControlType::kSelectOne) {
     profiles_to_suggest = GetPrefixMatchedProfiles(
@@ -530,8 +529,7 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
   // filtering logic after it, this case is fine since for field-by-field
   // filling suggestions, deduplication is rather trivial and the problem
   // explained above wouldn't apply.
-  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
-  // after launching `kAutofillFixIsAutofilled`.
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`.
   if (trigger_field.is_autofilled_according_to_renderer() &&
       profiles_to_suggest.size() > 1 &&
       base::FeatureList::IsEnabled(
@@ -659,8 +657,7 @@ SuggestionType GetSuggestionType(FormFieldData trigger_field) {
   // If the user triggers suggestions on an autofilled field, field-by-field
   // filling suggestions should be shown so that the user could easily correct
   // values to something present in different stored addresses.
-  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
-  // after launching `kAutofillFixIsAutofilled`.
+  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`.
   return trigger_field.is_autofilled_according_to_renderer()
              ? SuggestionType::kAddressFieldByFieldFilling
              : SuggestionType::kAddressEntry;
@@ -842,8 +839,7 @@ std::vector<Suggestion> GenerateAddressSuggestions(
   }
   base::Extend(suggestions,
                // TODO(crbug.com/393114125): Change to use
-               // `AutofillField::field_modifiers_` after launching
-               // `kAutofillFixIsAutofilled`.
+               // `AutofillField::field_modifiers_`.
                GetAddressFooterSuggestions(
                    trigger_field.is_autofilled_according_to_renderer()));
   return suggestions;

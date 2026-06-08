@@ -823,8 +823,7 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
         // Note that `field_fill_operation` is guaranteed to have an entry for
         // `field.global_id()` because of the condition right above.
         // TODO(crbug.com/393114125): Change to use
-        // `AutofillField::field_modifiers_` after launching
-        // `kAutofillFixIsAutofilled`.
+        // `AutofillField::field_modifiers_`.
         (!field.is_autofilled_according_to_renderer() &&
          !field.value().empty() &&
          field_fill_operation_it->at(field.global_id()).ignore_is_autofilled) ||
@@ -857,11 +856,6 @@ void FormFiller::UndoAutofill(mojom::ActionPersistence action_persistence,
     // Update the cached AutofillField in the browser if the operation isn't a
     // preview.
     if (action_persistence == mojom::ActionPersistence::kFill) {
-      if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-        autofill_field.set_is_autofilled_deprecated(
-            previous_state.is_autofilled_according_to_renderer,
-            base::PassKey<FormFiller>());
-      }
       autofill_field.set_field_modifiers(previous_state.field_modifiers,
                                          /*pass_key=*/{});
       autofill_field.set_autofill_source_profile_guid(
@@ -1016,8 +1010,7 @@ void FormFiller::FillOrPreviewForm(
 
     const bool allow_suggestion_swapping =
         // TODO(crbug.com/393114125): Change to use
-        // `AutofillField::field_modifiers_` after launching
-        // `kAutofillFixIsAutofilled`.
+        // `AutofillField::field_modifiers_`.
         form.fields()[i].is_autofilled_according_to_renderer() &&
         AllowPaymentSwapping(autofill_trigger_field, autofill_field,
                              refill_options.is_refill());

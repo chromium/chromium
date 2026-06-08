@@ -225,8 +225,6 @@ void ActorKeyMetricsRecorder::RecordEditedAutofilledFieldAtSubmission(
     if (!WasFieldFilledByActor(form, field->global_id())) {
       continue;
     }
-    // TODO(crbug.com/393114125): After launching`kAutofillFixIsAutofilled` this
-    // should instead check that the last modifier is not `kAutofill`.
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric editing_metric =
         field->last_modifier() == FieldModifier::kAutofill
             ? AutofillMetrics::AutofilledFieldUserEditingStatusMetric::

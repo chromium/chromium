@@ -1931,11 +1931,6 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
   test_api(second_form).field(3).set_value(u"51512345678");
 
   auto autofill_form = [&](FormData& form) {
-    if (!base::FeatureList::IsEnabled(features::kAutofillFixIsAutofilled)) {
-      for (FormFieldData& field : test_api(form).fields()) {
-        field.set_is_autofilled_according_to_renderer(true);
-      }
-    }
     FormStructure& form_structure =
         *test_api(autofill_manager()).FindCachedFormById(form.global_id());
     for (const std::unique_ptr<AutofillField>& field :

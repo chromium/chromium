@@ -93,8 +93,7 @@ std::vector<CreditCard> FetchCreditCardOrCvcFieldSuggestionDataSync(
 
   const bool allow_payment_swapping =
       // TODO(crbug.com/393114125): Change to use
-      // `AutofillField::field_modifiers_` after launching
-      // `kAutofillFixIsAutofilled`.
+      // `AutofillField::field_modifiers_`.
       trigger_field.is_autofilled_according_to_renderer() &&
       IsPaymentsFieldSwappingEnabled();
 
@@ -201,8 +200,7 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
                    client, should_show_pay_later_tab_suggestions,
                    should_append_bnpl_suggestion, should_show_scan_credit_card,
                    // TODO(crbug.com/393114125): Change to use
-                   // `AutofillField::field_modifiers_` after launching
-                   // `kAutofillFixIsAutofilled`.
+                   // `AutofillField::field_modifiers_`.
                    trigger_field.is_autofilled_according_to_renderer(),
                    display_gpay_logo, amount_extraction_status, bnpl_manager));
 
@@ -291,8 +289,7 @@ std::vector<Suggestion> GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
                         /*should_append_bnpl_suggestion=*/false,
                         /*should_show_scan_credit_card=*/false,
                         // TODO(crbug.com/393114125): Change to use
-                        // `AutofillField::field_modifiers_` after launching
-                        // `kAutofillFixIsAutofilled`.
+                        // `AutofillField::field_modifiers_`.
                         trigger_field.is_autofilled_according_to_renderer(),
                         /*with_gpay_logo=*/true, amount_extraction_status,
                         /*bnpl_manager=*/nullptr),
@@ -442,8 +439,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
       card_number_field_value += SanitizeCreditCardFieldValue(field.value());
       // TODO(crbug.com/393114125): Change to use
-      // `AutofillField::field_modifiers_` after launching
-      // `kAutofillFixIsAutofilled`.
+      // `AutofillField::field_modifiers_`.
       is_card_number_autofilled |= field.is_autofilled_according_to_renderer();
     }
   }
@@ -505,8 +501,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
                      ShouldShowScanCreditCard(*form_structure,
                                               *trigger_autofill_field, client),
                      // TODO(crbug.com/393114125): Change to use
-                     // `AutofillField::field_modifiers_` after launching
-                     // `kAutofillFixIsAutofilled`.
+                     // `AutofillField::field_modifiers_` after launching.
                      trigger_field.is_autofilled_according_to_renderer(),
                      display_gpay_logo, amount_extraction_status,
                      /*bnpl_manager=*/nullptr));
