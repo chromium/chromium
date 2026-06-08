@@ -140,6 +140,7 @@ V4L2ImageProcessorBackend::V4L2ImageProcessorBackend(
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   DVLOGF(2);
   DETACH_FROM_SEQUENCE(poll_sequence_checker_);
+  CHECK_EQ(input_memory_type_, V4L2_MEMORY_DMABUF);
   DCHECK_NE(output_memory_type_, V4L2_MEMORY_USERPTR);
 
   VLOGF(2) << "V4L2ImageProcessorBackend constructed with input: "
@@ -216,14 +217,12 @@ namespace {
 
 v4l2_memory InputStorageTypeToV4L2Memory(VideoFrame::StorageType storage_type) {
   switch (storage_type) {
-    case VideoFrame::STORAGE_OWNED_MEMORY:
-    case VideoFrame::STORAGE_UNOWNED_MEMORY:
-    case VideoFrame::STORAGE_SHMEM:
-      return V4L2_MEMORY_USERPTR;
     case VideoFrame::STORAGE_DMABUFS:
     case VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE:
       return V4L2_MEMORY_DMABUF;
     default:
+      VLOGF(2) << "Unsupported storage type:"
+               << VideoFrame::StorageTypeToString(storage_type);
       return static_cast<v4l2_memory>(0);
   }
 }
@@ -261,8 +260,7 @@ std::unique_ptr<ImageProcessorBackend> V4L2ImageProcessorBackend::Create(
 
   const v4l2_memory input_memory_type =
       InputStorageTypeToV4L2Memory(input_config.storage_type);
-  if (input_memory_type != V4L2_MEMORY_USERPTR &&
-      input_memory_type != V4L2_MEMORY_DMABUF) {
+  if (input_memory_type != V4L2_MEMORY_DMABUF) {
     VLOGF(2) << "Unsupported input storage type";
     return nullptr;
   }
@@ -875,25 +873,6 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
   DCHECK(input_queue_);
 
   switch (input_memory_type_) {
-    case V4L2_MEMORY_USERPTR: {
-      const size_t num_planes =
-          GetNumPlanesOfV4L2PixFmt(input_config_.fourcc.ToV4L2PixFmt());
-      std::vector<void*> user_ptrs(num_planes);
-      for (size_t i = 0; i < num_planes; ++i) {
-        int bytes_used =
-            VideoFrame::PlaneSize(job_record->input_frame->format(), i,
-                                  input_config_.size)
-                .GetArea();
-        buffer.SetPlaneBytesUsed(i, bytes_used);
-        user_ptrs[i] = const_cast<uint8_t*>(job_record->input_frame->data(i));
-      }
-      if (!std::move(buffer).QueueUserPtr(user_ptrs)) {
-        VPLOGF(1) << "Failed to queue a DMABUF buffer to input queue";
-        NotifyError();
-        return false;
-      }
-      break;
-    }
     case V4L2_MEMORY_DMABUF: {
       auto input_handle = CreateHandle(job_record->input_frame.get());
       if (!input_handle) {
