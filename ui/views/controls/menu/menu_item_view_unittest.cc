@@ -512,12 +512,12 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
   AddItem(u"No secondary label, minor icon only", std::u16string(),
           std::u16string(),
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckSmallIcon
+                                             ? kCheckIcon
                                              : views::kMenuCheckOldIcon));
   AddItem(u"No secondary label, minor text and icon", std::u16string(),
           u"minor text",
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckSmallIcon
+                                             ? kCheckIcon
                                              : views::kMenuCheckOldIcon));
   AddItem(u"Secondary label, no minor content", u"secondary label",
           std::u16string(), ui::ImageModel());
@@ -526,12 +526,12 @@ TEST_F(MenuItemViewPaintUnitTest, MinorTextAndIconAssertionCoverage) {
   AddItem(u"Secondary label, minor icon only", u"secondary label",
           std::u16string(),
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckSmallIcon
+                                             ? kCheckIcon
                                              : views::kMenuCheckOldIcon));
   AddItem(u"Secondary label, minor text and icon", u"secondary label",
           u"minor text",
           ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                             ? kCheckSmallIcon
+                                             ? kCheckIcon
                                              : views::kMenuCheckOldIcon));
 
   menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),

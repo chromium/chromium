@@ -57,7 +57,7 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   auto image_view = std::make_unique<NonAccessibleImageView>();
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      target >= 1 ? features::IsRoundedIconsEnabled() ? views::kCheckSmallIcon
+      target >= 1 ? features::IsRoundedIconsEnabled() ? views::kCheckIcon
                                                       : views::kMenuCheckOldIcon
       : features::IsRoundedIconsEnabled() ? kFingerprintIcon
                                           : kFingerprintOldIcon,

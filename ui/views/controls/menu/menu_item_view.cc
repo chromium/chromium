@@ -1661,7 +1661,7 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   if (type_ == Type::kCheckbox && delegate &&
       delegate->IsItemChecked(GetCommand())) {
     radio_check_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kMenuCheckOldIcon,
+        features::IsRoundedIconsEnabled() ? kCheckIcon : kMenuCheckOldIcon,
         colors.icon_color));
   } else if (type_ == Type::kRadio) {
     const bool toggled = delegate && delegate->IsItemChecked(GetCommand());

@@ -75,6 +75,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "brush_filled.icon",
     "cast.icon",
     "cast_chrome_refresh_old.icon",
+    "check.icon",
     "check_old.icon",
     "check_small.icon",
     "chevron_right.icon",

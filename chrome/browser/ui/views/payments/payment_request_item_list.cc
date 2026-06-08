@@ -141,7 +141,7 @@ std::unique_ptr<views::ImageView> PaymentRequestItemList::Item::CreateCheckmark(
   checkmark->SetID(static_cast<int>(DialogViewID::CHECKMARK_VIEW));
   checkmark->SetCanProcessEventsWithinSubtree(false);
   checkmark->SetImage(ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? views::kCheckSmallIcon
+      features::IsRoundedIconsEnabled() ? views::kCheckIcon
                                         : views::kMenuCheckOldIcon,
       kCheckmarkColor));
   checkmark->SetVisible(selected);
