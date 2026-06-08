@@ -356,10 +356,8 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
               ServiceAccessType::EXPLICIT_ACCESS),
           MaybeGetPasskeyModel(profile)),
       password_import_controller_(std::make_unique<PasswordImportController>(
-          profile,
           &saved_passwords_presenter_)),
       password_export_controller_(std::make_unique<PasswordExportController>(
-          profile,
           &saved_passwords_presenter_,
           base::BindRepeating(
               &PasswordsPrivateDelegateImpl::OnPasswordsExportProgress,

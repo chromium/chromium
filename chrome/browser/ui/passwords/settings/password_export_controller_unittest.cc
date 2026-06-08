@@ -18,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
@@ -188,10 +187,8 @@ class PasswordExportControllerTest : public ChromeRenderViewHostTestHarness {
     // associated with a new factory.
     ui::SelectFileDialog::SetFactory(
         std::make_unique<TestSelectFileDialogFactory>(temp_file_path()));
-
-    profile_ = CreateTestingProfile();
     controller_ = std::make_unique<PasswordExportController>(
-        profile_.get(), &presenter(),
+        &presenter(),
         /*on_export_progress_callback=*/base::DoNothing());
 
     store_->Init();
@@ -203,7 +200,6 @@ class PasswordExportControllerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     controller_.reset();
-    profile_.reset();
     store_->ShutdownOnUIThread();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -216,7 +212,6 @@ class PasswordExportControllerTest : public ChromeRenderViewHostTestHarness {
   }
 
  private:
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<PasswordExportController> controller_;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();

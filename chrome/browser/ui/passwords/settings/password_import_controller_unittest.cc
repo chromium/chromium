@@ -25,7 +25,6 @@
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
@@ -227,10 +226,7 @@ class PasswordImportControllerTest : public ChromeRenderViewHostTestHarness {
     // associated with a new factory.
     ui::SelectFileDialog::SetFactory(
         std::make_unique<TestSelectFileDialogFactory>(temp_file_path()));
-
-    profile_ = CreateTestingProfile();
-    controller_ = std::make_unique<PasswordImportController>(profile_.get(),
-                                                             &presenter());
+    controller_ = std::make_unique<PasswordImportController>(&presenter());
 
     auto importer =
         std::make_unique<password_manager::PasswordImporter>(&presenter_);
@@ -249,7 +245,6 @@ class PasswordImportControllerTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     controller_.reset();
-    profile_.reset();
     store_->ShutdownOnUIThread();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -298,7 +293,6 @@ class PasswordImportControllerTest : public ChromeRenderViewHostTestHarness {
  private:
   FakePasswordParserService service;
   mojo::Receiver<password_manager::mojom::CSVPasswordParser> receiver{&service};
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<PasswordImportController> controller_;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();

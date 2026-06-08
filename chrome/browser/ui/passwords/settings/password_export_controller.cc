@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
@@ -49,11 +48,9 @@ ui::SelectFileDialog::FileTypeInfo FileTypeInfoForExport() {
 }  // namespace
 
 PasswordExportController::PasswordExportController(
-    Profile* profile,
     password_manager::SavedPasswordsPresenter* presenter,
     ExportProgressCallback on_export_progress_callback)
-    : profile_(profile),
-      presenter_(presenter),
+    : presenter_(presenter),
       on_export_progress_callback_(on_export_progress_callback) {}
 
 PasswordExportController::~PasswordExportController() {

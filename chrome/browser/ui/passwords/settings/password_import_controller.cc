@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/branded_strings.h"
@@ -49,9 +48,8 @@ ui::SelectFileDialog::FileTypeInfo FileTypeInfoForImport() {
 }  // namespace
 
 PasswordImportController::PasswordImportController(
-    Profile* profile,
     password_manager::SavedPasswordsPresenter* presenter)
-    : profile_(profile), presenter_(presenter) {}
+    : presenter_(presenter) {}
 
 PasswordImportController::~PasswordImportController() {
   // There may be open file selection dialogs. We need to let them know that we

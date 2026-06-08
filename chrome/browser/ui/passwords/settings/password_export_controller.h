@@ -22,9 +22,6 @@ class WebContents;
 namespace password_manager {
 struct PasswordExportInfo;
 }
-
-class Profile;
-
 // Handles the exporting of passwords to a file.
 class PasswordExportController : public PasswordExportControllerInterface,
                                  public ui::SelectFileDialog::Listener {
@@ -32,12 +29,10 @@ class PasswordExportController : public PasswordExportControllerInterface,
   using ExportProgressCallback = base::RepeatingCallback<void(
       const password_manager::PasswordExportInfo&)>;
 
-  // |profile| for which credentials to be exported.
   // |presenter| provides the credentials which can be exported.
   // |on_export_progress_callback| will be called with updates to the progress
   // of exporting.
-  PasswordExportController(Profile* profile,
-                           password_manager::SavedPasswordsPresenter* presenter,
+  PasswordExportController(password_manager::SavedPasswordsPresenter* presenter,
                            ExportProgressCallback on_export_progress_callback);
 
   PasswordExportController(const PasswordExportController&) = delete;
@@ -69,7 +64,6 @@ class PasswordExportController : public PasswordExportControllerInterface,
 
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  raw_ptr<Profile> profile_;
 
   // We store |presenter_| and
   // |on_export_progress_callback_| to use them to create a new
