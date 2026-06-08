@@ -73,11 +73,14 @@
   DriveFilePickerMetricsHelper* _metricsHelper;
   // Gesture recognizer to properly handle tap-to-dismiss.
   UITapGestureRecognizer* _tapToDismissGestureRecognizer;
+  // Whether the coordinator is launched from/for the Composebox.
+  BOOL _forComposebox;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                  webState:(web::WebState*)webState {
+                                  webState:(web::WebState*)webState
+                             forComposebox:(BOOL)forComposebox {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     CHECK(browser);
@@ -87,6 +90,7 @@
     CHECK(webState);
     _webState = webState->GetWeakPtr();
     _presentationControllerShouldDismiss = YES;
+    _forComposebox = forComposebox;
   }
   return self;
 }

@@ -124,6 +124,11 @@ constexpr char kFakeIconURL[] = "http://www.example.com/image";
 }
 - (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)identity {
 }
+- (void)showDriveFilePickerWithComposeboxDelegate:
+            (id<ComposeboxPickerPresenterDelegate>)delegate
+                               baseViewController:
+                                   (UIViewController*)baseViewController {
+}
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.

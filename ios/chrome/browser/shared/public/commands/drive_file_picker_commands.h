@@ -5,7 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_DRIVE_FILE_PICKER_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_DRIVE_FILE_PICKER_COMMANDS_H_
 
+#import <UIKit/UIKit.h>
+
 @protocol SystemIdentity;
+@protocol ComposeboxPickerPresenterDelegate;
 
 namespace web {
 class WebState;
@@ -24,6 +27,12 @@ class WebState;
 // Updates the identity of the root drive folder.
 // `selectedIdentity` must be non nil.
 - (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
+
+// Shows the Drive file picker for the Composebox context.
+- (void)showDriveFilePickerWithComposeboxDelegate:
+            (id<ComposeboxPickerPresenterDelegate>)delegate
+                               baseViewController:
+                                   (UIViewController*)baseViewController;
 
 @end
 

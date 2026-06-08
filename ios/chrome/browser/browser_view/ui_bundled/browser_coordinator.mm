@@ -3512,7 +3512,8 @@ const char kChromeAppStoreUrl[] =
   _driveFilePickerCoordinator = [[RootDriveFilePickerCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
-                        webState:activeWebState];
+                        webState:activeWebState
+                   forComposebox:NO];
   [_driveFilePickerCoordinator start];
 }
 
@@ -3525,6 +3526,37 @@ const char kChromeAppStoreUrl[] =
     (id<SystemIdentity>)selectedIdentity {
   CHECK(selectedIdentity);
   [_driveFilePickerCoordinator setSelectedIdentity:selectedIdentity];
+}
+
+- (void)showDriveFilePickerWithComposeboxDelegate:
+            (id<ComposeboxPickerPresenterDelegate>)delegate
+                               baseViewController:
+                                   (UIViewController*)baseViewController {
+  // In the context of the compose box the user should not have been offered to
+  // use the drive if they are not signed-in.
+  CHECK(AuthenticationServiceFactory::GetForProfile(self.profile)
+            ->HasPrimaryIdentity());
+  // The user should not have been offered to use the drive if they are in
+  // incognito.
+  CHECK_EQ(self.browser->type(), Browser::Type::kRegular);
+
+  if (!base::FeatureList::IsEnabled(kIOSChooseFromDrive)) {
+    return;
+  }
+  // If there is a coordinator, stop it before showing it again.
+  [self hideDriveFilePicker];
+  web::WebState* activeWebState = self.activeWebState;
+  if (!activeWebState || activeWebState->IsBeingDestroyed()) {
+    return;
+  }
+
+  _driveFilePickerCoordinator = [[RootDriveFilePickerCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:self.browser
+                        webState:activeWebState
+                   forComposebox:YES];
+  _driveFilePickerCoordinator.composeboxDelegate = delegate;
+  [_driveFilePickerCoordinator start];
 }
 
 #pragma mark - EnhancedCalendarCommands

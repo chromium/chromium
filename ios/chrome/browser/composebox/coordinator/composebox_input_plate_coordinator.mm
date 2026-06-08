@@ -829,6 +829,16 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                              cachedWebStateIDs:cachedWebStateIDs];
 }
 
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+                didPickDriveItems:
+                    (NSArray<ComposeboxPickerDriveResult*>*)results {
+  if (results.count == 0) {
+    return;
+  }
+  // TODO(crbug.com/515377633): Loop through `results` and process each Drive
+  // file.
+}
+
 #pragma mark - ComposeboxPickerPresenterDataSource
 
 - (std::set<web::WebStateID>)allAttachedWebStateIDsForPresenter:

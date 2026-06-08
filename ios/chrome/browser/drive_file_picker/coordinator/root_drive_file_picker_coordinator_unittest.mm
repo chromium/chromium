@@ -48,7 +48,8 @@ class RootDriveFilePickerCoordinatorTest : public PlatformTest {
     coordinator_ = [[RootDriveFilePickerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
-                          webState:fake_web_state_.get()];
+                          webState:fake_web_state_.get()
+                     forComposebox:NO];
     StartChoosingFiles();
   }
 

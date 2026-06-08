@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/web/public/web_state.h"
@@ -38,6 +39,11 @@
         (std::set<web::WebStateID>)selectedWebStateIDs
                     cachedWebStateIDs:
                         (std::set<web::WebStateID>)cachedWebStateIDs;
+
+// Called when the Drive picker finishes picking Drive items.
+- (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
+                didPickDriveItems:
+                    (NSArray<ComposeboxPickerDriveResult*>*)results;
 
 @end
 
@@ -83,6 +89,9 @@
 
 // Presents the file picker.
 - (void)presentFilePicker;
+
+// Presents the Drive file picker.
+- (void)presentDriveFilePicker;
 
 @end
 

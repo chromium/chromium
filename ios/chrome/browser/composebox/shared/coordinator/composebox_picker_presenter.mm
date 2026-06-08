@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/composebox/public/composebox_input_item_source.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_snackbar_presenter.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_coordinator.h"
 #import "ios/chrome/browser/tab_picker/coordinator/tab_picker_logger.h"
@@ -95,6 +97,14 @@
 
 - (void)presentTabPicker {
   [self showTabPicker];
+}
+
+- (void)presentDriveFilePicker {
+  id<DriveFilePickerCommands> driveFilePickerCommands = HandlerForProtocol(
+      _browser->GetCommandDispatcher(), DriveFilePickerCommands);
+  [driveFilePickerCommands
+      showDriveFilePickerWithComposeboxDelegate:self.delegate
+                             baseViewController:_baseViewController];
 }
 
 #pragma mark - UIImagePickerControllerDelegate
