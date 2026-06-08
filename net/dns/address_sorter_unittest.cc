@@ -19,6 +19,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,7 +66,7 @@ TEST(AddressSorterTest, Sort) {
 
   std::vector<IPEndPoint> result;
   TestCompletionCallback callback;
-  sorter->Sort(endpoints,
+  sorter->Sort(endpoints, NetworkAnonymizationKey(),
                base::BindOnce(&OnSortComplete, &result, callback.callback()));
   EXPECT_EQ(expected_result, callback.WaitForResult());
 }

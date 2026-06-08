@@ -15,6 +15,7 @@
 namespace net {
 
 class AddressList;
+class NetworkAnonymizationKey;
 
 // Sorts AddressList according to RFC3484, by likelihood of successful
 // connection. Depending on the platform, the sort could be performed
@@ -34,6 +35,7 @@ class NET_EXPORT AddressSorter {
   // Calls `callback` upon completion. Could complete synchronously. Could
   // complete after this AddressSorter is destroyed.
   virtual void Sort(const std::vector<IPEndPoint>& endpoints,
+                    const NetworkAnonymizationKey& anonymization_key,
                     CallbackType callback) const = 0;
 
   // Creates platform-dependent AddressSorter.

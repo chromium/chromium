@@ -8,11 +8,13 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/dns/address_sorter.h"
 #include "net/socket/datagram_client_socket.h"
@@ -25,7 +27,8 @@ class ClientSocketFactory;
 // thread-safe and always completes synchronously.
 class NET_EXPORT_PRIVATE AddressSorterPosix
     : public AddressSorter,
-      public NetworkChangeNotifier::IPAddressObserver {
+      public NetworkChangeNotifier::IPAddressObserver,
+      public NetworkChangeNotifier::NetworkChangeObserver {
  public:
   // Generic policy entry.
   struct PolicyEntry {
@@ -69,15 +72,31 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
 
   // AddressSorter:
   void Sort(const std::vector<IPEndPoint>& endpoints,
+            const NetworkAnonymizationKey& anonymization_key,
             CallbackType callback) const override;
+
+  bool IsConnectCacheEmptyForTesting() const;
 
  private:
   friend class AddressSorterPosixTest;
   class SortContext;
 
+  // The cached result of a UDP connect() attempt to a specific destination IP
+  // subnet. Used by AddressSorterPosix to bypass socket creation and route
+  // discovery for subsequent requests to the same subnet.
+  struct ConnectResult {
+    // Errors here only reflect the state of the routing table, not the state of
+    // the remote host, so it is safe to reuse this cached value as long as the
+    // routing table has not changed.
+    int rv;
+    IPAddress source_address;
+  };
+
   // NetworkChangeNotifier::IPAddressObserver:
   void OnIPAddressChanged(
       NetworkChangeNotifier::IPAddressChangeType change_type) override;
+  // NetworkChangeNotifier::NetworkChangeObserver:
+  void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) override;
   // Fills |info| with values for |address| from policy tables.
   void FillPolicy(const IPAddress& address, SourceAddressInfo* info) const;
 
@@ -98,6 +117,16 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   // to track different SortContexts.
   mutable std::set<std::unique_ptr<SortContext>, base::UniquePtrComparator>
       sort_contexts_;
+
+  // Key type for the cache of results of UDP connect() calls. Includes the NAK
+  // to avoid cross-origin information leakage attacks.
+  using CacheKey = std::pair<IPAddress, NetworkAnonymizationKey>;
+
+  // Cache of the result of UDP connect() calls. Cleared when a change to
+  // network interfaces is detected.
+  mutable base::LRUCache<CacheKey, ConnectResult> connect_cache_;
+
+  const bool caching_enabled_;
 
   THREAD_CHECKER(thread_checker_);
 };

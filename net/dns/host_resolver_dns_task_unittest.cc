@@ -66,7 +66,9 @@ class MockAddressSorter : public AddressSorter {
 
   MOCK_METHOD(void,
               Sort,
-              (const std::vector<IPEndPoint>& endpoints, CallbackType callback),
+              (const std::vector<IPEndPoint>& endpoints,
+               const NetworkAnonymizationKey& anonymization_key,
+               CallbackType callback),
               (const, override));
 };
 
@@ -425,8 +427,9 @@ TEST_F(HostResolverDnsTaskTest,
     // need to ensure that HostResolverDnsTask does end up calling relying on
     // it.
     auto prefer_ipv6_address_sorter = std::make_unique<MockAddressSorter>();
-    EXPECT_CALL(*prefer_ipv6_address_sorter, Sort(_, _))
+    EXPECT_CALL(*prefer_ipv6_address_sorter, Sort(_, _, _))
         .WillOnce([](const std::vector<IPEndPoint>& endpoints,
+                     const NetworkAnonymizationKey& anonymization_key,
                      AddressSorter::CallbackType callback) {
           EXPECT_THAT(endpoints,
                       UnorderedElementsAre(
@@ -498,6 +501,7 @@ class DelayingAddressSorter : public AddressSorter {
 
   // AddressSorter:
   void Sort(const std::vector<IPEndPoint>& endpoints,
+            const NetworkAnonymizationKey& anonymization_key,
             CallbackType callback) const override {
     in_progress_.emplace_back(endpoints, std::move(callback));
 
