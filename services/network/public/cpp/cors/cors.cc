@@ -463,7 +463,7 @@ std::vector<std::string> PrivilegedNoCorsHeaderNames() {
   return {"range"};
 }
 
-bool IsForbiddenMethod(const std::string& method) {
+bool IsForbiddenMethod(std::string_view method) {
   const std::string upper_method = base::ToUpperASCII(method);
   return upper_method == net::HttpRequestHeaders::kConnectMethod ||
          upper_method == net::HttpRequestHeaders::kTraceMethod ||

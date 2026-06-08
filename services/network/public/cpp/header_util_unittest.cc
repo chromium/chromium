@@ -39,6 +39,13 @@ TEST(HeaderUtilTest, IsRequestHeaderSafe) {
       {"Proxy-Foo", "bar", false},
       {"PrOxY-FoO", "bar", false},
 
+      {"X-HTTP-Method-Override", "TRACE", false},
+      {"x-http-method-override", "trAcE", false},
+      {"X-HTTP-Method-Override", "GET", true},
+      {"X-HTTP-Method-Override", "GET, TRACE", false},
+      {"X-HTTP-Method", "TRACK", false},
+      {"X-Method-Override", "CONNECT", false},
+
       {"dnt", "1", true},
   };
 
@@ -79,6 +86,13 @@ TEST(HeaderUtilTest, AreRequestHeadersSafe) {
        "Basic Zm9vOmJhcg==", false},
       {"Proxy-Foo", "bar", false},
       {"PrOxY-FoO", "bar", false},
+
+      {"X-HTTP-Method-Override", "TRACE", false},
+      {"x-http-method-override", "trAcE", false},
+      {"X-HTTP-Method-Override", "GET", true},
+      {"X-HTTP-Method-Override", "GET, TRACE", false},
+      {"X-HTTP-Method", "TRACK", false},
+      {"X-Method-Override", "CONNECT", false},
 
       {"dnt", "1", true},
   };
