@@ -1944,11 +1944,11 @@ bool Element::InterestGained(Element* target, InterestState state) {
     if (existing_invoker == this) {
       // Case 1.
       auto* invoker_data = GetInvokerData();
-      CHECK(!invoker_data->HasInterestGainedTask());
       if (state == InterestState::kExplicitInterest) {
         DCHECK_NE(invoker_data->GetInterestState(), InterestState::kNoInterest);
         ChangeInterestState(target, state);
       }
+      CHECK(!invoker_data->HasInterestGainedTask());
       invoker_data->CancelInterestLostTask();
       return false;
     } else {
@@ -12682,6 +12682,7 @@ void Element::ChangeInterestState(Element* target, InterestState new_state) {
       DCHECK_EQ(invoker_data->ActiveInterestTarget(), target);
     }
     invoker_data->SetInterestState(new_state);
+    invoker_data->CancelInterestGainedTask();
   }
   PseudoStateChanged(CSSSelector::kPseudoInterestSource);
   if (target) {
