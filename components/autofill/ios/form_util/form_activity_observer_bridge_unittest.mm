@@ -24,6 +24,9 @@ using ::autofill::test::WithoutUnserializedData;
 // Arguments passed to
 // |webState:didRegisterFormActivity:inFrame:|.
 @property(nonatomic, readonly) autofill::TestFormActivityInfo* formActivityInfo;
+// Arguments passed to
+// |webState:didRegisterFormRemoval:inFrame:|.
+@property(nonatomic, readonly) autofill::TestFormRemovalInfo* formRemovalInfo;
 @end
 
 @implementation FakeFormActivityObserver {
@@ -57,8 +60,8 @@ using ::autofill::test::WithoutUnserializedData;
                           inFrame:(web::WebFrame*)frame
                    perfectFilling:(BOOL)perfectFilling {
   _submitDocumentInfo = std::make_unique<autofill::TestSubmitDocumentInfo>();
-  _submitDocumentInfo->web_state = webState;
-  _submitDocumentInfo->sender_frame = frame;
+  _submitDocumentInfo->web_state_id = webState->GetUniqueIdentifier();
+  _submitDocumentInfo->sender_frame_id = frame ? frame->GetFrameId() : "";
   _submitDocumentInfo->form_data = formData;
   _submitDocumentInfo->has_user_gesture = hasUserGesture;
 }
@@ -67,8 +70,8 @@ using ::autofill::test::WithoutUnserializedData;
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
   _formActivityInfo = std::make_unique<autofill::TestFormActivityInfo>();
-  _formActivityInfo->web_state = webState;
-  _formActivityInfo->sender_frame = frame;
+  _formActivityInfo->web_state_id = webState->GetUniqueIdentifier();
+  _formActivityInfo->sender_frame_id = frame ? frame->GetFrameId() : "";
   _formActivityInfo->form_activity = params;
 }
 
@@ -76,8 +79,8 @@ using ::autofill::test::WithoutUnserializedData;
     didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
                    inFrame:(web::WebFrame*)frame {
   _formRemovalInfo = std::make_unique<autofill::TestFormRemovalInfo>();
-  _formRemovalInfo->web_state = webState;
-  _formRemovalInfo->sender_frame = frame;
+  _formRemovalInfo->web_state_id = webState->GetUniqueIdentifier();
+  _formRemovalInfo->sender_frame_id = frame ? frame->GetFrameId() : "";
   _formRemovalInfo->form_removal_params = params;
 }
 
@@ -107,8 +110,10 @@ TEST_F(FormActivityObserverBridgeTest, DocumentSubmitted) {
                                      kTestFormData, has_user_gesture,
                                      perfect_filling);
   ASSERT_TRUE([observer_ submitDocumentInfo]);
-  EXPECT_EQ(&fake_web_state_, [observer_ submitDocumentInfo]->web_state);
-  EXPECT_EQ(sender_frame.get(), [observer_ submitDocumentInfo]->sender_frame);
+  EXPECT_EQ(fake_web_state_.GetUniqueIdentifier(),
+            [observer_ submitDocumentInfo]->web_state_id);
+  EXPECT_EQ(sender_frame->GetFrameId(),
+            [observer_ submitDocumentInfo]->sender_frame_id);
   EXPECT_THAT(
       WithoutUnserializedData([observer_ submitDocumentInfo]->form_data),
       FormDataEq(WithoutUnserializedData(kTestFormData)));
@@ -129,8 +134,10 @@ TEST_F(FormActivityObserverBridgeTest, FormActivityRegistered) {
   observer_bridge_.FormActivityRegistered(&fake_web_state_, sender_frame.get(),
                                           params);
   ASSERT_TRUE([observer_ formActivityInfo]);
-  EXPECT_EQ(&fake_web_state_, [observer_ formActivityInfo]->web_state);
-  EXPECT_EQ(sender_frame.get(), [observer_ formActivityInfo]->sender_frame);
+  EXPECT_EQ(fake_web_state_.GetUniqueIdentifier(),
+            [observer_ formActivityInfo]->web_state_id);
+  EXPECT_EQ(sender_frame->GetFrameId(),
+            [observer_ formActivityInfo]->sender_frame_id);
   EXPECT_EQ(params.form_name,
             [observer_ formActivityInfo]->form_activity.form_name);
   EXPECT_EQ(params.field_type,
@@ -149,8 +156,10 @@ TEST_F(FormActivityObserverBridgeTest, FormRemovalRegistered) {
   params.removed_forms = {autofill::FormRendererId(1)};
   observer_bridge_.FormRemoved(&fake_web_state_, sender_frame.get(), params);
   ASSERT_TRUE([observer_ formRemovalInfo]);
-  EXPECT_EQ(&fake_web_state_, [observer_ formRemovalInfo]->web_state);
-  EXPECT_EQ(sender_frame.get(), [observer_ formRemovalInfo]->sender_frame);
+  EXPECT_EQ(fake_web_state_.GetUniqueIdentifier(),
+            [observer_ formRemovalInfo]->web_state_id);
+  EXPECT_EQ(sender_frame->GetFrameId(),
+            [observer_ formRemovalInfo]->sender_frame_id);
   EXPECT_EQ(params.removed_forms,
             [observer_ formRemovalInfo]->form_removal_params.removed_forms);
 }

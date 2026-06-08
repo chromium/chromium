@@ -278,8 +278,8 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
 
   ExecuteJavaScript(@"document.getElementById('button').click();");
   ASSERT_TRUE(observer_->submit_document_info());
-  EXPECT_EQ(web_state(), observer_->submit_document_info()->web_state);
-  EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
+  EXPECT_EQ(main_frame->GetFrameId(),
+            observer_->submit_document_info()->sender_frame_id);
   EXPECT_THAT(
       WithoutUnserializedData(observer_->submit_document_info()->form_data),
       FormDataEq(WithoutUnserializedData(test_form_data)));
@@ -339,8 +339,8 @@ TEST_F(FormActivityTabHelperTest,
       base::test::ios::kWaitForJSCompletionTimeout, ^bool {
         return observer_->form_activity_info() != nullptr;
       }));
-  EXPECT_EQ(web_state(), observer_->form_activity_info()->web_state);
-  EXPECT_EQ(main_frame, observer_->form_activity_info()->sender_frame);
+  EXPECT_EQ(main_frame->GetFrameId(),
+            observer_->form_activity_info()->sender_frame_id);
   EXPECT_EQ("form-name",
             observer_->form_activity_info()->form_activity.form_name);
   EXPECT_EQ("text", observer_->form_activity_info()->form_activity.field_type);
@@ -483,8 +483,7 @@ class FormMutationTest : public base::test::WithFeatureOverride,
     web::WebFrame* main_frame = WaitForMainFrame();
     CHECK(main_frame);
 
-    EXPECT_EQ(web_state(), info->web_state);
-    EXPECT_EQ(main_frame, info->sender_frame);
+    EXPECT_EQ(main_frame->GetFrameId(), info->sender_frame_id);
     EXPECT_THAT(info->form_removal_params.frame_id,
                 StrEq(main_frame->GetFrameId()));
 
@@ -1075,7 +1074,8 @@ TEST_F(FormSubmittedHookTest, TestFormSubmittedHook) {
   FormData test_form_data = BuildTestFormData(main_frame->GetFrameId());
 
   ASSERT_TRUE(observer_->submit_document_info());
-  EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
+  EXPECT_EQ(main_frame->GetFrameId(),
+            observer_->submit_document_info()->sender_frame_id);
   EXPECT_THAT(
       WithoutUnserializedData(observer_->submit_document_info()->form_data),
       FormDataEq(WithoutUnserializedData(test_form_data)));
