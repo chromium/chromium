@@ -22,6 +22,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,16 +61,51 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     private boolean mIsStoppingTracing;
     private WebView mWebView;
 
+    /**
+     * Determines whether the WebView initialization should be delayed.
+     * This is useful for allowing tasks like memory profiling or environment setup
+     * before the WebView is created. Subclasses can override this to return true.
+     */
+    protected boolean shouldDelayStartup() {
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (shouldDelayStartup()) {
+            setupDelayStartup();
+        } else {
+            initialize();
+        }
+    }
+
+    private void setupDelayStartup() {
+        final Button startupButton = new Button(this);
+        startupButton.setText(getResources().getString(R.string.action_startup_webview));
+        setContentView(startupButton);
+
+        startupButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initialize();
+                    }
+                });
+    }
+
+    protected String getBrowserToolbarTitle() {
+        return getResources().getString(R.string.title_activity_browser);
+    }
+
+    protected void initialize() {
         ContextUtils.initApplicationContext(getApplicationContext());
 
         EdgeToEdgeUtil.setupEdgeToEdge(this, findViewById(android.R.id.content));
         setContentView(R.layout.activity_webview_browser);
         setSupportActionBar((Toolbar) findViewById(R.id.browser_toolbar));
         mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;
-        getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_browser));
+        getSupportActionBar().setTitle(getBrowserToolbarTitle());
         getSupportActionBar().setSubtitle(mWebViewVersion);
 
         mFragment =
@@ -80,10 +116,16 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         enableStrictMode();
     }
 
+    protected void onWebViewCreated(WebView webView) {
+        mWebView = webView;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        mWebView = mFragment.getWebView();
+        if (mFragment != null) {
+            mWebView = mFragment.getWebView();
+        }
     }
 
     @Override
@@ -133,7 +175,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+        if (mWebView != null && WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
             int forceDarkState = WebSettingsCompat.getForceDark(mWebView.getSettings());
             switch (forceDarkState) {
                 case WebSettingsCompat.FORCE_DARK_OFF:
@@ -147,7 +189,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     break;
             }
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_AUTHENTICATION)) {
+        if (mWebView != null
+                && WebViewFeature.isFeatureSupported(WebViewFeature.WEB_AUTHENTICATION)) {
             int webAuthnSupport =
                     WebSettingsCompat.getWebAuthenticationSupport(mWebView.getSettings());
             switch (webAuthnSupport) {
@@ -163,7 +206,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             }
         }
 
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+        if (mWebView != null
+                && WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
             menu.findItem(R.id.menu_algorithmic_darkening_on)
                     .setChecked(
                             WebSettingsCompat.isAlgorithmicDarkeningAllowed(
@@ -187,20 +231,26 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             mFragment.resetWebView();
             mWebView = mFragment.getWebView();
             return true;
+        } else if (itemId == R.id.menu_destroy_webview) {
+            mFragment.destroyWebView();
+            mWebView = mFragment.getWebView();
+            return true;
         } else if (itemId == R.id.menu_clear_cache) {
             if (mWebView != null) {
                 mWebView.clearCache(true);
             }
             return true;
         } else if (itemId == R.id.menu_get_cookie) {
-            String url = mWebView.getUrl();
-            if (url != null) {
-                String cookie = CookieManager.getInstance().getCookie(url);
-                Log.w(TAG, "GetCookie: " + cookie);
-                Toast.makeText(this, "Printing cookie values to adb logcat", Toast.LENGTH_SHORT)
-                        .show();
-            } else {
-                Toast.makeText(this, "Error: Url is not set", Toast.LENGTH_SHORT).show();
+            if (mWebView != null) {
+                String url = mWebView.getUrl();
+                if (url != null) {
+                    String cookie = CookieManager.getInstance().getCookie(url);
+                    Log.w(TAG, "GetCookie: " + cookie);
+                    Toast.makeText(this, "Printing cookie values to adb logcat", Toast.LENGTH_SHORT)
+                            .show();
+                } else {
+                    Toast.makeText(this, "Error: Url is not set", Toast.LENGTH_SHORT).show();
+                }
             }
             return true;
         } else if (itemId == R.id.menu_enable_tracing) {
@@ -330,7 +380,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             String url = mFragment.getUrlFromUrlBar();
             if (url == null || url.equals("about:blank")) {
                 Toast.makeText(this, "Please enter URL in URL bar.", Toast.LENGTH_SHORT).show();
-            } else {
+            } else if (mWebView != null) {
                 WebViewCompat.getProfile(mWebView).preconnect(url);
             }
             return true;

@@ -50,6 +50,7 @@ android_library("system_webview_shell_apk_java") {
     "apk/src/org/chromium/webview_shell/FullscreenActivity.java",
     "apk/src/org/chromium/webview_shell/InspectUserActionsActivity.java",
     "apk/src/org/chromium/webview_shell/JankActivity.java",
+    "apk/src/org/chromium/webview_shell/ManuallyTriggeredStartupActivity.java",
     "apk/src/org/chromium/webview_shell/MultiFileSelector.java",
     "apk/src/org/chromium/webview_shell/PageCyclerTestActivity.java",
     "apk/src/org/chromium/webview_shell/StartupTimeActivity.java",

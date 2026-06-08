@@ -139,6 +139,14 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density">
         </activity>
         <activity
+            android:name="org.chromium.webview_shell.ManuallyTriggeredStartupActivity"
+            android:label="@string/title_activity_manually_triggered_startup"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:colorMode="wideColorGamut"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density">
+        </activity>
+        <activity
             android:name="org.chromium.webview_shell.WebViewLayoutTestActivity"
             android:label="@string/title_activity_layout_test"
             android:exported="true">

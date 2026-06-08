@@ -10,6 +10,8 @@ found in the LICENSE file.
           android:title="@string/menu_reload_webview"/>
     <item android:id="@+id/menu_reset_webview"
           android:title="@string/menu_reset_webview"/>
+    <item android:id="@+id/menu_destroy_webview"
+          android:title="@string/menu_destroy_webview"/>
     <item android:id="@+id/menu_clear_cache"
           android:title="@string/menu_clear_cache"/>
     <item android:id="@+id/menu_get_cookie"
