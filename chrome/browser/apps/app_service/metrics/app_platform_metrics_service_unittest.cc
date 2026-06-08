@@ -820,10 +820,6 @@ TEST_F(AppPlatformMetricsServiceTest, InstallApps) {
       /*count=*/2);
 }
 
-
-
-
-
 // Tests the UMA metrics when launching an app in one day .
 TEST_F(AppPlatformMetricsServiceTest, OpenWindowInOneDay) {
   std::string app_id = "aa";
@@ -1013,64 +1009,6 @@ TEST_F(AppPlatformMetricsServiceTest, ReactiveWindow) {
   VerifyAppRunningDuration(base::Hours(0), AppTypeName::kArc);
   VerifyAppActivatedCount(/*expected_count=*/0, AppTypeName::kArc);
 }
-
-// Tests the app running percentage UMA metrics when launch a browser window
-// and an ARC app in one day.
-TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentage) {
-  std::unique_ptr<Browser> browser = CreateBrowserWindow();
-
-  // Set the browser window active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Hours(1));
-
-  // Set the browser window running in the background.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-
-  // Launch an ARC app.
-  std::string app_id = "aa";
-  InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
-                InstallSource::kPlayStore);
-
-  // Create a window to simulate launching the app.
-  auto window = std::make_unique<aura::Window>(nullptr);
-  window->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
-
-  // Close the window after running one hour.
-  task_environment_.FastForwardBy(base::Hours(1));
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kDestroyed);
-
-  // One day passes.
-  task_environment_.FastForwardBy(base::Hours(1));
-  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
-                                           AppTypeName::kChromeBrowser);
-  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
-                                           AppTypeName::kArc);
-  VerifyAppRunningPercentageHistogram(50,
-                                      /*expected_count=*/1,
-                                      AppTypeName::kChromeBrowser);
-  VerifyAppRunningPercentageHistogram(50,
-                                      /*expected_count=*/1, AppTypeName::kArc);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   for (const auto& [_, pre_installed_app] : pre_installed_apps()) {
@@ -1390,7 +1328,6 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
       }
     }
   }
-
 
   TestApp& ActivatePreInstalledApp(const std::string& app_id) {
     EXPECT_TRUE(pre_installed_apps().contains(app_id));
@@ -2328,9 +2265,5 @@ class ManagedGuestSessionBaseTest {
  private:
   chromeos::FakeManagedGuestSession managed_guest_session_;
 };
-
-
-
-
 
 }  // namespace apps

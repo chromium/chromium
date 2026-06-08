@@ -1527,4 +1527,44 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, BrowserWindow) {
   CloseBrowserSynchronously(browser1);
 }
 
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       AppRunningPercentage) {
+  Browser* browser = CreateBrowserWindow();
+
+  // Test one Chrome browser.
+  // browser is active by default.
+  FastForwardBy(base::Hours(1));
+
+  // Set the browser window running in the background by minimizing it.
+  browser->window()->Minimize();
+
+  // Test one ARC app.
+  std::string app_id = "aa";
+  InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
+                InstallSource::kPlayStore);
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
+  FastForwardBy(base::Hours(1));
+
+  // Inactive ARC app.
+  ModifyInstance(app_id, window.get(), kInactiveInstanceState);
+
+  // Test date change.
+  FastForwardBy(base::Days(1));
+
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kChromeBrowser);
+  VerifyAppRunningPercentageHistogram(50,
+                                      /*expected_count=*/1,
+                                      AppTypeName::kChromeBrowser);
+
+  VerifyAppRunningPercentageCountHistogram(/*expected_count=*/1,
+                                           AppTypeName::kArc);
+  VerifyAppRunningPercentageHistogram(50,
+                                      /*expected_count=*/1, AppTypeName::kArc);
+
+  CloseBrowserSynchronously(browser);
+}
+
 }  // namespace apps
