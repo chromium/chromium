@@ -715,6 +715,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // IPH will not show if the user has interacted with the GLIC button.
     config.used = EventConfig("android_bottom_bar_glic_used",
                               Comparator(EQUAL, 0), 360, 360);
+
+    // Require that the promo dialog IPH has been shown at least once.
+    config.event_configs.insert(
+        EventConfig("android_bottom_bar_promo_dialog_trigger",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 360, 360));
     return config;
   }
 
@@ -740,6 +745,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.event_configs.insert(
         EventConfig("android_bottom_bar_glic_trigger",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 360, 360));
+    return config;
+  }
+
+  if (kIPHAndroidBottomBarPromoDialog.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // IPH only shows once per 360 days.
+    config.trigger = EventConfig("android_bottom_bar_promo_dialog_trigger",
+                                 Comparator(EQUAL, 0), 360, 360);
+
+    // IPH will not show if the user has interacted with the Promo Dialog.
+    config.used = EventConfig("android_bottom_bar_promo_dialog_used",
+                              Comparator(EQUAL, 0), 360, 360);
     return config;
   }
 

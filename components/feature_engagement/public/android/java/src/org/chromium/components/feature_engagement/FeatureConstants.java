@@ -29,6 +29,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE,
     FeatureConstants.ANDROID_BOTTOM_BAR_GLIC,
     FeatureConstants.ANDROID_BOTTOM_BAR_NEW_TAB,
+    FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG,
     FeatureConstants.ANDROID_TAB_DECLUTTER_FEATURE,
     FeatureConstants.APP_RATING_PROMPT_FEATURE,
     FeatureConstants.APP_SPECIFIC_HISTORY_FEATURE,
@@ -179,6 +180,9 @@ public @interface FeatureConstants {
 
     /** Describes the new tab button moved down in the bottom bar. */
     String ANDROID_BOTTOM_BAR_NEW_TAB = "IPH_AndroidBottomBarNewTab";
+
+    /** Describes the promo dialog shown to introduce the bottom bar. */
+    String ANDROID_BOTTOM_BAR_PROMO_DIALOG = "IPH_AndroidBottomBarPromoDialog";
 
     String ANDROID_TAB_DECLUTTER_FEATURE = "IPH_AndroidTabDeclutter";
 

@@ -33,6 +33,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAdaptiveButtonPinGlicToolbarButtonFeature,
     &kIPHAndroidBottomBarGlic,
     &kIPHAndroidBottomBarNewTab,
+    &kIPHAndroidBottomBarPromoDialog,
     &kIPHAndroidTabDeclutter,
     &kIPHAppRatingPromptFeature,
     &kIPHAppSpecificHistory,
