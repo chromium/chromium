@@ -764,24 +764,6 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   return nil;
 }
 
-- (UITargetedPreview*)contextMenuInteraction:
-                          (UIContextMenuInteraction*)interaction
-                               configuration:
-                                   (UIContextMenuConfiguration*)configuration
-       dismissalPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
-  UIView* view = interaction.view;
-  if ([view isKindOfClass:[ToolbarTabGridBadgeButton class]]) {
-    ToolbarTabGridBadgeButton* tabGridButton = (ToolbarTabGridBadgeButton*)view;
-    UIPreviewParameters* parameters = [[UIPreviewParameters alloc] init];
-    parameters.visiblePath = [tabGridButton visiblePath];
-    parameters.shadowPath = [UIBezierPath bezierPath];
-    parameters.backgroundColor = [UIColor clearColor];
-
-    return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
-  }
-  return nil;
-}
-
 #pragma mark - Private
 
 // Creates and configures a separator line for the toolbar.
