@@ -30,6 +30,7 @@ RELEASES = {
     "mips64el": "bullseye",
     "ppc64el": "bullseye",
     "riscv64": "trixie",
+    "s390x": "bullseye",
 }
 
 GCC_VERSIONS = {
@@ -73,6 +74,7 @@ APT_SOURCES_LISTS = {
     "mips64el": APT_SOURCES_LIST,
     "ppc64el": APT_SOURCES_LIST,
     "riscv64": APT_SOURCES_LIST_RISCV,
+    "s390x": APT_SOURCES_LIST,
 }
 
 TRIPLES = {
@@ -84,6 +86,7 @@ TRIPLES = {
     "mips64el": "mips64el-linux-gnuabi64",
     "ppc64el": "powerpc64le-linux-gnu",
     "riscv64": "riscv64-linux-gnu",
+    "s390x": "s390x-linux-gnu",
 }
 
 LIB_DIRS = {
