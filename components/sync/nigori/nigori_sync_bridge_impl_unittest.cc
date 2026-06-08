@@ -1841,29 +1841,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_THAT(cryptographer.KeyBagSizeForTesting(), Eq(size_t(1)));
 }
 
-
-// Tests that upon startup bridge adds keystore keys into cryptographer, so it
-// can later decrypt the data using them.
-TEST_F(NigoriSyncBridgeImplTest, ShouldDecryptWithKeystoreKeysAfterRestart) {
-  // Perform initial sync with custom passphrase Nigori without keystore keys.
-  const KeyParamsForTesting kPassphraseKeyParams =
-      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
-  ASSERT_TRUE(PerformInitialSyncWithNigori(
-      BuildCustomPassphraseNigoriSpecifics(kPassphraseKeyParams)));
-
-  bridge()->SetDecryptionPassphrase(kPassphraseKeyParams.password);
-
-  // Mimic the browser restart.
-  MimicRestartWithLocalData(nigori_local_data());
-
-  ASSERT_THAT(*bridge()->GetCryptographer(),
-              CanDecryptWith(kPassphraseKeyParams));
-  ASSERT_THAT(*bridge()->GetCryptographer(),
-              HasDefaultKeyDerivedFrom(kPassphraseKeyParams));
-  EXPECT_THAT(*bridge()->GetCryptographer(),
-              CanDecryptWith(KeystoreKeyParamsForTesting(kRawKeystoreKey)));
-}
-
 TEST_F(NigoriSyncBridgeImplTest, ShouldRestoreTrustedVaultNigori) {
   // Perform initial sync with TrustedVault Nigori.
   ASSERT_TRUE(PerformInitialSyncWithNigori(

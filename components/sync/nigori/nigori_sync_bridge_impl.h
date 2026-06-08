@@ -144,11 +144,6 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // call is issued.
   void PutNextApplicablePendingLocalCommit();
 
-  // Populates keystore keys into `cryptographer` in case it doesn't contain
-  // them already and `passphrase_type` isn't KEYSTORE_PASSPHRASE. This
-  // function only updates local state and doesn't trigger a commit.
-  void MaybePopulateKeystoreKeysIntoCryptographer();
-
   std::unique_ptr<EntityData> GetDataImpl(bool is_for_commit);
 
   const std::unique_ptr<NigoriLocalChangeProcessor> processor_;

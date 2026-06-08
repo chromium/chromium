@@ -308,39 +308,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
                                               /*passphrase=*/"hunter2"));
 }
 
-// PRE_* tests aren't supported on Android browser tests.
-#if !BUILDFLAG(IS_ANDROID)
-// Populates custom passphrase Nigori without keystore keys to the client.
-IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
-                       PRE_CanDecryptWithKeystoreKeys) {
-  const KeyParamsForTesting key_params =
-      Pbkdf2PassphraseKeyParamsForTesting("hunter2");
-  SetNigoriInFakeServer(BuildCustomPassphraseNigoriSpecifics(key_params),
-                        GetFakeServer());
-  ASSERT_TRUE(SetupSync(WAIT_FOR_SYNC_SETUP_TO_COMPLETE));
-  ASSERT_TRUE(GetSyncService()->GetUserSettings()->SetDecryptionPassphrase(
-      key_params.password));
-  ASSERT_TRUE(WaitForPassphraseAccepted());
-}
-
-// Client should be able to decrypt with keystore keys, regardless whether they
-// were stored in NigoriSpecifics. It's not a normal state, when the server
-// stores some data encrypted with keystore keys, but client is able to
-// reencrypt the data and recover from this state.
-IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
-                       CanDecryptWithKeystoreKeys) {
-  const password_manager::PasswordForm password_form =
-      passwords_helper::CreateTestPasswordForm(0, GetPasswordsStoreType());
-  passwords_helper::InjectKeystoreEncryptedServerPassword(password_form,
-                                                          GetFakeServer());
-  ASSERT_TRUE(SetupClients());
-  EXPECT_TRUE(PasswordFormsChecker(/*index=*/0,
-                                   /*expected_forms=*/{password_form},
-                                   GetPasswordsStoreType())
-                  .Wait());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_P(SingleClientCustomPassphraseSyncTest,
                        DoesNotLeakUnencryptedData) {
   const std::u16string title = u"Should be encrypted";
