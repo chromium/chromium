@@ -32,20 +32,20 @@ CLANG_REV=llvmorg-15-init-234-g567890abc-2
 
 echo Linux
 gsutil cp $GS_PATH/Linux_x64/clang-format-$CLANG_REV.tar.xz /tmp
-tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/linux64 --strip-component=1 bin/clang-format
+tar xf /tmp/clang-format-$CLANG_REV.tar.xz -C buildtools/linux64 --strip-component=1 bin/clang-format
 
 echo Win
 gsutil cp $GS_PATH/Win/clang-format-$CLANG_REV.tar.xz /tmp
-tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/win --strip-component=1 bin/clang-format.exe
+tar xf /tmp/clang-format-$CLANG_REV.tar.xz -C buildtools/win --strip-component=1 bin/clang-format.exe
 
 echo 'Mac x64'
 gsutil cp $GS_PATH/Mac/clang-format-$CLANG_REV.tar.xz /tmp
-tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/mac --strip-component=1 bin/clang-format
+tar xf /tmp/clang-format-$CLANG_REV.tar.xz -C buildtools/mac --strip-component=1 bin/clang-format
 mv buildtools/mac/clang-format buildtools/mac/clang-format.x64
 
 echo 'Mac arm64'
-gsutil cp $GS_PATH/Mac_arm64/clang-format-$CLANG_REV.tgz /tmp
-tar xf /tmp/clang-format-$CLANG_REV.tgz -C buildtools/mac --strip-component=1 bin/clang-format
+gsutil cp $GS_PATH/Mac_arm64/clang-format-$CLANG_REV.tar.xz /tmp
+tar xf /tmp/clang-format-$CLANG_REV.tar.xz -C buildtools/mac --strip-component=1 bin/clang-format
 mv buildtools/mac/clang-format buildtools/mac/clang-format.arm64
 
 # TODO(crbug.com/339490714): Remove sha1 file creation once all downstream repos that
