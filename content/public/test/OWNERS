@@ -62,3 +62,6 @@ per-file *captured_surface_controller*=tovep@chromium.org
 
 # For Memory Coordinator
 per-file *memory_coordinator_browsertest_util.cc=file://base/memory_coordinator/OWNERS
+
+# For Web UI.
+per-file *web_ui*=file://ui/webui/PLATFORM_OWNERS
