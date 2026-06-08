@@ -15,11 +15,13 @@
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -28,69 +30,20 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
+// TODO(crbug.com/448993919): Re-enable this test on Mac and ChromeOS.
+// TODO(crbug.com/388531778): DND tests fail on Windows.
+#if BUILDFLAG(IS_LINUX)
 
 namespace {
 
-// Observes a widget to track when a drag is complete.
-class DragWaiter : public views::WidgetObserver {
- public:
-  explicit DragWaiter(views::Widget* widget) : widget_(widget) {
-    widget_->AddObserver(this);
-  }
-
-  ~DragWaiter() override {
-    if (widget_) {
-      widget_->RemoveObserver(this);
-    }
-  }
-
-  DragWaiter(const DragWaiter&) = delete;
-  void operator=(const DragWaiter&) = delete;
-
-  void OnWidgetDestroying(views::Widget* widget) override {
-    if (drag_loop_ && drag_loop_->running()) {
-      drag_loop_->Quit();
-    }
-    widget_->RemoveObserver(this);
-    widget_ = nullptr;
-  }
-
-  void OnWidgetDragDropCompleted(views::Widget* widget) override {
-    drag_complete_ = true;
-    if (drag_loop_ && drag_loop_->running()) {
-      drag_loop_->Quit();
-    }
-  }
-
-  void Wait() {
-    if (!drag_complete_) {
-      drag_loop_ = std::make_unique<base::RunLoop>(
-          base::RunLoop::Type::kNestableTasksAllowed);
-      drag_loop_->Run();
-    }
-  }
-
- private:
-  raw_ptr<views::Widget> widget_ = nullptr;
-  bool drag_complete_ = false;
-  std::unique_ptr<base::RunLoop> drag_loop_;
-};
-
 class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
  public:
-  using DragObserver =
-      views::test::PollingViewObserver<bool, views::MenuItemView>;
-
   BookmarkBarDragAndDropInteractiveTest() = default;
   ~BookmarkBarDragAndDropInteractiveTest() override = default;
-  BookmarkBarDragAndDropInteractiveTest(
-      const BookmarkBarDragAndDropInteractiveTest&) = delete;
-  void operator=(const BookmarkBarDragAndDropInteractiveTest&) = delete;
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
@@ -98,238 +51,150 @@ class BookmarkBarDragAndDropInteractiveTest : public InteractiveBrowserTest {
         bookmarks::prefs::kShowBookmarkBar, true);
   }
 
-  // Names the menu item at a given index of `target_view`'s submenu.
-  // The usual `NameChildView` doesn't work for this case because submenus
-  // have their own widgets and are not part of the parent menu item's view
-  // hierarchy.
-  auto NameSubmenuChild(ElementSpecifier target_view,
-                        std::string name,
-                        size_t index) {
-    return NameViewRelative(
-        target_view, name,
-        base::BindLambdaForTesting([=](views::View* view) -> views::View* {
-          auto* const menu = views::AsViewClass<views::MenuItemView>(view);
-          CHECK(menu);
-          CHECK(menu->HasSubmenu());
-          return menu->GetSubmenu()->GetMenuItemAt(index);
-        }));
-  }
-
-  // Names the child menu item of the currently open bookmark bar menu.
-  auto NameBarMenuChild(std::string name, size_t index) {
-    return NameView(
-        name, base::BindLambdaForTesting([this, index]() -> views::View* {
-          views::MenuItemView* const menu = BookmarkBarActiveMenu();
-          CHECK(menu);
-          CHECK(menu->HasSubmenu());
-          CHECK_LE(index, menu->GetSubmenu()->GetMenuItems().size());
-          return menu->GetSubmenu()->GetMenuItemAt(index);
-        }));
-  }
-
-  // Names the bookmark bar button for the given bookmark folder.
   auto NameBookmarkButton(std::string name,
                           const bookmarks::BookmarkNode* folder) {
     return NameViewRelative(
         kBookmarkBarElementId, name,
         base::BindLambdaForTesting([=](views::View* view) -> views::View* {
           auto* const bookmark_bar = views::AsViewClass<BookmarkBarView>(view);
-          CHECK(bookmark_bar);
+          if (!bookmark_bar) {
+            return nullptr;
+          }
           return bookmark_bar->GetMenuButtonForFolder(
               BookmarkParentFolder::FromFolderNode(folder));
         }));
   }
 
-  // Waits for the menu to be shown after clicking a bookmark bar button.
-  auto WaitForBookmarkBarMenuShown() {
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
-        ui::test::PollingStateObserver<views::MenuItemView*>, kMenuShownId);
-    return Steps(PollState(kMenuShownId, base::BindLambdaForTesting([this]() {
-                             return BookmarkBarActiveMenu();
-                           })),
-                 WaitForState(kMenuShownId, testing::NotNull()));
-  }
-
-  // Returns a relative-position callback that gets the top-center point of
-  // a view. The value is slightly adjusted to prevent rounding errors on
-  // scaled devices.
   auto TopCenter() {
-    return base::BindLambdaForTesting([](views::View* el) {
-      return el->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 2);
+    return base::BindOnce([](ui::TrackedElement* el) {
+      auto* const view =
+          views::test::InteractiveViewsTestApi::AsView<views::View>(el);
+      return view->GetBoundsInScreen().top_center() + gfx::Vector2d(0, 5);
     });
   }
 
-  // Returns a relative-position callback that gets the center point of
-  // a view.
-  auto CenterPoint() {
-    return base::BindLambdaForTesting([](views::View* view) {
-      return view->GetBoundsInScreen().CenterPoint();
+  static views::MenuItemView* FindMenuItemInSubmenu(views::MenuItemView* menu,
+                                                    std::u16string title) {
+    if (!menu->HasSubmenu()) {
+      return nullptr;
+    }
+    for (auto* item : menu->GetSubmenu()->GetMenuItems()) {
+      if (item->title() == title) {
+        return item;
+      }
+      if (auto* result = FindMenuItemInSubmenu(item, title)) {
+        return result;
+      }
+    }
+    return nullptr;
+  }
+
+  auto NameBarMenuChildByTitle(std::string name, std::u16string title) {
+    return NameView(
+        name, base::BindLambdaForTesting([this, title]() -> views::View* {
+          auto* const bar = browser()->GetBrowserView().bookmark_bar();
+          if (!bar || !bar->GetMenu()) {
+            return nullptr;
+          }
+          return FindMenuItemInSubmenu(bar->GetMenu(), title);
+        }));
+  }
+
+  auto CheckMenuItemBefore(ElementSpecifier item_after_spec,
+                           std::u16string item_before_title) {
+    return CheckView(item_after_spec, [item_before_title](
+                                          views::MenuItemView* a) {
+      views::View* parent = a->parent();
+      for (views::View* child : parent->children()) {
+        if (auto* menu_item = views::AsViewClass<views::MenuItemView>(child)) {
+          if (menu_item->title() == item_before_title) {
+            return true;
+          }
+          if (menu_item == a) {
+            return false;
+          }
+        }
+      }
+      return false;
     });
   }
-
-  auto RegisterDragWaiter(ElementSpecifier target_view) {
-    return WithView(target_view, [&](views::View* view) {
-      auto* menu = static_cast<views::MenuItemView*>(view);
-      drag_waiter_ = std::make_unique<DragWaiter>(menu->GetWidget());
-    });
-  }
-
-  auto RemoveDragWaiter() {
-    return Do([&]() { drag_waiter_.reset(); });
-  }
-
-  // The original "DragMouseTo" method has issues on various platforms. This
-  // method uses custom logic to perform the drag.
-  auto DragMouseTo(ElementSpecifier dragged_view,
-                   ElementSpecifier target_view,
-                   base::RepeatingCallback<gfx::Point(views::View*)> pos) {
-    return Steps(
-        RegisterDragWaiter(dragged_view),
-        WithView(target_view,
-                 [this, pos = std::move(pos)](views::View* view) {
-                   base::RunLoop press_loop(
-                       base::RunLoop::Type::kNestableTasksAllowed);
-                   EXPECT_TRUE(ui_controls::SendMouseEventsNotifyWhenDone(
-                       ui_controls::MouseButton::LEFT,
-                       ui_controls::MouseButtonState::DOWN,
-                       press_loop.QuitClosure()));
-                   press_loop.Run();
-
-// On Mac, no initial mouse movement is needed. Doing so results in an initial
-// drag event which does not complete prior to the start of the second drag
-// event to `target_location`, which causes issues in the case of nested drag
-// events.
-#if !BUILDFLAG(IS_MAC)
-                   gfx::Rect bounds = view->GetBoundsInScreen();
-                   gfx::Point start_location(bounds.width() / 2,
-                                             bounds.height() / 2);
-
-                   // Send an initial mouse movement to start the drag.
-                   gfx::Point initial_target_location =
-                       start_location + gfx::Vector2d(10, 10);
-                   EXPECT_TRUE(
-                       ui_controls::SendMouseMove(initial_target_location.x(),
-                                                  initial_target_location.y()));
-#endif  // !BUILDFLAG(IS_MAC)
-
-                   // Send another mouse movement to the target desitnation.
-                   gfx::Point target_location = std::move(pos).Run(view);
-                   EXPECT_TRUE(ui_controls::SendMouseMove(target_location.x(),
-                                                          target_location.y()));
-
-                   // Release the mouse movement.
-                   EXPECT_TRUE(ui_controls::SendMouseEvents(
-                       ui_controls::MouseButton::LEFT,
-                       ui_controls::MouseButtonState::UP));
-
-                   // Await drag completion.
-                   drag_waiter_->Wait();
-                 }),
-        RemoveDragWaiter());
-  }
-
- private:
-  views::MenuItemView* BookmarkBarActiveMenu() {
-    return browser()->GetBrowserView().bookmark_bar()->GetMenu();
-  }
-
-  std::unique_ptr<DragWaiter> drag_waiter_;
 };
 
-// TODO(crbug.com/375959961): For X11, the menu is always closed on drag
-// completion because the native widget's state is not properly updated.
-// TODO(crbug.com/388531778): DND tests are fail on Windows and Wayland. This
-// should be re-enabled once fix.
-// TODO(crbug.com/448993919): Re-enable this test on Mac.
-#if BUILDFLAG(SUPPORTS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
-#define MAYBE_DISABLED(test_name) DISABLED_##test_name
-#else
-#define MAYBE_DISABLED(test_name) test_name
-#endif
-
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
-                       MAYBE_DISABLED(BookmarksDragAndDrop)) {
-  // Add two bookmarks nodes to the bookmarks bar.
+                       BookmarksDragAndDrop) {
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
+  }
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* const bb_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* const folder =
       model->AddFolder(bb_node, 0, u"folder");
   model->AddFolder(folder, 0, u"a");
   model->AddFolder(folder, 1, u"b");
 
-  static constexpr std::string kFolderButtonId = "button";
-  static constexpr std::string kANodeMenuId = "a_node";
-  static constexpr std::string kBNodeMenuId = "b_node";
+  static constexpr char kFolderButtonId[] = "button";
+  static constexpr char kANodeMenuId[] = "a_node";
+  static constexpr char kBNodeMenuId[] = "b_node";
 
   RunTestSequence(
       WaitForShow(kBookmarkBarElementId),
       NameBookmarkButton(kFolderButtonId, folder), PressButton(kFolderButtonId),
-      WaitForBookmarkBarMenuShown(), NameBarMenuChild(kANodeMenuId, 0u),
+      NameBarMenuChildByTitle(kANodeMenuId, u"a"),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
-      NameBarMenuChild(kBNodeMenuId, 1u),
+      NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
-      // Drag bookmark "b" above bookmark "a".
       MoveMouseTo(kBNodeMenuId),
-      DragMouseTo(kBNodeMenuId, kANodeMenuId, TopCenter()),
-      // The order of the bookmarks should now be swapped.
-      NameBarMenuChild(kANodeMenuId, 1u),
-      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
-      NameBarMenuChild(kBNodeMenuId, 0u),
-      CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"));
+      DragMouseTo(kANodeMenuId, CenterPoint(), /*release=*/false)
+          .SetMustRemainVisible(false),
+      MoveMouseTo(kANodeMenuId, TopCenter()), ReleaseMouse(),
+      PressButton(kFolderButtonId), NameBarMenuChildByTitle(kANodeMenuId, u"a"),
+      NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
+      CheckMenuItemBefore(kANodeMenuId, u"b"));
 }
 
-// TODO(crbug.com/375959961): For X11, the menu is always closed on drag
-// completion because the native widget's state is not properly updated.
-// TODO(crbug.com/388531778): DND tests are fail on Windows and Wayland. This
-// should be re-enabled once fix.
-// TODO(crbug.com/448993919): Re-enable this test on Mac.
-#if BUILDFLAG(SUPPORTS_OZONE_X11) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
-#define MAYBE_BookmarksDragAndDropToNestedFolder \
-  DISABLED_BookmarksDragAndDropToNestedFolder
-#else
-#define MAYBE_BookmarksDragAndDropToNestedFolder \
-  BookmarksDragAndDropToNestedFolder
-#endif
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
-                       MAYBE_BookmarksDragAndDropToNestedFolder) {
-  // Add two bookmarks nodes to the bookmarks bar.
+                       BookmarksDragAndDropToNestedFolder) {
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
+  }
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* const bb_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* const folder =
       model->AddFolder(bb_node, 0, u"folder");
   model->AddFolder(folder, 0, u"a");
   model->AddFolder(folder, 1, u"b");
 
-  static constexpr std::string kFolderButtonId = "button";
-  static constexpr std::string kANodeMenuId = "a_node";
-  static constexpr std::string kBNodeMenuId = "b_node";
+  static constexpr char kFolderButtonId[] = "button";
+  static constexpr char kANodeMenuId[] = "a_node";
+  static constexpr char kBNodeMenuId[] = "b_node";
 
   RunTestSequence(
       WaitForShow(kBookmarkBarElementId),
       NameBookmarkButton(kFolderButtonId, folder), PressButton(kFolderButtonId),
-      WaitForBookmarkBarMenuShown(), NameBarMenuChild(kANodeMenuId, 0u),
+      NameBarMenuChildByTitle(kANodeMenuId, u"a"),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
-      NameBarMenuChild(kBNodeMenuId, 1u),
+      NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
-      // Drag bookmark "a" onto bookmark "a".
       MoveMouseTo(kANodeMenuId),
-      DragMouseTo(kANodeMenuId, kBNodeMenuId, CenterPoint()),
-      // Bookmark "a" should now be a child of bookmark folder "b".
-      NameBarMenuChild(kBNodeMenuId, 0u),
+      DragMouseTo(kBNodeMenuId, CenterPoint()).SetMustRemainVisible(false),
+      PressButton(kFolderButtonId), NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
-      NameSubmenuChild(kBNodeMenuId, kANodeMenuId, 0u),
-      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
+      SelectMenuItem(kBNodeMenuId), NameBarMenuChildByTitle("a_in_b", u"a"),
+      CheckViewProperty("a_in_b", &views::MenuItemView::title, u"a"));
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
-                       MAYBE_DISABLED(BookmarksDragAndDropFromNestedFolder)) {
-  // Add two bookmarks nodes to the bookmarks bar.
+                       BookmarksDragAndDropFromNestedFolder) {
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "System DnD simulation is not supported on Wayland.";
+  }
   bookmarks::BookmarkModel* const model =
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
   const bookmarks::BookmarkNode* const bb_node = model->bookmark_bar_node();
   const bookmarks::BookmarkNode* const folder =
       model->AddFolder(bb_node, 0, u"folder");
@@ -337,27 +202,28 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarDragAndDropInteractiveTest,
       model->AddFolder(folder, 0, u"a");
   model->AddFolder(a_node, 0, u"b");
 
-  static constexpr std::string kFolderButtonId = "button";
-  static constexpr std::string kANodeMenuId = "a_node";
-  static constexpr std::string kBNodeMenuId = "b_node";
+  static constexpr char kFolderButtonId[] = "button";
+  static constexpr char kANodeMenuId[] = "a_node";
+  static constexpr char kBNodeMenuId[] = "b_node";
 
   RunTestSequence(
       WaitForShow(kBookmarkBarElementId),
       NameBookmarkButton(kFolderButtonId, folder), PressButton(kFolderButtonId),
-      WaitForBookmarkBarMenuShown(), NameBarMenuChild(kANodeMenuId, 0u),
+      NameBarMenuChildByTitle(kANodeMenuId, u"a"),
       CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
-      SelectMenuItem(kANodeMenuId),
-      NameSubmenuChild(kANodeMenuId, kBNodeMenuId, 0u),
+      SelectMenuItem(kANodeMenuId), NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
-      // Drag bookmark "b" above bookmark "a".
       MoveMouseTo(kBNodeMenuId),
-      DragMouseTo(kBNodeMenuId, kANodeMenuId, TopCenter()),
-      // The order of the bookmarks should now be swapped.
-      NameBarMenuChild(kBNodeMenuId, 0u),
+      DragMouseTo(kANodeMenuId, CenterPoint(), /*release=*/false)
+          .SetMustRemainVisible(false),
+      MoveMouseTo(kANodeMenuId, TopCenter()), ReleaseMouse(),
+      PressButton(kFolderButtonId), NameBarMenuChildByTitle(kBNodeMenuId, u"b"),
       CheckViewProperty(kBNodeMenuId, &views::MenuItemView::title, u"b"),
-      NameBarMenuChild(kANodeMenuId, 1u),
-      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"));
+      NameBarMenuChildByTitle(kANodeMenuId, u"a"),
+      CheckViewProperty(kANodeMenuId, &views::MenuItemView::title, u"a"),
+      CheckMenuItemBefore(kANodeMenuId, u"b"));
 }
 
-
 }  // namespace
+
+#endif  // BUILDFLAG(IS_LINUX)
