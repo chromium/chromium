@@ -13,6 +13,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -518,6 +519,13 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
   auto* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   if (glic_service && tab_interface) {
+    // Check if enough time has passed since last prompt submission.
+    auto* glic_instance = glic_service->GetInstanceForTab(tab_interface);
+    if (glic_instance && glic_instance->GetTimeSinceLastPromptSubmission() <
+                             features::kAutoOpenGlicCooldown.Get()) {
+      return RecordAutoOpenResult(GlicAutoOpenResult::kPreventedFromCooldown);
+    }
+
     glic::mojom::InvocationSource invocation_source =
         glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
     if (is_pdf_candidate) {

@@ -815,6 +815,7 @@ void GlicInstanceImpl::OnUserInputSubmitted(mojom::WebClientMode mode) {
   for (auto& [key, entry] : embedders_) {
     entry.user_input_submitted_while_bound = true;
   }
+  last_prompt_submission_time_ = base::TimeTicks::Now();
   // TODO(harringtond): The only subscriber to this event is the tab underline
   // controller and I think it makes more sense for it to get that signal from
   // sharing manager instead of going through the keyed service.
@@ -1476,6 +1477,13 @@ base::TimeDelta GlicInstanceImpl::GetTimeSinceLastActive() const {
     return base::TimeDelta();
   }
   return base::TimeTicks::Now() - last_deactivation_timestamp_;
+}
+
+base::TimeDelta GlicInstanceImpl::GetTimeSinceLastPromptSubmission() const {
+  if (last_prompt_submission_time_.is_null()) {
+    return base::TimeDelta::Max();
+  }
+  return base::TimeTicks::Now() - last_prompt_submission_time_;
 }
 
 bool GlicInstanceImpl::IsHibernated() const {

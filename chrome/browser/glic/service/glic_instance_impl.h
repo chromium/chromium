@@ -129,6 +129,7 @@ class GlicInstanceImpl : public GlicInstance,
   void NotifyInstanceActivationChanged(bool is_active);
   base::Time GetLastActivationTimestamp() const override;
   base::TimeDelta GetTimeSinceLastActive() const override;
+  base::TimeDelta GetTimeSinceLastPromptSubmission() const override;
   bool IsHibernated() const;
   void Hibernate();
   void Shutdown();
@@ -450,6 +451,7 @@ class GlicInstanceImpl : public GlicInstance,
   base::OneShotTimer inactivity_timer_;
   base::Time last_activation_timestamp_;
   base::TimeTicks last_deactivation_timestamp_;
+  base::TimeTicks last_prompt_submission_time_;
 
   base::OneShotTimer remove_blank_instance_timer_;
   base::OneShotTimer maybe_activate_foreground_embedder_timer_;

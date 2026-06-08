@@ -291,6 +291,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Prevented From Window Too Narrow"/>
   <int value="6" label="Prevented From Button Not Visible"/>
   <int value="7" label="Prevented From PDF Page Count Below Threshold"/>
+  <int value="8" label="Prevented From Cooldown"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/suggestions/contextual_cueing_enums.h:GlicAutoOpenResult) -->

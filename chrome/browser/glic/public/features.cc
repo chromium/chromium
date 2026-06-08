@@ -51,6 +51,11 @@ const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding({
     "AutoOpenGlicForPdfWithOnboarding",
     true,
 });
+const base::FeatureParam<base::TimeDelta> kAutoOpenGlicCooldown({
+    &kAutoOpenGlicForPdf,
+    "AutoOpenGlicCooldown",
+    base::Hours(1),
+});
 
 BASE_FEATURE(kGlicInvoke, base::FEATURE_ENABLED_BY_DEFAULT);
 

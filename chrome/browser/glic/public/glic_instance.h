@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation_traits.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -114,6 +115,11 @@ class GlicInstance {
   // Returns the duration since the instance was last active.
   // Returns base::TimeDelta() if the instance is currently active.
   virtual base::TimeDelta GetTimeSinceLastActive() const = 0;
+
+  // Returns the duration since the user last submitted a prompt to a
+  // conversation in this instance. Returns base::TimeDelta::Max() if no prompt
+  // has been submitted yet.
+  virtual base::TimeDelta GetTimeSinceLastPromptSubmission() const = 0;
 
   // Metrics springboard for selection area changed.
   // TODO(b/500385503): Figure out what to do here. This is exposed for now

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -12,7 +13,9 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_enums.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -868,4 +871,177 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
   auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
   ASSERT_TRUE(glic_service);
   EXPECT_TRUE(glic_service->IsWindowShowing());
+}
+
+// Verify that the auto-open is blocked by the instance-scoped cooldown
+// after the user has submitted a prompt on the same tab's instance.
+IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
+                       TestAutoOpenRespectsCooldown) {
+  base::HistogramTester histogram_tester;
+  SetUpBypassHints();
+
+  // Navigate to the pdf to trigger initial auto-open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
+  ASSERT_TRUE(glic_service);
+  EXPECT_TRUE(glic_service->IsWindowShowing());
+
+  // Retrieve the active tab and its associated GlicInstance.
+  auto* tab_interface = tabs::TabInterface::GetFromContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(tab_interface);
+  auto* glic_instance = glic_service->GetInstanceForTab(tab_interface);
+  ASSERT_TRUE(glic_instance);
+
+  // Simulate a user prompt submission to start the 1-hour cooldown.
+  {
+    auto info = glic::mojom::ConversationInfo::New();
+    info->conversation_id = "test_conversation_id";
+    info->conversation_title = "Test Conversation";
+    glic_instance->host().instance_delegate().RegisterConversation(
+        std::move(info), base::DoNothing());
+  }
+  glic_instance->host().instance_delegate().OnUserInputSubmitted(
+      glic::mojom::WebClientMode::kText);
+
+  // Close the Glic side panel.
+  auto* coordinator = glic::GlicSidePanelCoordinator::GetForTab(tab_interface);
+  ASSERT_TRUE(coordinator);
+  coordinator->Close();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !glic_service->IsWindowShowing(); }));
+
+  // Navigate again to trigger auto-open
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html")));
+
+  // Verify that the Glic panel is still closed (and suppressed by the
+  // cooldown).
+  EXPECT_FALSE(glic_service->IsWindowShowing());
+  histogram_tester.ExpectBucketCount(
+      "ContextualCueing.GlicAutoOpen.Result",
+      glic::GlicAutoOpenResult::kPreventedFromCooldown, 1);
+}
+
+class ContextualCueingAutoOpenCooldownTest
+    : public glic::test::InteractiveGlicTest {
+ public:
+  ContextualCueingAutoOpenCooldownTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{glic::kContextualCueing,
+          {{"BackoffTime", "0h"},
+           {"BackoffMultiplierBase", "0.0"},
+           {"NudgeCapTime", "0h"},
+           {"NudgeCapCount", "10"},
+           {"MinPageCountBetweenNudges", "0"},
+           {"UseDynamicCues", "true"}}},
+         {glic::kEnableAutoOpenGlicSidePanel, {}},
+         {features::kAutoOpenGlicForPdf, {{"AutoOpenGlicCooldown", "2s"}}},
+         {page_content_annotations::features::kAnnotatedPageContentExtraction,
+          {}},
+         {contextual_tasks::kContextualTasks, {}}},
+        {contextual_cueing::kContextualCueingV2});
+  }
+
+  void SetUp() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+
+    glic::test::InteractiveGlicTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    glic::test::InteractiveGlicTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  void SetUpBypassHints() {
+    optimization_guide::proto::GlicContextualCueingMetadata cueing_metadata;
+    auto* cueing_config = cueing_metadata.add_cueing_configurations();
+    cueing_config->set_cue_label("auto open label");
+    cueing_config->set_dynamic_cue_label("auto open dynamic label");
+    cueing_config->set_default_text("Summarize this page");
+    cueing_config->set_auto_open_eligible(true);
+
+    optimization_guide::OptimizationMetadata metadata;
+    metadata.set_any_metadata(
+        optimization_guide::AnyWrapProto(cueing_metadata));
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->AddHintForTesting(
+            https_server_.GetURL("autoopen.com",
+                                 "/optimization_guide/hello.html"),
+            optimization_guide::proto::GLIC_CONTEXTUAL_CUEING, metadata);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+// Verify that the auto-open works normally again after the cooldown has
+// expired.
+IN_PROC_BROWSER_TEST_F(ContextualCueingAutoOpenCooldownTest,
+                       TestAutoOpenWorksAfterCooldownExpires) {
+  base::HistogramTester histogram_tester;
+  SetUpBypassHints();
+
+  // 1. Navigate to the pdf in a new foreground tab to trigger initial
+  // auto-open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(),
+      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
+  ASSERT_TRUE(glic_service);
+  EXPECT_TRUE(glic_service->IsWindowShowing());
+
+  // 2. Retrieve the active tab and its associated GlicInstance.
+  auto* tab_interface = tabs::TabInterface::GetFromContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(tab_interface);
+  auto* glic_instance = glic_service->GetInstanceForTab(tab_interface);
+  ASSERT_TRUE(glic_instance);
+
+  // 3. Simulate a user prompt submission to start the 2-second cooldown.
+  {
+    auto info = glic::mojom::ConversationInfo::New();
+    info->conversation_id = "test_conversation_id";
+    info->conversation_title = "Test Conversation";
+    glic_instance->host().instance_delegate().RegisterConversation(
+        std::move(info), base::DoNothing());
+  }
+  glic_instance->host().instance_delegate().OnUserInputSubmitted(
+      glic::mojom::WebClientMode::kText);
+
+  // 4. Close the Glic side panel.
+  auto* coordinator = glic::GlicSidePanelCoordinator::GetForTab(tab_interface);
+  ASSERT_TRUE(coordinator);
+  coordinator->Close();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !glic_service->IsWindowShowing(); }));
+
+  // 5. Wait 3 seconds for the 2-second cooldown to expire safely.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(3));
+  run_loop.Run();
+
+  // 6. Navigate again to trigger auto-open.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server_.GetURL("autoopen.com", "/optimization_guide/hello.html")));
+
+  // 7. Verify that Glic DOES auto-open this time (since the cooldown expired).
+  EXPECT_TRUE(glic_service->IsWindowShowing());
+  histogram_tester.ExpectBucketCount("ContextualCueing.GlicAutoOpen.Result",
+                                     glic::GlicAutoOpenResult::kSuccess, 2);
 }

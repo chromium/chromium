@@ -28,6 +28,7 @@ BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
 BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
 extern const base::FeatureParam<bool> kAutoOpenGlicForPdfWithOnboarding;
+extern const base::FeatureParam<base::TimeDelta> kAutoOpenGlicCooldown;
 
 BASE_DECLARE_FEATURE(kGlicInvoke);
 
