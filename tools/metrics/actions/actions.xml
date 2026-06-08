@@ -32989,6 +32989,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarShowAssistant">
+  <owner>gambard@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    User pressed button to show the assistant sheet on the toolbar. iOS only.
+  </description>
+</action>
+
+<action name="MobileToolbarShowAssistantOnNTP">
+  <owner>gambard@chromium.org</owner>
+  <owner>ewannpv@chromium.org</owner>
+  <description>
+    User pressed button to show the assistant sheet on the toolbar while viewing
+    the NTP. iOS only.
+  </description>
+</action>
+
 <action name="MobileToolbarShowMenu">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
