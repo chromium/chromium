@@ -419,6 +419,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
+    @DisableFeatures(ChromeFeatureList.ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE)
     public void testAllocInstanceId_reachesMaximum() {
         assertTrue(mMultiInstanceManager.mMaxInstances < mActivityPool.length);
         int index = 0;
@@ -1003,6 +1004,40 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify that subsequent id allocation uses a new id, not a persisted one marked for
         // deletion.
+        var multiInstanceManager = createTestMultiInstanceManager(mActivityTask59);
+        var allocatedIdInfo =
+                multiInstanceManager.allocInstanceId(
+                        /* windowId= */ -1,
+                        TASK_ID_59,
+                        /* preferNew= */ false,
+                        /* isIncognitoIntent= */ false);
+        assertEquals(3, allocatedIdInfo.instanceId);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOC_INSTANCE_ID_INCREASED_DEFAULT_RANGE)
+    public void testAllocInstanceId_maxInstanceLimitWindowCountMarkedForDeletion() {
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+
+        // Setup 3 instances.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity));
+        mMultiInstanceManager.initialize(
+                /* instanceId= */ 0, /* taskId= */ TASK_ID_56, SupportedProfileType.MIXED);
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask57));
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask58));
+
+        // Simulate closure of all windows from the window manager.
+        mMultiInstanceManager.closeWindows(List.of(0, 1, 2), CloseWindowAppSource.WINDOW_MANAGER);
+        destroyActivity(mCurrentActivity);
+        destroyActivity(mActivityTask57);
+        destroyActivity(mActivityTask58);
+
+        // Verify that they are marked for deletion.
+        assertTrue(ChromeMultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 0));
+        assertTrue(ChromeMultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 1));
+        assertTrue(ChromeMultiInstancePersistentStore.readMarkedForDeletion(/* instanceId= */ 2));
+
+        // Allocating a new instance should now loop past the limit and allocate a new ID (3).
         var multiInstanceManager = createTestMultiInstanceManager(mActivityTask59);
         var allocatedIdInfo =
                 multiInstanceManager.allocInstanceId(
