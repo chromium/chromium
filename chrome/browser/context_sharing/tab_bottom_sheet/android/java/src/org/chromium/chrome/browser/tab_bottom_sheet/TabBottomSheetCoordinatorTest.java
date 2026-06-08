@@ -69,6 +69,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
@@ -213,6 +214,7 @@ public class TabBottomSheetCoordinatorTest {
         if (mCoordinator != null) {
             mCoordinator.destroy();
         }
+        TestTabBottomSheetContent.setUsePlaceholderForTesting(false);
     }
 
     /**
@@ -1023,5 +1025,67 @@ public class TabBottomSheetCoordinatorTest {
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         // Verify it was called again (1 time after clearing)
         verify(mView).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    @Test
+    public void testPlaceholderVisibility_usePlaceholderFalse() {
+        TestTabBottomSheetContent.setUsePlaceholderForTesting(false);
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        View placeholder = mView.findViewById(R.id.empty_placeholder_container);
+        assertNotNull(placeholder);
+
+        // Initially state is HIDDEN.
+        assertEquals(View.GONE, placeholder.getVisibility());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        assertEquals(View.GONE, placeholder.getVisibility());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        assertEquals(View.GONE, placeholder.getVisibility());
+    }
+
+    @Test
+    public void testPlaceholderVisibility_usePlaceholderTrue_noWebContents() {
+        TestTabBottomSheetContent.setUsePlaceholderForTesting(true);
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        View placeholder = mView.findViewById(R.id.empty_placeholder_container);
+        assertNotNull(placeholder);
+
+        // Initially state is HIDDEN.
+        assertEquals(View.GONE, placeholder.getVisibility());
+
+        // Change state to HALF. Currently no WebContents (mMockWebUi.getWebContents() is null).
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+        assertEquals(View.GONE, placeholder.getVisibility());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        assertEquals(View.VISIBLE, placeholder.getVisibility());
+    }
+
+    @Test
+    public void testPlaceholderVisibility_usePlaceholderTrue_withWebContents() {
+        TestTabBottomSheetContent.setUsePlaceholderForTesting(true);
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        View placeholder = mView.findViewById(R.id.empty_placeholder_container);
+        assertNotNull(placeholder);
+
+        WebContents mockWebContents = mock();
+        mCoBrowseViews.setWebContents(mockWebContents, false);
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+        assertEquals(View.GONE, placeholder.getVisibility());
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        assertEquals(View.GONE, placeholder.getVisibility());
     }
 }

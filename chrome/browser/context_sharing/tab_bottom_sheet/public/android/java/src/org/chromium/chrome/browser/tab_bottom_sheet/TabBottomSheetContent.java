@@ -29,6 +29,7 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
     private final @ColorInt int mBackgroundColor;
     private final @Px int mPeekViewHeight;
     private final @IdRes int mEmptyPlaceholderContainerId;
+    private final boolean mUsePlaceholder;
 
     /**
      * Constructor.
@@ -59,9 +60,7 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
 
         TextViewWithCompoundDrawables placeholder =
                 NullUtil.assertNonNull(mContentView.findViewById(mEmptyPlaceholderContainerId));
-        if (setupPlaceholder(placeholder)) {
-            placeholder.setVisibility(View.VISIBLE);
-        }
+        mUsePlaceholder = setupPlaceholder(placeholder);
     }
 
     /**
@@ -72,6 +71,11 @@ public abstract class TabBottomSheetContent implements BottomSheetContent {
      */
     protected boolean setupPlaceholder(TextViewWithCompoundDrawables placeholder) {
         return false;
+    }
+
+    /** Returns whether the content uses an empty placeholder. */
+    public boolean usePlaceholder() {
+        return mUsePlaceholder;
     }
 
     @Override
