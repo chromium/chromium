@@ -178,6 +178,8 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createNonNull(PopupState.HIDDEN);
     private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
             ObservableSuppliers.createNullable();
+    private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
@@ -256,7 +258,8 @@ public class FuseboxMediatorUnitTest {
                         () -> null,
                         mBackPressManager,
                         mOnFirstPickerInteractionCanceledCallback,
-                        mExactMatchUrlSupplier);
+                        mExactMatchUrlSupplier,
+                        mActivationChipVisibilitySupplier);
         mMediator.beginInput(createSession());
     }
 

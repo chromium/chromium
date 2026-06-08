@@ -360,6 +360,7 @@ android_resources("java_resources") {
     "java/res/anim/fusebox_slide_out_down.xml",
     "java/res/drawable-night/search_spark_rainbow.xml",
     "java/res/drawable/action_button_foreground_selector.xml",
+    "java/res/drawable/activation_chip_focus_ring.xml",
     "java/res/drawable/create_image_24dp.xml",
     "java/res/drawable/fusebox_horizontal_attachment_background.xml",
     "java/res/drawable/fusebox_popup_bg_tinted.xml",

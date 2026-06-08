@@ -175,6 +175,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                 (holder) -> {
                     mContainer = holder.container;
                     mDropdown = holder.dropdown;
+                    mDropdown.setFuseboxCoordinator(fuseboxCoordinator);
                 });
         LazyConstructionPropertyMcp.create(
                 listModel,

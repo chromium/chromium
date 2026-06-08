@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:state_selected="true">
+    <!--
+    Bump the horizontal border out so that there is 3dp between it and the pill
+    inside. 3dp for that space, plus 2 more dp for the width of the border.
+    Negative inset so that it goes out rather than in.
+    -->
+    <inset
+        android:insetLeft="-5dp"
+        android:insetRight="-5dp">
+      <shape android:shape="rectangle">
+        <solid android:color="@android:color/transparent" />
+
+        <stroke
+            android:width="2dp"
+            android:color="@macro/default_icon_color" />
+        <!--
+18dp (base radius of activation chip) + 3dp to account for the fact that we're 3dp wider on either side.
+-->
+    <corners android:radius="21dp" />
+  </shape>
+</inset>
+</item>
+
+<item>
+<shape android:shape="rectangle">
+  <solid android:color="@android:color/transparent" />
+</shape>
+</item>
+</selector>

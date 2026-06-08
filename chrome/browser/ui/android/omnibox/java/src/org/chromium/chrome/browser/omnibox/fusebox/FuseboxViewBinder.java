@@ -55,6 +55,13 @@ import java.util.List;
 /** Binds the Fusebox properties to the view and component. */
 @NullMarked
 class FuseboxViewBinder {
+
+    private static final int[][] HOVER_STATES =
+            new int[][] {
+                new int[] {android.R.attr.state_hovered}, new int[] {} // Default, must be last
+            };
+    ;
+
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
@@ -62,6 +69,8 @@ class FuseboxViewBinder {
         if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_CLICKED) {
             view.activationChip.setOnClickListener(
                     v -> model.get(FuseboxProperties.ACTIVATION_CHIP_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_SELECTED) {
+            view.activationChip.setSelected(model.get(FuseboxProperties.ACTIVATION_CHIP_SELECTED));
         } else if (propertyKey == FuseboxProperties.ACTIVATION_CHIP_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.ACTIVATION_CHIP_VISIBLE, view.activationChip);
@@ -612,13 +621,20 @@ class FuseboxViewBinder {
         @ColorInt
         int buttonColor =
                 OmniboxResourceProvider.getColorSurfaceContainerHigh(context, brandedColorScheme);
+        @ColorInt
+        int buttonColorHovered =
+                OmniboxResourceProvider.getColorSurfaceContainerHighest(
+                        context, brandedColorScheme);
+        int[] backgroundColors = new int[] {buttonColorHovered, buttonColor};
+
         ButtonCompat button = viewHolder.activationChip;
-        button.setButtonColor(ColorStateList.valueOf(buttonColor));
+        button.setButtonColor(new ColorStateList(HOVER_STATES, backgroundColors));
 
         @ColorInt
         int colorOnSurface = OmniboxResourceProvider.getColorOnSurface(context, brandedColorScheme);
-        // TODO(pnoland): handle text color, selection, and hover states.
         button.setCompoundDrawableTintList(ColorStateList.valueOf(colorOnSurface));
+        button.setForegroundTintList(ColorStateList.valueOf(colorOnSurface));
+        button.setTextColor(colorOnSurface);
     }
 
     @SuppressLint("SwitchIntDef")

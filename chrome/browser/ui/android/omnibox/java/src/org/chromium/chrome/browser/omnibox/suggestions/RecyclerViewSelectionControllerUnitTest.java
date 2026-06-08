@@ -14,6 +14,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link RecyclerViewSelectionController}. */
@@ -44,6 +46,7 @@ public class RecyclerViewSelectionControllerUnitTest {
     private @Mock View mChildView3;
     private @Mock View mChildView4;
     private @Mock View mChildView5;
+    private @Mock Callback<Boolean> mVirtualCallback;
     RecyclerViewSelectionController mSelectionController;
     RecyclerViewSelectionController mSelectionControllerWithSentinel;
 
@@ -337,5 +340,54 @@ public class RecyclerViewSelectionControllerUnitTest {
         verify(mChildView2).setSelected(false);
         verify(mChildView2).setSelected(true);
         verifyNoMoreInteractions(mChildView2);
+    }
+
+    @Test
+    public void virtualViews_navigationAndCallbacks() {
+        when(mLayoutManager.getItemCount()).thenReturn(4);
+        mSelectionController.addVirtualView(1, mVirtualCallback);
+        assertEquals(5, mSelectionController.getItemCount());
+
+        mSelectionController.setPosition(0);
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        verify(mChildView1).setSelected(true);
+
+        clearInvocations(mChildView1);
+        mSelectionController.selectNextItem();
+
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        verify(mVirtualCallback, times(1)).onResult(true);
+        verify(mChildView1).setSelected(false);
+        verify(mChildView2, times(0)).setSelected(anyBoolean());
+
+        mSelectionController.selectNextItem();
+
+        assertEquals(Integer.valueOf(2), mSelectionController.getPosition());
+        verify(mVirtualCallback, times(1)).onResult(false);
+        verify(mChildView2).setSelected(true);
+
+        clearInvocations(mChildView2);
+        mSelectionController.selectPreviousItem();
+
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        verify(mVirtualCallback, times(2)).onResult(true);
+        verify(mChildView2).setSelected(false);
+    }
+
+    @Test
+    public void virtualViews_removeVirtualView() {
+        mSelectionController.addVirtualView(1, mVirtualCallback);
+        mSelectionController.removeVirtualView(1);
+
+        mSelectionController.setPosition(0);
+        assertEquals(Integer.valueOf(0), mSelectionController.getPosition());
+        verify(mChildView1).setSelected(true);
+
+        mSelectionController.selectNextItem();
+
+        assertEquals(Integer.valueOf(1), mSelectionController.getPosition());
+        verify(mChildView2).setSelected(true);
+
+        verifyNoInteractions(mVirtualCallback);
     }
 }

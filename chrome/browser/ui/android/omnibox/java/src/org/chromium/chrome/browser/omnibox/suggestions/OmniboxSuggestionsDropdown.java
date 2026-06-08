@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -31,6 +32,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -61,6 +63,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      */
     private static final long LIST_COMPOSITION_ACCESSIBILITY_ANNOUNCEMENT_DELAY_MS = 1500;
 
+    private static final int ACTIVATION_CHIP_INDEX_FOR_WRAPPING_WITH_SENTINEL_MODE = 0;
+    private static final int ACTIVATION_CHIP_INDEX_FOR_WRAPPING_MODE = 1;
+
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
     private final Handler mHandler;
@@ -75,6 +80,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     private final int mBaseBottomPadding;
     private final int mBaseTopPadding;
+    private @Nullable FuseboxCoordinator mFuseboxCoordinator;
+    private boolean mActivationChipVisible;
+    private @SelectionController.Mode int mSelectionMode;
+    private final Callback<Boolean> mActivationChipVisibiltyCallback =
+            this::onActivationChipVisibilityChanged;
 
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
@@ -323,9 +333,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mLayoutScrollListener = suggestionLayoutScrollListener;
             setLayoutManager(mLayoutScrollListener);
 
+            mSelectionMode = SelectionController.Mode.WRAPPING_WITH_SENTINEL;
             mSelectionController =
-                    new RecyclerViewSelectionController(
-                            mLayoutScrollListener, SelectionController.Mode.WRAPPING_WITH_SENTINEL);
+                    new RecyclerViewSelectionController(mLayoutScrollListener, mSelectionMode);
             addOnChildAttachStateChangeListener(mSelectionController);
 
             final Resources resources = context.getResources();
@@ -346,6 +356,34 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 setRecycledViewPool(mRecycledViewPool);
             }
         }
+    }
+
+    public void setFuseboxCoordinator(FuseboxCoordinator fuseboxCoordinator) {
+        mFuseboxCoordinator = fuseboxCoordinator;
+        mFuseboxCoordinator
+                .getActivationChipVisibilitySupplier()
+                .addSyncObserverAndCallIfNonNull(this::onActivationChipVisibilityChanged);
+    }
+
+    private void onActivationChipVisibilityChanged(boolean isVisible) {
+        mActivationChipVisible = isVisible;
+        int index = getChipIndexForSelectionMode(mSelectionMode);
+        if (isVisible) {
+            mSelectionController.addVirtualView(index, this::onActivationChipSelectionChanged);
+        } else {
+            mSelectionController.removeVirtualView(index);
+        }
+    }
+
+    private int getChipIndexForSelectionMode(int selectionMode) {
+        return selectionMode == SelectionController.Mode.WRAPPING
+                ? ACTIVATION_CHIP_INDEX_FOR_WRAPPING_MODE
+                : ACTIVATION_CHIP_INDEX_FOR_WRAPPING_WITH_SENTINEL_MODE;
+    }
+
+    private void onActivationChipSelectionChanged(boolean selected) {
+        assertNonNull(mFuseboxCoordinator);
+        mFuseboxCoordinator.onActivationChipSelectionChanged(selected);
     }
 
     /**
@@ -373,6 +411,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mRecycledViewPool.destroy();
         }
         mGestureObserver = null;
+        if (mFuseboxCoordinator != null) {
+            mFuseboxCoordinator
+                    .getActivationChipVisibilitySupplier()
+                    .removeObserver(mActivationChipVisibiltyCallback);
+        }
     }
 
     /**
@@ -405,12 +448,18 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * @param allow Whether parking at sentinel is allowed.
      */
     public void setAllowParkingAtSentinel(boolean allow) {
-        @SelectionController.Mode
-        int mode =
+        int oldSelectionMode = mSelectionMode;
+        mSelectionMode =
                 allow
                         ? SelectionController.Mode.WRAPPING_WITH_SENTINEL
                         : SelectionController.Mode.WRAPPING;
-        mSelectionController.setSelectionMode(mode);
+        mSelectionController.setSelectionMode(mSelectionMode);
+        if (mActivationChipVisible) {
+            int oldIndex = getChipIndexForSelectionMode(oldSelectionMode);
+            int newIndex = getChipIndexForSelectionMode(mSelectionMode);
+            mSelectionController.removeVirtualView(oldIndex);
+            mSelectionController.addVirtualView(newIndex, this::onActivationChipSelectionChanged);
+        }
         mSelectionController.reset();
     }
 
@@ -494,6 +543,16 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (!isShown()) return false;
+
+        if (mFuseboxCoordinator != null
+                && mActivationChipVisible
+                && mSelectionController.getPosition() != null
+                && mSelectionController.getPosition()
+                        == getChipIndexForSelectionMode(mSelectionMode)
+                && KeyNavigationUtil.isEnter(event)) {
+            mFuseboxCoordinator.onActivationChipClicked();
+            return true;
+        }
 
         View selectedView = mSelectionController.getSelectedView();
         boolean hasAdditionalModifiers = event.isAltPressed() || event.isShiftPressed();

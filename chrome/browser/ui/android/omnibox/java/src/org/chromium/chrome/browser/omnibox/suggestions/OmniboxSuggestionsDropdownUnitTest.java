@@ -11,7 +11,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,10 +39,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
@@ -53,11 +58,14 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private @Mock OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Mock View mView;
     private @Mock OmniboxSuggestionsDropdown.NavigationListener mNavigationListener;
+    private @Mock FuseboxCoordinator mFuseboxCoordinator;
 
     private Context mContext;
     private OmniboxSuggestionsDropdown mDropdown;
     private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
     private FrameLayout.LayoutParams mLayoutParams;
+    private final SettableNonNullObservableSupplier<Boolean> mChipVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
 
     @Before
     public void setUp() {
@@ -379,5 +387,47 @@ public class OmniboxSuggestionsDropdownUnitTest {
                 new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB, 0));
 
         verify(mNavigationListener).onNavigationStateChange(anyBoolean());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testActivationChip() {
+        doReturn(mChipVisibilitySupplier)
+                .when(mFuseboxCoordinator)
+                .getActivationChipVisibilitySupplier();
+        mDropdown.setFuseboxCoordinator(mFuseboxCoordinator);
+
+        RecyclerViewSelectionController controller =
+                (RecyclerViewSelectionController) mDropdown.getSelectionControllerForTesting();
+
+        mChipVisibilitySupplier.set(true);
+        controller.setPosition(0);
+        verify(mFuseboxCoordinator).onActivationChipSelectionChanged(true);
+
+        when(mDropdown.isShown()).thenReturn(true);
+        mDropdown.onKeyDown(
+                KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        verify(mFuseboxCoordinator).onActivationChipClicked();
+
+        clearInvocations(mFuseboxCoordinator);
+        // Changes mode to WRAPPING and chip position to 1
+        mDropdown.setAllowParkingAtSentinel(false);
+
+        controller.setPosition(1);
+        verify(mFuseboxCoordinator).onActivationChipSelectionChanged(true);
+
+        mDropdown.onKeyDown(
+                KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        verify(mFuseboxCoordinator).onActivationChipClicked();
+
+        clearInvocations(mFuseboxCoordinator);
+        mChipVisibilitySupplier.set(false);
+
+        controller.setPosition(1);
+        verify(mFuseboxCoordinator, never()).onActivationChipSelectionChanged(anyBoolean());
+
+        mDropdown.onKeyDown(
+                KeyEvent.KEYCODE_ENTER, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER));
+        verify(mFuseboxCoordinator, never()).onActivationChipClicked();
     }
 }

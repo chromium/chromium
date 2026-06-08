@@ -95,6 +95,7 @@ found in the LICENSE file.
         app:layout_constraintTop_toTopOf="parent"
         app:buttonBorderStyle="solid"
         app:verticalInset="6dp"
-        app:rippleCornerRadius="36dp"/>
+        app:rippleCornerRadius="36dp"
+        android:foreground="@drawable/activation_chip_focus_ring"/>
 
 </merge>
