@@ -196,12 +196,6 @@
     cameraSearchAction, voiceSearchAction, newIncognitoSearchAction,
     newSearchAction
   ]];
-
-  if (IsAIMCobrowseDebugEntrypointEnabled()) {
-    UIAction* openAIMode = [_actionFactory actionToOpenAIMode];
-    [staticActions addObject:openAIMode];
-  }
-
   if (experimental_flags::EnableAIPrototypingMenu()) {
     UIAction* openAIMenu = [_actionFactory actionToOpenAIMenu];
     [staticActions addObject:openAIMenu];

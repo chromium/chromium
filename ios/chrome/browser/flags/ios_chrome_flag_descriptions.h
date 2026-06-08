@@ -24,11 +24,6 @@ inline constexpr char kAIHubNewBadgeName[] = "AI Hub New Badge";
 inline constexpr char kAIHubNewBadgeDescription[] =
     "Enables showing a new badge on the AI Hub button in the toolbar.";
 
-inline constexpr char kAIMCobrowseDebugEntrypointName[] =
-    "AIM Cobrowse debug entrypoint";
-inline constexpr char kAIMCobrowseDebugEntrypointDescription[] =
-    "Enables the AIM Cobrowse debug entrypoint feature.";
-
 inline constexpr char kAIMEligibilityRefreshNTPModulesName[] =
     "AIMEligibilityRefreshNTPModules";
 inline constexpr char kAIMEligibilityRefreshNTPModulesDescription[] =

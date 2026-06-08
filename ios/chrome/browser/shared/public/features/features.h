@@ -900,12 +900,6 @@ BASE_DECLARE_FEATURE(kDisableComposeboxFromAIMNTP);
 // Returns true if the DisableComposeboxFromAIMNTP feature is enabled.
 bool IsDisableComposeboxFromAIMNTPEnabled();
 
-// Enables the AIMCobrowseDebugEntrypoint feature.
-BASE_DECLARE_FEATURE(kAIMCobrowseDebugEntrypoint);
-
-// Returns true if the AIMCobrowseDebugEntrypoint feature is enabled.
-bool IsAIMCobrowseDebugEntrypointEnabled();
-
 extern const char kAIMCobrowseHeaderParam[];
 extern const char kAIMCobrowseHeaderParamOptionA[];
 extern const char kAIMCobrowseHeaderParamOptionB[];
