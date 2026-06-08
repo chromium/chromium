@@ -29,6 +29,9 @@ class UserResizeMoveDetector {
   // Called on WM_EXITSIZEMOVE.
   void OnExitSizeMove();
 
+  // Returns true if any window is being resized or moved..
+  static bool InMoveResizeLoop();
+
  private:
   enum class State {
     // Start with not resizing.

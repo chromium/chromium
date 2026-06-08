@@ -167,6 +167,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
                            bool hide_on_escape);
   virtual void EndMoveLoop();
 
+  // Returns true if any HWndMessageHandler is in a native move/resize loop.
+  static bool IsInNativeMoveResizeLoop();
+
   // Tells the HWND its client area has changed.
   virtual void SendFrameChanged();
 
