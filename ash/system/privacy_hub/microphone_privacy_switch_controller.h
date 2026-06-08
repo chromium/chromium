@@ -63,6 +63,9 @@ class ASH_EXPORT MicrophonePrivacySwitchController
   bool mic_mute_on_ = false;
   bool mic_muted_by_mute_switch_ = false;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  PrefService* prefs();
+  const PrefService* prefs() const;
 };
 
 }  // namespace ash

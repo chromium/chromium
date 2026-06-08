@@ -871,4 +871,39 @@ TEST_P(PrivacyHubMicrophoneControllerTest, NotificationUpdatedWhenAppClosed) {
   }
 }
 
+using PrivacyHubMicrophoneEarlyQueryTest = AshTestBase;
+
+// Tests that querying the microphone switch state early before the active user
+// pref service is registered does not crash, and successfully falls back to
+// retrieving the PrefService directly from the SessionController.
+TEST_F(PrivacyHubMicrophoneEarlyQueryTest,
+       QueryAllowedBeforeActiveUserPrefServiceChangedFallbackToDirectBlocked) {
+  PrefService* active_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  ASSERT_TRUE(active_prefs);
+
+  // Set the microphone preference to FALSE.
+  active_prefs->SetBoolean(prefs::kUserMicrophoneAllowed, false);
+
+  MicrophonePrivacySwitchController controller;
+
+  // It should safely read the false (blocked) value.
+  EXPECT_FALSE(controller.IsMicrophoneUsageAllowed());
+}
+
+TEST_F(PrivacyHubMicrophoneEarlyQueryTest,
+       QueryAllowedBeforeActiveUserPrefServiceChangedFallbackToDirectAllowed) {
+  PrefService* active_prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  ASSERT_TRUE(active_prefs);
+
+  // Set the microphone preference to TRUE.
+  active_prefs->SetBoolean(prefs::kUserMicrophoneAllowed, true);
+
+  MicrophonePrivacySwitchController controller;
+
+  // It should safely read the true (allowed) value.
+  EXPECT_TRUE(controller.IsMicrophoneUsageAllowed());
+}
+
 }  // namespace ash

@@ -104,8 +104,8 @@ class ASH_EXPORT CameraPrivacySwitchController
   // Sets the value of the user pref in the pref service.
   void SetUserSwitchPreference(CameraSWPrivacySwitchSetting value);
 
-  PrefService& prefs();
-  const PrefService& prefs() const;
+  PrefService* prefs();
+  const PrefService* prefs() const;
   void RestorePreviousPrefValueMaybe();
   void StorePreviousPrefValue();
 

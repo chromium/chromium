@@ -79,6 +79,7 @@ CameraPrivacySwitchController::~CameraPrivacySwitchController() {
 
 void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  CHECK(pref_service);
   // Subscribing again to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
@@ -97,7 +98,7 @@ void CameraPrivacySwitchController::OnActiveUserPrefServiceChanged(
 
   if (force_disable_camera_access_) {
     StorePreviousPrefValue();
-    prefs().SetBoolean(prefs::kUserCameraAllowed, false);
+    pref_service->SetBoolean(prefs::kUserCameraAllowed, false);
   } else {
     // It's possible we crashed while force disable camera access was enabled,
     // in which case we need to restore the previous pref value.
@@ -136,7 +137,13 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
 
   if (force_disable_camera_access_ &&
       GetUserSwitchPreference() != CameraSWPrivacySwitchSetting::kDisabled) {
-    prefs().SetBoolean(prefs::kUserCameraAllowed, false);
+    PrefService* const pref_service = prefs();
+    if (!pref_service) {
+      LOG(WARNING)
+          << "PrefService not available. Cannot force disable camera access.";
+    } else {
+      pref_service->SetBoolean(prefs::kUserCameraAllowed, false);
+    }
   }
 
   // This needs to be called after RemoveSoftwareSwitchNotification() as that
@@ -147,7 +154,13 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
 
 CameraSWPrivacySwitchSetting
 CameraPrivacySwitchController::GetUserSwitchPreference() const {
-  const bool allowed = prefs().GetBoolean(prefs::kUserCameraAllowed);
+  const PrefService* pref_service = prefs();
+  if (!pref_service) {
+    LOG(WARNING)
+        << "PrefService not available. Blocking camera access by default.";
+    return CameraSWPrivacySwitchSetting::kDisabled;
+  }
+  const bool allowed = pref_service->GetBoolean(prefs::kUserCameraAllowed);
 
   return allowed ? CameraSWPrivacySwitchSetting::kEnabled
                  : CameraSWPrivacySwitchSetting::kDisabled;
@@ -166,8 +179,14 @@ void CameraPrivacySwitchController::SetCameraSWPrivacySwitch(
 
 void CameraPrivacySwitchController::SetUserSwitchPreference(
     CameraSWPrivacySwitchSetting value) {
-  prefs().SetBoolean(prefs::kUserCameraAllowed,
-                     value == CameraSWPrivacySwitchSetting::kEnabled);
+  PrefService* const pref_service = prefs();
+  if (!pref_service) {
+    LOG(WARNING) << "PrefService not available. Cannot set camera user switch "
+                    "preference.";
+    return;
+  }
+  pref_service->SetBoolean(prefs::kUserCameraAllowed,
+                           value == CameraSWPrivacySwitchSetting::kEnabled);
 }
 
 void CameraPrivacySwitchController::SetFrontend(PrivacyHubDelegate* frontend) {
@@ -177,10 +196,14 @@ void CameraPrivacySwitchController::SetFrontend(PrivacyHubDelegate* frontend) {
 void CameraPrivacySwitchController::SetForceDisableCameraAccess(
     bool new_value) {
   force_disable_camera_access_ = new_value;
-  if (pref_change_registrar_) {
+  PrefService* const pref_service = prefs();
+  if (!pref_service) {
+    LOG(WARNING)
+        << "PrefService not available. Cannot set force disable camera access.";
+  } else {
     if (new_value) {
       StorePreviousPrefValue();
-      prefs().SetBoolean(prefs::kUserCameraAllowed, false);
+      pref_service->SetBoolean(prefs::kUserCameraAllowed, false);
     } else {
       RestorePreviousPrefValueMaybe();
     }
@@ -196,37 +219,59 @@ bool CameraPrivacySwitchController::IsCameraAccessForceDisabled() const {
 }
 
 void CameraPrivacySwitchController::StorePreviousPrefValue() {
-  if (prefs().HasPrefPath(prefs::kUserCameraAllowedPreviousValue)) {
+  PrefService* const pref_service = prefs();
+  if (!pref_service) {
+    LOG(WARNING) << "PrefService not available. Cannot store previous camera "
+                    "preference value.";
+    return;
+  }
+  if (pref_service->HasPrefPath(prefs::kUserCameraAllowedPreviousValue)) {
     // Do not overwrite previous stored value, otherwise force disabling
     // camera access twice in a row will not properly restore the previous
     // value.
     return;
   }
 
-  prefs().SetBoolean(prefs::kUserCameraAllowedPreviousValue,
-                     prefs().GetBoolean(prefs::kUserCameraAllowed));
+  pref_service->SetBoolean(prefs::kUserCameraAllowedPreviousValue,
+                           pref_service->GetBoolean(prefs::kUserCameraAllowed));
 }
 
 void CameraPrivacySwitchController::RestorePreviousPrefValueMaybe() {
+  PrefService* const pref_service = prefs();
+  if (!pref_service) {
+    LOG(WARNING) << "PrefService not available. Cannot restore previous camera "
+                    "preference value.";
+    return;
+  }
   // If a previous value was stored, restore it and then clear the stored
   // previous value so we do not keep restoring it.
-  if (prefs().HasPrefPath(prefs::kUserCameraAllowedPreviousValue)) {
-    prefs().SetBoolean(
+  if (pref_service->HasPrefPath(prefs::kUserCameraAllowedPreviousValue)) {
+    pref_service->SetBoolean(
         prefs::kUserCameraAllowed,
-        prefs().GetBoolean(prefs::kUserCameraAllowedPreviousValue));
+        pref_service->GetBoolean(prefs::kUserCameraAllowedPreviousValue));
 
-    prefs().ClearPref(prefs::kUserCameraAllowedPreviousValue);
+    pref_service->ClearPref(prefs::kUserCameraAllowedPreviousValue);
   }
 }
 
-PrefService& CameraPrivacySwitchController::prefs() {
-  CHECK(pref_change_registrar_);
-  return CHECK_DEREF(pref_change_registrar_->prefs());
+PrefService* CameraPrivacySwitchController::prefs() {
+  if (pref_change_registrar_) {
+    return pref_change_registrar_->prefs();
+  }
+  if (Shell::HasInstance() && Shell::Get()->session_controller()) {
+    return Shell::Get()->session_controller()->GetActivePrefService();
+  }
+  return nullptr;
 }
 
-const PrefService& CameraPrivacySwitchController::prefs() const {
-  CHECK(pref_change_registrar_);
-  return CHECK_DEREF(pref_change_registrar_->prefs());
+const PrefService* CameraPrivacySwitchController::prefs() const {
+  if (pref_change_registrar_) {
+    return pref_change_registrar_->prefs();
+  }
+  if (Shell::HasInstance() && Shell::Get()->session_controller()) {
+    return Shell::Get()->session_controller()->GetActivePrefService();
+  }
+  return nullptr;
 }
 
 // static
