@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.autofill.AutofillManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
@@ -72,6 +73,7 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class UrlBar extends AutocompleteEditText {
     private static final String TAG = "UrlBar";
+    private static final String ACCESSIBILITY_WARNING_FORMAT = "%s. %s";
     @VisibleForTesting static final float LINE_HEIGHT_FACTOR = 1.15f;
 
     private static final boolean DEBUG = false;
@@ -166,6 +168,12 @@ public class UrlBar extends AutocompleteEditText {
      * AccessibilityNodeInfo data to apply related form-fill data.
      */
     private @Nullable CharSequence mTextForAutofillServices;
+
+    /**
+     * An optional accessibility warning message that is appended to the UrlBar's content
+     * description when TalkBack is active (e.g., a warning for non-secure connections).
+     */
+    private @Nullable String mAccessibilityWarning;
 
     protected boolean mRequestingAutofillStructure;
 
@@ -754,6 +762,25 @@ public class UrlBar extends AutocompleteEditText {
     /** Set the text to report to Autofill services upon call to onProvideAutofillStructure. */
     public void setTextForAutofillServices(CharSequence text) {
         mTextForAutofillServices = text;
+    }
+
+    /** Sets the accessibility warning text to append to the TalkBack description. */
+    public void setAccessibilityWarning(@Nullable String warning) {
+        if (TextUtils.equals(mAccessibilityWarning, warning)) return;
+        mAccessibilityWarning = warning;
+        sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+    }
+
+    @Override
+    public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(info);
+        if (!TextUtils.isEmpty(mAccessibilityWarning)) {
+            CharSequence text = info.getText();
+            if (text != null) {
+                info.setText(
+                        String.format(ACCESSIBILITY_WARNING_FORMAT, text, mAccessibilityWarning));
+            }
+        }
     }
 
     @Override

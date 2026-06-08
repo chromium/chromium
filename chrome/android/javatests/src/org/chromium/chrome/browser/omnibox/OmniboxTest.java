@@ -568,6 +568,7 @@ public class OmniboxTest {
 
     @Test
     @SmallTest
+    @DisableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
     public void testClickStatusIcon_ShowsPageInfo() {
         mActivityTestRule.startOnBlankPage();
         String testUrl =

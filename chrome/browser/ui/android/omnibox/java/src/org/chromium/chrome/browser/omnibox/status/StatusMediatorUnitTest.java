@@ -407,6 +407,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
     public void testSetTooltipText() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
@@ -421,6 +422,19 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    public void testSetTooltipText_whenPageInfoMovedToAppMenu() {
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+
+        mMediator.setTooltipText(Resources.ID_NULL);
+        assertEquals(Resources.ID_NULL, mModel.get(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
     public void testSetBackground() {
         doReturn(PageClassification.NTP_VALUE)
                 .when(mLocationBarDataProvider)
@@ -429,6 +443,19 @@ public final class StatusMediatorUnitTest {
         mMediator.setBackground();
         // Assert that the non verbose drawable is always set when #setBackground is called.
         assertNotNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM})
+    public void testSetBackground_whenPageInfoMovedToAppMenu() {
+        doReturn(PageClassification.NTP_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mMediator.updateVerboseStatus(ConnectionSecurityLevel.WARNING, false, false);
+
+        mMediator.setBackground();
+        assertNull(mModel.get(StatusProperties.STATUS_VIEW_BACKGROUND));
     }
 
     @Test
@@ -705,6 +732,7 @@ public final class StatusMediatorUnitTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM)
     public void testStatusClickListener_showPageInfo() {
         mMediator.endInput();
         doReturn(true).when(mLocationBarDataProvider).hasTab();

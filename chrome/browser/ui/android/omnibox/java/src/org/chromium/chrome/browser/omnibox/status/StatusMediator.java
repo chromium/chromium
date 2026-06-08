@@ -603,8 +603,13 @@ public class StatusMediator
                 mIsSecurityViewShown = true;
                 iconRes = mSecurityIconRes;
                 tintRes = mSecurityIconTintRes;
-                toastRes = R.string.menu_page_info;
-                clickListener = this::onClickOpenPageInfo;
+                if (isPageInfoMovedToAppMenu()) {
+                    toastRes = Resources.ID_NULL;
+                    clickListener = null;
+                } else {
+                    toastRes = R.string.menu_page_info;
+                    clickListener = this::onClickOpenPageInfo;
+                }
             }
         }
 
@@ -727,6 +732,9 @@ public class StatusMediator
         }
 
         if (mUrlHasFocus && !mLocationBarDataProvider.isIncognitoBranded()) {
+            return 0;
+        }
+        if (isPageInfoMovedAndConnectionNotSecure()) {
             return 0;
         }
         return (mSecurityIconRes != 0) ? mSecurityIconDescriptionRes : 0;
@@ -941,7 +949,9 @@ public class StatusMediator
     private void applyStatusIconAndTooltipProperties(boolean verboseStatusTextVisible) {
         if (!isHubSearch()) {
             Drawable background;
-            if (mLocationBarDataProvider.isIncognitoBranded()) {
+            if (isPageInfoMovedAndConnectionNotSecure()) {
+                background = null;
+            } else if (mLocationBarDataProvider.isIncognitoBranded()) {
                 background =
                         verboseStatusTextVisible
                                 ? mVerboseStatusBackgroundIncognito
@@ -953,7 +963,11 @@ public class StatusMediator
                                 : mDefaultStatusBackground;
             }
             mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, background);
-            mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, R.string.accessibility_menu_info);
+            mModel.set(
+                    StatusProperties.STATUS_VIEW_TOOLTIP_TEXT,
+                    isPageInfoMovedToAppMenu()
+                            ? Resources.ID_NULL
+                            : R.string.accessibility_menu_info);
         } else {
             mModel.set(StatusProperties.STATUS_VIEW_TOOLTIP_TEXT, Resources.ID_NULL);
             mModel.set(StatusProperties.STATUS_VIEW_BACKGROUND, null);
@@ -1032,6 +1046,10 @@ public class StatusMediator
 
     private boolean isPageInfoMovedToAppMenu() {
         return BrowserUiUtils.isPageInfoMovedToAppMenu(mContext);
+    }
+
+    private boolean isPageInfoMovedAndConnectionNotSecure() {
+        return isPageInfoMovedToAppMenu() && mPageSecurityLevel != ConnectionSecurityLevel.SECURE;
     }
 
     @Nullable CookieControlsBridge getCookieControlsBridgeForTesting() {

@@ -105,6 +105,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarVariationUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordinator;
 import org.chromium.components.browser_ui.share.ShareHelper;
@@ -124,6 +125,7 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -424,6 +426,7 @@ class LocationBarMediator
         updateShouldAnimateIconChanges();
         updateButtonVisibility();
         updateSearchEngineStatusIconShownState();
+        updateUrlBarAccessibilityWarning();
     }
 
     @SuppressWarnings("NullAway")
@@ -474,6 +477,7 @@ class LocationBarMediator
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
         onPrimaryColorChanged();
+        updateUrlBarAccessibilityWarning();
 
         if (hasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
@@ -1021,6 +1025,23 @@ class LocationBarMediator
         if (mOmniboxChipManager != null) {
             updateOmniboxChipVisibility();
         }
+    }
+
+    private void updateUrlBarAccessibilityWarning() {
+        if (mUrlCoordinator == null) return;
+        String warning = null;
+        Tab tab = mLocationBarDataProvider.getTab();
+        boolean isNtp = tab != null && tab.getUrl() != null && UrlUtilities.isNtpUrl(tab.getUrl());
+        boolean shouldShowWarning =
+                BrowserUiUtils.isPageInfoMovedToAppMenu(mContext)
+                        && mLocationBarDataProvider.getSecurityLevel()
+                                != ConnectionSecurityLevel.SECURE
+                        && !isNtp
+                        && !mUrlHasFocus;
+        if (shouldShowWarning) {
+            warning = mContext.getString(R.string.page_info_not_secure_description);
+        }
+        mUrlCoordinator.setAccessibilityWarning(warning);
     }
 
     /**
@@ -2333,8 +2354,12 @@ class LocationBarMediator
     }
 
     // LocationBarData.Observer implementation.
-    // Using the default empty onSecurityStateChanged.
     // Using the default empty onTitleChanged.
+
+    @Override
+    public void onSecurityStateChanged() {
+        updateUrlBarAccessibilityWarning();
+    }
 
     @Override
     public void onIncognitoStateChanged() {

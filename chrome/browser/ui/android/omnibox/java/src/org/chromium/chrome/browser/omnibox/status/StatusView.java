@@ -512,6 +512,9 @@ public class StatusView extends LinearLayout {
         }
         mIconView.setContentDescription(description);
         setImportantForAccessibility(importantForAccessibility);
+        setFocusable(descriptionRes != 0);
+        setClickable(descriptionRes != 0);
+        setLongClickable(descriptionRes != 0);
     }
 
     /** Select color of Separator view. */

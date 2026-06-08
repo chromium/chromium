@@ -113,6 +113,10 @@ class UrlBarProperties {
         }
     }
 
+    /** String to append to the end of the URL bar text during talkback readout. */
+    public static final WritableObjectPropertyKey<String> ACCESSIBILITY_WARNING =
+            new WritableObjectPropertyKey<>();
+
     /** The callback for contextual action modes (cut, copy, etc...). */
     public static final WritableObjectPropertyKey<ActionMode.Callback> ACTION_MODE_CALLBACK =
             new WritableObjectPropertyKey<>();
@@ -210,6 +214,7 @@ class UrlBarProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ACCESSIBILITY_WARNING,
                 ACTION_MODE_CALLBACK,
                 ALLOW_FOCUS,
                 ALLOW_MULTILINE_INPUT,
