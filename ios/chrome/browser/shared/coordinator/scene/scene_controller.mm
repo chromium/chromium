@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_authentication_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_signout_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin/cross_device_signin_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -1508,6 +1509,14 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
                                           profile)
                           syncService:SyncServiceFactory::GetForProfile(profile)
                           prefService:prefService]];
+  }
+
+  if (base::FeatureList::IsEnabled(switches::kCrossDeviceSignin)) {
+    [sceneState
+        addAgent:[[CrossDeviceSigninSceneAgent alloc]
+                     initWithSceneURLLoadingService:_sceneURLLoadingService
+                                                        .get()
+                                       sceneHandler:sceneHandler]];
   }
 
   // Add Cobalt scene agent if the feature is enabled and the profile management

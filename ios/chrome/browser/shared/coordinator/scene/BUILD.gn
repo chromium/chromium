@@ -138,6 +138,8 @@ source_set("scene") {
     "//ios/chrome/browser/authentication/ui_bundled/signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin:features",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin",
     "//ios/chrome/browser/blocking_overlay/ui_bundled",
     "//ios/chrome/browser/browser_view/ui_bundled",
     "//ios/chrome/browser/browsing_data/model",

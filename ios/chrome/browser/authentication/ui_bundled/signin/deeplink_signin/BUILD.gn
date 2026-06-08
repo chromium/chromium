@@ -6,19 +6,30 @@ import("//build/config/chrome_build.gni")
 
 source_set("deeplink_signin") {
   sources = [
+    "cross_device_signin_scene_agent.h",
+    "cross_device_signin_scene_agent.mm",
+    "cross_device_signin_url_interceptor.h",
+    "cross_device_signin_url_interceptor.mm",
     "deeplink_signin_coordinator.h",
     "deeplink_signin_coordinator.mm",
   ]
   deps = [
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_deep_link",
+    "//components/signin/public/base:signin_switches",
     "//ios/chrome/browser/authentication/add_account_signin/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/url_loading/model",
   ]
 }

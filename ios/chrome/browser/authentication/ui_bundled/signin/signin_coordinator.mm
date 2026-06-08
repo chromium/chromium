@@ -156,6 +156,16 @@ using signin_metrics::PromoAction;
                                           showSnackbar:command.showSnackbar];
       break;
     }
+    case AuthenticationOperation::kDeepLinkSignin: {
+      signinCoordinator = [SigninCoordinator
+          deeplinkSigninCoordinatorWithBaseViewController:baseViewController
+                                                  browser:browser
+                                     selectedAccountEmail:
+                                         command.targetAccountEmail
+                        changeProfileContinuationProvider:
+                            command.changeProfileContinuationProvider];
+      break;
+    }
   }
   signinCoordinator.signinCompletion = command.completion;
   return signinCoordinator;
