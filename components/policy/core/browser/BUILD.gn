@@ -27,6 +27,7 @@ source_set("internal") {
     "configuration_policy_handler_list.h",
     "configuration_policy_pref_store.cc",
     "configuration_policy_pref_store.h",
+    "developer_tools_availability.h",
     "gen_ai_default_settings_policy_handler.cc",
     "gen_ai_default_settings_policy_handler.h",
     "policy_conversions.cc",
