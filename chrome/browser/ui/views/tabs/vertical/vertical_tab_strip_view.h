@@ -69,6 +69,10 @@ class VerticalTabStripView final : public views::View,
 
   void OnActiveTabChanged(const tabs::TabInterface* active_tab);
 
+  // Ensures that `view` is visible within its respective ScrollView.
+  // Can be called to follow keyboard navigation and focus changes.
+  void EnsureViewVisible(views::View* view);
+
   void RecordMousePressedInTab();
   bool IsFocusInTabStrip();
 

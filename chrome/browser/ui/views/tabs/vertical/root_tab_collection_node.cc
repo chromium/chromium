@@ -76,7 +76,7 @@ RootTabCollectionNode::RegisterOnChildRemovedCallback(
 
 base::CallbackListSubscription
 RootTabCollectionNode::RegisterOnChildMovedCallback(
-    base::RepeatingClosure callback) {
+    ChildMovedCallback callback) {
   return on_child_moved_callback_list_.Add(std::move(callback));
 }
 
@@ -157,7 +157,8 @@ void RootTabCollectionNode::OnChildMoved(
                                  dst_parent_node);
   }
 
-  on_child_moved_callback_list_.Notify();
+  TabCollectionNode* final_moved_node = GetNodeForHandle(moved_node_handle);
+  on_child_moved_callback_list_.Notify(final_moved_node);
 }
 
 void RootTabCollectionNode::OnTabStripModelChanged(

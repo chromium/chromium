@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
@@ -1065,8 +1066,30 @@ void VerticalTabStripRegionView::OnChildrenRemoved() {
   hover_tab_selector_->CancelTabTransition();
 }
 
-void VerticalTabStripRegionView::OnChildMoved() {
+void VerticalTabStripRegionView::OnChildMoved(TabCollectionNode* moved_node) {
   hover_tab_selector_->CancelTabTransition();
+  if (drag_handler_ && drag_handler_->IsDragging()) {
+    return;
+  }
+  CHECK(moved_node);
+  CHECK(tab_strip_view_);
+
+  switch (moved_node->type()) {
+    case TabCollectionNode::Type::TAB:
+    case TabCollectionNode::Type::SPLIT:
+    case TabCollectionNode::Type::GROUP: {
+      if (views::View* view = moved_node->view()) {
+        tab_strip_view_->EnsureViewVisible(view);
+      }
+      break;
+    }
+    case TabCollectionNode::Type::TABSTRIP:
+    case TabCollectionNode::Type::PINNED:
+    case TabCollectionNode::Type::UNPINNED:
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 void VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged(bool enabled) {

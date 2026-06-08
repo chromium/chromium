@@ -259,7 +259,7 @@ class VerticalTabStripRegionView final
   void RecordNewTabButtonPressed();
   void OnChildrenAdded();
   void OnChildrenRemoved();
-  void OnChildMoved();
+  void OnChildMoved(TabCollectionNode* moved_node);
 
   void OnExpandOnHoverEnabledChanged(bool enabled);
   void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);

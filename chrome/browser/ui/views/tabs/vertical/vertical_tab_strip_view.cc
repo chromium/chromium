@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
@@ -324,24 +325,30 @@ void VerticalTabStripView::OnActiveTabChanged(
     TabCollectionNode* activated_node =
         collection_node_->GetNodeForHandle(active_tab->GetHandle());
     CHECK(activated_node);
-    views::View* const activated_node_view = activated_node->view();
-    activated_view_tracker_->SetView(activated_node_view);
-
-    // Views must either be in the pinned or unpinned view trees.
-    DCHECK_NE(pinned_tabs_container_view_->Contains(activated_node_view),
-              unpinned_tabs_container_view_->Contains(activated_node_view));
-
-    views::ScrollView* const target_scroll_view =
-        pinned_tabs_container_view_->Contains(activated_node_view)
-            ? pinned_tabs_scroll_view_
-            : unpinned_tabs_scroll_view_;
-
-    // Wait for the next successful layout before attempting to handle moving
-    // the activated view into the scroll view viewport.
-    target_scroll_view->RegisterPostLayoutCallback(base::BindRepeating(
-        &VerticalTabStripView::EnsureVisibleInViewportPostActivationAndLayout,
-        base::Unretained(this)));
+    EnsureViewVisible(activated_node->view());
   }
+}
+
+void VerticalTabStripView::EnsureViewVisible(views::View* view) {
+  if (!view || !Contains(view)) {
+    return;
+  }
+
+  activated_view_tracker_->SetView(view);
+
+  // Views must either be in the pinned or unpinned view trees.
+  DCHECK_NE(pinned_tabs_container_view_->Contains(view),
+            unpinned_tabs_container_view_->Contains(view));
+
+  views::ScrollView* const target_scroll_view =
+      pinned_tabs_container_view_->Contains(view) ? pinned_tabs_scroll_view_
+                                                  : unpinned_tabs_scroll_view_;
+
+  // Wait for the next successful layout before attempting to handle moving
+  // the activated view into the scroll view viewport.
+  target_scroll_view->RegisterPostLayoutCallback(base::BindRepeating(
+      &VerticalTabStripView::EnsureVisibleInViewportPostActivationAndLayout,
+      base::Unretained(this)));
 }
 
 void VerticalTabStripView::RecordMousePressedInTab() {
@@ -519,8 +526,8 @@ void VerticalTabStripView::EnsureVisibleInViewportPostActivationAndLayout(
 
   // Proceed up the hierarchy until the content view is reached, iteratively
   // adjusting target view bounds.
-  for (views::View* v = activated_view->parent(); v != scroll_view->contents();
-       v = v->parent()) {
+  for (views::View* v = activated_view->parent();
+       v && v != scroll_view->contents(); v = v->parent()) {
     activated_view_bounds =
         views::View::ConvertRectToTarget(v, v->parent(), activated_view_bounds);
   }
