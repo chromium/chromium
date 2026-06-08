@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #endif
 
 namespace feed {
@@ -146,8 +147,9 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(capability);
   }
 
-  for (auto capability : GetFeedConfig().experimental_capabilities)
+  for (auto capability : GetFeedConfig().experimental_capabilities) {
     feed_request.add_client_capability(capability);
+  }
 
   feed_request.add_client_capability(Capability::READ_LATER);
   // TODO(crbug.com/407797637): remove OPEN_WEB_FEED_COMMAND from
@@ -170,6 +172,14 @@ feedwire::Request CreateFeedQueryRequest(
   if (base::FeatureList::IsEnabled(kFeedStreaming)) {
     feed_request.add_client_capability(Capability::STREAMING_FULL);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::device_info::is_foldable() &&
+      base::FeatureList::IsEnabled(kWideScreenFeedForFoldables)) {
+    feed_request.add_client_capability(
+        Capability::WIDE_SCREEN_SINGLE_COLUMN_FEED);
+  }
+#endif
 
   switch (request_metadata.tab_group_enabled_state) {
     case TabGroupEnabledState::kNone:
@@ -299,14 +309,18 @@ bool CompareContentId(const feedwire::ContentId& a,
 bool CompareContent(const feedstore::Content& a, const feedstore::Content& b) {
   const ContentId& a_id = a.content_id();
   const ContentId& b_id = b.content_id();
-  if (a_id.id() < b_id.id())
+  if (a_id.id() < b_id.id()) {
     return true;
-  if (a_id.id() > b_id.id())
+  }
+  if (a_id.id() > b_id.id()) {
     return false;
-  if (a_id.type() < b_id.type())
+  }
+  if (a_id.type() < b_id.type()) {
     return true;
-  if (a_id.type() > b_id.type())
+  }
+  if (a_id.type() > b_id.type()) {
     return false;
+  }
   return a.frame() < b.frame();
 }
 

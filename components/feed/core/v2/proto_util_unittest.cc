@@ -22,6 +22,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace feed {
 namespace {
 
@@ -100,6 +104,63 @@ TEST(ProtoUtilTest, SyncRestringEnabled) {
 
   ASSERT_THAT(request.client_capability(),
               Contains(feedwire::Capability::SYNC_STRING_REMOVAL));
+}
+
+TEST(ProtoUtilTest, WideScreenSingleColumnFeedEnabledForFoldable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kWideScreenFeedForFoldables);
+  base::android::device_info::set_is_foldable_for_testing(true);
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string(),
+                                    /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(request.client_capability(),
+              Contains(feedwire::Capability::WIDE_SCREEN_SINGLE_COLUMN_FEED));
+
+  base::android::device_info::set_is_foldable_for_testing(false);
+}
+
+TEST(ProtoUtilTest, WideScreenSingleColumnFeedDisabledForNonFoldable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kWideScreenFeedForFoldables);
+  base::android::device_info::set_is_foldable_for_testing(false);
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string(),
+                                    /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(
+      request.client_capability(),
+      Not(Contains(feedwire::Capability::WIDE_SCREEN_SINGLE_COLUMN_FEED)));
+}
+
+TEST(ProtoUtilTest, WideScreenSingleColumnFeedDisabledWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kWideScreenFeedForFoldables);
+  base::android::device_info::set_is_foldable_for_testing(true);
+
+  feedwire::FeedRequest request =
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    /*request_metadata=*/{},
+                                    /*consistency_token=*/std::string(),
+                                    /*doc_view_counts=*/{})
+          .feed_request();
+
+  ASSERT_THAT(
+      request.client_capability(),
+      Not(Contains(feedwire::Capability::WIDE_SCREEN_SINGLE_COLUMN_FEED)));
+
+  base::android::device_info::set_is_foldable_for_testing(false);
 }
 #endif
 
@@ -186,7 +247,6 @@ TEST(ProtoUtilTest, InfoCardTrackingStates) {
                                       .chrome_fulfillment_info()
                                       .info_card_tracking_state(1)));
 }
-
 
 // ReadLater is enabled by default everywhere with the exception of iOS which
 // has a build-flag to enable it.
