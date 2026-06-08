@@ -143,7 +143,6 @@ trigger one child builder for each of those platforms. For example, the
 [Mac Builder](https://ci.chromium.org/ui/p/chromium/builders/ci/Mac%20Builder)
 compiles one set of binaries, and hands these off to multiple child builders
 for testing, one for each Mac version:
-[Mac12 Tests](https://ci.chromium.org/ui/p/chromium/builders/ci/Mac12%20Tests),
 [Mac13 Tests](https://ci.chromium.org/ui/p/chromium/builders/ci/Mac13%20Tests),
 and
 [mac14-tests](https://ci.chromium.org/ui/p/chromium/builders/ci/mac14-tests).

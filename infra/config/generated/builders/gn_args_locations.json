@@ -934,8 +934,6 @@
     "mac-ubsan-fyi-rel": "try/mac-ubsan-fyi-rel/gn-args.json",
     "mac-vm": "try/mac-vm/gn-args.json",
     "mac-x64-compile-dbg": "try/mac-x64-compile-dbg/gn-args.json",
-    "mac12-arm64-rel": "try/mac12-arm64-rel/gn-args.json",
-    "mac12-tests": "try/mac12-tests/gn-args.json",
     "mac13-arm64-rel": "try/mac13-arm64-rel/gn-args.json",
     "mac13-tests": "try/mac13-tests/gn-args.json",
     "mac14-arm64-rel": "try/mac14-arm64-rel/gn-args.json",

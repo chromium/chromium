@@ -231,7 +231,7 @@ polymorphic.launcher(
                 free_space = free_space.standard,
             ),
             testers = [
-                "ci/Mac12 Tests",
+                "ci/Mac13 Tests",
             ],
         ),
     ],

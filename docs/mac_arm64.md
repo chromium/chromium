@@ -13,10 +13,6 @@ bot](https://ci.chromium.org/p/chromium/builders/ci/mac-arm64-on-arm64-rel)
 that builds for Arm on an Arm bot as well. This bot does not have Rosetta
 installed.
 
-There's also a [tester
-bot](https://ci.chromium.org/p/chromium/builders/ci/mac12-arm64-rel-tests)
-that continuously runs tests. The tester bots don't have Rosetta installed.
-
 ## Building _for_ Arm Macs
 
 If you are on an Intel Mac, all that's required to build Chromium for arm64

@@ -4553,27 +4553,6 @@
           }
         ]
       },
-      "Mac12 Tests": {
-        "contact_team_email": "bling-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "Mac13 Tests": {
         "contact_team_email": "bling-engprod@google.com",
         "problem_specs": [
@@ -12064,27 +12043,6 @@
       },
       "mac12-arm64-enterprise-companion-tester-rel": {
         "contact_team_email": "omaha-client-dev@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "mac12-arm64-rel-tests": {
-        "contact_team_email": "bling-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",

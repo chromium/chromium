@@ -1,6 +1,5 @@
 ci/Mac Builder
 ci/Mac Builder (dbg)
-ci/Mac12 Tests
 ci/Mac13 Tests
 ci/ios-vm
 ci/ios26-sdk-device
@@ -11,7 +10,6 @@ ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
 ci/mac-vm
-ci/mac12-arm64-rel-tests
 ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
 ci/mac14-tests
