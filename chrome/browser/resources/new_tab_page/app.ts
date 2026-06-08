@@ -353,6 +353,7 @@ export class AppElement extends AppElementBase {
 
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
+      isAndroid_: {type: Boolean},
     };
   }
 
@@ -458,6 +459,8 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
+  protected accessor isAndroid_: boolean =
+      loadTimeData.getBoolean('isAndroid');
   protected realboxContextMenuAnimationCappingEnabled_: boolean =
       loadTimeData.getBoolean('realboxContextMenuAnimationCappingEnabled');
   private accessor selectedCustomizeDialogPage_: string|null = null;
@@ -882,6 +885,9 @@ export class AppElement extends AppElementBase {
   }
 
   private maybeRegisterCustomizeButtonHelpBubble_(): boolean {
+    if (this.isAndroid_) {
+      return false;
+    }
     if (!this.isFooterVisible_) {
       this.registerHelpBubble(
           CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,

@@ -187,17 +187,19 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           ${this.backgroundImageAttribution2_}
         </div>
       </a>
-      <ntp-customize-buttons id="customizeButtons"
-          ?modules-shown-to-user="${this.modulesShownToUser}"
-          ?show-background-image="${this.showBackgroundImage_}"
-          ?show-customize="${this.showCustomize_}"
-          ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
-          ?show-wallpaper-search="${this.showWallpaperSearch_}"
-          ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
-          ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
-          @customize-click="${this.onCustomizeClick_}"
-          @wallpaper-search-click="${this.onWallpaperSearchClick_}" show-shadow>
-      </ntp-customize-buttons>
+      ${!this.isAndroid_ ? html`
+        <ntp-customize-buttons id="customizeButtons"
+            ?modules-shown-to-user="${this.modulesShownToUser}"
+            ?show-background-image="${this.showBackgroundImage_}"
+            ?show-customize="${this.showCustomize_}"
+            ?show-customize-chrome-text="${this.showCustomizeChromeText_}"
+            ?show-wallpaper-search="${this.showWallpaperSearch_}"
+            ?show-wallpaper-search-button="${this.showWallpaperSearchButton_}"
+            ?wallpaper-search-button-animation-enabled="${this.wallpaperSearchButtonAnimationEnabled_}"
+            @customize-click="${this.onCustomizeClick_}"
+            @wallpaper-search-click="${this.onWallpaperSearchClick_}" show-shadow>
+        </ntp-customize-buttons>
+      ` : ''}
     ` : ''}
     ${this.showThemeAttribution_() ? html`
       <div id="themeAttribution">
