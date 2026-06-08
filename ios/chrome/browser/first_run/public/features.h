@@ -103,6 +103,9 @@ bool IsAnimatedDefaultBrowserPromoInFREEnabled();
 AnimatedDefaultBrowserPromoInFREExperimentType
 AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled();
 
+// Returns whether the Default Browser Promo should be skipped in the FRE.
+bool IsSkipDefaultBrowserPromoInFirstRunEnabled(bool is_in_eea_country);
+
 }  // namespace first_run
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_PUBLIC_FEATURES_H_

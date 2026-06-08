@@ -81,4 +81,9 @@ AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() {
       kAnimatedDefaultBrowserPromoInFREExperimentTypeFeature.Get());
 }
 
+bool IsSkipDefaultBrowserPromoInFirstRunEnabled(bool is_in_eea_country) {
+  return is_in_eea_country &&
+         base::FeatureList::IsEnabled(kSkipDefaultBrowserPromoInFirstRun);
+}
+
 }  // namespace first_run

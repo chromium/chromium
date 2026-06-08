@@ -123,4 +123,54 @@ TEST_F(FirstRunScreenProviderTest, KeepUpdatedSequenceWhenNotChoiceEligible) {
   EXPECT_EQ(screens.front(), kDefaultBrowserPromo);
 }
 
+// Tests that the Default Browser Promo is kept when the sign-in screen is
+// removed.
+TEST_F(FirstRunScreenProviderTest, DBPromoKeptWhenSignInRemoved) {
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{first_run::kSkipDefaultBrowserPromoInFirstRun, {}},
+                            {first_run::kUpdatedFirstRunSequence,
+                             {{"updated-first-run-sequence-param",
+                               "2"}}}},  // kRemoveSignInSync
+      /*disabled_features=*/{});
+
+  // Create a profile in the EEA (where DB promo is usually skipped).
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("BE");
+
+  // Get the screen sequence from the provider.
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  // Assert that kSignIn is NOT included (because there are no identities).
+  EXPECT_FALSE(std::ranges::contains(screens, kSignIn));
+
+  // Assert that kDefaultBrowserPromo IS included because kSignIn was removed.
+  EXPECT_TRUE(std::ranges::contains(screens, kDefaultBrowserPromo));
+}
+
+// Tests that the Default Browser Promo is removed when the sign-in screen is
+// present.
+TEST_F(FirstRunScreenProviderTest, DBPromoRemovedWhenSignInPresent) {
+  feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{first_run::kSkipDefaultBrowserPromoInFirstRun, {}},
+                            {first_run::kUpdatedFirstRunSequence,
+                             {{"updated-first-run-sequence-param",
+                               "1"}}}},  // kDBPromoFirst
+      /*disabled_features=*/{});
+
+  // Create a profile in the EEA (where DB promo is usually skipped).
+  std::unique_ptr<TestProfileIOS> profile = CreateProfile("BE");
+
+  // Get the screen sequence from the provider.
+  FirstRunScreenProvider* provider =
+      [[FirstRunScreenProvider alloc] initForProfile:profile.get()];
+  std::vector<ScreenType> screens = GetScreensSequence(provider);
+
+  // Assert that kSignIn IS included.
+  EXPECT_TRUE(std::ranges::contains(screens, kSignIn));
+
+  // Assert that kDefaultBrowserPromo is NOT included (skipped).
+  EXPECT_FALSE(std::ranges::contains(screens, kDefaultBrowserPromo));
+}
+
 }  // namespace
