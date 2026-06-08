@@ -454,6 +454,12 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
                << " due to Google groups membership checks.";
       return false;
     }
+
+    if (!CheckStudyEnterpriseGroup(study.filter(), client_state)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to enterprise groups membership checks.";
+      return false;
+    }
   }
 
   DVLOG(1) << "Kept study " << study.name() << ".";

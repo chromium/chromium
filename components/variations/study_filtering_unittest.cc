@@ -1028,6 +1028,39 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBlankStudyName) {
   histogram_tester.ExpectUniqueSample("Variations.InvalidStudyReason", 8, 1);
 }
 
+TEST(VariationsStudyFilteringTest,
+     FilterAndValidateStudiesWithEnterpriseGroups) {
+  VariationsSeed seed;
+  Study* study1 = seed.add_study();
+  study1->set_name("enterprise_study");
+  study1->set_default_experiment_name("First");
+  AddExperiment("First", 100, study1);
+  study1->mutable_filter()->add_platform(Study::PLATFORM_ANDROID);
+  study1->mutable_filter()->add_enterprise_group("a");
+
+  Study* study2 = seed.add_study();
+  study2->set_name("non_enterprise_study");
+  study2->set_default_experiment_name("Second");
+  AddExperiment("Second", 100, study2);
+  study2->mutable_filter()->add_platform(Study::PLATFORM_ANDROID);
+  study2->mutable_filter()->add_exclude_enterprise_group("a");
+
+  auto client_state = ClientFilterableStateForEnterpriseGroups(
+      base::flat_set<std::string>({"a"}));
+  client_state->locale = "en-CA";
+  client_state->reference_date = base::Time::Now();
+  client_state->version = base::Version("20.0.0.0");
+  client_state->channel = Study::STABLE;
+  client_state->form_factor = Study::DESKTOP;
+  client_state->platform = Study::PLATFORM_ANDROID;
+
+  std::vector<ProcessedStudy> processed_studies =
+      FilterAndValidateStudies(seed, *client_state, VariationsLayers());
+
+  ASSERT_THAT(processed_studies, testing::SizeIs(1));
+  EXPECT_EQ(processed_studies[0].study()->name(), "enterprise_study");
+}
+
 TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
   const char kSessionCountry[] = "ca";
   const char kPermanentCountry[] = "us";
