@@ -72,7 +72,7 @@ source_set("unit_tests") {
 
   sources = [
     "touch_to_fill_delegate_android_impl_unittest.cc",
-    "touch_to_fill_payment_method_controller_unittest.cc",
+    "touch_to_fill_payment_method_controller_impl_unittest.cc",
     "touch_to_fill_payment_method_quality_metrics_unittest.cc",
   ]
 
