@@ -84,6 +84,10 @@ class InputStateModel {
   // Returns the current state.
   const InputState& GetInputState() const;
 
+  contextual_search::ContextualSearchSessionHandle* session_handle() const {
+    return session_handle_.get();
+  }
+
   // Methods for testing.
   void set_state_for_testing(const InputState& state) { state_ = state; }
   const InputState& get_state_for_testing() { return state_; }
@@ -132,6 +136,7 @@ class InputStateModel {
   raw_ptr<const PrefService> pref_service_ = nullptr;
   const bool is_off_the_record_;
   const bool browser_identity_matches_aim_identity_;
+  GURL current_url_;
 
   // Stores tools that are permanently disabled by an external trigger and must
   // persist through state updates. Persists after Initialize() is called.

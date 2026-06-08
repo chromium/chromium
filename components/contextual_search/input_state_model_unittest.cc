@@ -327,6 +327,44 @@ TEST_F(InputStateModelTest, UpdateToolFromUrl) {
   EXPECT_TRUE(state_model->get_state_for_testing().is_canvas_query_submitted);
 }
 
+TEST_F(InputStateModelTest, UpdateToolFromUrl_ThreadChangedResetsTool) {
+  omnibox::SearchboxConfig config;
+
+  auto* canvas_config = config.add_tool_configs();
+  canvas_config->set_tool(omnibox::ToolMode::TOOL_MODE_CANVAS);
+  auto* canvas_param = canvas_config->add_aim_url_params();
+  canvas_param->set_param_key("rc");
+  canvas_param->set_param_value("1");
+
+  // Start with Canvas thread (thread ID 123).
+  GURL canvas_url("https://example.com/?rc=1&mtid=123");
+  auto state_model = std::make_unique<InputStateModel>(
+      session_handle_, config, canvas_url, /*is_off_the_record=*/false,
+      /*browser_identity_matches_aim_identity=*/false);
+
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_TRUE(state_model->get_state_for_testing().is_canvas_query_submitted);
+
+  // Soft navigate within the SAME thread (thread ID 123) to unrelated URL.
+  GURL other_url_same_thread("https://example.com/?other=1&mtid=123");
+  state_model->UpdateStateFromUrl(other_url_same_thread);
+
+  // Assert: Tool is preserved because thread is the same.
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_TRUE(state_model->get_state_for_testing().is_canvas_query_submitted);
+
+  // Switch to a DIFFERENT thread (thread ID 456) with no tool parameters.
+  GURL normal_url_new_thread("https://example.com/?mtid=456");
+  state_model->UpdateStateFromUrl(normal_url_new_thread);
+
+  // Assert: Tool is reset because thread changed.
+  EXPECT_EQ(state_model->get_state_for_testing().active_tool,
+            omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+  EXPECT_FALSE(state_model->get_state_for_testing().is_canvas_query_submitted);
+}
+
 TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
   omnibox::SearchboxConfig config;
 

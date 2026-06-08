@@ -30,7 +30,12 @@ base::WeakPtr<contextual_search::InputStateModel>
 ContextualTasksWebContentsUserData::GetOrCreateInputStateModel(
     contextual_search::ContextualSearchSessionHandle& session_handle) {
   if (input_state_model_) {
-    return input_state_model_->AsWeakPtr();
+    if (input_state_model_->session_handle() == &session_handle) {
+      return input_state_model_->AsWeakPtr();
+    }
+    // The session handle changed (e.g. task switched). Destroy the old model
+    // to start fresh and avoid using a stale session handle.
+    input_state_model_.reset();
   }
 
   content::WebContents* web_contents = &GetWebContents();
