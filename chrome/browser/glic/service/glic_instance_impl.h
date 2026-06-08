@@ -76,7 +76,7 @@ class GlicInstanceImpl : public GlicInstance,
   class InstanceCoordinatorDelegate {
    public:
     virtual ~InstanceCoordinatorDelegate() = default;
-    virtual void RemoveInstance(GlicInstanceImpl* instance) = 0;
+    virtual void RemoveInstance(InstanceId id) = 0;
     // Called by an instance when its visibility state changes.
     virtual void OnInstanceVisibilityChanged(GlicInstanceImpl* instance,
                                              bool is_showing) = 0;
@@ -340,6 +340,15 @@ class GlicInstanceImpl : public GlicInstance,
 
   void MaybeActivateForegroundEmbedder();
   void MaybeRemoveBlankInstanceOnClose();
+
+  // Checks if the instance is ready to be removed (i.e. it has no embedders
+  // and no remaining pinned tabs). If so, posts a task to the
+  // coordinator delegate to destroy this instance asynchronously.
+  void MaybeRemoveInstance();
+  // Executes the asynchronous removal of this instance. Should not be called
+  // directly; call MaybeRemoveInstance() instead.
+  void ExecuteRemoveInstance();
+  bool CanBeRemoved();
   EmbedderEntry& BindTab(tabs::TabInterface* tab,
                          GlicPinTrigger pin_trigger,
                          bool pin_on_bind);

@@ -246,7 +246,7 @@ class GlicInstanceCoordinatorImpl
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
   void ApplyMaxAwakeInstancesLimit();
 
-  void RemoveInstance(GlicInstanceImpl* instance) override;
+  void RemoveInstance(InstanceId id) override;
 
   void NotifyActiveInstanceChanged();
   void ComputeContentAccessIndicator();

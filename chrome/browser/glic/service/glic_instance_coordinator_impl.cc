@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -410,7 +411,7 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
 
 void GlicInstanceCoordinatorImpl::RemoveAllInstances() {
   while (!instances_.empty()) {
-    RemoveInstance(instances_.begin()->second.get());
+    RemoveInstance(instances_.begin()->first);
   }
 }
 
@@ -556,7 +557,7 @@ void GlicInstanceCoordinatorImpl::ArchiveInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
   for (auto& [id, instance] : instances_) {
     if (instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
-      RemoveInstance(instance.get());
+      RemoveInstance(id);
       return;
     }
   }
@@ -842,23 +843,18 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   instance->Toggle(std::move(options), prevent_close, source);
 }
 
-void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
-  auto it = instances_.find(instance->id());
+void GlicInstanceCoordinatorImpl::RemoveInstance(InstanceId id) {
+  auto it = instances_.find(id);
   if (it == instances_.end()) {
     // This instance has already been removed, so there's no work to do.
     return;
   }
-  // If an entry exists for this ID, it must be the specific instance we are
-  // removing. We prohibit overwriting instances in the map, so a mismatch
-  // would indicate a logic bug or state corruption (e.g., during restoration).
-  CHECK_EQ(it->second.get(), instance);
-
+  GlicInstanceImpl* instance = it->second.get();
   OnInstanceActivationChanged(instance, false);
 
   // Remove the instance first, and then delete. This way,
   // instances_ will not include the instance being deleted while
   // it's being deleted.
-  InstanceId id = instance->id();
   instance->CloseInstanceAndShutdown();
   if (instance == last_active_instance_) {
     last_active_instance_ = nullptr;
@@ -996,7 +992,6 @@ GlicInstanceCoordinatorImpl::GetSortedRecentInstances(size_t limit) const {
 void GlicInstanceCoordinatorImpl::UnbindTabFromAnyInstance(
     tabs::TabInterface* tab) {
   if (auto* instance = GetInstanceImplForTab(tab)) {
-    // `instance` may be deleted after this call.
     instance->UnbindEmbedder(EmbedderKey(tab));
   }
 }
