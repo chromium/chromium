@@ -59,6 +59,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
+import org.chromium.ui.util.StyleUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
@@ -293,7 +294,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             keyboardFocusHandler,
                             R.drawable.btn_tab_close_normal,
                             Resources.ID_NULL,
-                            GLIC_DISMISS_BUTTON_CLICK_SLOP_DP,
+                            /* clickSlopDp= */ 0.f,
                             /* hasLongClickAction= */ false);
 
             mGlicDismissNudgeButton.setDrawY(GLIC_DISMISS_BUTTON_Y_OFFSET_DP);
@@ -1056,7 +1057,25 @@ public class StripLayoutTrailingButtonsCoordinator {
                 -GLIC_BUTTON_VERTICAL_SLOP_DP + mTopPadding,
                 -GLIC_BUTTON_END_SLOP_DP,
                 -GLIC_BUTTON_VERTICAL_SLOP_DP - mTopPadding);
-        mGlicDismissNudgeButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
+
+        if (StyleUtils.shouldApplyDesktopDensity()) {
+            mGlicDismissNudgeButton.setTouchTargetInsets(
+                    -GLIC_DISMISS_BUTTON_CLICK_SLOP_DP,
+                    -GLIC_DISMISS_BUTTON_CLICK_SLOP_DP + mTopPadding,
+                    -GLIC_DISMISS_BUTTON_CLICK_SLOP_DP,
+                    -GLIC_DISMISS_BUTTON_CLICK_SLOP_DP - mTopPadding);
+        } else {
+            float endInset = GLIC_BUTTON_END_SLOP_DP + GLIC_BUTTON_SHORTENED_END_PADDING_DP;
+            float startInset =
+                    StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE
+                            - GLIC_DISMISS_ICON_WIDTH_DP
+                            - endInset;
+            mGlicDismissNudgeButton.setTouchTargetInsets(
+                    -startInset,
+                    -GLIC_DISMISS_BUTTON_CLICK_SLOP_DP + mTopPadding,
+                    -endInset,
+                    -GLIC_DISMISS_BUTTON_CLICK_SLOP_DP - mTopPadding);
+        }
     }
 
     /**
