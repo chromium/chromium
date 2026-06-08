@@ -1009,7 +1009,7 @@ std::string Database::CollectCorruptionInfo() {
   // turn up actionable information.
   const base::FilePath db_path = DbPath();
   std::optional<int64_t> db_size = base::GetFileSize(db_path);
-  if (db_size && *db_size < 0) {
+  if (!db_size.has_value() || *db_size < 0) {
     return std::string();
   }
 

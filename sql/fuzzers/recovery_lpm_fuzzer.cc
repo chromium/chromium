@@ -289,7 +289,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   // Mutate the backing file. Skip the expensive file operations when there are
   // no bytes to mutate.
   std::optional<int64_t> file_length = base::GetFileSize(env.db_path());
-  if (*file_length > 0) {
+  if (file_length.has_value() && *file_length > 0) {
     base::File file(env.db_path(), base::File::FLAG_OPEN |
                                        base::File::FLAG_READ |
                                        base::File::FLAG_WRITE);
