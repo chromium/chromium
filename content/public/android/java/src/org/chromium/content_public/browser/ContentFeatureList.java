@@ -185,13 +185,13 @@ public class ContentFeatureList {
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(),
                     ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING,
-                    true);
+                    false);
 
     public static final MutableIntParamWithSafeDefault sAndroidDesktopZoomScalingFactor =
-            sAndroidDesktopZoomScaling.newIntParam("desktop-zoom-scaling-factor", 109);
+            sAndroidDesktopZoomScaling.newIntParam("desktop-zoom-scaling-factor", 100);
 
     public static final MutableIntParamWithSafeDefault sAndroidMonitorZoomScalingFactor =
-            sAndroidDesktopZoomScaling.newIntParam("monitor-zoom-scaling-factor", 120);
+            sAndroidDesktopZoomScaling.newIntParam("monitor-zoom-scaling-factor", 100);
 
     public static final CachedFlag sSandboxedProcessServiceLimitOnAndroid =
             new CachedFlag(

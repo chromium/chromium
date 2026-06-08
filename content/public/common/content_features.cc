@@ -1414,11 +1414,11 @@ BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
 
 // Enables the ability to specify a platform-specific zoom scaling that will
 // apply transparently to all pages.
-BASE_FEATURE(kAndroidDesktopZoomScaling, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidDesktopZoomScaling, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAndroidDesktopZoomScalingFactor{
-    &kAndroidDesktopZoomScaling, "desktop-zoom-scaling-factor", 109};
+    &kAndroidDesktopZoomScaling, "desktop-zoom-scaling-factor", 100};
 const base::FeatureParam<int> kAndroidMonitorZoomScalingFactor{
-    &kAndroidDesktopZoomScaling, "monitor-zoom-scaling-factor", 120};
+    &kAndroidDesktopZoomScaling, "monitor-zoom-scaling-factor", 100};
 
 // Implementation of the DisplayCursor API in RenderWidgetHostViewInput on
 // Android.
