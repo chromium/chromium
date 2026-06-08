@@ -295,6 +295,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                       base::Time end_time,
                       mojom::ClearDataFilterPtr filter,
                       ClearHttpCacheCallback callback) override;
+  void ClearHttpCacheLogically(
+      base::Time start_time,
+      base::Time end_time,
+      mojom::ClearDataFilterPtr filter,
+      ClearHttpCacheLogicallyCallback callback) override;
   void ComputeHttpCacheSize(base::Time start_time,
                             base::Time end_time,
                             ComputeHttpCacheSizeCallback callback) override;
@@ -798,9 +803,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       net::handles::NetworkHandle bound_network);
   scoped_refptr<SessionCleanupCookieStore> MakeSessionCleanupCookieStore()
       const;
+  enum class ClearHttpCacheMode {
+    kPhysical = 0,
+    kLogical = 1,
+    kMaxValue = kLogical,
+  };
+
+  void ClearHttpCacheInternal(base::Time start_time,
+                              base::Time end_time,
+                              mojom::ClearDataFilterPtr filter,
+                              ClearHttpCacheMode mode,
+                              base::OnceClosure callback);
 
   // Invoked when the HTTP cache was cleared. Invokes |callback|.
-  void OnHttpCacheCleared(ClearHttpCacheCallback callback,
+  void OnHttpCacheCleared(base::OnceClosure callback,
                           HttpCacheDataRemover* remover);
 
   void OnHostResolverShutdown(HostResolver* resolver);

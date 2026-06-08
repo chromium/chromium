@@ -16462,4 +16462,129 @@ TEST_F(HttpCacheTest, ZstdDecompressRangeRequestCacheOnlyReturnsMiss) {
 
 #endif  // !defined(NET_DISABLE_ZSTD)
 
+TEST_F(HttpCacheTest, InvalidationFilterDomains) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  MockHttpCache cache;
+
+  // 1. Add entries to the cache for subdomains.
+  MockTransaction sub1 = kSimpleGET_Transaction;
+  sub1.url = "http://mail.google.com/index.html";
+  ScopedMockTransaction sub1_transaction(sub1);
+
+  MockTransaction sub2 = kSimpleGET_Transaction;
+  sub2.url = "http://docs.google.com/index.html";
+  ScopedMockTransaction sub2_transaction(sub2);
+
+  MockTransaction other = kSimpleGET_Transaction;
+  other.url = "http://example.com/index.html";
+  ScopedMockTransaction other_transaction(other);
+
+  RunTransactionTest(cache.http_cache(), sub1);
+  RunTransactionTest(cache.http_cache(), sub2);
+  RunTransactionTest(cache.http_cache(), other);
+
+  EXPECT_EQ(3, cache.network_layer()->transaction_count());
+
+  // 2. Add a broad domain invalidation filter for "google.com".
+  HttpCache::InvalidationFilter filter;
+  filter.begin_time = base::Time();
+  filter.end_time = base::Time::Max();
+  filter.filter_type = UrlFilterType::kTrueIfMatches;
+  filter.domains.insert("google.com");
+  cache.http_cache()->AddInvalidationFilter(std::move(filter));
+
+  // 3. Read from cache -> Google transactions should be misses, others hits.
+  RunTransactionTest(cache.http_cache(), sub1);
+  EXPECT_GT(cache.network_layer()->transaction_count(), 3);
+  int count = cache.network_layer()->transaction_count();
+
+  RunTransactionTest(cache.http_cache(), sub2);
+  EXPECT_GT(cache.network_layer()->transaction_count(), count);
+  count = cache.network_layer()->transaction_count();
+
+  RunTransactionTest(cache.http_cache(), other);
+  // No additional network transaction for other_transaction.
+  EXPECT_EQ(cache.network_layer()->transaction_count(), count);
+}
+
+class HttpCacheTestWithMockTime : public TestWithTaskEnvironment {
+ public:
+  HttpCacheTestWithMockTime()
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(HttpCacheTestWithMockTime, InvalidationFilterTimeBoundaries) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  MockHttpCache cache;
+
+  // 1. Add entry 1 at T0.
+  MockTransaction transaction = kSimpleGET_Transaction;
+  transaction.url = "https://google.com/page1.html";
+  ScopedMockTransaction transaction_scoped(transaction);
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // 2. Advance time by 1 minute.
+  FastForwardBy(base::Minutes(1));
+  base::Time t1 = base::Time::Now();
+  MockTransaction transaction2 = transaction;
+  transaction2.url = "https://google.com/page2.html";
+  ScopedMockTransaction transaction2_scoped(transaction2);
+  RunTransactionTest(cache.http_cache(), transaction2);
+
+  // 3. Add filter covering ONLY T1 onwards (start=T1, end=Max).
+  HttpCache::InvalidationFilter filter;
+  filter.begin_time = t1;
+  filter.end_time = base::Time::Max();
+  filter.filter_type = UrlFilterType::kTrueIfMatches;
+  filter.origins.insert(url::Origin::Create(GURL(transaction.url)));
+  cache.http_cache()->AddInvalidationFilter(std::move(filter));
+
+  // 4. Request Transaction 1 -> should be Cache HIT (pre-dates filter range).
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(cache.network_layer()->transaction_count(), 2);
+
+  // 5. Request Transaction 2 -> should be Cache MISS (within filter range).
+  RunTransactionTest(cache.http_cache(), transaction2);
+  EXPECT_GT(cache.network_layer()->transaction_count(), 2);
+}
+
+TEST_F(HttpCacheTest, InvalidationFilterRevocation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  MockHttpCache cache;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // Add filter.
+  HttpCache::InvalidationFilter filter;
+  filter.begin_time = base::Time();
+  filter.end_time = base::Time::Max();
+  filter.filter_type = UrlFilterType::kTrueIfMatches;
+  filter.origins.insert(url::Origin::Create(GURL(kSimpleGET_Transaction.url)));
+
+  HttpCache::InvalidationFilter filter_copy = filter;
+  cache.http_cache()->AddInvalidationFilter(std::move(filter));
+
+  // Assert miss.
+  RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
+  EXPECT_GT(cache.network_layer()->transaction_count(), 1);
+  int current_count = cache.network_layer()->transaction_count();
+
+  // Revoke/Remove filter.
+  cache.http_cache()->RemoveInvalidationFilter(filter_copy);
+
+  // Second request should be HIT again.
+  RunTransactionTest(cache.http_cache(), kSimpleGET_Transaction);
+  EXPECT_EQ(cache.network_layer()->transaction_count(), current_count);
+}
+
 }  // namespace net

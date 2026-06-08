@@ -85,6 +85,23 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     DISABLE
   };
 
+  // LINT.IfChange(InvalidationFilterLoadResult)
+  enum class InvalidationFilterLoadResult {
+    kSuccess = 0,
+    kFileNotFound = 1,
+    kCorrupt = 2,
+    kMaxValue = kCorrupt,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetHttpCacheLogicalInvalidationLoadResult)
+
+  // LINT.IfChange(InvalidationFilterClearContext)
+  enum class InvalidationFilterClearContext {
+    kSameSession = 0,
+    kRecoveredAfterCrash = 1,
+    kMaxValue = kRecoveredAfterCrash,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:NetHttpCacheLogicalInvalidationClearContext)
+
   // A BackendFactory creates a backend object to be used by the HttpCache.
   class NET_EXPORT BackendFactory {
    public:
@@ -215,6 +232,41 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   using GetBackendResult = std::pair<int, raw_ptr<disk_cache::Backend>>;
   using GetBackendCallback = base::OnceCallback<void(GetBackendResult)>;
+
+  // InvalidationFilter represents a request to logically clear parts of the
+  // cache. Instead of waiting for slow disk deletion, any entry matching
+  // these criteria is treated as a cache miss.
+  struct NET_EXPORT InvalidationFilter {
+    InvalidationFilter();
+    ~InvalidationFilter();
+    InvalidationFilter(const InvalidationFilter&);
+    InvalidationFilter& operator=(const InvalidationFilter&);
+
+    // Checks if the given cache entry matches this filter's criteria
+    // (time bounds and URL).
+    bool Matches(const GURL& url, const disk_cache::Entry* entry) const;
+
+    // The time range of entries to invalidate based on their 'LastUsed' time.
+    base::Time begin_time;
+    base::Time end_time;
+
+    // Filter type (e.g., exclude vs include) and the specific origins/domains.
+    UrlFilterType filter_type;
+    base::flat_set<url::Origin> origins;
+    base::flat_set<std::string> domains;
+
+    // Runtime only, not serialized.
+    bool was_loaded_from_disk = false;
+
+    bool operator==(const InvalidationFilter& other) const {
+      // `was_loaded_from_disk` is a transient runtime property used to track
+      // metrics and is not part of the logical filter identity.
+      return begin_time == other.begin_time && end_time == other.end_time &&
+             filter_type == other.filter_type && origins == other.origins &&
+             domains == other.domains;
+    }
+  };
+
   // Retrieves the cache backend for this HttpCache instance. If the backend
   // is not initialized yet, this method will initialize it. The integer portion
   // of the return value is a network error code, and it could be
@@ -265,32 +317,18 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                               base::Time delete_begin,
                               base::Time delete_end);
 
-  // InvalidationFilter represents a request to logically clear parts of the
-  // cache. Instead of waiting for slow disk deletion, any entry matching
-  // these criteria is treated as a cache miss.
-  struct NET_EXPORT InvalidationFilter {
-    InvalidationFilter();
-    ~InvalidationFilter();
-    InvalidationFilter(const InvalidationFilter&);
-    InvalidationFilter& operator=(const InvalidationFilter&);
 
-    // Checks if the given cache entry matches this filter's criteria
-    // (time bounds and URL).
-    bool Matches(const GURL& url, const disk_cache::Entry* entry) const;
-
-    // The time range of entries to invalidate based on their 'LastUsed' time.
-    base::Time begin_time;
-    base::Time end_time;
-
-    // Filter type (e.g., exclude vs include) and the specific origins/domains.
-    UrlFilterType filter_type;
-    base::flat_set<url::Origin> origins;
-    base::flat_set<std::string> domains;
-  };
 
   // Adds a filter to the logical invalidation list. Any subsequent access
   // to an entry matching this filter will result in a cache miss.
   void AddInvalidationFilter(InvalidationFilter filter);
+
+  // Removes a filter from the logical invalidation list.
+  void RemoveInvalidationFilter(const InvalidationFilter& filter);
+
+  size_t GetInvalidationFilterCountForTesting() const {
+    return invalidation_filters_.size();
+  }
 
   // Orchestrator for invalidation checks. This provides a fast-path bailout
   // when no filters are active, decodes the URL from the cache key exactly once,

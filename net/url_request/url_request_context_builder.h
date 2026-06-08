@@ -145,6 +145,9 @@ class NET_EXPORT URLRequestContextBuilder {
     // The path for persisting the NoVarySearchCache.
     base::FilePath no_vary_search_path;
 
+    // The path for persisting the logical invalidation filters.
+    base::FilePath logical_invalidation_path;
+
     // A factory to broker file operations. This is needed for network process
     // sandboxing in some platforms.
     scoped_refptr<disk_cache::BackendFileOperationsFactory>

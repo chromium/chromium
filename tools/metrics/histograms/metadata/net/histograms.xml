@@ -3698,6 +3698,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpCache.LogicalInvalidation.ClearContext"
+    enum="NetHttpCacheLogicalInvalidationClearContext"
+    expires_after="2027-05-26">
+  <owner>deepakr@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The context under which a logical HTTP cache invalidation filter is cleared
+    (i.e., whether it was cleared during the same session it was added, or if it
+    was successfully recovered from disk after a crash/restart and then
+    subsequently cleared). Recorded when a filter is removed.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.BytesReceived2" units="bytes"
     expires_after="2026-11-01">
   <owner>ashleynewson@chromium.org</owner>

@@ -2387,12 +2387,21 @@ TEST_F(NetworkContextTest, LogicalClearHttpCache) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(std::move(context_params));
 
+  base::HistogramTester histograms;
+
   base::test::TestFuture<void> future;
-  network_context->ClearHttpCache(base::Time(), base::Time(), nullptr,
-                                  future.GetCallback());
+  network_context->ClearHttpCacheLogically(base::Time(), base::Time(), nullptr,
+                                           future.GetCallback());
 
   // The callback should be called immediately.
   EXPECT_TRUE(future.Wait());
+  histograms.ExpectBucketCount("NetworkService.ClearHttpCacheMode", 1, 1);
+
+  base::test::TestFuture<void> physical_future;
+  network_context->ClearHttpCache(base::Time(), base::Time(), nullptr,
+                                  physical_future.GetCallback());
+  EXPECT_TRUE(physical_future.Wait());
+  histograms.ExpectBucketCount("NetworkService.ClearHttpCacheMode", 0, 1);
 }
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)

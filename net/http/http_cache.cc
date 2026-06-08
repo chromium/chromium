@@ -23,10 +23,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -526,6 +526,7 @@ HttpCache::HttpCache(
           features::kAvoidEntryCreationForNoStoreCacheSize.Get()),
       file_operations_(std::move(file_operations)) {
   g_init_cache = true;
+
   if (base::FeatureList::IsEnabled(features::kHttpCacheNoVarySearch)) {
     size_t max_entries = features::kHttpCacheNoVarySearchCacheMaxEntries.Get();
     if (max_entries) {
@@ -606,12 +607,13 @@ HttpCache::GetBackendResult HttpCache::GetBackend(GetBackendCallback callback) {
     return {OK, disk_cache_.get()};
   }
 
+  if (!backend_factory_.get()) {
+    return {ERR_FAILED, nullptr};
+  }
+
   int rv = CreateBackend(base::BindOnce(&HttpCache::ReportGetBackendResult,
                                         GetWeakPtr(), std::move(callback)));
-  if (rv != ERR_IO_PENDING) {
-    return {rv, disk_cache_.get()};
-  }
-  return {ERR_IO_PENDING, nullptr};
+  return {rv, disk_cache_.get()};
 }
 
 void HttpCache::ReportGetBackendResult(GetBackendCallback callback,
@@ -1920,26 +1922,57 @@ bool HttpCache::InvalidationFilter::Matches(
 }
 
 void HttpCache::AddInvalidationFilter(InvalidationFilter filter) {
+  DCHECK_LE(filter.begin_time, filter.end_time);
   invalidation_filters_.push_back(std::move(filter));
 }
 
+void HttpCache::RemoveInvalidationFilter(const InvalidationFilter& filter) {
+  auto it = std::ranges::find(invalidation_filters_, filter);
+  if (it != invalidation_filters_.end()) {
+    base::UmaHistogramEnumeration(
+        "Net.HttpCache.LogicalInvalidation.ClearContext",
+        it->was_loaded_from_disk
+            ? InvalidationFilterClearContext::kRecoveredAfterCrash
+            : InvalidationFilterClearContext::kSameSession);
+    invalidation_filters_.erase(it);
+  }
+}
+
 bool HttpCache::IsInvalidated(disk_cache::Entry* entry) {
-  if (!base::FeatureList::IsEnabled(features::kLogicalClearHttpCache) ||
-      invalidation_filters_.empty()) {
+  if (!base::FeatureList::IsEnabled(features::kLogicalClearHttpCache)) {
     return false;
   }
 
-  std::string url_str = GetResourceURLFromHttpCacheKey(entry->GetKey());
-  GURL url(url_str);
-  if (!url.is_valid()) {
+  if (invalidation_filters_.empty()) {
     return false;
   }
+
+  std::optional<GURL> parsed_url;
 
   for (const auto& filter : invalidation_filters_) {
-    if (filter.Matches(url, entry)) {
+    // Fast-path check: If the entry's LastUsed time is outside the filter's
+    // range, it cannot be invalidated by this filter. This avoids expensive
+    // GURL parsing for almost all checks!
+    if (entry->GetLastUsed() < filter.begin_time ||
+        entry->GetLastUsed() >= filter.end_time) {
+      continue;
+    }
+
+    // Lazily parse the URL from the cache key exactly once per entry check.
+    if (!parsed_url) {
+      std::string url_str = GetResourceURLFromHttpCacheKey(entry->GetKey());
+      parsed_url = GURL(url_str);
+      if (!parsed_url->is_valid()) {
+        return false;
+      }
+    }
+
+    if (DoesUrlMatchFilter(filter.filter_type, filter.origins, filter.domains,
+                           *parsed_url)) {
       return true;
     }
   }
+
   return false;
 }
 

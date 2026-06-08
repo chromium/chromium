@@ -1321,6 +1321,11 @@ historical analysis. -->
   </int>
 </enum>
 
+<enum name="NetHttpCacheLogicalInvalidationClearContext">
+  <int value="0" label="kSameSession"/>
+  <int value="1" label="kRecoveredAfterCrash"/>
+</enum>
+
 <enum name="NetNetworkErrorLoggingRequestOutcome">
   <int value="0" label="Discarded: no NetworkErrorLoggingService"/>
   <int value="1" label="Discarded: no ReportingService"/>

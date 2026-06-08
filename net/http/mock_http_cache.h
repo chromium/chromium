@@ -157,6 +157,7 @@ class MockDiskEntry : public disk_cache::Entry,
   int resume_return_code_ = 0;
 
   static bool ignore_callbacks_;
+  base::Time last_used_time_;
 };
 
 class MockDiskCache : public disk_cache::Backend {

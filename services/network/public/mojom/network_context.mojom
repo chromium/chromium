@@ -243,6 +243,13 @@ struct NetworkContextFilePaths {
   // `http_cache_directory` automatically by the network service.
   TransferableDirectory? no_vary_search_directory;
 
+  // Points to the directory used for persisting the logical invalidation
+  // filters for the HTTP cache. Ignored if the cache is disabled or
+  // `http_cache_directory` is null. If left null, will be set to a
+  // subdirectory of `http_cache_directory` automatically by the network
+  // service.
+  TransferableDirectory? logical_invalidation_directory;
+
   // Points to a path that contains all the network service files and databases
   // as listed below. If this network context is running inside a sandboxed
   // network service, then this path should contain no other sensitive data
@@ -1101,6 +1108,14 @@ interface NetworkContext {
   ClearHttpCache(mojo_base.mojom.Time start_time,
                  mojo_base.mojom.Time end_time,
                  ClearDataFilter? filter) => ();
+
+  // Clears the HTTP cache logically for entries within the time range.
+  // Any entries matching the filter are immediately marked as deleted,
+  // and will not be visible in the browser anymore. The physical background
+  // task clears resources from disk concurrently.
+  ClearHttpCacheLogically(mojo_base.mojom.Time start_time,
+                          mojo_base.mojom.Time end_time,
+                          ClearDataFilter? filter) => ();
 
   // Computes the size of cache objects last accessed between |start_time| and
   // |end_time|.

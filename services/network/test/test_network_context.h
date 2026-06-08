@@ -98,6 +98,11 @@ class TestNetworkContext : public mojom::NetworkContext {
                       base::Time end_time,
                       mojom::ClearDataFilterPtr filter,
                       ClearHttpCacheCallback callback) override {}
+  void ClearHttpCacheLogically(
+      base::Time start_time,
+      base::Time end_time,
+      mojom::ClearDataFilterPtr filter,
+      ClearHttpCacheLogicallyCallback callback) override {}
   void ComputeHttpCacheSize(base::Time start_time,
                             base::Time end_time,
                             ComputeHttpCacheSizeCallback callback) override {}

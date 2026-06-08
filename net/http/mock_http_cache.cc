@@ -61,7 +61,9 @@ struct MockDiskEntry::CallbackInfo {
 };
 
 MockDiskEntry::MockDiskEntry(const std::string& key)
-    : key_(key), max_file_size_(std::numeric_limits<int>::max()) {
+    : key_(key),
+      max_file_size_(std::numeric_limits<int>::max()),
+      last_used_time_(base::Time::Now()) {
   test_mode_ = GetTestModeForEntry(key);
 }
 
@@ -78,7 +80,7 @@ std::string MockDiskEntry::GetKey() const {
 }
 
 base::Time MockDiskEntry::GetLastUsed() const {
-  return base::Time::Now();
+  return last_used_time_;
 }
 
 int64_t MockDiskEntry::GetDataSize(int index) const {
@@ -357,7 +359,7 @@ void MockDiskEntry::SetEntryInMemoryData(uint8_t data) {
 }
 
 void MockDiskEntry::SetLastUsedTimeForTest(base::Time time) {
-  NOTREACHED();
+  last_used_time_ = time;
 }
 
 // If |value| is true, don't deliver any completion callbacks until called
