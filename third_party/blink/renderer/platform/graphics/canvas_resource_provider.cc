@@ -193,6 +193,8 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
   recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
+Canvas2DResourceProviderBitmap::~Canvas2DResourceProviderBitmap() = default;
+
 void Canvas2DResourceProviderBitmap::InitializeForRecording(
     cc::PaintCanvas* canvas) const {
   if (delegate_) {

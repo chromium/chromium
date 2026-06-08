@@ -242,8 +242,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
 
-  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;
@@ -262,7 +260,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
     : public CanvasResourceProvider {
  public:
-  ~Canvas2DResourceProviderBitmap() override = default;
+  ~Canvas2DResourceProviderBitmap() override;
 
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const override { return false; }
@@ -346,6 +344,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
   raw_ptr<Delegate> delegate_ = nullptr;
+  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
 };
 
 // * Subclass of CanvasResourceProvider that is specialized for usage
@@ -598,6 +597,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   size_t max_recorded_op_bytes_;
   size_t max_pinned_image_bytes_;
   raw_ptr<Delegate> delegate_ = nullptr;
+  std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
 
   base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
       this};
