@@ -44,7 +44,8 @@ public class GlicBottomSheetContentProvider implements TabBottomSheetContentProv
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
-            @IdRes int emptyPlaceholderContainerId) {
+            @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed) {
         return new GlicBottomSheetContent(
                 contentView,
                 fullHeightRatio,
@@ -52,6 +53,7 @@ public class GlicBottomSheetContentProvider implements TabBottomSheetContentProv
                 peekViewHeight,
                 peekViewContainerId,
                 emptyPlaceholderContainerId,
+                onBackPressed,
                 mProfile);
     }
 }

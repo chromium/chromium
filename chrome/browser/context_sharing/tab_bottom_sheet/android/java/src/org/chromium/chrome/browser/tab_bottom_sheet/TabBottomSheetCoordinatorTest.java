@@ -170,16 +170,25 @@ public class TabBottomSheetCoordinatorTest {
                             int peekViewHeight = invocation.getArgument(3);
                             int actorControlContainerId = invocation.getArgument(4);
                             int emptyPlaceholderContainerId = invocation.getArgument(5);
+                            Runnable onBackPressed = invocation.getArgument(6);
                             return new TestTabBottomSheetContent(
                                     view,
                                     heightRatio,
                                     bgColor,
                                     peekViewHeight,
                                     actorControlContainerId,
-                                    emptyPlaceholderContainerId);
+                                    emptyPlaceholderContainerId,
+                                    onBackPressed);
                         })
                 .when(mMockContentProvider)
-                .create(any(View.class), anyFloat(), anyInt(), anyInt(), anyInt(), anyInt());
+                .create(
+                        any(View.class),
+                        anyFloat(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        any(Runnable.class));
 
         mCoBrowseViews =
                 spy(
@@ -218,7 +227,8 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        mMockSheetEventsCallback);
+                        mMockSheetEventsCallback,
+                        () -> {});
 
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
@@ -884,7 +894,8 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        mMockSheetEventsCallback);
+                        mMockSheetEventsCallback,
+                        () -> {});
 
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -953,7 +964,8 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        mMockSheetEventsCallback);
+                        mMockSheetEventsCallback,
+                        () -> {});
 
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -1127,5 +1139,24 @@ public class TabBottomSheetCoordinatorTest {
         when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         assertEquals(View.GONE, placeholder.getVisibility());
+    }
+
+    @Test
+    public void testHandleBackPress_TriggersOnBackPressed() {
+        boolean[] backPressedCalled = new boolean[1];
+        mCoordinator =
+                new TabBottomSheetCoordinator(
+                        mContext,
+                        mWindowAndroid,
+                        mMockBottomSheetController,
+                        mMockTouchEventProvider,
+                        mCoBrowseViews,
+                        mMockSheetEventsCallback,
+                        () -> backPressedCalled[0] = true);
+        simulateShowSuccessAndGetObserver();
+        TabBottomSheetContent content = mCoordinator.getSheetContentForTesting();
+        assertNotNull(content);
+        assertTrue(content.handleBackPress());
+        assertTrue(backPressedCalled[0]);
     }
 }

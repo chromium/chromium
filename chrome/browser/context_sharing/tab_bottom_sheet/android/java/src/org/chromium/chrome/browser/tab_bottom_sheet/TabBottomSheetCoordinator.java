@@ -148,6 +148,7 @@ public class TabBottomSheetCoordinator {
     private final TabBottomSheetMediator mMediator;
     private final WindowAndroid mWindowAndroid;
     private final RoundedCornerOutlineProvider mOutlineProvider;
+    private final Runnable mOnBackPressed;
 
     private @Nullable SheetEventsCallback mSheetEventsCallback;
     private @Nullable TabBottomSheetContent mSheetContent;
@@ -165,6 +166,7 @@ public class TabBottomSheetCoordinator {
 
     /**
      * @param context The context to use for creating views.
+     * @param windowAndroid The {@link WindowAndroid} associated with the window.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      * @param touchEventProvider The {@link TouchEventProvider} used to observe touch events on the
      *     tab behind the bottom sheet.
@@ -174,6 +176,7 @@ public class TabBottomSheetCoordinator {
      *     subsequent showings.
      * @param sheetEventsCallback Interface used by the manager to monitor events related to the
      *     state of the bottom sheet.
+     * @param onBackPressed Callback run when the back button/swipe is triggered.
      */
     TabBottomSheetCoordinator(
             Context context,
@@ -181,7 +184,8 @@ public class TabBottomSheetCoordinator {
             BottomSheetController bottomSheetController,
             TouchEventProvider touchEventProvider,
             CoBrowseViews coBrowseViews,
-            SheetEventsCallback sheetEventsCallback) {
+            SheetEventsCallback sheetEventsCallback,
+            Runnable onBackPressed) {
         mContext = context;
         mGestureDetector = new GestureDetector(mContext, mGestureListener);
         mWindowAndroid = windowAndroid;
@@ -189,6 +193,7 @@ public class TabBottomSheetCoordinator {
         mTouchEventProvider = touchEventProvider;
         mCoBrowseViews = coBrowseViews;
         mSheetEventsCallback = sheetEventsCallback;
+        mOnBackPressed = onBackPressed;
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
@@ -230,7 +235,8 @@ public class TabBottomSheetCoordinator {
                                 .getResources()
                                 .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total),
                         R.id.peek_view_container,
-                        R.id.empty_placeholder_container);
+                        R.id.empty_placeholder_container,
+                        mOnBackPressed);
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);

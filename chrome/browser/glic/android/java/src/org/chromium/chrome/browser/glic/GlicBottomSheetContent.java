@@ -42,6 +42,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
      * @param peekViewHeight The height of the peek view in pixels.
      * @param peekViewContainerId The resource ID for the peek view container.
      * @param emptyPlaceholderContainerId The resource ID for the empty placeholder container.
+     * @param onBackPressed Callback run when the back button/swipe is triggered.
      * @param profile The active user profile for actor task verification.
      */
     public GlicBottomSheetContent(
@@ -51,6 +52,7 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
             @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed,
             Profile profile) {
         super(
                 contentView,
@@ -58,7 +60,8 @@ public class GlicBottomSheetContent extends TabBottomSheetContent {
                 backgroundColor,
                 peekViewHeight,
                 peekViewContainerId,
-                emptyPlaceholderContainerId);
+                emptyPlaceholderContainerId,
+                onBackPressed);
         mProfile = profile;
     }
 

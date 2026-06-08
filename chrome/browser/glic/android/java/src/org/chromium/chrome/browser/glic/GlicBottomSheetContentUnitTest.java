@@ -81,6 +81,7 @@ public class GlicBottomSheetContentUnitTest {
                         /* peekViewHeight= */ 100,
                         /* peekViewContainerId= */ 12345,
                         /* emptyPlaceholderContainerId= */ 12346,
+                        /* onBackPressed= */ () -> {},
                         mProfile);
     }
 

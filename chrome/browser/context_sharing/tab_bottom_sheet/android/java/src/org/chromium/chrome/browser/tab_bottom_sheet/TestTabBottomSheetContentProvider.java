@@ -27,13 +27,15 @@ public class TestTabBottomSheetContentProvider implements TabBottomSheetContentP
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
-            @IdRes int emptyPlaceholderContainerId) {
+            @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed) {
         return new TestTabBottomSheetContent(
                 contentView,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,
                 peekViewContainerId,
-                emptyPlaceholderContainerId);
+                emptyPlaceholderContainerId,
+                onBackPressed);
     }
 }

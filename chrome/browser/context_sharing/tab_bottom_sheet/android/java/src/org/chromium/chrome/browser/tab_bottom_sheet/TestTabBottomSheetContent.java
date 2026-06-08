@@ -39,14 +39,16 @@ public class TestTabBottomSheetContent extends TabBottomSheetContent {
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
-            @IdRes int emptyPlaceholderContainerId) {
+            @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed) {
         super(
                 contentView,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,
                 peekViewContainerId,
-                emptyPlaceholderContainerId);
+                emptyPlaceholderContainerId,
+                onBackPressed);
     }
 
     @Override

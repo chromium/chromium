@@ -173,6 +173,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     private final Callback<Boolean> mIsAccessoryRequestedObserver =
             this::onAccessoryRequestedChanged;
 
+    private final Runnable mOnBackPressed = () -> tryToCloseBottomSheet(/* animate= */ true);
+
     /**
      * Constructor.
      *
@@ -249,7 +251,8 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                         mBottomSheetController,
                         mTouchEventProvider,
                         coBrowseViews,
-                        mSheetEventsCallback);
+                        mSheetEventsCallback,
+                        mOnBackPressed);
         if (mPeekView != null) {
             mTabBottomSheetCoordinator.attachPeekView(mPeekView);
         }

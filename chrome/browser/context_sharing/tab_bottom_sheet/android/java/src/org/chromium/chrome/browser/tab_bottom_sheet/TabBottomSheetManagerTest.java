@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -59,6 +61,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
@@ -724,6 +727,23 @@ public class TabBottomSheetManagerTest {
                 });
 
         // Verify the sheet is closed
+        CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void testBackPressClosesBottomSheet() {
+        showBottomSheetAndBlockUntilReady();
+        assertTrue(mManager.isSheetShowing());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BottomSheetContent content = mBottomSheetController.getCurrentSheetContent();
+                    assertNotNull(content);
+                    boolean handled = content.handleBackPress();
+                    assertTrue(handled);
+                });
+
         CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
     }
 

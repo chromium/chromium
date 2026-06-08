@@ -44,13 +44,15 @@ public class ContextualTaskBottomSheetContentProvider implements TabBottomSheetC
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
-            @IdRes int emptyPlaceholderContainerId) {
+            @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed) {
         return new ContextualTaskBottomSheetContent(
                 contentView,
                 fullHeightRatio,
                 backgroundColor,
                 peekViewHeight,
                 peekViewContainerId,
-                emptyPlaceholderContainerId);
+                emptyPlaceholderContainerId,
+                onBackPressed);
     }
 }

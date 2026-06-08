@@ -27,6 +27,7 @@ public interface TabBottomSheetContentProvider {
      * @param peekViewHeight The height of the peek view in pixels.
      * @param peekViewContainerId The resource ID for the peek view container.
      * @param emptyPlaceholderContainerId The resource ID for the empty placeholder container.
+     * @param onBackPressed Callback run when the back button/swipe is triggered.
      * @return A non-null custom or default {@link TabBottomSheetContent}.
      */
     TabBottomSheetContent create(
@@ -35,5 +36,6 @@ public interface TabBottomSheetContentProvider {
             @ColorInt int backgroundColor,
             @Px int peekViewHeight,
             @IdRes int peekViewContainerId,
-            @IdRes int emptyPlaceholderContainerId);
+            @IdRes int emptyPlaceholderContainerId,
+            Runnable onBackPressed);
 }
