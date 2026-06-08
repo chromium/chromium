@@ -4311,7 +4311,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_updatesTabGroup_inTabSwitcher() {
+    public void tabClosure_updatesTabGroup_inGroupedLayout() {
         initAndAssertAllProperties();
 
         // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
@@ -4337,7 +4337,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_doesNotUpdateTabGroup_inTabSwitcher_WhenClosing() {
+    public void tabClosure_doesNotUpdateTabGroup_inGroupedLayout_WhenClosing() {
         initAndAssertAllProperties();
 
         // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
@@ -4363,7 +4363,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_ignoresUpdateForTabGroup_outsideTabSwitcher() {
+    public void tabClosure_ignoresUpdateForTabGroup_inFlatLayout() {
         setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
         initAndAssertAllProperties();
         TabActionListener actionListenerBeforeUpdate =
@@ -4390,7 +4390,33 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void tabClosure_resetTabsListForTabGroupUpdate_insideTabSwitcher() {
+    public void tabClosure_updatesTabGroup_inNestedLayout() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        initAndAssertAllProperties();
+
+        // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, tab3);
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, true);
+
+        doReturn(true).when(mTabModel).tabGroupExists(TAB_GROUP_ID);
+        doReturn(false).when(mTab1).isClosing();
+
+        String titleBefore = mModelList.get(0).model.get(TabProperties.TITLE);
+
+        // Change what the title editor will return after closure.
+        doReturn("1 tab").when(mTabModel).getTabGroupTitle(TAB_GROUP_ID);
+
+        mTabModelObserverCaptor.getValue().didRemoveTabForClosure(tab3);
+
+        String titleAfter = mModelList.get(0).model.get(TabProperties.TITLE);
+        assertThat(titleBefore, not(titleAfter));
+    }
+
+    @Test
+    public void tabClosure_resetTabsListForTabGroupUpdate_inGroupedLayout() {
         initAndAssertAllProperties();
 
         // Mock that tab1 and tab3 are in the same group and group root id is TAB1_ID.

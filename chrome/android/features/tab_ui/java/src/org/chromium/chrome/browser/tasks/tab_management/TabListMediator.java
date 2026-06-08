@@ -1296,26 +1296,28 @@ public class TabListMediator implements TabListNotificationHandler {
 
                         removeObserversForTab(tab);
 
-                        // If the tab closed was part of a tab group and the closure was triggered
-                        // from the tab switcher, update the group to reflect the closure instead of
-                        // closing the tab.
-                        // For nested group layouts, the header does not need to be
-                        // updated in-place because the webpage tab card is closed directly.
                         TabModel tabModel = mCurrentTabModelSupplier.get();
-                        if (mLayoutType == TabListLayoutType.GROUPED
-                                && tabModel != null
-                                && tabModel.tabGroupExists(tab.getTabGroupId())) {
-                            int groupIndex = tabModel.representativeIndexOf(tab);
-                            Tab groupTab = tabModel.getRepresentativeTabAt(groupIndex);
-                            assumeNonNull(groupTab);
-                            if (!groupTab.isClosing()) {
-                                updateTab(
-                                        mModelList.indexOfNthTabCard(groupIndex),
-                                        groupTab,
-                                        true,
-                                        false);
-
-                                return;
+                        Token tabGroupId = tab.getTabGroupId();
+                        if (tabModel != null
+                                && tabGroupId != null
+                                && tabModel.tabGroupExists(tabGroupId)) {
+                            if (mLayoutType == TabListLayoutType.GROUPED) {
+                                // If the tab closed was part of a tab group and the closure was
+                                // triggered from a grouped layout, update the group to reflect the
+                                // closure instead of closing the tab.
+                                int groupIndex = tabModel.representativeIndexOf(tab);
+                                Tab groupTab = tabModel.getRepresentativeTabAt(groupIndex);
+                                assumeNonNull(groupTab);
+                                if (!groupTab.isClosing()) {
+                                    updateTab(
+                                            mModelList.indexOfNthTabCard(groupIndex),
+                                            groupTab,
+                                            /* isUpdatingId= */ true,
+                                            /* quickMode= */ false);
+                                    return;
+                                }
+                            } else if (mLayoutType == TabListLayoutType.NESTED) {
+                                updateTabGroupTitle(tabGroupId);
                             }
                         }
 
