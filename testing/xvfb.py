@@ -12,6 +12,7 @@ import os
 import os.path
 import random
 import re
+import shutil
 import signal
 import socket
 import subprocess
@@ -398,6 +399,13 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
       # Set dummy variable for scripts.
       env['XVFB_DISPLAY'] = display
 
+      if use_openbox and not shutil.which('openbox'):
+        print(
+            'Warning: openbox binary not found. '
+            'Running without window manager.',
+            file=sys.stderr)
+        use_openbox = False
+
       if use_openbox:
         # Openbox will send a SIGUSR1 signal to the current process notifying
         # the script it has started up.
@@ -415,6 +423,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
               ['openbox', '--sm-disable', '--startup', openbox_startup_cmd],
               stderr=subprocess.STDOUT,
               env=env)
+
           for _ in range(30):
             time.sleep(.1)  # gives Openbox time to start or fail.
             if openbox_ready.getvalue() or openbox_proc.poll() is not None:
@@ -426,9 +435,16 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
             kill(openbox_proc, 'openbox')  # still not ready, give up and retry
             print('Openbox failed to start. Retrying.', file=sys.stderr)
 
-        if openbox_proc.poll() is not None:
+        if use_openbox and (openbox_proc is None
+                            or openbox_proc.poll() is not None):
           raise _ProcessError('Failed to start openbox after 10 tries')
 
+      if use_xcompmgr and not shutil.which('xcompmgr'):
+        print(
+            'Warning: xcompmgr binary not found. '
+            'Running without compositor.',
+            file=sys.stderr)
+        use_xcompmgr = False
       if use_xcompmgr:
         xcompmgr_proc = subprocess.Popen('xcompmgr',
                                          stderr=subprocess.STDOUT,
