@@ -2144,7 +2144,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/google/farmhash.git' + '@' + '816a4ae622e964763ca0862d9dbd19324a1eaf45',
 
   'src/third_party/fast_float/src':
-    Var('chromium_git') + '/external/github.com/fastfloat/fast_float.git' + '@' + 'e0b53eaf63c6d00e0725788ef1dbb759aa321d79',
+    Var('chromium_git') + '/external/github.com/fastfloat/fast_float.git' + '@' + 'e8ec8e8f34bd6142efdbf4c714734dcff51ea9ac',
 
   'src/third_party/federated_compute/src':
     Var('chromium_git') + '/external/github.com/google-parfait/federated-compute.git' + '@' + '8de5837b817f28abc54a387a9417631b905ba90a',
