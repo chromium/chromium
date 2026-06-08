@@ -20,7 +20,10 @@ namespace blink {
 class ReadableStream;
 class WritableStream;
 
-inline constexpr uint32_t kDefaultIncomingMaxBufferedDatagrams = 1;
+// Minimum value for incomingMaxBufferedDatagrams and
+// outgoingMaxBufferedDatagrams, as defined by the WebTransport spec.
+// https://www.w3.org/TR/webtransport/#dom-webtransportdatagramduplexstream-incomingmaxbuffereddatagrams
+inline constexpr uint32_t kMinimumMaxBufferedDatagrams = 1u;
 
 class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -56,19 +59,17 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   uint32_t incomingMaxBufferedDatagrams() const {
     return incoming_max_buffered_datagrams_;
   }
-  void setIncomingMaxBufferedDatagrams(uint32_t value) {
-    incoming_max_buffered_datagrams_ = value;
-  }
+  // Applies the spec minimum to the incoming datagram queue limit.
+  void setIncomingMaxBufferedDatagrams(uint32_t value);
 
   uint32_t outgoingMaxBufferedDatagrams() const {
     return outgoing_max_buffered_datagrams_;
   }
-  void setOutgoingMaxBufferedDatagrams(uint32_t value) {
-    outgoing_max_buffered_datagrams_ = value;
-  }
+  // Applies the spec minimum to the outgoing datagram queue limit.
+  void setOutgoingMaxBufferedDatagrams(uint32_t value);
 
-  // Deprecated aliases preserve the old Web IDL long (int32_t) surface.
-  // Negative setter values are ignored to match previous behavior.
+  // Deprecated aliases preserve the old Web IDL long (int32_t) surface and use
+  // the same spec minimum as the renamed attributes.
   // Values larger than INT32_MAX are clamped for the deprecated getters because
   // the old IDL type cannot represent the full uint32_t range.
   int32_t incomingHighWaterMark() const {
@@ -96,8 +97,7 @@ class MODULES_EXPORT DatagramDuplexStream : public ScriptWrappable {
   uint32_t max_datagram_size_ = 1024;
   std::optional<double> incoming_max_age_;
   std::optional<double> outgoing_max_age_;
-  uint32_t incoming_max_buffered_datagrams_ =
-      kDefaultIncomingMaxBufferedDatagrams;
+  uint32_t incoming_max_buffered_datagrams_ = kMinimumMaxBufferedDatagrams;
   uint32_t outgoing_max_buffered_datagrams_;
 };
 

@@ -1356,15 +1356,19 @@ TEST_F(WebTransportTest, ResettingMaxBufferedDatagramsClearsQueue) {
   web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
       kMaxBufferedDatagrams);
 
+  // The server sends datagrams before the page starts reading.
   for (uint32_t i = 0; i < kMaxBufferedDatagrams; ++i) {
-    const std::array<uint8_t, 1> chunk = {'A'};
+    const std::array<uint8_t, 1> chunk = {static_cast<uint8_t>('0' + i)};
     client_remote_->OnDatagramReceived(chunk);
   }
 
-  // Make sure that the calls have run.
+  // Process the receive tasks so the datagrams are buffered before the limit
+  // changes.
   test::RunPendingTasks();
 
   constexpr uint32_t kNoBufferedDatagrams = 0;
+  // The page asks for a zero-sized queue. The setter clamps that to 1, so the
+  // queue is trimmed to one datagram instead of being emptied.
   web_transport->datagrams()->setIncomingMaxBufferedDatagrams(
       kNoBufferedDatagrams);
 
@@ -1373,16 +1377,25 @@ TEST_F(WebTransportTest, ResettingMaxBufferedDatagramsClearsQueue) {
   auto* reader =
       readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
-  auto result = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto result1 = reader->read(script_state, ASSERT_NO_EXCEPTION);
+  auto result2 = reader->read(script_state, ASSERT_NO_EXCEPTION);
 
-  ScriptPromiseTester tester(script_state, result);
+  ScriptPromiseTester tester1(script_state, result1);
+  ScriptPromiseTester tester2(script_state, result2);
+  tester1.WaitUntilSettled();
 
-  // Give the promise an opportunity to settle.
+  // If trimming kept more than one datagram, this read would complete.
   test::RunPendingTasks();
 
-  // The queue should be empty, so read() should not have completed.
-  EXPECT_FALSE(tester.IsFulfilled());
-  EXPECT_FALSE(tester.IsRejected());
+  // The first read gets the latest datagram retained after trimming.
+  EXPECT_TRUE(tester1.IsFulfilled());
+  EXPECT_THAT(GetValueAsVector(script_state, tester1.Value()),
+              ElementsAre('0' + kMaxBufferedDatagrams - 1));
+
+  // The retained datagram has already been consumed, so this read is still
+  // waiting for a future datagram.
+  EXPECT_FALSE(tester2.IsFulfilled());
+  EXPECT_FALSE(tester2.IsRejected());
 }
 
 TEST_F(WebTransportTest,

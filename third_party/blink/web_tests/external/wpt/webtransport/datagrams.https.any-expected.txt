@@ -17,7 +17,5 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: wt.datagrams.createWritable is not a function"
 [FAIL] Datagram MaxAge getters/setters work correctly
   assert_throws_js: function "() => { wt.datagrams.incomingMaxAge = -1; }" did not throw
-[FAIL] Datagram MaxBufferedDatagrams getters/setters work correctly
-  assert_equals: expected 1 but got 0
 Harness: the test ran to completion.
 
