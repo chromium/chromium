@@ -260,6 +260,13 @@ void BufferQueue::EnsureMinNumberOfBuffers(size_t n) {
   number_of_buffers_ = n;
 }
 
+int BufferQueue::GetCurrentAllocatedBuffers() const {
+  if (size_.IsEmpty() || buffers_destroyed_) {
+    return 0;
+  }
+  return number_of_buffers_;
+}
+
 void BufferQueue::DestroyBuffers() {
   if (buffers_destroyed_) {
     return;

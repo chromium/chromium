@@ -4368,6 +4368,13 @@ void SkiaRenderer::EnsureMinNumberOfBuffers(int n) {
   }
 }
 
+int SkiaRenderer::GetCurrentAllocatedBuffers() const {
+  if (root_buffer_queue_) {
+    return root_buffer_queue_->GetCurrentAllocatedBuffers();
+  }
+  return 0;
+}
+
 #if BUILDFLAG(IS_OZONE)
 gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   // For the purpose of testing the overlay configuration, the mailbox for ANY

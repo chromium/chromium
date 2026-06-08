@@ -105,6 +105,10 @@ void DirectRenderer::Initialize() {
   initialized_ = true;
 }
 
+int DirectRenderer::GetCurrentAllocatedBuffers() const {
+  return 0;
+}
+
 gfx::AxisTransform2d DirectRenderer::CalculateTargetToDeviceTransform(
     const gfx::Rect& draw_rect,
     const gfx::Size& viewport_size) {

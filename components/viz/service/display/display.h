@@ -158,6 +158,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // DisplaySchedulerClient implementation.
   bool DrawAndSwap(const DrawAndSwapParams& params) override;
   void DidFinishFrame(const BeginFrameAck& ack) override;
+  int GetCurrentAllocatedBuffers() const override;
 
   // OutputSurfaceClient implementation.
   void DidReceiveSwapBuffersAck(gpu::SwapBuffersCompleteParams params,

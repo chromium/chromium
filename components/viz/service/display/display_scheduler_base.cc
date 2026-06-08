@@ -15,6 +15,10 @@ DrawAndSwapParams& DrawAndSwapParams::operator=(DrawAndSwapParams&& other) =
     default;
 DrawAndSwapParams::~DrawAndSwapParams() = default;
 
+int DisplaySchedulerClient::GetCurrentAllocatedBuffers() const {
+  return 0;
+}
+
 DisplaySchedulerBase::DisplaySchedulerBase() = default;
 
 DisplaySchedulerBase::~DisplaySchedulerBase() {

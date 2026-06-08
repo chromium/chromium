@@ -76,6 +76,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const AggregatedRenderPassId& render_pass_id) const override;
   void Reshape(const OutputSurface::ReshapeParams& reshape_params) override;
   void EnsureMinNumberOfBuffers(int n) override;
+  int GetCurrentAllocatedBuffers() const override;
 #if BUILDFLAG(IS_OZONE)
   gpu::Mailbox GetPrimaryPlaneOverlayTestingMailbox() override;
 #endif

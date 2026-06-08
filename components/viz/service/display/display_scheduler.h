@@ -89,6 +89,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
 
   bool OnBeginFrame(const BeginFrameArgs& args);
   void OnBeginFrameContinuation(const BeginFrameArgs& args);
+  int MaxPendingSwapsForRefreshRate() const;
+  int MaxPendingSwapsForDeadline(const PossibleDeadline& deadline) const;
   int MaxPendingSwaps() const;
 
   base::TimeTicks current_frame_display_time() const {
@@ -167,6 +169,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler
   int pending_swaps_;
   const PendingSwapParams pending_swap_params_;
   bool wait_for_all_surfaces_before_draw_;
+  const bool use_platform_preferred_deadlines_ = true;
 
   bool observing_begin_frame_source_;
 

@@ -768,6 +768,10 @@ OverdrawTracker::OverdrawTimeSeries Display::StopTrackingOverdraw() {
   return overdraw_data;
 }
 
+int Display::GetCurrentAllocatedBuffers() const {
+  return renderer_ ? renderer_->GetCurrentAllocatedBuffers() : 0;
+}
+
 bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   TRACE_EVENT0("viz", "Display::DrawAndSwap");
   VIZ_HIT_PATH("DrawAndSwap");

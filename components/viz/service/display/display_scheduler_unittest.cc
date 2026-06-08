@@ -103,6 +103,11 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
     last_begin_frame_ack_ = ack;
   }
 
+  int GetCurrentAllocatedBuffers() const override {
+    return current_allocated_buffers_;
+  }
+  void SetCurrentAllocatedBuffers(int n) { current_allocated_buffers_ = n; }
+
   int draw_and_swap_count() const { return draw_and_swap_count_; }
 
   void SetNextDrawAndSwapFails() { next_draw_and_swap_fails_ = true; }
@@ -116,6 +121,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
   bool next_draw_and_swap_fails_;
   BeginFrameAck last_begin_frame_ack_;
   DrawAndSwapParams last_params_;
+  int current_allocated_buffers_ = 0;
 };
 
 class TestDisplayScheduler : public DisplayScheduler {
@@ -124,11 +130,11 @@ class TestDisplayScheduler : public DisplayScheduler {
                        BeginFrameSource* begin_frame_source,
                        SurfaceManager* surface_manager,
                        base::SingleThreadTaskRunner* task_runner,
-                       int max_pending_swaps,
+                       PendingSwapParams pending_swap_params,
                        bool wait_for_all_surfaces_before_draw)
       : DisplayScheduler(begin_frame_source,
                          task_runner,
-                         PendingSwapParams(max_pending_swaps),
+                         pending_swap_params,
                          /*hint_session_factory=*/nullptr,
                          wait_for_all_surfaces_before_draw),
         scheduler_begin_frame_deadline_count_(0) {
@@ -261,7 +267,8 @@ class DisplaySchedulerTest : public testing::Test,
 void DisplaySchedulerTest::SetUp() {
   scheduler_ = std::make_unique<TestDisplayScheduler>(
       damage_tracker_.get(), &fake_begin_frame_source_, &surface_manager_,
-      task_runner_.get(), kMaxPendingSwaps, wait_for_all_surfaces_before_draw_);
+      task_runner_.get(), PendingSwapParams(kMaxPendingSwaps),
+      wait_for_all_surfaces_before_draw_);
   damage_tracker_->SetRootFrameMissingForTest(false);
   scheduler_->SetClient(&client_);
 }
@@ -1152,6 +1159,216 @@ TEST_P(DisplaySchedulerTest, ResetScrollingBitOnFrameFinished) {
   EXPECT_NE(base::TimeTicks(),
             scheduler_->DesiredBeginFrameDeadlineTimeForTest());
 }
+
+TEST_P(DisplaySchedulerTest, MaxPendingSwapsForRefreshRate) {
+  PendingSwapParams params(2);  // 60Hz limit = 2
+  params.max_pending_swaps_72hz = 3;
+  params.max_pending_swaps_90hz = 4;
+  params.max_pending_swaps_120hz = 5;
+
+  auto custom_scheduler = std::make_unique<TestDisplayScheduler>(
+      damage_tracker_.get(), &fake_begin_frame_source_, &surface_manager_,
+      task_runner_.get(), params, wait_for_all_surfaces_before_draw_);
+  custom_scheduler->SetClient(&client_);
+  custom_scheduler->SetVisible(true);
+  custom_scheduler->OnRootFrameMissing(false);
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  auto trigger_frame = [&](base::TimeDelta interval) {
+    base::TimeTicks now = now_src().NowTicks();
+    BeginFrameArgs args =
+        fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+            now, now + interval, interval);
+    args.possible_deadlines =
+        std::nullopt;  // Ensure we fall back to refresh rate logic
+
+    damage_tracker_->ClearUndrawnSurfaces();
+    custom_scheduler->OnDisplayDamaged(root_surface_id);
+    custom_scheduler->OnBeginFrameForScheduling(args);
+    custom_scheduler->BeginFrameDeadlineForTest();
+  };
+
+  trigger_frame(base::Milliseconds(16.666));  // 60Hz
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 2);
+
+  trigger_frame(base::Milliseconds(13.888));  // 72Hz
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 3);
+
+  trigger_frame(base::Milliseconds(11.111));  // 90Hz
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 4);
+
+  trigger_frame(base::Milliseconds(8.333));  // 120Hz
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 5);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(DisplaySchedulerTest, MaxPendingSwapsWithAndroidCustomDeadlines) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kUseAndroidCustomFrameDeadlines,
+      {{"presentation_offset", "0"}});
+
+  PendingSwapParams params(2);
+  params.max_pending_swaps_120hz = 4;  // 120Hz limit = 4
+  auto custom_scheduler = std::make_unique<TestDisplayScheduler>(
+      damage_tracker_.get(), &fake_begin_frame_source_, &surface_manager_,
+      task_runner_.get(), params, wait_for_all_surfaces_before_draw_);
+  custom_scheduler->SetClient(&client_);
+  custom_scheduler->SetVisible(true);
+  custom_scheduler->OnRootFrameMissing(false);
+
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  auto trigger_frame = [&](int allocated_buffers, bool large_deadline) {
+    client_.SetCurrentAllocatedBuffers(allocated_buffers);
+    base::TimeTicks now = now_src().NowTicks();
+    base::TimeDelta interval = base::Milliseconds(8.33);  // 120Hz
+    BeginFrameArgs args =
+        fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+            now, now + interval, interval);
+
+    PossibleDeadlines possible_deadlines(0);
+    int multiplier = large_deadline ? 5 : 3;
+    possible_deadlines.deadlines = {
+        PossibleDeadline(1, interval / 2, interval),
+        PossibleDeadline(2, interval * (multiplier - 1),
+                         interval * multiplier)};
+    args.possible_deadlines = possible_deadlines;
+
+    damage_tracker_->ClearUndrawnSurfaces();
+    custom_scheduler->OnDisplayDamaged(root_surface_id);
+    custom_scheduler->OnBeginFrameForScheduling(args);
+    custom_scheduler->BeginFrameDeadlineForTest();
+  };
+
+  auto reset_sequence = [&]() {
+    custom_scheduler->SetVisible(false);
+    base::TimeTicks now = now_src().NowTicks();
+    BeginFrameArgs args =
+        fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+            now, now + base::Milliseconds(8.33), base::Milliseconds(8.33));
+    custom_scheduler->OnBeginFrameForScheduling(args);
+    custom_scheduler->BeginFrameDeadlineForTest();
+    custom_scheduler->SetVisible(true);
+  };
+
+  // 120Hz refresh rate limit is 4 swaps.
+
+  // Case 1: Target = 3 swaps, allocated = 3.
+  // max_allowed_swaps = std::max(3-1, 4) = 4.
+  // Target (3) fits in max_allowed_swaps (4).
+  // Expect result = 3 swaps.
+  trigger_frame(3, false);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 3);
+  reset_sequence();
+
+  // Case 2: Target = 3 swaps, allocated = 6.
+  // max_allowed_swaps = std::max(6-1, 4) = 5.
+  // Target (3) fits in max_allowed_swaps (5).
+  // Expect result = 3 swaps.
+  trigger_frame(6, false);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 3);
+  reset_sequence();
+
+  // Case 3: Target = 5 swaps, allocated = 5.
+  // max_allowed_swaps = std::max(5-1, 4) = 4.
+  // Target (5) is clamped to max_allowed_swaps (4).
+  // Expect result = 4 swaps.
+  trigger_frame(5, true);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 4);
+  reset_sequence();
+
+  // Case 4: Target = 5 swaps, allocated = 6.
+  // max_allowed_swaps = std::max(6-1, 4) = 5.
+  // Target (5) fits in max_allowed_swaps (5).
+  // Expect result = 5 swaps.
+  trigger_frame(6, true);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 5);
+}
+
+TEST_P(DisplaySchedulerTest, MaxPendingSwapsTransition) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kUseAndroidCustomFrameDeadlines,
+      {{"presentation_offset", "0"}});
+
+  PendingSwapParams params(2);  // 60Hz limit = 2
+  params.max_pending_swaps_90hz = 3;
+  params.max_pending_swaps_120hz = 4;
+
+  auto custom_scheduler = std::make_unique<TestDisplayScheduler>(
+      damage_tracker_.get(), &fake_begin_frame_source_, &surface_manager_,
+      task_runner_.get(), params, wait_for_all_surfaces_before_draw_);
+  custom_scheduler->SetClient(&client_);
+  custom_scheduler->SetVisible(true);
+  custom_scheduler->OnRootFrameMissing(false);
+
+  SurfaceId root_surface_id(
+      kArbitraryFrameSinkId,
+      LocalSurfaceId(1, base::UnguessableToken::Create()));
+
+  auto trigger_frame = [&](int allocated_buffers, base::TimeDelta interval,
+                           int target_swaps) {
+    client_.SetCurrentAllocatedBuffers(allocated_buffers);
+    base::TimeTicks now = now_src().NowTicks();
+    BeginFrameArgs args =
+        fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+            now, now + interval, interval);
+
+    PossibleDeadlines possible_deadlines(0);
+    possible_deadlines.deadlines = {
+        PossibleDeadline(1, interval / 2, interval),
+        PossibleDeadline(2, interval * target_swaps - interval / 2,
+                         interval * target_swaps)};
+    args.possible_deadlines = possible_deadlines;
+
+    damage_tracker_->ClearUndrawnSurfaces();
+    custom_scheduler->OnDisplayDamaged(root_surface_id);
+    custom_scheduler->OnBeginFrameForScheduling(args);
+    custom_scheduler->BeginFrameDeadlineForTest();
+  };
+
+  auto reset_sequence = [&]() {
+    custom_scheduler->SetVisible(false);
+    base::TimeTicks now = now_src().NowTicks();
+    BeginFrameArgs args =
+        fake_begin_frame_source_.CreateBeginFrameArgsWithGenerator(
+            now, now + base::Milliseconds(8.33), base::Milliseconds(8.33));
+    custom_scheduler->OnBeginFrameForScheduling(args);
+    custom_scheduler->BeginFrameDeadlineForTest();
+    custom_scheduler->SetVisible(true);
+  };
+
+  // Frame 0: 60Hz, 0 allocated (initial state), expect fallback to 2 swaps
+  trigger_frame(0, base::Milliseconds(16.666), 2);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 2);
+  reset_sequence();
+
+  // Frame 1: 60Hz, 3 allocated, expect 2 swaps
+  trigger_frame(3, base::Milliseconds(16.666), 2);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 2);
+  reset_sequence();
+
+  // Frame 2: 90Hz, 3 allocated, expect 3 swaps
+  trigger_frame(3, base::Milliseconds(11.111), 3);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 3);
+  reset_sequence();
+
+  // Frame 3: 120Hz, 3 allocated, expect 4 swaps (this signals client to grow)
+  trigger_frame(3, base::Milliseconds(8.333), 4);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 4);
+  reset_sequence();
+
+  // Frame 4: 60Hz, 5 allocated (client grew), expect 4 swaps (retains larger
+  // limit)
+  trigger_frame(5, base::Milliseconds(16.666), 4);
+  EXPECT_EQ(client_.last_params().max_pending_swaps, 4);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 INSTANTIATE_TEST_SUITE_P(,
                          DisplaySchedulerTest,

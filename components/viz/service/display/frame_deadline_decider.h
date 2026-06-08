@@ -18,7 +18,7 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   static constexpr base::TimeDelta kPerceptibleLatencyThreshold =
       base::Milliseconds(100);
 
-  FrameDeadlineDecider();
+  explicit FrameDeadlineDecider(bool use_platform_preferred_deadlines);
   ~FrameDeadlineDecider();
 
   FrameDeadlineDecider(const FrameDeadlineDecider&) = delete;
@@ -29,7 +29,7 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   // at sequence start, and matches it on subsequent frames in the sequence.
   size_t SelectDeadline(const PossibleDeadlines& possible_deadlines,
                         base::TimeDelta vsync_interval,
-                        int max_pending_swaps,
+                        int max_allowed_buffers,
                         base::TimeTicks frame_time,
                         std::optional<base::TimeTicks> earliest_input_time);
 
@@ -44,6 +44,7 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
   bool in_frame_sequence_ = false;
   base::TimeDelta curr_sequence_present_delta_;
   size_t curr_sequence_deadline_index_ = 0;
+  const bool use_platform_preferred_deadlines_;
 };
 
 }  // namespace viz

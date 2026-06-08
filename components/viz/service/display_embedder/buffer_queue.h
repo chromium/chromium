@@ -91,6 +91,9 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // buffers if necessary. If |n| <= |number_of_buffers_| this is a no-op.
   void EnsureMinNumberOfBuffers(size_t n);
 
+  // Returns the number of currently allocated buffers.
+  int GetCurrentAllocatedBuffers() const;
+
   // Free all buffers and allocate |number_of_buffers_| new ones.
   // Note: SwapBuffersComplete() calls are still expected for all current
   // in-flight buffers, but they've been free'd so they won't be moved to

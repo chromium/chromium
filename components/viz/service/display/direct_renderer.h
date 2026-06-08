@@ -92,6 +92,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // bounding rect of the area that might need to be recomposited.
   gfx::Rect GetTargetDamageBoundingRect() const;
 
+  virtual int GetCurrentAllocatedBuffers() const;
+
   // Public interface implemented by subclasses.
   struct VIZ_SERVICE_EXPORT SwapFrameData {
     SwapFrameData();

@@ -99,10 +99,15 @@ DisplayScheduler::DisplayScheduler(BeginFrameSource* begin_frame_source,
       pending_swaps_(0),
       pending_swap_params_(std::move(pending_swap_params)),
       wait_for_all_surfaces_before_draw_(wait_for_all_surfaces_before_draw),
+#if BUILDFLAG(IS_ANDROID)
+      use_platform_preferred_deadlines_(!base::FeatureList::IsEnabled(
+          features::kUseAndroidCustomFrameDeadlines)),
+#endif
       observing_begin_frame_source_(false),
       last_targeted_latch_time_(),
       hint_session_factory_(hint_session_factory),
-      tick_clock_(base::DefaultTickClock::GetInstance()) {
+      tick_clock_(base::DefaultTickClock::GetInstance()),
+      decider_(use_platform_preferred_deadlines_) {
   if (base::FeatureList::IsEnabled(features::kDisplaySchedulerAsClient)) {
     begin_frame_source_->SetSchedulerClient(this);
   }
@@ -315,8 +320,12 @@ bool DisplayScheduler::DrawAndSwap() {
         damage_tracker_
             ? damage_tracker_->GetEarliestInputGenerationTimeOfDamagedSurfaces()
             : std::nullopt;
+    int current_allocated_buffers =
+        client_ ? client_->GetCurrentAllocatedBuffers() : 0;
+    int max_allowed_buffers = std::max(MaxPendingSwapsForRefreshRate() + 1,
+                                       current_allocated_buffers);
     auto selected_deadline = deadlines.deadlines[decider_.SelectDeadline(
-        deadlines, current_begin_frame_args_.interval, params.max_pending_swaps,
+        deadlines, current_begin_frame_args_.interval, max_allowed_buffers,
         current_begin_frame_args_.frame_time, earliest_input_time)];
     // TODO(crbug.com/500826814): Move this logic into FrameDeadlineDecider.
     if (base::FeatureList::IsEnabled(features::kSelectFutureFrameDeadline)) {
@@ -351,7 +360,18 @@ bool DisplayScheduler::DrawAndSwap() {
         current_begin_frame_args_.frame_time + selected_deadline.latch_delta;
     params.choreographer_vsync_id = selected_deadline.vsync_id;
     params.selected_deadline = selected_deadline;
+    if (!use_platform_preferred_deadlines_) {
+      int max_pending_swaps_for_refresh_rate = MaxPendingSwapsForRefreshRate();
+      // Allow using already allocated buffers for max pending swaps
+      // calculations. This can help in case frame rate has dropped.
+      int max_allowed_swaps = std::max(current_allocated_buffers - 1,
+                                       max_pending_swaps_for_refresh_rate);
+      params.max_pending_swaps =
+          std::clamp(MaxPendingSwapsForDeadline(*params.selected_deadline), 1,
+                     max_allowed_swaps);
+    }
   }
+
   bool success = client_ && client_->DrawAndSwap(params);
   if (!success)
     return false;
@@ -433,35 +453,27 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
   ScheduleBeginFrameDeadline();
 }
 
-int DisplayScheduler::MaxPendingSwaps() const {
+int DisplayScheduler::MaxPendingSwapsForRefreshRate() const {
   // Interval for 72, 90, and 120hz with some delta for margin of error.
   constexpr base::TimeDelta k72HzInterval = base::Microseconds(14000);
   constexpr base::TimeDelta k90HzInterval = base::Microseconds(11500);
   constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
-  int param_max_pending_swaps;
   if (current_begin_frame_args_.interval < k120HzInterval &&
       pending_swap_params_.max_pending_swaps_120hz) {
-    param_max_pending_swaps =
-        pending_swap_params_.max_pending_swaps_120hz.value();
+    return pending_swap_params_.max_pending_swaps_120hz.value();
   } else if (current_begin_frame_args_.interval < k90HzInterval &&
              pending_swap_params_.max_pending_swaps_90hz) {
-    param_max_pending_swaps =
-        pending_swap_params_.max_pending_swaps_90hz.value();
+    return pending_swap_params_.max_pending_swaps_90hz.value();
   } else if (current_begin_frame_args_.interval < k72HzInterval &&
              pending_swap_params_.max_pending_swaps_72hz) {
-    param_max_pending_swaps =
-        pending_swap_params_.max_pending_swaps_72hz.value();
-  } else {
-    param_max_pending_swaps = pending_swap_params_.max_pending_swaps;
-  }
-  if (!current_begin_frame_args_.possible_deadlines) {
-    return param_max_pending_swaps;
+    return pending_swap_params_.max_pending_swaps_72hz.value();
   }
 
-  // Estimate the max pending swap based on the frame rate and presentation
-  // time.
-  const auto& deadline =
-      current_begin_frame_args_.possible_deadlines->GetOSPreferredDeadline();
+  return pending_swap_params_.max_pending_swaps;
+}
+
+int DisplayScheduler::MaxPendingSwapsForDeadline(
+    const PossibleDeadline& deadline) const {
   int64_t total_time_nanos = deadline.present_delta.InNanoseconds();
   int64_t interval_nanos = current_begin_frame_args_.interval.InNanoseconds();
   // Assuming no frames are dropped, then:
@@ -474,7 +486,35 @@ int DisplayScheduler::MaxPendingSwaps() const {
   // here the 0.8 constant is chosen to bias rounding up.
   int deadline_max_pending_swaps =
       (total_time_nanos + 0.8 * interval_nanos) / interval_nanos;
-  return std::clamp(deadline_max_pending_swaps, 1, param_max_pending_swaps);
+  return deadline_max_pending_swaps;
+}
+
+int DisplayScheduler::MaxPendingSwaps() const {
+  int max_pending_swaps_for_refresh_rate = MaxPendingSwapsForRefreshRate();
+
+  if (!current_begin_frame_args_.possible_deadlines) {
+    return max_pending_swaps_for_refresh_rate;
+  }
+
+  if (use_platform_preferred_deadlines_) {
+    // Estimate the max pending swap based on the frame rate and presentation
+    // time.
+    int deadline_max_pending_swaps = MaxPendingSwapsForDeadline(
+        current_begin_frame_args_.possible_deadlines->GetOSPreferredDeadline());
+    return std::clamp(deadline_max_pending_swaps, 1,
+                      max_pending_swaps_for_refresh_rate);
+  }
+
+  // Try to use all the buffers that we have already allocated.
+  // When `use_platform_preferred_deadlines_` is false, DrawAndSwap will
+  // explicitly check max pending swaps for custom chosen deadline and update
+  // DrawAndSwapParams.max_pending_swaps, which in turn will update buffers
+  // allocated for future frames.
+  int current_allocated_buffers =
+      client_ ? client_->GetCurrentAllocatedBuffers() : 0;
+  return current_allocated_buffers > 0
+             ? std::max(1, current_allocated_buffers - 1)
+             : pending_swap_params_.max_pending_swaps;
 }
 
 void DisplayScheduler::SetNeedsOneBeginFrame(const BeginFrameArgs& args,

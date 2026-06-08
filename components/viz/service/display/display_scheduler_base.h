@@ -46,6 +46,7 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
 
   virtual bool DrawAndSwap(const DrawAndSwapParams& params) = 0;
   virtual void DidFinishFrame(const BeginFrameAck& ack) = 0;
+  virtual int GetCurrentAllocatedBuffers() const;
 };
 
 class VIZ_SERVICE_EXPORT DisplaySchedulerBase

@@ -20,14 +20,12 @@ namespace {
 
 constexpr base::TimeDelta k120HzVsyncInterval = base::Milliseconds(8);
 constexpr int k120HzMaxPendingSwaps = 4;
+constexpr int k120HzAllowedBuffers = k120HzMaxPendingSwaps + 1;
 
 class FrameDeadlineDeciderTest : public testing::Test {
  public:
   FrameDeadlineDeciderTest() = default;
   ~FrameDeadlineDeciderTest() override = default;
-
- protected:
-  FrameDeadlineDecider decider_;
 };
 
 PossibleDeadlines CreatePossibleDeadlines(
@@ -45,14 +43,16 @@ TEST_F(FrameDeadlineDeciderTest, FeatureDisabledFallback) {
       features::kUseAndroidCustomFrameDeadlines);
 #endif
 
+  FrameDeadlineDecider decider(true);
+
   auto deadlines = CreatePossibleDeadlines(
       1, {PossibleDeadline(1, base::Milliseconds(4), base::Milliseconds(12)),
           PossibleDeadline(2, base::Milliseconds(8), base::Milliseconds(16)),
           PossibleDeadline(3, base::Milliseconds(12), base::Milliseconds(20))});
 
-  EXPECT_EQ(1u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       std::nullopt));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -67,6 +67,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SingleFrameSequenceDefaultOffset) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "0"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup 120Hz deadlines.
   // num_buffers = 4 + 1 = 5.
@@ -91,9 +93,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SingleFrameSequenceDefaultOffset) {
                               base::Milliseconds(48))  // After target
          });
 
-  EXPECT_EQ(2u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(2u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       std::nullopt));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest, SingleFrameSequenceNegativeOffset) {
@@ -101,6 +103,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SingleFrameSequenceNegativeOffset) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "-1"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup 120Hz deadlines.
   // num_buffers = 4 + 1 = 5.
@@ -125,9 +129,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SingleFrameSequenceNegativeOffset) {
                               base::Milliseconds(40))  // After target
          });
 
-  EXPECT_EQ(2u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(2u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       std::nullopt));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest, SanityGuardFallback) {
@@ -135,6 +139,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SanityGuardFallback) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "-4"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup 120Hz deadlines.
   // num_buffers = 4 + 1 = 5.
@@ -152,9 +158,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SanityGuardFallback) {
                               base::Milliseconds(16))  // OS preferred
          });
 
-  EXPECT_EQ(1u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       std::nullopt));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest, BinarySearchLessThanOrEqualSelection) {
@@ -162,6 +168,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest, BinarySearchLessThanOrEqualSelection) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "-1"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup 120Hz deadlines.
   // num_buffers = 4 + 1 = 5.
@@ -179,9 +187,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest, BinarySearchLessThanOrEqualSelection) {
                            base::Milliseconds(28)),  // LTE custom target
           PossibleDeadline(3, base::Milliseconds(28), base::Milliseconds(36))});
 
-  EXPECT_EQ(1u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       std::nullopt));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
@@ -189,6 +197,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "0"}});
+
+  FrameDeadlineDecider decider(false);
 
   // 1. Start sequence: max_pending_swaps = 4. Target = (4+1)*8 = 40ms.
   // Deadlines: [16ms (pref), 40ms]
@@ -200,9 +210,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
              PossibleDeadline(2, base::Milliseconds(32),
                               base::Milliseconds(40))  // Custom target
          });
-  EXPECT_EQ(1u, decider_.SelectDeadline(deadlines_1, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines_1, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       std::nullopt));
 
   // 2. Subsequent frame: max_pending_swaps = 2.
   // Recalculated target would be (2+1)*8 = 24ms.
@@ -218,17 +228,17 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
              PossibleDeadline(3, base::Milliseconds(32),
                               base::Milliseconds(40))  // Lock target
          });
-  EXPECT_EQ(2u, decider_.SelectDeadline(deadlines_2, k120HzVsyncInterval, 2,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(2u, decider.SelectDeadline(deadlines_2, k120HzVsyncInterval, 3,
+                                       base::TimeTicks(), std::nullopt));
 
   // 3. Go idle. This should reset the sequence.
-  decider_.OnGoIdle();
+  decider.OnGoIdle();
 
   // 4. New frame: max_pending_swaps = 2. Target = 24ms.
   // Deadlines: [16ms (pref), 24ms, 40ms]
   // Should recalculate and select index 1 (24ms).
-  EXPECT_EQ(1u, decider_.SelectDeadline(deadlines_2, k120HzVsyncInterval, 2,
-                                        base::TimeTicks(), std::nullopt));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines_2, k120HzVsyncInterval, 3,
+                                       base::TimeTicks(), std::nullopt));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest,
@@ -237,6 +247,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "0"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup 120Hz deadlines.
   // num_buffers = 4 + 1 = 5.
@@ -261,9 +273,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest,
   // Target present delta from presentation offset 0 = (4 + 1) * 8ms = 40ms.
   // Since target present delta (40ms) <= max present delta (80ms), the target
   // is not reduced. Custom matches index 2 (present = 40ms).
-  EXPECT_EQ(2u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps, frame_time,
-                                        frame_time - base::Milliseconds(10)));
+  EXPECT_EQ(2u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, frame_time,
+                                       frame_time - base::Milliseconds(10)));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest,
@@ -272,6 +284,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "0"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup 120Hz deadlines.
   // num_buffers = 4 + 1 = 5.
@@ -300,9 +314,9 @@ TEST_F(AndroidFrameDeadlineDeciderTest,
   // Since max present delta (30ms) < target present delta (40ms), the target is
   // capped at 30ms. Largest deadline present delta <= 30ms is 24ms (index 1).
   // Should select index 1.
-  EXPECT_EQ(1u, decider_.SelectDeadline(deadlines, k120HzVsyncInterval,
-                                        k120HzMaxPendingSwaps, frame_time,
-                                        frame_time - base::Milliseconds(60)));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       k120HzAllowedBuffers, frame_time,
+                                       frame_time - base::Milliseconds(60)));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest,
@@ -311,6 +325,8 @@ TEST_F(AndroidFrameDeadlineDeciderTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kUseAndroidCustomFrameDeadlines,
       {{"presentation_offset", "0"}});
+
+  FrameDeadlineDecider decider(false);
 
   // Setup deadlines.
   // OS preferred = index 0 (present = 16ms).
@@ -337,10 +353,11 @@ TEST_F(AndroidFrameDeadlineDeciderTest,
   //   max_present_delta = 90ms - (-40ms) = 130ms
   //   target present delta (120ms) is NOT capped (120ms < 130ms).
   //   Should select index 3.
-  EXPECT_EQ(1u, decider_.SelectDeadline(
-                    deadlines, k120HzVsyncInterval,
-                    14,  // max_pending_swaps = 14 -> target = 15 * 8 = 120ms
-                    frame_time, frame_time + base::Milliseconds(40)));
+  EXPECT_EQ(1u, decider.SelectDeadline(deadlines, k120HzVsyncInterval,
+                                       15,  // max_pending_swaps = 14 -> allowed
+                                            // = 15 -> target = 15 * 8 = 120ms
+                                       frame_time,
+                                       frame_time + base::Milliseconds(40)));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

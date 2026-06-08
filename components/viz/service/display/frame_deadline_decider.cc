@@ -15,14 +15,16 @@
 
 namespace viz {
 
-FrameDeadlineDecider::FrameDeadlineDecider() = default;
+FrameDeadlineDecider::FrameDeadlineDecider(
+    bool use_platform_preferred_deadlines)
+    : use_platform_preferred_deadlines_(use_platform_preferred_deadlines) {}
 
 FrameDeadlineDecider::~FrameDeadlineDecider() = default;
 
 size_t FrameDeadlineDecider::SelectDeadline(
     const PossibleDeadlines& possible_deadlines,
     base::TimeDelta vsync_interval,
-    int max_pending_swaps,
+    int max_allowed_buffers,
     base::TimeTicks frame_time,
     std::optional<base::TimeTicks> earliest_input_time) {
   TRACE_EVENT_BEGIN("toplevel,graphics.pipeline,viz",
@@ -53,13 +55,7 @@ size_t FrameDeadlineDecider::SelectDeadline(
         });
   };
 
-  bool use_platform_preferred_deadlines = true;
-#if BUILDFLAG(IS_ANDROID)
-  use_platform_preferred_deadlines =
-      !base::FeatureList::IsEnabled(features::kUseAndroidCustomFrameDeadlines);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  if (use_platform_preferred_deadlines) {
+  if (use_platform_preferred_deadlines_) {
     result_index = possible_deadlines.os_preferred_index;
     return result_index;
   }
@@ -76,12 +72,11 @@ size_t FrameDeadlineDecider::SelectDeadline(
       features::kAndroidCustomFrameDeadlinePresentationOffset.Get();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  int num_buffers = max_pending_swaps + 1;
   // num_buffers * vsync_interval is the maximum presentation interval we would
   // want to target. Since going beyond this threshold means frames would now
   // start stalling for long time, waiting for buffers to be freed. Thus,
   // `presentation_offset` is expected to be non-positive (<= 0).
-  int target_present_multiplier = num_buffers + presentation_offset;
+  int target_present_multiplier = max_allowed_buffers + presentation_offset;
   CHECK_GT(target_present_multiplier, 0);
   base::TimeDelta target_present_delta =
       target_present_multiplier * vsync_interval;
