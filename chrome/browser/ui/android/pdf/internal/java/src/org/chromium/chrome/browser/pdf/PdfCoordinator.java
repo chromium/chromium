@@ -28,8 +28,8 @@ import androidx.pdf.PdfPoint;
 import androidx.pdf.PdfSandboxHandle;
 import androidx.pdf.SandboxedPdfLoader;
 import androidx.pdf.content.ExternalLink;
-import androidx.pdf.ink.EditablePdfViewerFragment;
 import androidx.pdf.view.PdfView;
+import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
@@ -64,8 +64,8 @@ import java.util.function.Consumer;
 /**
  * The class responsible for setting up PdfPage.
  *
- * <p>Lint suppression for NewApi is added because we are using an EditablePdfViewerFragment and
- * inline pdf support is enabled via PdfUtils#shouldOpenPdfInline.
+ * <p>Lint suppression for NewApi is added because we are using PdfViewerFragment and inline pdf
+ * support is enabled via PdfUtils#shouldOpenPdfInline.
  */
 @SuppressLint("NewApi")
 @NullMarked
@@ -243,7 +243,7 @@ public class PdfCoordinator
     }
 
     /** The class responsible for rendering pdf document. */
-    public static class ChromePdfViewerFragment extends EditablePdfViewerFragment {
+    public static class ChromePdfViewerFragment extends PdfViewerFragment {
 
         private static final String KEY_VIEW_TAG = "view_tag";
         private @Nullable PdfActionsDelegate mDelegate;
