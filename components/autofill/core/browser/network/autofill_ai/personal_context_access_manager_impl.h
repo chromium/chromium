@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
@@ -65,6 +66,17 @@ class PersonalContextAccessManagerImpl
  private:
   friend class PersonalContextAccessManagerImplTestApi;
 
+  struct RequestState {
+    enum class Status {
+      kPending,
+      kSuccess,
+      kFailure,
+    };
+    Status status = Status::kSuccess;
+    base::TimeTicks last_update_time;
+    size_t failure_count = 0;
+  };
+
   // Clears all caches and invalidates weak pointers.
   void WipeCaches();
 
@@ -84,6 +96,19 @@ class PersonalContextAccessManagerImpl
   void CachePrefetchedEntities(
       absl::flat_hash_map<EntityTypeName, std::vector<EntityInstance>>
           entities);
+
+  // Returns true if a network request should be initiated for `type_name`.
+  // This is true if the type is not cached, its cache TTL has expired, or a
+  // previous fetch failed and is now eligible for a retry.
+  bool ShouldRequestType(EntityTypeName type_name) const;
+
+  // Evaluates whether enough time has elapsed since the last failure to
+  // attempt fetching the type again, taking backoff delays into account.
+  bool ShouldRetryAfterFailure(const RequestState& state) const;
+
+  // Marks the cache state for `type_name` as `status`. Updates the timestamp
+  // to start the cache TTL timer and sets the appropriate failure count.
+  void SetTypeStatus(EntityTypeName type_name, RequestState::Status status);
 
   // Caches an unmasked SPII `entity`, so it can be refilled without an
   // additional network round trip for `kUnmaskedSpiiCacheTTL`.
@@ -127,9 +152,8 @@ class PersonalContextAccessManagerImpl
   base::flat_set<EntityInstance, EntityInstance::CompareByGuid>
       unmasked_spii_cache_;
 
-  // Entity types for which their corresponding prefetched entities are within
-  // their TTL.
-  base::flat_set<EntityTypeName> cached_types_;
+  // Maps entity types to their current cache request/response state.
+  base::flat_map<EntityTypeName, RequestState> cache_state_;
 
   base::ScopedObservation<
       personal_context::PersonalContextEnablementService,

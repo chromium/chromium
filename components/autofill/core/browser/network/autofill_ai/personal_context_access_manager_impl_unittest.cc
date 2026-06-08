@@ -542,5 +542,40 @@ TEST_F(PersonalContextAccessManagerImplTest, WipeCachesOnDisablement) {
   EXPECT_EQ(access_manager().GetCachedEntity(passport.guid()), std::nullopt);
 }
 
+// Tests that a pending request blocks subsequent requests for the same type.
+TEST_F(PersonalContextAccessManagerImplTest, PendingRequestBlocksSubsequent) {
+  const std::vector<EntityType> requested_types = {
+      EntityType(EntityTypeName::kOrder)};
+
+  base::test::TestFuture<personal_context::FetchContextCallback> future;
+  EXPECT_CALL(
+      mock_personal_context_service(),
+      FetchContext(
+          personal_context::proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, _,
+          _, _))
+      .WillOnce(WithArg<3>(base::test::InvokeFuture(future)));
+
+  // First request should trigger FetchContext.
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+  ASSERT_TRUE(future.IsReady());
+
+  // Second request for the same type should NOT trigger FetchContext.
+  EXPECT_CALL(mock_personal_context_service(), FetchContext).Times(0);
+  access_manager().PrefetchAmbientAutofillContext(requested_types);
+
+  // It isn't cachet yet.
+  EXPECT_FALSE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+
+  // Resolve the first request.
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  personal_context::proto::Any any_response;
+  response.SerializeToString(any_response.mutable_value());
+  future.Take().Run(
+      personal_context::FetchContextResult(base::ok(std::move(any_response))));
+
+  // Now it is cached.
+  EXPECT_TRUE(access_manager().IsTypeCached(EntityTypeName::kOrder));
+}
+
 }  // namespace
 }  // namespace autofill
