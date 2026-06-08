@@ -42,10 +42,18 @@ TEST_F(ScriptMessageValueTest, DoubleConstructor) {
   EXPECT_EQ(3.14, message_value.GetValue().GetDouble());
 }
 
+// Tests initialization with a NSDictionary
 TEST_F(ScriptMessageValueTest, ValueShouldSupportDictConstruction) {
   NSDictionary* ns_dict = @{@"key" : @"value"};
   ScriptMessageValue message_value(ns_dict);
   EXPECT_EQ(base::Value::Type::DICT, message_value.type());
+}
+
+// Tests initialization with a NSArray
+TEST_F(ScriptMessageValueTest, ValueShouldSupportArrayConstruction) {
+  NSArray* ns_array = @[ @"key", @"value" ];
+  ScriptMessageValue message_value(ns_array);
+  EXPECT_EQ(base::Value::Type::LIST, message_value.type());
 }
 
 // Tests move construction and move assignment.

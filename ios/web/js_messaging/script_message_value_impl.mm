@@ -7,7 +7,6 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
-#import "ios/web/public/js_messaging/script_message_dict_value.h"
 #import "ios/web/public/js_messaging/script_message_value.h"
 
 namespace web {
@@ -30,6 +29,10 @@ ScriptMessageValue::ScriptMessageValue(ScriptMessageDictValue value)
     : data_(std::move(value)) {}
 ScriptMessageValue::ScriptMessageValue(NSDictionary* value)
     : data_(ScriptMessageDictValue(value)) {}
+ScriptMessageValue::ScriptMessageValue(ScriptMessageListValue value)
+    : data_(std::move(value)) {}
+ScriptMessageValue::ScriptMessageValue(NSArray* value)
+    : data_(ScriptMessageListValue(value)) {}
 
 ScriptMessageValue::~ScriptMessageValue() = default;
 
@@ -42,6 +45,8 @@ base::Value::Type ScriptMessageValue::type() const {
     return std::get<base::Value>(data_).type();
   } else if (std::holds_alternative<ScriptMessageDictValue>(data_)) {
     return base::Value::Type::DICT;
+  } else if (std::holds_alternative<ScriptMessageListValue>(data_)) {
+    return base::Value::Type::LIST;
   }
 
   NOTREACHED();
@@ -59,6 +64,11 @@ const base::Value& ScriptMessageValue::GetValue() {
 const ScriptMessageDictValue& ScriptMessageValue::GetDict() const {
   CHECK(type() == base::Value::Type::DICT);
   return std::get<ScriptMessageDictValue>(data_);
+}
+
+const ScriptMessageListValue& ScriptMessageValue::GetList() const {
+  CHECK(type() == base::Value::Type::LIST);
+  return std::get<ScriptMessageListValue>(data_);
 }
 
 }  // namespace web

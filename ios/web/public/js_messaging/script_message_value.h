@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/values.h"
 #include "ios/web/public/js_messaging/script_message_dict_value.h"
+#include "ios/web/public/js_messaging/script_message_list_value.h"
 
 namespace web {
 
@@ -35,6 +36,8 @@ class ScriptMessageValue {
   explicit ScriptMessageValue(bool value);
   explicit ScriptMessageValue(ScriptMessageDictValue value);
   explicit ScriptMessageValue(NSDictionary* value);
+  explicit ScriptMessageValue(ScriptMessageListValue value);
+  explicit ScriptMessageValue(NSArray* value);
 
   ~ScriptMessageValue();
   // Type checker functions.
@@ -44,10 +47,15 @@ class ScriptMessageValue {
   // type mismatch.
   const base::Value& GetValue();
   const ScriptMessageDictValue& GetDict() const;
+  const ScriptMessageListValue& GetList() const;
 
  private:
   // The object ScriptMessageValue encapsulates.
-  std::variant<std::monostate, base::Value, ScriptMessageDictValue> data_;
+  std::variant<std::monostate,
+               base::Value,
+               ScriptMessageDictValue,
+               ScriptMessageListValue>
+      data_;
 };
 
 }  // namespace web

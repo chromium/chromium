@@ -15,6 +15,7 @@
 
 namespace web {
 class ScriptMessageValue;
+class ScriptMessageListValue;
 
 class ScriptMessageDictValue {
  public:
@@ -49,7 +50,7 @@ class ScriptMessageDictValue {
   std::optional<double> FindDouble(std::string_view key) const;
   std::optional<std::string> FindString(std::string_view key) const;
   std::unique_ptr<ScriptMessageDictValue> FindDict(std::string_view key) const;
-  // TODO(crbug.com/509501985): Add List support.
+  std::unique_ptr<ScriptMessageListValue> FindList(std::string_view key) const;
 
  private:
   NSDictionary* data_;
