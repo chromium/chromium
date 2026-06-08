@@ -451,6 +451,21 @@ TEST_F(AccountCapabilitiesTest,
       signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, SupportsWalletPrivatePassesInAutofill) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.supports_wallet_private_passes_in_autofill(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_supports_wallet_private_passes_in_autofill(true);
+  EXPECT_EQ(capabilities.supports_wallet_private_passes_in_autofill(),
+            signin::Tribool::kTrue);
+
+  mutator.set_supports_wallet_private_passes_in_autofill(false);
+  EXPECT_EQ(capabilities.supports_wallet_private_passes_in_autofill(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, AreAnyCapabilitiesKnown_Empty) {
   AccountCapabilities capabilities;
   EXPECT_FALSE(capabilities.AreAnyCapabilitiesKnown());

@@ -211,4 +211,10 @@ ACCOUNT_CAPABILITY_F(kMustSkipAppleAgeRangeInChromeCapabilityName,
                      switches::kEnforceMustSkipAppleAgeRangeInChromeCapability)
 #endif
 
+ACCOUNT_CAPABILITY_F(
+    kSupportsWalletPrivatePassesInAutofillCapabilityName,
+    SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME,
+    "accountcapabilities/gi3dknrnmnqxa",
+    switches::kReadSupportsWalletPrivatePassesInAutofillCapability)
+
 // keep-sorted end

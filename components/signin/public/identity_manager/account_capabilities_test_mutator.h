@@ -78,6 +78,7 @@ class AccountCapabilitiesTestMutator {
 #if BUILDFLAG(IS_IOS)
   void set_must_skip_apple_age_range_in_chrome(bool value);
 #endif
+  void set_supports_wallet_private_passes_in_autofill(bool value);
   // keep-sorted end
 
   // Modifies all supported capabilities at once.

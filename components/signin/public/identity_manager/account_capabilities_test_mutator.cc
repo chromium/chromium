@@ -229,6 +229,12 @@ void AccountCapabilitiesTestMutator::set_must_skip_apple_age_range_in_chrome(
 }
 #endif
 
+void AccountCapabilitiesTestMutator::
+    set_supports_wallet_private_passes_in_autofill(bool value) {
+  capabilities_->capabilities_map_
+      [kSupportsWalletPrivatePassesInAutofillCapabilityName] = value;
+}
+
 // keep-sorted end
 
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {

@@ -292,6 +292,12 @@ signin::Tribool AccountCapabilities::must_skip_apple_age_range_in_chrome()
 }
 #endif
 
+signin::Tribool
+AccountCapabilities::supports_wallet_private_passes_in_autofill() const {
+  return GetCapabilityByName(
+      kSupportsWalletPrivatePassesInAutofillCapabilityName);
+}
+
 // keep-sorted end
 
 bool AccountCapabilities::UpdateWith(const AccountCapabilities& other) {

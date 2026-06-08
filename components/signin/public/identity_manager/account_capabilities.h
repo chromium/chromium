@@ -180,6 +180,9 @@ class AccountCapabilities {
   signin::Tribool must_skip_apple_age_range_in_chrome() const;
 #endif
 
+  // Whether the account may fill and save Wallet private passes in Autofill.
+  signin::Tribool supports_wallet_private_passes_in_autofill() const;
+
   // keep-sorted end
 
   // Whether at least one of the capabilities is not
