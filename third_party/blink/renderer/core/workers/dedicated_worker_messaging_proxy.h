@@ -33,6 +33,7 @@ class FetchClientSettingsObjectSnapshot;
 class WorkerOptions;
 struct WorkerMainScriptLoadParameters;
 struct JavaScriptFrameworkDetectionResult;
+struct WebPolicyContainer;
 
 // A proxy class to talk to the DedicatedWorkerGlobalScope on a worker thread
 // via the DedicatedWorkerMessagingProxy from the main thread. See class
@@ -67,7 +68,8 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
-          back_forward_cache_controller_host);
+          back_forward_cache_controller_host,
+      std::unique_ptr<WebPolicyContainer> policy_container);
   void PostMessageToWorkerGlobalScope(BlinkTransferableMessage);
   void PostCustomEventToWorkerGlobalScope(
       TaskType task_type,

@@ -9,6 +9,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/renderer/policy_container_util.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
@@ -120,6 +121,7 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
     mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
         back_forward_cache_controller_host,
+    blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<blink::mojom::ReportingObserver>
@@ -163,10 +165,11 @@ void DedicatedWorkerHostFactoryClient::OnScriptLoadStarted(
       main_script_load_params->redirect_infos;
   worker_main_script_load_params->url_loader_client_endpoints =
       std::move(main_script_load_params->url_loader_client_endpoints);
-  worker_->OnScriptLoadStarted(std::move(worker_main_script_load_params),
-                               std::move(back_forward_cache_controller_host),
-                               std::move(coep_reporting_observer),
-                               std::move(dip_reporting_observer));
+  worker_->OnScriptLoadStarted(
+      std::move(worker_main_script_load_params),
+      std::move(back_forward_cache_controller_host),
+      ToWebPolicyContainer(std::move(policy_container)),
+      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
 }
 
 void DedicatedWorkerHostFactoryClient::OnScriptLoadStartFailed() {

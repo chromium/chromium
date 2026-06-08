@@ -577,6 +577,9 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   result->subresource_loader_factories->set_bypass_redirect_checks(
       bypass_redirect_checks);
 
+  auto policy_container_host = base::MakeRefCounted<PolicyContainerHost>(
+      std::move(result->policy_container_policies));
+
   blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info;
   blink::mojom::ControllerServiceWorkerInfoPtr controller;
   if (service_worker_handle_->service_worker_client()) {
@@ -597,8 +600,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     std::tie(container_info, controller) =
         service_worker_handle_->scoped_service_worker_client()
             ->CommitResponseAndRelease(
-                /*rfh_id=*/std::nullopt,
-                std::move(result->policy_container_policies),
+                /*rfh_id=*/std::nullopt, policy_container_host->policies(),
                 std::move(coep_reporter), std::move(dip_reporter),
                 ukm::kInvalidSourceId);
   }
@@ -609,6 +611,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       subresource_loader_updater_.BindNewPipeAndPassReceiver(),
       std::move(controller),
       BindAndPassRemoteForBackForwardCacheControllerHost(),
+      policy_container_host->CreatePolicyContainerForBlink(),
       std::move(coep_reporting_observer), std::move(dip_reporting_observer));
   if (service_worker_handle_->service_worker_client()) {
     service_worker_handle_->service_worker_client()->SetContainerReady();

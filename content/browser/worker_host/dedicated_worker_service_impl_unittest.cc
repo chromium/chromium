@@ -106,6 +106,7 @@ class MockDedicatedWorker
       blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
       mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
           back_forward_cache_controller_host,
+      blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<blink::mojom::ReportingObserver>

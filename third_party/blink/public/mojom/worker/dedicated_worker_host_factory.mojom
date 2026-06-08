@@ -18,6 +18,7 @@ import "third_party/blink/public/mojom/worker/worker_main_script_load_params.moj
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom";
 import "url/mojom/url.mojom";
 import "url/mojom/origin.mojom";
@@ -74,6 +75,9 @@ interface DedicatedWorkerHostFactoryClient {
       // usages.
       pending_remote<BackForwardCacheControllerHost>
       back_forward_cache_controller_host,
+
+      // The policy container of the worker.
+      PolicyContainer policy_container,
 
       // Used by a CrossOriginEmbedderPolicyReporter to send reports to the
       // ReportingObservers.

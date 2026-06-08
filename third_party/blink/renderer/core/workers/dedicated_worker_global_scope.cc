@@ -328,8 +328,9 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
                     perfetto::Track::FromPointer(this));
   fetch_classic_script_start_time_ = base::TimeTicks::Now();
 
-  // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
-  // container from DedicatedWorkerHost
+  if (policy_container) {
+    SetPolicyContainer(std::move(policy_container));
+  }
 
   // Step 12. "Fetch a classic worker script given url, outside settings,
   // destination, and inside settings."
@@ -371,8 +372,9 @@ void DedicatedWorkerGlobalScope::FetchAndRunModuleScript(
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::FetchAndRunModuleScript",
               "module_url_record", module_url_record);
-  // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
-  // container from DedicatedWorkerHost
+  if (policy_container) {
+    SetPolicyContainer(std::move(policy_container));
+  }
 
   if (worker_main_script_load_params) {
     SetWorkerMainScriptLoadingParametersForModules(

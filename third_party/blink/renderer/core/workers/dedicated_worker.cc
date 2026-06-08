@@ -356,6 +356,7 @@ void DedicatedWorker::OnScriptLoadStarted(
     CrossVariantMojoRemote<
         mojom::blink::BackForwardCacheControllerHostInterfaceBase>
         back_forward_cache_controller_host,
+    std::unique_ptr<WebPolicyContainer> policy_container,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
         coep_reporting_observer,
     CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
@@ -368,7 +369,7 @@ void DedicatedWorker::OnScriptLoadStarted(
                 Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
                 DocumentPolicy::DocumentPolicyBundle{},
                 std::move(back_forward_cache_controller_host),
-                std::move(coep_reporting_observer),
+                std::move(policy_container), std::move(coep_reporting_observer),
                 std::move(dip_reporting_observer));
 }
 
@@ -410,6 +411,7 @@ void DedicatedWorker::ContinueStart(
     DocumentPolicy::DocumentPolicyBundle response_document_policy,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host,
+    std::unique_ptr<WebPolicyContainer> policy_container,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
@@ -434,6 +436,7 @@ void DedicatedWorker::ContinueStart(
                      std::move(response_content_security_policies),
                      std::move(response_document_policy),
                      std::move(back_forward_cache_controller_host),
+                     std::move(policy_container),
                      std::move(coep_reporting_observer),
                      std::move(dip_reporting_observer)),
             base::Milliseconds(features::kDedicatedWorkerStartDelayInMs.Get()));
@@ -444,7 +447,8 @@ void DedicatedWorker::ContinueStart(
       std::move(referrer_policy), std::move(response_content_security_policies),
       std::move(response_document_policy),
       std::move(back_forward_cache_controller_host),
-      std::move(coep_reporting_observer), std::move(dip_reporting_observer));
+      std::move(policy_container), std::move(coep_reporting_observer),
+      std::move(dip_reporting_observer));
 }
 
 void DedicatedWorker::ContinueStartInternal(
@@ -457,6 +461,7 @@ void DedicatedWorker::ContinueStartInternal(
     DocumentPolicy::DocumentPolicyBundle document_policy,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host,
+    std::unique_ptr<WebPolicyContainer> policy_container,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
         coep_reporting_observer,
     mojo::PendingReceiver<mojom::blink::ReportingObserver>
@@ -474,7 +479,8 @@ void DedicatedWorker::ContinueStartInternal(
       std::move(worker_main_script_load_params), options_, script_url,
       *outside_fetch_client_settings_object_, v8_stack_trace_id_, token_,
       std::move(pending_dedicated_worker_host_),
-      std::move(back_forward_cache_controller_host));
+      std::move(back_forward_cache_controller_host),
+      std::move(policy_container));
 }
 
 namespace {

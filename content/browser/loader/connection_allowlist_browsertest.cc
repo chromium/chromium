@@ -1708,6 +1708,91 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       ServiceWorkerSubresourceFetchBlockedForDedicatedWorker) {
+  RegisterResponse(
+      "/sw.js",
+      ResponseEntry(
+          "self.addEventListener('install', e => self.skipWaiting());\n"
+          "self.addEventListener('activate', e => "
+          "e.waitUntil(self.clients.claim()));\n"
+          "self.addEventListener('fetch', event => {\n"
+          "  if (event.request.url.indexOf('cross-origin-resource') !== -1) "
+          "{\n"
+          "    event.respondWith(fetch(event.request));\n"
+          "  }\n"
+          "});",
+          {{"Content-Type", "text/javascript"}}));
+
+  // The main page has no Connection-Allowlist.
+  RegisterResponse("/index.html",
+                   ResponseEntry("<html><body>Hello</body></html>", {}));
+
+  // The worker has Connection-Allowlist: (response-origin).
+  RegisterResponse(
+      "/worker.js",
+      ResponseEntry("self.onmessage = async (e) => {\n"
+                    "  try {\n"
+                    "    await fetch(e.data.url);\n"
+                    "    postMessage('success');\n"
+                    "  } catch (err) {\n"
+                    "    postMessage('error');\n"
+                    "  }\n"
+                    "};",
+                    {{"Content-Type", "text/javascript"},
+                     {"Connection-Allowlist", "(response-origin)"}}));
+
+  RegisterResponse(
+      "/cross-origin-resource",
+      ResponseEntry("allowed-content", {{"Access-Control-Allow-Origin", "*"}}));
+
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL main_url = embedded_https_test_server().GetURL("a.test", "/index.html");
+  GURL cross_origin_url =
+      embedded_https_test_server().GetURL("b.test", "/cross-origin-resource");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Register and activate the Service Worker.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         R"(
+            (async () => {
+              const reg = await navigator.serviceWorker.register('/sw.js');
+              await new Promise(resolve => {
+                const worker = reg.installing || reg.waiting || reg.active;
+                if (worker.state === 'activated') {
+                  resolve();
+                } else {
+                  worker.addEventListener('statechange', () => {
+                    if (worker.state === 'activated') {
+                      resolve();
+                    }
+                  });
+                }
+              });
+              return !!navigator.serviceWorker.controller;
+            })();
+          )"));
+
+  // Start the Dedicated Worker and let it fetch the cross-origin resource.
+  // Since the worker has Connection-Allowlist: (response-origin), it should
+  // be blocked in Blink before reaching the Service Worker.
+  EXPECT_EQ("error", EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                            JsReplace(R"(
+            (async () => {
+              const worker = new Worker('/worker.js');
+              const result = await new Promise(resolve => {
+                worker.onmessage = e => resolve(e.data);
+                worker.postMessage({url: $1});
+              });
+              worker.terminate();
+              return result;
+            })();
+          )",
+                                      cross_origin_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
                        ServiceWorkerConnectionAllowlistEnforced) {
   RegisterResponse(
       "/sw.js",

@@ -118,7 +118,8 @@ Blink is the rendering engine running in the renderer process.
     Service Worker. This is done in blink because the renderer directly talks
     to the Service Worker URLLoaderFactory in these cases, not giving the
     document's URLLoaderFactory checks to run, unless the SW decides to
-    fallback on the original fetch.
+    fallback on the original fetch. This applies when the initiating
+    context is either a document, dedicated worker or shared worker.
 
 ### Integration with service workers
 Service Workers act as network proxies in the renderer process, intercepting requests

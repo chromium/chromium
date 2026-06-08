@@ -48,6 +48,7 @@ class ScriptState;
 class V8UnionTrustedScriptURLOrUSVString;
 class WebContentSettingsClient;
 struct GlobalScopeCreationParams;
+struct WebPolicyContainer;
 
 // Implementation of the Worker interface defined in the WebWorker HTML spec:
 // https://html.spec.whatwg.org/C/#worker
@@ -126,6 +127,7 @@ class CORE_EXPORT DedicatedWorker final
       CrossVariantMojoRemote<
           mojom::blink::BackForwardCacheControllerHostInterfaceBase>
           back_forward_cache_controller_host,
+      std::unique_ptr<WebPolicyContainer> policy_container,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
           coep_reporting_observer,
       CrossVariantMojoReceiver<mojom::blink::ReportingObserverInterfaceBase>
@@ -161,6 +163,7 @@ class CORE_EXPORT DedicatedWorker final
       DocumentPolicy::DocumentPolicyBundle response_document_policy,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
           back_forward_cache_controller_host,
+      std::unique_ptr<WebPolicyContainer> policy_container,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
@@ -175,6 +178,7 @@ class CORE_EXPORT DedicatedWorker final
       DocumentPolicy::DocumentPolicyBundle response_document_policy,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
           back_forward_cache_controller_host,
+      std::unique_ptr<WebPolicyContainer> policy_container,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
           coep_reporting_observer,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>
