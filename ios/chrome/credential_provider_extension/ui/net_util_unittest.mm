@@ -49,6 +49,7 @@ TEST_F(NetUtilTest, SecureHostsMatch) {
   // Exact match.
   EXPECT_TRUE(SecureHostsMatch(@"example.com", @"example.com"));
   EXPECT_TRUE(SecureHostsMatch(@"login.example.com", @"login.example.com"));
+  EXPECT_TRUE(SecureHostsMatch(@"example.co.uk", @"example.co.uk"));
 
   // RP ID / credential host is a registrable suffix of the origin's domain.
   EXPECT_TRUE(SecureHostsMatch(@"login.example.com", @"example.com"));
@@ -56,6 +57,8 @@ TEST_F(NetUtilTest, SecureHostsMatch) {
   EXPECT_TRUE(
       SecureHostsMatch(@"auth.login.example.com", @"login.example.com"));
   EXPECT_TRUE(SecureHostsMatch(@"login.railway.app", @"railway.app"));
+  EXPECT_TRUE(SecureHostsMatch(@"login.example.co.uk", @"example.co.uk"));
+  EXPECT_TRUE(SecureHostsMatch(@"auth.login.example.co.uk", @"example.co.uk"));
 
   // Same eTLD+1 but not a suffix (e.g., origin a.foo.com claiming RP ID
   // b.foo.com).
@@ -65,14 +68,17 @@ TEST_F(NetUtilTest, SecureHostsMatch) {
   // Credential host is longer than requested host.
   EXPECT_FALSE(SecureHostsMatch(@"example.com", @"login.example.com"));
   EXPECT_FALSE(SecureHostsMatch(@"railway.app", @"login.railway.app"));
+  EXPECT_FALSE(SecureHostsMatch(@"example.co.uk", @"login.example.co.uk"));
 
   // Suffix Match boundary hijacking checks (should REJECT!).
   EXPECT_FALSE(SecureHostsMatch(@"attacker.up.railway.app", @"railway.app"));
   EXPECT_FALSE(SecureHostsMatch(@"evil-railway.app", @"railway.app"));
   EXPECT_FALSE(SecureHostsMatch(@"railway.app.evil.com", @"railway.app"));
+  EXPECT_FALSE(SecureHostsMatch(@"evil-example.co.uk", @"example.co.uk"));
 
   // TLD / non-registrable suffix.
   EXPECT_FALSE(SecureHostsMatch(@"login.example.com", @"com"));
+  EXPECT_FALSE(SecureHostsMatch(@"login.example.co.uk", @"co.uk"));
 }
 
 }  // namespace credential_provider_extension
