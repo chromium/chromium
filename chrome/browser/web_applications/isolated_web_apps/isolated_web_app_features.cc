@@ -16,7 +16,7 @@
 namespace web_app {
 
 namespace {
-using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+using Availability = policy::DeveloperToolsAvailability;
 }
 
 bool IsIwaDevModeEnabled(Profile* profile) {

@@ -393,7 +393,7 @@ void MapChromeToArcPolicies(base::DictValue& filtered_policies,
       policy_util::kArcPolicyKeyDebuggingFeaturesDisabled,
       ash::chrome_prefs::kDevToolsAvailability, profile_prefs,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed),
+          policy::DeveloperToolsAvailability::kDisallowed),
       &filtered_policies);
   MapBoolToBool(policy_util::kArcPolicyKeyPrintingDisabled,
                 policy::key::kPrintingEnabled, policy_map,

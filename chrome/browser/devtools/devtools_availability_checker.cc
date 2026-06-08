@@ -43,9 +43,9 @@
 
 namespace {
 
-policy::DeveloperToolsPolicyHandler::Availability GetDevToolsAvailability(
+policy::DeveloperToolsAvailability GetDevToolsAvailability(
     Profile* profile) {
-  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  using Availability = policy::DeveloperToolsAvailability;
   Availability availability =
       policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
 #if BUILDFLAG(IS_CHROMEOS)
@@ -172,7 +172,7 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   }
 
   // Fall back to the general enum policy for the tab context.
-  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  using Availability = policy::DeveloperToolsAvailability;
   Availability availability = GetDevToolsAvailability(profile);
   switch (availability) {
     case Availability::kDisallowed:
@@ -224,7 +224,7 @@ bool IsInspectionAllowed(Profile* profile,
   }
 #endif
 
-  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  using Availability = policy::DeveloperToolsAvailability;
   Availability availability =
       extension ? policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(
                       profile)
@@ -280,7 +280,7 @@ bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app) {
         break;
     }
   }
-  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  using Availability = policy::DeveloperToolsAvailability;
   Availability availability =
       policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
   switch (availability) {
@@ -328,7 +328,7 @@ bool IsInspectionAllowed(Profile* profile, const GURL& url) {
     }
   }
 
-  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  using Availability = policy::DeveloperToolsAvailability;
   Availability availability = GetDevToolsAvailability(profile);
   switch (availability) {
     case Availability::kDisallowed:

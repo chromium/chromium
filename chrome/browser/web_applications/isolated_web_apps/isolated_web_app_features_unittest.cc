@@ -29,7 +29,7 @@ using testing::IsTrue;
 class IsolatedWebAppFeaturesTest : public WebAppTest {
  protected:
   void SetDeveloperToolsAvailabilityPolicy(
-      policy::DeveloperToolsPolicyHandler::Availability availability) {
+      policy::DeveloperToolsAvailability availability) {
     profile()->GetTestingPrefService()->SetManagedPref(
         prefs::kDevToolsAvailability,
         base::Value(std::to_underlying(availability)));
@@ -54,7 +54,7 @@ TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledDevPolicyDisabled) {
   base::test::ScopedFeatureList scoped_feature_list{features::kIsolatedWebApps};
 
   SetDeveloperToolsAvailabilityPolicy(
-      policy::DeveloperToolsPolicyHandler::Availability::
+      policy::DeveloperToolsAvailability::
           kDisallowedForForceInstalledExtensions);
   EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
 }
@@ -66,7 +66,7 @@ TEST_F(IsolatedWebAppFeaturesTest, IwaEnabledDevModeEnabledDevPolicyDisabled) {
   EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsTrue());
 
   SetDeveloperToolsAvailabilityPolicy(
-      policy::DeveloperToolsPolicyHandler::Availability::kDisallowed);
+      policy::DeveloperToolsAvailability::kDisallowed);
   EXPECT_THAT(IsIwaDevModeEnabled(profile()), IsFalse());
 }
 

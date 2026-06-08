@@ -3177,7 +3177,7 @@ class DevToolsPolicyContextMenuBrowserTest : public ContextMenuBrowserTestBase {
   }
 
   void SetDevToolsAvailability(
-      policy::DeveloperToolsPolicyHandler::Availability availability) {
+      policy::DeveloperToolsAvailability availability) {
     browser()->profile()->GetPrefs()->SetInteger(
         prefs::kDevToolsAvailability, static_cast<int>(availability));
   }
@@ -3188,7 +3188,7 @@ class DevToolsPolicyContextMenuBrowserTest : public ContextMenuBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsBlocked) {
   SetDevToolsAvailability(
-      policy::DeveloperToolsPolicyHandler::Availability::kDisallowed);
+      policy::DeveloperToolsAvailability::kDisallowed);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -3210,7 +3210,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsBlocked) {
 
 IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsAllowed) {
   SetDevToolsAvailability(
-      policy::DeveloperToolsPolicyHandler::Availability::kAllowed);
+      policy::DeveloperToolsAvailability::kAllowed);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

@@ -26,7 +26,7 @@ void SetUpSupervisedUserPolicies(
     enterprise_management::CloudPolicySettings* policy_payload) {
   policy_payload->mutable_developertoolsavailability()->set_value(
       static_cast<int64_t>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
   policy_payload->mutable_educoexistencetosversion()->set_value(
       kEduCoexistenceToSVersion);
 

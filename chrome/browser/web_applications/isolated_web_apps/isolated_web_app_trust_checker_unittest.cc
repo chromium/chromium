@@ -204,7 +204,7 @@ TEST_F(IsolatedWebAppTrustCheckerTest, TrustedViaDevMode) {
   pref_service().SetInteger(
       prefs::kDevToolsAvailability,
       std::to_underlying(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
 
   EXPECT_THAT(IsolatedWebAppTrustChecker::IsOperationAllowed(
                   *profile(), kWebBundleId1, /*dev_mode=*/true,

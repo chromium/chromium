@@ -55,7 +55,7 @@ void DeveloperToolsPolicyCheckerFactory::RegisterProfilePrefs(
   // TODO(crbug.com/442892562) Add implementation for mobile.
   registry->RegisterIntegerPref(
       prefs::kDevToolsAvailability,
-      static_cast<int>(DeveloperToolsPolicyHandler::Availability::
+      static_cast<int>(DeveloperToolsAvailability::
                            kDisallowedForForceInstalledExtensions));
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)

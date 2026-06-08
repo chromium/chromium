@@ -51,7 +51,7 @@ constexpr auto kSecondaryUserAccountId =
 }  // namespace
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-using Availability = DeveloperToolsPolicyHandler::Availability;
+using Availability = DeveloperToolsAvailability;
 
 class DeveloperToolsPolicyHandlerTest
     : public ConfigurationPolicyPrefStoreTest {

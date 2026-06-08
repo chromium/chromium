@@ -606,7 +606,7 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyAllowedTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kAllowed)));
+          policy::DeveloperToolsAvailability::kAllowed)));
   GetPoliciesAndVerifyResult(
       "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":false,"
       "\"guid\":\"" +
@@ -618,7 +618,7 @@ TEST_F(ArcPolicyBridgeTest,
   profile()->GetTestingPrefService()->SetManagedPref(
       ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(
-          static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
+          static_cast<int>(policy::DeveloperToolsAvailability::
                                kDisallowedForForceInstalledExtensions)));
   GetPoliciesAndVerifyResult(
       "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":false,"
@@ -630,7 +630,7 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyDisallowedTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
+          policy::DeveloperToolsAvailability::kDisallowed)));
   GetPoliciesAndVerifyResult(
       "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":true,"
       "\"guid\":\"" +
@@ -641,7 +641,7 @@ TEST_F(ArcPolicyBridgeTest, ForceDevToolsAvailabilityTest) {
   profile()->GetTestingPrefService()->SetManagedPref(
       ash::chrome_prefs::kDevToolsAvailability,
       std::make_unique<base::Value>(static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
+          policy::DeveloperToolsAvailability::kDisallowed)));
   base::test::ScopedCommandLine command_line;
   command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kForceDevToolsAvailable);

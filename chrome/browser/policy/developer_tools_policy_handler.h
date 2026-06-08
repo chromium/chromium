@@ -28,12 +28,6 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
       delete;
   ~DeveloperToolsPolicyHandler() override;
 
-  // Type alias preserved for backward compatibility with existing callers.
-  // New code (especially outside //chrome) should prefer the canonical
-  // policy::DeveloperToolsAvailability from
-  // components/policy/core/browser/developer_tools_availability.h.
-  using Availability = DeveloperToolsAvailability;
-
   // ConfigurationPolicyHandler methods:
   bool CheckPolicySettings(const policy::PolicyMap& policies,
                            policy::PolicyErrorMap* errors) override;
@@ -41,7 +35,7 @@ class DeveloperToolsPolicyHandler : public ConfigurationPolicyHandler {
                            PrefValueMap* prefs) override;
 
   // Returns the effective developer tools availability for the profile.
-  static Availability GetEffectiveAvailability(Profile* profile);
+  static DeveloperToolsAvailability GetEffectiveAvailability(Profile* profile);
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

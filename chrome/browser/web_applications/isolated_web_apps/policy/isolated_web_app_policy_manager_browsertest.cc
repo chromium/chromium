@@ -100,7 +100,7 @@ const UpdateChannel kBetaChannel = UpdateChannel::Create("beta").value();
 constexpr std::string kPinnedVersion = "1.0.0";
 constexpr char kOrphanedBundleDirectory[] = "6zsr4hjoudsu6ihf";
 
-using policy::DeveloperToolsPolicyHandler;
+using policy::DeveloperToolsAvailability;
 
 using UpdateDiscoveryTaskFuture =
     base::test::TestFuture<IsolatedWebAppUpdateDiscoveryTask::CompletionStatus>;
@@ -807,7 +807,7 @@ INSTANTIATE_TEST_SUITE_P(
 class IsolatedWebAppDevToolsTestWithPolicy
     : public IsolatedWebAppPolicyManagerBrowserTestBase,
       public testing::WithParamInterface<
-          std::tuple<bool, DeveloperToolsPolicyHandler::Availability>> {
+          std::tuple<bool, DeveloperToolsAvailability>> {
  public:
   IsolatedWebAppDevToolsTestWithPolicy()
       : IsolatedWebAppPolicyManagerBrowserTestBase(std::get<bool>(GetParam())) {
@@ -817,11 +817,11 @@ class IsolatedWebAppDevToolsTestWithPolicy
     GetProfileForTest()->GetPrefs()->SetInteger(
         prefs::kDevToolsAvailability,
         std::to_underlying(
-            std::get<DeveloperToolsPolicyHandler::Availability>(GetParam())));
+            std::get<DeveloperToolsAvailability>(GetParam())));
   }
   bool AreDevToolsWindowsAllowedByCurrentPolicy() const {
-    return std::get<DeveloperToolsPolicyHandler::Availability>(GetParam()) ==
-           DeveloperToolsPolicyHandler::Availability::kAllowed;
+    return std::get<DeveloperToolsAvailability>(GetParam()) ==
+           DeveloperToolsAvailability::kAllowed;
   }
 };
 
@@ -871,10 +871,10 @@ INSTANTIATE_TEST_SUITE_P(
         /*is_user_session=*/testing::ValuesIn({true}),
 #endif  // BUILDFLAG(IS_CHROMEOS)
         testing::Values(
-            DeveloperToolsPolicyHandler::Availability::kAllowed,
-            DeveloperToolsPolicyHandler::Availability::
+            DeveloperToolsAvailability::kAllowed,
+            DeveloperToolsAvailability::
                 kDisallowedForForceInstalledExtensions,
-            DeveloperToolsPolicyHandler::Availability::kDisallowed)));
+            DeveloperToolsAvailability::kDisallowed)));
 
 class CleanupOrphanedBundlesTest
     : public IsolatedWebAppPolicyManagerBrowserTestBase,

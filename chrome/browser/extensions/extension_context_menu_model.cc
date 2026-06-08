@@ -145,7 +145,7 @@ bool IsExtensionInspectionAllowed(const Extension& extension,
         break;
     }
   }
-  using Availability = policy::DeveloperToolsPolicyHandler::Availability;
+  using Availability = policy::DeveloperToolsAvailability;
   Availability availability =
       policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
 

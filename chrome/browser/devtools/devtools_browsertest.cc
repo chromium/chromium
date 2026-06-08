@@ -295,7 +295,7 @@ void DisallowDevToolsForForceInstalledExtenions(
     BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
-      static_cast<int>(policy::DeveloperToolsPolicyHandler::Availability::
+      static_cast<int>(policy::DeveloperToolsAvailability::
                            kDisallowedForForceInstalledExtensions));
 }
 
@@ -304,7 +304,7 @@ void DisallowDevTools(BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -312,7 +312,7 @@ void AllowDevTools(BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
+          policy::DeveloperToolsAvailability::kAllowed));
 }
 
 scoped_refptr<DevToolsAgentHost> GetOrCreateDevToolsHostForWebContents(

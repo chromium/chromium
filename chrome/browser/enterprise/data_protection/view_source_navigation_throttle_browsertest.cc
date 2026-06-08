@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
 
   GURL url(embedded_test_server()->GetURL("/simple.html"));
   GURL view_source_url("view-source:" + url.spec());
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
   GURL url(embedded_test_server()->GetURL("/simple.html"));
   base::ListValue allowlist;
   allowlist.Append(url.host());
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
+          policy::DeveloperToolsAvailability::kAllowed));
 
   GURL url(embedded_test_server()->GetURL("/simple.html"));
   GURL view_source_url("view-source:" + url.spec());
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
   base::ListValue allowlist;
   allowlist.Append("example.com");
   browser()->profile()->GetPrefs()->SetList(
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigationThrottleBrowserTest,
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
   base::ListValue allowlist;
   allowlist.Append("example.com");
   browser()->profile()->GetPrefs()->SetList(

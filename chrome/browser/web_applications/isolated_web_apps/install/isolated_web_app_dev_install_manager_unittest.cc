@@ -265,7 +265,7 @@ TEST_F(IsolatedWebAppDevInstallManagerTest,
   pref_service()->SetManagedPref(
       prefs::kDevToolsAvailability,
       base::Value(std::to_underlying(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed)));
+          policy::DeveloperToolsAvailability::kDisallowed)));
 
   base::test::RepeatingTestFuture<
       base::expected<InstallIsolatedWebAppCommandSuccess, std::string>>

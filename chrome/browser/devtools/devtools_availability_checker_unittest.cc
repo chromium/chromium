@@ -157,7 +157,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, DeveloperToolsDisallowedByPolicy) {
   profile_->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
   content::WebContentsTester::For(web_contents_.get())
       ->NavigateAndCommit(GURL("https://example.com/page"));
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_contents_.get()));
@@ -220,7 +220,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   profile_->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
 
   base::ListValue allowlist;
   allowlist.Append("foo.com");
@@ -236,7 +236,7 @@ TEST_F(DevToolsAvailabilityCheckerTest,
   profile_->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
 
   EXPECT_FALSE(IsInspectionAllowed(
       profile_.get(), static_cast<extensions::Extension*>(nullptr)));
@@ -275,7 +275,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppDisallowedByPolicy) {
   profile_->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
+          policy::DeveloperToolsAvailability::kDisallowed));
 
   auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/"));
   EXPECT_FALSE(IsInspectionAllowed(profile_.get(), web_app.get()));
@@ -285,7 +285,7 @@ TEST_F(DevToolsAvailabilityCheckerTest, WebAppAllowedWhenPolicyIsAllowed) {
   profile_->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
-          policy::DeveloperToolsPolicyHandler::Availability::kAllowed));
+          policy::DeveloperToolsAvailability::kAllowed));
 
   auto web_app = web_app::test::CreateWebApp(GURL("https://example.com/"));
   EXPECT_TRUE(IsInspectionAllowed(profile_.get(), web_app.get()));
