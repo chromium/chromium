@@ -336,6 +336,12 @@ void ContextualCueingController::OnActiveTabChanged(TabListInterface& tab_list,
   }
 }
 
+void ContextualCueingController::OnTabRemoved(TabListInterface& tab_list,
+                                              tabs::TabInterface* tab,
+                                              TabRemovedReason reason) {
+  HideAllCuesDependingOnTab(tab);
+}
+
 void ContextualCueingController::ActiveTabUrlChanged(const GURL& url) {
   if (url == last_logged_active_url_) {
     return;
@@ -853,6 +859,11 @@ void ContextualCueingController::MaybeShowTabList(
 
     tab_items.emplace_back(std::move(favicon), std::move(title));
     domains.insert(tab->GetURL().GetHost());
+
+    SessionID session_id =
+        sessions::SessionTabHelper::IdForTab(tab->GetContents());
+    multi_tab_cues_map_[session_id].insert(sessions::SessionTabHelper::IdForTab(
+        tab_list_interface_->GetActiveTab()->GetContents()));
   }
 
   if (tab_items.size() < min_tab_count) {
@@ -928,7 +939,7 @@ void ContextualCueingController::OnShowCueFailed(
 }
 
 void ContextualCueingController::OnSidePanelShown() {
-  HideCue();
+  HideCueForTab(tab_list_interface_->GetActiveTab());
 }
 
 void ContextualCueingController::OnCueClicked(
@@ -981,7 +992,7 @@ void ContextualCueingController::OnCueInteraction(
   RecordContextualCueingInteraction(interaction_type, cuj, source_id,
                                     shown_duration);
 
-  HideCue();
+  HideCueForTab(tab_list_interface_->GetActiveTab());
 
   switch (interaction_type) {
     case ContextualCueingInteraction::kCueDismissed:
@@ -1014,20 +1025,54 @@ base::TimeDelta ContextualCueingController::ExtractCueShownDuration() {
   return duration;
 }
 
-void ContextualCueingController::HideCue() {
+void ContextualCueingController::HideCueForTab(tabs::TabInterface* tab) {
 #if !BUILDFLAG(IS_ANDROID)
-  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
-  if (!active_tab) {
+  if (!tab) {
+    return;
+  }
+  tabs::TabFeatures* tab_features = tab->GetTabFeatures();
+  if (!tab_features) {
     return;
   }
   page_actions::PageActionController* page_action_controller =
-      active_tab->GetTabFeatures()->page_action_controller();
+      tab_features->page_action_controller();
   if (!page_action_controller) {
     return;
   }
   page_action_controller->HideAnchoredMessage(kActionAnchoredContextualCue);
   page_action_controller->Hide(kActionAnchoredContextualCue);
 #endif
+}
+
+void ContextualCueingController::HideAllCuesDependingOnTab(
+    tabs::TabInterface* tab) {
+  if (!tab) {
+    return;
+  }
+
+  // Hide the cue for all other tabs for which the removed tab was part of a
+  // multi-tab cue.
+  SessionID session_id =
+      sessions::SessionTabHelper::IdForTab(tab->GetContents());
+  if (!session_id.is_valid()) {
+    return;
+  }
+  auto it = multi_tab_cues_map_.find(session_id);
+  if (it != multi_tab_cues_map_.end()) {
+    auto& tab_handle_factory =
+        tabs::SessionMappedTabHandleFactory::GetInstance();
+    for (const auto& other_tab_session_id : it->second) {
+      if (other_tab_session_id == session_id) {
+        continue;
+      }
+      tabs::TabHandle other_tab_handle(
+          tab_handle_factory.GetHandleForSessionId(other_tab_session_id.id()));
+      if (tabs::TabInterface* other_tab = other_tab_handle.Get()) {
+        HideCueForTab(other_tab);
+      }
+    }
+  }
+  multi_tab_cues_map_.erase(session_id);
 }
 
 void ContextualCueingController::ObserveSidePanel() {
