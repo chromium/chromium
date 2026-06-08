@@ -8,10 +8,13 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/synchronization/lock.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/credential_store_util.h"
 
-@interface MemoryCredentialStore ()
+@interface MemoryCredentialStore () {
+  base::Lock _memoryStorageLock;
+}
 
 // Working queue used to sync the mutable set and offload expensive get
 // operations.
@@ -84,7 +87,9 @@
 }
 
 - (void)updateCredential:(id<Credential>)credential {
-  [self removeCredentialWithRecordIdentifier:credential.recordIdentifier];
+  // Only calling `addCredential:` is safe because `addCredential:` uses
+  // subscript assignment (`memoryStorage[identifier] = ...`) which completely
+  // overwrites any existing value for the key in `NSMutableDictionary`.
   [self addCredential:credential];
 }
 
@@ -115,7 +120,10 @@
   dispatch_assert_queue(self.workingQueue);
 #endif  // !defined(NDEBUG)
   if (!_memoryStorage) {
-    _memoryStorage = [self loadStorage];
+    base::AutoLock lock(_memoryStorageLock);
+    if (!_memoryStorage) {
+      _memoryStorage = [self loadStorage];
+    }
   }
   return _memoryStorage;
 }
