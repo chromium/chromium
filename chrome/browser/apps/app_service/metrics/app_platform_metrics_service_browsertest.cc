@@ -1381,4 +1381,73 @@ IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
   CloseBrowserSynchronously(browser);
 }
 
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest,
+                       UsageTimeUkmForMultipleWebAppOpenInTab) {
+  Browser* browser = CreateBrowserWindow();
+  InstallOneApp(kWebAppId1, AppType::kWeb, "https://foo.com/",
+                Readiness::kReady, InstallSource::kSystem);
+  InstallOneApp(kWebAppId2, AppType::kWeb, "https://foo2.com/",
+                Readiness::kReady, InstallSource::kSystem);
+
+  // Create web app tabs.
+  const GURL url1 = GURL("https://foo.com");
+  auto web_app_window1 =
+      CreateWebAppWindow(browser->window()->GetNativeWindow());
+  const GURL url2 = GURL("https://foo2.com");
+  auto web_app_window2 =
+      CreateWebAppWindow(browser->window()->GetNativeWindow());
+
+  // Set the web app tab 1 as activated.
+  ModifyWebAppInstance(kWebAppId1, web_app_window1.get(), kActiveInstanceState);
+  ModifyWebAppInstance(kWebAppId2, web_app_window2.get(),
+                       kInactiveInstanceState);
+
+  // Set the browser window as activated.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+
+  FastForwardBy(base::Minutes(5));
+
+  // Set the web app tab 2 as activated.
+  ModifyWebAppInstance(kWebAppId2, web_app_window2.get(), kActiveInstanceState);
+  ModifyWebAppInstance(kWebAppId1, web_app_window1.get(),
+                       kInactiveInstanceState);
+  FastForwardBy(base::Minutes(4));
+
+  // Set the web app tabs as inactivated.
+  ModifyWebAppInstance(kWebAppId1, web_app_window1.get(),
+                       kInactiveInstanceState);
+  ModifyWebAppInstance(kWebAppId2, web_app_window2.get(),
+                       kInactiveInstanceState);
+
+  FastForwardBy(base::Minutes(3));
+  VerifyNoAppUsageTimeUkm();
+
+  // Set the browser window as activated.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kInactiveInstanceState);
+
+  // Destroy the browser windows, and web app tabs.
+  ModifyWebAppInstance(kWebAppId1, web_app_window1.get(),
+                       apps::InstanceState::kDestroyed);
+  ModifyWebAppInstance(kWebAppId2, web_app_window2.get(),
+                       apps::InstanceState::kDestroyed);
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(),
+                 apps::InstanceState::kDestroyed);
+
+  FastForwardBy(base::Minutes(108));
+
+  // Verify the app usage time AppKM for the web apps and browser window.
+  VerifyAppUsageTimeUkm(/*count=*/3);
+  VerifyAppUsageTimeUkm(url1, base::Minutes(5), AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeUkm(url2, base::Minutes(4), AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(3),
+                        AppTypeName::kChromeBrowser);
+
+  web_app_window1.reset();
+  web_app_window2.reset();
+  CloseBrowserSynchronously(browser);
+}
+
 }  // namespace apps
