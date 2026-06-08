@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/events/event.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -54,7 +55,9 @@ ExtensionsRequestAccessButton::ExtensionsRequestAccessButton(
       extensions_toolbar_view_model_(extensions_toolbar_view_model),
       extensions_container_views_(extensions_container_views),
       hover_card_coordinator_(
-          std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()) {
+          std::make_unique<ExtensionsRequestAccessHoverCardCoordinator>()),
+      input_protector_(
+          std::make_unique<views::InputEventActivationProtector>()) {
   // Set button for IPH.
   SetProperty(views::kElementIdentifierKey,
               kExtensionsRequestAccessButtonElementId);
@@ -130,7 +133,24 @@ bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
   return false;
 }
 
-void ExtensionsRequestAccessButton::OnButtonPressed() {
+void ExtensionsRequestAccessButton::VisibilityChanged(
+    views::View* starting_from,
+    bool is_visible) {
+  views::View::VisibilityChanged(starting_from, is_visible);
+  input_protector_->VisibilityChanged(is_visible);
+}
+
+void ExtensionsRequestAccessButton::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  ToolbarChipButton::OnBoundsChanged(previous_bounds);
+  input_protector_->MaybeUpdateViewProtectedTimeStamp();
+}
+
+void ExtensionsRequestAccessButton::OnButtonPressed(const ui::Event& event) {
+  if (input_protector_->IsPossiblyUnintendedInteraction(
+          event, /*allow_key_events=*/false)) {
+    return;
+  }
   // Record IPH usage.
   BrowserUserEducationInterface::From(browser_)->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHExtensionsRequestAccessButtonFeature,

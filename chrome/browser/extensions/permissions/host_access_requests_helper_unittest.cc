@@ -67,6 +67,7 @@ void HostAccessRequestsHelperUnittest::SetUp() {
   ExtensionServiceTestBase::SetUp();
   InitializeEmptyExtensionService();
   permissions_manager_ = PermissionsManager::Get(profile());
+  HostAccessRequestsHelper::SetCooldownForTesting(base::Seconds(0));
 }
 
 void HostAccessRequestsHelperUnittest::TearDown() {
@@ -142,8 +143,9 @@ TEST_F(HostAccessRequestsHelperUnittest, AddAndRemoveRequests) {
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
   // Try to remove a non-existent host access request. Verify nothing happens.
-  EXPECT_FALSE(permissions_manager()->RemoveHostAccessRequest(
-      tab_id, extension_A->id()));
+  EXPECT_EQ(
+      permissions_manager()->RemoveHostAccessRequest(tab_id, extension_A->id()),
+      PermissionsManager::RemoveRequestResult::kNotFound);
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension_A->id()));
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
@@ -169,8 +171,9 @@ TEST_F(HostAccessRequestsHelperUnittest, AddAndRemoveRequests) {
 
   // Remove host access request for extension A. Verify only extension B has an
   // active request.
-  EXPECT_TRUE(permissions_manager()->RemoveHostAccessRequest(
-      tab_id, extension_A->id()));
+  EXPECT_EQ(
+      permissions_manager()->RemoveHostAccessRequest(tab_id, extension_A->id()),
+      PermissionsManager::RemoveRequestResult::kSuccess);
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension_A->id()));
   EXPECT_TRUE(permissions_manager()->HasActiveHostAccessRequest(
@@ -229,8 +232,9 @@ TEST_F(HostAccessRequestsHelperUnittest,
   // Remove a host access request for extension without specifying a filter.
   // Verify request is no longer active, since a request without filter matches
   // all patterns.
-  EXPECT_TRUE(
-      permissions_manager()->RemoveHostAccessRequest(tab_id, extension->id()));
+  EXPECT_EQ(
+      permissions_manager()->RemoveHostAccessRequest(tab_id, extension->id()),
+      PermissionsManager::RemoveRequestResult::kSuccess);
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension->id()));
 }

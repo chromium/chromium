@@ -37,6 +37,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -279,6 +280,9 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ShowUi(
 // updated.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
                        SiteAccessToggle_RunAction) {
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   ASSERT_TRUE(embedded_test_server()->Start());
 
   auto extension =

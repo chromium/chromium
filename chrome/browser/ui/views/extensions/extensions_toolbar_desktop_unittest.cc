@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -23,6 +24,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/vector_icons/vector_icons.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/extension_features.h"
@@ -34,6 +36,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 
@@ -115,6 +118,8 @@ bool ExtensionsToolbarDesktopUnitTest::IsRequestAccessButtonVisible() {
 
 void ExtensionsToolbarDesktopUnitTest::SetUp() {
   ExtensionsToolbarUnitTest::SetUp();
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      views::switches::kDisableInputEventActivationProtectionForTesting);
   web_contents_tester_ = AddWebContentsAndGetTester();
 }
 
@@ -780,6 +785,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
 
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   // Navigate to a site and verify request access button is not visible, since
   // no extension has added a request.
   NavigateAndCommit(GURL("http://www.example.com"));
@@ -884,6 +892,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
 // same-origin navigations.
 TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_NavigationBetweenPages_RequestWithPattern) {
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
@@ -1077,6 +1088,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest, RequestAccessButton_RequestDismissed) {
 
 TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_OnPressedExecuteAction) {
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
   WithholdHostPermissions(extension.get());
@@ -1142,6 +1156,9 @@ TEST_F(ExtensionsToolbarDesktopUnitTest,
 // correct information.
 TEST_F(ExtensionsToolbarDesktopUnitTest,
        RequestAccessButton_UpdateInBetweenClickAndConfirmationCollapse) {
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   auto extension_A =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   auto extension_B =

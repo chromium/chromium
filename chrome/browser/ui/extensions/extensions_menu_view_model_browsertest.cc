@@ -22,6 +22,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
@@ -1399,6 +1400,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
 // matching the action_models_ order, regardless of the order they are added.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
                        HostAccessRequests_SortedInsertionAndRemoval) {
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   // Add 3 extensions (A, B, C) and withhold their permissions, using names that
   // ensure alphabetical order.
   auto extension_A = AddExtensionWithHostPermission("Alpha", "<all_urls>");

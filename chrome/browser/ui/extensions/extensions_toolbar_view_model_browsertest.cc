@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
@@ -182,6 +183,9 @@ void ExtensionsToolbarViewModelBrowserTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(embedded_test_server()->Start());
+
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
 
   toolbar_delegate_ = std::make_unique<TestExtensionsToolbarDelegate>(
       browser_window_interface());

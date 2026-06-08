@@ -29,6 +29,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
@@ -772,6 +773,7 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
 
   void SetUpOnMainThread() override {
     PermissionsAPIUnitTest::SetUpOnMainThread();
+    HostAccessRequestsHelper::SetCooldownForTesting(base::TimeDelta());
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -1582,6 +1584,89 @@ IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
         api_test_utils::FunctionMode::kNone));
 
     // Verify request was removed.
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
+        tab_id, extension->id()));
+  }
+}
+
+// Test that adding and removing host access requests are throttled when
+// the cooldown is active.
+IN_PROC_BROWSER_TEST_F(PermissionsAPIHostAccessRequestsUnitTest,
+                       HostAccessRequestCooldown) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("Extension")
+          .AddHostPermission("*://*.requested.com/*")
+          .Build();
+  AddExtensionAndWithheldPermissions(*extension);
+
+  NavigateTo("http://www.requested.com");
+  int tab_id = ExtensionTabUtil::GetTabId(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  auto* permissions_manager = PermissionsManager::Get(profile());
+
+  // Set cooldown to 200ms.
+  HostAccessRequestsHelper::SetCooldownForTesting(base::Milliseconds(200));
+
+  // Add request. Should succeed.
+  {
+    auto function =
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Remove request immediately. Should fail due to cooldown.
+  {
+    auto function =
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    function->set_extension(extension.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot remove a host access request due to rate limiting.",
+        error);
+    // Request is still active.
+    EXPECT_TRUE(permissions_manager->HasActiveHostAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Wait for cooldown to expire.
+  {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(250));
+    run_loop.Run();
+  }
+
+  // Remove request again. Should succeed now.
+  {
+    auto function =
+        base::MakeRefCounted<PermissionsRemoveHostAccessRequestFunction>();
+    function->set_extension(extension.get());
+    EXPECT_TRUE(api_test_utils::RunFunction(
+        function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone));
+    EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
+        tab_id, extension->id()));
+  }
+
+  // Try to immediately re-add. Should fail due to cooldown.
+  {
+    auto function =
+        base::MakeRefCounted<PermissionsAddHostAccessRequestFunction>();
+    function->set_extension(extension.get());
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        function.get(), GetFunctionParams(tab_id), profile(),
+        api_test_utils::FunctionMode::kNone);
+    EXPECT_EQ(
+        "Extension cannot add a host access request due to rate limiting.",
+        error);
     EXPECT_FALSE(permissions_manager->HasActiveHostAccessRequest(
         tab_id, extension->id()));
   }

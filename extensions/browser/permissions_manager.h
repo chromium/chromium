@@ -98,6 +98,9 @@ class PermissionsManager : public KeyedService {
     kCustomizeByExtension,
   };
 
+  using AddRequestResult = HostAccessRequestsHelper::AddRequestResult;
+  using RemoveRequestResult = HostAccessRequestsHelper::RemoveRequestResult;
+
   enum class UpdateReason {
     // Permissions were added to the extension.
     kAdded,
@@ -301,8 +304,8 @@ class PermissionsManager : public KeyedService {
 
   // Adds site access request with an optional `filter` for `extension` in
   // `web_contents` with `tab_id`. Extension must have site access withheld for
-  // request to be added.
-  void AddHostAccessRequest(
+  // request to be added. Returns the result of the addition.
+  AddRequestResult AddHostAccessRequest(
       content::WebContents* web_contents,
       int tab_id,
       const Extension& extension,
@@ -310,10 +313,11 @@ class PermissionsManager : public KeyedService {
 
   // Removes site access request for `extension` in `tab_id` with an optional
   // `filter`, if existent. Returns whether the request was removed.
-  bool RemoveHostAccessRequest(
+  RemoveRequestResult RemoveHostAccessRequest(
       int tab_id,
       const ExtensionId& extension_id,
-      const std::optional<URLPattern>& filter = std::nullopt);
+      const std::optional<URLPattern>& filter = std::nullopt,
+      bool bypass_cooldown = false);
 
   // Dismisses site access request for `extension` in `tab_id`. Request must be
   // existent for user to be able to dismiss it.

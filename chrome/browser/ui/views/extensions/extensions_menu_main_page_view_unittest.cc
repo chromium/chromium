@@ -28,6 +28,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/host_access_request_helper.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
@@ -1431,6 +1432,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
 // extensions site access and at least 1+ extensions added a site access
 // request. Reload section is always hidden if requests section is visible.
 TEST_F(ExtensionsMenuMainPageViewUnitTest, RequestsSection) {
+  extensions::HostAccessRequestsHelper::SetCooldownForTesting(
+      base::TimeDelta());
+
   // Install two extension that requests host permissions.
   auto extension_A =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});

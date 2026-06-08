@@ -65,6 +65,10 @@ constexpr char kExtensionHasNoHostPermissionsForPatternError[] =
     "any of its host permissions.";
 constexpr char kExtensionRequestCannotBeRemovedError[] =
     "Extension cannot remove a host access request that doesn't exist.";
+constexpr char kExtensionRequestRateLimitError[] =
+    "Extension cannot remove a host access request due to rate limiting.";
+constexpr char kExtensionAddRequestRateLimitError[] =
+    "Extension cannot add a host access request due to rate limiting.";
 constexpr char kAddRequestInvalidPatternError[] =
     "Extension cannot add a request with an invalid value for 'pattern'.";
 constexpr char kRemoveRequestInvalidPatternError[] =
@@ -631,8 +635,12 @@ PermissionsAddHostAccessRequestFunction::Run() {
     }
   }
 
-  permissions_manager->AddHostAccessRequest(web_contents, tab_id, *extension(),
-                                            pattern);
+  PermissionsManager::AddRequestResult result =
+      permissions_manager->AddHostAccessRequest(web_contents, tab_id,
+                                                *extension(), pattern);
+  if (result == PermissionsManager::AddRequestResult::kThrottled) {
+    return RespondNow(Error(kExtensionAddRequestRateLimitError));
+  }
   return RespondNow(NoArguments());
 }
 
@@ -693,14 +701,17 @@ PermissionsRemoveHostAccessRequestFunction::Run() {
   DCHECK(web_contents);
   DCHECK_NE(tab_id, -1);
 
-  bool is_removed =
+  PermissionsManager::RemoveRequestResult result =
       PermissionsManager::Get(browser_context())
           ->RemoveHostAccessRequest(tab_id, extension()->id(), pattern);
-  if (!is_removed) {
-    return RespondNow(Error(kExtensionRequestCannotBeRemovedError));
+  switch (result) {
+    case PermissionsManager::RemoveRequestResult::kSuccess:
+      return RespondNow(NoArguments());
+    case PermissionsManager::RemoveRequestResult::kNotFound:
+      return RespondNow(Error(kExtensionRequestCannotBeRemovedError));
+    case PermissionsManager::RemoveRequestResult::kThrottled:
+      return RespondNow(Error(kExtensionRequestRateLimitError));
   }
-
-  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions
