@@ -46,13 +46,6 @@ found in the LICENSE file.
 
     <include
         layout="@layout/fusebox_list_item"
-        android:id="@+id/fusebox_paste_from_clipboard_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
-
-    <include
-        layout="@layout/fusebox_list_item"
         android:id="@+id/fusebox_camera_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

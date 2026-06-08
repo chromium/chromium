@@ -350,14 +350,6 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
-    public void testClipboardButtonEnabled() {
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, true);
-        assertTrue(mViewHolder.popup.mClipboardButton.isEnabled());
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, false);
-        assertFalse(mViewHolder.popup.mClipboardButton.isEnabled());
-    }
-
-    @Test
     public void requestTypeDrawable() {
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
@@ -548,12 +540,12 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1, data2));
         int headerIndex = mPopup.mViewGroup.indexOfChild(mPopup.mModelsHeader);
         assertEquals(2, mPopup.mViewGroup.getChildCount() - (headerIndex + 1));
-        assertEquals(6, mPopup.mAttachmentButtons.size());
+        assertEquals(5, mPopup.mAttachmentButtons.size());
         assertEquals(2, mPopup.mDynamicThemedButtons.size());
 
         mModel.set(FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST, List.of(data1));
         assertEquals(1, mPopup.mViewGroup.getChildCount() - (headerIndex + 1));
-        assertEquals(6, mPopup.mAttachmentButtons.size());
+        assertEquals(5, mPopup.mAttachmentButtons.size());
         assertEquals(1, mPopup.mDynamicThemedButtons.size());
     }
 

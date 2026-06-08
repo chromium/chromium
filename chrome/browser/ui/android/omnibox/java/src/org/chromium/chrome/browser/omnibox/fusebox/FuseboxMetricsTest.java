@@ -209,7 +209,7 @@ public class FuseboxMetricsTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, true);
-        mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, true);
+
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, true);
 
         var histogramWatcher =
@@ -229,9 +229,6 @@ public class FuseboxMetricsTest {
                                 FuseboxMetrics.FuseboxAttachmentButtonType.CURRENT_TAB)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonShown",
-                                FuseboxMetrics.FuseboxAttachmentButtonType.CLIPBOARD)
-                        .expectIntRecord(
-                                "Omnibox.MobileFusebox.AttachmentButtonShown",
                                 FuseboxMetrics.FuseboxAttachmentButtonType.FILES)
                         .build();
 
@@ -247,7 +244,7 @@ public class FuseboxMetricsTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, false);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, false);
-        mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, false);
+
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, false);
 
         var histogramWatcher =
@@ -388,7 +385,7 @@ public class FuseboxMetricsTest {
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE, true);
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE, true);
-        mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, true);
+
         mPropertyModel.set(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, true);
 
         var histogramWatcher =
@@ -406,9 +403,6 @@ public class FuseboxMetricsTest {
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonShown",
                                 FuseboxMetrics.FuseboxAttachmentButtonType.GALLERY)
-                        .expectIntRecord(
-                                "Omnibox.MobileFusebox.AttachmentButtonShown",
-                                FuseboxMetrics.FuseboxAttachmentButtonType.CLIPBOARD)
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonShown",
                                 FuseboxMetrics.FuseboxAttachmentButtonType.FILES)
@@ -439,9 +433,6 @@ public class FuseboxMetricsTest {
                                 "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Camera", true)
                         .expectBooleanRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Gallery",
-                                false)
-                        .expectBooleanRecord(
-                                "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Clipboard",
                                 false)
                         .expectBooleanRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Files", false)

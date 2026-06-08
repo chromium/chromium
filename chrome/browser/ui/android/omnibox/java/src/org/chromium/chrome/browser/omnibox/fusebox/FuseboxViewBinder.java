@@ -115,17 +115,6 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE) {
             updateButtonVisibility(
                     model, FuseboxProperties.POPUP_ATTACH_CAMERA_VISIBLE, view.popup.mCameraButton);
-        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED) {
-            view.popup.mClipboardButton.setOnClickListener(
-                    v -> model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED) {
-            view.popup.mClipboardButton.setEnabled(
-                    model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
-        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE) {
-            updateButtonVisibility(
-                    model,
-                    FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE,
-                    view.popup.mClipboardButton);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED) {
             view.popup.mAddCurrentTab.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run());

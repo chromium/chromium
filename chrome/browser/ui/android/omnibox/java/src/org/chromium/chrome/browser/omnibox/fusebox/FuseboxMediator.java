@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -77,7 +76,6 @@ import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
-import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.ListObservable;
@@ -103,7 +101,6 @@ import java.util.function.Supplier;
     private final FuseboxViewHolder mViewHolder;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final SettableNonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
-    private final Clipboard mClipboard;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
     private final Callback<InputState> mOnInputStateChanged = this::onInputStateChange;
@@ -153,7 +150,6 @@ import java.util.function.Supplier;
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SettableNonNullObservableSupplier<@PopupState Integer> popupStateSupplier,
             SnackbarManager snackbarManager,
-            Clipboard clipboard,
             ScrimManager scrimManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
             BackPressManager backPressManager,
@@ -168,7 +164,6 @@ import java.util.function.Supplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
         mPopupStateSupplier = popupStateSupplier;
         mSnackbarManager = snackbarManager;
-        mClipboard = clipboard;
         mScrimManager = scrimManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
         mBackPressManager = backPressManager;
@@ -189,7 +184,6 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.ACTIVATION_CHIP_CLICKED, this::onActivationChipClicked);
 
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED, this::onTabPickerClicked);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED, this::onClipboardClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED, this::onCameraClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED, this::onImagePickerClicked);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED, this::onFilePickerClicked);
@@ -546,7 +540,7 @@ import java.util.function.Supplier;
         }
         updateModelForCurrentTab();
         updateModelForRecentTabs();
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, mClipboard.hasImage());
+
         @PopupState
         int targetState = shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING;
         mModel.set(FuseboxProperties.POPUP_STATE, targetState);
@@ -960,7 +954,6 @@ import java.util.function.Supplier;
 
         // Disable Camera and Gallery Selection popup buttons if no remaining attachments are left.
         boolean allowByCapacity = mModelList.getRemainingAttachments() > 0;
-
         // Disables popup buttons for Current Tab, Tab Picker, and File selection if the
         // autocomplete request is not image generation and if there are no remaining attachments.
         boolean allowNonImage =
@@ -970,7 +963,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, allowNonImage);
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, allowNonImage);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, allowByCapacity);
+
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, allowByCapacity);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, allowByCapacity);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, allowNonImage);
@@ -1149,42 +1142,6 @@ import java.util.function.Supplier;
         activateAiMode(AutocompleteRequestType.AI_MODE, AiModeActivationSource.DEDICATED_BUTTON);
     }
 
-    private void onClipboardClicked() {
-        if (!isInInputSession()) return;
-
-        mActionTaken = true;
-        hidePopup();
-        mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
-
-        long startTime = SystemClock.elapsedRealtime();
-        new AsyncTask<byte[]>() {
-            @Override
-            protected byte[] doInBackground() {
-                byte[] png = mClipboard.getPng();
-                return png == null ? new byte[0] : png;
-            }
-
-            @Override
-            protected void onPostExecute(byte[] pngBytes) {
-                if (!isInInputSession()) return;
-                if (pngBytes == null || pngBytes.length == 0) return;
-
-                Bitmap bitmap = BitmapFactory.decodeByteArray(pngBytes, 0, pngBytes.length);
-                if (bitmap == null) return;
-
-                var attachment =
-                        FuseboxAttachment.forImage(
-                                new BitmapDrawable(mContext.getResources(), bitmap),
-                                /* title= */ "",
-                                "image/png",
-                                pngBytes,
-                                startTime,
-                                FuseboxAttachmentButtonType.CLIPBOARD);
-                uploadAndAddAttachment(attachment);
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
-
     @VisibleForTesting
     /* package */ void fetchAttachmentDetails(
             Uri uri,
@@ -1250,7 +1207,7 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED, tabsEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED, tabsEnabled);
         mModel.set(FuseboxProperties.POPUP_RECENT_TABS_ENABLED, tabsEnabled);
-        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, imagesEnabled);
+
         mModel.set(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED, imagesEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_GALLERY_ENABLED, imagesEnabled);
         mModel.set(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED, filesEnabled);
