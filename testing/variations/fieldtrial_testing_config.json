@@ -1031,45 +1031,6 @@
             ]
         }
     ],
-    "AndroidDesktopZoomScaling": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledSmall",
-                    "params": {
-                        "desktop-zoom-scaling-factor": "109",
-                        "monitor-zoom-scaling-factor": "120"
-                    },
-                    "enable_features": [
-                        "AndroidDesktopZoomScaling"
-                    ]
-                },
-                {
-                    "name": "EnabledMedium",
-                    "params": {
-                        "desktop-zoom-scaling-factor": "115",
-                        "monitor-zoom-scaling-factor": "125"
-                    },
-                    "enable_features": [
-                        "AndroidDesktopZoomScaling"
-                    ]
-                },
-                {
-                    "name": "EnabledLarge",
-                    "params": {
-                        "desktop-zoom-scaling-factor": "120",
-                        "monitor-zoom-scaling-factor": "130"
-                    },
-                    "enable_features": [
-                        "AndroidDesktopZoomScaling"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidDevToolsFrontend": [
         {
             "platforms": [

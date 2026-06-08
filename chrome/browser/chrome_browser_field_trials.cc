@@ -251,11 +251,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(
       features::kEnableFullscreenToAnyScreenAndroid);
 
-  // Enables the ability to specify a platform-specific zoom scaling that will
-  // apply transparently to all pages.
-  // TODO(crbug.com/450281745): Remove once feature is enabled by default.
-  feature_overrides.EnableFeature(::features::kAndroidDesktopZoomScaling);
-
   // Enables desktop page web prefs for large displays on Android.
   // TODO(crbug.com/433519850): Remove once feature is enabled by default.
   feature_overrides.EnableFeature(
