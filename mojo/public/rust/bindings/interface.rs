@@ -174,6 +174,8 @@
 
 use crate::message::MojomMessage;
 
+pub use crate::multiplex_router::ResponseSender;
+
 /// This trait abstracts over the parts of individual Mojom `interface`s, such
 /// as `MathService`. This trait is what's used by generic `Remote`s and
 /// `Receiver`s to handle incoming and outgoing messages.
@@ -195,7 +197,11 @@ pub trait MojomInterface {
     /// For use in `Remote`s. Takes a message with a parsed header, examines
     /// it to determine which message type it contains, ensures the callback
     /// has the right type, then invokes it on the parsed message body.
-    fn handle_incoming_response(message: MojomMessage, response_callback: Self::ResponseCallbackTy);
+    fn handle_incoming_response(
+        message: MojomMessage,
+        response_sender: ResponseSender,
+        response_callback: Self::ResponseCallbackTy,
+    );
 
     /// For use in `Receiver`s. Takes a message with a parsed header, examines
     /// it to determine which message type it contains, then invokes the
@@ -227,7 +233,10 @@ pub mod internal {
     // interface traits. A blanket implementation is fine because all the
     // `Remote` code is auto-generated, so there's nothing for a user to get
     // wrong.
-    impl<T> ImplementThisViaMacro for crate::remote::Remote<T> where T: DynMojomInterface + ?Sized {}
+    impl<T, Marker> ImplementThisViaMacro for crate::remote::GenericRemote<T, Marker> where
+        T: DynMojomInterface + ?Sized
+    {
+    }
 }
 
 /// This macro sets up some behind-the-scenes implementations that mojom state
@@ -259,6 +268,7 @@ macro_rules! register_mojom_state_object_impls {
             type ResponseCallbackTy = ();
             fn handle_incoming_response(
                 _message: $crate::message::MojomMessage,
+                _response_sender: $crate::interface::ResponseSender,
                 _response_callback: Self::ResponseCallbackTy,
             ) {
                 panic!("Receivers never get responses")

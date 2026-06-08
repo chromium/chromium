@@ -134,16 +134,20 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
 
   type ResponseCallbackTy = {{callback_ty_name}};
 
-  fn handle_incoming_response(message: bindings::message::MojomMessage, send_response: Self::ResponseCallbackTy) {
+  #[allow(unused_variables, unused_mut)] // If no messages take a response
+  fn handle_incoming_response(
+    message: bindings::message::MojomMessage,
+    sender: ResponseSender,
+    send_response: Self::ResponseCallbackTy)
+  {
     // We could also do this with std::mem::transmute due to the null-pointer optimization,
     // but that's unsafe, and the compiler can figure it out anway.
-    #[allow(unused_variables, unused_mut)] // Unused if no messages take a response
     let mut handles = message.handles.into_iter().map(|h| Some(h)).collect::<Vec<_>>();
     match (message.header.name, send_response) {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} =
-          mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &())
+          mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &sender)
           .expect("Associated interfaces are not yet supported (crbug.com/493274453)");
         callback(
           {%- for field in method.response_param_struct.fields -%}
@@ -166,7 +170,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
 
 impl bindings::interface::DynMojomInterface for dyn {{interface.name}} {}
 
-impl {{interface.name}} for bindings::remote::Remote<dyn {{interface.name}}> {
+impl<Marker> {{interface.name}} for bindings::remote::GenericRemote<dyn {{interface.name}}, Marker> {
   {%- for method in interface.methods %}
   fn {{method.name}}(&mut self{{", " if method.param_struct.fields}}
   {{- typed_fields(method.param_struct.fields)}}

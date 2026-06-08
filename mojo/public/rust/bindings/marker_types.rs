@@ -40,3 +40,9 @@ impl IsRemote for Remote {
 impl IsRemote for Receiver {
     const IS_REMOTE: bool = false;
 }
+
+/// Marker type used to indicate an Associated endpoint.
+pub struct Associated;
+
+/// Marker type used to indicate a Primary (non-associated) endpoint.
+pub struct Primary;

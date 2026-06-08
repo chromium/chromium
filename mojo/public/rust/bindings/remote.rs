@@ -38,14 +38,39 @@ use std::marker::PhantomData;
 use std::sync::{Arc, Mutex};
 
 use sequenced_task_runner::SequencedTaskRunnerHandle;
-use system::message::RawMojoMessage;
-use system::message_pipe::MessageEndpoint;
 
 use crate::interface::{DynMojomInterface, MojomInterface};
+use crate::marker_types::{Associated, Primary};
 use crate::message::MojomMessage;
-use crate::message_pipe_watcher::MessagePipeWatcher;
+use crate::multiplex_router::{EndpointInfo, MultiplexRouterHandle, ResponseSender};
 
+/// This type looks very scary, but mostly it's just a map from request ID to
+/// the function to invoke when we get a response to that request. For examples
+/// of what a real `ResponseCallbackTy` looks like, it's easiest to take a look
+/// at some generated code from a mojom file with an `interface`.
 type CallbackMap<T> = Arc<Mutex<HashMap<u64, <T as MojomInterface>::ResponseCallbackTy>>>;
+
+// TODO(crbug.com/517519181): Use an enum instead of a trait object.
+pub(crate) type RouterHandle = Box<dyn AsRef<MultiplexRouterHandle> + Send + Sync + 'static>;
+
+/// This type represents either a regular mojom `Remote`, or an
+/// `AssociatedRemote`. See the documentation of those types for details.
+pub struct GenericRemote<T, Marker>
+where
+    T: DynMojomInterface + ?Sized,
+{
+    router: RouterHandle,
+    // Stores the callbacks to be invoked when we get a response, using the
+    // request ID as a key. May be accessed out-of-sequence (when sending a
+    // new message), so requires synchronization.
+    pending_responses: CallbackMap<T>,
+    // Starts at 1, increments each time we send a message.
+    // 0 is reserved in case it gets a special meaning later.
+    next_request_id: u64,
+    // fn() -> T acts like T, but is always `Send` and `Sync`
+    #[allow(clippy::type_complexity)]
+    _phantom: PhantomData<(fn() -> T, fn() -> Marker)>,
+}
 
 /// This type represents one end of a Mojo pipe corresponding to a
 /// particular Mojom `interface`. The parameter `T` names the interface:
@@ -80,20 +105,18 @@ type CallbackMap<T> = Arc<Mutex<HashMap<u64, <T as MojomInterface>::ResponseCall
 // The bindings will implement the trait such that calling, e.g.
 // `remote.Add(...)` will send an `Add` message to the receiver, and stash a
 // response callback in the map if necessary.
-pub struct Remote<T>
-where
-    T: DynMojomInterface + ?Sized,
-{
-    endpoint_watcher: MessagePipeWatcher,
-    // Stores the callbacks to be invoked when we get a response, using the
-    // request ID as a key. May be accessed out-of-sequence (when sending a
-    // new message), so requires synchronization.
-    pending_responses: CallbackMap<T>,
-    // Starts at 1, increments each time we send a message.
-    // 0 is reserved in case it gets a special meaning later.
-    next_request_id: u64,
-    _phantom: PhantomData<T>,
-}
+pub type Remote<T> = GenericRemote<T, Primary>;
+
+/// This type is equivalent to `Remote`, but does not own the underlying message
+/// pipe across which it sends messages. Instead, it is entangled with an
+/// associated receiver, and exactly one end of each pair must be sent across an
+/// existing message pipe. Once that's done, all messages between the pair will
+/// utilize that pipe.
+///
+/// It is guaranteed that all messages across that pipe will be delivered in
+/// strict FIFO order; if one endpoint sends a message and its counterpart isn't
+/// yet ready to receive messages, _all_ messages on that pipe will be blocked.
+pub type AssociatedRemote<T> = GenericRemote<T, Associated>;
 
 /// This type represents one end of a Mojo pipe corresponding to a
 /// particular Mojom `interface`. The parameter `T` names the interface:
@@ -112,7 +135,7 @@ where
 {
     /// Bind this pending remote to the current default sequence.
     pub fn bind(self) -> Remote<T> {
-        Remote::new(self.endpoint)
+        Self::bind_with_options(self, None, None)
     }
 
     /// Bind this pending remote with the provided options.
@@ -125,53 +148,41 @@ where
             SequencedTaskRunnerHandle::get_current_default()
                 .expect("Must be called in a context with a default SequencedTaskRunner")
         });
-        Remote::new_with_options(self.endpoint, runner, disconnect_handler)
+        let make_handle = |endpoint_info| -> RouterHandle {
+            let sets_high_bit = true; // Remotes set the high bit to 1
+            Box::new(MultiplexRouterHandle::new(self.endpoint, sets_high_bit, endpoint_info))
+        };
+        Remote::new(make_handle, runner, disconnect_handler)
     }
 }
 
-impl<T> Remote<T>
+impl<T, Marker> GenericRemote<T, Marker>
 where
     T: DynMojomInterface + ?Sized,
 {
-    /// Create a new Remote from a raw pipe endpoint, bound to the default
-    /// sequence.
-    // This function isn't `pub` because users should always get their `Remote`s
-    // by `bind`ing a `PendingRemote`.
-    fn new(endpoint: MessageEndpoint) -> Self {
-        Self::new_with_options(
-            endpoint,
-            SequencedTaskRunnerHandle::get_current_default()
-                .expect("Must be called in a context with a default SequencedTaskRunner"),
-            None,
-        )
-    }
-
     /// Create a new Remote from a raw pipe endpoint, bound to the given
     /// sequence.
     /// This function isn't `pub` because users should always get their
     /// `Remote`s by `bind`ing a `PendingRemote`.
-    fn new_with_options(
-        endpoint: MessageEndpoint,
+    fn new(
+        make_handle: impl FnOnce(EndpointInfo) -> RouterHandle,
         runner: SequencedTaskRunnerHandle,
         disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
     ) -> Self {
         let pending_responses = Arc::new(Mutex::new(HashMap::new()));
         let pending_responses_clone = pending_responses.clone();
-        let message_handler = move |raw_message, _sender| {
-            Self::incoming_message_handler(raw_message, &pending_responses_clone)
+        let message_handler = move |message, sender| {
+            Self::incoming_message_handler(message, sender, &pending_responses_clone)
         };
-        let endpoint_watcher = MessagePipeWatcher::new_with_runner(
-            endpoint,
-            runner,
-            message_handler,
+        let router = make_handle(crate::multiplex_router::EndpointInfo {
+            incoming_message_handler: Arc::new(message_handler),
             disconnect_handler,
-            /* begin_processing_immediately = */ true,
-        )
-        .expect("System ran out of resources to create new mojo objects.");
+            runner,
+        });
 
         Self {
             pending_responses,
-            endpoint_watcher,
+            router,
             next_request_id: 1, // Reserve 0 in case it gets a special meaning later
             _phantom: PhantomData,
         }
@@ -212,21 +223,19 @@ where
 
         // This can only fail if the other end is closed, in which case we've nothing to
         // do here (we'll get a disconnection notification separately).
-        let (payload, handles) = message.into_data();
-        let _ = self
-            .endpoint_watcher
-            .send_message(RawMojoMessage::new_with_data(&payload, handles).unwrap());
+        self.router.as_ref().as_ref().send_message(message);
     }
 
-    /// This is the function which is called by the endpoint watcher
+    /// This is the function which is called by the `MultiplexRouter`
     /// whenever a message comes in. Its job is to parse the message
     /// header, retrieve the corresponding response callback from
     /// the map, and invoke the interface's response handler with
     /// it.
-    fn incoming_message_handler(raw_message: RawMojoMessage, callback_map: &CallbackMap<T>) {
-        let Some(mut message) = MojomMessage::parse_raw_or_report_bad_message(raw_message) else {
-            return;
-        };
+    fn incoming_message_handler(
+        mut message: MojomMessage,
+        sender: ResponseSender,
+        callback_map: &CallbackMap<T>,
+    ) {
         let response_callback = callback_map
             .lock()
             .expect("Callback map should never be poisoned")
@@ -242,7 +251,7 @@ where
                 return;
             }
         };
-        T::handle_incoming_response(message, response_callback);
+        T::handle_incoming_response(message, sender, response_callback);
     }
 }
 
