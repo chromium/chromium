@@ -8,12 +8,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_ai/mock_autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -27,6 +30,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget_utils.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 
 // TODO(crbug.com/362227379): Consider having an interactive UI test to evaluate
 // both the controller and the view working together.
@@ -182,6 +186,64 @@ TEST_F(AutofillAiImportDataBubbleViewTest, CancelInvokesTheController) {
 
   view()->CancelDialog();
   run_loop.Run();
+}
+
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       WalletIconShownWhenBrandingDisabledForSavePrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillAiWalletPassBranding2026);
+  EXPECT_CALL(mock_controller(), IsWalletableEntity())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
+      .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
+  EXPECT_CALL(mock_controller(), GetNoticeStringId())
+      .WillRepeatedly(
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
+  CreateViewAndShow();
+
+  ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
+  EXPECT_EQ(view()->GetBubbleFrameView()->title()->children().size(), 2u);
+}
+
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       WalletIconNotShownWhenBrandingEnabledForSavePrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillAiWalletPassBranding2026);
+  EXPECT_CALL(mock_controller(), IsWalletableEntity())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), GetSaveUpdateDialogTitleImagesResourceId())
+      .WillRepeatedly(Return(IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE));
+  EXPECT_CALL(mock_controller(), GetNoticeStringId())
+      .WillRepeatedly(
+          Return(IDS_AUTOFILL_AI_SAVE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
+  CreateViewAndShow();
+
+  ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
+  EXPECT_EQ(view()->GetBubbleFrameView()->title()->children().size(), 0u);
+}
+
+TEST_F(AutofillAiImportDataBubbleViewTest,
+       WalletIconShownWhenBrandingEnabledForUpdatePrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillAiWalletPassBranding2026);
+  EXPECT_CALL(mock_controller(), IsWalletableEntity())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_controller(), IsSavePrompt())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_controller(), GetNoticeStringId())
+      .WillRepeatedly(
+          Return(IDS_AUTOFILL_AI_UPDATE_ENTITY_TO_WALLET_DIALOG_SUBTITLE));
+  CreateViewAndShow();
+
+  ASSERT_NE(view()->GetBubbleFrameView()->title(), nullptr);
+  EXPECT_EQ(view()->GetBubbleFrameView()->title()->children().size(), 2u);
 }
 
 }  // namespace

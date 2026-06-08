@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -87,7 +88,10 @@ AutofillAiImportDataBubbleView::AutofillAiImportDataBubbleView(
       views::BoxLayout::Orientation::kVertical));
   set_margins(GetAutofillAiBubbleInnerMargins());
   SetAccessibleTitle(controller_->GetSaveUpdateDialogTitle());
-  if (!controller_->IsWalletableEntity()) {
+  if (!controller_->IsWalletableEntity() ||
+      (controller_->IsSavePrompt() &&
+       base::FeatureList::IsEnabled(
+           features::kAutofillAiWalletPassBranding2026))) {
     SetTitle(controller_->GetSaveUpdateDialogTitle());
   }
   auto* main_content_wrapper =
@@ -285,7 +289,10 @@ void AutofillAiImportDataBubbleView::AddedToWidget() {
 
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
   }
-  if (controller_->IsWalletableEntity()) {
+  if (controller_->IsWalletableEntity() &&
+      (!controller_->IsSavePrompt() ||
+       !base::FeatureList::IsEnabled(
+           features::kAutofillAiWalletPassBranding2026))) {
     GetBubbleFrameView()->SetTitleView(
         CreateWalletBubbleTitleView(controller_->GetSaveUpdateDialogTitle()));
   }
