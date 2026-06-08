@@ -100,18 +100,18 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     public LocationBarTablet(Context context, AttributeSet attrs) {
         super(context, attrs);
 
+        Resources resources = context.getResources();
         mToolbarButtonsWidth =
-                getResources().getDimensionPixelOffset(R.dimen.toolbar_button_width)
+                resources.getDimensionPixelOffset(R.dimen.toolbar_button_width)
                         * HIDEABLE_BUTTON_COUNT;
         int locationBarIconWidth =
-                getResources().getDimensionPixelOffset(R.dimen.location_bar_icon_width);
+                resources.getDimensionPixelOffset(R.dimen.location_bar_icon_width);
         mMicButtonWidth = locationBarIconWidth;
         mLensButtonWidth = locationBarIconWidth;
-        Resources resources = context.getResources();
         mFocusedPopupDrawable =
                 (LayerDrawable)
                         assumeNonNull(
-                                resources.getDrawable(
+                                context.getDrawable(
                                         R.drawable
                                                 .modern_toolbar_tablet_text_box_background_focused_popup));
         mFocusedPopupDrawable.mutate();
