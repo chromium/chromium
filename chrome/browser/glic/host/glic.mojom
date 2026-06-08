@@ -1615,7 +1615,7 @@ enum InvocationSource {
   // GlicExperimentalTriggeringMessageHandler.
   [MinVersion=19] kExperimentalTriggering = 28,
   // From the promotion page.
-  [MinVersion=20] kPromotionPage = 29,
+  [MinVersion=25] kPromotionPage = 34,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInvocationSource, //chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation)

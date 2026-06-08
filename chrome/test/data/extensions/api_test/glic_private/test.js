@@ -58,6 +58,15 @@ import {openTab} from '/_test_resources/test_util/tabs_util.js';
     case 'invoke_server_error':
       tests_runInvokeServerError(documentId);
       return;
+    case 'universal_cart_only':
+      tests_runUniversalCartOnly(documentId);
+      return;
+    case 'promotion_page_only':
+      tests_runPromotionPageOnly(documentId);
+      return;
+    case 'both_access_disabled':
+      tests_runBothAccessDisabled(documentId);
+      return;
     case 'account_mismatch':
       tests_runAccountMismatch(documentId);
       return;
@@ -140,14 +149,23 @@ function tests_runFeatureDisabled(documentId) {
 }
 
 function tests_runInvoke(documentId) {
-  chrome.test.runTests([async function invokeSuccess() {
-    await chrome.glicPrivate.invoke({
-      promptId: 'TEST_PROMPT_ID',
-      invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
-      documentId,
-    });
-    chrome.test.succeed();
-  }]);
+  chrome.test.runTests([
+    async function invokeUniversalCartSuccess() {
+      await chrome.glicPrivate.invoke({
+        promptId: 'TEST_PROMPT_ID',
+        invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
+        documentId,
+      });
+      chrome.test.succeed();
+    },
+    async function invokePromotionPageSuccess() {
+      await chrome.glicPrivate.invoke({
+        invocationSource: chrome.glicPrivate.InvocationSource.PROMOTION_PAGE,
+        documentId,
+      });
+      chrome.test.succeed();
+    },
+  ]);
 }
 
 function tests_runInvokeDisabled(documentId) {
@@ -206,6 +224,78 @@ function tests_runInvokeServerError(documentId) {
             documentId,
           }),
           'Error: http-error');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runUniversalCartOnly(documentId) {
+  chrome.test.runTests([
+    async function invokeUniversalCartSuccess() {
+      await chrome.glicPrivate.invoke({
+        promptId: 'TEST_PROMPT_ID',
+        invocationSource: chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
+        documentId,
+      });
+      chrome.test.succeed();
+    },
+    async function invokePromotionPageDisabled() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.PROMOTION_PAGE,
+            documentId,
+          }),
+          'Error: local-glic-access-from-page-disabled');
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runPromotionPageOnly(documentId) {
+  chrome.test.runTests([
+    async function invokeUniversalCartDisabled() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            promptId: 'TEST_PROMPT_ID',
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
+            documentId,
+          }),
+          'Error: local-glic-access-from-page-disabled');
+      chrome.test.succeed();
+    },
+    async function invokePromotionPageSuccess() {
+      await chrome.glicPrivate.invoke({
+        invocationSource: chrome.glicPrivate.InvocationSource.PROMOTION_PAGE,
+        documentId,
+      });
+      chrome.test.succeed();
+    },
+  ]);
+}
+
+function tests_runBothAccessDisabled(documentId) {
+  chrome.test.runTests([
+    async function invokeUniversalCartDisabled() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            promptId: 'TEST_PROMPT_ID',
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.UNIVERSAL_CART,
+            documentId,
+          }),
+          'Error: local-glic-access-from-page-disabled');
+      chrome.test.succeed();
+    },
+    async function invokePromotionPageDisabled() {
+      await chrome.test.assertPromiseRejects(
+          chrome.glicPrivate.invoke({
+            invocationSource:
+                chrome.glicPrivate.InvocationSource.PROMOTION_PAGE,
+            documentId,
+          }),
+          'Error: local-glic-access-from-page-disabled');
       chrome.test.succeed();
     },
   ]);

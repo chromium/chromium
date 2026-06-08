@@ -513,7 +513,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Zero-state Auto-summarize"/>
   <int value="27" label="From the universal cart"/>
   <int value="28" label="Experimental triggering"/>
-  <int value="29" label="From the promotion page"/>
+  <int value="34" label="From the promotion page"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/glic.mojom:InvocationSource) -->
@@ -617,6 +617,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="LocalGlicNotEnabledAndConsented"/>
   <int value="11" label="LocalAccountMismatch"/>
   <int value="12" label="LocalInvalidDocumentId"/>
+  <int value="16" label="LocalGlicAccessFromPageDisabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/extensions/api/glic_private/glic_private_api.cc:GlicPrivateApiStatusCodeHistogramValue) -->
@@ -785,10 +786,10 @@ chromium-metrics-reviews@google.com.
   <int value="114" label="Experimental triggering, attached, audio mode."/>
   <int value="115" label="Experimental triggering, detached, text mode."/>
   <int value="116" label="Experimental triggering, detached, audio mode."/>
-  <int value="117" label="From the promotion page, attached, text mode."/>
-  <int value="118" label="From the promotion page, attached, audio mode."/>
-  <int value="119" label="From the promotion page, detached, text mode."/>
-  <int value="120" label="From the promotion page, detached, audio mode."/>
+  <int value="137" label="From the promotion page, attached, text mode."/>
+  <int value="138" label="From the promotion page, attached, audio mode."/>
+  <int value="139" label="From the promotion page, detached, text mode."/>
+  <int value="140" label="From the promotion page, detached, audio mode."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->

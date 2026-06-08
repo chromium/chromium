@@ -65,7 +65,8 @@ enum ErrorCode {
   "local-glic-actuation-not-allowed",
   "local-glic-not-enabled-and-consented",
   "local-account-mismatch",
-  "local-invalid-document-id"
+  "local-invalid-document-id",
+  "local-glic-access-from-page-disabled"
 };
 
 

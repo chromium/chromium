@@ -2993,7 +2993,7 @@ export enum InvocationSource {
   // GlicExperimentalTriggeringMessageHandler.
   EXPERIMENTAL_TRIGGERING = 28,
   // From the promotion page.
-  PROMOTION_PAGE = 29,
+  PROMOTION_PAGE = 34,
 }
 
 ///////////////////////////////////////////////

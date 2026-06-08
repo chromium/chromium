@@ -13,6 +13,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -42,6 +43,7 @@ class GlicPrivateApiTest : public GlicPrivateApiTestBase {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{extensions_features::kApiGlicPrivate, {}},
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
+         {extensions_features::kApiGlicAccessFromPromotionPage, {}},
          {features::kGlicActor,
           {{"glic_actor_policy_control_exemption", "true"}}}},
         {});
@@ -234,6 +236,108 @@ IN_PROC_BROWSER_TEST_F(GlicPrivateApiDisabledTest, Invoke) {
   EXPECT_TRUE(RunExtensionTest(
       "glic_private",
       {.extension_url = "test.html", .custom_arg = "invoke_disabled"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class GlicPrivateApiUniversalCartOnlyTest
+    : public glic::GlicBrowserTestMixin<GlicPrivateApiTest> {
+ public:
+  GlicPrivateApiUniversalCartOnlyTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{extensions_features::kApiGlicPrivate, {}},
+         {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
+         {features::kGlicActor,
+          {{"glic_actor_policy_control_exemption", "true"}}}},
+        {extensions_features::kApiGlicAccessFromPromotionPage});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTest::SetUpOnMainThread();
+    SetupIdentityAndCapabilities();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiUniversalCartOnlyTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  auto interceptor = CreateMockPromptResponseInterceptor();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "universal_cart_only"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class GlicPrivateApiPromotionPageOnlyTest
+    : public glic::GlicBrowserTestMixin<GlicPrivateApiTest> {
+ public:
+  GlicPrivateApiPromotionPageOnlyTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{extensions_features::kApiGlicPrivate, {}},
+         {extensions_features::kApiGlicAccessFromPromotionPage, {}},
+         {features::kGlicActor,
+          {{"glic_actor_policy_control_exemption", "true"}}}},
+        {extensions_features::kApiGlicAccessFromGoogleWebpage});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTest::SetUpOnMainThread();
+    SetupIdentityAndCapabilities();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiPromotionPageOnlyTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  auto interceptor = CreateMockPromptResponseInterceptor();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "promotion_page_only"},
+      {.load_as_component = true}))
+      << message_;
+}
+
+class GlicPrivateApiBothAccessDisabledTest
+    : public glic::GlicBrowserTestMixin<GlicPrivateApiTest> {
+ public:
+  GlicPrivateApiBothAccessDisabledTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{extensions_features::kApiGlicPrivate, {}},
+         {features::kGlicActor,
+          {{"glic_actor_policy_control_exemption", "true"}}}},
+        {extensions_features::kApiGlicAccessFromGoogleWebpage,
+         extensions_features::kApiGlicAccessFromPromotionPage});
+  }
+
+  void SetUpOnMainThread() override {
+    GlicPrivateApiTest::SetUpOnMainThread();
+    SetupIdentityAndCapabilities();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicPrivateApiBothAccessDisabledTest, Invoke) {
+  SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+      kGlicPrivateTestExtensionId);
+
+  auto interceptor = CreateMockPromptResponseInterceptor();
+
+  EXPECT_TRUE(RunExtensionTest(
+      "glic_private",
+      {.extension_url = "test.html", .custom_arg = "both_access_disabled"},
       {.load_as_component = true}))
       << message_;
 }
