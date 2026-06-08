@@ -206,10 +206,14 @@ Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     std::u16string_view username,
     std::u16string_view password,
-    std::u16string_view backup_password)
+    std::u16string_view backup_password,
+    std::string_view signon_realm,
+    bool is_cross_domain)
     : username(username),
       password(password),
-      backup_password(backup_password) {}
+      backup_password(backup_password),
+      signon_realm(signon_realm),
+      is_cross_domain(is_cross_domain) {}
 
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     const PasswordSuggestionDetails&) = default;

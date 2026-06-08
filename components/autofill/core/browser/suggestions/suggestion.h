@@ -62,11 +62,13 @@ struct Suggestion {
     // Stores either the password signon realm or the Android app name for which
     // the password was saved.
     std::optional<std::u16string> display_signon_realm;
-    // This flag is set to `false` for the manual fallback suggestions which
-    // represent exact, strongly affiliated, PSL and weakly affiliated matches
-    // for the domain the suggestions are shown for. All other manual fallback
-    // suggestions have this flag set to `true`.
-    // Note that non-manual-fallback suggestions are never cross domain.
+    // Indicates if the suggestions represents a credential for which we are
+    // unsure if it belongs to the current website, and thus should show a
+    // confirmation popup when filling the credential. For manual fallback
+    // suggestions, this is set to `false` if they represent exact, strongly
+    // affiliated or PSL matches, and `true` for all others (such as
+    // grouped/weakly affiliated matches). For backup suggestions, this is set
+    // to `true` if they represent a grouped match.
     bool is_cross_domain = false;
 
     PasswordSuggestionDetails();
@@ -78,7 +80,9 @@ struct Suggestion {
     // Used to construct the payload of a backup password suggestion.
     PasswordSuggestionDetails(std::u16string_view username,
                               std::u16string_view password,
-                              std::u16string_view backup_password);
+                              std::u16string_view backup_password,
+                              std::string_view signon_realm,
+                              bool is_cross_domain);
     PasswordSuggestionDetails(const PasswordSuggestionDetails&);
     PasswordSuggestionDetails(PasswordSuggestionDetails&&);
     PasswordSuggestionDetails& operator=(const PasswordSuggestionDetails&);

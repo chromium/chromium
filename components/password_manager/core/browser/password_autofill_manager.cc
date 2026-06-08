@@ -374,9 +374,28 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       auto payload =
           suggestion
               .GetPayload<autofill::Suggestion::PasswordSuggestionDetails>();
-      OnPasswordCredentialSuggestionAccepted(
+      auto fill_backup_callback =
           base::BindOnce(&PasswordAutofillManager::FillBackupSuggestion,
-                         weak_ptr_factory_.GetWeakPtr(), payload));
+                         weak_ptr_factory_.GetWeakPtr(), payload);
+      if (payload.is_cross_domain) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+        cross_domain_confirmation_controller_ =
+            password_client_->ShowCrossDomainConfirmationPopup(
+                last_popup_open_args_.element_bounds,
+                last_popup_open_args_.text_direction,
+                password_manager_driver_->GetLastCommittedURL(),
+                password_manager_util::GetHumanReadableRealm(
+                    payload.signon_realm.value_or(std::string())),
+                /*show_warning_text=*/true,
+                base::BindOnce(&PasswordAutofillManager::
+                                   OnPasswordCredentialSuggestionAccepted,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(fill_backup_callback)));
+#endif
+      } else {
+        OnPasswordCredentialSuggestionAccepted(std::move(fill_backup_callback));
+      }
       break;
     }
     case autofill::SuggestionType::kTroubleSigningInEntry: {
@@ -929,10 +948,12 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::GetSuggestions(
   if (proactive_recovery_login) {
     CHECK(proactive_recovery_login->backup_password_value);
 
-    const auto suggestion_details = Suggestion::PasswordSuggestionDetails(
+    auto suggestion_details = Suggestion::PasswordSuggestionDetails(
         proactive_recovery_login->username_value,
         proactive_recovery_login->password_value,
-        proactive_recovery_login->backup_password_value.value());
+        proactive_recovery_login->backup_password_value.value(),
+        proactive_recovery_login->realm,
+        proactive_recovery_login->is_grouped_affiliation);
     return suggestion_generator_.GetProactiveRecoverySuggestions(
         suggestion_details);
   }

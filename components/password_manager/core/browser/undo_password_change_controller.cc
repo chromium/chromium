@@ -37,11 +37,6 @@ bool IsFormEligibleForProactiveRecovery(
     return false;
   }
 
-  if (password_manager_util::GetMatchType(*form_best_match) ==
-      password_manager_util::GetLoginMatchType::kGrouped) {
-    return false;
-  }
-
   if (!form_best_match->GetPasswordBackup()) {
     return false;
   }
