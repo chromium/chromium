@@ -4189,6 +4189,10 @@ inline constexpr char kTestThirdPartyCookiePhaseoutDescription[] =
     "Enable to test third-party cookie phaseout. "
     "Learn more: https://goo.gle/3pcd-flags";
 
+inline constexpr char kSplitViewHorizontalName[] = "Stacked Split Views";
+inline constexpr char kSplitViewHorizontalDescription[] =
+    "Whether split views can be arranged in a stacked layout.";
+
 inline constexpr char kSplitViewTabRestoreName[] = "Split View Tab Restore";
 inline constexpr char kSplitViewTabRestoreDescription[] =
     "Whether or not a split view should restore together.";

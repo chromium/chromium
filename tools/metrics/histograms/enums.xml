@@ -13583,6 +13583,7 @@ from previous Chrome versions.
       label="IsSecurePaymentConfirmationAvailableAPI:enabled"/>
   <int value="-256347812" label="AndroidBricksNativePage:disabled"/>
   <int value="-256163762" label="AccessibilityAtomicLiveRegions:enabled"/>
+  <int value="-256085312" label="SplitViewHorizontal:enabled"/>
   <int value="-255869867" label="eol-reset-dismissed-prefs:disabled"/>
   <int value="-255264176" label="OmniboxSearchEngineLogo:disabled"/>
   <int value="-255157394" label="ButtonARCNetworkDiagnostics:enabled"/>
@@ -14039,6 +14040,7 @@ from previous Chrome versions.
   <int value="-106128305" label="DragDropTabTearing:disabled"/>
   <int value="-106039323" label="XplatSyncedSetup:disabled"/>
   <int value="-105400607" label="Glic:enabled"/>
+  <int value="-105280945" label="SplitViewHorizontal:disabled"/>
   <int value="-104106119" label="WebViewJavaJsBridgeMojo:disabled"/>
   <int value="-103592169" label="EnableInputProtection:enabled"/>
   <int value="-103131043" label="NtpOutlookCalendarModule:disabled"/>

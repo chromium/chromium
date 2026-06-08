@@ -4617,6 +4617,16 @@ const FeatureEntry::FeatureVariation kCanvasAccessibilityChoices[] = {
     {"Basic (Rendered Text)", kCanvasAccessibilityBasic, nullptr},
     {"Advanced (Rendered Text + OCR)", kCanvasAccessibilityAdvanced, nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kSplitViewHorizontalDirectAccess[] = {
+    {"split_view_horizontal_direct_access", "true"}};
+const FeatureEntry::FeatureParam kSplitViewHorizontalIndirectAccess[] = {
+    {"split_view_horizontal_direct_access", "false"}};
+const FeatureEntry::FeatureVariation kSplitViewHorizontalVariations[] = {
+    {"Direct Access", kSplitViewHorizontalDirectAccess, nullptr},
+    {"Indirect Access", kSplitViewHorizontalIndirectAccess, nullptr}};
+#endif
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13038,6 +13048,14 @@ const FeatureEntry kFeatureEntries[] = {
     {"devtools-plus-button", flag_descriptions::kDevToolsPlusButtonName,
      flag_descriptions::kDevToolsPlusButtonDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsPlusButton)},
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"split-view-horizontal", flag_descriptions::kSplitViewHorizontalName,
+     flag_descriptions::kSplitViewHorizontalDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kSplitViewHorizontal,
+                                    kSplitViewHorizontalVariations,
+                                    "SplitViewHorizontal")},
+#endif
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

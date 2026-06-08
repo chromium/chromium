@@ -8796,6 +8796,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "split-view-horizontal",
+    "owners": [ "charlesmeng@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "split-view-link-open",
     "owners": [ "helmut@januschka.com", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 152
