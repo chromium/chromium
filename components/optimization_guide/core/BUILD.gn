@@ -272,6 +272,7 @@ source_set("ondevice") {
     ":features",
     "//base",
     "//base/version_info",
+    "//build:branding_buildflags",
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
