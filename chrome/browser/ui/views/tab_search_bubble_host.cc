@@ -67,7 +67,6 @@ TabSearchBubbleHost::TabSearchBubbleHost(
       profile_(browser_window_interface->GetProfile()),
       browser_window_interface_(browser_window_interface),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
-          button,
           browser_window_interface,
           GURL(chrome::kChromeUITabSearchURL),
           IDS_ACCNAME_TAB_SEARCH)),
@@ -202,7 +201,7 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
   const tabs::TabSearchPosition position =
       tabs::GetTabSearchPosition(browser_window_interface_);
   webui_bubble_manager_->ShowBubble(
-      std::nullopt,
+      button_,
       (position == tabs::TabSearchPosition::kLeadingHorizontalTabstrip ||
        position == tabs::TabSearchPosition::kVerticalTabstrip)
           ? views::BubbleBorder::TOP_LEFT

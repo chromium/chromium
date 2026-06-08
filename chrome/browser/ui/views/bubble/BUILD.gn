@@ -17,6 +17,7 @@ source_set("bubble") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:primitives",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui:webui_util",
