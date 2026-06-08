@@ -94,6 +94,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // frame.
   gfx::RoundedCornersF GetRoundedCornerRadii() const;
 
+  virtual bool EscClosesUI() const;
+
  protected:
   // Callback for cleaning up the `context_menu_` field.
   void OnMenuClosed();

@@ -1757,7 +1757,9 @@ void OmniboxViewViews::OnBlur() {
     RevertAll();
   } else if (auto* popup_closer =
                  controller()->client()->GetOmniboxPopupCloser()) {
-    popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
+    if (!base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
+      popup_closer->CloseWithReason(omnibox::PopupCloseReason::kBlur);
+    }
   }
 
   // Tell the model to reset itself.

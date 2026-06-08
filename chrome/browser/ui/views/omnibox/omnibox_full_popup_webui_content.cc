@@ -32,6 +32,17 @@ OmniboxFullPopupWebUIContent::OmniboxFullPopupWebUIContent(
 
 OmniboxFullPopupWebUIContent::~OmniboxFullPopupWebUIContent() = default;
 
+bool OmniboxFullPopupWebUIContent::EscClosesUI() const {
+  return false;
+}
+
+void OmniboxFullPopupWebUIContent::CloseUI() {
+  controller()->client()->FocusWebContents();
+  controller()->edit_model()->OnKillFocus();
+
+  OmniboxPopupWebUIBaseContent::CloseUI();
+}
+
 // TODO(b/504668887): If necessary, copy `OmniboxAimPopupWebUIContent::Clear()`
 // implementation here to deal with tab state restoration issue(s) when the user
 // creates a new tab while there's an in-progress text input in the popup.

@@ -33,6 +33,10 @@ class OmniboxFullPopupWebUIContent : public OmniboxPopupWebUIContent {
       delete;
   ~OmniboxFullPopupWebUIContent() override;
 
+  bool EscClosesUI() const override;
+
+  void CloseUI() override;
+
  protected:
   std::string_view GetMetricPrefix() const override;
 
