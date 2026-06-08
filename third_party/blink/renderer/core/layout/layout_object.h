@@ -89,6 +89,7 @@ class LayoutBlockFlow;
 class LayoutView;
 class LocalFrameView;
 class PaintLayer;
+class PhysicalBoxFragment;
 class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
@@ -2029,6 +2030,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   virtual void ClearFirstInlineFragmentItemIndex() { NOT_DESTROYED(); }
   virtual void SetFirstInlineFragmentItemIndex(wtf_size_t) { NOT_DESTROYED(); }
+
+  // Gap decorations can take a list format for its styles. When the container
+  // fragments, the order of those styles must be maintained. This method
+  // returns the index of the gap within the container's decoration style
+  // pattern within the stiched container given the provided fragment relative
+  // `gap_index`.
+  virtual wtf_size_t StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
+                                         wtf_size_t gap_index) const {
+    NOT_DESTROYED();
+    return gap_index;
+  }
 
   void SetHasBoxDecorationBackground(bool);
 

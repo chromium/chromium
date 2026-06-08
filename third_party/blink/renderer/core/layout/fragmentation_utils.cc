@@ -1470,6 +1470,13 @@ const BlockBreakToken* FindPreviousBreakToken(
   return previous_fragment->GetBreakToken();
 }
 
+const BreakTokenAlgorithmData* GetFirstFragmentBreakTokenData(
+    const PhysicalBoxFragment& fragment) {
+  const auto* box = To<LayoutBox>(fragment.GetLayoutObject());
+  const auto* first_break_token = box->GetPhysicalFragment(0)->GetBreakToken();
+  return first_break_token ? first_break_token->TokenData() : nullptr;
+}
+
 wtf_size_t BoxFragmentIndex(const PhysicalBoxFragment& fragment) {
   DCHECK(!fragment.IsInlineBox());
   const BlockBreakToken* token = FindPreviousBreakToken(fragment);

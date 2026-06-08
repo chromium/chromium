@@ -8,11 +8,29 @@
 
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
+
+bool GapGeometry::HasRowGapFragmentation(
+    const PhysicalBoxFragment& box_fragment,
+    bool is_main) const {
+  if (box_fragment.IsOnlyForNode()) {
+    return false;
+  }
+
+  // For grid, fragmentation only affects grid rows gaps indices (i.e. main
+  // gaps).
+  if (container_type_ == ContainerType::kGrid) {
+    return is_main;
+  }
+
+  // TODO(samomekarajr): Implement for flex and multicol in a follow-up CL.
+  return false;
+}
 
 PhysicalRect GapGeometry::ComputeInkOverflowForGaps(
     WritingDirectionMode writing_direction,

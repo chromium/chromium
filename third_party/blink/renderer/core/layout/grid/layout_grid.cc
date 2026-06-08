@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
+#include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
@@ -139,6 +141,23 @@ bool LayoutGrid::ShouldInvalidateSubgridMinMaxSizesCacheFor(
 
 const GridLayoutData* LayoutGrid::LayoutData() const {
   return GetGridLayoutDataFromFragments(this);
+}
+
+wtf_size_t LayoutGrid::StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
+                                           wtf_size_t gap_index) const {
+  NOT_DESTROYED();
+  // This should only be reached when painting gap decorations in a fragmented
+  // context.
+  CHECK(!fragment.IsOnlyForNode());
+  const auto* previous_break_token = FindPreviousBreakToken(fragment);
+
+  // The first fragment has no previous break token, so the stitched index is
+  // just `gap_index`.
+  if (!previous_break_token) {
+    return gap_index;
+  }
+  return previous_break_token->TokenData()->GetFirstUnprocessedRowGapIndex() +
+         gap_index;
 }
 
 // static

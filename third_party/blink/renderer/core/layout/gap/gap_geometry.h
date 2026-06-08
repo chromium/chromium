@@ -20,6 +20,7 @@
 namespace blink {
 
 class ComputedStyle;
+class PhysicalBoxFragment;
 
 // This bitmask indicates whether an intersection is blocked due to the presence
 // of a spanning item in one or both directions. When considering column gaps,
@@ -141,6 +142,10 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   LayoutUnit GetCrossingGapSize(GridTrackSizingDirection direction) const;
 
   ContainerType GetContainerType() const { return container_type_; }
+
+  // Returns true when row gaps span multiple fragments.
+  bool HasRowGapFragmentation(const PhysicalBoxFragment& box_fragment,
+                              bool is_main) const;
 
   void SetInlineGapSize(LayoutUnit size) { inline_gap_size_ = size; }
   LayoutUnit GetInlineGapSize() const { return inline_gap_size_; }

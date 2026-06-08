@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_TOKEN_ALGORITHM_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_BREAK_TOKEN_ALGORITHM_DATA_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -38,6 +40,15 @@ struct BreakTokenAlgorithmData
   bool IsTableType() const { return Type() == kTableData; }
   bool IsTableRowType() const { return Type() == kTableRowData; }
   bool IsMulticolType() const { return Type() == kMulticolData; }
+
+  // Returns the total row gap count across all fragments including any gaps
+  // suppressed during fragmentation.
+  virtual wtf_size_t GetTotalRowGapCount() const { NOTREACHED(); }
+
+  // Returns the first row gap index associated with this break token data
+  // in the stitched container. In other words, it would be the index of the
+  // gap in the container had it not been fragmented.
+  virtual wtf_size_t GetFirstUnprocessedRowGapIndex() const { NOTREACHED(); }
 
   virtual void Trace(Visitor* visitor) const {}
 

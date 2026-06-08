@@ -127,8 +127,8 @@ class CORE_EXPORT GapDataListIterator {
  public:
   using GapDataVector = GapDataList<T>::GapDataVector;
   using GapData = GapData<T>;
-  explicit GapDataListIterator(const GapDataVector& gap_data_list,
-                               wtf_size_t gap_count)
+
+  GapDataListIterator(const GapDataVector& gap_data_list, wtf_size_t gap_count)
       : gap_data_list_(gap_data_list), gap_count_(gap_count) {
     CHECK(!gap_data_list_.empty());
     BuildRegions();
@@ -148,6 +148,16 @@ class CORE_EXPORT GapDataListIterator {
   }
 
   bool HasNext() const { return current_gap_index_ < gap_count_; }
+
+  // Advances the cursor to just before `target_index`, hence subsequent
+  // `Next()` call returns the data at `target_index`.
+  void AdvanceUpTo(wtf_size_t target_index) {
+    CHECK_LE(current_gap_index_, target_index);
+    CHECK_LE(target_index, gap_count_);
+    while (current_gap_index_ < target_index) {
+      Next();
+    }
+  }
 
   T Next() {
     CHECK(HasNext());

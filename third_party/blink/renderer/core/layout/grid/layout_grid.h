@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class PhysicalBoxFragment;
+
 class CORE_EXPORT LayoutGrid : public LayoutBlock {
  public:
   explicit LayoutGrid(Element* element);
@@ -69,6 +71,9 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
       GridTrackSizingDirection track_direction) const;
 
   const GridLayoutData* LayoutData() const;
+
+  wtf_size_t StitchedRowGapIndex(const PhysicalBoxFragment& fragment,
+                                 wtf_size_t gap_index) const override;
 
   void Trace(Visitor* visitor) const override {
     LayoutBlock::Trace(visitor);
