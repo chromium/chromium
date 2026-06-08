@@ -775,6 +775,8 @@ void ContextualCueingController::ShowCue(
       base::UTF8ToUTF16(strings.anchored_message_text()));
   page_action_controller->OverrideText(
       kActionAnchoredContextualCue, base::UTF8ToUTF16(strings.action_text()));
+  page_action_controller->OverrideImage(kActionAnchoredContextualCue,
+                                        target.GetOmniboxChipIcon());
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
