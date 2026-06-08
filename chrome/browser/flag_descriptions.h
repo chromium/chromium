@@ -193,7 +193,6 @@ inline constexpr char kGroupPromoPrototypeCpaName[] =
 inline constexpr char kGroupPromoPrototypeCpaDescription[] =
     "Enables contextual toolbar button for group promo prototype.";
 
-
 inline constexpr char kNewTabPageCustomizationV2Name[] =
     "Customize the new tab page V2";
 inline constexpr char kNewTabPageCustomizationV2Description[] =
@@ -4722,6 +4721,12 @@ inline constexpr char kWebAppInstallDialogName[] = "Web App install dialog";
 inline constexpr char kWebAppInstallDialogDescription[] =
     "Enables the new web app install dialog.";
 
+inline constexpr char kWebAppInstallDialogWinPinName[] =
+    "Enable PWA install dialog pinning option";
+inline constexpr char kWebAppInstallDialogWinPinDescription[] =
+    "Enables the option to pin PWA to taskbar in the PWA install "
+    "dialog.";
+
 inline constexpr char kWebAppMigratePreinstalledChatName[] =
     "Migrate preinstalled Chat app";
 inline constexpr char kWebAppMigratePreinstalledChatDescription[] =
@@ -5875,7 +5880,6 @@ inline constexpr char kMediaCodecLowDelayModeDescription[] =
     "Allows selection of low latency MediaCodec instances for video "
     "decoding when low delay is requested by the underlying stream.";
 
-
 inline constexpr char kMigrateAccountManagerDelegateName[] =
     "Migrate Account Manager Delegate";
 inline constexpr char kMigrateAccountManagerDelegateDescription[] =
@@ -6662,7 +6666,6 @@ inline constexpr char kUseWinrtMidiApiName[] = "Use Windows Runtime MIDI API";
 inline constexpr char kUseWinrtMidiApiDescription[] =
     "Use Windows Runtime MIDI API for WebMIDI (effective only on Windows 10 or "
     "later).";
-
 
 inline constexpr char kWebRtcWgcRequireBorderName[] =
     "Border around WGC captures";

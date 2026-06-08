@@ -10763,6 +10763,7 @@ from previous Chrome versions.
       label="CrOSLateBootCrasOutputPluginProcessor:enabled"/>
   <int value="-1175552430" label="WebViewNewInvalidateHeuristic:enabled"/>
   <int value="-1175496736" label="AutofillUnmaskCardRequestTimeout:enabled"/>
+  <int value="-1175005559" label="WebAppInstallDialogWinPin:disabled"/>
   <int value="-1174628038"
       label="ContextualSearchBoxUsesContextualSearchProvider:disabled"/>
   <int value="-1174292609" label="SystemProxyForSystemServices:disabled"/>
@@ -13728,6 +13729,7 @@ from previous Chrome versions.
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>
   <int value="-201756738" label="AndroidContextMenuNewActions:disabled"/>
   <int value="-201633741" label="DisplayAlignAssist:enabled"/>
+  <int value="-201053031" label="WebAppInstallDialogWinPin:enabled"/>
   <int value="-200805659" label="ContextualSuggestionsButton:enabled"/>
   <int value="-200792853" label="UnifiedPasswordManagerAndroid:disabled"/>
   <int value="-200160012" label="RelatedSearchesUi:disabled"/>

@@ -9746,6 +9746,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "web-app-install-dialog-win-pin",
+    "owners": [ "aixba@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "web-app-install-element",
     "owners": [
       "liahiscock@microsoft.com",

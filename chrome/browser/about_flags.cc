@@ -12049,6 +12049,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-app-install-dialog", flag_descriptions::kWebAppInstallDialogName,
      flag_descriptions::kWebAppInstallDialogDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebAppInstallDialog)},
+    {"web-app-install-dialog-win-pin",
+     flag_descriptions::kWebAppInstallDialogWinPinName,
+     flag_descriptions::kWebAppInstallDialogWinPinDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebAppInstallDialogWinPin)},
 #endif
 
     {"connection-allowlists", flag_descriptions::kConnectionAllowlistsName,
