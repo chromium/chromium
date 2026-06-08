@@ -27,6 +27,8 @@ using content::BrowserThread;
 
 namespace ash::file_system_provider {
 
+namespace {
+
 // Converts GetLengthCallback to net::CompletionOnceCallback for Read errors.
 void GetLengthToIntCompletionOnceCallback(
     net::CompletionOnceCallback callback,
@@ -34,6 +36,12 @@ void GetLengthToIntCompletionOnceCallback(
   std::move(callback).Run(result.has_value() ? static_cast<int>(result.value())
                                              : result.error());
 }
+
+perfetto::NamedTrack GetTracingTrack(const FileStreamReader* reader) {
+  return perfetto::NamedTrack::FromPointer("ash::FileStreamReader", reader);
+}
+
+}  // namespace
 
 class FileStreamReader::OperationRunner
     : public base::RefCountedThreadSafe<
@@ -210,7 +218,7 @@ FileStreamReader::~FileStreamReader() {
       base::BindOnce(&OperationRunner::CloseRunnerOnUIThread, runner_));
 
   // If a read is in progress, mark it as completed.
-  TRACE_EVENT_END("file_system_provider", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("file_system_provider", GetTracingTrack(this));
 }
 
 void FileStreamReader::Initialize(base::OnceClosure pending_closure,
@@ -293,8 +301,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
                            net::CompletionOnceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT_BEGIN("file_system_provider", "FileStreamReader::Read",
-                    perfetto::Track::FromPointer(this), "buffer_length",
-                    buffer_length);
+                    GetTracingTrack(this), "buffer_length", buffer_length);
 
   read_callback_ = std::move(callback);
   switch (state_) {
@@ -331,7 +338,7 @@ int FileStreamReader::Read(net::IOBuffer* buffer,
 void FileStreamReader::OnReadCompleted(int result) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   std::move(read_callback_).Run(static_cast<int>(result));
-  TRACE_EVENT_END("file_system_provider", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("file_system_provider", GetTracingTrack(this));
 }
 
 int64_t FileStreamReader::GetLength(GetLengthCallback callback) {
