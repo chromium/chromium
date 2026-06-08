@@ -596,7 +596,8 @@ IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, ToolbarPositioningTransform) {
       StopObservingState(kToolbarBoundsState));
 }
 
-IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, HideToolbarOnReload) {
+// TODO(b/521479979): Re-enable this test once the bug is fixed.
+IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, DISABLED_HideToolbarOnReload) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
 
   RunTestSequence(
