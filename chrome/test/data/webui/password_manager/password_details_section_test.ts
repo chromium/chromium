@@ -423,8 +423,7 @@ suite('PasswordDetailsSectionTest', function() {
       });
 
   // <if expr="_google_chrome">
-  // TODO(crbug.com/494149175): Re-enable after fixing.
-  test.skip(
+  test(
       'Register password sharing IPH for password card', async function() {
         syncProxy.syncInfo = {
           isSyncingPasswords: true,

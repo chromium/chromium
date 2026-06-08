@@ -145,6 +145,14 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'maybeRegisterSharingHelpBubble_(' +
+          'shouldRegisterSharingPromo, showShareButton_, ' +
+          'passwordSharingDisabled_)',
+    ];
+  }
+
   declare password: chrome.passwordsPrivate.PasswordUiEntry;
   declare groupName: string;
   declare iconUrl: string;
@@ -162,10 +170,6 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   declare private showSingleClickUploadUi_: boolean;
   declare private trigger_: MoveToAccountStoreTrigger;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.maybeRegisterSharingHelpBubble_();
-  }
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -386,12 +390,14 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     this.isPasswordVisible = false;
   }
 
-  private maybeRegisterSharingHelpBubble_(): void {
+  private maybeRegisterSharingHelpBubble_(
+      shouldRegisterSharingPromo: boolean, showShareButton: boolean,
+      passwordSharingDisabled: boolean): void {
     // Register the help bubble only if this is the first card in the list
     // (`shouldRegisterSharingPromo` is true), and the share button is visible
     // and not disabled.
-    if (!this.shouldRegisterSharingPromo ||
-        (!this.showShareButton_ && !this.passwordSharingDisabled_)) {
+    if (!shouldRegisterSharingPromo || !showShareButton ||
+        passwordSharingDisabled) {
       return;
     }
 
