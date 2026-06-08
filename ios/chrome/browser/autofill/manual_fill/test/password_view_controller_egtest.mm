@@ -967,8 +967,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   // Verify that the password filling option is visible with subtext.
-  NSString* subtext =
-      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+  NSString* subtext = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
   id<GREYMatcher> subtextMatcher = grey_text([NSString
       stringWithFormat:@"%@\n%@", base::SysUTF8ToNSString(self.URL.host()),
                        subtext]);

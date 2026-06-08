@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -412,9 +413,14 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
     BOOL isTablet = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 
+    NSString* displayDescription =
+        IsConditionalPasskeyLoginEnabled() && IsPasswordSuggestion(suggestion)
+            ? l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT)
+            : suggestion.displayDescription;
+
     BOOL hasText = suggestionText.length > 0 ||
                    suggestion.minorValue.length > 0 ||
-                   suggestion.displayDescription.length > 0;
+                   displayDescription.length > 0;
 
     if (hasText) {
       if (isTablet) {
@@ -427,8 +433,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
         // on the plus side, might actually be more light weight in the end.
         [stackView addArrangedSubview:AttributedTextLabel(
                                           suggestionText, suggestion.minorValue,
-                                          suggestion.displayDescription,
-                                          suggestion.icon)];
+                                          displayDescription, suggestion.icon)];
       } else {
         // On phones, store the suggestion information in a stack view so that
         // it can be selectively truncated if necessary.
@@ -448,9 +453,9 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
         // Format the suggestion information using a stack view so that each
         // piece of information can be truncated individually when truncation is
         // needed.
-        NSArray<UIView*>* views = TextViews(
-            suggestionText, suggestion.minorValue,
-            suggestion.displayDescription, [self isCreditCardSuggestion]);
+        NSArray<UIView*>* views =
+            TextViews(suggestionText, suggestion.minorValue, displayDescription,
+                      [self isCreditCardSuggestion]);
         for (UIView* view in views) {
           [stackView addArrangedSubview:view];
         }
@@ -465,11 +470,10 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
     [self setClipsToBounds:YES];
     [self setUserInteractionEnabled:YES];
     [self setIsAccessibilityElement:YES];
-    [self
-        setAccessibilityLabel:AccessibilityLabel(
-                                  suggestionText, suggestion.displayDescription,
-                                  suggestion.type ==
-                                      SuggestionType::kBackupPasswordEntry)];
+    [self setAccessibilityLabel:AccessibilityLabel(
+                                    suggestionText, displayDescription,
+                                    suggestion.type ==
+                                        SuggestionType::kBackupPasswordEntry)];
     [self
         setAccessibilityValue:l10n_util::GetNSStringF(
                                   IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE,

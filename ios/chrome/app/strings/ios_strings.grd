@@ -4658,9 +4658,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_CHIP_ACCESSIBILITY_LABEL" desc="Accessibility label for the password chip button displayed in the password manual fallback screen and that's allowing the user to autofill their password on a specific form field.">
         Autofill the password
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT" desc="The subtext for a password credential in the manual fallback menu, indicating it is a password.">
-        Password
-      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_PAYMENT_CELL_INDEX" desc="Accessibility label for the payment method suggestions in the manual fallback view to indicate the position of the payment method suggestion in the list of payment method suggestions.">
         {count, plural,
              =1 {{position} of {count} payment method}
@@ -5723,6 +5720,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_PASSWORD_SHARING_TITLE" desc="Title of the password sharing bottom sheet view. [iOS only]">
         Share Password
+      </message>
+      <message name="IDS_IOS_PASSWORD_SUBTEXT" desc="The subtext indicating a credential is a traditional password.">
+        Password
       </message>
       <message name="IDS_IOS_PAYMENT_BOTTOM_SHEET_CARD_DESCRIPTION" desc="The (accessibility) credit card description from the network of the card and last 4 digits of the card number.">
         <ph name="NETWORK_NAME">$1<ex>Visa</ex></ph> ending in <ph name="LAST_FOUR_DIGITS">$2<ex>1234</ex></ph>

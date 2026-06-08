@@ -509,8 +509,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
     return formSuggestion.displayDescription;
   }
 
-  NSString* credentialType =
-      l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+  NSString* credentialType = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
 
   NSString* suggestionHost = formSuggestion.displayDescription;
   if (suggestionHost && suggestionHost.length > 0 &&

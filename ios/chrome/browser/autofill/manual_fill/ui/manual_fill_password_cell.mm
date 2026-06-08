@@ -496,8 +496,7 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
       credentialSubtext = webauthn::ComputePasskeyDescription(
           self.credential.displayName, self.credential.displayName);
     } else {
-      credentialSubtext =
-          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+      credentialSubtext = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUBTEXT);
     }
   }
   return CreateCredentialSubtitle(self.credential.host,
