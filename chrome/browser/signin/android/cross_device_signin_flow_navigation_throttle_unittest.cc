@@ -102,6 +102,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   ASSERT_TRUE(throttle);
   signin::SigninDeepLinkPayload expected_payload{
       .entry_point_id = signin::ExternalEntryPoint::kUnknown,
+      .entry_point_id_raw_value_for_metrics = 0,
       .email = "test@gmail.com"};
   EXPECT_CALL(*signin_bridge(),
               StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),
@@ -164,6 +165,7 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   ASSERT_TRUE(throttle);
   signin::SigninDeepLinkPayload expected_payload{
       .entry_point_id = signin::ExternalEntryPoint::kUnknown,
+      .entry_point_id_raw_value_for_metrics = 0,
       .email = "test@gmail.com"};
   EXPECT_CALL(*signin_bridge(),
               StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),

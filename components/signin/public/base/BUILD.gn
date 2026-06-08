@@ -107,6 +107,8 @@ static_library("base") {
 if (is_android || is_ios) {
   source_set("signin_deep_link") {
     sources = [
+      "signin_deep_link_metrics.cc",
+      "signin_deep_link_metrics.h",
       "signin_deep_link_parser.cc",
       "signin_deep_link_parser.h",
       "signin_deep_link_payload.cc",
@@ -211,6 +213,7 @@ source_set("unit_tests") {
 
   if (is_android || is_ios) {
     sources += [
+      "signin_deep_link_metrics_unittest.cc",
       "signin_deep_link_parser_unittest.cc",
       "signin_deep_link_payload_unittest.cc",
     ]

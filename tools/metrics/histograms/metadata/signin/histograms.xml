@@ -104,6 +104,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.cc:GetRotationHistogramTriggerSuffix) -->
 
+<!-- LINT.IfChange(ExternalEntryPoint) -->
+
+<variants name="ExternalEntryPoint">
+  <variant name="" summary="Aggregated view across all external entry points"/>
+  <variant name=".DesktopDefault"
+      summary="Desktop default entry point (1), supported in V1"/>
+  <variant name=".Unknown"
+      summary="Fallback UI, shown because an unknown external entry point
+               value was provided"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/signin/public/base/signin_deep_link_payload.h:ExternalEntryPoint) -->
+
 <!-- LINT.IfChange(PartitionSuffix) -->
 
 <variants name="PartitionSuffix">
@@ -1596,6 +1609,31 @@ prefs when the profile is loaded.  -->
   <summary>
     The total number of accounts in the cookie jar.
     {AccountInvestigationReportingType}
+  </summary>
+</histogram>
+
+<histogram name="Signin.CrossDevice.InitialAccountsNumber{ExternalEntryPoint}"
+    units="accounts" expires_after="2027-05-25">
+  <owner>lbarczynski@google.com</owner>
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the total number of Google accounts present on the device at the
+    moment the cross-device sign-in flow starts. Recorded for
+    {ExternalEntryPoint}.
+  </summary>
+  <token key="ExternalEntryPoint" variants="ExternalEntryPoint"/>
+</histogram>
+
+<histogram name="Signin.CrossDevice.UrlDetected" units="entry point id"
+    expires_after="2027-05-25">
+  <owner>lbarczynski@google.com</owner>
+  <owner>myuu@google.com</owner>
+  <owner>chrome-signin-mobile-team@google.com</owner>
+  <summary>
+    Records the raw external entry point ID detected from the cross-device
+    sign-in URL (e.g., from a QR code scan). It's recorded only if the full URL
+    is valid and was parsed successfully.
   </summary>
 </histogram>
 
