@@ -362,6 +362,11 @@ void DoOpen(Browser* browser,
     auto* const single_web_contents = *(opened_web_contents.begin());
     const int opened_web_contents_index =
         model->GetIndexOfWebContents(single_web_contents);
+    // Handle the situation where the bookmark is opened in a different window
+    // (happens when opening certain internal pages in incognito mode).
+    if (opened_web_contents_index == TabStripModel::kNoTab) {
+      return;
+    }
     model->AddToNewSplit(
         {opened_web_contents_index}, split_tabs::SplitTabVisualData(),
         split_tabs::SplitTabCreatedSource::kBookmarkContextMenu);

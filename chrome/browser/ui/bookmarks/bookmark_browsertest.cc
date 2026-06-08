@@ -293,6 +293,31 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(browser_tabs + 2, browser()->tab_strip_model()->count());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBrowsertest,
+    OpenBookmarkInSplitInIncognitoWhenBookmarkCantOpenInIncognito) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  bookmark_model->AddURL(bookmark_model->bookmark_bar_node(), 0, u"Settings",
+                         GURL(chrome::kChromeUISettingsURL));
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  BookmarkModel* incognito_model =
+      WaitForBookmarkModel(incognito_browser->profile());
+  ASSERT_FALSE(incognito_model->bookmark_bar_node()->children().empty());
+  BookmarkNode* const incognito_page =
+      incognito_model->bookmark_bar_node()->children()[0].get();
+
+  const int browser_tabs = browser()->tab_strip_model()->count();
+  const int incognito_tabs = incognito_browser->tab_strip_model()->count();
+
+  bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_page},
+                              WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                              bookmarks::OpenAllBookmarksContext::kInSplit);
+
+  EXPECT_EQ(incognito_tabs, incognito_browser->tab_strip_model()->count());
+  EXPECT_EQ(browser_tabs + 1, browser()->tab_strip_model()->count());
+}
+
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
                        ConvertBookmarkFolderToGroupCreateNewGroup) {
   base::UserActionTester user_action_tester;
