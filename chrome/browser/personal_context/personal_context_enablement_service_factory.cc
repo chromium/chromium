@@ -10,13 +10,11 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/personal_context/core/country_type.h"
 #include "components/personal_context/core/personal_context_enablement_service_impl.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
 
@@ -56,8 +54,6 @@ PersonalContextEnablementServiceFactory::
               .Build()) {
   DependsOn(AccountSettingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
-                GetInstance());
 }
 
 PersonalContextEnablementServiceFactory::
@@ -78,14 +74,9 @@ PersonalContextEnablementServiceFactory::BuildServiceInstanceForBrowserContext(
           profile->GetOriginalProfile());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
-  subscription_eligibility::SubscriptionEligibilityService*
-      subscription_eligibility_service =
-          subscription_eligibility::SubscriptionEligibilityServiceFactory::
-              GetForProfile(profile->GetOriginalProfile());
   return std::make_unique<
       personal_context::PersonalContextEnablementServiceImpl>(
-      account_settings_service, identity_manager,
-      subscription_eligibility_service, profile->GetPrefs(),
+      account_settings_service, identity_manager, profile->GetPrefs(),
       GetCountryCodeFromVariations(),
       g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }

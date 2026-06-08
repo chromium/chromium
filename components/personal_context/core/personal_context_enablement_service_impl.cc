@@ -21,7 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 
 namespace personal_context {
 namespace {
@@ -51,29 +50,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   return true;
 }
 
-const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
-  static const base::NoDestructor<base::flat_set<int32_t>> eligible_tiers([] {
-    std::string tier_list = features::kPersonalContextEligibleTiers.Get();
-    std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
-        tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    base::flat_set<int32_t> tiers;
-    tiers.reserve(tier_pieces.size());
-    for (std::string_view piece : tier_pieces) {
-      int32_t tier_id = 0;
-      if (base::StringToInt(piece, &tier_id)) {
-        tiers.insert(tier_id);
-      }
-    }
-    return tiers;
-  }());
-  return *eligible_tiers;
-}
-
 // Checks whether all requirements for `IdentityManager` state are met.
 [[nodiscard]] bool SatisfiesAccountRequirements(
     const signin::IdentityManager* identity_manager,
-    subscription_eligibility::SubscriptionEligibilityService*
-        subscription_eligibility_service,
     std::string* debug_message = nullptr) {
   // The user is signed out.
   if (!identity_manager ||
@@ -108,19 +87,6 @@ const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
   if (extended_account_info.capabilities.can_use_model_execution_features() !=
       signin::Tribool::kTrue) {
     MaybeOutputReason(debug_message, "User is underaged.");
-    return false;
-  }
-
-  if (!subscription_eligibility_service) {
-    MaybeOutputReason(debug_message,
-                      "Subscription eligibility service not available.");
-    return false;
-  }
-
-  const int32_t tier =
-      subscription_eligibility_service->GetAiSubscriptionTier();
-  if (!GetPersonalContextEligibleTiers().contains(tier)) {
-    MaybeOutputReason(debug_message, "User subscription tier is not eligible.");
     return false;
   }
 
@@ -208,14 +174,11 @@ const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
 PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
     account_settings::AccountSettingService* account_settings_service,
     signin::IdentityManager* identity_manager,
-    subscription_eligibility::SubscriptionEligibilityService*
-        subscription_eligibility_service,
     PrefService* pref_service,
     GeoIpCountryCode country_code,
     std::string locale)
     : account_settings_service_(account_settings_service),
       identity_manager_(identity_manager),
-      subscription_eligibility_service_(subscription_eligibility_service),
       pref_service_(pref_service),
       country_code_(std::move(country_code)),
       locale_(std::move(locale)) {
@@ -224,10 +187,6 @@ PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
   }
   if (identity_manager) {
     identity_manager_observer_.Observe(identity_manager);
-  }
-  if (subscription_eligibility_service_) {
-    subscription_eligibility_observer_.Observe(
-        subscription_eligibility_service_);
   }
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
@@ -277,8 +236,7 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
     return kDisabledNotEligible;
   }
 
-  if (!SatisfiesAccountRequirements(identity_manager_.get(),
-                                    subscription_eligibility_service_.get())) {
+  if (!SatisfiesAccountRequirements(identity_manager_.get())) {
     return kDisabledNotEligible;
   }
 
@@ -332,11 +290,6 @@ void PersonalContextEnablementServiceImpl::OnIdentityManagerShutdown(
 
 void PersonalContextEnablementServiceImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
-  UpdateEnablementState();
-}
-
-void PersonalContextEnablementServiceImpl::OnAiSubscriptionTierUpdated(
-    int32_t new_subscription_tier) {
   UpdateEnablementState();
 }
 

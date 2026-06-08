@@ -14,7 +14,6 @@
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/subscription_eligibility/subscription_eligibility_service.h"
 
 class PrefService;
 
@@ -23,14 +22,11 @@ namespace personal_context {
 class PersonalContextEnablementServiceImpl
     : public PersonalContextEnablementService,
       public signin::IdentityManager::Observer,
-      public subscription_eligibility::SubscriptionEligibilityService::Observer,
       public account_settings::AccountSettingService::Observer {
  public:
   explicit PersonalContextEnablementServiceImpl(
       account_settings::AccountSettingService* account_settings_service,
       signin::IdentityManager* identity_manager,
-      subscription_eligibility::SubscriptionEligibilityService*
-          subscription_eligibility_service,
       PrefService* pref_service,
       GeoIpCountryCode country_code,
       std::string locale);
@@ -53,10 +49,6 @@ class PersonalContextEnablementServiceImpl
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-
-  // subscription_eligibility::SubscriptionEligibilityService::Observer:
-  void OnAiSubscriptionTierUpdated(int32_t new_subscription_tier) override;
-
   // account_settings::AccountSettingService::Observer:
   void OnAccountSettingDataUpdated(const std::string& setting_name) override;
 
@@ -69,8 +61,6 @@ class PersonalContextEnablementServiceImpl
   const raw_ptr<account_settings::AccountSettingService>
       account_settings_service_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
-  const raw_ptr<subscription_eligibility::SubscriptionEligibilityService>
-      subscription_eligibility_service_;
   const raw_ptr<PrefService> pref_service_;
   const GeoIpCountryCode country_code_;
   const std::string locale_;
@@ -78,10 +68,6 @@ class PersonalContextEnablementServiceImpl
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};
-  base::ScopedObservation<
-      subscription_eligibility::SubscriptionEligibilityService,
-      subscription_eligibility::SubscriptionEligibilityService::Observer>
-      subscription_eligibility_observer_{this};
   base::ScopedObservation<account_settings::AccountSettingService,
                           account_settings::AccountSettingService::Observer>
       account_settings_observation_{this};

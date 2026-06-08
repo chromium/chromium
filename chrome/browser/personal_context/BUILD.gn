@@ -12,11 +12,11 @@ source_set("personal_context") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/account_settings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
-    "//chrome/browser/subscription_eligibility",
     "//components/application_locale_storage",
     "//components/personal_context/core",
     "//components/personal_context/core:features",

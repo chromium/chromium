@@ -31,7 +31,6 @@ source_set("core") {
     "//components/personal_context/proto:personal_context_proto",
     "//components/prefs",
     "//components/signin/public/identity_manager",
-    "//components/subscription_eligibility",
     "//net",
   ]
 }
@@ -87,7 +86,6 @@ source_set("unit_tests") {
     "//components/account_settings:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
-    "//components/subscription_eligibility",
     "//components/sync_preferences:test_support",
     "//services/network:test_support",
     "//testing/gmock",
