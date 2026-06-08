@@ -11,6 +11,8 @@ class to be passed in when calling methods you wish to restrict the use of. It
 is used like this:
 
 ```cpp
+#include "base/types/pass_key.h"
+
 class Foo {
  public:
   Foo();
@@ -19,12 +21,7 @@ class Foo {
   void NormalPublicMethod();
   bool AnotherNormalPublicMethod(int a, int b);
 
-  class BarPasskey {
-   private:
-    friend class Bar;
-    BarPasskey() = default;
-    ~BarPasskey() = default;
-  };
+  using BarPassKey = base::PassKey<Bar>;
 
   void HelpBarOut(BarPasskey, ...);
 };
