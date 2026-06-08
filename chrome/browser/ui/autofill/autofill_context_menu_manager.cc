@@ -387,7 +387,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
 
   // Do not show password manager context menu options for input fields that
   // cannot be filled by the driver. See crbug.com/40061116.
-  if (password_manager_driver && password_manager_driver->CanShowAutofillUi()) {
+  if (password_manager_driver) {
     add_passwords_fallback =
         ShouldAddPasswordsManualFallbackItem(*password_manager_driver);
   }
@@ -447,11 +447,20 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
 
 bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
     ContentPasswordManagerDriver& password_manager_driver) {
+  if (!password_manager_driver.CanShowAutofillUi()) {
+    return false;
+  }
   // Password suggestions should not be triggered on text areas.
   if (params_.form_control_type == blink::mojom::FormControlType::kTextArea) {
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackSecurityChecks) &&
+      (!password_manager_driver.HasValidURL(/*may_kill_renderer*/ false) ||
+       !password_manager_driver.IsRenderFrameHostSupported())) {
+    return false;
+  }
   return password_manager_driver.GetPasswordManager()
       ->GetClient()
       ->IsFillingEnabled(password_manager_driver.GetLastCommittedURL());

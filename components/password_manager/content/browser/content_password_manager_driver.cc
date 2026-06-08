@@ -58,56 +58,6 @@ void LogSiteIsolationMetricsForSubmittedForm(
       render_frame_host->GetSiteInstance()->RequiresDedicatedProcess());
 }
 
-bool HasValidURL(content::RenderFrameHost* render_frame_host) {
-  GURL url = GetURLFromRenderFrameHost(render_frame_host);
-
-  // URL might be invalid when GetLastCommittedOrigin is opaque.
-  if (!url.is_valid())
-    return false;
-
-  return password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
-      render_frame_host, url,
-      password_manager::BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED);
-}
-
-bool IsRenderFrameHostSupported(content::RenderFrameHost* rfh) {
-  if (rfh->GetProcess()->IsPdf()) {
-    return false;
-  }
-
-  // Explanation of current PasswordManagerDriver limitations:
-  // * Currently, PasswordManagerDriver binding has RenderFrameHost lifetime,
-  //   not document lifetime. This can lead to premature binding in rare race
-  //   conditions (see https://crbug.com/329989911).
-  // * Due to this, we can't reliably determine if the document will be
-  //   credentialless at this stage. Returning 'false' speculatively would be
-  //   destructive.
-  // * Workaround: Temporarily return 'true'; the function will be re-evaluated
-  //   on commit via `DidNavigate`.
-  //
-  // TODO(https://crbug.com/40615943): After RenderDocument is enabled, consider
-  // simplifying by binding PasswordManagerDriver via `PopulateFrameBinders`
-  // instead of `RegisterAssociatedInterfaceBindersForRenderFrameHost`.
-  if (rfh->GetLifecycleState() ==
-      content::RenderFrameHost::LifecycleState::kPendingCommit) {
-    return true;
-  }
-
-  if (rfh->GetLifecycleState() ==
-      content::RenderFrameHost::LifecycleState::kPrerendering) {
-    return false;
-  }
-
-  // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
-  // > Browsers that implement autofill or password manager functionalities
-  //   should make them unavailable in credentialless iframes.
-  if (rfh->IsCredentialless()) {
-    return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 ContentPasswordManagerDriver::ContentPasswordManagerDriver(
@@ -162,15 +112,67 @@ ContentPasswordManagerDriver::GetForRenderFrameHost(
 void ContentPasswordManagerDriver::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
         pending_receiver) {
-  if (IsRenderFrameHostSupported(render_frame_host_)) {
+  if (IsRenderFrameHostSupported()) {
     password_manager_receiver_.Bind(std::move(pending_receiver));
   }
 }
 
 void ContentPasswordManagerDriver::DidNavigate() {
-  if (!IsRenderFrameHostSupported(render_frame_host_)) {
+  if (!IsRenderFrameHostSupported()) {
     password_manager_receiver_.reset();
   }
+}
+
+bool ContentPasswordManagerDriver::HasValidURL(bool may_kill_renderer) {
+  GURL url = GetURLFromRenderFrameHost(render_frame_host_);
+
+  // URL might be invalid when GetLastCommittedOrigin is opaque.
+  if (!url.is_valid()) {
+    return false;
+  }
+
+  return password_manager::bad_message::CheckChildProcessSecurityPolicyForURL(
+      render_frame_host_, url,
+      password_manager::BadMessageReason::CPMD_BAD_ORIGIN_FORM_SUBMITTED,
+      may_kill_renderer);
+}
+
+bool ContentPasswordManagerDriver::IsRenderFrameHostSupported() {
+  if (render_frame_host_->GetProcess()->IsPdf()) {
+    return false;
+  }
+
+  // Explanation of current PasswordManagerDriver limitations:
+  // * Currently, PasswordManagerDriver binding has RenderFrameHost lifetime,
+  //   not document lifetime. This can lead to premature binding in rare race
+  //   conditions (see https://crbug.com/329989911).
+  // * Due to this, we can't reliably determine if the document will be
+  //   credentialless at this stage. Returning 'false' speculatively would be
+  //   destructive.
+  // * Workaround: Temporarily return 'true'; the function will be re-evaluated
+  //   on commit via `DidNavigate`.
+  //
+  // TODO(https://crbug.com/40615943): After RenderDocument is enabled, consider
+  // simplifying by binding PasswordManagerDriver via `PopulateFrameBinders`
+  // instead of `RegisterAssociatedInterfaceBindersForRenderFrameHost`.
+  if (render_frame_host_->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPendingCommit) {
+    return true;
+  }
+
+  if (render_frame_host_->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    return false;
+  }
+
+  // [spec] https://wicg.github.io/anonymous-iframe/#spec-autofill
+  // > Browsers that implement autofill or password manager functionalities
+  //   should make them unavailable in credentialless iframes.
+  if (render_frame_host_->IsCredentialless()) {
+    return false;
+  }
+
+  return true;
 }
 
 DriverId ContentPasswordManagerDriver::GetId() const {
@@ -246,8 +248,9 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
   // operation with generated URL, don't forward anything to password manager.
   // TODO(crbug.com/40191770): Test that PasswordManager doesn't receive url
   // and full_url from renderer.
-  if (!HasValidURL(render_frame_host_))
+  if (!HasValidURL()) {
     return;
+  }
 
   GetPasswordManager()->OnGeneratedPasswordAccepted(
       this, GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form),
@@ -502,8 +505,9 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
 
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  if (!HasValidURL(render_frame_host_))
+  if (!HasValidURL()) {
     return;
+  }
 
   autofill::LogManager* log_manager = client_->GetCurrentLogManager();
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
@@ -530,8 +534,9 @@ void ContentPasswordManagerDriver::PasswordFormsRendered(
 
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  if (!HasValidURL(render_frame_host_))
+  if (!HasValidURL()) {
     return;
+  }
 
   std::vector<autofill::FormData> forms = raw_forms;
   for (auto& form : forms)
@@ -548,8 +553,9 @@ void ContentPasswordManagerDriver::PasswordFormSubmitted(
 
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  if (!HasValidURL(render_frame_host_))
+  if (!HasValidURL()) {
     return;
+  }
 
   GetPasswordManager()->OnPasswordFormSubmitted(
       this, GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
@@ -567,8 +573,9 @@ void ContentPasswordManagerDriver::InformAboutUserInput(
   // operation with generated URL, don't forward anything to password manager.
   // TODO(crbug.com/40191770): Test that PasswordManager doesn't receive url
   // and full_url from renderer.
-  if (!HasValidURL(render_frame_host_))
+  if (!HasValidURL()) {
     return;
+  }
 
   autofill::FormData form_data =
       GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form);
@@ -607,8 +614,9 @@ void ContentPasswordManagerDriver::PasswordFormCleared(
 
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  if (!HasValidURL(render_frame_host_))
+  if (!HasValidURL()) {
     return;
+  }
 
   GetPasswordManager()->OnPasswordFormCleared(
       this, GetFormWithFrameAndFormMetaData(render_frame_host_, raw_form));
@@ -702,9 +710,8 @@ ContentPasswordManagerDriver::GetPasswordAutofillAgent() {
   CHECK_NE(render_frame_host_->GetLifecycleState(),
            content::RenderFrameHost::LifecycleState::kPendingCommit);
 
-  return IsRenderFrameHostSupported(render_frame_host_)
-             ? password_autofill_agent_
-             : password_autofill_agent_unbound_;
+  return IsRenderFrameHostSupported() ? password_autofill_agent_
+                                      : password_autofill_agent_unbound_;
 }
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordGenerationAgent>&
@@ -730,7 +737,7 @@ void ContentPasswordManagerDriver::OnChangePasswordFormFilled(
 
   // In case we can't obtain a valid URL or a frame isn't allowed to perform an
   // operation with generated URL, don't forward anything to password manager.
-  if (!HasValidURL(render_frame_host_)) {
+  if (!HasValidURL()) {
     return;
   }
   std::move(form_data_callback)

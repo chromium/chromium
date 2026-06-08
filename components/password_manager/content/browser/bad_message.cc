@@ -33,12 +33,16 @@ void ReceivedBadMessage(content::RenderProcessHost* host,
 
 bool CheckForIllegalURL(content::RenderFrameHost* frame,
                         const GURL& form_url,
-                        BadMessageReason reason) {
+                        BadMessageReason reason,
+                        bool may_kill_renderer) {
   if (form_url.SchemeIs(url::kAboutScheme) ||
       form_url.SchemeIs(url::kDataScheme)) {
-    SYSLOG(WARNING) << "Killing renderer: illegal password access from about: "
-                    << "or data: URL. Reason: " << static_cast<int>(reason);
-    bad_message::ReceivedBadMessage(frame->GetProcess(), reason);
+    if (may_kill_renderer) {
+      SYSLOG(WARNING)
+          << "Killing renderer: illegal password access from about: "
+          << "or data: URL. Reason: " << static_cast<int>(reason);
+      bad_message::ReceivedBadMessage(frame->GetProcess(), reason);
+    }
     return false;
   }
 
@@ -47,8 +51,9 @@ bool CheckForIllegalURL(content::RenderFrameHost* frame,
 
 bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
                                            const GURL& form_url,
-                                           BadMessageReason reason) {
-  if (!CheckForIllegalURL(frame, form_url, reason)) {
+                                           BadMessageReason reason,
+                                           bool may_kill_renderer) {
+  if (!CheckForIllegalURL(frame, form_url, reason, may_kill_renderer)) {
     return false;
   }
 
@@ -56,9 +61,11 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
       content::ChildProcessSecurityPolicy::GetInstance();
   if (!policy->CanAccessDataForOrigin(frame->GetProcess()->GetDeprecatedID(),
                                       url::Origin::Create(form_url))) {
-    SYSLOG(WARNING) << "Killing renderer: illegal password access. Reason: "
-                    << static_cast<int>(reason);
-    bad_message::ReceivedBadMessage(frame->GetProcess(), reason);
+    if (may_kill_renderer) {
+      SYSLOG(WARNING) << "Killing renderer: illegal password access. Reason: "
+                      << static_cast<int>(reason);
+      bad_message::ReceivedBadMessage(frame->GetProcess(), reason);
+    }
     return false;
   }
 

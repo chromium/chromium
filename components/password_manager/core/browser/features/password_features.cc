@@ -191,6 +191,11 @@ BASE_FEATURE(kPasswordStorePropagatesActionableErrors,
 
 BASE_FEATURE(kPasswordCheckupPrototype, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+BASE_FEATURE(kPasswordManualFallbackSecurityChecks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,
 #if BUILDFLAG(IS_MAC)

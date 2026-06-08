@@ -60,6 +60,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -75,6 +76,12 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
+using ::testing::Pointee;
+using ::testing::Property;
+
+testing::Matcher<const ui::SimpleMenuModel*> NoAutofillItemsAdded() {
+  return Pointee(Property(&ui::SimpleMenuModel::GetItemCount, 0));
+}
 
 // Checks if the context menu model contains any entries with plus address
 // manual fallback labels or command ids. `arg` must be of type
@@ -212,13 +219,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("http://test.com")));
 
-    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
-    render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
-        *main_rfh(), content::ContextMenuParams());
-    render_view_context_menu_->Init();
-    autofill_context_menu_manager_ =
-        std::make_unique<AutofillContextMenuManager>(
-            render_view_context_menu_.get(), menu_model_.get());
+    CreateAutofillContextMenu(main_rfh());
     autofill_context_menu_manager()->set_params_for_testing(
         CreateContextMenuParams());
   }
@@ -262,6 +263,16 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
 
   AutofillContextMenuManager* autofill_context_menu_manager() const {
     return autofill_context_menu_manager_.get();
+  }
+
+  void CreateAutofillContextMenu(content::RenderFrameHost* rfh) {
+    menu_model_ = std::make_unique<ui::SimpleMenuModel>(nullptr);
+    render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
+        *rfh, content::ContextMenuParams());
+    render_view_context_menu_->Init();
+    autofill_context_menu_manager_ =
+        std::make_unique<AutofillContextMenuManager>(
+            render_view_context_menu_.get(), menu_model_.get());
   }
 
   // Sets the `form` and the `form.fields`'s `host_frame`. Since this test
@@ -564,6 +575,10 @@ class PasswordsFallbackWithUIInteractionsTest
     // Load an HTML with password forms so that the test can execute JS on the
     // forms.
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  void LoadPasswordForm() {
     PasswordsNavigationObserver observer(web_contents());
     const GURL url =
         embedded_test_server()->GetURL("/password/password_form.html");
@@ -584,19 +599,95 @@ class PasswordsFallbackWithUIInteractionsTest
         ->GetPersonalDataManager()
         .test_address_data_manager()
         .SetAutofillProfileEnabled(false);
-
-    FormData form = CreateAndAttachPasswordForm();
-    autofill_context_menu_manager()->set_params_for_testing(
-        CreateContextMenuParams(form.renderer_id(),
-                                form.fields()[0].renderer_id(),
-                                blink::mojom::FormControlType::kInputPassword));
   }
+
+  void LoadCredentiallessIframe() {
+    PasswordsNavigationObserver observer(web_contents());
+    const GURL url = embedded_test_server()->GetURL(
+        "/password/password_form_in_credentialless_iframe.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(observer.Wait());
+
+    // Create a credentialless iframe and attach it to the main frame.
+    ASSERT_TRUE(content::ExecJs(
+        main_rfh(), R"(create_iframe('/empty.html', 'iframe', true);)"));
+    content::RenderFrameHost* child_credentialless_rfh =
+        ChildFrameAt(main_rfh(), 0);
+    ASSERT_NE(child_credentialless_rfh, nullptr);
+
+    CreateAutofillContextMenu(child_credentialless_rfh);
+    autofill_client()
+        ->GetPersonalDataManager()
+        .test_address_data_manager()
+        .SetAutofillProfileEnabled(false);
+  }
+
+  void LoadSandboxedIframe() {
+    PasswordsNavigationObserver observer(web_contents());
+    const GURL url = embedded_test_server()->GetURL(
+        "/password/password_form_in_sandboxed_iframe.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(observer.Wait());
+
+    content::RenderFrameHost* child_sandboxed_rfh = ChildFrameAt(main_rfh(), 0);
+    ASSERT_NE(child_sandboxed_rfh, nullptr);
+
+    CreateAutofillContextMenu(child_sandboxed_rfh);
+    autofill_client()
+        ->GetPersonalDataManager()
+        .test_address_data_manager()
+        .SetAutofillProfileEnabled(false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      password_manager::features::kPasswordManualFallbackSecurityChecks};
 };
 
+// Navigates to the `/password/password_form_in_credentialless_iframe.html`
+// page, creates a credentialless iframe and creates the Autofill context menu
+// items for it.
+IN_PROC_BROWSER_TEST_F(PasswordsFallbackWithUIInteractionsTest,
+                       CredentiallessIframe_ManualFallbackNotAdded) {
+  LoadCredentiallessIframe();
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kInputText));
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), NoAutofillItemsAdded());
+}
+
+// Navigates to the `/password/password_form_in_sandboxed_iframe.html`
+// page and creates the Autofill context menu items for it.
+IN_PROC_BROWSER_TEST_F(PasswordsFallbackWithUIInteractionsTest,
+                       SandboxedIframe_ManualFallbackNotAdded) {
+  LoadSandboxedIframe();
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kInputText));
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(), NoAutofillItemsAdded());
+}
+
+// Navigates to the `/password/password_form.html` so that the test can execute
+// JS on forms.
 IN_PROC_BROWSER_TEST_F(
     PasswordsFallbackWithUIInteractionsTest,
     SuggestPasswordTriggersPasswordGenerationAndRecordsMetrics) {
   base::HistogramTester histogram_tester;
+
+  LoadPasswordForm();
+  FormData form = CreateAndAttachPasswordForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kInputPassword));
 
   // Focus on a password field so that the agent can allow password generation.
   // It is not relevant (and also no in the scope of the test) whether the

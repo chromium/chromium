@@ -200,6 +200,12 @@ BASE_DECLARE_FEATURE(kPreventAPCOnFederatedLogin);
 // This flag is only for the prototype version.
 BASE_DECLARE_FEATURE(kPasswordCheckupPrototype);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
+// Performs additional security checks wrt. the triggering frame before adding
+// the "Select password" entry to the context menu.
+BASE_DECLARE_FEATURE(kPasswordManualFallbackSecurityChecks);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables "Needs access to keychain, restart chrome" bubble and banner.
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
