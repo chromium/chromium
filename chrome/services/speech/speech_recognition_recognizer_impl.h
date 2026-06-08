@@ -215,6 +215,8 @@ class SpeechRecognitionRecognizerImpl
 
   base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_;
 
+  uint32_t soda_client_id_ = 0;
+
   base::WeakPtrFactory<SpeechRecognitionRecognizerImpl> weak_factory_{this};
 };
 

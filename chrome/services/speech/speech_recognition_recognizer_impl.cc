@@ -5,6 +5,7 @@
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <utility>
 
@@ -14,8 +15,10 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -61,6 +64,56 @@ constexpr char kLiveCaptionLanguageCountHistogramName[] =
 
 namespace {
 
+struct SodaCallbacks {
+  SpeechRecognitionRecognizerImpl::OnRecognitionEventCallback recognition;
+  SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEventCallback lang;
+  SpeechRecognitionRecognizerImpl::OnSpeechRecognitionStoppedCallback stop;
+};
+
+class SodaClientRegistry {
+ public:
+  static SodaClientRegistry* GetInstance() {
+    static base::NoDestructor<SodaClientRegistry> instance;
+    return instance.get();
+  }
+
+  uint32_t Register(SpeechRecognitionRecognizerImpl* recognizer) {
+    base::AutoLock auto_lock(lock_);
+    uint32_t id = ++next_id_;
+    registry_.insert_or_assign(
+        id, SodaCallbacks{recognizer->recognition_event_callback(),
+                          recognizer->language_identification_event_callback(),
+                          recognizer->speech_recognition_stopped_callback()});
+    return id;
+  }
+
+  void Unregister(uint32_t id) {
+    base::AutoLock auto_lock(lock_);
+    registry_.erase(id);
+  }
+
+  bool GetCallbacks(uint32_t id, SodaCallbacks* out_callbacks) {
+    base::AutoLock auto_lock(lock_);
+    auto it = registry_.find(id);
+    if (it == registry_.end()) {
+      return false;
+    }
+    *out_callbacks = it->second;
+    return true;
+  }
+
+ private:
+  friend class base::NoDestructor<SodaClientRegistry>;
+  SodaClientRegistry() = default;
+
+  base::Lock lock_;
+  uint32_t next_id_ GUARDED_BY(lock_) = 0;
+  // A flat_map is used because the number of concurrent active SODA clients
+  // (N) is expected to be very small (typically just 1 or a few tabs).
+  // This provides better cache locality than std::map despite O(N) operations.
+  base::flat_map<uint32_t, SodaCallbacks> registry_ GUARDED_BY(lock_);
+};
+
 // Callback executed by the SODA library on a speech recognition event. The
 // callback handle is a void pointer to the SpeechRecognitionRecognizerImpl that
 // owns the SODA instance. SpeechRecognitionRecognizerImpl owns the SodaClient
@@ -74,6 +127,13 @@ void OnSodaResponse(const char* serialized_proto,
   soda::chrome::SodaResponse response;
   if (!response.ParseFromArray(serialized_proto, length)) {
     LOG(ERROR) << "Unable to parse result from SODA.";
+    return;
+  }
+
+  SodaCallbacks callbacks;
+  uint32_t id =
+      static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_handle));
+  if (!SodaClientRegistry::GetInstance()->GetCallbacks(id, &callbacks)) {
     return;
   }
 
@@ -94,9 +154,7 @@ void OnSodaResponse(const char* serialized_proto,
     }
 
     DCHECK(result.hypothesis_size());
-    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
-        ->recognition_event_callback()
-        .Run(std::move(speech_recognition_result));
+    callbacks.recognition.Run(std::move(speech_recognition_result));
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::LANGID) {
@@ -113,19 +171,14 @@ void OnSodaResponse(const char* serialized_proto,
       return;
     }
 
-    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
-        ->language_identification_event_callback()
-        .Run(std::string(event.language()),
-             static_cast<media::mojom::ConfidenceLevel>(
-                 event.confidence_level()),
-             static_cast<media::mojom::AsrSwitchResult>(
-                 event.asr_switch_result()));
+    callbacks.lang.Run(
+        std::string(event.language()),
+        static_cast<media::mojom::ConfidenceLevel>(event.confidence_level()),
+        static_cast<media::mojom::AsrSwitchResult>(event.asr_switch_result()));
   }
 
   if (response.soda_type() == soda::chrome::SodaResponse::STOP) {
-    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
-        ->speech_recognition_stopped_callback()
-        .Run();
+    callbacks.stop.Run();
   }
 }
 
@@ -145,6 +198,10 @@ GetSodaSpeechRecognitionMode(
 }  // namespace
 
 SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
+  if (soda_client_id_ > 0) {
+    SodaClientRegistry::GetInstance()->Unregister(soda_client_id_);
+  }
+
   base::UmaHistogramBoolean(
       base::StrCat({"Accessibility.LiveCaption.", primary_language_name_,
                     ".SessionContainsRecognizedSpeech"}),
@@ -304,6 +361,8 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
   if (speech_recognition_service_) {
     speech_recognition_service_->AddObserver(this);
   }
+
+  soda_client_id_ = SodaClientRegistry::GetInstance()->Register(this);
 }
 
 void SpeechRecognitionRecognizerImpl::CreateSodaClient(
@@ -613,7 +672,8 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
   config.soda_config = serialized.c_str();
   config.soda_config_size = serialized.size();
   config.callback = &OnSodaResponse;
-  config.callback_handle = this;
+  config.callback_handle =
+      reinterpret_cast<void*>(static_cast<uintptr_t>(soda_client_id_));
   CHECK(soda_client_);
   soda_client_->Reset(config, sample_rate_, channel_count_);
 

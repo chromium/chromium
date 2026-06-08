@@ -4,7 +4,13 @@
 
 #include "chrome/services/speech/speech_recognition_recognizer_impl.h"
 
+#include <vector>
+
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/speech/soda/mock_soda_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,7 +107,8 @@ class SpeechRecognitionRecognizerImplTest
                                                     media_start_pts);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient> receiver_{
       this};
   base::flat_map<std::string, base::FilePath> config_paths_;
@@ -312,6 +319,59 @@ TEST_F(SpeechRecognitionRecognizerImplTest, ResetSodaWithGenericUpperCaseLang) {
   EXPECT_EQ(soda::chrome::ExtendedSodaConfigMsg::CAPTION,
             config->recognition_mode());
   EXPECT_EQ("/fake/path", config->language_pack_directory());
+}
+
+TEST_F(SpeechRecognitionRecognizerImplTest, SodaClientRegistryThreadSafety) {
+  CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
+
+  SerializedSodaConfig saved_config;
+  EXPECT_CALL(*soda_client_, Reset(_, _, _))
+      .WillOnce(testing::SaveArg<0>(&saved_config));
+
+  recognizer_->OnLanguagePackInstalled(config_paths());
+
+  // Create a valid dummy response so the callback proceeds to fetching from the
+  // registry.
+  soda::chrome::SodaResponse response;
+  response.set_soda_type(soda::chrome::SodaResponse::RECOGNITION);
+  auto* result = response.mutable_recognition_result();
+  result->set_result_type(soda::chrome::SodaRecognitionResult::FINAL);
+  result->add_hypothesis("UAF test");
+  std::string serialized;
+  response.SerializeToString(&serialized);
+
+  constexpr int kNumThreads = 20;
+  base::WaitableEvent threads_started_event;
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      kNumThreads, base::BindOnce(&base::WaitableEvent::Signal,
+                                  base::Unretained(&threads_started_event)));
+
+  // Launch background tasks to pound the callback.
+  for (int i = 0; i < kNumThreads; i++) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](SerializedSodaConfig config, std::string serialized,
+               base::RepeatingClosure barrier) {
+              barrier.Run();
+              for (int j = 0; j < 100; j++) {
+                config.callback(serialized.c_str(), serialized.size(),
+                                config.callback_handle);
+              }
+            },
+            saved_config, serialized, barrier));
+  }
+
+  threads_started_event.Wait();
+
+  // Clear the raw_ptr before destroying the recognizer to avoid dangling
+  // pointer warnings.
+  soda_client_ = nullptr;
+
+  // Concurrently destroy the recognizer.
+  recognizer_.reset();
+
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace speech
