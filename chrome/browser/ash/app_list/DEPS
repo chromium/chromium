@@ -87,6 +87,7 @@ include_rules = [
   "+ash/strings",
   "+components/app_constants",
   "+components/app_icon_loader",
+  "+components/constrained_window",
   "+components/services/app_service/public",
 ]
 

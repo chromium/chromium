@@ -113,6 +113,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -256,6 +257,69 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   // The app list should not be dismissed when the dialog is shown.
   EXPECT_TRUE(client->app_list_visible());
   EXPECT_TRUE(client->GetAppListWindow());
+}
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
+                       UninstallDialogRepositionOnRotation) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  const extensions::Extension* app = InstallPlatformApp("minimal");
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
+
+  // Bring up the app list.
+  EXPECT_FALSE(client->GetAppListWindow());
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  aura::Window* app_list_window = client->GetAppListWindow();
+  ASSERT_TRUE(app_list_window);
+
+  // Open the uninstall dialog.
+  base::RunLoop run_loop;
+  app_service_proxy->UninstallForTesting(
+      app->id(), app_list_window,
+      base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
+  run_loop.Run();
+
+  aura::Window::Windows transient_children =
+      wm::GetTransientChildren(app_list_window);
+  ASSERT_EQ(1u, transient_children.size());
+  aura::Window* dialog_window = transient_children[0];
+  ASSERT_TRUE(dialog_window);
+
+  // Verify the dialog is roughly centered in the app list window.
+  int x_offset = app_list_window->GetBoundsInScreen().CenterPoint().x() -
+                 dialog_window->GetBoundsInScreen().CenterPoint().x();
+  int y_offset = app_list_window->GetBoundsInScreen().CenterPoint().y() -
+                 dialog_window->GetBoundsInScreen().CenterPoint().y();
+  EXPECT_LE(std::abs(x_offset), 10);
+  EXPECT_LE(std::abs(y_offset), 10);
+
+  // Rotate the display.
+  display::DisplayManager* display_manager =
+      ash::Shell::Get()->display_manager();
+  int64_t display_id =
+      display::Screen::Get()->GetDisplayNearestWindow(app_list_window).id();
+
+  // Rotate 90 degrees.
+  display_manager->SetDisplayRotation(display_id, display::Display::ROTATE_90,
+                                      display::Display::RotationSource::ACTIVE);
+
+  // Wait for bounds to update (wait for rotation to be completed).
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return display::Screen::Get()
+               ->GetDisplayNearestWindow(app_list_window)
+               .rotation() == display::Display::ROTATE_90;
+  }));
+
+  // Verify the relative offset is preserved after rotation.
+  int new_x_offset = app_list_window->GetBoundsInScreen().CenterPoint().x() -
+                     dialog_window->GetBoundsInScreen().CenterPoint().x();
+  int new_y_offset = app_list_window->GetBoundsInScreen().CenterPoint().y() -
+                     dialog_window->GetBoundsInScreen().CenterPoint().y();
+  EXPECT_EQ(x_offset, new_x_offset);
+  EXPECT_EQ(y_offset, new_y_offset);
 }
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {

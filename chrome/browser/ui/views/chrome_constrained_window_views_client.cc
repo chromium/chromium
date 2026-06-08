@@ -5,11 +5,17 @@
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
+#include "components/constrained_window/modal_dialog_host_property.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif
 
 namespace {
 
@@ -29,6 +35,15 @@ class ChromeConstrainedWindowViewsClient
   // ConstrainedWindowViewsClient:
   web_modal::ModalDialogHost* GetModalDialogHost(
       gfx::NativeWindow parent) override {
+#if defined(USE_AURA)
+    if (parent) {
+      web_modal::ModalDialogHost* host =
+          parent->GetProperty(constrained_window::kModalDialogHostKey);
+      if (host) {
+        return host;
+      }
+    }
+#endif
     // Get the browser dialog management and hosting components from |parent|.
     BrowserWindowInterface* const browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithWindow(parent);

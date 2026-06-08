@@ -65,6 +65,7 @@ static_library("app_list") {
     "//components/search_engines",
     "//components/session_manager/core",
     "//components/sync/model",
+    "//components/web_modal",
     "//extensions/browser",
     "//extensions/common",
   ]
@@ -95,6 +96,7 @@ static_library("app_list") {
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/constants",
     "//components/app_constants",
+    "//components/constrained_window",
     "//components/pref_registry",
     "//extensions/common",
     "//rlz/buildflags",

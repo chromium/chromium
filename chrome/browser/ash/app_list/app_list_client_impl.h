@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
@@ -30,6 +31,8 @@
 #include "components/search_engines/template_url_service_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/models/image_model.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/image/image.h"
@@ -51,7 +54,9 @@ class AppListClientImpl
       public user_manager::UserManager::Observer,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver,
-      public TemplateURLServiceObserver {
+      public TemplateURLServiceObserver,
+      public web_modal::ModalDialogHost,
+      public aura::WindowObserver {
  public:
   // Indicates the launcher usage state during the session started by a new user
   // (i.e. the session completing the OOBE flow) but before any account
@@ -127,6 +132,19 @@ class AppListClientImpl
       bool is_apps_collections_page) override;
   bool HasReordered() override;
   gfx::Image GetGeminiIcon() override;
+
+  // web_modal::ModalDialogHost:
+  gfx::NativeView GetHostView() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& size) override;
+  void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+
+  // aura::WindowObserver:
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // user_manager::UserManager::Observer:
   void OnUserProfileCreated(const user_manager::User& user) override;
@@ -287,6 +305,11 @@ class AppListClientImpl
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      app_list_window_observation_{this};
+  base::ObserverList<web_modal::ModalDialogHostObserver>
+      modal_dialog_host_observers_;
 
   base::WeakPtrFactory<AppListClientImpl> weak_ptr_factory_{this};
 };
