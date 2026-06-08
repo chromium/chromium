@@ -20,8 +20,10 @@ namespace print_to_pdf {
 
 PdfPrintJob::PdfPrintJob(content::WebContents* contents,
                          content::RenderFrameHost* rfh,
-                         PrintToPdfCallback callback)
+                         PrintToPdfCallback callback,
+                         base::SelfDeletingPassKey key)
     : content::WebContentsObserver(contents),
+      base::SelfDeleting(key),
       printing_rfh_(rfh),
       print_to_pdf_callback_(std::move(callback)) {}
 
@@ -54,8 +56,8 @@ void PdfPrintJob::StartJob(
 
   print_pages_params->pages = std::get<printing::PageRanges>(pages);
 
-  // Job is self-owned and will delete itself when complete.
-  auto* job = new PdfPrintJob(contents, rfh, std::move(callback));
+  auto* job =
+      base::MakeSelfDeleting<PdfPrintJob>(contents, rfh, std::move(callback));
   remote->PrintWithParams(std::move(print_pages_params),
                           base::BindOnce(&PdfPrintJob::OnDidPrintWithParams,
                                          job->weak_ptr_factory_.GetWeakPtr()));
