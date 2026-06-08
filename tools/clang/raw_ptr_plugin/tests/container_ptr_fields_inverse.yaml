@@ -1,0 +1,6 @@
+check_raw_ptr_in_container:
+  enabled: true
+  override_defaults: true # Wipes out default STL containers completely
+  excluded_types:
+    - "ExcludedContainer"
+

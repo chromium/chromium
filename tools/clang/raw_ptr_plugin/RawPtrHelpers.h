@@ -139,6 +139,42 @@ AST_MATCHER_P(clang::NamedDecl,
   return Filter->ContainsLine(Node.getQualifiedNameAsString());
 }
 
+// Matches a `ClassTemplateSpecializationDecl` if any of its template arguments
+// is a template pack containing at least one type argument that matches
+// `TemplateArgumentMatcher`. This is necessary for variadic templates like
+// `std::tuple`, where `hasAnyTemplateArgument` would otherwise fail to
+// recurse into the template pack.
+//
+// Example:
+//   Given:
+//     template <typename... Ts> class MyTuple {};
+//     MyTuple<int, char*, double> v;
+//   hasAnyPackedTemplateArgument(refersToType(pointerType()))
+//   matches the specialization `MyTuple<int, char*, double>` because the
+//   template pack contains `char*`.
+AST_MATCHER_P(clang::ClassTemplateSpecializationDecl,
+              hasAnyPackedTemplateArgument,
+              clang::ast_matchers::internal::Matcher<clang::TemplateArgument>,
+              TemplateArgumentMatcher) {
+  for (const clang::TemplateArgument& Arg : Node.getTemplateArgs().asArray()) {
+    if (Arg.getKind() != clang::TemplateArgument::Pack) {
+      // Only verifies packed arguments.
+      continue;
+    }
+
+    llvm::ArrayRef<clang::TemplateArgument> PackArgs = Arg.getPackAsArray();
+    for (const clang::TemplateArgument& InnerArg : PackArgs) {
+      if (InnerArg.getKind() != clang::TemplateArgument::Type) {
+        continue;
+      }
+      if (TemplateArgumentMatcher.matches(InnerArg, Finder, Builder)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 AST_POLYMORPHIC_MATCHER_P(isInLocationListedInFilterFile,
                           AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                           clang::Stmt,

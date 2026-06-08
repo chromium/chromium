@@ -1,0 +1,5 @@
+YAML:1:1: error: not a mapping
+ThisIsNotAValidMapping
+^~~~~~~~~~~~~~~~~~~~~~
+error: raw-ptr-plugin: YAML error in raw_ptr_plugin_invalid_config.yaml: Invalid argument
+1 error generated.

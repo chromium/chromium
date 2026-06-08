@@ -6,12 +6,14 @@
 #define TOOLS_CLANG_RAW_PTR_PLUGIN_FINDBADRAWPTRPATTERNS_H_
 
 #include "Options.h"
+#include "PluginConfig.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Frontend/CompilerInstance.h"
 
 namespace raw_ptr_plugin {
 
 void FindBadRawPtrPatterns(const Options& options,
+                           const RawPtrPluginConfig& config,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler);
 

@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-raw-ptr-plugin -Xclang exclude-fields=container_raw_ptr_exclude_fields.exclude -Xclang -plugin-arg-raw-ptr-plugin -Xclang config-path=raw_ptr_plugin_config.yaml

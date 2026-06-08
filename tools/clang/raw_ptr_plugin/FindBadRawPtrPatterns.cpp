@@ -207,6 +207,92 @@ class RawRefFieldMatcher : public MatchFinder::MatchCallback {
   const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
 
+class ContainerOfPointersFieldMatcher : public MatchFinder::MatchCallback {
+ public:
+  explicit ContainerOfPointersFieldMatcher(
+      clang::CompilerInstance& compiler,
+      const RawPtrAndRefExclusionsOptions& exclusion_options,
+      const RawPtrContainerConfig& config)
+      : compiler_(compiler),
+        exclusion_options_(exclusion_options),
+        config_(config) {
+    error_need_container_signature_ =
+        compiler_.getDiagnostics().getCustomDiagID(
+            clang::DiagnosticsEngine::Error,
+            "[chromium-containers] Use raw_ptr<T> instead of T* in the "
+            "container template argument.");
+  }
+
+  void Register(MatchFinder& match_finder) {
+    auto arg_ptr_type = qualType(
+        allOf(supported_pointer_type(),
+              unless(const_char_pointer_type(
+                  exclusion_options_.should_rewrite_non_string_literals))));
+
+    auto template_arg_type =
+        anyOf(hasAnyTemplateArgument(refersToType(arg_ptr_type)),
+              hasAnyPackedTemplateArgument(refersToType(arg_ptr_type)));
+
+    std::vector<llvm::StringRef> included_types;
+    for (const auto& included_type : config_.included_container_types) {
+      included_types.push_back(included_type);
+    }
+
+    std::vector<llvm::StringRef> excluded_types;
+    for (const auto& excluded_type : config_.excluded_container_types) {
+      excluded_types.push_back(excluded_type);
+    }
+
+    auto name_matcher =
+        included_types.empty() ? anything() : hasAnyName(included_types);
+
+    auto exclusion_matcher = excluded_types.empty()
+                                 ? unless(anything())
+                                 : hasAnyName(excluded_types);
+
+    auto container_matcher = allOf(name_matcher, unless(exclusion_matcher));
+
+    // Both arms are required to match containers in different AST contexts:
+    // 1. Concrete specializations (classTemplateSpecializationDecl):
+    //    Matches instantiated types where the declaration is fully resolved.
+    //    Example: `std::vector<int*> member;`
+    // 2. Template specialization types (templateSpecializationType):
+    //    Matches types in dependent contexts where the declaration might not
+    //    be resolvable via `hasDeclaration()`.
+    //    Example: `template <typename T> struct S { std::vector<T*> member; };`
+    auto supported_containers =
+        anyOf(qualType(hasDeclaration(classTemplateSpecializationDecl(
+                  container_matcher, template_arg_type))),
+              qualType(type(templateSpecializationType(
+                  hasDeclaration(classTemplateDecl(container_matcher)),
+                  hasAnyTemplateArgument(refersToType(arg_ptr_type))))));
+
+    auto field_decl_matcher =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 fieldDecl(hasType(hasCanonicalType(supported_containers)),
+                           unless(PtrAndRefExclusions(exclusion_options_)))
+                     .bind("affectedFieldDecl"));
+
+    match_finder.addMatcher(field_decl_matcher, this);
+  }
+
+  void run(const MatchFinder::MatchResult& result) override {
+    const clang::FieldDecl* field_decl =
+        result.Nodes.getNodeAs<clang::FieldDecl>("affectedFieldDecl");
+    assert(field_decl && "matcher should bind 'fieldDecl'");
+
+    compiler_.getDiagnostics().Report(field_decl->getLocation(),
+                                      error_need_container_signature_)
+        << field_decl->getSourceRange();
+  }
+
+ private:
+  clang::CompilerInstance& compiler_;
+  unsigned error_need_container_signature_;
+  const RawPtrAndRefExclusionsOptions exclusion_options_;
+  const RawPtrContainerConfig& config_;
+};
+
 const char kNoRawPtrToStackAllocatedSignature[] =
     "[chromium-raw-ptr-to-stack-allocated] Do not use '%0<T>' on a "
     "`STACK_ALLOCATED` object '%1'.";
@@ -362,6 +448,7 @@ class SpanFieldMatcher : public MatchFinder::MatchCallback {
 };
 
 void FindBadRawPtrPatterns(const Options& options,
+                           const RawPtrPluginConfig& config,
                            clang::ASTContext& ast_context,
                            clang::CompilerInstance& compiler) {
   llvm::StringMap<llvm::TimeRecord> Records;
@@ -415,6 +502,12 @@ void FindBadRawPtrPatterns(const Options& options,
   RawRefFieldMatcher ref_field_matcher(compiler, exclusion_options);
   if (options.check_raw_ref_fields) {
     ref_field_matcher.Register(match_finder);
+  }
+
+  ContainerOfPointersFieldMatcher container_field_matcher(
+      compiler, exclusion_options, config.container_config);
+  if (config.container_config.enabled) {
+    container_field_matcher.Register(match_finder);
   }
 
   RawPtrToStackAllocatedMatcher raw_ptr_to_stack(compiler);

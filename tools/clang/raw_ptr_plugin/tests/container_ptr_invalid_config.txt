@@ -1,0 +1,2 @@
+error: raw-ptr-plugin: Config error: 'included_types' and 'excluded_types' cannot be defined at the same time when 'override_defaults' is true.
+1 error generated.

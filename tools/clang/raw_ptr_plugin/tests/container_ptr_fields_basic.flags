@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-raw-ptr-plugin -Xclang check-raw-ptr-to-stack-allocated -Xclang -plugin-arg-raw-ptr-plugin -Xclang check-containers -Xclang -plugin-arg-raw-ptr-plugin -Xclang config-path=raw_ptr_plugin_config.yaml

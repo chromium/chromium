@@ -1,0 +1,52 @@
+container_ptr_fields_basic.cpp:45:10: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  VECTOR aliased_type_member;
+  ~~~~~~~^~~~~~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:46:8: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  LIST aliased_list_member;
+  ~~~~~^~~~~~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:47:27: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<SomeClass*> vector_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:48:25: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::list<SomeClass*> list_member;
+  ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+container_ptr_fields_basic.cpp:49:24: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::set<SomeClass*> set_member;
+  ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+container_ptr_fields_basic.cpp:50:26: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::stack<SomeClass*> stack_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+container_ptr_fields_basic.cpp:51:26: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::queue<SomeClass*> queue_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+container_ptr_fields_basic.cpp:52:26: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::deque<SomeClass*> dequeue_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:53:34: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::unordered_set<SomeClass*> unordered_set_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:54:30: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  base::flat_set<SomeClass*> flat_set_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:55:27: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  base::queue<SomeClass*> base_queue_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:56:27: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  base::stack<SomeClass*> base_stack_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:79:53: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<typename MaybeProvidesType<T>::Type*> vector_field;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+container_ptr_fields_basic.cpp:80:53: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  base::stack<typename MaybeProvidesType<T>::Type*> base_stack_field;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:81:56: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  base::flat_set<typename MaybeProvidesType<T>::Type*> flat_set_field;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+container_ptr_fields_basic.cpp:82:8: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  LIST list_field;
+  ~~~~~^~~~~~~~~~
+container_ptr_fields_basic.cpp:97:37: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::list<NonStackAllocatedType*> member2;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+17 errors generated.

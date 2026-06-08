@@ -1,0 +1,7 @@
+container_raw_ptr_exclude_fields.cpp:11:25: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::list<SomeClass*> raw_ptr_ctn_field;
+  ~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+container_raw_ptr_exclude_fields.cpp:16:32: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::tuple<SomeClass*, int*> raw_ptr_tuple;
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+2 errors generated.

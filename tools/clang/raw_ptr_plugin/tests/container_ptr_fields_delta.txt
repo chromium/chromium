@@ -1,0 +1,7 @@
+container_ptr_fields_delta.cpp:13:21: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  std::vector<int*> vector_member;
+  ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+container_ptr_fields_delta.cpp:16:27: error: [chromium-containers] Use raw_ptr<T> instead of T* in the container template argument.
+  MyCustomContainer<int*> custom_member;
+  ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+2 errors generated.

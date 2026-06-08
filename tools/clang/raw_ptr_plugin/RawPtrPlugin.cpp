@@ -4,6 +4,8 @@
 
 #include "RawPtrPlugin.h"
 
+#include <algorithm>
+
 #include "FindBadRawPtrPatterns.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Frontend/FrontendPluginRegistry.h"
@@ -26,6 +28,13 @@ const char kExcludeFieldsArgPrefix[] = "exclude-fields=";
 // that matches paths that should be excluded from the raw pointer usage checks.
 const char kRawPtrExcludePathArgPrefix[] = "raw-ptr-exclude-path=";
 
+// Name of a cmdline parameter that can be used to specify a file with
+// config options.
+//
+// See also:
+// - RawPtrPluginConfig
+const char kRawPtrPluginConfigPathArgPrefix[] = "config-path=";
+
 // Name of a cmdline parameter that can be used to add a regular expressions
 // that matches paths that should be excluded from the bad raw_ptr casts checks.
 const char kBadRawPtrCastExcludePathArgPrefix[] =
@@ -47,25 +56,28 @@ namespace {
 
 class PluginConsumer : public FilteredASTConsumer {
  public:
-  PluginConsumer(CompilerInstance* instance, const Options& options)
-      : options_(options), instance_(*instance) {}
+  PluginConsumer(CompilerInstance* instance,
+                 const Options& options,
+                 const RawPtrPluginConfig& config)
+      : options_(options), config_(config), instance_(*instance) {}
 
   void HandleTranslationUnit(clang::ASTContext& context) override {
     llvm::TimeTraceScope TimeScope("HandleTranslationUnit for raw-ptr plugin");
     ApplyFilter(context);
 
     if (options_.check_bad_raw_ptr_cast || options_.check_raw_ptr_fields ||
-        options_.check_raw_ref_fields ||
+        options_.check_raw_ref_fields || config_.container_config.enabled ||
         (options_.check_raw_ptr_to_stack_allocated &&
          !options_.disable_check_raw_ptr_to_stack_allocated_error) ||
         options_.check_span_fields) {
-      FindBadRawPtrPatterns(options_, context, instance_);
+      FindBadRawPtrPatterns(options_, config_, context, instance_);
     }
   }
 
  private:
   // Options.
   const Options options_;
+  const RawPtrPluginConfig config_;
 
   clang::CompilerInstance& instance_;
 };
@@ -77,11 +89,43 @@ RawPtrPlugin::RawPtrPlugin() {}
 std::unique_ptr<ASTConsumer> RawPtrPlugin::CreateASTConsumer(
     CompilerInstance& instance,
     llvm::StringRef ref) {
-  return std::make_unique<PluginConsumer>(&instance, options_);
+  return std::make_unique<PluginConsumer>(&instance, options_, config_);
+}
+
+bool LoadPluginConfig(const clang::CompilerInstance& instance,
+                      llvm::StringRef file_path,
+                      ParsedRawPtrPluginConfig& config) {
+  auto buffer = llvm::MemoryBuffer::getFile(file_path);
+
+  if (!buffer) {
+    unsigned diag_id = instance.getDiagnostics().getCustomDiagID(
+        clang::DiagnosticsEngine::Error,
+        "raw-ptr-plugin: Could not open config file %0: %1");
+    instance.getDiagnostics().Report(diag_id)
+        << file_path << buffer.getError().message();
+    return false;
+  }
+
+  llvm::yaml::Input yin(buffer.get()->getBuffer());
+  yin >> config;
+
+  if (yin.error()) {
+    unsigned diag_id = instance.getDiagnostics().getCustomDiagID(
+        clang::DiagnosticsEngine::Error,
+        "raw-ptr-plugin: YAML error in %0: %1");
+    instance.getDiagnostics().Report(diag_id)
+        << file_path << yin.error().message();
+    return false;
+  }
+
+  return true;
 }
 
 bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
                              const std::vector<std::string>& args) {
+  bool config_path_provided = false;
+  std::string config_path;
+  bool check_containers = false;
   for (llvm::StringRef arg : args) {
     if (arg.starts_with(kExcludeFieldsArgPrefix)) {
       options_.exclude_fields_file =
@@ -89,6 +133,9 @@ bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
     } else if (arg.starts_with(kRawPtrExcludePathArgPrefix)) {
       options_.raw_ptr_paths_to_exclude_lines.push_back(
           arg.substr(strlen(kRawPtrExcludePathArgPrefix)).str());
+    } else if (arg.starts_with(kRawPtrPluginConfigPathArgPrefix)) {
+      config_path_provided = true;
+      config_path = arg.substr(strlen(kRawPtrPluginConfigPathArgPrefix)).str();
     } else if (arg.starts_with(kCheckBadRawPtrCastExcludeFuncArgPrefix)) {
       options_.check_bad_raw_ptr_cast_exclude_funcs.push_back(
           arg.substr(strlen(kCheckBadRawPtrCastExcludeFuncArgPrefix)).str());
@@ -125,10 +172,29 @@ bool RawPtrPlugin::ParseArgs(const CompilerInstance& instance,
       options_.enable_match_profiling = true;
     } else if (arg == "no-special-treatment-for-oilpanized-paths") {
       options_.explicitly_ignore_oilpanized_paths = false;
+    } else if (arg == "check-containers") {
+      check_containers = true;
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;
     }
+  }
+
+  if (config_path_provided) {
+    ParsedRawPtrPluginConfig parsed_config;
+    if (!LoadPluginConfig(instance, config_path, parsed_config)) {
+      return false;
+    }
+    config_ = RawPtrPluginConfig::Default();
+    std::string err = config_.Merge(parsed_config);
+    if (!err.empty()) {
+      unsigned diag_id = instance.getDiagnostics().getCustomDiagID(
+          clang::DiagnosticsEngine::Error, "raw-ptr-plugin: %0");
+      instance.getDiagnostics().Report(diag_id) << err;
+      return false;
+    }
+  } else if (check_containers) {
+    config_ = RawPtrPluginConfig::Default();
   }
 
   return true;

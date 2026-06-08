@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-raw-ptr-plugin -Xclang raw-ptr-exclude-path=raw_ptr_exclude_paths -Xclang -plugin-arg-raw-ptr-plugin -Xclang config-path=raw_ptr_plugin_config.yaml

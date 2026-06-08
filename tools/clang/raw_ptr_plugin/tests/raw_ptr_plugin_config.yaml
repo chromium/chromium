@@ -1,0 +1,14 @@
+check_raw_ptr_in_container:
+  enabled: true
+  included_types:
+    # Base containers we want to enforce immediately
+    - "base::flat_tree"
+    - "std::deque"
+    - "std::list"
+    - "std::set"
+    - "std::stack"
+    - "std::tuple"
+    - "std::unordered_set"
+    - "std::variant"
+    - "std::vector"
+    - "std::queue"
