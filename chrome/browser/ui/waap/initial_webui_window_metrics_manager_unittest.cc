@@ -237,3 +237,56 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "BrowserWindowToReloadButton.FirstPaintGap",
       webui_delay, 1);
 }
+
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       RecordsClosedBeforeFirstPaintForNewWindow) {
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  base::HistogramTester tester;
+
+  {
+    InitialWebUIWindowMetricsManager manager(&browser_window_);
+    manager.SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+    manager.SkipStartupForTesting();
+
+    // Simulate show request.
+    base::TimeDelta show_request_delay = base::Milliseconds(30);
+    base::TimeTicks show_request_time = start_time + show_request_delay;
+    manager.OnBrowserWindowShowRequested(show_request_time);
+
+    // Destruction happens here when 'manager' goes out of scope.
+  }
+
+  // Verify metric was recorded.
+  tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
+      "ClosedBeforeFirstPaint",
+      1);
+  tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "BrowserWindow.ClosedBeforeFirstPaint",
+      1);
+}
+
+TEST_F(InitialWebUIWindowMetricsManagerTest,
+       RecordsClosedBeforeFirstPaintForStartupWindow) {
+  InitialWebUIWindowMetricsManager::ResetForTesting();
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  base::HistogramTester tester;
+
+  {
+    InitialWebUIWindowMetricsManager manager(&browser_window_);
+
+    // Simulate show request.
+    base::TimeDelta show_request_delay = base::Milliseconds(30);
+    base::TimeTicks show_request_time = start_time + show_request_delay;
+    manager.OnBrowserWindowShowRequested(show_request_time);
+
+    // Destruction happens here when 'manager' goes out of scope.
+  }
+
+  // Verify metric was recorded.
+  tester.ExpectTotalCount(
+      "InitialWebUI.Startup.BrowserWindow.ClosedBeforeFirstPaint", 1);
+}

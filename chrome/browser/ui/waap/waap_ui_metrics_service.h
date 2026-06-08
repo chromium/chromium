@@ -144,6 +144,19 @@ class WaapUIMetricsService : public KeyedService {
       bool with_existing_window,
       base::TimeTicks request_time,
       base::TimeTicks paint_time);
+
+  // Called when the browser window is closed before the first paint.
+  void OnStartupBrowserWindowClosedBeforeFirstPaint(
+      base::TimeTicks request_time,
+      base::TimeTicks close_time);
+
+  // Called when a new browser window (not the initial one) is closed before the
+  // first paint.
+  void OnNewWindowBrowserWindowClosedBeforeFirstPaint(
+      waap::NewWindowCreationSource source,
+      bool with_existing_window,
+      base::TimeTicks start_time,
+      base::TimeTicks close_time);
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UI_METRICS_SERVICE_H_
