@@ -26,6 +26,9 @@ class PaymentsWindowDelegate {
   // Triggered when a tab navigation has finished, and `flow_state_->flow_type`
   // is `kBnpl`.
   virtual void OnDidFinishNavigationForBnpl(const GURL& clicked_url) = 0;
+
+  // Triggered when the user denies opening the ephemeral tab.
+  virtual void OnUserDeniedTabOpening() = 0;
 };
 
 }  // namespace autofill::payments
