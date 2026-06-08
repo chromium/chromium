@@ -139,7 +139,8 @@ BASE_FEATURE(kContextualTasksOverrideShowBottomSheetOnLargeScreen,
 // Enables prefetching of cookies for contextual tasks.
 BASE_FEATURE(kContextualTasksCookiePrefetch, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAimTriggeredThreadLinks, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAimTriggeredThreadLinks, base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksPdfCitationsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksPdfCitations);
 }
@@ -343,8 +344,10 @@ const base::FeatureParam<bool> kForceGscInTabMode(
 // Version 2.2: Added UI fixes for NLM.
 // Version 2.3: UI fixes for transitions from search results.
 // Version 2.4: Adds ability to hideInput/restoreInput
+// Version 2.5: Support for link click post messages and window.open calls from
+//              AIM.
 const base::FeatureParam<std::string> kContextualTasksUserAgentSuffix{
-    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.4"};
+    &kContextualTasks, "contextual-tasks-user-agent-suffix", "Cobrowsing/2.5"};
 
 const base::FeatureParam<std::string> kContextualTasksOAuthScopes{
     &kContextualTasksExtraOauthScopes, "ContextualTasksOAuthScopes", ""};
