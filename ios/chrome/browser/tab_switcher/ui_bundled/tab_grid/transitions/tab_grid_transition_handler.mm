@@ -223,36 +223,41 @@ enum class TabGridTransitionType {
     browserLayout.view.frame = tabGrid.view.bounds;
   }
 
-  // Taking a snapshot can take a few milliseconds during which a screen refresh
-  // can occur. If the browserLayout is added to the final position before
-  // taking the snapshot, it means that it will be visible in its final position
-  // before the animation starts. But it is also necessary to add it to the view
-  // hierarchy before taking a snapshot otherwise `-viewWillAppear` and
-  // `-viewDidDisappear` are called during the snapshot. The compromise is to
-  // add it below all the views so it is part of the view hierarchy but hidden
-  // by all the views.
-  CGRect browserLayoutOriginalFrame = browserLayout.view.frame;
-  UIView* sourceView = tabGrid.view;
-  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
-    sourceView = appContentGuide;
+  if (_transitionType != TabGridTransitionType::kDisabledAnimation) {
+    // Taking a snapshot can take a few milliseconds during which a screen
+    // refresh can occur. If the browserLayout is added to the final position
+    // before taking the snapshot, it means that it will be visible in its final
+    // position before the animation starts. But it is also necessary to add it
+    // to the view hierarchy before taking a snapshot otherwise
+    // `-viewWillAppear` and
+    // `-viewDidDisappear` are called during the snapshot. The compromise is to
+    // add it below all the views so it is part of the view hierarchy but hidden
+    // by all the views.
+    CGRect browserLayoutOriginalFrame = browserLayout.view.frame;
+    UIView* sourceView = tabGrid.view;
+    if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+      sourceView = appContentGuide;
+    }
+    UIViewController* rootViewController =
+        tabGrid.view.window.rootViewController;
+    if (IsFullscreenRefactoringEnabled()) {
+      // Temporarily re-enable autoresizing so that the frame can be manually
+      // set for the snapshot.
+      browserLayout.view.translatesAutoresizingMaskIntoConstraints = YES;
+    }
+    browserLayout.view.frame =
+        [sourceView convertRect:browserLayoutOriginalFrame
+                         toView:rootViewController.view];
+    [rootViewController addChildViewController:browserLayout];
+    [rootViewController.view insertSubview:browserLayout.view atIndex:0];
+    if (IsFullscreenRefactoringEnabled()) {
+      // Running a layout here ensures that the toolbar frames are correct for
+      // the snapshots.
+      [browserLayout.view layoutIfNeeded];
+    }
+    [self takeToolbarSnapshots];
+    browserLayout.view.frame = browserLayoutOriginalFrame;
   }
-  UIViewController* rootViewController = tabGrid.view.window.rootViewController;
-  if (IsFullscreenRefactoringEnabled()) {
-    // Temporarily re-enable autoresizing so that the frame can be manually set
-    // for the snapshot.
-    browserLayout.view.translatesAutoresizingMaskIntoConstraints = YES;
-  }
-  browserLayout.view.frame = [sourceView convertRect:browserLayoutOriginalFrame
-                                              toView:rootViewController.view];
-  [rootViewController addChildViewController:browserLayout];
-  [rootViewController.view insertSubview:browserLayout.view atIndex:0];
-  if (IsFullscreenRefactoringEnabled()) {
-    // Running a layout here ensures that the toolbar frames are correct for
-    // the snapshots.
-    [browserLayout.view layoutIfNeeded];
-  }
-  [self takeToolbarSnapshots];
-  browserLayout.view.frame = browserLayoutOriginalFrame;
 
   if (IsChromeNextIaEnabled()) {
     [parentViewController addChildViewController:browserLayout];
