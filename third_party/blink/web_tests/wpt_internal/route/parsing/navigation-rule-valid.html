@@ -13,6 +13,12 @@
   }, "navigation-location-test");
 
   test(()=> {
+    const canonical = "@navigation (between: --a and --b) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule("@Navigation  ( Between:--a  And  --b ){ \n} ", canonical);
+  }, "navigation-location-between-test");
+
+  test(()=> {
     const canonical = "@navigation (history: back) {\n}";
     test_valid_rule(canonical);
     test_valid_rule("@Navigation  ( History:Back){ \n } ", canonical);
@@ -28,5 +34,11 @@
     const canonical = "@navigation ((from: --a) or (at: --b)) {\n}";
     test_valid_rule(canonical);
     test_valid_rule("@Navigation  ( ( From:--a ) Or ( At:--b) ){ \n} ", canonical);
-  }, "complex");
+  }, "complex navigation-location-test");
+
+  test(()=> {
+    const canonical = "@navigation ((between: --a and --b) or (at: --c)) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule("@Navigation  ( ( Between:--a  And  --b ) Or ( At:--c) ){ \n} ", canonical);
+  }, "complex mixed");
 </script>

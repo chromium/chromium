@@ -124,6 +124,27 @@ NavigationTestExpression* NavigationParser::ParseNavigationTest(
     return MakeGarbageCollected<NavigationPhaseTestExpression>(phase);
   }
 
+  if (EqualIgnoringAsciiCase(token.Value(), "between")) {
+    // <navigation-location-between-test> =
+    //   between : <route-location> and <route-location>
+    RouteLocation* route_location1 = ParseLocation(stream, document);
+    if (!route_location1) {
+      return nullptr;
+    }
+    CSSParserToken and_token = stream.ConsumeIncludingWhitespace();
+    if (and_token.GetType() != kIdentToken ||
+        !EqualIgnoringAsciiCase(and_token.Value(), "and")) {
+      return nullptr;
+    }
+    RouteLocation* route_location2 = ParseLocation(stream, document);
+    if (!route_location2 || !stream.AtEnd()) {
+      return nullptr;
+    }
+
+    return MakeGarbageCollected<NavigationLocationBetweenTestExpression>(
+        *route_location1, *route_location2);
+  }
+
   // <navigation-location-test> =
   //   <navigation-location-keyword> : <route-location>
   // <navigation-location-keyword> = at | from | to | with

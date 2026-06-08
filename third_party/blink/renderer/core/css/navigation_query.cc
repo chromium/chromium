@@ -93,6 +93,33 @@ void NavigationLocationTestExpression::SerializePrepositionTo(
   }
 }
 
+void NavigationLocationBetweenTestExpression::Trace(Visitor* visitor) const {
+  visitor->Trace(route_location1_);
+  visitor->Trace(route_location2_);
+  NavigationTestExpression::Trace(visitor);
+}
+
+bool NavigationLocationBetweenTestExpression::Matches(
+    Document& document) const {
+  const Route* route1 = route_location1_->FindOrCreateRoute(document);
+  const Route* route2 = route_location2_->FindOrCreateRoute(document);
+  if (!route1 || !route2) {
+    return false;
+  }
+  return (route1->Matches(NavigationPreposition::kFrom) &&
+          route2->Matches(NavigationPreposition::kTo)) ||
+         (route1->Matches(NavigationPreposition::kTo) &&
+          route2->Matches(NavigationPreposition::kFrom));
+}
+
+void NavigationLocationBetweenTestExpression::SerializeTo(
+    StringBuilder& builder) const {
+  builder.Append("between: ");
+  route_location1_->SerializeTo(builder);
+  builder.Append(" and ");
+  route_location2_->SerializeTo(builder);
+}
+
 bool NavigationPhaseTestExpression::Matches(Document& document) const {
   const auto* route_map = RouteMap::Get(&document);
   return route_map && route_map->GetPhase() == phase_;

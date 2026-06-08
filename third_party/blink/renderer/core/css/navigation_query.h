@@ -121,6 +121,26 @@ struct DowncastTraits<NavigationLocationTestExpression> {
   }
 };
 
+// <navigation-location-between-test>
+//
+// https://drafts.csswg.org/css-navigation-1/#typedef-navigation-location-between-test
+class NavigationLocationBetweenTestExpression
+    : public NavigationTestExpression {
+ public:
+  NavigationLocationBetweenTestExpression(RouteLocation& location1,
+                                          RouteLocation& location2)
+      : route_location1_(&location1), route_location2_(location2) {}
+
+  void Trace(Visitor* visitor) const override;
+
+  bool Matches(Document&) const override;
+  void SerializeTo(StringBuilder&) const override;
+
+ private:
+  Member<RouteLocation> route_location1_;
+  Member<RouteLocation> route_location2_;
+};
+
 // <navigation-phase-test>
 //
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-phase-test
