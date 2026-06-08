@@ -40,11 +40,7 @@ class WellKnownChangePasswordNavigationThrottleTest
     ChromeRenderViewHostTestHarness::SetUp();
     content::RenderFrameHostTester::For(main_rfh())
         ->InitializeRenderFrameIfNeeded();
-    subframe_ = content::RenderFrameHostTester::For(main_rfh())
-                    ->AppendChild("subframe");
   }
-
-  content::RenderFrameHost* subframe() const { return subframe_; }
 
   bool CreateNavigationThrottle(NavigationThrottleOptions opts) {
     content::MockNavigationHandle handle(
@@ -63,7 +59,6 @@ class WellKnownChangePasswordNavigationThrottleTest
  private:
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  raw_ptr<content::RenderFrameHost, DanglingUntriaged> subframe_ = nullptr;
 };
 
 TEST_F(WellKnownChangePasswordNavigationThrottleTest,
@@ -128,13 +123,15 @@ TEST_F(WellKnownChangePasswordNavigationThrottleTest,
 // navigation initiated by a subframe.
 TEST_F(WellKnownChangePasswordNavigationThrottleTest,
        NeverCreateNavigationThrottle_Subframe) {
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
   // change-password url without trailing slash
   GURL url("https://google.com/.well-known/change-password");
-  EXPECT_FALSE(CreateNavigationThrottle({url, subframe()}));
+  EXPECT_FALSE(CreateNavigationThrottle({url, subframe}));
 
   // change-password url with trailing slash
   url = GURL("https://google.com/.well-known/change-password/");
-  EXPECT_FALSE(CreateNavigationThrottle({url, subframe()}));
+  EXPECT_FALSE(CreateNavigationThrottle({url, subframe}));
 }
 
 class WellKnownChangePasswordNavigationThrottleFencedFramesTest
