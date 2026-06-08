@@ -969,7 +969,7 @@ as required builders.
 
 ### chrome
 * [android-internal-desktop-x64-rel](https://ci.chromium.org/p/chrome/builders/try/android-internal-desktop-x64-rel) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""android-internal-desktop-x64-rel""))
-  * Experiment percentage: 25.0
+  * Experiment percentage: 100.0
 
   This builder is only run when the CL owner is in the group:
   * [`google/chrome-al-eng@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chrome-al-eng@google.com)
