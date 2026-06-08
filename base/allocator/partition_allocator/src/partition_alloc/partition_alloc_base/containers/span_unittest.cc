@@ -742,11 +742,12 @@ TEST(PASpanTest, NoLifetimeWarnings) {
 
   // It's also safe with an lvalue `std::string`.
   std::string s = "123";
-  [[maybe_unused]] auto g = span<const char>(std::string_view(s));
-  [[maybe_unused]] auto h = span<const char>(std::string_view(s));
+  std::string_view sv = s;
+  [[maybe_unused]] auto g = span<const char>(sv);
+  [[maybe_unused]] auto h = span<const char>(sv);
 
   // Non-std:: helpers should also allow safe usage.
-  [[maybe_unused]] auto i = as_byte_span(std::string_view(s));
+  [[maybe_unused]] auto i = as_byte_span(sv);
 }
 
 TEST(PASpanTest, FromRefOfRValue) {

@@ -1867,17 +1867,19 @@ template <typename ElementType,
 // std:: has no direct equivalent for this; however, it eases span adoption in
 // Chromium, which uses `string`s and `string_view`s in many cases that
 // rightfully should be containers of `uint8_t`.
+// Note: We use the 2-argument constructor `(s.data(), s.size())` instead of the
+// 1-argument range constructor `(s)` for C++20 compatibility.
 constexpr auto as_string_view(span<const char> s) {
-  return std::string_view(s);
+  return std::string_view(s.data(), s.size());
 }
 constexpr auto as_string_view(span<const unsigned char> s) {
   return as_string_view(as_chars(s));
 }
 constexpr auto as_string_view(span<const char16_t> s) {
-  return std::u16string_view(s);
+  return std::u16string_view(s.data(), s.size());
 }
 constexpr auto as_string_view(span<const wchar_t> s) {
-  return std::wstring_view(s);
+  return std::wstring_view(s.data(), s.size());
 }
 
 }  // namespace partition_alloc::internal::base
