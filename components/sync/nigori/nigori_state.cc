@@ -103,7 +103,7 @@ bool IsValidKeyPairState(const NigoriState& state) {
   // Key version existence is guaranteed by NigoriState::CreateFromLocalProto().
   CHECK(state.cross_user_sharing_key_pair_version);
 
-  if (!state.cryptographer->HasKeyPair(
+  if (!state.cryptographer->HasCrossUserSharingKeyPair(
           state.cross_user_sharing_key_pair_version.value())) {
     // The private key does not exist for the current public key version.
     return false;

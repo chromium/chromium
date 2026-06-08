@@ -118,7 +118,7 @@ TEST(CryptographerImplTest, ShouldSelectDefaultCrossUserSharingKey) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
   cryptographer->SelectDefaultCrossUserSharingKey(4);
 
@@ -138,7 +138,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonSetEncryptionKeyPair) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
 
   const std::string plaintext = "Sharing is caring";
@@ -157,7 +157,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonExistentDefaultEncryptionKeyPair) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
   cryptographer->SelectDefaultCrossUserSharingKey(3);
 
@@ -184,7 +184,7 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
       "password1", KeyDerivationParams::CreateForPbkdf2());
   const std::string key_name2 = original_cryptographer->EmplaceKey(
       "password2", KeyDerivationParams::CreateForPbkdf2());
-  original_cryptographer->SetKeyPair(
+  original_cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
 
   original_cryptographer->SelectDefaultEncryptionKey(key_name1);
@@ -200,7 +200,7 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
       CryptographerImpl::FromLocalProto(original_cryptographer->ToLocalProto());
   ASSERT_THAT(restored_cryptographer, NotNull());
   EXPECT_TRUE(restored_cryptographer->CanEncrypt());
-  EXPECT_TRUE(restored_cryptographer->HasKeyPair(0));
+  EXPECT_TRUE(restored_cryptographer->HasCrossUserSharingKeyPair(0));
 
   std::string decrypted;
   EXPECT_TRUE(restored_cryptographer->DecryptToString(encrypted1, &decrypted));
@@ -230,18 +230,18 @@ TEST(CryptographerImplTest, ShouldExportDefaultKey) {
               Eq(key_name));
 }
 
-TEST(CryptographerImplTest, ShouldSetKeyPair) {
+TEST(CryptographerImplTest, ShouldSetCrossUserSharingKeyPair) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
   std::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
   ASSERT_TRUE(key_pair.has_value());
-  ASSERT_FALSE(cryptographer->HasKeyPair(0));
+  ASSERT_FALSE(cryptographer->HasCrossUserSharingKeyPair(0));
 
-  cryptographer->SetKeyPair(std::move(key_pair.value()), 0);
+  cryptographer->SetCrossUserSharingKeyPair(std::move(key_pair.value()), 0);
 
-  EXPECT_TRUE(cryptographer->HasKeyPair(0));
+  EXPECT_TRUE(cryptographer->HasCrossUserSharingKeyPair(0));
 }
 
 TEST(CryptographerImplTest, ShouldEmplaceKeysFrom) {
@@ -266,22 +266,22 @@ TEST(CryptographerImplTest, ShouldEmplaceExistingKeyPair) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
-  ASSERT_FALSE(cryptographer->HasKeyPair(0));
-  cryptographer->SetKeyPair(
+  ASSERT_FALSE(cryptographer->HasCrossUserSharingKeyPair(0));
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  ASSERT_TRUE(cryptographer->HasKeyPair(0));
+  ASSERT_TRUE(cryptographer->HasCrossUserSharingKeyPair(0));
 
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
 
-  EXPECT_TRUE(cryptographer->HasKeyPair(0));
+  EXPECT_TRUE(cryptographer->HasCrossUserSharingKeyPair(0));
 }
 
 TEST(CryptographerImplTest, ShouldReplaceCrossUserSharingKeys) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
-  ASSERT_FALSE(cryptographer->HasKeyPair(0));
+  ASSERT_FALSE(cryptographer->HasCrossUserSharingKeyPair(0));
   CrossUserSharingKeys keys = CrossUserSharingKeys::CreateEmpty();
   keys.SetKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
                   0);
@@ -290,8 +290,8 @@ TEST(CryptographerImplTest, ShouldReplaceCrossUserSharingKeys) {
 
   cryptographer->ReplaceCrossUserSharingKeys(std::move(keys));
 
-  EXPECT_TRUE(cryptographer->HasKeyPair(0));
-  EXPECT_TRUE(cryptographer->HasKeyPair(1));
+  EXPECT_TRUE(cryptographer->HasCrossUserSharingKeyPair(0));
+  EXPECT_TRUE(cryptographer->HasCrossUserSharingKeyPair(1));
 }
 
 TEST(CryptographerImplTest, ShouldOverwritePreexistingKeys) {
@@ -305,8 +305,10 @@ TEST(CryptographerImplTest, ShouldOverwritePreexistingKeys) {
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
       /*version=*/1);
   cryptographer->ReplaceCrossUserSharingKeys(old_keys.Clone());
-  ASSERT_TRUE(cryptographer->HasKeyPair(/*key_pair_version=*/0));
-  ASSERT_TRUE(cryptographer->HasKeyPair(/*key_pair_version=*/1));
+  ASSERT_TRUE(
+      cryptographer->HasCrossUserSharingKeyPair(/*key_pair_version=*/0));
+  ASSERT_TRUE(
+      cryptographer->HasCrossUserSharingKeyPair(/*key_pair_version=*/1));
 
   // Generate a new key pair and replace the pre-existing one with the same
   // version. The version 1 should also disappear.
@@ -315,8 +317,10 @@ TEST(CryptographerImplTest, ShouldOverwritePreexistingKeys) {
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
       /*version=*/0);
   cryptographer->ReplaceCrossUserSharingKeys(new_keys.Clone());
-  ASSERT_TRUE(cryptographer->HasKeyPair(/*key_pair_version=*/0));
-  ASSERT_FALSE(cryptographer->HasKeyPair(/*key_pair_version=*/1));
+  ASSERT_TRUE(
+      cryptographer->HasCrossUserSharingKeyPair(/*key_pair_version=*/0));
+  ASSERT_FALSE(
+      cryptographer->HasCrossUserSharingKeyPair(/*key_pair_version=*/1));
   EXPECT_EQ(cryptographer->GetCrossUserSharingKeyPair(/*version=*/0)
                 .GetRawPrivateKey(),
             new_keys.GetKeyPair(/*version=*/0).GetRawPrivateKey());
@@ -330,9 +334,9 @@ TEST(CryptographerImplTest, ShouldOverwriteOnlyOneKeyPair) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
 
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   // Replace only one key with a new value.
@@ -342,7 +346,7 @@ TEST(CryptographerImplTest, ShouldOverwriteOnlyOneKeyPair) {
   auto raw_existing_private_key1 =
       cryptographer->GetCrossUserSharingKeyPair(/*version=*/1)
           .GetRawPrivateKey();
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
 
   EXPECT_NE(raw_existing_private_key0,
@@ -357,14 +361,14 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
   std::unique_ptr<CryptographerImpl> cryptographer_sender =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer_sender, NotNull());
-  cryptographer_sender->SetKeyPair(
+  cryptographer_sender->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
   cryptographer_sender->SelectDefaultCrossUserSharingKey(0);
   std::unique_ptr<CryptographerImpl> cryptographer_recipient =
       CryptographerImpl::CreateEmpty();
 
   ASSERT_THAT(cryptographer_recipient, NotNull());
-  cryptographer_recipient->SetKeyPair(
+  cryptographer_recipient->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
   cryptographer_recipient->SelectDefaultCrossUserSharingKey(0);
 
@@ -394,15 +398,15 @@ TEST(CryptographerImplTest, ShouldClearCrossUserSharingKeys) {
 
   ASSERT_THAT(cryptographer, NotNull());
 
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   cryptographer->ClearAllKeys();
 
-  EXPECT_FALSE(cryptographer->HasKeyPair(0));
-  EXPECT_FALSE(cryptographer->HasKeyPair(1));
+  EXPECT_FALSE(cryptographer->HasCrossUserSharingKeyPair(0));
+  EXPECT_FALSE(cryptographer->HasCrossUserSharingKeyPair(1));
 }
 
 TEST(CryptographerImplTest, ShouldEmplaceAllNigoriKeysFrom) {
@@ -441,7 +445,7 @@ TEST(CryptographerImplTest, ShouldEmplaceAllNigoriKeysFrom) {
 TEST(CryptographerImplTest, ShouldCloneDefaultCrossUserSharingKeyVersion) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
   cryptographer->SelectDefaultCrossUserSharingKey(4);
 

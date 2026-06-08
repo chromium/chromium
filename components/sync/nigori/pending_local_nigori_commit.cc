@@ -44,7 +44,7 @@ void InitNewOrFixCorruptedKeyPair(
   state.cross_user_sharing_key_pair_version = version;
   CrossUserSharingPublicPrivateKeyPair key_pair(
       cross_user_sharing_key_pair.GetRawPrivateKey());
-  state.cryptographer->SetKeyPair(std::move(key_pair), version);
+  state.cryptographer->SetCrossUserSharingKeyPair(std::move(key_pair), version);
   state.cryptographer->SelectDefaultCrossUserSharingKey(version);
 }
 

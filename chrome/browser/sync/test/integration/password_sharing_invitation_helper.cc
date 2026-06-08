@@ -45,7 +45,7 @@ std::unique_ptr<syncer::CryptographerImpl> InitializeCryptographer(
       syncer::CryptographerImpl::CreateEmpty();
 
   // Clone `key_pair` since the cryptographer requires it to be moved.
-  cryptographer->SetKeyPair(
+  cryptographer->SetCrossUserSharingKeyPair(
       syncer::CrossUserSharingPublicPrivateKeyPair(key_pair.GetRawPrivateKey()),
       kDefaultKeyVersion);
   cryptographer->SelectDefaultCrossUserSharingKey(kDefaultKeyVersion);
