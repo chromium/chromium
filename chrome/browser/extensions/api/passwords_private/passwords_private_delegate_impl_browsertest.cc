@@ -306,8 +306,6 @@ class PasswordsPrivateDelegateImplTest : public InProcessBrowserTest {
   PasswordsPrivateDelegateImplTest& operator=(
       const PasswordsPrivateDelegateImplTest&) = delete;
 
-  ~PasswordsPrivateDelegateImplTest() override;
-
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override;
 
@@ -346,7 +344,6 @@ class PasswordsPrivateDelegateImplTest : public InProcessBrowserTest {
   raw_ptr<extensions::EventRouter> event_router_ = nullptr;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
-  raw_ptr<ui::TestClipboard, DanglingUntriaged> test_clipboard_;
   MockChangePinController change_pin_controller_;
 
   void TearDownOnMainThread() override;
@@ -355,12 +352,9 @@ class PasswordsPrivateDelegateImplTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 };
 
-PasswordsPrivateDelegateImplTest::~PasswordsPrivateDelegateImplTest() {
-  ui::Clipboard::DestroyClipboardForCurrentThread();
-}
-
 void PasswordsPrivateDelegateImplTest::TearDownOnMainThread() {
   event_router_ = nullptr;
+  ui::Clipboard::DestroyClipboardForCurrentThread();
   InProcessBrowserTest::TearDownOnMainThread();
 }
 
@@ -441,7 +435,7 @@ void PasswordsPrivateDelegateImplTest::SetUpOnMainThread() {
       AccountPasswordStoreFactory::GetForProfile(
           GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get());
-  test_clipboard_ = ui::TestClipboard::CreateForCurrentThread();
+  ui::TestClipboard::CreateForCurrentThread();
   SetUpRouters();
   sync_service()->SetSignedIn(signin::ConsentLevel::kSignin);
   ChangePinController::set_instance_for_testing(&change_pin_controller_);
@@ -978,9 +972,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
       password_callback.Get(), web_contents.get());
 
   std::u16string result;
-  result = ui::clipboard_test_util::ReadText(test_clipboard_,
-                                             ui::ClipboardBuffer::kCopyPaste,
-                                             /* data_dst = */ nullptr);
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(form.password_value, result);
 
   histogram_tester().ExpectUniqueSample(
@@ -1007,9 +1001,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
                                         result_callback.Get());
 
   std::u16string result;
-  result = ui::clipboard_test_util::ReadText(test_clipboard_,
-                                             ui::ClipboardBuffer::kCopyPaste,
-                                             /* data_dst = */ nullptr);
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(result, form.GetPasswordBackup());
 }
 
@@ -1060,7 +1054,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
 
   ExpectAuthentication(delegate, /*successful=*/false);
 
-  base::Time before_call = test_clipboard_->GetLastModifiedTime();
+  base::Time before_call =
+      ui::Clipboard::GetForCurrentThread()->GetLastModifiedTime();
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(std::nullopt)));
@@ -1069,11 +1064,12 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
       password_callback.Get(), web_contents.get());
   // Clipboard should not be modified in case Reauth failed
   std::u16string result;
-  result = ui::clipboard_test_util::ReadText(test_clipboard_,
-                                             ui::ClipboardBuffer::kCopyPaste,
-                                             /* data_dst = */ nullptr);
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(std::u16string(), result);
-  EXPECT_EQ(before_call, test_clipboard_->GetLastModifiedTime());
+  EXPECT_EQ(before_call,
+            ui::Clipboard::GetForCurrentThread()->GetLastModifiedTime());
 
   // Since Reauth had failed password was not copied and metric wasn't recorded
   histogram_tester().ExpectTotalCount(kHistogramName, 0);
@@ -1098,9 +1094,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplTest,
                                         result_callback.Get());
 
   std::u16string result;
-  result = ui::clipboard_test_util::ReadText(test_clipboard_,
-                                             ui::ClipboardBuffer::kCopyPaste,
-                                             /* data_dst = */ nullptr);
+  result = ui::clipboard_test_util::ReadText(
+      ui::Clipboard::GetForCurrentThread(), ui::ClipboardBuffer::kCopyPaste,
+      /*data_dst=*/nullptr);
   EXPECT_EQ(result, std::u16string());
 }
 
