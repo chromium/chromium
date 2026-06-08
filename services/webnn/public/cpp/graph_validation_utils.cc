@@ -32,9 +32,6 @@ namespace webnn {
 
 namespace {
 
-// Used by concat/split to validate operand count limit.
-constexpr uint32_t kMaxValidTensorCount = 8192;
-
 struct Conv2dInputOutputInfo {
   uint32_t batches;
   uint32_t channels;

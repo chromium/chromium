@@ -17,6 +17,9 @@
 
 namespace webnn {
 
+// Used by concat/split to validate operand count limit.
+inline constexpr uint32_t kMaxValidTensorCount = 8192;
+
 // Represents the `MLConv2dFilterOperandLayout` that specifies the layout format
 // of the filter tensor. O is output channels, I is input channels / groups, H
 // is height and W is the width of filter.
