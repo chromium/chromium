@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -32,9 +32,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
-class CrOSPreConsentMetricsManagerTest : public InProcessBrowserTest {
+class CrOSPreChoiceMetricsManagerTest : public InProcessBrowserTest {
  public:
-  CrOSPreConsentMetricsManagerTest() {
+  CrOSPreChoiceMetricsManagerTest() {
     feature_list_.InitAndEnableFeature(ash::features::kOobePreConsentMetrics);
 
     // Make sure that the pref is used to check the consent during tests.
@@ -42,7 +42,7 @@ class CrOSPreConsentMetricsManagerTest : public InProcessBrowserTest {
         true);
   }
 
-  ~CrOSPreConsentMetricsManagerTest() override {
+  ~CrOSPreChoiceMetricsManagerTest() override {
     ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
         false);
   }
@@ -65,10 +65,10 @@ class CrOSPreConsentMetricsManagerTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
-                       EnablePreConsentMetrics) {
+IN_PROC_BROWSER_TEST_F(CrOSPreChoiceMetricsManagerTest,
+                       EnablePreChoiceMetrics) {
   // Check that the default instance is in the expected state.
-  CrOSPreConsentMetricsManager* manager = CrOSPreConsentMetricsManager::Get();
+  CrOSPreChoiceMetricsManager* manager = CrOSPreChoiceMetricsManager::Get();
   ASSERT_NE(manager, nullptr);
   EXPECT_FALSE(manager->is_enabled_for_testing());
 
@@ -83,9 +83,9 @@ IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
                   ->IsMetricsReportingEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
-                       DisablePreConsentMetrics) {
-  CrOSPreConsentMetricsManager* manager = CrOSPreConsentMetricsManager::Get();
+IN_PROC_BROWSER_TEST_F(CrOSPreChoiceMetricsManagerTest,
+                       DisablePreChoiceMetrics) {
+  CrOSPreChoiceMetricsManager* manager = CrOSPreChoiceMetricsManager::Get();
   ASSERT_NE(manager, nullptr);
 
   base::FilePath completed_path = temp_dir_.GetPath().Append("test_file");
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
   EXPECT_TRUE(
       g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
 
-  // Disable the Pre-consent metrics.
+  // Disable the Pre-choice metrics.
   manager->Disable();
   EXPECT_FALSE(manager->is_enabled_for_testing());
   WaitOnConsentToPropagate();
@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
   EXPECT_TRUE(closure_ran);
 }
 
-IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
+IN_PROC_BROWSER_TEST_F(CrOSPreChoiceMetricsManagerTest,
                        EnableSetsBasicLevelWithRestructure) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(
@@ -139,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
   ASSERT_TRUE(metrics::MetricsReportingChoiceService::
                   ShouldUseMetricsConsentRestructure(local_state));
 
-  CrOSPreConsentMetricsManager* manager = CrOSPreConsentMetricsManager::Get();
+  CrOSPreChoiceMetricsManager* manager = CrOSPreChoiceMetricsManager::Get();
   ASSERT_NE(manager, nullptr);
 
   manager->Enable();
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(CrOSPreConsentMetricsManagerTest,
             local_state->GetInteger(metrics::prefs::kMetricsReportingLevel));
 }
 
-class OwnedDeviceCrOSPreConsentMetricsManagerTest
+class OwnedDeviceCrOSPreChoiceMetricsManagerTest
     : public MixinBasedInProcessBrowserTest {
  private:
   ash::DeviceStateMixin device_state_{
@@ -159,9 +159,9 @@ class OwnedDeviceCrOSPreConsentMetricsManagerTest
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED};
 };
 
-IN_PROC_BROWSER_TEST_F(OwnedDeviceCrOSPreConsentMetricsManagerTest,
+IN_PROC_BROWSER_TEST_F(OwnedDeviceCrOSPreChoiceMetricsManagerTest,
                        DeviceOwned) {
-  ASSERT_EQ(CrOSPreConsentMetricsManager::Get(), nullptr);
+  ASSERT_EQ(CrOSPreChoiceMetricsManager::Get(), nullptr);
 }
 
 }  // namespace metrics

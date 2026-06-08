@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_choice_handler.h"
 
 #include "base/containers/adapters.h"
 #include "base/metrics/user_metrics.h"
@@ -50,7 +50,7 @@ using ::testing::Eq;
 // For a user to be recognized as an owner, it needs to be the author of the
 // device settings. So use the default user name that DevicePolicyBuilder uses.
 const char* kOwner = policy::PolicyBuilder::kFakeUsername;
-constexpr char kNonOwner[] = "non@owner.com";
+const char kNonOwner[] = "non@owner.com";
 
 TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
   StatsReportingController::RegisterLocalStatePrefs(local_state->registry());
@@ -84,16 +84,16 @@ class TestUserMetricsServiceClient
 
 }  // namespace
 
-class TestMetricsConsentHandler : public MetricsConsentHandler {
+class TestMetricsChoiceHandler : public MetricsChoiceHandler {
  public:
-  TestMetricsConsentHandler(Profile* profile,
-                            metrics::MetricsService* metrics_service,
-                            user_manager::UserManager* user_manager,
-                            content::WebUI* web_ui)
-      : MetricsConsentHandler(profile, metrics_service, user_manager) {
+  TestMetricsChoiceHandler(Profile* profile,
+                           metrics::MetricsService* metrics_service,
+                           user_manager::UserManager* user_manager,
+                           content::WebUI* web_ui)
+      : MetricsChoiceHandler(profile, metrics_service, user_manager) {
     set_web_ui(web_ui);
   }
-  ~TestMetricsConsentHandler() override = default;
+  ~TestMetricsChoiceHandler() override = default;
 
   void GetMetricsConsentState() {
     base::ListValue args;
@@ -113,13 +113,12 @@ class TestMetricsConsentHandler : public MetricsConsentHandler {
   }
 };
 
-class MetricsConsentHandlerTest : public testing::Test {
+class MetricsChoiceHandlerTest : public testing::Test {
  public:
-  MetricsConsentHandlerTest() = default;
-  MetricsConsentHandlerTest(const MetricsConsentHandlerTest&) = delete;
-  MetricsConsentHandlerTest& operator=(const MetricsConsentHandlerTest&) =
-      delete;
-  ~MetricsConsentHandlerTest() override = default;
+  MetricsChoiceHandlerTest() = default;
+  MetricsChoiceHandlerTest(const MetricsChoiceHandlerTest&) = delete;
+  MetricsChoiceHandlerTest& operator=(const MetricsChoiceHandlerTest&) = delete;
+  ~MetricsChoiceHandlerTest() override = default;
 
   std::unique_ptr<TestingProfile> RegisterOwner(const AccountId& account_id) {
     DeviceSettingsService::Get()->StartProcessing(
@@ -138,7 +137,7 @@ class MetricsConsentHandlerTest : public testing::Test {
 
   void InitializeTestHandler(Profile* profile) {
     // Create the handler with given profile.
-    handler_ = std::make_unique<TestMetricsConsentHandler>(
+    handler_ = std::make_unique<TestMetricsChoiceHandler>(
         profile, test_metrics_service_.get(), test_user_manager_.get(),
         web_ui_.get());
 
@@ -262,7 +261,7 @@ class MetricsConsentHandlerTest : public testing::Test {
   CrosSettingsHolder cros_settings_holder_{ash::DeviceSettingsService::Get(),
                                            RegisterPrefs(&pref_service_)};
 
-  std::unique_ptr<TestMetricsConsentHandler> handler_;
+  std::unique_ptr<TestMetricsChoiceHandler> handler_;
   std::unique_ptr<FakeChromeUserManager> test_user_manager_;
   std::unique_ptr<content::TestWebUI> web_ui_;
 
@@ -283,7 +282,7 @@ class MetricsConsentHandlerTest : public testing::Test {
       base::MakeRefCounted<ownership::MockOwnerKeyUtil>()};
 };
 
-TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
+TEST_F(MetricsChoiceHandlerTest, OwnerCanToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
@@ -319,7 +318,7 @@ TEST_F(MetricsConsentHandlerTest, OwnerCanToggle) {
   StatsReportingController::Shutdown();
 }
 
-TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
+TEST_F(MetricsChoiceHandlerTest, NonOwnerWithUserConsentCanToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
@@ -360,7 +359,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithUserConsentCanToggle) {
   StatsReportingController::Shutdown();
 }
 
-TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
+TEST_F(MetricsChoiceHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 
@@ -401,7 +400,7 @@ TEST_F(MetricsConsentHandlerTest, NonOwnerWithoutUserConsentCannotToggle) {
   StatsReportingController::Shutdown();
 }
 
-TEST_F(MetricsConsentHandlerTest, ChildUserCannotToggleAsNonOwner) {
+TEST_F(MetricsChoiceHandlerTest, ChildUserCannotToggleAsNonOwner) {
   auto owner_id = AccountId::FromUserEmailGaiaId(kOwner, GaiaId("2"));
   std::unique_ptr<TestingProfile> owner = RegisterOwner(owner_id);
 

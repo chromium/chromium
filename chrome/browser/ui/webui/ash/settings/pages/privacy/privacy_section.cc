@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_choice_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_hub_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -392,7 +392,7 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(
       std::make_unique<PeripheralDataAccessHandler>(profile()));
 
-  web_ui->AddMessageHandler(std::make_unique<MetricsConsentHandler>(
+  web_ui->AddMessageHandler(std::make_unique<MetricsChoiceHandler>(
       profile(), g_browser_process->metrics_service(),
       user_manager::UserManager::Get()));
 

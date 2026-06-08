@@ -41,7 +41,7 @@
 #include "ui/base/user_activity/user_activity_observer.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
 #endif
 
 class BrowserActivityWatcher;
@@ -335,8 +335,8 @@ class ChromeMetricsServiceClient
   // Manages the consent of UMA before the user has been created. This object is
   // only created during OOBE before the primary user has given intent to
   // metrics consent.
-  std::unique_ptr<metrics::CrOSPreConsentMetricsManager>
-      cros_pre_consent_manager_;
+  std::unique_ptr<metrics::CrOSPreChoiceMetricsManager>
+      cros_pre_choice_manager_;
 #endif
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

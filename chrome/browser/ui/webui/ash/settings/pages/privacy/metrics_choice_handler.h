@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_METRICS_CONSENT_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_METRICS_CONSENT_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_METRICS_CHOICE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_METRICS_CHOICE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,23 +14,23 @@
 
 namespace ash::settings {
 
-class TestMetricsConsentHandler;
+class TestMetricsChoiceHandler;
 
 // Handler for fetching and updating metrics consent.
-class MetricsConsentHandler : public content::WebUIMessageHandler {
+class MetricsChoiceHandler : public content::WebUIMessageHandler {
  public:
   // Message names sent to WebUI for handling metric consent.
   static const char kGetMetricsConsentState[];
   static const char kUpdateMetricsConsent[];
 
-  MetricsConsentHandler(Profile* profile,
-                        metrics::MetricsService* metrics_service,
-                        user_manager::UserManager* user_manager);
+  MetricsChoiceHandler(Profile* profile,
+                       metrics::MetricsService* metrics_service,
+                       user_manager::UserManager* user_manager);
 
-  MetricsConsentHandler(const MetricsConsentHandler&) = delete;
-  MetricsConsentHandler& operator=(const MetricsConsentHandler&) = delete;
+  MetricsChoiceHandler(const MetricsChoiceHandler&) = delete;
+  MetricsChoiceHandler& operator=(const MetricsChoiceHandler&) = delete;
 
-  ~MetricsConsentHandler() override;
+  ~MetricsChoiceHandler() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -38,7 +38,7 @@ class MetricsConsentHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
  private:
-  friend class TestMetricsConsentHandler;
+  friend class TestMetricsChoiceHandler;
 
   // Handles updating metrics consent for the user.
   void HandleUpdateMetricsConsent(const base::ListValue& args);
@@ -61,9 +61,9 @@ class MetricsConsentHandler : public content::WebUIMessageHandler {
   const raw_ptr<user_manager::UserManager, DanglingUntriaged> user_manager_;
 
   // Used for callbacks.
-  base::WeakPtrFactory<MetricsConsentHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<MetricsChoiceHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_METRICS_CONSENT_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_METRICS_CHOICE_HANDLER_H_

@@ -159,7 +159,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
-#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1434,8 +1434,8 @@ void WizardController::ShowConsolidatedConsentScreen() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
   if (enterprise_util::IsBrowserManaged(profile)) {
-    if (metrics::CrOSPreConsentMetricsManager::Get()) {
-      metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+    if (metrics::CrOSPreChoiceMetricsManager::Get()) {
+      metrics::CrOSPreChoiceMetricsManager::Get()->Disable();
     }
   }
 
@@ -3292,11 +3292,11 @@ void WizardController::OnOobeFlowFinished() {
 
   GetLocalState()->ClearPref(prefs::kOobeMetricsClientIdAtOobeStart);
 
-  // Check if pre-consent metrics is still enabled.
-  if (metrics::CrOSPreConsentMetricsManager::Get()) {
-    LOG(ERROR) << "OOBE flow is finished and Pre-consent metrics is still "
-               << "enabled. Disabling pre-consent metrics.";
-    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  // Check if pre-choice metrics is still enabled.
+  if (metrics::CrOSPreChoiceMetricsManager::Get()) {
+    LOG(ERROR) << "OOBE flow is finished and Pre-choice metrics is still "
+               << "enabled. Disabling pre-choice metrics.";
+    metrics::CrOSPreChoiceMetricsManager::Get()->Disable();
   }
 
   // Launch browser and delete login host controller.
@@ -4077,13 +4077,13 @@ void WizardController::MaybeEnablePreConsentMetrics() {
   }
 
   if (!wizard_context_->is_add_person_flow &&
-      metrics::CrOSPreConsentMetricsManager::Get()) {
+      metrics::CrOSPreChoiceMetricsManager::Get()) {
     // Update stats reporter that the current metrics consent is enabled. This
     // will make sure that any changes in the future are properly propagated
     // when using the API.
     StatsReportingController::Get()->SetEnabled(
         ProfileManager::GetActiveUserProfile(), true);
-    metrics::CrOSPreConsentMetricsManager::Get()->Enable();
+    metrics::CrOSPreChoiceMetricsManager::Get()->Enable();
   }
 }
 

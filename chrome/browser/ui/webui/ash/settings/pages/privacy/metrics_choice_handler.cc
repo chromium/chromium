@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_consent_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_choice_handler.h"
 
 #include "base/check.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -13,12 +13,12 @@
 
 namespace ash::settings {
 
-const char MetricsConsentHandler::kGetMetricsConsentState[] =
+const char MetricsChoiceHandler::kGetMetricsConsentState[] =
     "getMetricsConsentState";
-const char MetricsConsentHandler::kUpdateMetricsConsent[] =
+const char MetricsChoiceHandler::kUpdateMetricsConsent[] =
     "updateMetricsConsent";
 
-MetricsConsentHandler::MetricsConsentHandler(
+MetricsChoiceHandler::MetricsChoiceHandler(
     Profile* profile,
     metrics::MetricsService* metrics_service,
     user_manager::UserManager* user_manager)
@@ -30,25 +30,25 @@ MetricsConsentHandler::MetricsConsentHandler(
   DCHECK(user_manager_);
 }
 
-MetricsConsentHandler::~MetricsConsentHandler() = default;
+MetricsChoiceHandler::~MetricsChoiceHandler() = default;
 
-void MetricsConsentHandler::RegisterMessages() {
+void MetricsChoiceHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       kUpdateMetricsConsent,
-      base::BindRepeating(&MetricsConsentHandler::HandleUpdateMetricsConsent,
+      base::BindRepeating(&MetricsChoiceHandler::HandleUpdateMetricsConsent,
                           weak_ptr_factory_.GetWeakPtr()));
 
   web_ui()->RegisterMessageCallback(
       kGetMetricsConsentState,
-      base::BindRepeating(&MetricsConsentHandler::HandleGetMetricsConsentState,
+      base::BindRepeating(&MetricsChoiceHandler::HandleGetMetricsConsentState,
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void MetricsConsentHandler::OnJavascriptAllowed() {}
+void MetricsChoiceHandler::OnJavascriptAllowed() {}
 
-void MetricsConsentHandler::OnJavascriptDisallowed() {}
+void MetricsChoiceHandler::OnJavascriptDisallowed() {}
 
-void MetricsConsentHandler::HandleGetMetricsConsentState(
+void MetricsChoiceHandler::HandleGetMetricsConsentState(
     const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(1U, args.size());
@@ -68,7 +68,7 @@ void MetricsConsentHandler::HandleGetMetricsConsentState(
   ResolveJavascriptCallback(callback_id, response);
 }
 
-void MetricsConsentHandler::HandleUpdateMetricsConsent(
+void MetricsChoiceHandler::HandleUpdateMetricsConsent(
     const base::ListValue& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
@@ -96,7 +96,7 @@ void MetricsConsentHandler::HandleUpdateMetricsConsent(
   ResolveJavascriptCallback(callback_id, base::Value(*user_metrics_consent));
 }
 
-bool MetricsConsentHandler::IsMetricsConsentConfigurable() const {
+bool MetricsChoiceHandler::IsMetricsConsentConfigurable() const {
   // TODO(b/333911538): In the interim, completely disable child users
   // from being able to toggle consent in the settings. Once the parent sets
   // the consent for the child during OOBE, it cannot be updated afterwards.
@@ -107,7 +107,7 @@ bool MetricsConsentHandler::IsMetricsConsentConfigurable() const {
   return ShouldUseUserConsent() || user_manager_->IsCurrentUserOwner();
 }
 
-bool MetricsConsentHandler::ShouldUseUserConsent() const {
+bool MetricsChoiceHandler::ShouldUseUserConsent() const {
   return metrics_service_->GetCurrentUserMetricsConsent().has_value();
 }
 

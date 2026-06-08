@@ -63,7 +63,7 @@ class GlicSyntheticTrialManager;
 namespace metrics {
 class ChromeOSPerUserMetricsBrowserTestBase;
 class UkmConsentParamBrowserTest;
-class CrOSPreConsentMetricsManagerTest;
+class CrOSPreChoiceMetricsManagerTest;
 }  // namespace metrics
 
 namespace optimization_guide {
@@ -207,7 +207,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class metrics::ChromeOSPerUserMetricsBrowserTestBase;
   friend class SampledOutClientIdSavedBrowserTest;
   friend class MetricsInternalsUIBrowserTestWithLog;
-  friend class metrics::CrOSPreConsentMetricsManagerTest;
+  friend class metrics::CrOSPreChoiceMetricsManagerTest;
   FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceAccessorTest,
                            MetricsReportingEnabled);
   FRIEND_TEST_ALL_PREFIXES(

@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/metrics/metrics_reporting_level.h"
@@ -103,11 +103,11 @@ void GuestTosScreen::OnUserAction(const base::ListValue& args) {
 }
 
 void GuestTosScreen::OnAccept(bool enable_usage_stats) {
-  // Disable pre-consent metrics for guest as guest has expressed consent. This
+  // Disable pre-choice metrics for guest as guest has expressed consent. This
   // is critical as crash_reportor is depending on the disable operation of
-  // CrOSPreConsentMetricsManager to end pre-consent stage.
-  if (metrics::CrOSPreConsentMetricsManager::Get()) {
-    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  // CrOSPreChoiceMetricsManager to end pre-choice stage.
+  if (metrics::CrOSPreChoiceMetricsManager::Get()) {
+    metrics::CrOSPreChoiceMetricsManager::Get()->Disable();
   }
 
   // Store guest consent to local state so that correct metrics consent can be

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_CROS_PRE_CONSENT_METRICS_MANAGER_H_
-#define CHROME_BROWSER_METRICS_CROS_PRE_CONSENT_METRICS_MANAGER_H_
+#ifndef CHROME_BROWSER_METRICS_CROS_PRE_CHOICE_METRICS_MANAGER_H_
+#define CHROME_BROWSER_METRICS_CROS_PRE_CHOICE_METRICS_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -14,19 +14,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
-
-class PrefService;
-class PrefRegistrySimple;
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 
 namespace base {
 class SequencedTaskRunner;
 }
 
 namespace metrics {
-
-class MetricsServiceClient;
 
 // Manages the setting of metrics during ChromeOS OOBE before the primary user
 // has been created.
@@ -46,10 +41,9 @@ class MetricsServiceClient;
 // * Guest User: Disabled when the Guest ToS screen is accepted.
 // * Managed User: Disabled during when the Consolidated Consent Screen is
 // skipped due to managed user.
-class CrOSPreConsentMetricsManager
-    : public policy::CloudPolicyStore::Observer {
+class CrOSPreChoiceMetricsManager : public policy::CloudPolicyStore::Observer {
  public:
-  ~CrOSPreConsentMetricsManager() override;
+  ~CrOSPreChoiceMetricsManager() override;
 
   // Enables pre-consent metrics. This will force metrics to be enabled and
   // metrics will be uploaded.
@@ -76,15 +70,15 @@ class CrOSPreConsentMetricsManager
                                     base::OnceClosure callback);
 
   // Gets the singleton instance.
-  static CrOSPreConsentMetricsManager* Get();
+  static CrOSPreChoiceMetricsManager* Get();
 
-  // Conditionally creates a new instance of CrOSPreConsentMetricsManager
+  // Conditionally creates a new instance of CrOSPreChoiceMetricsManager
   // depending on |ash::feature::kOobePreConsentMetrics| feature or
   // the existence of a marker file.
-  static std::unique_ptr<CrOSPreConsentMetricsManager> MaybeCreate();
+  static std::unique_ptr<CrOSPreChoiceMetricsManager> MaybeCreate();
 
  private:
-  CrOSPreConsentMetricsManager();
+  CrOSPreChoiceMetricsManager();
 
   // policy::CloudPolicyStore::Observer interface:
   void OnStoreError(policy::CloudPolicyStore* store) override;
@@ -101,12 +95,11 @@ class CrOSPreConsentMetricsManager
   // A path used to test the Disable functionality.
   std::optional<base::FilePath> completed_path_for_testing_;
 
-
   base::ScopedObservation<policy::DeviceCloudPolicyStoreAsh,
-                          CrOSPreConsentMetricsManager>
+                          CrOSPreChoiceMetricsManager>
       cloud_policy_store_observation_{this};
 };
 
 }  // namespace metrics
 
-#endif  // CHROME_BROWSER_METRICS_CROS_PRE_CONSENT_METRICS_MANAGER_H_
+#endif  // CHROME_BROWSER_METRICS_CROS_PRE_CHOICE_METRICS_MANAGER_H_

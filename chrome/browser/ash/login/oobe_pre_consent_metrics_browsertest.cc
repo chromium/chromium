@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
 #include "chrome/browser/metrics/structured/test/structured_metrics_mixin.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/choobe_screen_handler.h"
@@ -79,7 +79,7 @@ class OobePreConsentMetricsTest : public OobeBaseTest {
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
 
-    metrics::CrOSPreConsentMetricsManager::Get()->SetCompletedPathForTesting(
+    metrics::CrOSPreChoiceMetricsManager::Get()->SetCompletedPathForTesting(
         GetTestPath());
   }
 
@@ -90,7 +90,7 @@ class OobePreConsentMetricsTest : public OobeBaseTest {
   }
 
   void EnsureManagerSetupAndValidateConsent() {
-    ASSERT_NE(metrics::CrOSPreConsentMetricsManager::Get(), nullptr);
+    ASSERT_NE(metrics::CrOSPreChoiceMetricsManager::Get(), nullptr);
 
     ValidateMetricsConsent(/*enabled=*/true);
   }
@@ -111,7 +111,7 @@ class OobePreConsentMetricsTest : public OobeBaseTest {
   base::ScopedTempDir temp_dir_;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
-  std::unique_ptr<metrics::CrOSPreConsentMetricsManager> manager_;
+  std::unique_ptr<metrics::CrOSPreChoiceMetricsManager> manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(OobePreConsentMetricsTest, RegularUserConsented) {
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ManagedOobePreConsentMetricsTest, ManagedUser) {
 
   ValidateMetricsConsent(/*enabled=*/true);
   EXPECT_FALSE(
-      metrics::CrOSPreConsentMetricsManager::Get()->is_enabled_for_testing());
+      metrics::CrOSPreChoiceMetricsManager::Get()->is_enabled_for_testing());
   CheckForMarkerFile();
 }
 
@@ -302,13 +302,13 @@ class EnrolledDeviceOobePreConsentMetricsTest
 // enabled.
 IN_PROC_BROWSER_TEST_F(EnrolledDeviceOobePreConsentMetricsTest,
                        ShouldNotHavePreConsentMetrics) {
-  EXPECT_EQ(metrics::CrOSPreConsentMetricsManager::Get(), nullptr);
+  EXPECT_EQ(metrics::CrOSPreChoiceMetricsManager::Get(), nullptr);
   // It's unable to check the pre-consent complete file since the location of
   // the file, "/home/chronos", is not accessible by browser test. And because
-  // CrOSPreConsentMetricsManager is not created at all in
-  // `CrOSPreConsentMetricsManager::MaybeCreate` so it's not possible to
+  // CrOSPreChoiceMetricsManager is not created at all in
+  // `CrOSPreChoiceMetricsManager::MaybeCreate` so it's not possible to
   // override the complete file location. However, by checking if the
-  // CrOSPreConsentMetricsManager is nullptr should be sufficient because it
+  // CrOSPreChoiceMetricsManager is nullptr should be sufficient because it
   // indicates that the manager is not initialized and pre-consent will have no
   // chance to be enabled.
 }

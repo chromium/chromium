@@ -8,8 +8,8 @@ static_library("privacy") {
   sources = [
     "app_permission_handler.cc",
     "app_permission_handler.h",
-    "metrics_consent_handler.cc",
-    "metrics_consent_handler.h",
+    "metrics_choice_handler.cc",
+    "metrics_choice_handler.h",
     "peripheral_data_access_handler.cc",
     "peripheral_data_access_handler.h",
     "privacy_hub_handler.cc",
@@ -81,7 +81,7 @@ source_set("unit_tests") {
 
   sources = [
     "app_permission_handler_unittest.cc",
-    "metrics_consent_handler_unittest.cc",
+    "metrics_choice_handler_unittest.cc",
     "privacy_hub_handler_unittest.cc",
   ]
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
+#include "chrome/browser/metrics/cros_pre_choice_metrics_manager.h"
 
 #include <optional>
 
@@ -32,22 +32,22 @@
 
 namespace metrics {
 
-// Singleton pointer to the instance of CrOSPreConsentMetricsManager.
-static CrOSPreConsentMetricsManager* g_instance = nullptr;
+// Singleton pointer to the instance of CrOSPreChoiceMetricsManager.
+static CrOSPreChoiceMetricsManager* g_instance = nullptr;
 
-// Path for pre_consent_complete file. This file is created when the pre-consent
+// Path for pre_consent_complete file. This file is created when the pre-choice
 // is considered completed depending on the type of user.
 //
-// See class comment on CrOSPreConsentMetricsManager for details on when this
+// See class comment on CrOSPreChoiceMetricsManager for details on when this
 // file is written.
 const char kCrOSPreConsentCompletePath[] =
     "/home/chronos/.pre_consent_complete";
 
-// The upload interval for metrics during pre-consent metrics.
-const base::TimeDelta kPreConsentUploadInterval = base::Seconds(120);
+// The upload interval for metrics during pre-choice metrics.
+const base::TimeDelta kPreChoiceUploadInterval = base::Seconds(120);
 
 // Writes the .pre_consent_complete file in chronos home. This signifies that
-// the primary user has been set and their consent for metrics has been set.
+// the primary user has been set and their choice for metrics has been set.
 void WritePreConsentCompleteFile(std::optional<base::FilePath> test_path) {
   base::FilePath path = base::FilePath(kCrOSPreConsentCompletePath);
   if (test_path.has_value()) {
@@ -57,8 +57,8 @@ void WritePreConsentCompleteFile(std::optional<base::FilePath> test_path) {
 }
 
 // static
-std::unique_ptr<CrOSPreConsentMetricsManager>
-CrOSPreConsentMetricsManager::MaybeCreate() {
+std::unique_ptr<CrOSPreChoiceMetricsManager>
+CrOSPreChoiceMetricsManager::MaybeCreate() {
   // If this path exists then this object doesn't need to be created.
   if (!ash::features::IsOobePreConsentMetricsEnabled() ||
       base::PathExists(base::FilePath(kCrOSPreConsentCompletePath))) {
@@ -76,20 +76,20 @@ CrOSPreConsentMetricsManager::MaybeCreate() {
     return nullptr;
   }
 
-  return base::WrapUnique(new CrOSPreConsentMetricsManager());
+  return base::WrapUnique(new CrOSPreChoiceMetricsManager());
 }
 
-CrOSPreConsentMetricsManager::~CrOSPreConsentMetricsManager() {
+CrOSPreChoiceMetricsManager::~CrOSPreChoiceMetricsManager() {
   g_instance = nullptr;
 }
 
-void CrOSPreConsentMetricsManager::Enable() {
+void CrOSPreChoiceMetricsManager::Enable() {
   if (is_enabled_) {
     return;
   }
 
   is_enabled_ = true;
-  VLOG(1) << "Pre-consent metrics enabled";
+  VLOG(1) << "Pre-choice metrics enabled";
 
   // Force enable metrics. This will enable metrics and populate all appropriate
   // preferences.
@@ -98,11 +98,11 @@ void CrOSPreConsentMetricsManager::Enable() {
       metrics::ChangeMetricsReportingStateCalledFrom::kCrosMetricsPreConsent);
 
   // Propagate the change to metrics services. This will create the Client ID
-  // that will be used if the user consents to metrics. If pre-consent is being
+  // that will be used if the user consents to metrics. If pre-choice is being
   // disabled do not update the permissions as it should not be changed.
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions();
 
-  // Register CrOSPreConsentMetricsManager as the observer for policy change to
+  // Register CrOSPreChoiceMetricsManager as the observer for policy change to
   // get notified when device is enrolled.
   cloud_policy_store_observation_.Observe(g_browser_process->platform_part()
                                               ->browser_policy_connector_ash()
@@ -110,54 +110,54 @@ void CrOSPreConsentMetricsManager::Enable() {
                                               ->device_store());
 }
 
-void CrOSPreConsentMetricsManager::Disable() {
+void CrOSPreChoiceMetricsManager::Disable() {
   if (!is_enabled_) {
     return;
   }
 
   is_enabled_ = false;
-  VLOG(1) << "Pre-consent metrics disabled";
+  VLOG(1) << "Pre-choice metrics disabled";
 
   task_runner_->PostTask(FROM_HERE,
                          base::BindOnce(&WritePreConsentCompleteFile,
                                         completed_path_for_testing_));
 }
 
-std::optional<base::TimeDelta> CrOSPreConsentMetricsManager::GetUploadInterval()
+std::optional<base::TimeDelta> CrOSPreChoiceMetricsManager::GetUploadInterval()
     const {
   if (is_enabled_) {
-    return kPreConsentUploadInterval;
+    return kPreChoiceUploadInterval;
   }
   return std::nullopt;
 }
 
-void CrOSPreConsentMetricsManager::SetCompletedPathForTesting(
+void CrOSPreChoiceMetricsManager::SetCompletedPathForTesting(  // IN-TEST
     const base::FilePath& path) {
   completed_path_for_testing_ = path;
 }
 
-void CrOSPreConsentMetricsManager::PostToIOTaskRunnerForTesting(
+void CrOSPreChoiceMetricsManager::PostToIOTaskRunnerForTesting(  // IN-TEST
     base::Location here,
     base::OnceClosure callback) {
   task_runner_->PostTask(here, std::move(callback));
 }
 
 // static
-CrOSPreConsentMetricsManager* CrOSPreConsentMetricsManager::Get() {
+CrOSPreChoiceMetricsManager* CrOSPreChoiceMetricsManager::Get() {
   return g_instance;
 }
 
-CrOSPreConsentMetricsManager::CrOSPreConsentMetricsManager()
+CrOSPreChoiceMetricsManager::CrOSPreChoiceMetricsManager()
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(base::MayBlock())) {
-  CHECK(g_instance == nullptr) << "CrOSPreConsentMetricsManager already exists";
+  CHECK(g_instance == nullptr) << "CrOSPreChoiceMetricsManager already exists";
   g_instance = this;
 }
 
-void CrOSPreConsentMetricsManager::OnStoreError(
+void CrOSPreChoiceMetricsManager::OnStoreError(
     policy::CloudPolicyStore* store) {}
 
-void CrOSPreConsentMetricsManager::OnStoreLoaded(
+void CrOSPreChoiceMetricsManager::OnStoreLoaded(
     policy::CloudPolicyStore* store) {
   cloud_policy_store_observation_.Reset();
 
