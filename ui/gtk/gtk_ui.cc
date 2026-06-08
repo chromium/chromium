@@ -365,6 +365,11 @@ bool GtkUi::Initialize() {
 
   GtkSettings* settings = gtk_settings_get_default();
   SanitizeIconThemeName();
+  if (!GtkCheckVersion(4)) {
+    SanitizeKeyThemeName();
+    connect(settings, "notify::gtk-key-theme-name",
+            &GtkUi::OnKeyThemeNameChanged);
+  }
   connect(settings, "notify::gtk-theme-name", &GtkUi::OnThemeChanged);
   connect(settings, "notify::gtk-icon-theme-name", &GtkUi::OnThemeChanged);
   connect(settings, "notify::gtk-application-prefer-dark-theme",
@@ -804,6 +809,28 @@ bool GtkUi::SanitizeIconThemeName() {
     return true;
   }
   return false;
+}
+
+bool GtkUi::SanitizeKeyThemeName() {
+  gchar* name = nullptr;
+  g_object_get(gtk_settings_get_default(), "gtk-key-theme-name", &name,
+               nullptr);
+  std::string name_str;
+  if (name) {
+    name_str = name;
+    g_free(name);
+  }
+  // Unlike the icon theme, an empty key-theme name is normal (no key theme).
+  if (!name_str.empty() && !IsValidIconThemeName(name_str)) {
+    g_object_set(gtk_settings_get_default(), "gtk-key-theme-name", nullptr,
+                 nullptr);
+    return true;
+  }
+  return false;
+}
+
+void GtkUi::OnKeyThemeNameChanged(GtkSettings* settings, GtkParamSpec* param) {
+  SanitizeKeyThemeName();
 }
 
 int GtkUi::GetCursorThemeSize() {
