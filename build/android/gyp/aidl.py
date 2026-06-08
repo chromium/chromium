@@ -90,7 +90,7 @@ def main(argv):
   if options.depfile:
     include_files = []
     for include_dir in options.includes:
-      include_files += build_utils.FindInDirectory(include_dir, '*.java')
+      include_files += build_utils.FindInDirectory(include_dir, '*.aidl')
     action_helpers.write_depfile(options.depfile, options.srcjar, include_files)
 
 
