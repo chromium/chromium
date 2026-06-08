@@ -228,7 +228,38 @@ void Canvas2DResourceProviderBitmap::FlushIfRecordingLimitExceeded() {
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::Snapshot");
-  return UnacceleratedSnapshot(orientation);
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  Flush();
+
+  cc::PaintImage paint_image;
+
+  auto sk_image = GetSkSurface()->makeImageSnapshot();
+  if (sk_image) {
+    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
+    snapshot_sk_image_id_ = sk_image->uniqueID();
+
+    // Ensure that a new PaintImage::ContentId is used only when the underlying
+    // SkImage changes. This is necessary to ensure that the same image results
+    // in a cache hit in cc's ImageDecodeCache.
+    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
+        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
+      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
+    }
+
+    paint_image =
+        PaintImageBuilder::WithDefault()
+            .set_id(snapshot_paint_image_id_)
+            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
+            .set_hdr_metadata(GetHdrMetadata())
+            .TakePaintImage();
+  }
+
+  DCHECK(!paint_image.IsTextureBacked());
+  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                                orientation);
 }
 
 sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
@@ -1078,6 +1109,43 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
   return cached_snapshot_;
 }
 
+scoped_refptr<UnacceleratedStaticBitmapImage>
+Canvas2DResourceProviderSharedImage::UnacceleratedSnapshot(
+    ImageOrientation orientation) {
+  if (!IsValid()) {
+    return nullptr;
+  }
+
+  Flush();
+
+  cc::PaintImage paint_image;
+
+  auto sk_image = GetSkSurface()->makeImageSnapshot();
+  if (sk_image) {
+    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
+    snapshot_sk_image_id_ = sk_image->uniqueID();
+
+    // Ensure that a new PaintImage::ContentId is used only when the underlying
+    // SkImage changes. This is necessary to ensure that the same image results
+    // in a cache hit in cc's ImageDecodeCache.
+    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
+        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
+      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
+    }
+
+    paint_image =
+        PaintImageBuilder::WithDefault()
+            .set_id(snapshot_paint_image_id_)
+            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
+            .set_hdr_metadata(GetHdrMetadata())
+            .TakePaintImage();
+  }
+
+  DCHECK(!paint_image.IsTextureBacked());
+  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
+                                                orientation);
+}
+
 void CanvasNon2DResourceProviderSharedImage::EnsureWriteAccess() {
   DCHECK(resource_);
   // In software mode, we don't need write access to the resource during
@@ -1862,40 +1930,6 @@ MemoryManagedPaintCanvas& CanvasResourceProvider::GetCanvasForTesting() {
   return Recorder().getRecordingCanvas();
 }
 
-scoped_refptr<UnacceleratedStaticBitmapImage>
-CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
-  if (!IsValid())
-    return nullptr;
-
-  Flush();
-
-  cc::PaintImage paint_image;
-
-  auto sk_image = GetSkSurface()->makeImageSnapshot();
-  if (sk_image) {
-    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
-    snapshot_sk_image_id_ = sk_image->uniqueID();
-
-    // Ensure that a new PaintImage::ContentId is used only when the underlying
-    // SkImage changes. This is necessary to ensure that the same image results
-    // in a cache hit in cc's ImageDecodeCache.
-    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
-        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
-      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
-    }
-
-    paint_image =
-        PaintImageBuilder::WithDefault()
-            .set_id(snapshot_paint_image_id_)
-            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
-            .set_hdr_metadata(GetHdrMetadata())
-            .TakePaintImage();
-  }
-
-  DCHECK(!paint_image.IsTextureBacked());
-  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                                orientation);
-}
 
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;

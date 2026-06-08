@@ -203,9 +203,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
  protected:
   SkSurface* GetSkSurface() const;
 
-  scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
-      ImageOrientation);
-
   explicit CanvasResourceProvider(const ResourceProviderType&);
 
   virtual void RasterRecord(cc::PaintRecord) = 0;
@@ -512,6 +509,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
   ScopedRasterTimer CreateScopedRasterTimer() override;
+
+ protected:
+  scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
+      ImageOrientation);
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
