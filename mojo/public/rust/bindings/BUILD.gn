@@ -15,6 +15,7 @@ rust_static_library("bindings") {
     "multiplex_router/mod.rs",
     "multiplex_router/response_sender.rs",
     "multiplex_router/router.rs",
+    "pending_associated_endpoint.rs",
     "pending_endpoint.rs",
     "receiver.rs",
     "remote.rs",

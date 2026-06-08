@@ -129,6 +129,17 @@ pub type AssociatedRemote<T> = GenericRemote<T, Associated>;
 /// sequence, and is therefore unable to send messages.
 pub type PendingRemote<T> = crate::pending_endpoint::PendingRemote<T>;
 
+/// This type is equivalent to a `PendingRemote`, but it does not hold a
+/// message pipe endpoint; instead, it will use an existing message pipe to send
+/// its messages.
+///
+/// Each `PendingAssociatedRemote` is entangled with a
+/// `(Pending)AssociatedReceiver` elsewhere in the program. Exactly one of the
+/// pair should be sent over a pipe via a mojo message; afterwards, they will
+/// be associated with that pipe and communicate using it.
+pub type PendingAssociatedRemote<T> =
+    crate::pending_associated_endpoint::PendingAssociatedRemote<T>;
+
 impl<T> PendingRemote<T>
 where
     T: DynMojomInterface + ?Sized,
@@ -153,6 +164,30 @@ where
             Box::new(MultiplexRouterHandle::new(self.endpoint, sets_high_bit, endpoint_info))
         };
         Remote::new(make_handle, runner, disconnect_handler)
+    }
+}
+
+impl<T> PendingAssociatedRemote<T>
+where
+    T: DynMojomInterface + ?Sized,
+{
+    /// Bind this pending remote to the current default sequence.
+    pub fn bind(self) -> AssociatedRemote<T> {
+        Self::bind_with_options(self, None, None)
+    }
+
+    /// Bind this pending remote with the provided options.
+    pub fn bind_with_options(
+        self,
+        runner: Option<SequencedTaskRunnerHandle>,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
+    ) -> AssociatedRemote<T> {
+        let runner = runner.unwrap_or_else(|| {
+            SequencedTaskRunnerHandle::get_current_default()
+                .expect("Must be called in a context with a default SequencedTaskRunner")
+        });
+        let make_handle = |endpoint_info| self.register_bound(endpoint_info);
+        AssociatedRemote::new(make_handle, runner, disconnect_handler)
     }
 }
 

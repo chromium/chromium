@@ -101,10 +101,24 @@ pub type AssociatedReceiver<T> = GenericReceiver<T, Associated>;
 /// `interface`, which holds the other end of the pipe.
 pub type PendingReceiver<T> = crate::pending_endpoint::PendingReceiver<T>;
 
+/// This type is equivalent to a `PendingReceiver`, but it does not hold a
+/// message pipe endpoint; instead, it will use an existing message pipe to send
+/// its messages.
+///
+/// Each `PendingAssociatedReceiver` is entangled with a
+/// `(Pending)AssociatedRemote` elsewhere in the program. Exactly one of the
+/// pair should be sent over a pipe via a mojo message; afterwards, they will
+/// be associated with that pipe and communicate using it.
+pub type PendingAssociatedReceiver<T> =
+    crate::pending_associated_endpoint::PendingAssociatedReceiver<T>;
+
 /// This type is used to represent a self-owned receiver, which keeps itself
 /// alive until the other endpoint is disconnected.
 pub type SelfOwnedReceiver<StateTy> = Arc<Receiver<StateTy>>;
 pub type SelfOwnedReceiverWeak<StateTy> = Weak<Receiver<StateTy>>;
+
+pub type SelfOwnedAssociatedReceiver<StateTy> = Arc<AssociatedReceiver<StateTy>>;
+pub type SelfOwnedAssociatedReceiverWeak<StateTy> = Weak<AssociatedReceiver<StateTy>>;
 
 impl<T> PendingReceiver<T>
 where
@@ -148,6 +162,53 @@ where
         StateTy: MojomInterface<DynTy = T> + Sized + Send + 'static,
     {
         Receiver::bind_self_owned_internal(move |disconnect_handler| {
+            self.bind_with_options(state, None, disconnect_handler)
+        })
+    }
+}
+
+impl<T> PendingAssociatedReceiver<T>
+where
+    T: DynMojomInterface + ?Sized,
+{
+    /// Bind this `PendingReceiver` to the provided state object and the
+    /// current default sequence.
+    pub fn bind<StateTy>(self, state: StateTy) -> AssociatedReceiver<StateTy>
+    where
+        StateTy: MojomInterface<DynTy = T> + Send + 'static,
+    {
+        Self::bind_with_options(self, state, None, None)
+    }
+
+    /// Bind this `PendingReceiver` to the provided state object with the
+    /// provided options.
+    pub fn bind_with_options<StateTy>(
+        self,
+        state: StateTy,
+        runner: Option<SequencedTaskRunnerHandle>,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
+    ) -> AssociatedReceiver<StateTy>
+    where
+        StateTy: MojomInterface<DynTy = T> + Send + 'static,
+    {
+        let runner = runner.unwrap_or_else(|| {
+            SequencedTaskRunnerHandle::get_current_default()
+                .expect("Must be called in a context with a default SequencedTaskRunner")
+        });
+        let make_handle = |endpoint_info| self.register_bound(endpoint_info);
+        AssociatedReceiver::new(make_handle, state, runner, disconnect_handler)
+    }
+
+    /// Create a new AssociatedReceiver which owns itself; it will continue to
+    /// live until the other end is disconnected.
+    pub fn bind_self_owned<StateTy>(
+        self,
+        state: StateTy,
+    ) -> SelfOwnedAssociatedReceiverWeak<StateTy>
+    where
+        StateTy: MojomInterface<DynTy = T> + Sized + Send + 'static,
+    {
+        AssociatedReceiver::bind_self_owned_internal(move |disconnect_handler| {
             self.bind_with_options(state, None, disconnect_handler)
         })
     }
