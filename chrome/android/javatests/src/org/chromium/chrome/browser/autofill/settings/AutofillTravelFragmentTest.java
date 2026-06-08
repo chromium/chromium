@@ -115,6 +115,23 @@ public class AutofillTravelFragmentTest {
     }
 
     @Test
+    @MediumTest
+    public void testScreenSetup() {
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillTravelFragment fragment = mSettingsActivityTestRule.getFragment();
+        assertThat(fragment.getPageTitle().get())
+                .isEqualTo(
+                        mSettingsActivityTestRule
+                                .getActivity()
+                                .getString(R.string.autofill_travel_title));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThat(fragment.getPreferenceScreen().shouldUseGeneratedIds()).isFalse();
+                });
+    }
+
+    @Test
     @SmallTest
     public void testHelpMenuTriggersAutofillHelp() {
         SettingsActivity settingsActivity = mSettingsActivityTestRule.startSettingsActivity();

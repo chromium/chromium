@@ -64,6 +64,9 @@ public class AutofillTravelFragment extends ChromeBaseSettingsFragment
                 .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
 
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        // Suppresses unwanted animations while Preferences are removed from and re-added to the
+        // screen.
+        screen.setShouldUseGeneratedIds(false);
         setPreferenceScreen(screen);
     }
 
