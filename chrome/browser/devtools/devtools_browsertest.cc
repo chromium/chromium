@@ -206,6 +206,7 @@ const char kSlowTestPage[] =
 const char kEmptyTestPage[] = "/devtools/empty.html";
 // Arbitrary page that returns a 200 response, for tests that don't care about
 // more than that.
+const char kNavigateBackTestPage[] = "/devtools/navigate_back.html";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 const char kArbitraryPage[] = "/title1.html";
@@ -217,7 +218,6 @@ const char kDispatchKeyEventShowsAutoFill[] =
     "/devtools/dispatch_key_event_shows_auto_fill.html";
 const char kEmulateNetworkConditionsPage[] =
     "/devtools/emulate_network_conditions.html";
-const char kNavigateBackTestPage[] = "/devtools/navigate_back.html";
 const char kReloadSharedWorkerTestPage[] =
     "/workers/debug_shared_worker_initialization.html";
 const char kReloadSharedWorkerTestWorker[] =
@@ -299,14 +299,12 @@ void DisallowDevToolsForForceInstalledExtenions(
                            kDisallowedForForceInstalledExtensions));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void DisallowDevTools(BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
       prefs::kDevToolsAvailability,
       static_cast<int>(
           policy::DeveloperToolsAvailability::kDisallowed));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void AllowDevTools(BrowserWindowInterface* browser) {
   browser->GetProfile()->GetPrefs()->SetInteger(
@@ -402,13 +400,12 @@ class DevToolsTest : public PlatformBrowserTest {
             base::BindLambdaForTesting([this]() { window_ = nullptr; }));
   }
 
-  WebContents* GetInspectedTab() {
-#if BUILDFLAG(IS_ANDROID)
-    // Note: This doesn't work well when there are multiple tabs.
-    return chrome_test_utils::GetActiveWebContents(this);
-#else
-    return browser()->tab_strip_model()->GetWebContentsAt(0);
-#endif
+  WebContents* GetInspectedTab() { return GetWebContentsAt(0); }
+
+  WebContents* GetWebContentsAt(int index) {
+    tabs::TabInterface* tab =
+        TabListInterface::From(browser_window_interface())->GetTab(index);
+    return tab ? tab->GetContents() : nullptr;
   }
 
   void CloseDevToolsWindow() {
@@ -2467,7 +2464,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestNetworkPushTime) {
   CloseDevToolsWindow();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 
 // Tests that console messages are not duplicated on navigation back.
 // Flaking on windows swarm try runs: crbug.com/41129305.
@@ -2477,7 +2473,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestConsoleOnNavigateBack) {
   RunTest("testConsoleOnNavigateBack", kNavigateBackTestPage);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Flaking on linux runs, see crbug.com/40638917.
 #define MAYBE_TestDeviceEmulation DISABLED_TestDeviceEmulation
 #else
@@ -2491,6 +2487,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDispatchKeyEventDoesNotCrash) {
   RunTest("testDispatchKeyEventDoesNotCrash", "about:blank");
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class BrowserAutofillManagerTestDelegateDevtoolsImpl
     : public autofill::BrowserAutofillManagerTestDelegate {
  public:
@@ -2608,7 +2605,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestSettings) {
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDevToolsExternalNavigation) {
   OpenDevToolsWindow(kDebuggerTestPage, true);
   GURL url = embedded_test_server()->GetURL(kNavigateBackTestPage);
-  ui_test_utils::UrlLoadObserver observer(url);
+  content::TestNavigationObserver observer(GetInspectedTab());
   ASSERT_TRUE(
       content::ExecJs(main_web_contents(),
                       std::string("window.location = \"") + url.spec() + "\""));
@@ -2871,12 +2868,12 @@ IN_PROC_BROWSER_TEST_F(RemoteDebuggingTest, DiscoveryPage) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
-  DisallowDevTools(browser());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+  DisallowDevTools(browser_window_interface());
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
+  content::WebContents* web_contents = GetWebContentsAt(0);
   DevToolsWindow::OpenDevToolsWindow(web_contents,
                                      DevToolsOpenedByAction::kUnknown);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
@@ -2884,20 +2881,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowed) {
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, PolicyDisallowedCloseConnection) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), GURL("about:blank")));
+  content::WebContents* web_contents = GetWebContentsAt(0);
   DevToolsWindow::OpenDevToolsWindow(web_contents,
                                      DevToolsOpenedByAction::kUnknown);
   auto agent_host = GetOrCreateDevToolsHostForWebContents(web_contents);
 
   // Policy change must close the connection
-  DisallowDevTools(browser());
+  DisallowDevTools(browser_window_interface());
   EXPECT_FALSE(DevToolsWindow::FindDevToolsWindow(agent_host.get()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using ManifestLocation = extensions::mojom::ManifestLocation;
 class DevToolsDisallowedForForceInstalledExtensionsPolicyTest
     : public extensions::ExtensionBrowserTest {
@@ -3234,17 +3228,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsAllowedByCommandLineSwitch,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-class DevToolsPixelOutputTests : public DevToolsTest {
- public:
-  void SetUp() override {
-    EnablePixelOutput();
-    DevToolsTest::SetUp();
-  }
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kUseGpuInTests);
-  }
-};
-
 #if !BUILDFLAG(IS_ANDROID)
 class DevToolsNetInfoTest : public DevToolsTest {
  protected:
@@ -3489,8 +3472,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestOpenSearchResultsInNewTab) {
   CloseDevToolsWindow();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-
 IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
   std::string file_url =
       "file://" + base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -3499,8 +3480,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
                       .AsUTF8Unsafe();
 
   GURL url(embedded_test_server()->GetURL("/"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/hello.html")));
+  ASSERT_TRUE(NavigateToURL(GetInspectedTab(),
+                            embedded_test_server()->GetURL("/hello.html")));
   window_ =
       DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), false);
   LoadLegacyFilesInFrontend(window_);
@@ -3513,7 +3494,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, LoadNetworkResourceForFrontend) {
 IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_CreateBrowserContext) {
   GURL url(embedded_test_server()->GetURL("/devtools/empty.html"));
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
-      browser()->profile());
+      browser_window_interface()->GetProfile());
   RunTestMethod("testCreateBrowserContext", url.spec().c_str());
   CloseDevToolsWindow();
 }
@@ -3521,7 +3502,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_CreateBrowserContext) {
 // TODO(crbug.com/40708597): Flaky.
 IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_DisposeEmptyBrowserContext) {
   window_ = DevToolsWindowTesting::OpenDiscoveryDevToolsWindowSync(
-      browser()->profile());
+      browser_window_interface()->GetProfile());
   RunTestMethod("testDisposeEmptyBrowserContext");
   CloseDevToolsWindow();
 }
@@ -3531,7 +3512,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest, InspectElement) {
   GURL iframe_url(
       embedded_test_server()->GetURL("b.com", "/devtools/oopif_frame.html"));
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetInspectedTab();
 
   content::TestNavigationManager navigation_manager(tab, url);
   content::TestNavigationManager navigation_manager_iframe(tab, iframe_url);
@@ -3562,7 +3543,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, InspectElement) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/devtools/oopif_frame.html"));
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetInspectedTab();
 
   content::TestNavigationManager navigation_manager(tab, url);
 
@@ -3591,7 +3572,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, UKMTest) {
   GURL url(
       embedded_test_server()->GetURL("a.com", "/devtools/oopif_frame.html"));
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  WebContents* tab = GetInspectedTab();
   tab->GetController().LoadURL(url, content::Referrer(),
                                ui::PAGE_TRANSITION_LINK, std::string());
   EXPECT_TRUE(content::WaitForLoadStop(tab));
@@ -3622,6 +3603,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, ExistsForWebContentsAfterClosing) {
   // it is now closed.
   ASSERT_TRUE(content::DevToolsAgentHost::HasFor(GetInspectedTab()));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, BrowserCloseWithBeforeUnload) {
   EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
@@ -4538,8 +4521,8 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
   }
 
   void SetupAccountCapabilities(bool is_minor = false) {
-    auto* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser()->profile());
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(
+        browser_window_interface()->GetProfile());
     auto account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
@@ -4555,11 +4538,6 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
-
-bool hasQueryParam(WebContents* wc, std::string query_param) {
-  return std::string::npos !=
-         wc->GetLastCommittedURL().GetQuery().find(query_param);
-}
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {
   SetupAccountCapabilities();
@@ -4872,6 +4850,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsGdpProfilesTest,
 #endif
   EXPECT_EQ(configGdpAvailability2.FindInt("enterprisePolicyValue").value(), 2);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class DevToolsSelfXssTest : public DevToolsTest {
  public:
@@ -4882,6 +4861,12 @@ class DevToolsSelfXssTest : public DevToolsTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
         switches::kUnsafelyDisableDevToolsSelfXssWarnings);
+  }
+
+ protected:
+  static bool hasQueryParam(WebContents* wc, std::string query_param) {
+    return std::string::npos !=
+           wc->GetLastCommittedURL().GetQuery().find(query_param);
   }
 };
 
@@ -4926,7 +4911,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsRenderDocumentTest, ReloadWithRFHSwap) {
 }
 
 class DevToolsOriginTrialsApiBrowserTest
-    : public InProcessBrowserTest,
+    : public PlatformBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
   DevToolsOriginTrialsApiBrowserTest() {
@@ -4953,7 +4938,7 @@ IN_PROC_BROWSER_TEST_P(DevToolsOriginTrialsApiBrowserTest,
   // Open DevTools on a tab
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(
-          browser()->tab_strip_model()->GetActiveWebContents(), false);
+          chrome_test_utils::GetActiveWebContents(this), false);
   ASSERT_TRUE(devtools_window);
 
   // Get the WebContents of the DevTools frontend
@@ -4981,5 +4966,3 @@ INSTANTIATE_TEST_SUITE_P(,
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "Enabled" : "Disabled";
                          });
-
-#endif  // !BUILDFLAG(IS_ANDROID)
