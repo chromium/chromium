@@ -515,10 +515,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
   }
 
+  // TODO(crbug.com/515377633): Add proper Drive files selection.
   return [[ComposeboxAttachmentSelection alloc] initWithTabIDs:tabIDs
                                              cachedWebStateIDs:{}
                                                         images:images
-                                                         files:files];
+                                                         files:files
+                                                    driveItems:@[]];
 }
 
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments {

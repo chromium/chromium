@@ -785,7 +785,8 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsSetOnFocus) {
       [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
           cachedWebStateIDs:{}
           images:@[]
-          files:@[ url ]];
+          files:@[ url ]
+          driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -829,7 +830,8 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemRemoval) {
       [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
           cachedWebStateIDs:{}
           images:@[]
-          files:@[ url ]];
+          files:@[ url ]
+          driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -866,7 +868,8 @@ TEST_F(ComposeboxInputPlateMediatorTest, AwaitingSignalsClearedOnItemError) {
       [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
           cachedWebStateIDs:{}
           images:@[]
-          files:@[ url ]];
+          files:@[ url ]
+          driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther
@@ -904,7 +907,8 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       [[ComposeboxAttachmentSelection alloc] initWithTabIDs:{}
           cachedWebStateIDs:{}
           images:@[]
-          files:@[ url ]];
+          files:@[ url ]
+          driveItems:@[]];
 
   ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
       initWithEntrypoint:ComposeboxEntrypoint::kOther

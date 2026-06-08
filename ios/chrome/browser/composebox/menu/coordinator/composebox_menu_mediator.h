@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_image_result.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -86,6 +87,9 @@ class WebStateList;
 
 /// Processes the given `urls`.
 - (void)processFileURLs:(NSArray<NSURL*>*)urls;
+
+/// Processes the given `driveItems`.
+- (void)processDriveItems:(NSArray<ComposeboxPickerDriveResult*>*)driveItems;
 
 /// Processes the given web state IDs.
 - (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs

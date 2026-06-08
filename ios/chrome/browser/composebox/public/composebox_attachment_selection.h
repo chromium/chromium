@@ -12,6 +12,7 @@
 #import "ios/web/public/web_state_id.h"
 
 @class ComposeboxPickerImageResult;
+@class ComposeboxPickerDriveResult;
 
 // Representation of currently selected/attached items.
 @interface ComposeboxAttachmentSelection : NSObject
@@ -28,6 +29,10 @@
 // Initial files to attach.
 @property(nonatomic, readonly) NSArray<NSURL*>* files;
 
+// Initial Drive items to attach.
+@property(nonatomic, readonly)
+    NSArray<ComposeboxPickerDriveResult*>* driveItems;
+
 // Whether there are any attachments in this selection.
 @property(nonatomic, readonly) BOOL hasAttachments;
 
@@ -35,6 +40,8 @@
              cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs
                         images:(NSArray<ComposeboxPickerImageResult*>*)images
                          files:(NSArray<NSURL*>*)files
+                    driveItems:
+                        (NSArray<ComposeboxPickerDriveResult*>*)driveItems
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/features.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -71,7 +72,8 @@
              initWithTabIDs:_preselection.tabIDs
           cachedWebStateIDs:_preselection.cachedWebStateIDs
                      images:updatedImageResults
-                      files:_preselection.files];
+                      files:_preselection.files
+                 driveItems:_preselection.driveItems];
 
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
@@ -95,7 +97,28 @@
              initWithTabIDs:_preselection.tabIDs
           cachedWebStateIDs:_preselection.cachedWebStateIDs
                      images:_preselection.images
-                      files:[updatedURLs allObjects]];
+                      files:[updatedURLs allObjects]
+                 driveItems:_preselection.driveItems];
+  [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
+}
+
+- (void)processDriveItems:(NSArray<ComposeboxPickerDriveResult*>*)driveItems {
+  NSMutableArray<ComposeboxPickerDriveResult*>* updatedDriveItems =
+      [[NSMutableArray alloc] init];
+
+  if (_preselection.driveItems) {
+    updatedDriveItems = [_preselection.driveItems mutableCopy];
+  }
+
+  [updatedDriveItems addObjectsFromArray:driveItems];
+
+  ComposeboxAttachmentSelection* selection =
+      [[ComposeboxAttachmentSelection alloc]
+             initWithTabIDs:_preselection.tabIDs
+          cachedWebStateIDs:_preselection.cachedWebStateIDs
+                     images:_preselection.images
+                      files:_preselection.files
+                 driveItems:updatedDriveItems];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
@@ -109,7 +132,8 @@
              initWithTabIDs:selectedWebStateIDs
           cachedWebStateIDs:cachedWebStateIDs
                      images:_preselection.images
-                      files:_preselection.files];
+                      files:_preselection.files
+                 driveItems:_preselection.driveItems];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_attachment_diff.h"
+#import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_drive_result.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
@@ -366,8 +367,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediatorDidRequestDriveFileSelection:
     (ComposeboxMenuMediator*)mediator {
-  // TODO(crbug.com/515377633): Record metrics and start the drive file picker
-  // coordinator.
+  [_pickerPresenter presentDriveFilePicker];
 }
 
 #pragma mark - ComposeboxPickerPresenterDelegate
@@ -413,8 +413,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                 didPickDriveItems:
                     (NSArray<ComposeboxPickerDriveResult*>*)results {
-  // TODO(crbug.com/515377633): Loop through `results` and process each Drive
-  // file.
+  // TODO(crbug.com/515377633): Record metrics for Drive files.
+  [_mediator processDriveItems:results];
 }
 
 #pragma mark - ComposeboxPickerPresenterDataSource
