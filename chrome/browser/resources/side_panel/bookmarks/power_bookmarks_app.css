@@ -52,6 +52,8 @@ cr-toolbar-search-field {
   flex-shrink: 0;
   margin: var(--sp-body-padding);
   width: auto;
+  --cr-toolbar-search-field-background: var(
+      --color-side-panel-search-field-background);
 }
 
 hr {

@@ -213,6 +213,7 @@ html {
   --cr-fallback-color-surface1: rgb(248, 250, 253);
   --cr-fallback-color-surface2: rgb(243, 246, 252);
   --cr-fallback-color-surface3: rgb(239, 243, 250);
+  --cr-fallback-color-surface4: rgb(237, 242, 250);
   --cr-fallback-color-surface5: rgb(234, 240, 249);
   --cr-fallback-color-on-surface-rgb: 31, 31, 31;
   --cr-fallback-color-on-surface: rgb(var(--cr-fallback-color-on-surface-rgb));
@@ -317,6 +318,7 @@ html[webui-refresh-2026] {
     --cr-fallback-color-surface1: rgb(39, 40, 42);
     --cr-fallback-color-surface2: rgb(45, 47, 49);
     --cr-fallback-color-surface3: rgb(51, 52, 56);
+    --cr-fallback-color-surface4: rgb(52, 54, 58);
     --cr-fallback-color-surface5: rgb(56, 58, 62);
     --cr-fallback-color-on-surface-rgb: 227, 227, 227;
     --cr-fallback-color-surface-variant: rgb(68, 71, 70);

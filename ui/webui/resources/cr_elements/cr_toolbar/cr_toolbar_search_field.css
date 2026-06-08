@@ -197,6 +197,14 @@ input[type='search']::-webkit-search-cancel-button {
   z-index: 0;
 }
 
+:host-context([webui-refresh-2026]) {
+  &:host(:not([narrow])) #background {
+    background: var(--cr-toolbar-search-field-background,
+        var(--color-toolbar-search-field-background,
+        var(--cr-fallback-color-surface4)));
+  }
+}
+
 :host([search-focused_]:not([narrow])) {
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: 2px;
