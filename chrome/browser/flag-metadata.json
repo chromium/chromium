@@ -8117,11 +8117,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "reader-mode-distill-in-app",
-    "owners": ["wylieb@google.com", "chrome-reader-mode-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "reader-mode-heuristics",
     "owners": [ "mdjones@chromium.org", "wychen@chromium.org" ],
     // This flag is a utility for testing Reader Mode heuristics or force

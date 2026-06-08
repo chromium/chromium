@@ -5966,19 +5966,18 @@ inline constexpr char kProtectedTabsAndroidName[] =
 inline constexpr char kProtectedTabsAndroidDescription[] =
     "Ensures that renderer processes for protected tabs will be killed after "
     "other discard-eligible tabs.";
+
 inline constexpr char kReaderModeBlurTransitionAnimationName[] =
     "Reader Mode blur transition animation";
 inline constexpr char kReaderModeBlurTransitionAnimationDescription[] =
     "Display a blur animation during reader mode navigations to "
     "provide an enhanced transition experience.";
+
 inline constexpr char kReaderModeDelayBottomSheetPeekName[] =
     "Reader Mode bottom sheet peek delay";
 inline constexpr char kReaderModeDelayBottomSheetPeekDescription[] =
     "Delays the bottom sheet peek on initial load into the Reading Mode page.";
-inline constexpr char kReaderModeDistillInAppName[] =
-    "Reader Mode distillation in app";
-inline constexpr char kReaderModeDistillInAppDescription[] =
-    "Distills the web page in brapp instead of a custom tab.";
+
 inline constexpr char kReaderModeHeuristicsName[] = "Reader Mode triggering";
 inline constexpr char kReaderModeHeuristicsDescription[] =
     "Determines what pages the Reader Mode infobar is shown on.";
@@ -5989,6 +5988,7 @@ inline constexpr char kReaderModeHeuristicsAdaboost[] =
 inline constexpr char kReaderModeHeuristicsAllArticles[] = "All articles";
 inline constexpr char kReaderModeHeuristicsAlwaysOff[] = "Never";
 inline constexpr char kReaderModeHeuristicsAlwaysOn[] = "Always";
+
 inline constexpr char kReaderModeSupportNewFontsName[] =
     "Reader Mode support new fonts";
 inline constexpr char kReaderModeSupportNewFontsDescription[] =
