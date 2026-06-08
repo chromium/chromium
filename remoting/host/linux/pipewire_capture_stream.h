@@ -94,11 +94,11 @@ class PipewireCaptureStream : public CaptureStream {
   webrtc::ScreenId screen_id_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
   base::WeakPtr<webrtc::DesktopCapturer::Callback> callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<CallbackProxy> callback_proxy_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::scoped_refptr<webrtc::SharedScreenCastStream> stream_
       GUARDED_BY_CONTEXT(sequence_checker_) =
           webrtc::SharedScreenCastStream::CreateDefault();
-  std::unique_ptr<CallbackProxy> callback_proxy_
-      GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<CaptureStream::CursorObserver> cursor_observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_capturing_frame_ GUARDED_BY_CONTEXT(sequence_checker_) = false;

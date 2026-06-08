@@ -140,6 +140,11 @@ PipewireCaptureStream::PipewireCaptureStream() {
 
 PipewireCaptureStream::~PipewireCaptureStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // StopScreenCastStream() joins the PipeWire thread, and SetObserver(null)
+  // clears the dangling Observer* before `callback_proxy_` is destroyed.
+  StopVideoCapture();
+  stream_->SetObserver(nullptr);
 }
 
 void PipewireCaptureStream::SetPipeWireStream(
