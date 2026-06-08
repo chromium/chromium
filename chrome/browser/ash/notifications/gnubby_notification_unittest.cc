@@ -84,4 +84,29 @@ TEST_F(GnubbyNotificationTest, TwoNotificationsTest) {
   }
 }
 
+TEST_F(GnubbyNotificationTest, ShowAgainAfterUserDismissal) {
+  std::u16string expected_title =
+      l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
+
+  {
+    message_center::MessageCenterWaiter waiter(kOOBEGnubbyNotificationId);
+    gnubby_notification_->ShowNotification();
+    waiter.WaitUntilAdded();
+    ASSERT_TRUE(GetNotification());
+  }
+
+  message_center::MessageCenter::Get()->RemoveNotification(
+      kOOBEGnubbyNotificationId, true /* by_user */);
+  ASSERT_FALSE(GetNotification());
+
+  {
+    message_center::MessageCenterWaiter waiter(kOOBEGnubbyNotificationId);
+    gnubby_notification_->ShowNotification();
+    waiter.WaitUntilAdded();
+    const auto* notification = GetNotification();
+    ASSERT_TRUE(notification);
+    EXPECT_EQ(expected_title, notification->title());
+  }
+}
+
 }  // namespace ash

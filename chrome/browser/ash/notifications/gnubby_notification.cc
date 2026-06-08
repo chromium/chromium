@@ -48,26 +48,23 @@ void GnubbyNotification::PromptUserAuth() {
 void GnubbyNotification::ShowNotification() {
   update_dismiss_notification_timer_->Stop();
 
-  if (!notification_active_) {
-    const std::u16string title =
-        l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
-    const std::u16string message =
-        l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_MESSAGE);
-    const message_center::SystemNotificationWarningLevel colorType =
-        message_center::SystemNotificationWarningLevel::NORMAL;
+  const std::u16string title =
+      l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_TITLE);
+  const std::u16string message =
+      l10n_util::GetStringUTF16(IDS_GNUBBY_NOTIFICATION_MESSAGE);
+  const message_center::SystemNotificationWarningLevel colorType =
+      message_center::SystemNotificationWarningLevel::NORMAL;
 
-    auto notification = ash::CreateSystemNotificationPtr(
-        message_center::NOTIFICATION_TYPE_SIMPLE, kOOBEGnubbyNotificationId,
-        title, message, std::u16string(), GURL(), message_center::NotifierId(),
-        message_center::RichNotificationData(),
-        base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-            base::BindRepeating(&GnubbyNotification::DismissNotification,
-                                weak_ptr_factory_.GetWeakPtr())),
-        gfx::VectorIcon::EmptyIcon(), colorType);
-    message_center::MessageCenter::Get()->AddNotification(
-        std::move(notification));
-    notification_active_ = true;
-  }
+  auto notification = ash::CreateSystemNotificationPtr(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kOOBEGnubbyNotificationId,
+      title, message, std::u16string(), GURL(), message_center::NotifierId(),
+      message_center::RichNotificationData(),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&GnubbyNotification::DismissNotification,
+                              weak_ptr_factory_.GetWeakPtr())),
+      gfx::VectorIcon::EmptyIcon(), colorType);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
 
   update_dismiss_notification_timer_->Start(
       FROM_HERE, kNotificationTimeout,
@@ -76,7 +73,6 @@ void GnubbyNotification::ShowNotification() {
 }
 
 void GnubbyNotification::DismissNotification() {
-  notification_active_ = false;
   message_center::MessageCenter::Get()->RemoveNotification(
       kOOBEGnubbyNotificationId, false /* by_user */);
 }

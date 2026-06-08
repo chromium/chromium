@@ -34,7 +34,6 @@ class GnubbyNotification : public GnubbyClient::Observer {
 
  private:
   std::unique_ptr<base::OneShotTimer> update_dismiss_notification_timer_;
-  bool notification_active_ = false;
 
   base::WeakPtrFactory<GnubbyNotification> weak_ptr_factory_{this};
 };
