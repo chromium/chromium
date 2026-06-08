@@ -1,0 +1,7 @@
+Tests that binary data served as text/plain is returned as base64.
+Binary data served as text/plain; charset=utf-8:
+base64Encoded: true
+Valid UTF-8 text served as text/plain; charset=utf-8:
+base64Encoded: false
+body: Hello, World!
+

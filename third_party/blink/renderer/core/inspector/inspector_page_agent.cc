@@ -350,6 +350,14 @@ bool InspectorPageAgent::SegmentedBufferContent(
   if (decoder) {
     text_content = decoder->Decode(byte_buffer);
     text_content = StrCat({text_content, decoder->Flush()});
+    // If the decoder encountered invalid byte sequences for the declared
+    // encoding, the decoded text does not faithfully represent the original
+    // bytes (e.g., invalid UTF-8 sequences are replaced with U+FFFD).
+    // Discard the lossy text and fall back to base64 to preserve the exact
+    // response body.
+    if (decoder->SawError()) {
+      text_content = String();
+    }
   } else if (encoding.IsValid()) {
     text_content = encoding.Decode(byte_buffer);
   }
