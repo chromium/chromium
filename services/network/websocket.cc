@@ -207,6 +207,60 @@ void WebSocket::WebSocketEventHandler::OnCreateURLRequest(
         url_request->net_log().source().id, url_request->url(),
         impl_->throttling_profile_id_);
   }
+
+  // If the request is to a URL that we can determine is an LNA request from
+  // just the URL, then trigger the LNA prompt. We only trigger this for request
+  // where GetAddressSpaceFromUrl() returns a value as those would also trigger
+  // if and when we move the LNA check to after hostname resolution but before
+  // connection.
+  if (impl_->client_security_state_ &&
+      impl_->client_security_state_->local_network_access_request_policy ==
+          mojom::LocalNetworkAccessRequestPolicy::kPermissionBlock &&
+      impl_->url_loader_network_observer_) {
+    std::optional<mojom::IPAddressSpace> url_address_space =
+        GetAddressSpaceFromUrl(url_request->url());
+    if (url_address_space) {
+      LocalNetworkAccessChecker lna_checker(
+          url_request->url(), impl_->origin_,
+          /*required_ip_address_space=*/mojom::IPAddressSpace::kUnknown,
+          impl_->client_security_state_.get(), impl_->options_);
+      if (lna_checker.CheckAddressSpace(*url_address_space) ==
+          LocalNetworkAccessCheckResult::kLNAPermissionRequired) {
+        // This passes in `TransportType::kDirect`, regardless of how the
+        // request may end up being connected -- the cases where we know this
+        // is an LNA request from the URL alone are ones where we have high
+        // confidence in triggering the LNA prompt.
+        //
+        // Ignoring the result of the permission here because the point of this
+        // call is to get the permission prompt shown if the permission is
+        // "prompt". Later LNA checks will check the permission and use the
+        // result.
+        impl_->url_loader_network_observer_
+            ->OnLocalNetworkAccessPermissionRequired(
+                mojom::TransportType::kDirect, *url_address_space,
+                base::BindOnce(
+                    [](const net::NetLogWithSource& net_log,
+                       const mojom::IPAddressSpace address_space,
+                       mojom::LocalNetworkAccessResult result) {
+                      net_log.AddEvent(
+                          net::NetLogEventType::
+                              LOCAL_NETWORK_ACCESS_PERMISSION_REQUESTED,
+                          [&] {
+                            return base::DictValue()
+                                .Set("address_space",
+                                     IPAddressSpaceToStringPiece(address_space))
+                                .Set("transport_type",
+                                     TransportTypeToStringPiece(
+                                         mojom::TransportType::kDirect))
+                                .Set("result",
+                                     LocalNetworkAccessResultToStringPiece(
+                                         result));
+                          });
+                    },
+                    url_request->net_log(), *url_address_space));
+      }
+    }
+  }
 }
 
 int WebSocket::WebSocketEventHandler::OnURLRequestConnected(
