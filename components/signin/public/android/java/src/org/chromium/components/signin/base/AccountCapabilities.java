@@ -190,6 +190,14 @@ public class AccountCapabilities {
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME);
     }
 
+    /**
+     * @return supportsWalletPrivatePassesInAutofill capability value.
+     */
+    public @Tribool int supportsWalletPrivatePassesInAutofill() {
+        return getCapabilityByName(
+                AccountCapabilitiesConstants.SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME);
+    }
+
     /** keep-sorted end */
 
     /**

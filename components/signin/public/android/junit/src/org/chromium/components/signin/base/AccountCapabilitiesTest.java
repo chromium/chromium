@@ -76,6 +76,8 @@ public final class AccountCapabilitiesTest {
                 return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
+            case AccountCapabilitiesConstants.SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME:
+                return capabilities.supportsWalletPrivatePassesInAutofill();
                 /** keep-sorted end */
         }
         throw new AssertionError("Capability name is not known.");
@@ -118,7 +120,9 @@ public final class AccountCapabilitiesTest {
                             AccountCapabilitiesConstants.CAN_USE_GEMINI_IN_CHROME_CAPABILITY_NAME,
                             AccountCapabilitiesConstants
                                     .IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME,
-                            AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP
+                            AccountCapabilitiesConstants.CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP,
+                            AccountCapabilitiesConstants
+                                    .SUPPORTS_WALLET_PRIVATE_PASSES_IN_AUTOFILL_NAME
                         });
         assert AccountCapabilitiesConstants.SUPPORTED_ACCOUNT_CAPABILITY_NAMES.containsAll(params);
         return params;
