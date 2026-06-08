@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Overscroll area: slot change crash test</title>
+<div id="host">
+  <div id="menu1" slot="slot1" overscrollarea style="width: 50px; height: 50px; background: red;"></div>
+  <div id="menu2" slot="slot1" overscrollarea style="width: 50px; height: 50px; background: blue;"></div>
+</div>
+<script>
+const host = document.getElementById('host');
+const root = host.attachShadow({mode: 'open'});
+root.innerHTML = `
+  <div id="C1" overscrollcontainer style="width: 200px; height: 200px; overflow: scroll; position: relative;">
+    <slot name="slot1"></slot>
+  </div>
+  <div id="C2" overscrollcontainer style="width: 200px; height: 200px; overflow: scroll; position: relative;">
+    <div style="content-visibility: hidden;">
+      <slot name="slot2"></slot>
+    </div>
+  </div>
+`;
+
+<script>
+function runTest() {
+  const menu1 = document.getElementById('menu1');
+  const menu2 = document.getElementById('menu2');
+
+  // 1. Initial layout
+  menu2.getBoundingClientRect();
+
+  // 2. Reassign menu1 to locked slot
+  menu1.slot = 'slot2';
+
+  // 3. Force layout and map menu2
+  menu2.getBoundingClientRect();
+};
+onload = () => requestAnimationFrame(runTest);
+</script>

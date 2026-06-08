@@ -4538,7 +4538,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   // We do this outside of the OverscrollCommandTargets check since we could,
   // for instance, remove the element's id first and then remove it from the
   // DOM.
-  LeaveOverscrollContainer();
+  DetachOverscroll();
 
   // Remove all of the overscroll areas from this tracker.
   if (auto* tracker = GetOverscrollAreaTracker()) {
@@ -4725,7 +4725,7 @@ void Element::DetachLayoutTree(bool performing_reattach) {
 
   if (ElementRareDataVector* data = RareData()) {
     if (!performing_reattach) {
-      LeaveOverscrollContainer();
+      DetachOverscroll();
       data->ClearPseudoElements();
       data->ClearContainerQueryData();
       data->ClearOutOfFlowData();
@@ -5570,7 +5570,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   if (GetOverscrollContainer() &&
       (!new_style || !new_style->IsInternalOverscrollPositionAuto() ||
        GetOverscrollContainer() != style_recalc_context.overscroll_container)) {
-    LeaveOverscrollContainer();
+    DetachOverscroll();
     // We may need to remove this element's ::-internal-overscroll-area-parent.
     child_change =
         child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
@@ -14022,7 +14022,7 @@ void Element::ClearOverscrollContainer() {
   }
 }
 
-void Element::LeaveOverscrollContainer() {
+void Element::DetachOverscroll() {
   if (auto* container = GetOverscrollContainer()) {
     auto* tracker = container->GetOverscrollAreaTracker();
     CHECK(tracker);

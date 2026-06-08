@@ -2077,7 +2077,7 @@ class CORE_EXPORT Element : public ContainerNode {
   Element* GetOverscrollContainer() const;
   void SetOverscrollContainer(Element*);
   void ClearOverscrollContainer();
-  void LeaveOverscrollContainer();
+  void DetachOverscroll();
 
   // This method matches the logic of the following UA style rule, and is used
   // in the case that the overlay property is not enabled. This is separate from
