@@ -2063,6 +2063,50 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       IsClipboardCopyAllowedByPolicyForUI_Allowed) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+  EXPECT_TRUE(IsClipboardCopyAllowedByPolicyForUI(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       IsClipboardCopyAllowedByPolicyForUI_Blocked) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "block_rule",
+                                   "rule_id": "444",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  EXPECT_FALSE(IsClipboardCopyAllowedByPolicyForUI(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       IsClipboardCopyAllowedByPolicyForUI_Warned) {
+  ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
+
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "warn_rule",
+                                   "rule_id": "333",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  EXPECT_FALSE(IsClipboardCopyAllowedByPolicyForUI(contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        ShouldAllowSearchWith_Allowed) {
   base::HistogramTester histogram_tester;
   auto event_validator = event_report_validator_helper_->CreateValidator();

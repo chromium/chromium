@@ -294,6 +294,8 @@ void LinkToTextMenuObserver::ExecuteCopyLinkToText() {
           kCopiedFromNewGeneration);
 
   if (toast_features::IsEnabled(toast_features::kLinkToHighlightCopiedToast) &&
+      enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
+          proxy_->GetWebContents()) &&
       toast_controller_) {
     toast_controller_->MaybeShowToast(
         ToastParams(ToastId::kLinkToHighlightCopied));

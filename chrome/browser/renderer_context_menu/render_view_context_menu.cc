@@ -4941,7 +4941,9 @@ void RenderViewContextMenu::ExecCopyImageAt() {
   frame_host->CopyImageAt(params_.x, params_.y);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
+  if (enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
+          GetWebContentsForDataControls()) &&
+      toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
     auto* const toast_controller = GetToastController();
     if (toast_controller) {
       toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
@@ -5136,7 +5138,9 @@ void RenderViewContextMenu::ExecCopyVideoFrame() {
       blink::mojom::MediaPlayerActionType::kCopyVideoFrame,
       /*enable=*/true));
 #if !BUILDFLAG(IS_ANDROID)
-  if (toast_features::IsEnabled(toast_features::kVideoFrameCopiedToast)) {
+  if (enterprise_data_protection::IsClipboardCopyAllowedByPolicyForUI(
+          GetWebContentsForDataControls()) &&
+      toast_features::IsEnabled(toast_features::kVideoFrameCopiedToast)) {
     auto* const toast_controller = GetToastController();
     if (toast_controller) {
       toast_controller->MaybeShowToast(ToastParams(ToastId::kVideoFrameCopied));

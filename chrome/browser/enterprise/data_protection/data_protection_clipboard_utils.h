@@ -163,6 +163,15 @@ void ShouldAllowSearchWith(content::WebContents* web_contents,
                            size_t selection_size,
                            base::OnceClosure on_allowed_callback);
 
+// Synchronously checks if a clipboard copy is allowed by Data Controls
+// policies. This is intended specifically for UI code to decide whether to show
+// "success" feedback (like toasts), preventing misleading UI states when a copy
+// is blocked or warned by policy.
+// This is used over `IsClipboardCopyAllowedByPolicy` because UI feedback
+// mechanisms require synchronous heuristics and do not need to trigger
+// long-running content analysis or asynchronous dialogs.
+bool IsClipboardCopyAllowedByPolicyForUI(content::WebContents* web_contents);
+
 // Copies `text` to the user's clipboard. This checks the Data Controls rules to
 // ensure the copy is allowed.
 void CopyTextToClipboard(content::RenderFrameHost* rfh,
