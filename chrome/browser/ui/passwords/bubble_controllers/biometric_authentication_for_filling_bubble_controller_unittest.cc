@@ -56,10 +56,10 @@ class BiometricAuthenticationForFillingBubbleControllerTest
   void ResetController() { controller_.reset(); }
 
  private:
+  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::unique_ptr<PasswordsModelDelegateMock> mock_delegate_;
   std::unique_ptr<BiometricAuthenticationForFillingBubbleController>
       controller_;
-  std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
 };
 
 TEST_F(BiometricAuthenticationForFillingBubbleControllerTest, Destroy) {
