@@ -68,7 +68,7 @@
 /// The `logger` argument accepts a value that implements the `Log` trait. The value
 /// will be borrowed within the macro.
 ///
-/// Note that the global level set via Cargo features, or through `set_max_level` will
+/// Note that the global level set via Cargo features or through `set_max_level` will
 /// still apply, even when a custom logger is supplied with the `logger` argument.
 #[macro_export]
 #[clippy::format_args]
@@ -444,12 +444,16 @@ macro_rules! __log_logger {
 #[cfg(feature = "kv")]
 macro_rules! __log_key {
     // key1 = 42
-    ($($args:ident)*) => {
-        $crate::__private_api::stringify!($($args)*)
+    ($args:ident) => {
+        $crate::__private_api::Key::from_str_static($crate::__private_api::stringify!($args))
     };
     // "key1" = 42
-    ($($args:expr)*) => {
-        $($args)*
+    ($args:literal) => {
+        $crate::__private_api::Key::from_str_static($args)
+    };
+    // key = 42, where key is an expression
+    ($args:expr) => {
+        $crate::__private_api::Key::from_str($args)
     };
 }
 
@@ -534,7 +538,7 @@ macro_rules! __log_value_sval {
 #[cfg(not(feature = "kv_sval"))]
 macro_rules! __log_value_sval {
     ($args:expr) => {
-        compile_error!("capturing values as `sval::Value` requites the `kv_sval` feature of `log`")
+        compile_error!("capturing values as `sval::Value` requires the `kv_sval` feature of `log`")
     };
 }
 
@@ -553,7 +557,7 @@ macro_rules! __log_value_serde {
 macro_rules! __log_value_serde {
     ($args:expr) => {
         compile_error!(
-            "capturing values as `serde::Serialize` requites the `kv_serde` feature of `log`"
+            "capturing values as `serde::Serialize` requires the `kv_serde` feature of `log`"
         )
     };
 }
@@ -573,7 +577,7 @@ macro_rules! __log_value_error {
 macro_rules! __log_value_error {
     ($args:expr) => {
         compile_error!(
-            "capturing values as `std::error::Error` requites the `kv_std` feature of `log`"
+            "capturing values as `std::error::Error` requires the `kv_std` feature of `log`"
         )
     };
 }

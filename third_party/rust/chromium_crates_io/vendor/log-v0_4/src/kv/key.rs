@@ -1,5 +1,6 @@
 //! Structured keys.
 
+use crate::MaybeStaticStr;
 use std::borrow::Borrow;
 use std::fmt;
 
@@ -35,15 +36,23 @@ impl ToKey for str {
 // If a new field (such as an optional index) is added to the key they must not affect comparison
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Key<'k> {
-    // NOTE: This may become `Cow<'k, str>`
-    key: &'k str,
+    key: MaybeStaticStr<'k>,
 }
 
 impl<'k> Key<'k> {
     /// Get a key from a borrowed string.
     #[allow(clippy::should_implement_trait)] // Part of the public API now.
     pub fn from_str(key: &'k str) -> Self {
-        Key { key }
+        Key {
+            key: MaybeStaticStr::Borrowed(key),
+        }
+    }
+
+    /// Get a key from a static str.
+    pub fn from_str_static(key: &'static str) -> Self {
+        Key {
+            key: MaybeStaticStr::Static(key),
+        }
     }
 
     /// Get a borrowed string from this key.
@@ -51,10 +60,10 @@ impl<'k> Key<'k> {
     /// The lifetime of the returned string is bound to the borrow of `self` rather
     /// than to `'k`.
     pub fn as_str(&self) -> &str {
-        self.key
+        self.key.get()
     }
 
-    /// Try get a borrowed string for the lifetime `'k` from this key.
+    /// Try to get a borrowed string for the lifetime `'k` from this key.
     ///
     /// If the key is a borrow of a longer lived string, this method will return `Some`.
     /// If the key is internally buffered, this method will return `None`.
@@ -62,13 +71,21 @@ impl<'k> Key<'k> {
         // NOTE: If the internals of `Key` support buffering this
         // won't be unconditionally `Some` anymore. We want to keep
         // this option open
-        Some(self.key)
+        Some(self.key.get())
+    }
+
+    /// Try to get a static string from this key.
+    pub fn to_static_str(&self) -> Option<&'static str> {
+        match self.key {
+            MaybeStaticStr::Static(s) => Some(s),
+            MaybeStaticStr::Borrowed(_) => None,
+        }
     }
 }
 
 impl<'k> fmt::Display for Key<'k> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.key.fmt(f)
+        self.key.get().fmt(f)
     }
 }
 
@@ -121,13 +138,13 @@ mod sval_support {
             &'sval self,
             stream: &mut S,
         ) -> sval::Result {
-            self.key.stream(stream)
+            self.key.get().stream(stream)
         }
     }
 
     impl<'a> ValueRef<'a> for Key<'a> {
         fn stream_ref<S: sval::Stream<'a> + ?Sized>(&self, stream: &mut S) -> sval::Result {
-            self.key.stream(stream)
+            self.key.get().stream(stream)
         }
     }
 }
@@ -143,7 +160,7 @@ mod serde_support {
         where
             S: Serializer,
         {
-            self.key.serialize(serializer)
+            self.key.get().serialize(serializer)
         }
     }
 }

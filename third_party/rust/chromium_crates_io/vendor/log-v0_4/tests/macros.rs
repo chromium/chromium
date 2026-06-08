@@ -271,6 +271,16 @@ fn kv_ident() {
 
 #[test]
 #[cfg(feature = "kv")]
+fn kv_static_keys() {
+    assert_eq!(Some("cat_1"), log::__log_key!(cat_1).to_static_str());
+    assert_eq!(Some("cat_1"), log::__log_key!("cat_1").to_static_str());
+
+    let cat_1 = "chashu".to_string();
+    assert_eq!(None, log::__log_key!(cat_1.as_str()).to_static_str());
+}
+
+#[test]
+#[cfg(feature = "kv")]
 fn kv_expr_context() {
     match "chashu" {
         cat_1 => {

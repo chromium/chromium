@@ -7,27 +7,29 @@ use std::panic::Location;
 pub use std::{format_args, module_path, stringify};
 
 #[cfg(not(feature = "kv"))]
+pub type Key<'a> = &'a str;
+#[cfg(not(feature = "kv"))]
 pub type Value<'a> = &'a str;
 
 mod sealed {
     /// Types for the `kv` argument.
     pub trait KVs<'a> {
-        fn into_kvs(self) -> Option<&'a [(&'a str, super::Value<'a>)]>;
+        fn into_kvs(self) -> Option<&'a [(super::Key<'a>, super::Value<'a>)]>;
     }
 }
 
 // Types for the `kv` argument.
 
-impl<'a> KVs<'a> for &'a [(&'a str, Value<'a>)] {
+impl<'a> KVs<'a> for &'a [(Key<'a>, Value<'a>)] {
     #[inline]
-    fn into_kvs(self) -> Option<&'a [(&'a str, Value<'a>)]> {
+    fn into_kvs(self) -> Option<&'a [(Key<'a>, Value<'a>)]> {
         Some(self)
     }
 }
 
 impl<'a> KVs<'a> for () {
     #[inline]
-    fn into_kvs(self) -> Option<&'a [(&'a str, Value<'a>)]> {
+    fn into_kvs(self) -> Option<&'a [(Key<'a>, Value<'a>)]> {
         None
     }
 }
@@ -58,7 +60,7 @@ fn log_impl<L: Log>(
     args: Arguments,
     level: Level,
     &(target, module_path, loc): &(&str, &'static str, &'static Location),
-    kvs: Option<&[(&str, Value)]>,
+    kvs: Option<&[(Key, Value)]>,
 ) {
     #[cfg(not(feature = "kv"))]
     if kvs.is_some() {
@@ -113,6 +115,7 @@ pub fn loc() -> &'static Location<'static> {
 mod kv_support {
     use crate::kv;
 
+    pub type Key<'a> = kv::Key<'a>;
     pub type Value<'a> = kv::Value<'a>;
 
     // NOTE: Many functions here accept a double reference &&V

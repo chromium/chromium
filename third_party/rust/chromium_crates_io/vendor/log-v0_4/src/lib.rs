@@ -348,7 +348,7 @@
 #![doc(
     html_logo_url = "https://prev.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
     html_favicon_url = "https://prev.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/log/0.4.30"
+    html_root_url = "https://docs.rs/log/0.4.32"
 )]
 #![warn(missing_docs)]
 #![deny(missing_debug_implementations, unconditional_recursion)]

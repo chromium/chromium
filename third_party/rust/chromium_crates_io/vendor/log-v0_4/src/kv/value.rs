@@ -415,7 +415,7 @@ impl<'v> Value<'v> {
     }
 }
 
-#[cfg(feature = "kv_std")]
+#[cfg(feature = "std")]
 mod std_support {
     use std::borrow::Cow;
     use std::rc::Rc;
@@ -462,6 +462,7 @@ mod std_support {
         }
     }
 
+    #[cfg(feature = "kv_std")]
     impl<'v> Value<'v> {
         /// Try convert this value into a string.
         pub fn to_cow_str(&self) -> Option<Cow<'v, str>> {

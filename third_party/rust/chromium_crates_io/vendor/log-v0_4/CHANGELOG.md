@@ -1,6 +1,21 @@
 # Change Log
 
-## [Unreleased]
+## [0.4.32] - 2026-06-04
+
+### What's Changed
+* Support `Value` -> string conversions with `kv` + `std` features instead of `kv_std` by @tisonkun in https://github.com/rust-lang/log/pull/729
+
+**Full Changelog**: https://github.com/rust-lang/log/compare/0.4.31...0.4.32
+
+## [0.4.31] - 2026-06-02
+
+### What's Changed
+* Leverage static str key when possible by @tisonkun in https://github.com/rust-lang/log/pull/727
+
+### New Contributors
+* @Isvane made their first contribution in https://github.com/rust-lang/log/pull/726
+
+**Full Changelog**: https://github.com/rust-lang/log/compare/0.4.30...0.4.31
 
 ## [0.4.30] - 2026-05-21
 
@@ -403,7 +418,9 @@ version using log 0.4.x to avoid losing module and file information.
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.30...HEAD
+[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.32...HEAD
+[0.4.32]: https://github.com/rust-lang/log/compare/0.4.31...0.4.32
+[0.4.31]: https://github.com/rust-lang/log/compare/0.4.30...0.4.31
 [0.4.30]: https://github.com/rust-lang/log/compare/0.4.29...0.4.30
 [0.4.29]: https://github.com/rust-lang/log/compare/0.4.28...0.4.29
 [0.4.28]: https://github.com/rust-lang/log/compare/0.4.27...0.4.28
