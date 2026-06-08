@@ -1152,7 +1152,8 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Marks all read entries as unread.
-- (void)testMarkAllUnread {
+// TODO(crbug.com/521260679): Unflake this test
+- (void)FLAKY_testMarkAllUnread {
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
