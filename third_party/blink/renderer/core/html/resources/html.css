@@ -1240,12 +1240,10 @@ select:-internal-list-box:disabled option:checked {
    color: -internal-auto-base(light-dark(gray, #aaa), inherit);
 }
 
-/* TODO(crbug.com/406464760): decide on <hr> styles for customizable select
- * multiple. */
 select:-internal-list-box hr {
-    border-style: none;
-    margin-block-start: 0.5em;
-    margin-block-end: 0;
+    border-style: -internal-auto-base(none, revert-rule);
+    margin-block-start: -internal-auto-base(0.5em, revert-rule);
+    margin-block-end: -internal-auto-base(0, revert-rule);;
 }
 
 /* TODO(crbug.com/357649033): Consider undoing these styles for customizable
