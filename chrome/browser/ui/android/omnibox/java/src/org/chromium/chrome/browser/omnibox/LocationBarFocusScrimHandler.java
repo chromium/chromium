@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerT
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -110,7 +111,10 @@ public class LocationBarFocusScrimHandler {
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         boolean useTransparentScrim =
-                isTablet && OmniboxFeatures.isMultimodalInputEnabled(mContext);
+                isTablet
+                        && (OmniboxFeatures.isMultimodalInputEnabled(mContext)
+                                || (OmniboxCapabilities.isDesktopPlatform()
+                                        && OmniboxFeatures.sAndroidDesktopAimGate.isEnabled()));
         boolean useLightColor =
                 !isTablet
                         && !mLocationBarDataProvider.isIncognitoBranded()

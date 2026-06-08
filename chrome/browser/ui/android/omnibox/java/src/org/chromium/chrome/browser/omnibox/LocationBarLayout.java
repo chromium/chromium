@@ -515,6 +515,9 @@ public class LocationBarLayout extends ConstraintLayout {
      */
     /* package */ void onFuseboxStateChanged(@FuseboxState int state) {}
 
+    /** Notify the layout that it has been reparented to a popover container. */
+    /* package */ void setReparentedToPopover(boolean isReparented) {}
+
     /**
      * Returns the view to which the omnibox suggestions list should be aligned to horizontally and
      * vertically.

@@ -1405,6 +1405,7 @@ class LocationBarMediator
         set.constrainHeight(mDropdown.getId(), ConstraintSet.WRAP_CONTENT);
         set.constrainedHeight(mDropdown.getId(), true);
         set.applyTo(mLocationBarLayout);
+        mLocationBarLayout.setReparentedToPopover(true);
         mUrlCoordinator.finishReparenting(true);
         mIsReparenting = false;
     }
@@ -1431,6 +1432,7 @@ class LocationBarMediator
             mLocationBarLayout.removeView(mDropdown);
         }
         mToolbarParent = null;
+        mLocationBarLayout.setReparentedToPopover(false);
         mUrlCoordinator.finishReparenting(false);
         mIsReparenting = false;
     }
@@ -1465,12 +1467,12 @@ class LocationBarMediator
     /* package */ void handleUrlFocusAnimation(boolean hasFocus) {
         @FuseboxLayoutMode
         int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
+        mLocationBarLayout.setFuseboxLayoutMode(layoutMode);
         if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                 && hasFocus
                 && !isParentedToSuggestionsContainer()) {
             reparentToSuggestionsContainer();
         }
-        mLocationBarLayout.setFuseboxLayoutMode(layoutMode);
 
         if (hasFocus) {
             mUrlFocusedWithoutAnimations = false;

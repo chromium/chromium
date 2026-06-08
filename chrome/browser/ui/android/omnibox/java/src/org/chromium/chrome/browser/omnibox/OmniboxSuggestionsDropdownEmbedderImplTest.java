@@ -40,6 +40,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
@@ -94,6 +95,8 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     private @ControlsPosition int mControlsPosition = ControlsPosition.TOP;
     private final SettableNonNullObservableSupplier<Integer> mFuseboxStateSupplier =
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
+    private final SettableNonNullObservableSupplier<Integer> mFuseboxLayoutModeSupplier =
+            ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
 
     @Before
     public void setUp() {
@@ -129,6 +132,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         () -> 0,
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
+                        mFuseboxLayoutModeSupplier,
                         mLocationBarDataProvider,
                         mTopInsetProvider);
     }
@@ -277,6 +281,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         () -> 0,
                         () -> 0,
                         mFuseboxStateSupplier,
+                        mFuseboxLayoutModeSupplier,
                         mLocationBarDataProvider,
                         mTopInsetProvider);
         impl.recalculateOmniboxAlignment();
@@ -375,6 +380,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
                         () -> keyboardHeight,
                         () -> mBottomWindowPadding,
                         mFuseboxStateSupplier,
+                        mFuseboxLayoutModeSupplier,
                         mLocationBarDataProvider,
                         mTopInsetProvider);
 

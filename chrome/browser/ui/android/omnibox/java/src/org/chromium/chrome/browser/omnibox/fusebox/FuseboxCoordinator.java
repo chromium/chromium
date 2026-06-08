@@ -516,7 +516,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
         return OmniboxCapabilities.isDesktopPlatform()
-                        && OmniboxFeatures.isMultimodalInputEnabled(mActivity)
+                        && OmniboxFeatures.sAndroidDesktopAimGate.isEnabled()
                 ? FuseboxLayoutMode.SUGGESTIONS_POPOVER
                 : FuseboxLayoutMode.TOOLBAR;
     }

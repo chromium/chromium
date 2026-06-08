@@ -277,7 +277,9 @@ class AutocompleteMediator
 
         mAnimationDriver = initializeAnimationDriver();
 
-        mFuseboxCoordinator.getFuseboxStateSupplier().addSyncObserver(mOnFuseboxStateChanged);
+        mFuseboxCoordinator
+                .getFuseboxStateSupplier()
+                .addSyncObserverAndCallIfNonNull(mOnFuseboxStateChanged);
 
         mDataProvider
                 .getToolbarPositionSupplier()

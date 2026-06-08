@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.LocationBarMediator.OmniboxUma;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
@@ -320,20 +319,14 @@ public class LocationBarCoordinator
                                         : null,
                         backPressManager,
                         exactMatchUrlSupplier);
-        NonNullObservableSupplier<Integer> fuseboxStateSupplier;
-        NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier;
-        if (OmniboxFeatures.isMultimodalInputEnabled(context)) {
-            fuseboxStateSupplier = mFuseboxCoordinator.getFuseboxStateSupplier();
-            fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
-            mFuseboxCoordinator
-                    .getPopupStateSupplier()
-                    .addSyncObserverAndPostIfNonNull(mOnPopupStateChange);
-            fuseboxLayoutModeSupplier = mFuseboxCoordinator.getFuseboxLayoutModeSupplier();
-        } else {
-            fuseboxStateSupplier = ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
-            fuseboxLayoutModeSupplier =
-                    ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
-        }
+        NonNullObservableSupplier<Integer> fuseboxStateSupplier =
+                mFuseboxCoordinator.getFuseboxStateSupplier();
+        fuseboxStateSupplier.addSyncObserverAndPostIfNonNull(mOnFuseboxStateChange);
+        mFuseboxCoordinator
+                .getPopupStateSupplier()
+                .addSyncObserverAndPostIfNonNull(mOnPopupStateChange);
+        NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier =
+                mFuseboxCoordinator.getFuseboxLayoutModeSupplier();
 
         if (mLocationBarLayout instanceof LocationBarTablet tabletLayout) {
             mLocationBarHolder = (ViewGroup) tabletLayout.getParent();
@@ -355,6 +348,7 @@ public class LocationBarCoordinator
                         mDeferredIMEWindowInsetApplicationCallback::getCurrentKeyboardHeight,
                         bottomWindowPaddingSupplier,
                         fuseboxStateSupplier,
+                        fuseboxLayoutModeSupplier,
                         locationBarDataProvider,
                         topInsetProvider);
 
