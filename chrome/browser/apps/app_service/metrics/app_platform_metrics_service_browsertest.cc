@@ -4,28 +4,46 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/json/values_util.h"
+#include "base/memory/raw_ref.h"
+#include "base/run_loop.h"
+#include "base/sequence_checker_impl.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/threading/sequence_local_storage_map.h"
+#include "base/time/time_override.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/app_constants/constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/policy_logger.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -65,6 +83,18 @@ class FakeSyncService : public syncer::TestSyncService {
   }
 };
 
+std::atomic<int64_t> g_fake_time_us{0};
+std::atomic<int64_t> g_fake_ticks_us{0};
+
+base::Time GetFakeTime() {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(g_fake_time_us.load(std::memory_order_relaxed)));
+}
+base::TimeTicks GetFakeTimeTicks() {
+  return base::TimeTicks() +
+         base::Microseconds(g_fake_ticks_us.load(std::memory_order_relaxed));
+}
+
 }  // namespace
 
 class AppPlatformInputMetricsTest : public InProcessBrowserTest {
@@ -94,12 +124,11 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
   }
 
   void StartMetricsService() {
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     // Force overwrite and re-create the service to completely bypass and
     // replace the production async posted task from
     // AppServiceProxyAsh::Initialize()!
-    auto service =
-        std::make_unique<apps::AppPlatformMetricsService>(browser()->profile());
+    auto service = std::make_unique<apps::AppPlatformMetricsService>(profile());
     auto* service_ptr = service.get();
     proxy->SetAppPlatformMetricsServiceForTesting(std::move(service));
 
@@ -108,13 +137,13 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
   }
 
   AppPlatformInputMetrics* app_platform_input_metrics() {
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     return proxy->AppPlatformMetricsService()
         ->app_platform_input_metrics_.get();
   }
 
   AppPlatformMetrics* app_platform_metrics() {
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     return proxy->AppPlatformMetrics();
   }
 
@@ -133,8 +162,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
                                         AppTypeName app_type_name) {
     const auto entries = test_ukm_recorder_->GetEntriesByName(ukm_name);
     int usage_time = 0;
-    GURL expected_url =
-        AppPlatformMetrics::GetURLForApp(browser()->profile(), app_id);
+    GURL expected_url = AppPlatformMetrics::GetURLForApp(profile(), app_id);
     for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
@@ -160,8 +188,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
     const auto entries =
         test_ukm_recorder_->GetEntriesByName("ChromeOSApp.UsageTime");
     bool found = false;
-    GURL expected_url =
-        AppPlatformMetrics::GetURLForApp(browser()->profile(), app_id);
+    GURL expected_url = AppPlatformMetrics::GetURLForApp(profile(), app_id);
     for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
@@ -182,8 +209,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
     const auto entries =
         test_ukm_recorder_->GetEntriesByName("ChromeOSApp.InstalledApp");
     bool found = false;
-    GURL expected_url =
-        AppPlatformMetrics::GetURLForApp(browser()->profile(), app_id);
+    GURL expected_url = AppPlatformMetrics::GetURLForApp(profile(), app_id);
     for (const ukm::mojom::UkmEntry* entry : entries) {
       const ukm::UkmSource* src =
           test_ukm_recorder_->GetSourceForSourceId(entry->source_id);
@@ -247,7 +273,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
                      Readiness readiness,
                      InstallSource install_source,
                      InstallReason install_reason = InstallReason::kSystem) {
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     AppPtr app = std::make_unique<App>(app_type, app_id);
     app->readiness = readiness;
     app->publisher_id = publisher_id;
@@ -262,7 +288,7 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
   void ModifyInstance(const std::string& app_id,
                       aura::Window* window,
                       InstanceState state) {
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     InstanceParams params(app_id, window);
     params.state = std::make_optional(std::make_pair(state, base::Time::Now()));
     proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
@@ -305,9 +331,22 @@ class AppPlatformInputMetricsTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  Profile* profile() { return ProfileManager::GetPrimaryUserProfile(); }
+
  protected:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   base::CallbackListSubscription create_services_subscription_;
+
+  void TriggerCheckForFiveMinutes(AppPlatformMetricsService* service) {
+    service->CheckForFiveMinutes();
+  }
+  void TriggerCheckForNewDay(AppPlatformMetricsService* service) {
+    service->CheckForNewDay();
+  }
+  void TriggerCheckForNoisyAppKMReportingInterval(
+      AppPlatformMetricsService* service) {
+    service->CheckForNoisyAppKMReportingInterval();
+  }
 };
 
 class ManagedGuestSessionMetricsTest : public AppPlatformInputMetricsTest {
@@ -326,7 +365,7 @@ class ManagedGuestSessionMetricsTest : public AppPlatformInputMetricsTest {
     // 1. Purge and destroy the custom testing metrics service early. This
     // invokes their destructors and safely unregisters the UkmRecorder
     // observers while MGS is still active!
-    auto* proxy = AppServiceProxyFactory::GetForProfile(browser()->profile());
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
     if (proxy) {
       proxy->SetAppPlatformMetricsServiceForTesting(nullptr);
     }
@@ -677,6 +716,383 @@ IN_PROC_BROWSER_TEST_F(ManagedGuestSessionMetricsTest,
 
   VerifyInstalledAppsUkm("a", InstallReason::kPolicy, InstallSource::kSystem,
                          InstallTime::kRunning);
+}
+
+class AppPlatformMetricsServiceBrowserTest
+    : public AppPlatformInputMetricsTest {
+ public:
+  using AppPlatformInputMetricsTest::VerifyAppUsageTimeUkm;
+  using AppPlatformInputMetricsTest::VerifyAppUsageTimeUkmWithUkmName;
+
+  AppPlatformMetricsServiceBrowserTest() {
+    set_open_about_blank_on_browser_launch(false);
+    set_exit_when_last_browser_closes(false);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+  ~AppPlatformMetricsServiceBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    base::SequenceCheckerImpl::EnableStackLogging();
+    AppPlatformInputMetricsTest::SetUpOnMainThread();
+
+    // Close the default browser created by InProcessBrowserTest.
+    if (browser()) {
+      CloseBrowserSynchronously(browser());
+      SetBrowser(nullptr);
+    }
+
+    base::Time fake_time;
+    constexpr char kFakeNowTimeString[] = "Sunday, 5 June 2022 14:30:00 CDT";
+    ASSERT_TRUE(base::Time::FromString(kFakeNowTimeString, &fake_time));
+    g_fake_time_us.store(fake_time.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+                         std::memory_order_relaxed);
+
+    base::TimeTicks fake_ticks = base::TimeTicks::Now();
+    g_fake_ticks_us.store(fake_ticks.since_origin().InMicroseconds(),
+                          std::memory_order_relaxed);
+    time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+        &GetFakeTime, &GetFakeTimeTicks, nullptr);
+    policy::PolicyLogger::GetInstance()->ResetLoggerForTesting();
+    StartMetricsService();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+
+    content::RunAllTasksUntilIdle();
+    if (auto* swa_manager = ash::SystemWebAppManager::Get(profile())) {
+      swa_manager->StopBackgroundTasksForTesting();
+    }
+  }
+
+  void TearDownOnMainThread() override {
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    time_override_.release();
+    AppPlatformInputMetricsTest::TearDownOnMainThread();
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  void InstallOneApp(const std::string& app_id,
+                     AppType app_type,
+                     const std::string& publisher_id,
+                     Readiness readiness,
+                     InstallSource install_source,
+                     bool is_platform_app = false,
+                     WindowMode window_mode = WindowMode::kUnknown,
+                     InstallReason install_reason = InstallReason::kUser) {
+    auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
+    AppPtr app = std::make_unique<App>(app_type, app_id);
+    app->readiness = readiness;
+    app->publisher_id = publisher_id;
+    app->install_reason = install_reason;
+    app->install_source = install_source;
+    app->is_platform_app = is_platform_app;
+    app->window_mode = window_mode;
+
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(app));
+    proxy->OnApps(std::move(apps), app_type, false);
+  }
+
+  Browser* CreateBrowserWithAuraWindow() {
+    Browser* browser = CreateBrowser(profile());
+    content::WaitForLoadStop(
+        browser->tab_strip_model()->GetActiveWebContents());
+    return browser;
+  }
+
+  Browser* CreateBrowserWindow(
+      InstallReason install_reason = InstallReason::kUser) {
+    InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
+                  Readiness::kReady, InstallSource::kSystem,
+                  /*is_platform_app=*/false, WindowMode::kUnknown,
+                  install_reason);
+    Browser* browser = CreateBrowserWithAuraWindow();
+    SetBrowser(browser);
+    EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
+    return browser;
+  }
+
+  void ModifyWebAppInstance(const std::string& app_id,
+                            aura::Window* window,
+                            InstanceState state) {
+    ModifyInstance(app_id, window, state);
+  }
+
+  void VerifyAppUsageTimeCountHistogram(
+      base::HistogramBase::Count32 expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectTotalCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        expected_count);
+  }
+
+  void VerifyAppUsageTimeCountHistogram(
+      base::HistogramBase::Count32 expected_count,
+      AppTypeNameV2 app_type_name) {
+    histogram_tester().ExpectTotalCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        expected_count);
+  }
+
+  void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
+                                   base::HistogramBase::Count32 expected_count,
+                                   AppTypeName app_type_name) {
+    histogram_tester().ExpectTimeBucketCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        time_delta, expected_count);
+  }
+
+  void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
+                                   base::HistogramBase::Count32 expected_count,
+                                   AppTypeNameV2 app_type_name) {
+    histogram_tester().ExpectTimeBucketCount(
+        AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
+        time_delta, expected_count);
+  }
+
+  void VerifyAppUsageTimeUkmWithUkmName(const std::string& ukm_name,
+                                        const GURL& url,
+                                        base::TimeDelta duration,
+                                        AppTypeName app_type_name) {
+    const auto entries = test_ukm_recorder()->GetEntriesByName(ukm_name);
+    int usage_time = 0;
+    for (const ukm::mojom::UkmEntry* entry : entries) {
+      const ukm::UkmSource* src =
+          test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+      if (src == nullptr || src->url() != url) {
+        continue;
+      }
+      usage_time += *(test_ukm_recorder()->GetEntryMetric(entry, "Duration"));
+      test_ukm_recorder()->ExpectEntryMetric(entry, "UserDeviceMatrix", 0);
+      test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                             (int)app_type_name);
+    }
+    ASSERT_EQ(usage_time, duration.InMilliseconds());
+  }
+
+  void VerifyAppUsageTimeUkm(const GURL& url,
+                             base::TimeDelta duration,
+                             AppTypeName app_type_name) {
+    VerifyAppUsageTimeUkmWithUkmName("ChromeOSApp.UsageTime", url, duration,
+                                     app_type_name);
+    VerifyAppUsageTimeUkmWithUkmName("ChromeOSApp.UsageTimeReusedSourceId", url,
+                                     duration, app_type_name);
+  }
+
+  void VerifyAppUsageTimeUkm(uint32_t count) {
+    auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.UsageTime");
+    ASSERT_EQ(count, entries.size());
+
+    entries = test_ukm_recorder()->GetEntriesByName(
+        "ChromeOSApp.UsageTimeReusedSourceId");
+    ASSERT_EQ(count, entries.size());
+  }
+
+  void VerifyNoAppUsageTimeUkm() { VerifyAppUsageTimeUkm(/*count=*/0); }
+
+  void ResetAppPlatformMetricsService() { StartMetricsService(); }
+
+  base::HistogramTester& histogram_tester() { return *histogram_tester_; }
+  FakeSyncService* sync_service() {
+    return static_cast<FakeSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    content::RunAllTasksUntilIdle();
+    base::TimeDelta remaining = delta;
+    auto* service = AppServiceProxyFactory::GetForProfile(profile())
+                        ->AppPlatformMetricsService();
+    while (remaining > base::TimeDelta()) {
+      base::TimeDelta time_to_five_mins =
+          base::Minutes(5) - accumulated_five_minutes_time_;
+      base::TimeDelta time_to_two_hours =
+          base::Hours(2) - accumulated_two_hours_time_;
+      base::TimeDelta step =
+          std::min({remaining, time_to_five_mins, time_to_two_hours});
+      g_fake_time_us.fetch_add(step.InMicroseconds(),
+                               std::memory_order_relaxed);
+      g_fake_ticks_us.fetch_add(step.InMicroseconds(),
+                                std::memory_order_relaxed);
+      remaining -= step;
+
+      accumulated_five_minutes_time_ += step;
+      accumulated_two_hours_time_ += step;
+
+      // Pump the loop to let tasks run at this new time step.
+      content::RunAllTasksUntilIdle();
+
+      if (accumulated_five_minutes_time_ >= base::Minutes(5)) {
+        TriggerCheckForNewDay(service);
+        accumulated_five_minutes_time_ = base::TimeDelta();
+      }
+
+      if (accumulated_two_hours_time_ >= base::Hours(2)) {
+        accumulated_two_hours_time_ = base::TimeDelta();
+      }
+
+      // Pump again in case the checks posted more tasks.
+      content::RunAllTasksUntilIdle();
+    }
+  }
+
+  PrefService* GetPrefService() { return profile()->GetPrefs(); }
+
+  void VerifyAppRunningDuration(const base::TimeDelta time_delta,
+                                AppTypeName app_type_name) {
+    const base::DictValue& dict =
+        GetPrefService()->GetDict(kAppRunningDuration);
+    std::string key = GetAppTypeHistogramName(app_type_name);
+
+    std::optional<base::TimeDelta> unreported_duration =
+        base::ValueToTimeDelta(dict.FindByDottedPath(key));
+    if (time_delta.is_zero()) {
+      EXPECT_FALSE(unreported_duration.has_value());
+      return;
+    }
+
+    ASSERT_TRUE(unreported_duration.has_value());
+    EXPECT_EQ(time_delta, unreported_duration.value());
+  }
+
+  void VerifyAppRunningDurationCountHistogram(
+      base::HistogramBase::Count32 expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectTotalCount(
+        AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
+            app_type_name),
+        expected_count);
+  }
+
+  void VerifyAppRunningDurationHistogram(
+      base::TimeDelta time_delta,
+      base::HistogramBase::Count32 expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectTimeBucketCount(
+        AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
+            app_type_name),
+        time_delta, expected_count);
+  }
+
+  void VerifyAppRunningPercentageCountHistogram(
+      base::HistogramBase::Count32 expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectTotalCount(
+        AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
+            app_type_name),
+        expected_count);
+  }
+
+  void VerifyAppRunningPercentageHistogram(
+      int count,
+      base::HistogramBase::Count32 expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectBucketCount(
+        AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
+            app_type_name),
+        count, expected_count);
+  }
+
+  void VerifyAppActivatedCount(int expected_count, AppTypeName app_type_name) {
+    const base::DictValue& dict = GetPrefService()->GetDict(kAppActivatedCount);
+    std::string key = GetAppTypeHistogramName(app_type_name);
+
+    std::optional<int> activated_count = dict.FindIntByDottedPath(key);
+    if (expected_count == 0) {
+      EXPECT_FALSE(activated_count.has_value());
+      return;
+    }
+
+    ASSERT_TRUE(activated_count.has_value());
+    EXPECT_EQ(expected_count, activated_count.value());
+  }
+
+  void VerifyAppActivatedCountHistogram(
+      base::HistogramBase::Count32 expected_count,
+      AppTypeName app_type_name) {
+    histogram_tester().ExpectTotalCount(
+        AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
+            app_type_name),
+        expected_count);
+  }
+
+  void VerifyAppActivatedHistogram(int count,
+                                   base::HistogramBase::Count32 expected_count,
+                                   AppTypeName app_type_name) {
+    histogram_tester().ExpectBucketCount(
+        AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
+            app_type_name),
+        count, expected_count);
+  }
+
+ private:
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
+  base::TimeDelta accumulated_five_minutes_time_;
+  base::TimeDelta accumulated_two_hours_time_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppPlatformMetricsServiceBrowserTest, UsageTime) {
+  // Create an ARC app window.
+  std::string app_id = "aa";
+  InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
+                InstallSource::kPlayStore);
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
+
+  FastForwardBy(base::Minutes(5));
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeNameV2::kArc);
+  VerifyAppUsageTimeHistogram(base::Minutes(5),
+                              /*expected_count=*/1, AppTypeName::kArc);
+
+  FastForwardBy(base::Minutes(2));
+  ModifyInstance(app_id, window.get(), kInactiveInstanceState);
+
+  Browser* browser = CreateBrowserWindow();
+
+  // Set the browser window active.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kActiveInstanceState);
+
+  FastForwardBy(base::Minutes(3));
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
+  VerifyAppUsageTimeHistogram(base::Minutes(2),
+                              /*expected_count=*/1, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
+                                   AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
+                                   AppTypeNameV2::kChromeBrowser);
+  VerifyAppUsageTimeHistogram(base::Minutes(3),
+                              /*expected_count=*/1,
+                              AppTypeName::kChromeBrowser);
+  VerifyNoAppUsageTimeUkm();
+
+  FastForwardBy(base::Minutes(15));
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
+                                   AppTypeName::kChromeBrowser);
+  VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
+                                   AppTypeNameV2::kChromeBrowser);
+  VerifyAppUsageTimeHistogram(base::Minutes(5),
+                              /*expected_count=*/3,
+                              AppTypeName::kChromeBrowser);
+  VerifyNoAppUsageTimeUkm();
+
+  // Set the browser window inactive.
+  ModifyInstance(app_constants::kChromeAppId,
+                 browser->window()->GetNativeWindow(), kInactiveInstanceState);
+
+  // Set time passed 2 hours to record the usage time AppKM.
+  FastForwardBy(base::Minutes(95));
+  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(18),
+                        AppTypeName::kChromeBrowser);
+  CloseBrowserSynchronously(browser);
 }
 
 }  // namespace apps

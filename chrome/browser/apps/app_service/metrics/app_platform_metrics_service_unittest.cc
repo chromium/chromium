@@ -1114,66 +1114,7 @@ TEST_F(AppPlatformMetricsServiceTest, AppRunningPercentage) {
                                       /*expected_count=*/1, AppTypeName::kArc);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTime) {
-  // Create an ARC app window.
-  std::string app_id = "aa";
-  InstallOneApp(app_id, AppType::kArc, "com.google.AA", Readiness::kReady,
-                InstallSource::kPlayStore);
-  auto window = std::make_unique<aura::Window>(nullptr);
-  window->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(app_id, window.get(), apps::InstanceState::kActive);
 
-  task_environment_.FastForwardBy(base::Minutes(5));
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeName::kArc);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1, AppTypeNameV2::kArc);
-  VerifyAppUsageTimeHistogram(base::Minutes(5),
-                              /*expected_count=*/1, AppTypeName::kArc);
-
-  task_environment_.FastForwardBy(base::Minutes(2));
-  ModifyInstance(app_id, window.get(), kInactiveInstanceState);
-
-  std::unique_ptr<Browser> browser = CreateBrowserWindow();
-
-  // Set the browser window active.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(), kActiveInstanceState);
-
-  task_environment_.FastForwardBy(base::Minutes(3));
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
-  VerifyAppUsageTimeHistogram(base::Minutes(2),
-                              /*expected_count=*/1, AppTypeName::kArc);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
-                                   AppTypeName::kChromeBrowser);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/1,
-                                   AppTypeNameV2::kChromeBrowser);
-  VerifyAppUsageTimeHistogram(base::Minutes(3),
-                              /*expected_count=*/1,
-                              AppTypeName::kChromeBrowser);
-  VerifyNoAppUsageTimeUkm();
-
-  task_environment_.FastForwardBy(base::Minutes(15));
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeName::kArc);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/2, AppTypeNameV2::kArc);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
-                                   AppTypeName::kChromeBrowser);
-  VerifyAppUsageTimeCountHistogram(/*expected_count=*/4,
-                                   AppTypeNameV2::kChromeBrowser);
-  VerifyAppUsageTimeHistogram(base::Minutes(5),
-                              /*expected_count=*/3,
-                              AppTypeName::kChromeBrowser);
-  VerifyNoAppUsageTimeUkm();
-
-  // Set the browser window inactive.
-  ModifyInstance(app_constants::kChromeAppId,
-                 browser->GetWindow()->GetNativeWindow(),
-                 kInactiveInstanceState);
-
-  // Set time passed 2 hours to record the usage time AppKM.
-  task_environment_.FastForwardBy(base::Minutes(95));
-  VerifyAppUsageTimeUkm(app_constants::kChromeAppId, base::Minutes(18),
-                        AppTypeName::kChromeBrowser);
-}
 
 TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkm) {
   std::unique_ptr<Browser> browser = CreateBrowserWindow();
