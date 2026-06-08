@@ -384,8 +384,12 @@ final class SigninBridge {
                                     isWebSignin
                                             ? SupplierFlow.WEB_SIGNIN
                                             : SupplierFlow.EXTENSIONS));
-            coordinator.startSigninFlow(
-                    config, new SigninDelegateContext(tab.getId(), continueUrl));
+            if (isWebSignin) {
+                coordinator.startSigninFlow(
+                        config, new SigninDelegateContext(tab.getId(), continueUrl));
+            } else {
+                coordinator.startSigninFlow(config);
+            }
             return;
         }
 

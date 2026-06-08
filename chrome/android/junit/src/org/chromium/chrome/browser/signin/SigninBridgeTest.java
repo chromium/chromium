@@ -690,16 +690,20 @@ public class SigninBridgeTest {
     private void verifyBottomSheetStartSigninFlow(@Nullable CoreAccountId accountId) {
         ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
                 ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
-        ArgumentCaptor<DelegateContext> delegateContextCaptor =
-                ArgumentCaptor.forClass(DelegateContext.class);
-        verify(mCoordinatorMock)
-                .startSigninFlow(configCaptor.capture(), delegateContextCaptor.capture());
-        Assert.assertNotNull(delegateContextCaptor.getValue());
+        if (mIsWebSignin) {
+            ArgumentCaptor<DelegateContext> delegateContextCaptor =
+                    ArgumentCaptor.forClass(DelegateContext.class);
+            verify(mCoordinatorMock)
+                    .startSigninFlow(configCaptor.capture(), delegateContextCaptor.capture());
+            Assert.assertNotNull(delegateContextCaptor.getValue());
+            SigninDelegateContext delegateContext =
+                    (SigninDelegateContext) delegateContextCaptor.getValue();
+            Assert.assertEquals(mContinueUrl, delegateContext.getContinueUrl());
+            Assert.assertEquals(TAB_ID, delegateContext.getTabId());
+        } else {
+            verify(mCoordinatorMock).startSigninFlow(configCaptor.capture());
+        }
         BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
         Assert.assertEquals(accountId, config.selectedCoreAccountId);
-        SigninDelegateContext delegateContext =
-                (SigninDelegateContext) delegateContextCaptor.getValue();
-        Assert.assertEquals(mContinueUrl, delegateContext.getContinueUrl());
-        Assert.assertEquals(TAB_ID, delegateContext.getTabId());
     }
 }
