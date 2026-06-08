@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -128,17 +126,6 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
     bool privacy_notice_fulfilled = true,
     StreamModelUpdateRequest::Source source =
         StreamModelUpdateRequest::Source::kNetworkLoadMore);
-
-feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name);
-feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name);
-WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url);
-feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
-    const std::string& follow_name);
-feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse();
-feedwire::webfeed::QueryWebFeedResponse SuccessfulQueryResponse(
-    const std::string& query_name);
-feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain);
-
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_TEST_STREAM_BUILDER_H_

@@ -27,7 +27,6 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"

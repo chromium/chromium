@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/eventid.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
@@ -382,69 +381,4 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
   generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
   return generator.MakeNextPage(page_number, source);
 }
-
-feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
-  feedstore::WebFeedInfo result;
-  result.set_web_feed_id("id_" + name);
-  result.set_title("Title " + name);
-  result.mutable_favicon()->set_url("http://favicon/" + name);
-  result.set_follower_count(123);
-  result.set_visit_uri("https://" + name + ".com");
-  feedwire::webfeed::WebFeedMatcher* matcher = result.add_matchers();
-  feedwire::webfeed::WebFeedMatcher::Criteria* criteria =
-      matcher->add_criteria();
-  criteria->set_criteria_type(
-      feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
-  criteria->set_text(name + ".com");
-  return result;
-}
-
-feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name) {
-  feedwire::webfeed::WebFeed result;
-  result.set_name("id_" + name);
-  result.set_title("Title " + name);
-  result.set_subtitle("Subtitle " + name);
-  result.set_detail_text("details...");
-  result.set_visit_uri("https://" + name + ".com");
-  result.set_follower_count(kFollowerCount);
-  *result.add_web_feed_matchers() = MakeDomainMatcher(name + ".com");
-  return result;
-}
-
-feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
-    const std::string& follow_name) {
-  feedwire::webfeed::FollowWebFeedResponse response;
-  *response.mutable_web_feed() = MakeWireWebFeed(follow_name);
-  SetConsistencyToken(response, "follow-ct");
-  return response;
-}
-
-feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse() {
-  feedwire::webfeed::UnfollowWebFeedResponse response;
-  SetConsistencyToken(response, "unfollow-ct");
-  return response;
-}
-feedwire::webfeed::QueryWebFeedResponse SuccessfulQueryResponse(
-    const std::string& query_name) {
-  feedwire::webfeed::QueryWebFeedResponse response;
-  *response.mutable_web_feed() = MakeWireWebFeed(query_name);
-  SetConsistencyToken(response, "query-ct");
-  return response;
-}
-
-WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
-  WebFeedPageInformation info;
-  info.SetUrl(GURL(url));
-  return info;
-}
-
-feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain) {
-  feedwire::webfeed::WebFeedMatcher result;
-  feedwire::webfeed::WebFeedMatcher::Criteria* criteria = result.add_criteria();
-  criteria->set_criteria_type(
-      feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
-  criteria->set_text(domain);
-  return result;
-}
-
 }  // namespace feed

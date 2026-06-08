@@ -15,7 +15,7 @@
 #include "base/types/id_type.h"
 #include "base/values.h"
 #include "components/feed/core/proto/v2/store.pb.h"
-// #include "components/feed/core/proto/v2/wire/chrome_fulfillment_info.pb.h"
+#include "components/feed/core/proto/v2/wire/chrome_fulfillment_info.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/info_card.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"

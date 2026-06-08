@@ -30,7 +30,6 @@
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"

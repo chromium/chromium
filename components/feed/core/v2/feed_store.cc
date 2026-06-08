@@ -153,8 +153,6 @@ bool IsLocalActionKey(const std::string& key) {
   return base::StartsWith(key, kLocalActionPrefix);
 }
 
-// TODO(crbug.com/407797637): remove kSubscribedWebFeeds, kRecommendedWebFeed,
-// kRecommendedWebFeedIndex and kPendingWebFeedOperation from store.proto
 std::string KeyForRecord(const feedstore::Record& record) {
   switch (record.data_case()) {
     case feedstore::Record::kStreamData: {
@@ -179,10 +177,6 @@ std::string KeyForRecord(const feedstore::Record& record) {
     case feedstore::Record::kDocView:
       return DocViewKey(record.doc_view());
     case feedstore::Record::DATA_NOT_SET:
-    case feedstore::Record::kSubscribedWebFeeds:
-    case feedstore::Record::kRecommendedWebFeed:
-    case feedstore::Record::kRecommendedWebFeedIndex:
-    case feedstore::Record::kPendingWebFeedOperation:
       break;
   }
   NOTREACHED() << "Invalid record case " << record.data_case();

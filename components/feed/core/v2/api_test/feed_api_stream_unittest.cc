@@ -40,9 +40,6 @@
 namespace feed {
 namespace test {
 namespace {
-
-using ::feedwire::webfeed::WebFeedChangeReason;
-
 const int kTestInfoCardType1 = 101;
 const int kTestInfoCardType2 = 8888;
 const int kMinimumViewIntervalSeconds = 5 * 60;

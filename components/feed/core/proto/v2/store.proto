@@ -9,8 +9,6 @@ package feedstore;
 import "components/feed/core/proto/v2/wire/content_id.proto";
 import "components/feed/core/proto/v2/wire/feed_action.proto";
 import "components/feed/core/proto/v2/wire/stream_structure.proto";
-import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
-import "components/feed/core/proto/v2/wire/web_feeds.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -26,10 +24,6 @@ option optimize_for = LITE_RUNTIME;
 // s/<stream-key>/<content-id>      -> shared_state
 // a/<action-id>                    -> action
 // m                                -> metadata
-// subs                             -> subscribed_web_feeds
-// recommendedIndex                 -> recommended_web_feed_index
-// R/<web_feed_id>                  -> recommended_web_feed
-// W/<operation-id>                 -> pending_web_feed_operation
 // v/<docid>/<timestamp>            -> docview
 message Record {
   oneof data {
@@ -39,12 +33,9 @@ message Record {
     StoredAction local_action = 4;
     StreamSharedState shared_state = 5;
     Metadata metadata = 6;
-    SubscribedWebFeeds subscribed_web_feeds = 7;
-    WebFeedInfo recommended_web_feed = 8;
-    RecommendedWebFeedIndex recommended_web_feed_index = 9;
-    PendingWebFeedOperation pending_web_feed_operation = 10;
     DocView doc_view = 11;
   }
+  reserved 7, 8, 9, 10;
 }
 
 // List of the hashes for all the contents in a collection (carousel, list,
@@ -144,9 +135,6 @@ message Metadata {
   // Whether personalization is enabled for Discover, as reported by the last
   // FeedQuery response.
   bool discover_personalization_enabled = 8;
-  // Count of how many times the user has followed from the main menu, so we
-  // can show appropriate user education help for the following feed.
-  int32 followed_from_web_page_menu_count = 9;
   // The list of IDs representing the most recent contents viewed by the user.
   // The size of the list is capped to
   // feedstore_util::kMaxMostRecentContentHashes. The IDs are stored in the
@@ -155,7 +143,7 @@ message Metadata {
   // Serialized server-provided feed launch CUI metadata.
   bytes feed_launch_cui_metadata = 12;
 
-  reserved 10;
+  reserved 9, 10;
 }
 
 // A set of StreamStructures that should be applied to a stream.
@@ -251,68 +239,6 @@ message StoredAction {
   int32 upload_attempt_count = 2;
   // The action to upload.
   feedwire.FeedAction action = 3;
-}
-
-// List of web feeds for which the user is subscribed.
-message SubscribedWebFeeds {
-  repeated WebFeedInfo feeds = 1;
-  // The unix timestamp in milliseconds that this data was updated from the
-  // server.
-  int64 update_time_millis = 2;
-}
-
-message RecommendedWebFeedIndex {
-  message Entry {
-    string web_feed_id = 1;
-    repeated feedwire.webfeed.WebFeedMatcher matchers = 2;
-  }
-  repeated Entry entries = 1;
-  // The unix timestamp in milliseconds that this data was updated from the
-  // server.
-  int64 update_time_millis = 2;
-}
-
-// Reference to an image.
-message Image {
-  string url = 1;
-}
-
-// See http://go/chrome-web-feed-api.
-message WebFeedInfo {
-  enum State {
-    STATE_UNSPECIFIED = 0;
-    INACTIVE = 1;
-    ACTIVE = 2;
-    WAITING_FOR_CONTENT = 4;
-  }
-  string web_feed_id = 1;
-  string title = 2;
-  string subtitle = 3;
-  string detail_text = 4;
-  string visit_uri = 5;
-  string rss_uri = 6;
-  Image favicon = 7;
-  int64 follower_count = 8;
-  State state = 9;
-  repeated feedwire.webfeed.WebFeedMatcher matchers = 10;
-}
-
-message PendingWebFeedOperation {
-  enum Kind {
-    KIND_UNSPECIFIED = 0;
-    SUBSCRIBE = 1;
-    UNSUBSCRIBE = 2;
-  }
-  // Unique ID, for sorting operations.
-  int64 id = 1;
-  // The operation kind.
-  Kind kind = 2;
-  // The web feed ID to either subscribe or unsubscribe.
-  string web_feed_id = 3;
-  // Number of times the operation has been attempted.
-  int32 attempts = 4;
-  // Reason for this change.
-  feedwire.webfeed.WebFeedChangeReason change_reason = 5;
 }
 
 message DocView {

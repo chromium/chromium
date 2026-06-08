@@ -21,8 +21,6 @@
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/table.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feed_id.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feed_identifier_token.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"

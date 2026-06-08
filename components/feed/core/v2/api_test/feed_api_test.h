@@ -21,7 +21,6 @@
 #include "components/feed/core/proto/v2/keyvalue_store.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
-#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
@@ -469,7 +468,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   // auto-unload, which will only take place if there are no attached surfaces.
   void WaitForModelToAutoUnload();
   void UnloadModel(const StreamType& stream_type);
-  void FollowWebFeed(const WebFeedPageInformation page_info);
 
   // Dumps the state of |FeedStore| to a string for debugging.
   std::string DumpStoreState(bool print_keys = false);

@@ -53,31 +53,6 @@ public interface SurfaceActionsHandler {
         int NEW_TAB_IN_GROUP = 7;
     }
 
-    /** Options for entry points to the single web feed. */
-    @IntDef({
-        OpenWebFeedEntryPoint.OTHER,
-        OpenWebFeedEntryPoint.ATTRIBUTION,
-        OpenWebFeedEntryPoint.RECOMMENDATION,
-        OpenWebFeedEntryPoint.GROUP_HEADER,
-        OpenWebFeedEntryPoint.MAX_VALUE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface OpenWebFeedEntryPoint {
-        /** Other */
-        int OTHER = 0;
-
-        /** Feed Attribution */
-        int ATTRIBUTION = 1;
-
-        /** Feed Recommendation */
-        int RECOMMENDATION = 2;
-
-        /** Group Header */
-        int GROUP_HEADER = 3;
-
-        int MAX_VALUE = GROUP_HEADER;
-    }
-
     /** Options when opening URLs with openUrl(). */
     interface OpenUrlOptions {
         /** Returns the title. Currently used only for READ_LATER. */
@@ -131,65 +106,6 @@ public interface SurfaceActionsHandler {
 
     default void updateUserProfileOnLinkClick(
             String url, List<Long> entityMids, long contentCategoryMediaType, long cardCategory) {}
-
-    /** A request to follow or unfollow a WebFeed. */
-    interface WebFeedFollowUpdate {
-        /**
-         * Called after a WebFeedFollowUpdate completes, reporting whether or not it is successful.
-         * For durable requests, this reports the status of the first attempt. Subsequent attempts
-         * do not trigger this callback.
-         */
-        interface Callback {
-            void requestComplete(boolean success);
-        }
-
-        /** The WebFeed name (ID) being operated on. */
-        String webFeedName();
-
-        /** Whether to follow, or unfollow the WebFeed. */
-        default boolean isFollow() {
-            return true;
-        }
-
-        /**
-         * Whether the request will be automatically retried later if it fails (for example, due to
-         * a network error).
-         */
-        default boolean isDurable() {
-            return false;
-        }
-
-        /** The callback to be informed of completion, or null. */
-        default WebFeedFollowUpdate.@Nullable Callback callback() {
-            return null;
-        }
-
-        /** The WebFeedChangeReason for this change. */
-        default int webFeedChangeReason() {
-            return 0;
-        }
-    }
-
-    /** Attempts to follow or unfollow a WebFeed. */
-    @Deprecated
-    default void updateWebFeedFollowState(WebFeedFollowUpdate update) {}
-
-    /**
-     * Opens a specific WebFeed by name.
-     * @param webFeedName the relevant web feed name.
-     */
-    @Deprecated
-    default void openWebFeed(String webFeedName) {
-        openWebFeed(webFeedName, OpenWebFeedEntryPoint.OTHER);
-    }
-
-    /**
-     * Opens a specific WebFeed by name with a specific entrypoint.
-     *
-     * @param webFeedName the relevant web feed name.
-     * @param entryPoint the entry point used to launch the feed.
-     */
-    default void openWebFeed(String webFeedName, @OpenWebFeedEntryPoint int entryPoint) {}
 
     /**
      * Requests that sign-in flow be started.
