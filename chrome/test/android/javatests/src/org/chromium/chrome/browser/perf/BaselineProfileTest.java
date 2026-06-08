@@ -103,7 +103,7 @@ public class BaselineProfileTest {
                     Log.i(TAG, "startActivity(CTA)");
                     context.startActivity(ctaIntent);
                     String urlWithoutScheme = url.substring(7);
-                    IUi2Locator urlTextLocator = Ui2Locators.withText(urlWithoutScheme);
+                    IUi2Locator urlTextLocator = Ui2Locators.withTextContaining(urlWithoutScheme);
                     Log.i(TAG, "Waiting for omnibox to show URL");
                     UiAutomatorUtils.getInstance().waitUntilAnyVisible(urlTextLocator);
                     Log.i(TAG, "CTA load complete");
