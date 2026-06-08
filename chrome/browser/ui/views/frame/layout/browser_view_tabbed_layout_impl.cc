@@ -344,6 +344,9 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
             vertical_tab_strip->GetMinimumSize().width(),
             base::ClampCeil(
                 params.leading_exclusion.ContentWithPadding().width()));
+      } else {
+        min_vertical_tab_strip_width =
+            vertical_tab_strip->GetMinimumSize().width();
       }
 
       // Account for grab handle. This has to be done after the minimum size

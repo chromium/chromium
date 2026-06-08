@@ -25,6 +25,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -99,6 +100,14 @@ class VerticalTabStripView::ActivatedViewTracker : public views::ViewObserver {
 VerticalTabStripView::VerticalTabStripView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
       activated_view_tracker_(std::make_unique<ActivatedViewTracker>()) {
+  // Paint to a layer and mask to bounds to prevent tabs from overflowing and
+  // drawing outside the window boundaries on Linux when the window is small.
+  // This is configured here rather than a higher-level container so that drop
+  // shadows are not clipped.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetMasksToBounds(true);
+
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kTabStripElementId);
 
