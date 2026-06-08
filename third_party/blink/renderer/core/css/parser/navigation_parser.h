@@ -8,11 +8,11 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/css/parser/conditional_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/route_matching/navigation_preposition.h"
 
 namespace blink {
 
-class AtomicString;
 class CSSParserTokenStream;
 class Document;
 class NavigationQuery;
@@ -23,7 +23,7 @@ class NavigationParser : public ConditionalParser {
   static NavigationQuery* ParseQuery(CSSParserTokenStream&, const Document&);
   static RouteLocation* ParseLocation(CSSParserTokenStream&, const Document&);
   static std::optional<NavigationPreposition> ParsePrepositionIdent(
-      const AtomicString& ident);
+      CSSParserToken);
 
   explicit NavigationParser(const Document& document) : document_(document) {}
 

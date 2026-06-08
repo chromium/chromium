@@ -210,10 +210,9 @@ ActiveNavigationCondition* CSSSelectorParser::ParseActiveNavigationCondition(
   // <navigation-relation> = at | with | from | to
   NavigationPreposition preposition = NavigationPreposition::kWith;
   if (stream.Peek().GetType() == kIdentToken) {
-    AtomicString ident(stream.Peek().Value().ToString());
     // <navigation-relation>?
     if (std::optional<NavigationPreposition> parsed_preposition =
-            NavigationParser::ParsePrepositionIdent(ident)) {
+            NavigationParser::ParsePrepositionIdent(stream.Peek())) {
       preposition = *parsed_preposition;
       stream.ConsumeIncludingWhitespace();
     }

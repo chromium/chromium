@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<title>Serialization of @navigation</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  test(()=> {
+    const canonical = "@navigation (at: --foo) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule(" @Navigation  (At:--foo){  \n} ", canonical);
+  }, "navigation-location-test");
+
+  test(()=> {
+    const canonical = "@navigation (history: back) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule("@Navigation  ( History:Back){ \n } ", canonical);
+  }, "navigation-type-test");
+
+  test(()=> {
+    const canonical = "@navigation (phase: loading) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule("@Navigation  ( Phase:Loading){ \n } ", canonical);
+  }, "navigation-phase-test");
+
+  test(()=> {
+    const canonical = "@navigation ((from: --a) or (at: --b)) {\n}";
+    test_valid_rule(canonical);
+    test_valid_rule("@Navigation  ( ( From:--a ) Or ( At:--b) ){ \n} ", canonical);
+  }, "complex");
+</script>
