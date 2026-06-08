@@ -36,11 +36,8 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
-#include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
@@ -249,8 +246,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void TearDown() override {
     AppPlatformMetricsServiceTestBase::TearDown();
-    browser_window1_.reset();
-    browser_window2_.reset();
     metrics::structured::StructuredMetricsClient::Get()->UnsetDelegate();
   }
 
@@ -426,48 +421,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     user_segment_ = user_segment;
   }
 
-  std::unique_ptr<Browser> CreateBrowserWithAuraWindow1() {
-    std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
-        &delegate1_, aura::client::WINDOW_TYPE_NORMAL);
-    window->SetId(0);
-    window->Init(ui::LAYER_TEXTURED);
-    Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_NORMAL;
-    browser_window1_ =
-        std::make_unique<TestBrowserWindowAura>(std::move(window));
-    params.window = browser_window1_.release();
-    return Browser::DeprecatedCreateOwnedForTesting(params);
-  }
 
-  std::unique_ptr<Browser> CreateBrowserWithAuraWindow2() {
-    std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
-        &delegate2_, aura::client::WINDOW_TYPE_NORMAL);
-    window->SetId(0);
-    window->Init(ui::LAYER_TEXTURED);
-    Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_NORMAL;
-    browser_window2_ =
-        std::make_unique<TestBrowserWindowAura>(std::move(window));
-    params.window = browser_window2_.release();
-    return Browser::DeprecatedCreateOwnedForTesting(params);
-  }
-
-  std::unique_ptr<Browser> CreateBrowserWindow(
-      InstallReason install_reason = InstallReason::kUser) {
-    InstallOneApp(app_constants::kChromeAppId, AppType::kChromeApp, "Chrome",
-                  Readiness::kReady, InstallSource::kSystem,
-                  /*is_platform_app=*/false, WindowMode::kUnknown,
-                  install_reason);
-    std::unique_ptr<Browser> browser = CreateBrowserWithAuraWindow1();
-    EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
-    return browser;
-  }
-
-  std::unique_ptr<aura::Window> CreateWebAppWindow(aura::Window* parent) {
-    return aura::test::CreateTestWindow({.delegate = &delegate1_,
-                                         .parent = parent,
-                                         .window_id = 1});
-  }
 
   GURL GetSourceUrlForApp(const std::string& app_id) {
     return AppPlatformMetrics::GetURLForApp(profile(), app_id);
@@ -761,10 +715,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
  private:
   ash::SessionTerminationManager session_termination_manager_;
-  std::unique_ptr<TestBrowserWindowAura> browser_window1_;
-  std::unique_ptr<TestBrowserWindowAura> browser_window2_;
-  aura::test::TestWindowDelegate delegate1_;
-  aura::test::TestWindowDelegate delegate2_;
+
   std::map<std::string, TestApp> pre_installed_apps_;
   UserTypeByDeviceTypeMetricsProvider::UserSegment user_segment_ =
       UserTypeByDeviceTypeMetricsProvider::UserSegment::kUnmanaged;
