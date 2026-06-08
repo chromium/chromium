@@ -84,6 +84,7 @@ class ShellClientData : public test::TestClient::CustomData {
 
   // Start Drag and Drop operation.
   void StartDrag(uint32_t serial);
+  void StartDrag(uint32_t serial, wl_surface* origin);
   void DestroyDataSource();
 
   void Close();
@@ -91,6 +92,9 @@ class ShellClientData : public test::TestClient::CustomData {
   ResourceKey GetSurfaceResourceKey() const;
 
   bool close_called() const { return close_called_; }
+  wl_surface* GetWlSurface() const { return surface_.get(); }
+  bool HasDataSource() const { return !!data_source_; }
+  wl_data_device* GetDataDevice() const { return data_device_.get(); }
 
   void set_data_offer(
       std::unique_ptr<wl_data_offer, decltype(&wl_data_offer_destroy)>

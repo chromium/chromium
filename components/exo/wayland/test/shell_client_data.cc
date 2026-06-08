@@ -247,6 +247,10 @@ void ShellClientData::RequestWindowBounds(const gfx::Rect& bounds,
 }
 
 void ShellClientData::StartDrag(uint32_t serial) {
+  StartDrag(serial, surface_.get());
+}
+
+void ShellClientData::StartDrag(uint32_t serial, wl_surface* origin) {
   DCHECK(!data_source_);
   data_source_.reset(wl_data_device_manager_create_data_source(
       client_->globals().data_device_manager.get()));
@@ -266,8 +270,8 @@ void ShellClientData::StartDrag(uint32_t serial) {
   };
   wl_data_source_add_listener(data_source_.get(), &kDataSourceListener, this);
 
-  wl_data_device_start_drag(data_device_.get(), data_source_.get(),
-                            surface_.get(), nullptr, serial);
+  wl_data_device_start_drag(data_device_.get(), data_source_.get(), origin,
+                            nullptr, serial);
 }
 
 void ShellClientData::DestroyDataSource() {

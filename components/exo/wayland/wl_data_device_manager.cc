@@ -353,6 +353,24 @@ class WaylandDataDeviceDelegate : public DataDeviceDelegate {
                  Surface* origin,
                  Surface* icon,
                  uint32_t serial) {
+    if (!origin) {
+      wl_resource_post_error(data_device_resource_, WL_DATA_DEVICE_ERROR_ROLE,
+                             "origin surface is null");
+      return;
+    }
+    if (!origin->window()->GetRootWindow()) {
+      LOG(ERROR) << "Origin surface has no root window.";
+      if (source) {
+        source->Cancelled();
+      }
+      return;
+    }
+    if (icon && icon->HasSurfaceDelegate()) {
+      wl_resource_post_error(data_device_resource_, WL_DATA_DEVICE_ERROR_ROLE,
+                             "icon surface already has another role");
+      return;
+    }
+
     std::optional<wayland::SerialTracker::EventType> event_type =
         serial_tracker_->GetEventType(serial);
     if (event_type == std::nullopt) {

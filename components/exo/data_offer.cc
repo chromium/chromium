@@ -212,7 +212,7 @@ void DataOffer::Receive(const std::string& mime_type, base::ScopedFD fd) {
   const auto callbacks_it = data_callbacks_.find(mime_type);
   if (callbacks_it != data_callbacks_.end()) {
     // Set cache with empty data to indicate in process.
-    DCHECK(data_cache_.count(mime_type) == 0);
+    CHECK(data_cache_.count(mime_type) == 0);
     data_cache_.emplace(mime_type, nullptr);
     std::move(callbacks_it->second)
         .Run(base::BindOnce(&DataOffer::OnDataReady,
@@ -263,7 +263,7 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   if (!delegate_) {
     return;
   }
-  DCHECK_EQ(0u, data_callbacks_.size());
+  CHECK_EQ(0u, data_callbacks_.size());
 
   ui::EndpointType endpoint_type =
       data_exchange_delegate->GetDataTransferEndpointType(target);
@@ -388,7 +388,7 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
 void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
                                  const ui::Clipboard& data,
                                  ui::EndpointType endpoint_type) {
-  DCHECK_EQ(0u, data_callbacks_.size());
+  CHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(endpoint_type);
 
   data.GetAllAvailableFormats(
@@ -469,7 +469,7 @@ void DataOffer::OnDataReady(const std::string& mime_type,
   // Update cache from nullptr to data.
   const auto cache_it = data_cache_.find(mime_type);
   CHECK(cache_it != data_cache_.end());
-  DCHECK(!cache_it->second);
+  CHECK(!cache_it->second);
   data_cache_.erase(cache_it);
   data_cache_.emplace(mime_type, data);
 

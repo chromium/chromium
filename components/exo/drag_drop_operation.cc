@@ -101,8 +101,8 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
       : SurfaceTreeHost("ExoDragIcon"),
         ScopedSurface(icon, operation),
         operation_(operation) {
-    DCHECK(operation_);
-    DCHECK(!icon->HasSurfaceDelegate());
+    CHECK(operation_);
+    CHECK(!icon->HasSurfaceDelegate());
 
     Surface* origin_surface = operation_->origin_->get();
     origin_surface->window()->AddChild(host_window());
@@ -176,10 +176,10 @@ DragDropOperation::DragDropOperation(
       os_exchange_data_(std::make_unique<ui::OSExchangeData>()),
       event_source_(event_source) {
   aura::Window* root_window = origin_->get()->window()->GetRootWindow();
-  DCHECK(root_window);
+  CHECK(root_window);
   drag_drop_controller_ = static_cast<ash::DragDropController*>(
       aura::client::GetDragDropClient(root_window));
-  DCHECK(drag_drop_controller_);
+  CHECK(drag_drop_controller_);
 
   if (drag_drop_controller_->IsDragDropInProgress())
     drag_drop_controller_->DragCancel();
