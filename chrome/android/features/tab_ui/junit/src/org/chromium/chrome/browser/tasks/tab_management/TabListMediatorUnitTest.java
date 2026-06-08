@@ -3634,7 +3634,7 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testDidCreateNewGroup() {
+    public void testDidCreateNewGroup_InGroupedLayout() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
 
         createTabGroup(Collections.singletonList(mTab1), TAB_GROUP_ID);
@@ -3654,6 +3654,64 @@ public class TabListMediatorUnitTest {
 
         assertNotNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
         assertNull(mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
+    }
+
+    @Test
+    public void testDidCreateNewGroup_InNestedLayout() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        assertEquals(2, mModelList.size());
+        assertEquals(mTab1.getId(), mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getRelatedTabList(mTab1.getId()))
+                .thenReturn(Collections.singletonList(mTab1));
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab1, mTabModel);
+
+        // After creating the group, a new Header should be injected.
+        assertEquals(3, mModelList.size());
+        assertEquals(TabProperties.UiType.TAB, mModelList.get(0).type);
+        assertEquals(TAB_GROUP_ID, mModelList.get(0).model.get(TabProperties.TAB_GROUP_HEADER_ID));
+
+        PropertyModel childModel = mModelList.get(1).model;
+        assertEquals(mTab1.getId(), childModel.get(TabProperties.TAB_ID));
+        assertNotNull(childModel.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+    }
+
+    @Test
+    public void testDidCreateNewGroup_RestoresScrambledTabs_InNestedLayout() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+
+        assertEquals(2, mModelList.size());
+        assertEquals(mTab1.getId(), mModelList.get(0).model.get(TabProperties.TAB_ID));
+        assertEquals(mTab2.getId(), mModelList.get(1).model.get(TabProperties.TAB_ID));
+
+        // Simulate merging Tab 2 into Tab 1 (creating a new group).
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTabModel.isIncognito()).thenReturn(false);
+        when(mTabModel.getTabGroupColorWithFallback(TAB_GROUP_ID)).thenReturn(COLOR_2);
+        when(mTabModel.getRelatedTabList(mTab1.getId())).thenReturn(Arrays.asList(mTab1, mTab2));
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
+        mTabGroupObserverCaptor.getValue().didCreateNewGroup(mTab1, mTabModel);
+
+        assertEquals(3, mModelList.size());
+
+        assertEquals(TabProperties.UiType.TAB, mModelList.get(0).type);
+        assertEquals(TAB_GROUP_ID, mModelList.get(0).model.get(TabProperties.TAB_GROUP_HEADER_ID));
+
+        assertEquals(mTab1.getId(), mModelList.get(1).model.get(TabProperties.TAB_ID));
+        assertNotNull(mModelList.get(1).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
+
+        assertEquals(mTab2.getId(), mModelList.get(2).model.get(TabProperties.TAB_ID));
+        assertNotNull(mModelList.get(2).model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER));
     }
 
     @Test
