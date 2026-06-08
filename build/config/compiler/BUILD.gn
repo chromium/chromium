@@ -2031,6 +2031,10 @@ config("default_clippy_lints") {
     # Lints disabled during the initial rollout period (when any objection
     # coming from a Chromium engineer would get a lint disabled):
     "-Aclippy::needless_return",
+
+    # TODO(crbug.com/514692100): Fix or otherwise handle these.
+    "-Aclippy::manual-filter",
+    "-Aclippy::useless-borrows-in-formatting",
   ]
 }
 
