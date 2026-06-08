@@ -14,6 +14,7 @@ mod multiplex_router;
 
 mod marker_types;
 mod pending_associated_endpoint;
+mod pending_associated_endpoint_parsing;
 mod pending_endpoint;
 
 pub mod interface;

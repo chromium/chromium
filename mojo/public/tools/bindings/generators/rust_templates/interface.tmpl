@@ -31,9 +31,11 @@
 {{- declare_struct(args_struct(method), method.param_struct, true)}}
 
 impl {{args_struct(method)}} {
-  fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
+  fn serialize_from_parts(registrar: &impl Registrar, {{typed_fields(method.param_struct.fields)}})
+    -> bindings::message::MojomMessage
+  {
     let (payload, handles, interface_ids_offset) =
-       mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} }, &());
+       mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} }, registrar);
     {%- if method.response_parameters %}
     let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
     {%- else %}
@@ -53,9 +55,11 @@ impl {{args_struct(method)}} {
 {{declare_struct(response_struct(method), method.response_param_struct, true)}}
 
 impl {{response_struct(method)}} {
-  fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {
+  fn serialize_from_parts(registrar: &impl Registrar, {{typed_fields(method.response_param_struct.fields)}})
+    -> bindings::message::MojomMessage
+  {
     let (payload, handles, interface_ids_offset) =
-      mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} }, &());
+      mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} }, registrar);
     let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeader::new(
@@ -100,12 +104,18 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
     match message.header.name {
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
-        let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
+        let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} = match
           mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &sender)
-          .expect("Associated interfaces are not yet supported (crbug.com/493274453)");
+        {
+          Ok(parsed) => parsed,
+          Err(err) => {
+            let _ = message.raw_message_handle.unwrap().report_bad_message(&err.to_string());
+            return;
+          }
+        };
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
-          send_response({{response_struct(method)}}::serialize_from_parts({{field_names(method.response_param_struct.fields)}}))
+          send_response({{response_struct(method)}}::serialize_from_parts(&sender, {{field_names(method.response_param_struct.fields)}}))
         };
         {%- endif %}
         self.{{method.name}}(
@@ -136,7 +146,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
 
   #[allow(unused_variables, unused_mut)] // If no messages take a response
   fn handle_incoming_response(
-    message: bindings::message::MojomMessage,
+    mut message: bindings::message::MojomMessage,
     sender: ResponseSender,
     send_response: Self::ResponseCallbackTy)
   {
@@ -146,9 +156,15 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
     match (message.header.name, send_response) {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
-        let parsed: {{response_struct(method)}} =
+        let parsed: {{response_struct(method)}} = match
           mojom_value_parser::deserialize_exact(&message.payload, &mut handles, message.header.interface_ids_offset(), &sender)
-          .expect("Associated interfaces are not yet supported (crbug.com/493274453)");
+        {
+          Ok(parsed) => parsed,
+          Err(err) => {
+            let _ = message.raw_message_handle.unwrap().report_bad_message(&err.to_string());
+            return;
+          }
+        };
         callback(
           {%- for field in method.response_param_struct.fields -%}
             {#- #}parsed.{{field.name}} {{- ", " if not loop.last -}}
@@ -184,7 +200,7 @@ impl<Marker> {{interface.name}} for bindings::remote::GenericRemote<dyn {{interf
   {%- endif -%}
   ) {
     {#- Function body begins here #}
-    let message = {{args_struct(method)}}::serialize_from_parts({{field_names(method.param_struct.fields)}});
+    let message = {{args_struct(method)}}::serialize_from_parts(self.as_registrar(), {{field_names(method.param_struct.fields)}});
     {%- if method.response_parameters %}
     let callback = Some({{callback_ty_name}}::{{method.name}}(Box::new(response_callback)));
     {%- else %}

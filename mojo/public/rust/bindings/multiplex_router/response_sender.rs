@@ -32,3 +32,14 @@ impl ResponseSender {
         self.router.send_message(msg, self.interface_id)
     }
 }
+
+impl crate::pending_associated_endpoint_parsing::Registrar for ResponseSender {
+    fn register_new_endpoint(
+        &self,
+        interface_id: Option<InterfaceId>,
+        endpoint_info: Option<super::EndpointInfo>,
+    ) -> Option<super::MultiplexRouterHandle> {
+        let interface_id = self.router.add_associated_interface(interface_id, endpoint_info)?;
+        Some(super::MultiplexRouterHandle::from_parts(interface_id, &self.router))
+    }
+}

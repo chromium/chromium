@@ -10,10 +10,6 @@
 //! distinguish between them using a const generic argument. The subset of
 //! behavior that's unique to remotes and receivers are implemented only for
 //! the appropriate type in `remote.rs` or `receiver.rs`.
-
-// FOR_RELEASE: Remove when associated interfaces are fully implemented
-#![allow(unused)]
-
 chromium::import! {
   "//mojo/public/rust/system";
   "//base:sequenced_task_runner";
@@ -27,6 +23,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 use crate::interface::DynMojomInterface;
 use crate::marker_types::{IsRemote, Receiver, Remote};
 use crate::multiplex_router::{EndpointInfo, InterfaceId, MultiplexRouterHandle};
+use crate::pending_associated_endpoint_parsing::Registrar;
 
 /// The core state of a pending associated endpoint.
 ///
@@ -73,7 +70,7 @@ impl AssociatedState {
     /// Returns the interface ID of the newly created handle, to be serialized.
     pub(crate) fn register_with_router(
         shared_state: SharedAssociatedState,
-        router_ref: &MultiplexRouterHandle,
+        router_ref: &impl Registrar,
     ) -> InterfaceId {
         // This removes the endpoint info from the shared state. This is fine:
         // 1. If it was present, the other side is already finished with the shared

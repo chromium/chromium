@@ -175,6 +175,8 @@
 use crate::message::MojomMessage;
 
 pub use crate::multiplex_router::ResponseSender;
+#[doc(hidden)] // Referenced by generated bindings code
+pub use crate::pending_associated_endpoint_parsing::Registrar;
 
 /// This trait abstracts over the parts of individual Mojom `interface`s, such
 /// as `MathService`. This trait is what's used by generic `Remote`s and

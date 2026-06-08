@@ -157,11 +157,13 @@ fn derive_mojomparse_struct(
         const _: () = {
             chromium::import! {
                 "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
+                 "//mojo/public/rust/bindings";
             }
 
+            use bindings::interface::Registrar;
             use mojom_value_parser_core::*;
 
-            impl<Context> MojomParse<Context> for #name {
+            impl<Context: Registrar> MojomParse<Context> for #name {
                 fn mojom_type() -> MojomType {
                     let (field_names, fields) : (Vec<String>, Vec<MojomType>) = vec![
                         #(#mojom_type_fields),*
@@ -250,12 +252,14 @@ fn derive_mojomparse_union(
         const _: () = {
             chromium::import! {
                 "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
+                "//mojo/public/rust/bindings";
             }
 
+            use bindings::interface::Registrar;
             use mojom_value_parser_core::*;
             use std::collections::BTreeMap;
 
-            impl<Context> MojomParse<Context> for #name {
+            impl<Context: Registrar> MojomParse<Context> for #name {
                 fn mojom_type() -> MojomType {
                     let variants : BTreeMap<i32, MojomType> = [
                         #(#mojom_type_fields),*

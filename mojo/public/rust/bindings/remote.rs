@@ -43,6 +43,7 @@ use crate::interface::{DynMojomInterface, MojomInterface};
 use crate::marker_types::{Associated, Primary};
 use crate::message::MojomMessage;
 use crate::multiplex_router::{EndpointInfo, MultiplexRouterHandle, ResponseSender};
+use crate::pending_associated_endpoint_parsing::Registrar;
 
 /// This type looks very scary, but mostly it's just a map from request ID to
 /// the function to invoke when we get a response to that request. For examples
@@ -287,6 +288,10 @@ where
             }
         };
         T::handle_incoming_response(message, sender, response_callback);
+    }
+
+    pub fn as_registrar(&self) -> &impl Registrar {
+        self.router.as_ref().as_ref()
     }
 }
 

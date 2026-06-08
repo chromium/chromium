@@ -135,6 +135,16 @@ def _MojomTypeToRustType(ty: mojom.Kind, current_module: mojom.Module,
                                      source_to_target_map)
     return f"bindings::receiver::PendingReceiver<dyn {interface_ty}>"
 
+  if mojom.IsPendingAssociatedRemoteKind(ty):
+    interface_ty = _GetQualifiedName(ty.kind, current_module,
+                                     source_to_target_map)
+    return f"bindings::remote::PendingAssociatedRemote<dyn {interface_ty}>"
+
+  if mojom.IsPendingAssociatedReceiverKind(ty):
+    interface_ty = _GetQualifiedName(ty.kind, current_module,
+                                     source_to_target_map)
+    return f"bindings::receiver::PendingAssociatedReceiver<dyn {interface_ty}>"
+
   if ty not in _mojom_primitive_type_to_rust_type:
     # Raising from a jinja2 call won't display the error message
     print(f"Mojom type {ty} is either undefined, "
