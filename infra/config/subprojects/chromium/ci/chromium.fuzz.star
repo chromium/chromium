@@ -809,6 +809,7 @@ def browser_asan_win_builder(
             "clang",
             "fuzzer",
             "v8_heap",
+            "minimal_symbols",
         ] + gn_extra_configs,
         builderless = False,
         os = os.WINDOWS_DEFAULT,

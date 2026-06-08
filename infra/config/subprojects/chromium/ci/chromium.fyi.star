@@ -1225,6 +1225,7 @@ ci.builder(
         configs = [
             "release_builder",
             "remoteexec",
+            "minimal_symbols",
             "win",
             "x64",
         ],
@@ -1551,6 +1552,7 @@ ci.builder(
         configs = [
             "release_builder",
             "remoteexec",
+            "minimal_symbols",
             "perfetto_zlib",
             "win",
             "x64",
@@ -2342,6 +2344,7 @@ ci.builder(
         configs = [
             "release_builder",
             "remoteexec",
+            "minimal_symbols",
             "win",
             "x64",
         ],
