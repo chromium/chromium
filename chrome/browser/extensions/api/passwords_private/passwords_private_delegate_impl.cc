@@ -355,9 +355,9 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
               profile,
               ServiceAccessType::EXPLICIT_ACCESS),
           MaybeGetPasskeyModel(profile)),
-      password_manager_porter_(
-          std::make_unique<PasswordManagerPorter>(profile,
-                                                  &saved_passwords_presenter_)),
+      password_import_controller_(std::make_unique<PasswordImportController>(
+          profile,
+          &saved_passwords_presenter_)),
       password_export_controller_(std::make_unique<PasswordExportController>(
           profile,
           &saved_passwords_presenter_,
@@ -802,7 +802,7 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
             to_store);
   password_manager::PasswordForm::Store store_to_use =
       *ConvertToPasswordFormStores(to_store).begin();
-  password_manager_porter_->Import(
+  password_import_controller_->Import(
       web_contents, store_to_use,
       base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }
@@ -812,7 +812,7 @@ void PasswordsPrivateDelegateImpl::ContinueImport(
     ImportResultsCallback results_callback,
     content::WebContents* web_contents) {
   if (selected_ids.empty()) {
-    password_manager_porter_->ContinueImport(
+    password_import_controller_->ContinueImport(
         selected_ids, base::BindOnce(&ConvertImportResults)
                           .Then(std::move(results_callback)));
     return;
@@ -835,7 +835,7 @@ void PasswordsPrivateDelegateImpl::ContinueImport(
 }
 
 void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
-  password_manager_porter_->ResetImporter(delete_file);
+  password_import_controller_->ResetImporter(delete_file);
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(
@@ -1286,8 +1286,8 @@ void PasswordsPrivateDelegateImpl::OnImportPasswordsAuthResult(
     return;
   }
 
-  CHECK(password_manager_porter_);
-  password_manager_porter_->ContinueImport(
+  CHECK(password_import_controller_);
+  password_import_controller_->ContinueImport(
       selected_ids,
       base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }

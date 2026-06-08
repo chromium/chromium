@@ -24,7 +24,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils.h"
 #include "chrome/browser/ui/passwords/settings/password_export_controller.h"
-#include "chrome/browser/ui/passwords/settings/password_manager_porter.h"
+#include "chrome/browser/ui/passwords/settings/password_import_controller.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -184,9 +184,9 @@ class PasswordsPrivateDelegateImpl
     return credential_id_generator_.GenerateId(credential);
   }
 
-  void SetPorterForTesting(
-      std::unique_ptr<PasswordManagerPorterInterface> porter) {
-    password_manager_porter_ = std::move(porter);
+  void SetImportControllerForTesting(
+      std::unique_ptr<PasswordImportControllerInterface> controller) {
+    password_import_controller_ = std::move(controller);
   }
 
   void SetRecipientsFetcherForTesting(
@@ -300,7 +300,8 @@ class PasswordsPrivateDelegateImpl
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
 
   // Used to control the export and import flows.
-  std::unique_ptr<PasswordManagerPorterInterface> password_manager_porter_;
+  std::unique_ptr<PasswordImportControllerInterface>
+      password_import_controller_;
   std::unique_ptr<PasswordExportControllerInterface>
       password_export_controller_;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/passwords/settings/password_manager_porter.h"
+#include "chrome/browser/ui/passwords/settings/password_import_controller.h"
 
 #include <string>
 #include <vector>
@@ -48,12 +48,12 @@ ui::SelectFileDialog::FileTypeInfo FileTypeInfoForImport() {
 
 }  // namespace
 
-PasswordManagerPorter::PasswordManagerPorter(
+PasswordImportController::PasswordImportController(
     Profile* profile,
     password_manager::SavedPasswordsPresenter* presenter)
     : profile_(profile), presenter_(presenter) {}
 
-PasswordManagerPorter::~PasswordManagerPorter() {
+PasswordImportController::~PasswordImportController() {
   // There may be open file selection dialogs. We need to let them know that we
   // have gone away so that they do not attempt to call us back.
   if (select_file_dialog_) {
@@ -61,7 +61,7 @@ PasswordManagerPorter::~PasswordManagerPorter() {
   }
 }
 
-void PasswordManagerPorter::Import(
+void PasswordImportController::Import(
     content::WebContents* web_contents,
     password_manager::PasswordForm::Store to_store,
     ImportResultsCallback results_callback) {
@@ -89,7 +89,7 @@ void PasswordManagerPorter::Import(
   PresentImportFileSelector(web_contents);
 }
 
-void PasswordManagerPorter::ContinueImport(
+void PasswordImportController::ContinueImport(
     const std::vector<int>& selected_ids,
     ImportResultsCallback results_callback) {
   if (importer_ &&
@@ -119,7 +119,7 @@ void PasswordManagerPorter::ContinueImport(
       FROM_HERE, base::BindOnce(std::move(results_callback), results));
 }
 
-void PasswordManagerPorter::ResetImporter(bool delete_file) {
+void PasswordImportController::ResetImporter(bool delete_file) {
   // Importer can be reset only in kNotStarted, kFinished,
   // kUserInteractionRequired states, but not in kInProgress.
   if (!importer_ ||
@@ -135,35 +135,27 @@ void PasswordManagerPorter::ResetImporter(bool delete_file) {
   importer_.reset();
 }
 
-void PasswordManagerPorter::SetImporterForTesting(
+void PasswordImportController::SetImporterForTesting(  // IN-TEST
     std::unique_ptr<password_manager::PasswordImporter> importer) {
   importer_ = std::move(importer);
 }
 
-PasswordManagerPorter::ImportFileSelectListener::ImportFileSelectListener(
-    PasswordManagerPorter* owner)
-    : owner_(owner) {}
-
-PasswordManagerPorter::ImportFileSelectListener::~ImportFileSelectListener() =
-    default;
-
-void PasswordManagerPorter::ImportFileSelectListener::FileSelected(
-    const ui::SelectedFileInfo& file,
-    int /* index */) {
-  owner_->ImportPasswordsFromPath(file.path());
-  owner_->select_file_dialog_.reset();
+void PasswordImportController::FileSelected(const ui::SelectedFileInfo& file,
+                                            int /* index */) {
+  ImportPasswordsFromPath(file.path());
+  select_file_dialog_.reset();
 }
 
-void PasswordManagerPorter::ImportFileSelectListener::FileSelectionCanceled() {
-  if (owner_->import_results_callback_) {
+void PasswordImportController::FileSelectionCanceled() {
+  if (import_results_callback_) {
     password_manager::ImportResults results;
     results.status = password_manager::ImportResults::Status::DISMISSED;
-    std::move(owner_->import_results_callback_).Run(results);
+    std::move(import_results_callback_).Run(results);
   }
-  owner_->select_file_dialog_.reset();
+  select_file_dialog_.reset();
 }
 
-void PasswordManagerPorter::PresentImportFileSelector(
+void PasswordImportController::PresentImportFileSelector(
     content::WebContents* web_contents) {
   // Early return if the select file dialog is already active.
   if (select_file_dialog_) {
@@ -172,8 +164,7 @@ void PasswordManagerPorter::PresentImportFileSelector(
 
   ui::SelectFileDialog::FileTypeInfo info = FileTypeInfoForImport();
   select_file_dialog_ = ui::SelectFileDialog::Create(
-      &import_listener_,
-      std::make_unique<ChromeSelectFilePolicy>(web_contents));
+      this, std::make_unique<ChromeSelectFilePolicy>(web_contents));
 
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE,
@@ -182,7 +173,7 @@ void PasswordManagerPorter::PresentImportFileSelector(
       info.extensions[0][0], web_contents->GetTopLevelNativeWindow());
 }
 
-void PasswordManagerPorter::ImportPasswordsFromPath(
+void PasswordImportController::ImportPasswordsFromPath(
     const base::FilePath& path) {
   DCHECK(!import_results_callback_.is_null());
   if (!importer_) {

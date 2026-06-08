@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_INTERFACE_H_
-#define CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_INTERFACE_H_
+#ifndef CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_IMPORT_CONTROLLER_INTERFACE_H_
+#define CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_IMPORT_CONTROLLER_INTERFACE_H_
 
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -12,14 +12,15 @@ namespace content {
 class WebContents;
 }
 
-// Interface for PasswordManagerPorter to allow unittesting methods that use it.
-class PasswordManagerPorterInterface {
+// Interface for PasswordImportController to allow unittesting methods that use
+// it.
+class PasswordImportControllerInterface {
  public:
   using ImportResultsCallback =
       base::OnceCallback<void(const password_manager::ImportResults&)>;
 
-  PasswordManagerPorterInterface() = default;
-  virtual ~PasswordManagerPorterInterface() = default;
+  PasswordImportControllerInterface() = default;
+  virtual ~PasswordImportControllerInterface() = default;
 
   // Triggers passwords import flow for the given |web_contents|.
   // Passwords will be imported into the |to_store|.
@@ -45,4 +46,4 @@ class PasswordManagerPorterInterface {
   virtual void ResetImporter(bool delete_file) = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_MANAGER_PORTER_INTERFACE_H_
+#endif  // CHROME_BROWSER_UI_PASSWORDS_SETTINGS_PASSWORD_IMPORT_CONTROLLER_INTERFACE_H_
