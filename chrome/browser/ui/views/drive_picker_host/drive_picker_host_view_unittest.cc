@@ -16,8 +16,10 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {
@@ -120,4 +122,25 @@ TEST_F(DrivePickerHostViewTest, TriggerDrivePickerHostUi) {
 
   // Clean up the view to avoid dangling references.
   view.reset();
+}
+
+TEST_F(DrivePickerHostViewTest, EscapeAcceleratorClosesWidget) {
+  auto view = std::make_unique<DrivePickerHostView>(profile(),
+                                                    browser_window_interface());
+
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.context = GetContext();
+  widget->Init(std::move(params));
+  views::View* view_ptr = widget->SetContentsView(std::move(view));
+  widget->Show();
+
+  EXPECT_FALSE(widget->IsClosed());
+
+  ui::Accelerator escape_accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
+  view_ptr->AcceleratorPressed(escape_accelerator);
+
+  EXPECT_TRUE(widget->IsClosed());
 }
