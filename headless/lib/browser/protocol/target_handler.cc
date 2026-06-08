@@ -8,6 +8,9 @@
 #include <string_view>
 
 #include "build/build_config.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
@@ -109,6 +112,15 @@ Response TargetHandler::CreateTarget(
     // Create a hidden target.
     HeadlessWebContentsImpl* web_contents_impl = HeadlessWebContentsImpl::From(
         context->CreateWebContentsBuilder().SetInitialURL(gurl).Build());
+
+    // Mark the process used so IsSuitableHost() rejects it for sites that
+    // require a dedicated process. (Mirrors content::HiddenTargetManager, which
+    // the headless embedder layer bypasses by handling Target.createTarget
+    // itself.)
+    web_contents_impl->web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->SetIsUsed();
 
     *out_target_id = content::DevToolsAgentHost::GetOrCreateFor(
                          web_contents_impl->web_contents())
