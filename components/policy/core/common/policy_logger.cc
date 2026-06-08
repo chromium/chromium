@@ -292,7 +292,7 @@ void PolicyLogger::ScheduleOldLogsDeletion() {
   }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&PolicyLogger::DeleteOldLogs, weak_factory_.GetWeakPtr()),
+      base::BindOnce(&PolicyLogger::DeleteOldLogs, base::Unretained(this)),
       kTimeToLive);
   is_log_deletion_scheduled_ = true;
 }

@@ -215,8 +215,6 @@ class POLICY_EXPORT PolicyLogger {
   base::Lock lock_;
 
   std::deque<Log> logs_ GUARDED_BY(lock_);
-
-  base::WeakPtrFactory<PolicyLogger> weak_factory_{this};
 };
 
 }  // namespace policy
