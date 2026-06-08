@@ -6,7 +6,8 @@ import './app.js';
 
 export {AppType, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-export {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+export {browserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+export type {BrowserProxy} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 export {createTriStatePermission} from 'chrome://resources/cr_components/app_management/permission_util.js';
 export {getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';

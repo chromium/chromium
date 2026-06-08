@@ -8,8 +8,7 @@ import './app_management_cros_shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppType, browserProxyFactory, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -68,7 +67,7 @@ export class AppManagementAppDetailsItem extends
 
   private appIdChanged_(appId: string): void {
     if (appId && this.app) {
-      BrowserProxy.getInstance().handler.updateAppSize(appId);
+      browserProxyFactory.getInstance().handler.updateAppSize(appId);
     }
   }
 
@@ -192,7 +191,7 @@ export class AppManagementAppDetailsItem extends
     if (this.app !== null) {
       recordAppManagementUserAction(
           this.app.type, AppManagementUserAction.APP_STORE_LINK_CLICKED);
-      BrowserProxy.getInstance().handler.openStorePage(this.app.id);
+      browserProxyFactory.getInstance().handler.openStorePage(this.app.id);
     }
   }
 

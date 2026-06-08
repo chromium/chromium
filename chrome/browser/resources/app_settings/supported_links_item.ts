@@ -12,7 +12,7 @@ import './supported_links_overlapping_apps_dialog.js';
 
 import {WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
@@ -166,8 +166,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     let overlappingAppIds: string[] = [];
     try {
       const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              this.app.id);
+          await browserProxyFactory.getInstance()
+              .handler.getOverlappingPreferredApps(this.app.id);
       overlappingAppIds = appIds;
     } catch (err) {
       // If we fail to get the overlapping preferred apps, do not
@@ -244,8 +244,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
     let overlappingAppIds: string[] = [];
     try {
       const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              this.app.id);
+          await browserProxyFactory.getInstance()
+              .handler.getOverlappingPreferredApps(this.app.id);
       overlappingAppIds = appIds;
     } catch (err) {
       // If we fail to get the overlapping preferred apps, don't prevent the
@@ -293,7 +293,8 @@ export class SupportedLinksItemElement extends SupportedLinksItemElementBase {
   private setAppAsPreferredApp_(preference: PreferenceType): void {
     const newState = preference === PREFERRED_APP_PREF;
 
-    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
+    browserProxyFactory.getInstance().handler.setPreferredApp(
+        this.app.id, newState);
 
     const userAction = newState ?
         AppManagementUserAction.PREFERRED_APP_TURNED_ON :

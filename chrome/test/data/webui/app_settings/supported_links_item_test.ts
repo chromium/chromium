@@ -8,7 +8,6 @@ import 'chrome://app-settings/supported_links_item.js';
 import type {SupportedLinksItemElement} from 'chrome://app-settings/supported_links_item.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -19,18 +18,16 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {AppConfig} from './app_management_test_support.js';
-import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
+import {createTestApp, setupMockHandler} from './app_management_test_support.js';
 
 suite('SupportedLinksItemElement', function() {
   let supportedLinksItem: SupportedLinksItemElement;
-  let testProxy: TestAppManagementBrowserProxy;
   let apps: AppMap;
 
   setup(function() {
     apps = {};
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestAppManagementBrowserProxy();
-    BrowserProxy.setInstance(testProxy);
+    setupMockHandler();
 
     loadTimeData.resetForTesting({
       cancel: 'Cancel',

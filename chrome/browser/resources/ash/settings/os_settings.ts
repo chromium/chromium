@@ -66,7 +66,7 @@ export {ApnDetailDialog} from 'chrome://resources/ash/common/network/apn_detail_
 export {ApnSelectionDialog} from 'chrome://resources/ash/common/network/apn_selection_dialog.js';
 export {ApnSelectionDialogListItem} from 'chrome://resources/ash/common/network/apn_selection_dialog_list_item.js';
 export {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
-export {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+export {browserProxyFactory as appManagementBrowserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 export {MetricsBrowserProxy} from 'chrome://resources/cr_components/app_management/metrics_browser_proxy.js';
 export type {OpenWindowProxy} from 'chrome://resources/js/open_window_proxy.js';
 export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';

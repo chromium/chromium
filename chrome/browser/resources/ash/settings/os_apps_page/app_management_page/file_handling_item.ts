@@ -9,7 +9,7 @@ import {assert} from '//resources/js/assert.js';
 import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -96,7 +96,7 @@ export class AppManagementFileHandlingItemElement extends
       // Currently, this branch should only be used on Windows.
       e.detail.event.preventDefault();
       e.stopPropagation();
-      BrowserProxy.getInstance().handler.showDefaultAppAssociationsUi();
+      browserProxyFactory.getInstance().handler.showDefaultAppAssociationsUi();
     }
   }
 
@@ -135,7 +135,7 @@ export class AppManagementFileHandlingItemElement extends
                         .querySelector<AppManagementToggleRowElement>(
                             '#toggle-row')!.isChecked();
 
-    BrowserProxy.getInstance().handler.setFileHandlingEnabled(
+    browserProxyFactory.getInstance().handler.setFileHandlingEnabled(
         this.app.id,
         enabled,
     );

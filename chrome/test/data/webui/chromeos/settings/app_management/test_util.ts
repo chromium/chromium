@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {AppManagementToggleRowElement, CrToggleElement} from 'chrome://os-settings/os_settings.js';
-import {BrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {appManagementBrowserProxyFactory} from 'chrome://os-settings/os_settings.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {PermissionType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {MetricsBrowserProxy} from 'chrome://resources/cr_components/app_management/metrics_browser_proxy.js';
@@ -40,7 +40,7 @@ export function createApp(id: string, config?: AppConfig): App {
 }
 
 export function setupFakeHandler(): FakePageHandler {
-  const browserProxy = BrowserProxy.getInstance();
+  const browserProxy = appManagementBrowserProxyFactory.getInstance();
   const fakeHandler = new FakePageHandler(
       browserProxy.callbackRouter.$.bindNewPipeAndPassRemote());
   browserProxy.handler = fakeHandler;

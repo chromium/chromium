@@ -6,8 +6,7 @@ import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import type {App, Permission} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {InstallReason, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory, InstallReason, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
@@ -158,7 +157,7 @@ export class PermissionItemElement extends CrLitElement {
       assertNotReached();
     }
 
-    BrowserProxy.getInstance().handler.setPermission(
+    browserProxyFactory.getInstance().handler.setPermission(
         this.app.id, newPermission);
 
     recordAppManagementUserAction(

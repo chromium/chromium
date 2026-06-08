@@ -5,7 +5,7 @@
 import 'chrome://app-settings/web_app_settings.js';
 
 import type {App, AppElement, PermissionItemElement, PermissionTypeIndex, SupportedLinksItemElement, SupportedLinksOverlappingAppsDialogElement, ToggleRowElement} from 'chrome://app-settings/web_app_settings.js';
-import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
+import {AppType, browserProxyFactory, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -14,14 +14,14 @@ import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestAppManagementBrowserProxy} from './test_app_management_browser_proxy.js';
+import {FakePageHandler} from './test_app_management_browser_proxy.js';
 
 type AppConfig = Partial<App>;
 
 suite('AppSettingsAppTest', () => {
   let appSettingsApp: AppElement;
   let app: App;
-  let testProxy: TestAppManagementBrowserProxy;
+  let fakePageHandler: FakePageHandler;
 
   function createApp(id: string, optConfig?: AppConfig): App {
     const app: App = {
@@ -85,10 +85,6 @@ suite('AppSettingsAppTest', () => {
     return app;
   }
 
-  function fakeHandler() {
-    return testProxy.fakeHandler;
-  }
-
   function getSupportedLinksElement(): SupportedLinksItemElement|null {
     return appSettingsApp.shadowRoot.querySelector(
         'app-management-supported-links-item');
@@ -103,8 +99,11 @@ suite('AppSettingsAppTest', () => {
 
   setup(async () => {
     app = createApp('test');
-    testProxy = new TestAppManagementBrowserProxy(app);
-    BrowserProxy.setInstance(testProxy);
+    fakePageHandler = new FakePageHandler(app);
+    const {instance, remote} =
+        browserProxyFactory.createForTest(fakePageHandler);
+    fakePageHandler.setPage(remote);
+    browserProxyFactory.setInstance(instance);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     appSettingsApp = document.createElement('web-app-settings-app');
@@ -206,8 +205,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     let radioGroup =
@@ -220,10 +219,10 @@ suite('AppSettingsAppTest', () => {
             .querySelector<CrRadioButtonElement>('#browserRadioButton');
     assertTrue(!!browserRadioButton);
     await browserRadioButton.click();
-    await fakeHandler().whenCalled('setPreferredApp');
+    await fakePageHandler.whenCalled('setPreferredApp');
     await microtasksFinished();
 
-    const selectedApp = await fakeHandler().getApp('app1');
+    const selectedApp = await fakePageHandler.getApp('app1');
     assertTrue(!!selectedApp.app);
     assertFalse(selectedApp.app.isPreferredApp);
 
@@ -241,8 +240,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     let radioGroup =
@@ -255,10 +254,10 @@ suite('AppSettingsAppTest', () => {
             .querySelector<CrRadioButtonElement>('#preferredRadioButton');
     assertTrue(!!preferredRadioButton);
     await preferredRadioButton.click();
-    await fakeHandler().whenCalled('setPreferredApp');
+    await fakePageHandler.whenCalled('setPreferredApp');
     await microtasksFinished();
 
-    const selectedApp = await fakeHandler().getApp('app1');
+    const selectedApp = await fakePageHandler.getApp('app1');
     assertTrue(!!selectedApp.app);
     assertTrue(selectedApp.app.isPreferredApp);
 
@@ -277,10 +276,10 @@ suite('AppSettingsAppTest', () => {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().addApp(createApp('app2', appOptions));
-    fakeHandler().setOverlappingAppsForTesting(['app2']);
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.addApp(createApp('app2', appOptions));
+    fakePageHandler.setOverlappingAppsForTesting(['app2']);
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     // Pre-test checks
@@ -292,20 +291,20 @@ suite('AppSettingsAppTest', () => {
     assertTrue(browserRadioButton.checked);
 
     // Open dialog
-    let promise = fakeHandler().whenCalled('getOverlappingPreferredApps');
+    let promise = fakePageHandler.whenCalled('getOverlappingPreferredApps');
     const preferredRadioButton =
         getSupportedLinksElement()!.shadowRoot
             .querySelector<CrRadioButtonElement>('#preferredRadioButton');
     assertTrue(!!preferredRadioButton);
     await preferredRadioButton.click();
     await promise;
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.flushPipesForTesting();
     await microtasksFinished();
     assertTrue(!!getSupportedLinksElement()!.shadowRoot.querySelector(
         '#overlapDialog'));
 
     // Accept change
-    promise = fakeHandler().whenCalled('setPreferredApp');
+    promise = fakePageHandler.whenCalled('setPreferredApp');
     const overlapDialog =
         getSupportedLinksElement()!.shadowRoot
             .querySelector<SupportedLinksOverlappingAppsDialogElement>(
@@ -313,13 +312,13 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!overlapDialog);
     overlapDialog.$.dialog.close();
     await promise;
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.flushPipesForTesting();
     await microtasksFinished();
 
     assertNull(
         getSupportedLinksElement()!.shadowRoot.querySelector('#overlapDialog'));
 
-    const selectedApp = await fakeHandler().getApp('app1');
+    const selectedApp = await fakePageHandler.getApp('app1');
     assertTrue(!!selectedApp.app);
     assertTrue(selectedApp.app.isPreferredApp);
     const radioGroup =
@@ -344,10 +343,10 @@ suite('AppSettingsAppTest', () => {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', pwaOptions1));
-    await fakeHandler().addApp(createApp('app2', pwaOptions2));
-    fakeHandler().setOverlappingAppsForTesting(['app2']);
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', pwaOptions1));
+    await fakePageHandler.addApp(createApp('app2', pwaOptions2));
+    fakePageHandler.setOverlappingAppsForTesting(['app2']);
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     assertNull(
@@ -372,10 +371,10 @@ suite('AppSettingsAppTest', () => {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', pwaOptions1));
-    await fakeHandler().addApp(createApp('app2', pwaOptions2));
-    fakeHandler().setOverlappingAppsForTesting(['app2']);
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', pwaOptions1));
+    await fakePageHandler.addApp(createApp('app2', pwaOptions2));
+    fakePageHandler.setOverlappingAppsForTesting(['app2']);
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     assertTrue(!!getSupportedLinksElement()!.shadowRoot.querySelector(
@@ -389,8 +388,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     assertEquals(
@@ -408,8 +407,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     const appContentItem = appSettingsApp.shadowRoot.querySelector(
@@ -428,8 +427,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     const appContentItem = appSettingsApp.shadowRoot.querySelector(
@@ -446,8 +445,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA app, and make it the currently selected app.
-    await fakeHandler().setApp(createApp('app1', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('app1', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     const appContentItem = appSettingsApp.shadowRoot.querySelector(
@@ -494,8 +493,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add IWA and make it the currently selected app.
-    await fakeHandler().setApp(createApp('iwa', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('iwa', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     const appVersionItem =
@@ -525,8 +524,8 @@ suite('AppSettingsAppTest', () => {
     };
 
     // Add PWA and make it the currently selected app.
-    await fakeHandler().setApp(createApp('pwa', appOptions));
-    await fakeHandler().flushPipesForTesting();
+    await fakePageHandler.setApp(createApp('pwa', appOptions));
+    await fakePageHandler.flushPipesForTesting();
     await reloadPage();
 
     const appVersionItem =

@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -106,7 +106,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
       // Currently, this branch should only be used on Windows.
       e.detail.event.preventDefault();
       e.stopPropagation();
-      BrowserProxy.getInstance().handler.showDefaultAppAssociationsUi();
+      browserProxyFactory.getInstance().handler.showDefaultAppAssociationsUi();
     }
   }
 
@@ -145,7 +145,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
         this.shadowRoot.querySelector<ToggleRowElement>(
                            '#toggle-row')!.isChecked();
 
-    BrowserProxy.getInstance().handler.setFileHandlingEnabled(
+    browserProxyFactory.getInstance().handler.setFileHandlingEnabled(
         this.app.id,
         enabled,
     );

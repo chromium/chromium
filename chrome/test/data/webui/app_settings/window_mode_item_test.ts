@@ -7,20 +7,18 @@ import 'chrome://app-settings/window_mode_item.js';
 
 import type {WindowModeItemElement} from 'chrome://app-settings/window_mode_item.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
+import {createTestApp, setupMockHandler} from './app_management_test_support.js';
 
 suite('AppManagementWindowModeItemTest', function() {
   let windowModeItem: WindowModeItemElement;
-  let testProxy: TestAppManagementBrowserProxy;
+
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestAppManagementBrowserProxy();
-    BrowserProxy.setInstance(testProxy);
+    setupMockHandler();
   });
 
   async function setupWindowModeItem(app: App) {

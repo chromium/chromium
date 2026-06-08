@@ -8,20 +8,20 @@ import 'chrome://app-settings/uninstall_button.js';
 import type {UninstallButtonElement} from 'chrome://app-settings/uninstall_button.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import type {PageHandlerRemote} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
+import {createTestApp, setupMockHandler} from './app_management_test_support.js';
 
 suite('AppManagementUninstallButtonTest', () => {
   let uninstallButton: UninstallButtonElement;
-  let testProxy: TestAppManagementBrowserProxy;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy = new TestAppManagementBrowserProxy();
-    BrowserProxy.setInstance(testProxy);
+    handler = setupMockHandler();
   });
 
   async function setupUninstallButton(app: App) {
@@ -42,8 +42,7 @@ suite('AppManagementUninstallButtonTest', () => {
     assertTrue(!!clickable);
     clickable.click();
 
-    assertEquals(
-        await testProxy.handler.whenCalled('uninstall'), 'some test app id');
+    assertEquals(await handler.whenCalled('uninstall'), 'some test app id');
   });
 
   test('Disabled by policy', async () => {
@@ -57,7 +56,7 @@ suite('AppManagementUninstallButtonTest', () => {
     clickable.click();
 
     // Disabled by policy, clicking should not remove app.
-    assertEquals(testProxy.handler.getCallCount('uninstall'), 0);
+    assertEquals(handler.getCallCount('uninstall'), 0);
   });
 
   test('System app, button hidden', async () => {
@@ -79,7 +78,6 @@ suite('AppManagementUninstallButtonTest', () => {
                                   '#uninstallButton')!.click();
 
     assertEquals(
-        await testProxy.handler.whenCalled('uninstall'),
-        'test id for command line app');
+        await handler.whenCalled('uninstall'), 'test id for command line app');
   });
 });

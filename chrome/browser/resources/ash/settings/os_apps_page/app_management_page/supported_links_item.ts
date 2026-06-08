@@ -16,8 +16,7 @@ import type {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_element
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {AppType, browserProxyFactory, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
@@ -167,9 +166,8 @@ export class AppManagementSupportedLinksItemElement extends
 
     let overlappingAppIds: string[] = [];
     try {
-      const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              app.id);
+      const {appIds: appIds} = await browserProxyFactory.getInstance()
+                                   .handler.getOverlappingPreferredApps(app.id);
       overlappingAppIds = appIds;
     } catch (err) {
       // If we fail to get the overlapping preferred apps, do not
@@ -241,8 +239,8 @@ export class AppManagementSupportedLinksItemElement extends
     let overlappingAppIds: string[] = [];
     try {
       const {appIds: appIds} =
-          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
-              this.app.id);
+          await browserProxyFactory.getInstance()
+              .handler.getOverlappingPreferredApps(this.app.id);
       overlappingAppIds = appIds;
     } catch (err) {
       // If we fail to get the overlapping preferred apps, don't prevent the
@@ -290,7 +288,8 @@ export class AppManagementSupportedLinksItemElement extends
   private setAppAsPreferredApp_(preference: PreferenceType): void {
     const newState = preference === PREFERRED_APP_PREF;
 
-    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
+    browserProxyFactory.getInstance().handler.setPreferredApp(
+        this.app.id, newState);
 
     const userAction = newState ?
         AppManagementUserAction.PREFERRED_APP_TURNED_ON :

@@ -7,12 +7,13 @@ import type {App, ExtensionAppPermissionMessage, PageHandlerInterface, PageHandl
 import {AppType, InstallReason, InstallSource, PageHandlerReceiver, PermissionType, TriState, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type AppConfig = Partial<App>;
 type PermissionMap = Partial<Record<PermissionType, Permission>>;
 
-export class FakePageHandler implements PageHandlerInterface {
+export class FakePageHandler extends TestBrowserProxy implements
+    PageHandlerInterface {
   static createWebPermissions(
       options?: Partial<Record<PermissionType, Permission>>): PermissionMap {
     const permissionTypes = [
@@ -119,58 +120,23 @@ export class FakePageHandler implements PageHandlerInterface {
     return app;
   }
 
-  guid: number;
-  overlappingAppIds: string[];
+  guid: number = 0;
+  overlappingAppIds: string[] = [];
   page: PageRemote;
-  private apps_: App[];
+  private apps_: App[] = [];
   private receiver_: PageHandlerReceiver;
-  private resolverMap_: Map<string, PromiseResolver<void>>;
-  private callCountMap_: Map<string, number>;
 
   constructor(page: PageRemote) {
+    super([
+      'setPreferredApp',
+      'setPermission',
+      'getOverlappingPreferredApps',
+      'setAppLocale',
+      'uninstall',
+    ]);
+
     this.receiver_ = new PageHandlerReceiver(this);
-
-    this.guid = 0;
-    this.overlappingAppIds = [];
     this.page = page;
-
-    this.apps_ = [];
-    this.resolverMap_ = new Map();
-    this.callCountMap_ = new Map();
-    this.resolverMap_.set('setPreferredApp', new PromiseResolver());
-    this.resolverMap_.set('setPermission', new PromiseResolver());
-    this.resolverMap_.set('getOverlappingPreferredApps', new PromiseResolver());
-    this.resolverMap_.set('setAppLocale', new PromiseResolver());
-    this.resolverMap_.set('uninstall', new PromiseResolver());
-  }
-
-  private getResolver_(methodName: string): PromiseResolver<any> {
-    const method = this.resolverMap_.get(methodName);
-    assert(method, `Method '${methodName}' not found.`);
-    return method;
-  }
-
-  getCallCount(methodName: string): number {
-    const count = this.callCountMap_.get(methodName);
-    return count ? count : 0;
-  }
-
-  methodCalled(methodName: string, returnValue?: any): void {
-    const count = this.callCountMap_.get(methodName);
-    if (count) {
-      this.callCountMap_.set(methodName, count + 1);
-    } else {
-      this.callCountMap_.set(methodName, 1);
-    }
-
-    this.getResolver_(methodName).resolve(returnValue);
-  }
-
-  async whenCalled(methodName: string): Promise<any> {
-    const promise = await this.getResolver_(methodName).promise;
-    // Support sequential calls to whenCalled by replacing the promise.
-    this.resolverMap_.set(methodName, new PromiseResolver());
-    return promise;
   }
 
   getRemote(): PageHandlerRemote {

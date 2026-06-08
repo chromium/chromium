@@ -7,8 +7,7 @@ import '//resources/ash/common/cr_elements/cr_button/cr_button.js';
 import '//resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 
 import type {App} from '//resources/cr_components/app_management/app_management.mojom-webui.js';
-import {InstallReason} from '//resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from '//resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory, InstallReason} from '//resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from '//resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from '//resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -59,7 +58,7 @@ export class AppManagementUninstallButtonElement extends PolymerElement {
   }
 
   private onClick_(): void {
-    BrowserProxy.getInstance().handler.uninstall(this.app.id);
+    browserProxyFactory.getInstance().handler.uninstall(this.app.id);
     recordAppManagementUserAction(
         this.app.type, AppManagementUserAction.UNINSTALL_DIALOG_LAUNCHED);
   }

@@ -6,25 +6,24 @@
 import 'chrome://app-settings/file_handling_item.js';
 
 import type {FileHandlingItemElement} from 'chrome://app-settings/file_handling_item.js';
-import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import type {App, PageHandlerRemote} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
+import {createTestApp, setupMockHandler} from './app_management_test_support.js';
 
 suite('AppManagementFileHandlingItemTest', function() {
   let fileHandlingItem: FileHandlingItemElement;
-  let testProxy: TestAppManagementBrowserProxy;
+  let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let app: App;
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = createTestApp('app');
-    testProxy = new TestAppManagementBrowserProxy();
-    BrowserProxy.setInstance(testProxy);
+    handler = setupMockHandler();
 
     loadTimeData.resetForTesting({
       close: 'Close',
@@ -89,6 +88,6 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertEquals(link.getAttribute('href'), '#');
 
     link.click();
-    await testProxy.handler.whenCalled('showDefaultAppAssociationsUi');
+    await handler.whenCalled('showDefaultAppAssociationsUi');
   });
 });

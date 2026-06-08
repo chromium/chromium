@@ -21,7 +21,7 @@ import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr
 import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {App, Locale} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -86,7 +86,7 @@ export class AppLanguageSelectionDialogElement extends
   }
 
   private onActionButtonClick_(): void {
-    BrowserProxy.getInstance().handler.setAppLocale(
+    browserProxyFactory.getInstance().handler.setAppLocale(
         this.app.id,
         this.selectedLanguage_!.localeTag,
     );

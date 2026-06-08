@@ -7,8 +7,7 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/cr_elements/icons.html.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory, InstallReason} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -84,7 +83,7 @@ export class UninstallButtonElement extends CrLitElement {
   }
 
   protected onClick_() {
-    BrowserProxy.getInstance().handler.uninstall(this.app.id);
+    browserProxyFactory.getInstance().handler.uninstall(this.app.id);
     recordAppManagementUserAction(
         this.app.type, AppManagementUserAction.UNINSTALL_DIALOG_LAUNCHED);
   }

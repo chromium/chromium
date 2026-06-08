@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {browserProxyFactory} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -42,7 +42,7 @@ export class MorePermissionsItemElement extends CrLitElement {
   }
 
   private onClick_() {
-    BrowserProxy.getInstance().handler.openNativeSettings(this.app.id);
+    browserProxyFactory.getInstance().handler.openNativeSettings(this.app.id);
     recordAppManagementUserAction(
         this.app.type, AppManagementUserAction.NATIVE_SETTINGS_OPENED);
   }

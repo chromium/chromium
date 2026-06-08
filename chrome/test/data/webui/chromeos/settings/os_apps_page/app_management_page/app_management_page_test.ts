@@ -5,7 +5,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import type {SettingsAppManagementPageElement} from 'chrome://os-settings/lazy_load.js';
-import {BrowserProxy} from 'chrome://os-settings/os_settings.js';
+import {appManagementBrowserProxyFactory} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -55,7 +55,7 @@ suite('<settings-app-management-page>', () => {
 
   test('loads', async () => {
     // Check that the browser responds to the getApps() message.
-    await BrowserProxy.getInstance().handler.getApps();
+    await appManagementBrowserProxyFactory.getInstance().handler.getApps();
   });
 
   test('App list renders on page change', async () => {
