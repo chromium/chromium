@@ -140,7 +140,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         /* keyboardFocusHandler= */ null,
                         /* isAppInDesktopWindow= */ false,
                         /* isTopResumedActivity= */ false,
-                        mGlicKeyedService,
                         mTaskTracker,
                         () -> mIsIncognito,
                         () -> null,

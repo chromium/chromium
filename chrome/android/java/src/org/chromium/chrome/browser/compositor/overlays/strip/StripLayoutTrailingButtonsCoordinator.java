@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
 import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
 import org.chromium.chrome.browser.glic.GlicUtils;
@@ -126,8 +127,9 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final StripLayoutTrailingButtonsObserver mObserver;
     private final float mDensity;
     private final GlicButtonDelegate mGlicClickHandler;
-    private final @Nullable GlicKeyedService mGlicKeyedService;
-    private final @Nullable GlobalShowHideObserver mGlicUiObserver;
+    private final GlobalShowHideObserver mGlicUiObserver;
+    private final GlicKeyedService.AllowedChangedObserver mAllowedChangedObserver =
+            () -> updateTrailingButtonsState(/* animate= */ false, /* forceLayoutChanged= */ false);
     private final @Nullable ChromeAndroidTaskTracker mTaskTracker;
     private final Supplier<Boolean> mIsIncognitoSupplier;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
@@ -136,6 +138,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private @Nullable Profile mProfile;
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable LayerTitleCache mLayerTitleCache;
+    private @Nullable GlicKeyedService mGlicKeyedService;
 
     // UI Components
     private @Nullable TintedCompositorTextButton mGlicButton;
@@ -238,7 +241,6 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param keyboardFocusHandler The {@link StripLayoutViewOnKeyboardFocusHandler} for the button.
      * @param isAppInDesktopWindow Whether the app is in a desktop window.
      * @param isTopResumedActivity Whether the app is the top resumed activity.
-     * @param glicKeyedService The {@link GlicKeyedService} for observing Glic UI state.
      * @param taskTracker The {@link ChromeAndroidTaskTracker} for tracking tasks.
      * @param observer The {@link StripLayoutTrailingButtonsObserver} for layout state changes.
      */
@@ -253,7 +255,6 @@ public class StripLayoutTrailingButtonsCoordinator {
             StripLayoutViewOnKeyboardFocusHandler keyboardFocusHandler,
             boolean isAppInDesktopWindow,
             boolean isTopResumedActivity,
-            @Nullable GlicKeyedService glicKeyedService,
             @Nullable ChromeAndroidTaskTracker taskTracker,
             Supplier<Boolean> isIncognitoSupplier,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
@@ -263,20 +264,13 @@ public class StripLayoutTrailingButtonsCoordinator {
         mRenderHost = renderHost;
         mGlicClickHandler = glicClickHandler;
         mDensity = density;
-        mGlicKeyedService = glicKeyedService;
         mTaskTracker = taskTracker;
         mIsIncognitoSupplier = isIncognitoSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mObserver = observer;
         mWindowAndroid = windowAndroid;
         mToolbarControlContainer = toolbarControlContainer;
-
-        if (mGlicKeyedService != null) {
-            mGlicUiObserver = this::updateIsPanelOpen;
-            mGlicKeyedService.addGlobalShowHideObserver(mGlicUiObserver);
-        } else {
-            mGlicUiObserver = null;
-        }
+        mGlicUiObserver = this::updateIsPanelOpen;
 
         StripLayoutViewOnClickHandler glicClickHandlerOnButton =
                 (time, view, motionEventButtonState, modifiers) ->
@@ -404,8 +398,9 @@ public class StripLayoutTrailingButtonsCoordinator {
             mStateController.destroy();
             mStateController = null;
         }
-        if (mGlicKeyedService != null && mGlicUiObserver != null) {
+        if (mGlicKeyedService != null) {
             mGlicKeyedService.removeGlobalShowHideObserver(mGlicUiObserver);
+            mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
         }
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
@@ -428,22 +423,41 @@ public class StripLayoutTrailingButtonsCoordinator {
      */
     public void onProfileAvailable(Profile profile) {
         if (mProfile == profile) return;
-
         mProfile = profile;
+
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
-
         mPrefChangeRegistrar = new PrefChangeRegistrar(UserPrefs.get(profile));
         mPrefChangeRegistrar.addObserver(
                 GlicPrefNames.GLIC_PINNED_TO_TABSTRIP, this::onGlicPrefChanged);
 
-        onGlicPrefChanged();
-        updateIsPanelOpen();
+        updateGlicKeyedService(profile);
+
         GlicButtonStateController stateController = getOrCreateStateController();
         if (stateController != null) {
             stateController.updateObservations(profile);
+        }
+
+        onGlicPrefChanged();
+        updateIsPanelOpen();
+    }
+
+    private void updateGlicKeyedService(Profile profile) {
+        GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
+        if (mGlicKeyedService == service) return;
+
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.removeGlobalShowHideObserver(mGlicUiObserver);
+            mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
+        }
+
+        mGlicKeyedService = service;
+
+        if (mGlicKeyedService != null) {
+            mGlicKeyedService.addGlobalShowHideObserver(mGlicUiObserver);
+            mGlicKeyedService.addAllowedChangedObserver(mAllowedChangedObserver);
         }
     }
 

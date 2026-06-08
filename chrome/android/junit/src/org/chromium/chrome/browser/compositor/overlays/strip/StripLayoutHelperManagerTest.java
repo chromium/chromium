@@ -294,8 +294,7 @@ public class StripLayoutHelperManagerTest {
                         mBackPressManager,
                         mSnackbarManager,
                         mActivityResultTracker,
-                        (preventClose, invocationSource) -> {},
-                        mGlicKeyedService);
+                        (preventClose, invocationSource) -> {});
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);

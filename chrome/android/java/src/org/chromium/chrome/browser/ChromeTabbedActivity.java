@@ -149,7 +149,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPane;
@@ -1187,8 +1186,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mBackPressManager,
                             getSnackbarManager(),
                             getActivityResultTracker(),
-                            glicClickHandler,
-                            GlicKeyedServiceFactory.getForProfile(mTabModelProfileSupplier.get()));
+                            glicClickHandler);
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

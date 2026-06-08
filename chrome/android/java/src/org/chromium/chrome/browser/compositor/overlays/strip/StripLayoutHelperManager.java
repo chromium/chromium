@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -527,8 +526,7 @@ public class StripLayoutHelperManager
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
             @Nullable ActivityResultTracker activityResultTracker,
-            GlicButtonDelegate glicClickHandler,
-            @Nullable GlicKeyedService glicKeyedService) {
+            GlicButtonDelegate glicClickHandler) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         Resources res = context.getResources();
@@ -610,7 +608,6 @@ public class StripLayoutHelperManager
                         glicKeyboardFocusHandler,
                         isAppInDesktopWindow(),
                         mIsTopResumedActivity,
-                        glicKeyedService,
                         ChromeAndroidTaskTrackerFactory.getInstance(),
                         () -> mIsIncognito,
                         () -> mTabModelSelector,

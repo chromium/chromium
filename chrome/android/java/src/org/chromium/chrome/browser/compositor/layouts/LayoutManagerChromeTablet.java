@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.glic.GlicButtonDelegate;
-import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -130,8 +129,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
             ActivityResultTracker activityResultTracker,
-            GlicButtonDelegate glicClickHandler,
-            @Nullable GlicKeyedService glicKeyedService) {
+            GlicButtonDelegate glicClickHandler) {
         super(
                 host,
                 contentContainer,
@@ -174,8 +172,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         backPressManager,
                         snackbarManager,
                         activityResultTracker,
-                        glicClickHandler,
-                        glicKeyedService);
+                        glicClickHandler);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;
