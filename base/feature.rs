@@ -140,8 +140,9 @@ mod ffi {
 macro_rules! base_feature {
     // 2-argument version: Derive the name from the identifier.
     ($id:ident, $default:expr) => {
+        #[unsafe(no_mangle)]
         #[allow(non_upper_case_globals)]
-        static $id: $crate::Feature = unsafe {
+        pub static $id: $crate::Feature = unsafe {
             // Safety: The string constructed here is explicitly null-terminated.
             $crate::Feature::from_id(
                 concat!(stringify!($id), "\0"),
