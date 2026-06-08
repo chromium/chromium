@@ -25,7 +25,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*fuzzer\.cc$": [
+  ".*fuzzer\\.cc$": [
     "+third_party/icu",
   ],
   "manifest_fuzzer.cc": [

@@ -29,7 +29,7 @@ include_rules = [
 specific_include_rules = {
   # Allow tests to include extensions system files. Typically, this shouldn't
   # be necessary, but it can be useful.
-  ".*test\.(cc|h)$": [
+  ".*test\\.(cc|h)$": [
     "+extensions/renderer",
     "+extensions/common",
   ]

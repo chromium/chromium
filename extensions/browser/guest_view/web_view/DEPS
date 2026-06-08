@@ -6,7 +6,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*(test)\.(cc|h)$": [
+  ".*(test)\\.(cc|h)$": [
     "+media", # Tests need to be able to tweak media devices.
   ]
 }
