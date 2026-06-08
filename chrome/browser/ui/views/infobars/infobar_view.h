@@ -62,6 +62,8 @@ class InfoBarView : public infobars::InfoBar,
   views::ImageView* icon() { return icon_; }
   views::View* close_button() { return close_button_.get(); }
 
+  void SetInteriorMargin(const gfx::Insets& margin);
+
  protected:
   using Labels = std::vector<views::Label*>;
 

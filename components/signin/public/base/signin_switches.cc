@@ -568,6 +568,8 @@ BASE_FEATURE(kIgnoreInvalidGrantError, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kMagiChromeSignInBanner, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMagiChromeSignInExperimentsBatch1,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

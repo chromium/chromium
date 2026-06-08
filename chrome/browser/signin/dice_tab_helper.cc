@@ -194,7 +194,7 @@ void DiceTabHelper::InitializeSigninFlow(
       std::move(on_signin_header_received_callback);
   state_->show_signin_error_callback = std::move(show_signin_error_callback);
 
-  is_chrome_signin_page_ = true;
+  SetIsChromeSigninPage(true);
   signin_page_load_recorded_ = false;
 
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
@@ -271,6 +271,14 @@ void DiceTabHelper::UpdateSigninErrorCallback(
 
 void DiceTabHelper::UpdateRedirectUrl(const GURL& redirect_url) {
   state_->redirect_url = redirect_url;
+}
+
+void DiceTabHelper::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void DiceTabHelper::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 // static
@@ -360,7 +368,7 @@ void DiceTabHelper::DidStartNavigation(
     // Note that currently any indication of a navigation is enough to consider
     // this tab unsuitable for re-use, even if the navigation does not end up
     // committing.
-    is_chrome_signin_page_ = false;
+    SetIsChromeSigninPage(false);
   }
 }
 
@@ -381,7 +389,7 @@ void DiceTabHelper::DidFinishNavigation(
     // Note that currently any indication of a navigation is enough to consider
     // this tab unsuitable for re-use, even if the navigation does not end up
     // committing.
-    is_chrome_signin_page_ = false;
+    SetIsChromeSigninPage(false);
     return;
   }
 
@@ -401,6 +409,16 @@ bool DiceTabHelper::IsSigninPageNavigation(
 
 void DiceTabHelper::Reset() {
   state_ = std::make_unique<ResetableState>();
+}
+
+void DiceTabHelper::SetIsChromeSigninPage(bool is_signin_page) {
+  if (is_chrome_signin_page_ == is_signin_page) {
+    return;
+  }
+  is_chrome_signin_page_ = is_signin_page;
+  for (auto& observer : observer_list_) {
+    observer.OnIsChromeSigninPageChanged(is_chrome_signin_page_);
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DiceTabHelper);

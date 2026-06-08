@@ -548,6 +548,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".signin-email-confirmation"/>
   <variant name=".signin-error"/>
   <variant name=".signin-internals"/>
+  <variant name=".signin-qrcode-bar"/>
   <variant name=".signout-confirmation"/>
   <variant name=".site-engagement"/>
   <variant name=".skills"/>

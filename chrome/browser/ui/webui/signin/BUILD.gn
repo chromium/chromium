@@ -116,6 +116,7 @@ source_set("signin") {
     sources += [
       "dice_web_signin_intercept_handler.h",
       "dice_web_signin_intercept_ui.h",
+      "signin_qrcode_bar_ui.h",
     ]
   }
 
@@ -196,6 +197,7 @@ source_set("signin_impl") {
     sources += [
       "dice_web_signin_intercept_handler.cc",
       "dice_web_signin_intercept_ui.cc",
+      "signin_qrcode_bar_ui.cc",
     ]
     deps += [ "//chrome/browser/ui/webui" ]
   }

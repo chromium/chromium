@@ -44,8 +44,13 @@ source_set("signin") {
       "promos/bubble_signin_promo_signin_button_view.h",
       "promos/bubble_signin_promo_view.h",
       "promos/signin_promo_tab_helper.h",
+      "signin_qrcode_infobar.h",
+      "signin_qrcode_infobar_delegate.h",
     ]
-    public_deps += [ "//chrome/browser/signin" ]
+    public_deps += [
+      "//chrome/browser/signin",
+      "//chrome/browser/ui/views/infobars",
+    ]
   }
 }
 
@@ -107,6 +112,8 @@ source_set("impl") {
       "promos/bubble_signin_promo_signin_button_view.cc",
       "promos/bubble_signin_promo_view.cc",
       "promos/signin_promo_tab_helper.cc",
+      "signin_qrcode_infobar.cc",
+      "signin_qrcode_infobar_delegate.cc",
     ]
 
     deps += [
@@ -114,10 +121,13 @@ source_set("impl") {
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/views/infobars",
       "//chrome/browser/ui/web_applications",
+      "//components/infobars/content",
       "//components/pref_registry",
       "//components/send_tab_to_self:features",
       "//components/user_education/common",
+      "//ui/views",
     ]
   }
 
@@ -227,6 +237,7 @@ if (!is_android) {
         "//chrome/browser/ui/webui/signin/signout_confirmation:test_support",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//chrome/test:test_support",
+        "//components/infobars/content",
         "//components/sync:test_support",
       ]
     }

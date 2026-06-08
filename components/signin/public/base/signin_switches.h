@@ -527,6 +527,10 @@ BASE_DECLARE_FEATURE(kIgnoreInvalidGrantError);
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Controls the MagiChrome sign-in banner.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kMagiChromeSignInBanner);
+
 // Controls experiments for MagiChrome (e.g. Gaia sign-in URL parameters).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kMagiChromeSignInExperimentsBatch1);

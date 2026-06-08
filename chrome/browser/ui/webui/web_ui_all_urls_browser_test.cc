@@ -68,6 +68,7 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enabled_features.push_back(switches::kFirstRunDesktopRefresh);
   enabled_features.push_back(switches::kFirstRunDesktopChoiceScreenRefresh);
   enabled_features.push_back(switches::kFirstRunDesktopRevamp);
+  enabled_features.push_back(switches::kMagiChromeSignInBanner);
 #endif
 
   const std::vector<base::test::FeatureRef> disabled_features = {

@@ -301,6 +301,9 @@ inline constexpr char kChromeUISigninEmailConfirmationURL[] =
     "chrome://signin-email-confirmation";
 inline constexpr char kChromeUISigninErrorHost[] = "signin-error";
 inline constexpr char kChromeUISigninErrorURL[] = "chrome://signin-error/";
+inline constexpr char kChromeUISigninQRCodeBarHost[] = "signin-qrcode-bar";
+inline constexpr char kChromeUISigninQRCodeBarURL[] =
+    "chrome://signin-qrcode-bar/";
 inline constexpr char kChromeUISignInInternalsHost[] = "signin-internals";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 inline constexpr char kChromeUISignoutConfirmationHost[] =

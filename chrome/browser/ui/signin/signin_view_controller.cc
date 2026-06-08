@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -64,11 +65,14 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/signin/signin_qrcode_infobar.h"  // nogncheck
+#include "chrome/browser/ui/signin/signin_qrcode_infobar_delegate.h"  // nogncheck
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"  // nogncheck
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -642,6 +646,18 @@ void SigninViewController::ShowDiceSigninTab(
       DiceTabHelper::GetHistorySyncOptinCallbackForBrowser(),
       DiceTabHelper::OnSigninHeaderReceived(),
       DiceTabHelper::GetShowSigninErrorCallbackForBrowser());
+
+  if (base::FeatureList::IsEnabled(switches::kMagiChromeSignInBanner)) {
+    infobars::InfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(active_contents);
+    if (infobar_manager) {
+      auto delegate =
+          std::make_unique<SigninQRCodeInfoBarDelegate>(active_contents);
+      Profile* profile = delegate->profile();
+      infobar_manager->AddInfoBar(
+          std::make_unique<SigninQRCodeInfoBar>(profile, std::move(delegate)));
+    }
+  }
 }
 
 void SigninViewController::ShowDiceEnableSyncTab(

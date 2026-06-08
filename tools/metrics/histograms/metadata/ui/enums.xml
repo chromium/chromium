@@ -906,6 +906,7 @@ chromium-metrics-reviews@google.com.
   <int value="275260142" label="chrome://eoc-internals/"/>
   <int value="296428820" label="chrome-untrusted://lens-overlay/"/>
   <int value="325375649" label="chrome://settings-frame/"/>
+  <int value="354948668" label="chrome://signin-qrcode-bar/"/>
   <int value="361250371" label="chrome://nearby/"/>
   <int value="361621847" label="chrome://make-metro/"/>
   <int value="372516928" label="chrome://histograms/"/>

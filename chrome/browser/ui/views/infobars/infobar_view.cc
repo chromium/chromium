@@ -473,6 +473,11 @@ void InfoBarView::AssignWidthsSorted(Views* views, int available_width) {
   AssignWidthsSorted(views, available_width - back_view_size.width());
 }
 
+void InfoBarView::SetInteriorMargin(const gfx::Insets& margin) {
+  static_cast<views::FlexLayout*>(GetLayoutManager())
+      ->SetInteriorMargin(margin);
+}
+
 void InfoBarView::LinkClicked(const ui::Event& event) {
   if (!owner()) {
     return;  // We're closing; don't call anything, it might access the owner.

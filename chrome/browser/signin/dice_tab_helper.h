@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
@@ -24,6 +26,11 @@ class SigninUIError;
 class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                       public content::WebContentsObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnIsChromeSigninPageChanged(bool is_signin_page) {}
+  };
+
   // Callback starting Sync. This is a repeating callback, because multiple
   // `ProcessDiceHeaderDelegateImpl` may make copies of it.
   using EnableSyncCallback =
@@ -146,6 +153,9 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // in case of errors.
   void UpdateRedirectUrl(const GURL& redirect_url);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Can be used in tests to reduce the delay before showing the interception
   // bubble, after the auth token is received.
   [[nodiscard]] static base::AutoReset<base::TimeDelta>
@@ -208,6 +218,8 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // Resets the internal state to the initial values.
   void Reset();
 
+  void SetIsChromeSigninPage(bool is_signin_page);
+
   // Starts the timer before showing the interception bubble.
   void StartInterceptionBubbleTimer(
       base::OnceClosure retry_interception_bubble_callback);
@@ -223,6 +235,8 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   bool is_chrome_signin_page_ = false;
   bool signin_page_load_recorded_ = false;
+
+  base::ObserverList<Observer> observer_list_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
