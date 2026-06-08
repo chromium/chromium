@@ -42,7 +42,7 @@ class SupportsUserData;
 
 // Feature flag for enabling foundational models in the AI API, requires the
 // field param kModelVersionParam to specify the model version. Example:
-// --enable-features=AIApiFoundationalModel:model_version=v4
+// --enable-features=AIApiFoundationalModel:model_version/v4
 BASE_DECLARE_FEATURE(kAIApiFoundationalModel);
 extern const char kModelVersionParam[];
 
