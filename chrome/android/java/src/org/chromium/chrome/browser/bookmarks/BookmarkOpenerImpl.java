@@ -22,11 +22,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -138,9 +136,6 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         recordMetricsForOpenBookmarksInNewTabs(items);
 
         Intent intent = createBasicOpenIntent(firstItem, incognito);
-        // The shared createBasicOpenIntent targets the source activity's window.
-        // Clear this since we are explicitly opening in a new window.
-        intent.removeExtra(IntentHandler.EXTRA_WINDOW_ID);
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
@@ -199,15 +194,6 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
             IntentHandler.setTabLaunchType(intent, TabLaunchType.FROM_READING_LIST);
             intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
-        }
-
-        // Target the source activity's window in multi-window mode.
-        Activity activity = ContextUtils.activityFromContext(mContext);
-        if (activity != null) {
-            int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
-            if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
-                intent.putExtra(IntentHandler.EXTRA_WINDOW_ID, windowId);
-            }
         }
 
         IntentUtils.addTrustedIntentExtras(intent);
