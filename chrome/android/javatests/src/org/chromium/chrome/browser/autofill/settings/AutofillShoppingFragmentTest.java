@@ -308,7 +308,7 @@ public class AutofillShoppingFragmentTest {
 
     @Test
     @MediumTest
-    public void testTitle() {
+    public void testScreenSetup() {
         mSettingsActivityTestRule.startSettingsActivity();
 
         AutofillShoppingFragment fragment = mSettingsActivityTestRule.getFragment();
@@ -317,6 +317,10 @@ public class AutofillShoppingFragmentTest {
                         mSettingsActivityTestRule
                                 .getActivity()
                                 .getString(R.string.autofill_shopping_title));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertThat(fragment.getPreferenceScreen().shouldUseGeneratedIds()).isFalse();
+                });
     }
 
     @Test
