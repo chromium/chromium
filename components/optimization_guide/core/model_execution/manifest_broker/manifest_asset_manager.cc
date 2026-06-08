@@ -313,7 +313,8 @@ ManifestAssetManager::ManifestAssetManager(
     Delegate& delegate,
     component_updater::ComponentUpdateService* component_update_service,
     std::unique_ptr<ManifestSolutionFactory> factory)
-    : usage_tracker_(usage_tracker),
+    : local_state_(local_state),
+      usage_tracker_(usage_tracker),
       delegate_(delegate),
       component_update_service_(component_update_service),
       ledger_(local_state) {
@@ -411,6 +412,37 @@ void ManifestAssetManager::RefreshSolutions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (factory_) {
     factory_->UpdateSolutions();
+  }
+}
+
+void ManifestAssetManager::UninstallModels() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  model_execution::prefs::ClearAllUseCaseUsages(&*local_state_);
+  active_assets_by_id_.clear();
+  background_download_assets_by_id_.clear();
+
+  std::vector<std::string> keys_to_save;
+  for (auto& [public_key, context] : ledger_.GetMutableContexts()) {
+    if (context.state() == ComponentState::kRegistering ||
+        context.state() == ComponentState::kUninstalling) {
+      // Can't do anything right now during
+      // registering/uninstalling, wait for callbacks.
+      continue;
+    }
+    if (context.NeedsCleanup()) {
+      context.SetUninstalling();
+      keys_to_save.push_back(public_key);
+      // Uninstall the component which will delete the model files, after a
+      // short delay to give time for the consumers to unload the model.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&ManifestAssetManager::UninstallComponent,
+                         weak_ptr_factory_.GetWeakPtr(), public_key),
+          kUninstallDelay);
+    }
+  }
+  if (!keys_to_save.empty()) {
+    ledger_.SaveContexts(keys_to_save);
   }
 }
 

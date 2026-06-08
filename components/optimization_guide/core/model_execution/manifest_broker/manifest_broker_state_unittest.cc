@@ -179,4 +179,17 @@ TEST_F(ManifestBrokerStateTest, FallbackToDefaultMaxTokens) {
   EXPECT_EQ(session->GetTokenLimits().max_tokens, kOnDeviceModelMaxTokens);
 }
 
+TEST_F(ManifestBrokerStateTest, UninstallModels) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.Startup();
+  fake_.client().RequestAssetsFor("test");
+
+  EXPECT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_A_key", base::Version("1.0.0.0")}));
+
+  fake_.state().UninstallModels();
+
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+}
+
 }  // namespace optimization_guide

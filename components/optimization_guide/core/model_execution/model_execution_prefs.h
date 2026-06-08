@@ -89,6 +89,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void ClearUseCaseUsage(PrefService* local_state,
                        const std::string& use_case_name);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+void ClearAllUseCaseUsages(PrefService* local_state);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool WasUseCaseRecentlyUsed(const PrefService* local_state,
                             const std::string& use_case_name);
 

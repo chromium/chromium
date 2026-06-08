@@ -179,6 +179,10 @@ void ClearUseCaseUsage(PrefService* local_state,
   }
 }
 
+void ClearAllUseCaseUsages(PrefService* local_state) {
+  local_state->ClearPref(localstate::kLastUsageByFeature);
+}
+
 bool WasUseCaseRecentlyUsed(const PrefService* local_state,
                             const std::string& use_case_name) {
   const auto& dict = local_state->GetDict(localstate::kLastUsageByFeature);

@@ -297,8 +297,7 @@ void ManifestBrokerState::SetUseCaseRequested(const std::string& use_case,
 }
 
 void ManifestBrokerState::UninstallModels() {
-  // TODO: crbug.com/489511500 - Implement this.
-  // component_state_manager_.ForceUninstall();
+  asset_manager_->UninstallModels();
 }
 
 }  // namespace optimization_guide

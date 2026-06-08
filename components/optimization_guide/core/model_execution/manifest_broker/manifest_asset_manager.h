@@ -122,6 +122,9 @@ class ManifestAssetManager : public UsageTracker::Observer {
                            const std::string& version,
                            bool is_already_installed);
 
+  // Uninstalls all models and clears active/background download requirements.
+  void UninstallModels();
+
  private:
   enum class ComponentState {
     // Asset is not registered with the component updater.
@@ -251,6 +254,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
   void NotifyFactory(const std::string& public_key,
                      const ComponentContext& context);
 
+  const raw_ref<PrefService> local_state_;
   const raw_ref<UsageTracker> usage_tracker_;
   const raw_ref<Delegate> delegate_;
   raw_ptr<component_updater::ComponentUpdateService> component_update_service_;

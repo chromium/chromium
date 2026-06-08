@@ -811,6 +811,19 @@ TEST_F(ManifestAssetManagerTest, BackgroundDownloadForManifestEnabledUseCase) {
   EXPECT_FALSE(component_state_.IsRegistered(test_asset.public_key));
 }
 
+TEST_F(ManifestAssetManagerTest, UninstallModels) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  Startup();
+
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  manifest_broker_state_->UninstallModels();
+
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+}
+
 // TODO(crbug.com/504749700): Verify these scenarios from these
 // OnDeviceModelServiceControllerTest tests are covered by
 // ManifestAssetManagerTests BaseModelToBeInstalled BaseModelAvailableAfterInit
