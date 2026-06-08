@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/test_extension_service.h"
 
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::Extension;
 

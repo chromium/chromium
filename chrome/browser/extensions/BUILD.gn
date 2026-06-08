@@ -1607,6 +1607,8 @@ static_library("test_support") {
     "load_error_waiter.h",
     "menu_manager_test_observer.cc",
     "menu_manager_test_observer.h",
+    "mock_crx_installer.cc",
+    "mock_crx_installer.h",
     "mock_extension_special_storage_policy.cc",
     "mock_extension_special_storage_policy.h",
     "mock_window_controller_list_observer.cc",
@@ -1615,6 +1617,8 @@ static_library("test_support") {
     "scoped_test_mv2_enabler.h",
     "signin_test_util.cc",
     "signin_test_util.h",
+    "test_extension_service.cc",
+    "test_extension_service.h",
     "test_extension_system.cc",
     "test_extension_system.h",
   ]
@@ -1649,10 +1653,6 @@ static_library("test_support") {
     sources += [
       "api/passwords_private/test_passwords_private_delegate.cc",
       "api/passwords_private/test_passwords_private_delegate.h",
-      "mock_crx_installer.cc",
-      "mock_crx_installer.h",
-      "test_extension_service.cc",
-      "test_extension_service.h",
     ]
 
     deps += [
