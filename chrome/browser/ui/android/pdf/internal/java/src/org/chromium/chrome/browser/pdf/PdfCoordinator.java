@@ -340,7 +340,7 @@ public class PdfCoordinator
         }
 
         @Override
-        public void onLoadDocumentSuccess() {
+        public void onLoadDocumentSuccess(PdfDocument pdfDocument) {
             if (mDocumentLoadStartTimestamp <= 0) {
                 return;
             }
