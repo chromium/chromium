@@ -78,17 +78,17 @@
   std::unique_ptr<GeminiBrowserAgentObserverBridge> _geminiObserver;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                       actionFactory:(BrowserActionFactory*)actionFactory
-                         prefService:(PrefService*)prefService
-                fullscreenController:(FullscreenController*)fullscreenController
-                         topPosition:(BOOL)topPosition
-        defaultBrowserBannerAppAgent:
-            (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
-               authenticationService:
-                   (AuthenticationService*)authenticationService
-                       geminiService:(GeminiService*)geminiService
-                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent {
+- (instancetype)initWithIncognito:(BOOL)incognito
+                     webStateList:(WebStateList*)webStateList
+                    actionFactory:(BrowserActionFactory*)actionFactory
+                      prefService:(PrefService*)prefService
+             fullscreenController:(FullscreenController*)fullscreenController
+                      topPosition:(BOOL)topPosition
+     defaultBrowserBannerAppAgent:
+         (DefaultBrowserBannerPromoAppAgent*)defaultBrowserBannerAppAgent
+            authenticationService:(AuthenticationService*)authenticationService
+                    geminiService:(GeminiService*)geminiService
+               geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -102,8 +102,8 @@
             webStateList, _activeWebStateObserver.get());
 
     _buttonMenuFactory = [[ToolbarButtonMenuFactory alloc]
-        initForToolbarWithIncognito:_incognito
-                       webStateList:_webStateList
+        initForToolbarWithIncognito:incognito
+                       webStateList:webStateList
                       actionFactory:actionFactory];
     _buttonMenuFactory.delegate = self;
 

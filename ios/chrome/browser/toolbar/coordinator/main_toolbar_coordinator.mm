@@ -1318,7 +1318,8 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
       GeminiBrowserAgent::FromBrowser(browser);
 
   ToolbarMediator* toolbarMediator = [[ToolbarMediator alloc]
-              initWithWebStateList:browser->GetWebStateList()
+                 initWithIncognito:isIncognito
+                      webStateList:browser->GetWebStateList()
                      actionFactory:actionFactory
                        prefService:profile->GetPrefs()
               fullscreenController:FullscreenController::FromBrowser(browser)
@@ -1327,7 +1328,6 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
              authenticationService:authService
                      geminiService:geminiService
                 geminiBrowserAgent:geminiBrowserAgent];
-  toolbarMediator.incognito = isIncognito;
   toolbarMediator.navigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(browser);
   toolbarMediator.tabBasedIPHAgent =
