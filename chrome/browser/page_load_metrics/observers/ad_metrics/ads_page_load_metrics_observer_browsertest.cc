@@ -58,6 +58,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -2000,14 +2001,25 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  auto main_html_response =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          embedded_test_server(), "/mock_page.html",
-          true /*relative_url_is_prefix*/);
-  auto ad_script_response =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          embedded_test_server(), "/ad_script.js",
-          true /*relative_url_is_prefix*/);
+  const std::string main_html_body =
+      std::string(
+          "<html><body></body><script src=\"ad_script.js\"></script></html>") +
+      std::string(1024, ' ');
+  const std::string ad_script_body = std::string(R"(
+        navigator.bluetooth.requestDevice().catch(e => {});
+        navigator.geolocation.getCurrentPosition(() => {});
+        navigator.mediaDevices.getUserMedia({video: true});
+        navigator.mediaDevices.getDisplayMedia().catch(() => {});
+        navigator.mediaDevices.getUserMedia({audio: true});
+        navigator.serial.requestPort().catch(() => {});
+        navigator.usb.requestDevice({ filters: [] }).catch(() => {});
+  )") + std::string(5000, ' ');
+
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/mock_page.html", /*is_prefix=*/true)
+      .RespondWith("text/html; charset=utf-8", main_html_body);
+  handler.OnRequest("/ad_script.js", /*is_prefix=*/true)
+      .RespondWith("text/html; charset=utf-8", ad_script_body);
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -2019,28 +2031,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
                              WindowOpenDisposition::CURRENT_TAB,
                              ui::PAGE_TRANSITION_TYPED, false),
       /*navigation_handle_callback=*/{});
-
-  main_html_response->WaitForRequest();
-  main_html_response->Send(page_load_metrics::kHttpOkResponseHeader);
-  main_html_response->Send(
-      "<html><body></body><script src=\"ad_script.js\"></script></html>");
-  main_html_response->Send(std::string(1024, ' '));
-  main_html_response->Done();
-
-  ad_script_response->WaitForRequest();
-  ad_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
-  // Get ad script to use a bunch of privacy sensitive features.
-  ad_script_response->Send(R"(
-        navigator.bluetooth.requestDevice().catch(e => {});
-        navigator.geolocation.getCurrentPosition(() => {});
-        navigator.mediaDevices.getUserMedia({video: true});
-        navigator.mediaDevices.getDisplayMedia().catch(() => {});
-        navigator.mediaDevices.getUserMedia({audio: true});
-        navigator.serial.requestPort().catch(() => {});
-        navigator.usb.requestDevice({ filters: [] }).catch(() => {});
-  )");
-  ad_script_response->Send(std::string(5000, ' '));
-  ad_script_response->Done();
 
   waiter->AddMinimumNetworkBytesExpectation(base::ByteCount(5000));
 
