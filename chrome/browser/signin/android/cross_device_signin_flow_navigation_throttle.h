@@ -14,6 +14,10 @@ namespace content {
 class NavigationThrottleRegistry;
 }
 
+namespace signin {
+class IdentityManager;
+}
+
 // A navigation throttle that intercepts requests to the cross-device signin
 // deep link URL.
 //
@@ -43,11 +47,13 @@ class CrossDeviceSigninFlowNavigationThrottle
   CrossDeviceSigninFlowNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
       SigninBridge* signin_bridge,
+      signin::IdentityManager* identity_manager,
       signin::SigninDeepLinkParser deep_link_parser);
 
   void ClosePageIfNeeded();
 
   raw_ptr<SigninBridge> signin_bridge_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   signin::SigninDeepLinkParser deep_link_parser_;
 };
 

@@ -16,9 +16,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/signin/public/base/signin_deep_link_payload.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -67,6 +69,18 @@ class CrossDeviceSigninFlowNavigationThrottleUnitTest
         switches::kCrossDeviceSignin, {{"url", kValidBaseUrl}});
     window_ = ui::WindowAndroid::CreateForTesting();
     window_->get()->AddChild(web_contents()->GetNativeView());
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  }
+
+  void TearDown() override {
+    identity_test_env_profile_adaptor_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
   }
 
   content::NavigationThrottle* CreateAndGetThrottle(
@@ -75,16 +89,24 @@ class CrossDeviceSigninFlowNavigationThrottleUnitTest
         signin::SigninDeepLinkParser::CreateForCrossDeviceSigninIfEnabled();
     CHECK(parser.has_value());
     throttle_ = base::WrapUnique(new CrossDeviceSigninFlowNavigationThrottle(
-        registry, &mock_signin_bridge_, std::move(parser.value())));
+        registry, &mock_signin_bridge_,
+        identity_test_env_profile_adaptor_->identity_test_env()
+            ->identity_manager(),
+        std::move(parser.value())));
     return throttle_.get();
   }
 
   MockSigninBridge* signin_bridge() { return &mock_signin_bridge_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_profile_adaptor_->identity_test_env();
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSigninBridge> mock_signin_bridge_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
   std::unique_ptr<CrossDeviceSigninFlowNavigationThrottle> throttle_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
   base::HistogramTester histogram_tester_;
@@ -115,6 +137,39 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
             throttle->WillStartRequest().action());
   histogram_tester().ExpectUniqueSample("Signin.CrossDevice.UrlDetected", 1000,
                                         1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.CrossDevice.InitialAccountsNumber", 0, 1);
+}
+
+TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
+       WillStartRequest_LogsCorrectAccountsNumberWhenAccountsExist) {
+  identity_test_env()->MakeAccountAvailable("test1@gmail.com");
+  identity_test_env()->MakeAccountAvailable("test2@gmail.com");
+
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://www.google.com/chrome/"
+           "go-mobile?entry_point_id=1&email=test@gmail.com"),
+      main_rfh());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  auto* throttle = CreateAndGetThrottle(registry);
+
+  ASSERT_TRUE(throttle);
+  signin::SigninDeepLinkPayload expected_payload{
+      .entry_point_id = signin::ExternalEntryPoint::kDesktopDefault,
+      .entry_point_id_raw_value_for_metrics = 1,
+      .email = "test@gmail.com"};
+  EXPECT_CALL(*signin_bridge(),
+              StartSigninDeepLinkFlow(web_contents()->GetTopLevelNativeWindow(),
+                                      profile(), expected_payload))
+      .Times(1);
+  EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            throttle->WillStartRequest().action());
+  histogram_tester().ExpectUniqueSample("Signin.CrossDevice.UrlDetected", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.CrossDevice.InitialAccountsNumber", 2, 1);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -136,6 +191,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
   histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
+  histogram_tester().ExpectTotalCount(
+      "Signin.CrossDevice.InitialAccountsNumber", 0);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -155,6 +212,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
   histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
+  histogram_tester().ExpectTotalCount(
+      "Signin.CrossDevice.InitialAccountsNumber", 0);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -181,6 +240,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
             throttle->WillRedirectRequest().action());
   histogram_tester().ExpectUniqueSample("Signin.CrossDevice.UrlDetected", 1, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.CrossDevice.InitialAccountsNumber", 0, 1);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -202,6 +263,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
   histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
+  histogram_tester().ExpectTotalCount(
+      "Signin.CrossDevice.InitialAccountsNumber", 0);
 }
 
 TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
@@ -221,6 +284,8 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleUnitTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillRedirectRequest().action());
   histogram_tester().ExpectTotalCount("Signin.CrossDevice.UrlDetected", 0);
+  histogram_tester().ExpectTotalCount(
+      "Signin.CrossDevice.InitialAccountsNumber", 0);
 }
 
 class CrossDeviceSigninFlowNavigationThrottleFactoryUnitTest
@@ -314,6 +379,19 @@ class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest
     window_ = ui::WindowAndroid::CreateForTesting();
     window_->get()->AddChild(web_contents()->GetNativeView());
     web_contents()->SetDelegate(&mock_web_contents_delegate_);
+    identity_test_env_profile_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  }
+
+  void TearDown() override {
+    identity_test_env_profile_adaptor_.reset();
+    web_contents()->SetDelegate(nullptr);
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return IdentityTestEnvironmentProfileAdaptor::
+        GetIdentityTestEnvironmentFactories();
   }
 
   content::NavigationThrottle* CreateAndGetThrottle(
@@ -322,13 +400,11 @@ class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest
         signin::SigninDeepLinkParser::CreateForCrossDeviceSigninIfEnabled();
     CHECK(parser.has_value());
     throttle_ = base::WrapUnique(new CrossDeviceSigninFlowNavigationThrottle(
-        registry, &mock_signin_bridge_, std::move(parser.value())));
+        registry, &mock_signin_bridge_,
+        identity_test_env_profile_adaptor_->identity_test_env()
+            ->identity_manager(),
+        std::move(parser.value())));
     return throttle_.get();
-  }
-
-  void TearDown() override {
-    web_contents()->SetDelegate(nullptr);
-    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   MockWebContentsDelegate* web_contents_delegate() {
@@ -338,6 +414,8 @@ class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<MockSigninBridge> mock_signin_bridge_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_profile_adaptor_;
   std::unique_ptr<CrossDeviceSigninFlowNavigationThrottle> throttle_;
   MockWebContentsDelegate mock_web_contents_delegate_;
   std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
